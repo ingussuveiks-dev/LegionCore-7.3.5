@@ -1,0 +1,161 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "NATIVE_IRON_THREAD_AND_MAGIC_SCALES_DAMAGE_THRESHOLDS_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "8d96b12a091cb3cc499d08b180f631a2542a0abf",
+  "problem": "Six real AddPet/Begin observations,three native species on both teams: species183 carried1390/1674,but191/200 stayed0 and Damage accepted499/251 respectively. Both inherent state initialization and actual damage resolution were absent.",
+  "native_data": "Matching26972 species1507/1880->183=1390 IronThread; species1882->183=1674 MagicScales.1390 owns191 Ignore_Damage_Below_Threshold=500;1674 owns200 Ignore_Damage_Above_Threshold=250; both metadata flags8. These are the only matching ability-state191/200 rows. Static passives have no effect payload that would create an ordinary aura. Current World includes1507/1880 at Stitches/Weebomination actors and1882 at68662. Readonly NPC catalog reached EOF with31 matching team rows. No character,SQL or trainer-team row changed.",
+  "repair": "Actual AddPet recognizes only the verified species/183/passive bindings and initializes their positive native threshold state once before first snapshots. It reads500/250 from actual ability-state data,without an infinite controller or enabling other183 producers. Damage ignores strictly below191 or strictly above200,emits unchanged native health with IMMUNE and returns false before finite block consumption,damage conditions/reactions and death. Equality remains a hit;existing miss causes,ordinary native damage and source species/racials remain. Exact self-targeted451/758 property68 health payments bypass attack thresholds; hostile unavoidable attacks remain eligible for immunity.",
+  "policy_and_limits": "Strict boundary follows native Below/Above names and matching descriptions. Immunity uses the native event flag; actual client display/visuals/encounter traversal remains pending. Threshold comparison uses actual incoming type/modifier-adjusted attack damage before finite block consumption. Native protected species are Undead/Dragonkin; ordering against artificially combined foreign Aquatic/Magic states is not independently retail-verified. The payment check covers the real Damage entry/native68 row; full clone122/123/124 gameplay remains OPEN.",
+  "tests": {
+    "native": "78 counted native cases in12 groups: real AddPet/Begin/read-only native species initialization on both teams; three values around each threshold; ignored attacks preserve finite block and damage/death receipts; misses retain cause; actual outgoing/returning swaps without transfer/stacking; periodic/unavoidable damage; ordinary species; native451/758 payment-row Damage path; actual re-AddPet reset; actual CalculateDamage type-modified input; selected native110 through complete ProceedRound; ignored lethal/scaled one-hit without consuming racial. Memory-only actors and controlled assigned kits,no character writes or client certification.",
+    "control": "Complete pinned8d96b12a0 PetBattle.cpp+PetBattleAbilityEffect.cpp fails exact native initialization assertion exit1; fixed78 execute and pass. Six older actual threshold observations paired and archived after deployment.",
+    "retained": "48 Roboflauge,24 Frenzy,144 percentage variance/all63 rows,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 PE scopes,complete retained pet proof chain,new threshold native-state write/strict branches/early return and unchanged writer PE pass. Historical106 is still tied to cdca; no fresh106 claim.",
+    "runtime": "Owned canonical PID21868 reached fresh ready,shutdown0,exit0,gone;stderr empty. Scepter -VerifyReleaseBinary passes. Current bnet .text equals verified preceding rollback .text byte-for-byte; new whole-file hash comes from relinking. No separate new bnet startup claim.",
+    "diagnostics": "Formal native/build/PE/deployment/startup/Scepter/cleanup runs retain canonical and own pre/post crash/log records. No new/changed crash or appended DBErrors/unexplained server warnings/errors/assertions. Existing C4018 in unchanged generic target-team loop is also present in prior Roboflauge build; retained Scepter C4244/C4389 fixture warnings are unchanged.",
+    "helper_repairs": "First full100 helper extraction failed before native dispatch because this shell omitted PYTHONUTF8=1; original failed output retained,explicit UTF8 rerun succeeds through both full suites. First cleanup selected similarly named fixed-*.log files instead of directories and failed hashing an archive directory before any deletion. Corrected is_dir filtering and explicit directory validation;first diagnostic Completed=false is preserved. One byte-identical historical Discharge log copy is retained and explicitly manifested. Corrected archive/copy/delete checks pass. No production crash is inferred from either helper error.",
+    "packet": "Round writer/sender source unchanged; current writer PE passes. Prior nine-sender18-packet extracted-source ASAN is retained as historical wire coverage. This does not establish full native-core ASAN or actual client rendering."
+  },
+  "canonical": {
+    "worldserver.exe": "9eaa2715ac31aa536a18f95b2d9b250f4ef4f703a5ef1479cd585c0761cb4b1d",
+    "worldserver.map": "c6fab3c9095b7689efdd7f2bf3d04d90d4e7e7e3d4b65c45aaf971bc13a299d7",
+    "bnetserver.exe": "efbd94e690bb0a5565583ad75ce9b680166db2aae9db05089e93269ce763f99f",
+    "bnetserver.map": "97fe86c3d80a8369d37358fdc0586a63361bdc1f7b617f1d1d1ac062990f76e1"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/final78-driver.log",
+      "sha256": "51da00049c36993b946d4f50e9868e8a24797146d435fd853f05fbb64dd4b07c"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-roboflauge48-driver.log",
+      "sha256": "7ac107b1dd2bed31e89004b91dc29a888b277e399e2216104c485b85323fb968"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-frenzy24-driver.log",
+      "sha256": "1aff6cad2bbe324871fbaaaf0758b3946617275de51a197dbfc0e6c359e24bc4"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-variance144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-ward50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-roster48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-cheat28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-hourglass34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-bend26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-racial13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-sacrifice44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/retained-unholy16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/full-SecondTenTen20261112Native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/full-TenTen20261111Native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/hundred-stage.log",
+      "sha256": "43d590c828151ef4363cc31db1c525196cc4eac034ff1697841cf7da5fafe3f1"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/second-hundred-stage.log",
+      "sha256": "f20463beef375bf5243941fd1e1edb670d534f3311b4a31563f427d713338179"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/writer-stage.log",
+      "sha256": "5034f7b3e3eab8cb13ef338974eea0a887381d1324d03dfd06635e817b03c24b"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/canonical-linked.log",
+      "sha256": "b13d844b779c5d6b3d0285d626ba54a020b79759661cccc25f1be60f992c0bf9"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/startup-driver.log",
+      "sha256": "372f2a6157c5b9e3bb2985125637abbd6769d1c0eb088a06a5c9a394f5929c0b"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/scepter-driver.log",
+      "sha256": "71267b1942216489fb11280a9284eb3c120f397fedf6dbf3f7ae6eed7fe777fc"
+    },
+    {
+      "path": ".codex/pet-damage-threshold-open-2026-11-12/cleanup-driver.log",
+      "sha256": "dfb1bb000a0088e9a1e7325e4117f45581b2a89643d4b4ea49ceb643f979e915"
+    }
+  ],
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-damage-threshold-2026-11-12",
+    "ManifestSHA256": "CE7644ACFC2AAF7C7026CF709A2BBED3ADB1E6DBA58F888834F3F8B17248B1D3",
+    "Archived": 522,
+    "Removed": 64,
+    "ReclaimedBytes": 731378070.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent rollback copies for pending client comparisons,regression sources and reusable tools. Resolved78 threshold tests, six prior native reproductions, one complete pinned baseline and retained48 Roboflauge/24 Frenzy/144 variance/all earlier pet checks/two full100 suites archived. Initial full helper UTF8 setup failure preserved and paired with successful extraction/native runs. Mixed Ominitron/other183/Haunt/795 and original type research stay OPEN outside fixed with unique caches. Slaghammer/LINK2/Lady/mixed7111byteDBErrors/character/security evidence untouched. No fresh106 or actual client certification."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_threshold_cases": 78,
+    "retained_native_cases": [
+      48,
+      24,
+      144,
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "9eaa2715ac31aa536a18f95b2d9b250f4ef4f703a5ef1479cd585c0761cb4b1d",
+      "worldserver.map": "c6fab3c9095b7689efdd7f2bf3d04d90d4e7e7e3d4b65c45aaf971bc13a299d7",
+      "bnetserver.exe": "efbd94e690bb0a5565583ad75ce9b680166db2aae9db05089e93269ce763f99f",
+      "bnetserver.map": "97fe86c3d80a8369d37358fdc0586a63361bdc1f7b617f1d1d1ac062990f76e1"
+    },
+    "bnet_native_code_section_unchanged": true,
+    "archive_records": 522,
+    "removed": 64,
+    "removed_bytes": 731378070.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Actual Stitches/Weebomination/Chromaddon encounters,passive UI,damage/immune presentation,real learned/World kits,client re-entry and all whole pet encounters remain pending.",
+    "Other9 species183 records/8 abilities:251,485,1377,1387,1586,1588,1673,1672 remain OPEN. Ominitron1595 still lacks an authentic producer;actual99878 team1817/1597 and1818/1670 force opponent high-health swaps through native145,not an observed1595 activation. Both species have native17/20 states and no183. No invented binding added.",
+    "Haunt652/653 actual4-round230/state68/fake-death/return sequence,Dark Rebirth794/795 missing146/protected window/penalty796,Apocalypse,clone122/123/124 and other generic159 remain OPEN. Mixed metadata/observations and unique probes stay outside fixed.",
+    "Living Lady activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer/mixed DBErrors,intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or killing timer."
+  ],
+  "next": "Trace and implement the independently verifiable static species183 modifiers251/485/1673,including native initialization/reset and actual accuracy/crit/dodge/damage dispatch. Preserve uncertain global/team/periodic/resurrection producers as OPEN."
+}

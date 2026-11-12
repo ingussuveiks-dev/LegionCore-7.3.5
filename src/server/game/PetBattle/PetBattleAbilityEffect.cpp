@@ -309,6 +309,23 @@ bool PetBattleAbilityEffect::Damage(uint32 target, int32 damage, bool cantBeAvoi
     if (!(Flags & FailFlags) && damage <= 0)
         Flags |= PETBATTLE_EVENT_FLAG_MISS;
 
+    // Ignore attacks strictly outside the native threshold. Equality is an
+    // ordinary hit; an ignored attack must not consume a finite block charge
+    // or dispatch damage reactions. Clone health payments remain payments.
+    bool const cloneHealthCost = target == Caster && (AbilityID == 451 || AbilityID == 758) &&
+        EffectInfo->BattlePetEffectPropertiesID == 68;
+    if (!(Flags & FailFlags) && !cloneHealthCost)
+    {
+        int32 const below = GetState(target, BATTLEPET_STATE_Ignore_Damage_Below_Threshold);
+        int32 const above = GetState(target, BATTLEPET_STATE_Ignore_Damage_Above_Threshold);
+        if ((below > 0 && damage < below) || (above > 0 && damage > above))
+        {
+            Flags |= PETBATTLE_EVENT_FLAG_IMMUNE;
+            SetHealth(target, GetHealth(target));
+            return false;
+        }
+    }
+
     if (!(Flags & FailFlags) && !cantBeAvoidBlockedDodged && !GetState(target, BATTLEPET_STATE_Mechanic_IsWall))
         ConsumeBlockCharge(target);
 

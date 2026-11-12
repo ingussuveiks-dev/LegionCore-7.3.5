@@ -1042,6 +1042,18 @@ void PetBattle::AddPet(uint32 teamID, std::shared_ptr<BattlePetInstance> pet)
         pet->States[speciesStateInfo->BattlePetStateID] += speciesStateInfo->Value;
     }
 
+    // These inherent species183 passives author a fixed damage threshold.
+    // Initialize their real native state before the first snapshot, without
+    // inventing an infinite aura or activating unrelated species abilities.
+    uint32 const speciesAbility = pet->States[BATTLEPET_STATE_Internal_SpeciesAbility];
+    uint32 const thresholdState = ((pet->Species == 1507 || pet->Species == 1880) && speciesAbility == 1390)
+        ? BATTLEPET_STATE_Ignore_Damage_Below_Threshold
+        : (pet->Species == 1882 && speciesAbility == 1674 ? BATTLEPET_STATE_Ignore_Damage_Above_Threshold : 0);
+    if (thresholdState)
+        for (auto state : sBattlePetAbilityStateStore)
+            if (state->BattlePetAbilityID == speciesAbility && state->BattlePetStateID == thresholdState && state->Value > 0)
+                pet->States[thresholdState] += state->Value;
+
     // Primary stats is scaled with level and quality
     if (auto qualityInfo = sBattlePetBreedQualityStore.LookupEntry(7 + pet->Quality))
         for (size_t i = 0; i < 3; ++i)
