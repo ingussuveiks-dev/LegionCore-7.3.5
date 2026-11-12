@@ -88,12 +88,14 @@ public:
         bool blinkEvent = false;
         bool checkWebPlayer = false;
         uint8 DiedSpidersCount = 0;
-        Unit* plrWebTarget = nullptr;
+        ObjectGuid webTargetGuid;
 
         void Reset() override
         {
             _Reset();
             blinkEvent = false;
+            checkWebPlayer = false;
+            webTargetGuid.Clear();
 
             if (DiedSpidersCount >= 21)
                 me->SetReactState(REACT_AGGRESSIVE);
@@ -128,10 +130,11 @@ public:
                     if (checkWebPlayer)
                     {
                         checkWebPlayer = false;
-                        plrWebTarget = target;
+                        webTargetGuid = target ? target->GetGUID() : ObjectGuid::Empty;
                     }
-                    else
-                        target->CastSpell(plrWebTarget, SPELL_TANGLED_BEAM, true);
+                    else if (Unit* webTarget = ObjectAccessor::GetUnit(*me, webTargetGuid))
+                        if (target && target != webTarget)
+                            target->CastSpell(webTarget, SPELL_TANGLED_BEAM, true);
                     break;
             }
         }
@@ -230,7 +233,7 @@ public:
                         events.RescheduleEvent(EVENT_NETHER_VENOM, 30000);
                         break;
                     case EVENT_TANGLED_WEB:
-                        plrWebTarget = nullptr;
+                        webTargetGuid.Clear();
                         checkWebPlayer = true;
                         DoCast(SPELL_TANGLED_WEB);
                         Talk(0);
