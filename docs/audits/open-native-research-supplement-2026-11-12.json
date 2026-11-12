@@ -1,4 +1,10 @@
 {
+  "latest_accuracy_roster_resolution_2026_11_12": {
+    "status": "527_1010_THREE_ENEMY_RECIPIENTS_FIXED_CLIENT_PENDING",
+    "fix_commit": "72e54ac8cce57458a1be91ad88619635d32f8c16",
+    "audit": "docs/audits/pet-accuracy-roster-2026-11-12.json",
+    "supersedes": "Four Stench/Inebriate native observations are historical failures paired with48 passing cases and fresh106 certificate on cdca. Generic159 and other roots remain OPEN. Fourteen type229 observations and both Dark Rebirth/state146 and type research unique caches remain outside fixed. Native state124 is Special_TypeOverride/flags8; four mark values4/7/5/3 are categorical; source-species counts574=18,476=18,1389/1595/1718=0,794=9,1906=1. This metadata does not establish complete NPC encounter or overlapping-type behavior."
+  },
   "latest_cheat_death_resolution_2026_11_12": {
     "status": "1906_1907_OWNER_ROUND_END_REVIVAL_FIXED_CLIENT_PENDING",
     "fix_commit": "35c59cab0b9ea364f5d0f6f14d6366a587dffbee",
