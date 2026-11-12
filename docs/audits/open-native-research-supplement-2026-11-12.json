@@ -1,4 +1,10 @@
 {
+  "latest_cheat_death_resolution_2026_11_12": {
+    "status": "1906_1907_OWNER_ROUND_END_REVIVAL_FIXED_CLIENT_PENDING",
+    "fix_commit": "35c59cab0b9ea364f5d0f6f14d6366a587dffbee",
+    "audit": "docs/audits/pet-cheat-death-2026-11-12.json",
+    "supersedes": "The1906half of earlier eight resurrection observations is now paired with28 passing actual native cases. Mixed Dark Rebirth794/795/state146 research and its unique cache remain outside fixed;795protected-window/penalty796 is still OPEN. The first research probe wrongly required a146 metadata row and exited1; corrected read-only probe records actual metadata absence and all eight observations, with no crash/newDB/server failure."
+  },
   "latest_hourglass_resolution_2026_11_12": {
     "status": "1927_230_1932_246_ROUND_END_PIPELINE_FIXED_CLIENT_PENDING",
     "fix_commit": "94b0133fbda2b1e5dcb274b8a01ce13de74610a5",

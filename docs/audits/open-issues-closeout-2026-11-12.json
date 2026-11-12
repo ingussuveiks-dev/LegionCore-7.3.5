@@ -1,4 +1,48 @@
 {
+  "latest_native_cheat_death_repair_2026_11_12": {
+    "status": "CHEAT_DEATH_AND_PRIOR_NATIVE_COOLDOWN_REPAIRS_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
+    "fix_commit": "35c59cab0b9ea364f5d0f6f14d6366a587dffbee",
+    "audit": "docs/audits/pet-cheat-death-2026-11-12.json",
+    "canonical": {
+      "worldserver.exe": "7c8683092fd2abde174f3a92bcff107504f6b7a94f2e2ab0e620984cbc6ab5a1",
+      "worldserver.map": "45bb01ae216ec561bbd7754474978d6faecab7b9df3fced23432e7172f90bcc9",
+      "bnetserver.exe": "4a58343b0d03178c997c1e145e0f139614085cc6c16b18ec73bdc33796edef73",
+      "bnetserver.map": "ad95841c200bde8f6aa4413588e8dbde2c79da0a17aa82c55a471c6271fbc559"
+    },
+    "checks": "Current28 native Cheat Death cases and complete pinned94b lethal control; current34/26/13/44/16 and both100 native suites, nine actual sender/writer/ByteBuffer ASAN paths plus18 cooldown packets, complete retained pet/two100/writer linked proofs, strict source/build/archive/protected/rollback hashes, Scepter and owned canonical PID4884 ready/shutdown0/exit0/gone. No new crash or unexplained appended server/DB failure. Historical106 belongs to9338, not current7c86.",
+    "cleanup": {
+      "status": "PASS",
+      "native_cheat_death_cases": 28,
+      "retained_native_cases": [
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "current_linked_hundred_scopes": 2,
+      "current_round_sender_paths": 9,
+      "current_ready_zero_idle_minus_one_pairs": 9,
+      "canonical": {
+        "worldserver.exe": "7c8683092fd2abde174f3a92bcff107504f6b7a94f2e2ab0e620984cbc6ab5a1",
+        "worldserver.map": "45bb01ae216ec561bbd7754474978d6faecab7b9df3fced23432e7172f90bcc9",
+        "bnetserver.exe": "4a58343b0d03178c997c1e145e0f139614085cc6c16b18ec73bdc33796edef73",
+        "bnetserver.map": "ad95841c200bde8f6aa4413588e8dbde2c79da0a17aa82c55a471c6271fbc559"
+      },
+      "archive_records": 417,
+      "removed": 42,
+      "removed_bytes": 671097904.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    },
+    "remaining": [
+      "Dark Rebirth794/795 has native infinite duration and a146 state change row, but state146 has no matching native metadata record. Full protected-window/penalty796 behavior remains OPEN; no duration or failure semantics guessed. Mixed eight research observations and corrected missing-state probe remain outside fixed.",
+      "Haunt/Apocalypse, generic159/clone122/123/124, type229 and wider core health remain OPEN.",
+      "Actual pet learned-kit PvE/PvP UI/cooldown/animation/battle log, authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2/mixed DBErrors, original client handshake cause and all36 complete artifact chains remain OPEN. Pet1906 is a different namespace."
+    ],
+    "next": "Continue independently verifiable native OPEN behavior while resolving Dark Rebirth protected-window evidence; do not infer missing native146 metadata or invent a timer."
+  },
   "latest_native_hourglass_repair_2026_11_12": {
     "status": "HOURGLASS_BEND_TIME_AND_PRIOR_NATIVE_REPAIRS_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
     "fix_commit": "94b0133fbda2b1e5dcb274b8a01ce13de74610a5",
