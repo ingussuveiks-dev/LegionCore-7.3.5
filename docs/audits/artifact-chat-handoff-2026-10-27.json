@@ -1,4 +1,37 @@
 {
+  "latest_native_sacrifice_repair_2026_11_12": {
+    "status": "FOUR_SACRIFICES_AND_IMMEDIATE_RACIALS_FIXED_OTHER_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
+    "fix_commit": "27213e1242c568d35abaf49574964d849235e976",
+    "prior_racial_fix": "29547942525a25d73521747cdf3b4703bc6cbe9a",
+    "audit": "docs/audits/pet-self-sacrifice-2026-11-12.json",
+    "certificate_results": "docs/audits/pet-self-sacrifice-2026-11-12/certificate-results.json",
+    "canonical": {
+      "worldserver.exe": "4c86e9306a497306d763a5c84a4edb2b6f845cb943cc9754e9fa0cabe3f057c6",
+      "worldserver.map": "6f6aee9d90795580fe7452fd43b18cd2be104528afd7a65d0a97ae9ae7a5ae1b",
+      "bnetserver.exe": "f0a92b490e6627ac248450ac2c15fd10dd61213cf1b576cf0d630803aa0bfec9",
+      "bnetserver.map": "33133b1b5b4e4025dd007dcfdcaf52a902c625bbb5a34fd609966cab3e8f9c09"
+    },
+    "verified": "Current44actual native cases across four sacrifices,7complete original82a0counterfactual groups,retained13racial/two100native/9packet ASAN/two100linked scopes,actual current sacrifice+racial linked proof,full immutable106/106,Scepter and owned canonical PID3960 ready/shutdown0/exit0/gone. No new crash or unexplained appended server/DB failure.",
+    "cleanup": {
+      "status": "PASS",
+      "canonical_world_sha256": "4c86e9306a497306d763a5c84a4edb2b6f845cb943cc9754e9fa0cabe3f057c6",
+      "certificate_roots": 106,
+      "native_sacrifice_cases": 44,
+      "retained_native_racial_cases": 13,
+      "native_controls": 7,
+      "archive_records": 645,
+      "removed": 41,
+      "removed_bytes": 702840487.0,
+      "protected_evidence_and_runtime_unchanged": true
+    },
+    "remaining": [
+      "UnholyAscension321:6actual native observations prove3aura applications on one enemy,wrong death of both fronts,andignored clone immunity;actual full rounds fail too.",
+      "246/230cooldown/owner/swap/round-end,other resurrection/death reactions,clone122/123/124,type229andwider core health remain OPEN.8actual native observations show1905/1906zero-accuracy auras fail at ordinary accuracy0.",
+      "LivingLady activation/surrender/1906/Grash finish/cleanup and sharedLINK2payloads remain OPEN.80sampledvideo frames are not a proved server trigger or full client traversal.",
+      "Mixed7111byteDBErrors and original Slaghammer cache preserved. Original intermittent client handshake cause,all36whole artifact chains and pet/quest/boost presentation remain client-pending."
+    ],
+    "next": "Repair independently proved UnholyAscension321roster/user-sacrifice path,next continue authored cooldown/proc/death reaction work. No new property159generic selector or complete clone behavior is inferred."
+  },
   "latest_native_racial_repair_2026_11_12": {
     "status": "IMMEDIATE_RACIAL_RESURRECTION_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
     "fix_commit": "29547942525a25d73521747cdf3b4703bc6cbe9a",

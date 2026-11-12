@@ -1,4 +1,26 @@
 {
+  "latest_native_repair_and_followup_2026_11_12": {
+    "four_repaired": "docs/audits/pet-self-sacrifice-2026-11-12.json",
+    "fix_commit": "27213e1242c568d35abaf49574964d849235e976",
+    "unholy321": {
+      "status": "OPEN_ACTUAL_NATIVE_DEFECT",
+      "evidence": {
+        "path": ".codex/pet-unholy-ascension-open-2026-11-12/current-321/native.tsv",
+        "sha256": "f606678f1c2c3d8ac7eb0daeb4165390c341197b83c9bb0e3c155a9709f19450"
+      },
+      "scope": "6actual memory-only native observations,both teams,ordinary/clone/fullProceedRound. Matching320state24value25. Each ordinary cast applies320three times to the active enemy,then kills user and that enemy;reserves receive none. No character data changed."
+    },
+    "zero_accuracy": {
+      "status": "OPEN_ACTUAL_NATIVE_DEFECT",
+      "evidence": {
+        "path": ".codex/pet-cooldown-open-2026-11-12/current-zero-accuracy/native.tsv",
+        "sha256": "88b4d6be11b4e66badb822529acfcd1a3c0c39c9491a352be684a2626b610f8e"
+      },
+      "scope": "8actual memory-only native casts:1905/1906,both teams,accuracyStat0/100. Both root Cast results areOK;at ordinary0the real aura is missing,and only an artificial100accuracy stat makes it appear. Matching property26has precisely these2zero-accuracy rows."
+    },
+    "diagnostics": "Both new observation sets completed without crashes,new DBErrors or unexplained server warnings/errors/assertions. Research completion is not a passing repaired regression. Evidence stays outside fixed.",
+    "limits": "Historical20-case observations below are superseded for the four repaired abilities by27213e124;321remains unresolved. Sampled video and all client/whole-chain limits remain explicit."
+  },
   "date": "2026-11-12",
   "status": "AUTHENTIC_OPEN_EVIDENCE_RETAINED_NO_GAMEPLAY_COMPLETION_CLAIM",
   "sharasdal": {
