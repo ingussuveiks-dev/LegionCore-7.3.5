@@ -795,8 +795,13 @@ bool PetBattleTeam::CanSwap(int8 replacementPet)
     if (PetBattleInstance->Pets[ActivePetID]->IsAlive() && (PetBattleInstance->Pets[ActivePetID]->States[BATTLEPET_STATE_swapOutLock] || PetBattleInstance->Pets[ActivePetID]->States[BATTLEPET_STATE_Mechanic_IsWebbed]))
         return false;
 
-    if (replacementPet != PETBATTLE_NULL_ID)
+    if (replacementPet != PETBATTLE_NULL_SLOT)
     {
+        uint32 const teamID = PetBattleInstance->Teams[PETBATTLE_TEAM_1] == this ? PETBATTLE_TEAM_1 : PETBATTLE_TEAM_2;
+        if (replacementPet < 0 || replacementPet >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS ||
+            !PetBattleInstance->Pets[replacementPet] || PetBattleInstance->Pets[replacementPet]->TeamID != teamID)
+            return false;
+
         if (!PetBattleInstance->Pets[replacementPet]->IsAlive())
             return false;
 
@@ -1449,13 +1454,13 @@ void PetBattle::SwapPet(uint32 teamID, int32 newFrontPetID, bool initial)
 {
     assert(teamID < MAX_PETBATTLE_TEAM);
 
-    if (newFrontPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS)
+    if (newFrontPetID < 0 || newFrontPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS)
         return;
 
     if (!Pets[newFrontPetID])
         return;
 
-    if (!Teams[teamID]->CanSwap())
+    if (!Teams[teamID]->CanSwap(newFrontPetID))
         return;
 
     int32 oldTeamFrontPetID = Teams[teamID]->ActivePetID;

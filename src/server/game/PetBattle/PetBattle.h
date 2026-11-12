@@ -512,7 +512,7 @@ public:
     bool HasPendingMultiTurnCast();
 
     bool CanCastAny();
-    bool CanSwap(int8 replacementPet = PETBATTLE_NULL_ID);
+    bool CanSwap(int8 replacementPet = PETBATTLE_NULL_SLOT);
     uint8 CanCatchOpponentTeamFrontPet();
 
     uint32 GetTeamInputFlags();
