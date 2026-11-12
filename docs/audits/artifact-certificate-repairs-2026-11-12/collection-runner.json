@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-12",
+  "status": "RUNNER_FAILURE_PROPAGATION_AND_PINNED_CONTROLS_VALIDATED_FINAL_COLLECTION_RECORDED_SEPARATELY",
+  "cause": "The historical106-root ledger retained36 failing legacy certificates. Individual passing prefixes were insufficient because composed runpy chains can fail later or exit before returning. There was no single immutable-input collection certifying every retained root on the final canonical binary.",
+  "repair": "Run every declared root body to completion in an independent process, capture real exit/stdout/stderr and require a returned-through-chain marker. Reject SystemExit even with status0. Freeze EXE/map plus every Python/PowerShell test source before/after collection and reject mixed inputs. Reuse only the successfully checked immutable base PE reader within one process, with copied maps/lists; no certificate body is omitted. Ordinary collection exits nonzero on any failed root. Preserve per-root log hashes and the full result manifest.",
+  "counterfactual": "Pin all local Python certificate bodies AND imported local helper modules from Git32f7dc01263cc5f312252b5b08df69b24381e448. Inspect the same current production EXE. All15 selected historical controls fail at their real stale assertions or missing obsolete symbol, with no import/codec/harness failure. This is a tool counterfactual, not a broken gameplay-binary baseline. Correct UTF-8 BOM decoding and pinned linecache source text keep failure reports attributable to the executed historical code.",
+  "validated_runs": [
+    ".codex/open-closeout-2026-11-12/full-current/results.json:100/106 pass,6 actual unresolved roots,ordinary exit1; unchanged-source/binary assertions pass. This intermediate run is not an ordinary passing collection.",
+    ".codex/open-closeout-2026-11-12/six-repaired/results.json and six-repaired2/results.json: intermediate real failures retained; later focused passing roots resolve them.",
+    ".codex/open-closeout-2026-11-12/pinned-final/results.json:15/15 expected historical tool failures,diagnostics completed true; unchanged source/binary hashes.",
+    ".codex/open-closeout-2026-11-12/silver-ally-repaired2.log:complete final Silver Hand root returns after its current64heal and procession successor checks."
+  ],
+  "earlier_harness_failures": "Initial exploratory collections failed report bookkeeping because their output directory was not resolved before relative-path recording. Some exploratory inputs were edited during execution. They are retained as exploratory evidence and are excluded from the final immutable-source certificate. A misspelled UTF codec in the first pinned driver attempt was repaired before the clean15-control run. No baseline failure is presented as a passing gameplay run.",
+  "post_test_diagnostics": "Canonical plus own crash/log inventories before/after every formal collection; no new/changed crash, appended DBErrors or unexplained worldserver warnings/errors/assertions. Expected certificate assertion failures retain their captured output and real nonzero exits.",
+  "production_changes": "None. No binary build or promotion is necessary for these test-only repairs. Canonical worldserver SHA256f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165 remains deployed.",
+  "limitations": "Declared selected linked paths are not actual client traversal or a whole36-chain gameplay certificate. The authentic living Lady finale, missing shared LINK2 payloads, mixed log, intermittent client handshake cause and remaining native pet/core healing pipelines remain explicitly open.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}
