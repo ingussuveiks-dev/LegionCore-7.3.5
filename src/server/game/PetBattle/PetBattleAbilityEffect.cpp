@@ -1587,7 +1587,7 @@ bool PetBattleAbilityEffect::HandleInitialization()
 {
     SetState(Target, BATTLEPET_STATE_Internal_InitialHealth, GetHealth(Target));
     SetState(Target, BATTLEPET_STATE_Internal_InitialLevel, PetBattleInstance->Pets[Target]->Level);
-    SetState(Target, BATTLEPET_STATE_Stat_CritChance, 5);
+    SetState(Target, BATTLEPET_STATE_Stat_CritChance, PetBattleInstance->Pets[Target]->GetInitialCritChance());
 
     uint32 petType = BATTLEPET_PETTYPE_HUMANOID;
     if (BattlePetSpeciesEntry const* targetSpeciesInfo = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Target]->Species))

@@ -349,6 +349,16 @@ int32 BattlePetInstance::GetMaxHealth()
     return int32(std::max<int64>(1, std::min<int64>(maximum, std::numeric_limits<int32>::max())));
 }
 
+int32 BattlePetInstance::GetInitialCritChance() const
+{
+    int32 chance = 5; // Preserve the native battle initialization base.
+    if (Species == 1259 && States[BATTLEPET_STATE_Internal_SpeciesAbility] == 251)
+        for (auto state : sBattlePetAbilityStateStore)
+            if (state->BattlePetAbilityID == 251 && state->BattlePetStateID == BATTLEPET_STATE_Stat_CritChance)
+                chance += state->Value;
+    return chance;
+}
+
 int32 BattlePetInstance::GetSpeed()
 {
     int32 modPercent = States[BATTLEPET_STATE_Mod_SpeedPercent];
@@ -1053,6 +1063,21 @@ void PetBattle::AddPet(uint32 teamID, std::shared_ptr<BattlePetInstance> pet)
         for (auto state : sBattlePetAbilityStateStore)
             if (state->BattlePetAbilityID == speciesAbility && state->BattlePetStateID == thresholdState && state->Value > 0)
                 pet->States[thresholdState] += state->Value;
+
+    // Personal static species183 passives have native states but no aura
+    // producer. Keep global/team and periodic passives separate.
+    uint32 const personalState = (pet->Species == 1259 && speciesAbility == 251) ? BATTLEPET_STATE_Stat_Accuracy
+        : (pet->Species == 1420 && speciesAbility == 485) ? BATTLEPET_STATE_Mod_DamageDealtPercent
+        : (pet->Species == 1881 && speciesAbility == 1673) ? BATTLEPET_STATE_Stat_Dodge : 0;
+    if (personalState)
+    {
+        for (auto state : sBattlePetAbilityStateStore)
+            if (state->BattlePetAbilityID == speciesAbility && state->BattlePetStateID == personalState)
+                pet->States[personalState] += state->Value;
+        // Include Uncanny Luck before the initial snapshot. Native291 must
+        // restore the same initial value rather than overwrite its bonus.
+        pet->States[BATTLEPET_STATE_Stat_CritChance] = pet->GetInitialCritChance();
+    }
 
     // Primary stats is scaled with level and quality
     if (auto qualityInfo = sBattlePetBreedQualityStore.LookupEntry(7 + pet->Quality))

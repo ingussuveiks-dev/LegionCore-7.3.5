@@ -325,6 +325,7 @@ public:
 
     int32 GetMaxHealth();
     int32 GetSpeed();
+    int32 GetInitialCritChance() const;
     uint32 GetMaxXPForCurrentLevel();
     uint32 GetXPEarn(uint32 targetPetID);
 

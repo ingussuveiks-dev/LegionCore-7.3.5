@@ -1,0 +1,243 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "UNCANNY_LUCK_ATTACK_BOOST_EVASION_NATIVE_PERSONAL_STATES_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "c04fcef56",
+  "problem": "Twelve actual AddPet/Begin observations,front/reserve sources on both teams: species1259/1420/1881 carried183=251/485/1673 but accuracy41,damage23,dodge73 were0 and crit40 remained only5. Native291 also overwrote any Uncanny Luck crit bonus with5.",
+  "native_data": "Matching26972 species1259->251 UncannyLuck owns41=50/40=25;1420->485 AttackBoost owns23=25;1881->1673 Evasion owns73=25. All three flags2/static,no ordinary aura producer/effect payload. Native family1259/1420 Beast7,1881 Humanoid0. World reader includes1881 at85009 with901/1533/1535; no current World team reference for1259/1420 was found. Tests use memory-only assigned native abilities and do not invent live World team rows.",
+  "repair": "Actual AddPet scopes the three verified species/183 bindings and loads only the appropriate native personal ability-state Value into41/23/73. GetInitialCritChance preserves the existing native5 base and adds actual251/state40 only for1259/183=251. AddPet stores this value before Begin/initial snapshots and actual291 uses the same getter,so reinitialization neither erases the25 bonus nor stacks it. No fabricated aura,global/team/periodic activation,SQL,character data or production active kit change. No layout/member/vtable change; added getter is nonvirtual.",
+  "limits_and_policy": "Native base5 is the existing core initialization contract; Uncanny Luck becomes30 by adding its authored25. Existing CalculateHit combines caster accuracy and recipient dodge; its existing MISS presentation is retained. No change or retail claim for general dodge/miss event categorization or RNG distribution. Actual client passive icons/stats/battle log/encounter traversal and UI scheduling remain pending. The readonly original7.3.5 UI passive model reviewed for Roboflauge permits passives without actual aura instances; scope is supported by actual native bindings/state rows,not a new infinite controller.",
+  "tests": {
+    "native": "120 counted real native cases in16 groups: three species and four front/reserve positions across both teams; actual AddPet before Begin and after Begin; three actual291 repeats; incoming/outgoing/return swaps without transfer/stacking; real re-AddPet reset; native CalculateHit accuracy and target dodge with exact100 boundaries and failed-hit path; actual CalculateDamage crit/ordinary branches over1024 total samples with exact native initialized30,forced calibration and legal outcome checks,without a distribution claim; real25 damage modifier; independent untargetability; ordinary source; explicitly unsupported global Birds1387; actual assigned110 selected attack through full ProceedRound; final lethal death with exactly one actor receipt; original Beast/Humanoid preservation and native low-health Beast coexistence; simultaneous own accuracy plus other-actor dodge. No character writes,client traversal or full learned/World-kit certification.",
+    "controls": "Three complete pinnedc04fcef56 PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail exact init/accuracy/dodge assertions with exit1. Fixed120 pass. Both12-observation research runs are historical reproductions,paired and archived after deployment.",
+    "retained": "78 thresholds,48 Roboflauge,24 Frenzy,144 variance/all63 rows,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 PE scopes,complete retained pet proof chain,new personal state/getter/291 proof and unchanged writer PE pass. No fresh full106 claim.",
+    "pe": "Getter is144byte stack-free leaf without unwind metadata. The shared64byte unknown-leaf limit is unchanged; this named getter independently proves next-symbol bound<=512,contiguous decode/padding,no calls/stack frame and closed immediate-branch CFG before exact species/183/native251/state40 checks. Actual AddPet inlined getter includes native30 before snapshots; actual291 calls the real getter and passes its EAX to target state40. Existing threshold/source/handler-table CFG bounds proofs remain unchanged and pass.",
+    "runtime": "Owned canonical PID25108 fresh ready/shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Current bnet .text equals preceding rollback .text byte-for-byte; no separate new bnet startup claim.",
+    "diagnostics": "Canonical/own pre/post crash/log inventories and exits/stdout/stderr reviewed for formal runs. No new/changed crash,appended DBErrors or unexplained server warning/error/assertion. All17 full build warnings C4018/C4146/C5055 match prior Roboflauge warnings after line-number normalization;Scepter C4244/C4389 fixture warnings retained. No native harness repair was required in this phase.",
+    "packet": "Writer/sender source unchanged; current writer PE passes. Prior nine-sender18-packet extracted-source ASAN remains historical wire coverage,not full native-core ASAN or client rendering proof."
+  },
+  "canonical": {
+    "worldserver.exe": "024527032db630225835f7f95976b22177c36f85afbf0e956e1427f954a0cfeb",
+    "worldserver.map": "40afb57bf04ea90e733890514a042ef632f43dcafe75f0b644e3f87e89271005",
+    "bnetserver.exe": "816a9d56c4521cb5ec135efcf6710fde22b16d1f583e790a2a8f630780e26f1d",
+    "bnetserver.map": "f752aeadeb2e5aad076241b80d8331b1234ca889c31c5fe992c2b3466089bb42"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/fixed-driver.log",
+      "sha256": "699ae182e121d24d6e2042bbcd9d7e2f0bd1c7ef771ea0bc7bde3fe7b4c9d125"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-threshold78-driver.log",
+      "sha256": "51da00049c36993b946d4f50e9868e8a24797146d435fd853f05fbb64dd4b07c"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-roboflauge48-driver.log",
+      "sha256": "7ac107b1dd2bed31e89004b91dc29a888b277e399e2216104c485b85323fb968"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-frenzy24-driver.log",
+      "sha256": "1aff6cad2bbe324871fbaaaf0758b3946617275de51a197dbfc0e6c359e24bc4"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-variance144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-ward50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-roster48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-cheat28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-hourglass34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-bend26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-racial13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-sacrifice44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/retained-unholy16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/full-SecondTenTen20261112Native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/full-TenTen20261111Native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/hundred-stage.log",
+      "sha256": "0946f79800cf2c5d2f0af0fb6bab017c6a1373001423cba34649f2e73e011e87"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/second-hundred-stage.log",
+      "sha256": "76007cba5a1a9ab15a608bdb45330c15eb29e1c3cac660897a75c930b4ac4e0c"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/writer-stage.log",
+      "sha256": "4f19b526a1f4c4aa34fa18842e4423a146f6824f4da8b4897cdd85c938c547d0"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/canonical-linked.log",
+      "sha256": "65aef7e94d738cbc8e570b8b649b01f55b607b8f43fe237f77e371d62d0b02bd"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/startup-driver.log",
+      "sha256": "16df46b898b00b6391ab536e6a6e68160194a5f03ab4c6d7071f82f383c3bed3"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/scepter-driver.log",
+      "sha256": "71267b1942216489fb11280a9284eb3c120f397fedf6dbf3f7ae6eed7fe777fc"
+    },
+    {
+      "path": ".codex/pet-static-passives-open-2026-11-12/cleanup-driver.log",
+      "sha256": "21176b5202a05b63dcb25e1ff3b573cce12e3f3cb4efff5e14744a5d54238a7e"
+    }
+  ],
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-static-passives-2026-11-12",
+    "ManifestSHA256": "792DE9CA3BDC4EC803D41E38E8617E7AA49379C6B3F3F467F940690D3756F42E",
+    "Archived": 534,
+    "Removed": 108,
+    "ReclaimedBytes": 2532658154.0,
+    "Retained": "Canonical runtime/configuration/DLLs/certs/shared data/main libraries,source-backed regressions and tools,three newest pre-static/pre-threshold/pre-Roboflauge rollback sets plus exact latest106-certified cdca pre-Ward executable/maps. Ten older resolved owned binary/map sets superseded; original deployment manifests and full old evidence retained. Current120 static cases,12 observations and family reread,three pinned controls,78 thresholds and all retained pet/two full100 native/linked outputs archived. Mixed remaining183/Ominitron/Haunt/795/type/Lady/LINK2 evidence and unique probes stay OPEN outside fixed. Slaghammer,7111byte mixedDBErrors,personal/character/database/security files untouched. No current full106 or client certification."
+  },
+  "superseded_rollback_copies": [
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-lifecycle-2026-11-12",
+      "repair_commit": "29547942525a25d73521747cdf3b4703bc6cbe9a",
+      "audit": "docs/audits/pet-racial-lifecycle-2026-11-12.json",
+      "manifest_sha256": "6e799306a81b0d1a015f33c5a96b7a5557dbbf46f54b888e680e258e08e4c2f0",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-self-sacrifice-2026-11-12",
+      "repair_commit": "27213e1242c568d35abaf49574964d849235e976",
+      "audit": "docs/audits/pet-self-sacrifice-2026-11-12.json",
+      "manifest_sha256": "e4417e24f204a06f3aec06d5f15d59137e737ccbdac7651d171b9e94488ff442",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-unholy-ascension-2026-11-12",
+      "repair_commit": "6fb37efdd8dd453a2a9c27f1b83495b86cbdb4fb",
+      "audit": "docs/audits/pet-unholy-ascension-2026-11-12.json",
+      "manifest_sha256": "e06ea102cac12e884f4fd0fe6b308d7188249e97416943b5faae529bacf17f7c",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-bend-time-2026-11-12",
+      "repair_commit": "6ca2296649aa07862fddbbf67a60016ca0a1323a",
+      "audit": "docs/audits/pet-bend-time-2026-11-12.json",
+      "manifest_sha256": "8aa5e7708a78992cb0e58df3c9b8a49ba14e160a05d4b265ed24bd988430a935",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-hourglass-2026-11-12",
+      "repair_commit": "94b0133fbda2b1e5dcb274b8a01ce13de74610a5",
+      "audit": "docs/audits/pet-hourglass-2026-11-12.json",
+      "manifest_sha256": "9508ae6da1061fc45706c3f75c07a17bb0586488d7760d8826ae8e0851e4abc8",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-cheat-death-2026-11-12",
+      "repair_commit": "35c59cab0b9ea364f5d0f6f14d6366a587dffbee",
+      "audit": "docs/audits/pet-cheat-death-2026-11-12.json",
+      "manifest_sha256": "52df76a92c6099217c3c5fd1288d5884d59f94375f4a5a5050b50b70099e603c",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-accuracy-roster-2026-11-12",
+      "repair_commit": "72e54ac8cce57458a1be91ad88619635d32f8c16",
+      "audit": "docs/audits/pet-accuracy-roster-2026-11-12.json",
+      "manifest_sha256": "2213471d6e96a913de32962ad70cebb7af48583f8629188dbb6e4e725dba62d3",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-discharge-2026-11-12",
+      "repair_commit": "f62521fc7ba5c35761ba0a64bc7539ffcc5fa799",
+      "audit": "docs/audits/pet-discharge-2026-11-12.json",
+      "manifest_sha256": "3861c57c1e934f22a866d34ec3189d9aa0e0b534ecd695f6bf46f24a4eae95ec",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-variance-2026-11-12",
+      "repair_commit": "92e783872ac544f94ca82c7513c1ddf95d99fd64",
+      "audit": "docs/audits/pet-variance-2026-11-12.json",
+      "manifest_sha256": "05dd92d2acc71448fbe83f9a0c3bdb133dae4a9ec5d55fad41aab21803de172b",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    },
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-feathered-frenzy-2026-11-12",
+      "repair_commit": "061c035c2190d283a83c62fbf17928cf5fb32292",
+      "audit": "docs/audits/pet-feathered-frenzy-2026-11-12.json",
+      "manifest_sha256": "25e3783c219464603d441c8abeca7db93da46e12261d57cb3b957b5abab47b75",
+      "reason": "Owned older resolved pet repair binary/map copy superseded by three recent recovery sets,current passing native/linked regressions and retained latest106-certified cdca. Source-backed pinned regressions and original deployment/hash manifest remain."
+    }
+  ],
+  "rollback_cleanup_note": "Ten older resolved owned EXE/map sets are intentionally removed;their original deployment manifests remain hash-verified. Historical Protected-path inventories are point-in-time records,superseded for these files by the current exact deletion manifest. Source-backed pinned regressions remain reusable. Three latest recovery sets and exact cdca executable/maps paired with106/106 remain verified. No unresolved crash,personal/character/database backup or security file removed.",
+  "final_verification": {
+    "status": "PASS",
+    "native_static_passive_cases": 120,
+    "retained_native_cases": [
+      78,
+      48,
+      24,
+      144,
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "024527032db630225835f7f95976b22177c36f85afbf0e956e1427f954a0cfeb",
+      "worldserver.map": "40afb57bf04ea90e733890514a042ef632f43dcafe75f0b644e3f87e89271005",
+      "bnetserver.exe": "816a9d56c4521cb5ec135efcf6710fde22b16d1f583e790a2a8f630780e26f1d",
+      "bnetserver.map": "f752aeadeb2e5aad076241b80d8331b1234ca889c31c5fe992c2b3466089bb42"
+    },
+    "bnet_native_code_section_unchanged": true,
+    "archive_records": 534,
+    "removed": 108,
+    "removed_bytes": 2532658154.0,
+    "older_owned_rollback_sets_removed": 10,
+    "recent_rollback_sets_retained": 3,
+    "historical106_binary_and_maps_retained": true,
+    "protected_evidence_configuration_and_rollback_unchanged": true,
+    "new_compiler_warnings": 0
+  },
+  "remaining": [
+    "Actual client native traits/stat display,crit/dodge/miss presentation,animations,encounters,real kits,abandon/re-entry and whole pet battles remain pending.",
+    "Other6 species183 records/5 abilities remain OPEN:1479/1482 HeartyMeal1377,1496 Birds1387,1811 Crumble1586,1815 RiseFromAsh1588,1883 SepticSecretion1672. Do not blanket-enable global/team/periodic/resurrection semantics.",
+    "Ominitron1595 producer,Haunt652/653 fake-death/return,DarkRebirth794/795 missing146/protected window/796,Apocalypse,clone122/123/124 and generic159 remain OPEN. Mixed metadata/observations and unique native probes stay outside fixed.",
+    "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer/mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+  ],
+  "next": "Continue actual native Haunt652/653 complete producer/owner/death/return sequence and remaining183 data research; keep unestablished team/global/resurrection timing explicit rather than inventing callbacks."
+}
