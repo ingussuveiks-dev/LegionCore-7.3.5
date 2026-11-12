@@ -559,17 +559,24 @@ class npc_chogall_fire_elemental : public CreatureScript
 
             InstanceScript* instance;
             EventMap events;
-            Creature* pChogall;
-            bool bNear;
+            ObjectGuid chogallGuid;
+            bool bNear = false;
 
             void IsSummonedBy(Unit* owner)
             {
                 if (!instance)
-                    return;
-                bNear = false;
-                pChogall = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_CHOGALL));
-                if (!pChogall)
+                {
                     me->DespawnOrUnsummon();
+                    return;
+                }
+                bNear = false;
+                chogallGuid = instance->GetGuidData(DATA_CHOGALL);
+                Creature* pChogall = ObjectAccessor::GetCreature(*me, chogallGuid);
+                if (!pChogall)
+                {
+                    me->DespawnOrUnsummon();
+                    return;
+                }
                 DoCast(me, SPELL_FIRE_SHELL);
                 events.RescheduleEvent(EVENT_ORDER_MOVE, 1000);
             }
@@ -580,8 +587,17 @@ class npc_chogall_fire_elemental : public CreatureScript
 
             void UpdateAI(uint32 diff)
             {
-                if (instance->GetBossState(DATA_CHOGALL) != IN_PROGRESS)
+                if (!instance || instance->GetBossState(DATA_CHOGALL) != IN_PROGRESS)
+                {
                     me->DespawnOrUnsummon();
+                    return;
+                }
+                Creature* pChogall = ObjectAccessor::GetCreature(*me, chogallGuid);
+                if (!pChogall)
+                {
+                    me->DespawnOrUnsummon();
+                    return;
+                }
 
                 events.Update(diff);
 
@@ -630,17 +646,24 @@ class npc_chogall_shadow_lord : public CreatureScript
 
             InstanceScript* instance;
             EventMap events;
-            Creature* pChogall;
-            bool bNear;
+            ObjectGuid chogallGuid;
+            bool bNear = false;
 
             void IsSummonedBy(Unit* owner)
             {
                 if (!instance)
-                    return;
-                bNear = false;
-                pChogall = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_CHOGALL));
-                if (!pChogall)
+                {
                     me->DespawnOrUnsummon();
+                    return;
+                }
+                bNear = false;
+                chogallGuid = instance->GetGuidData(DATA_CHOGALL);
+                Creature* pChogall = ObjectAccessor::GetCreature(*me, chogallGuid);
+                if (!pChogall)
+                {
+                    me->DespawnOrUnsummon();
+                    return;
+                }
                 DoCast(me, SPELL_SHADOW_SHELL);
                 events.RescheduleEvent(EVENT_ORDER_MOVE, 1000);
             }
@@ -651,8 +674,17 @@ class npc_chogall_shadow_lord : public CreatureScript
 
             void UpdateAI(uint32 diff)
             {
-                if (instance->GetBossState(DATA_CHOGALL) != IN_PROGRESS)
+                if (!instance || instance->GetBossState(DATA_CHOGALL) != IN_PROGRESS)
+                {
                     me->DespawnOrUnsummon();
+                    return;
+                }
+                Creature* pChogall = ObjectAccessor::GetCreature(*me, chogallGuid);
+                if (!pChogall)
+                {
+                    me->DespawnOrUnsummon();
+                    return;
+                }
 
                 events.Update(diff);
 

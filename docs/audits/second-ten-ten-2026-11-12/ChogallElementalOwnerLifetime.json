@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-12",
+  "key": "ChogallElementalOwnerLifetime",
+  "title": "Resolve Cho gall for both elemental handoffs and return after a failed encounter guard",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 4,
+  "historical_group": 65,
+  "baseline": "e82bb1e56165eb39b356cff307c569733e57544e",
+  "paths": [
+    "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_chogall.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 4 -Case ChogallElementalOwnerLifetime",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten pinned controls reproduce heap-use-after-free in their actual delayed production callbacks; paired fixed complete-class MSVC ASAN runs pass. Fixed positive/alternative controls cover live owners, map changes, dead actors, native reacquisition, repeat callbacks, original interactor identity, authored timers, reset, missing instance and independent damage events. World lookup, cast, motion, credit and instance endpoints are explicitly controlled; no full-core ASAN claim.",
+    "native": "Actual linked probe loads matching26972 runtime/catalogue and verifies all eleven script bindings and native creature IDs/vehicles; first30 pet native regressions pass. These catalogue bindings do not execute the eleven AIs against a full native dungeon or client.",
+    "linked": "All selected40 and retained previous100 PE checks pass. Each of eleven actual native AI callbacks contains its typed GUID lookup and null-result branch before owner use; both Cho gall elementals form one repair. Captive repeat guard precedes lookup/credit. Original game/scripts/Main library inputs and staged final link verified; canonical Scepter passes.",
+    "startup": "Owned worldserver PID=8220\nPASS owned PID=8220 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;no new crashes, appended DBErrors or unexplained server errors/warnings/assertions.",
+    "limitations": "Actual dungeon/raid/escort traversal, boarding camera, visual/timing, owner logout/reentry and whole36artifact chains remain client checks. No invented HP threshold, credit grant or kill timer. Existing LINK2/Slaghammer and mixed log evidence retained."
+  },
+  "fixture_setup_failures_resolved": [
+    "Fourth extraction initially encountered legacy non-UTF8 Cho gall source; surrogateescape preserves its original bytes and BOM/line endings. Transactional exact-baseline frames and source scope pass.",
+    "Fourth fixture needed native label/method endpoints defined; corrected before all paired ASAN runs.",
+    "Retained PE verifier initially decoded a compiler RVA switch table following the final return as an impossible call. Reader now proves image-base table addressing and actual instruction targets before excluding data bytes; all unchanged retained assertions pass. This is test infrastructure, not an additional counted gameplay repair.",
+    "Scepter was also run once without the outer diagnostic wrapper; rerun with the mandatory wrapper passes; previous owned-start and native diagnostic snapshots bracketed that invocation."
+  ],
+  "canonical_worldserver_sha256": "6e89313d557947d2c97cf90e77c28393b845af5613d794bf39977d9433d42686",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch4; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
