@@ -1303,7 +1303,7 @@ public:
 
     bool OnTrigger(Player* player, AreaTriggerEntry const* at, bool enter) override
     {
-        instance = player->GetInstanceScript();
+        InstanceScript* instance = player->GetInstanceScript();
         if (enter && instance)
         {
             switch (at->ID)
@@ -1317,7 +1317,7 @@ public:
                         player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT, 34545, 1);  //< set stage 4
                     return true;
                 case 8698:
-                    if (instance->GetData(DATA_ESSENCE_OF_ORDER_EVENT) != DONE || instance->GetData(DATA_ESSENCE_OF_ORDER_EVENT) != TO_BE_DECIDED)
+                    if (instance->GetData(DATA_ESSENCE_OF_ORDER_EVENT) != DONE && instance->GetData(DATA_ESSENCE_OF_ORDER_EVENT) != TO_BE_DECIDED)
                     {
                         if (instance->GetData(DATA_SCENE_EVENT) == DONE)
                             return false;
@@ -1330,6 +1330,7 @@ public:
                             essence->AI()->DoAction(ACTION_1);
                         return true;
                     }
+                    return false;
                 case 8701:
                     if (IsNextStageAllowed(instance, STAGE_7))
                         player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 34554, 1); //< set stage 7 
@@ -1359,6 +1360,7 @@ public:
                         player->PlayerTalkClass->SendQuestQueryResponse(32340); //< i hope it's right way... SMSG_QUEST_GIVER_QUEST_DETAILS in sniffs
                         return true;
                     }
+                    return false;
                 case 8708:
                     if (IsNextStageAllowed(instance, STAGE_8))
                         player->TeleportTo(1112, 786.0955f, 304.3524f, 319.7598f, 0.0f);
@@ -1375,8 +1377,6 @@ public:
         return false;
     }
 
-private:
-    InstanceScript* instance;
 };
 
 class go_cospicuous_illidari_scroll : public GameObjectScript
