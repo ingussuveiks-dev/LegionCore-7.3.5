@@ -17,6 +17,7 @@
  */
 
 #include "Unit.h"
+#include "HealingAmount.h"
 #include "Player.h"
 #include "Pet.h"
 #include "Creature.h"
@@ -897,7 +898,7 @@ void Player::UpdateMaxHealth()
     value += GetModifierValue(unitMod, TOTAL_VALUE) + GetHealthBonusFromStamina();
     value *= GetModifierValue(unitMod, TOTAL_PCT);
 
-    SetMaxHealth(static_cast<uint32>(value)); // uint32 sure?
+    SetMaxHealth(HealingAmount::FromFloat(value));
 
     if (Pet* pet = GetPet())
         if (pet->IsWarlockPet() || pet->isHunterPet())

@@ -167,8 +167,8 @@ class spell_warr_commanding_shout : public SpellScript
         if (!target)
             return;
 
-        int32 health = CalculatePct(target->GetMaxHealth(), GetEffectValue());
-        GetCaster()->CastCustomSpell(SPELL_WARRIOR_COMMANDING_SHOUT_AURA, SPELLVALUE_BASE_POINT0, health, target, true);
+        float health = CalculatePct(float(target->GetMaxHealth()), GetEffectValue());
+        GetCaster()->CastCustomSpell(target, SPELL_WARRIOR_COMMANDING_SHOUT_AURA, &health, nullptr, nullptr, true);
     }
 
     void Register() override

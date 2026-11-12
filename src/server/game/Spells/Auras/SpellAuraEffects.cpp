@@ -5168,7 +5168,8 @@ void AuraEffect::HandleAuraModIncreaseHealth(AuraApplication const* aurApp, uint
         return;
 
     Unit* target = aurApp->GetTarget();
-    int32 amount = GetAmount();
+    int64 amount = GetAmount() >= float(INT64_MAX) ? INT64_MAX :
+        GetAmount() <= -float(INT64_MAX) ? -INT64_MAX : int64(GetAmount());
 
     if(target->isAnySummons())
     {
@@ -5183,8 +5184,8 @@ void AuraEffect::HandleAuraModIncreaseHealth(AuraApplication const* aurApp, uint
     }
     else
     {
-        if (int32(target->GetHealth()) > GetAmount())
-            target->ModifyHealth(-GetAmount(), nullptr, GetId());
+        if (amount <= 0 || target->GetHealth() > uint64(amount))
+            target->ModifyHealth(-amount, nullptr, GetId());
         else
             target->SetHealth(1, GetId());
         target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);
