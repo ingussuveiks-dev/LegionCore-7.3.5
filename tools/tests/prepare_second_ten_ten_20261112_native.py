@@ -49,3 +49,18 @@ if any(row['batch']==9 for row in PLAN['changes']):
    if m:spells.add(int(m[1]))
  native+='static uint32 secondNinthSpells[]={'+','.join(map(str,sorted(spells)))+'};\n';(out/'NinthBindings.inc').write_text(native)
  print('Prepared actual native reset/reentry EventMap sequences with explicit source projections and matching creature/spell data bindings.')
+
+if any(row['batch']==10 for row in PLAN['changes']):
+ import runpy,re
+ saved=sys.argv;sys.argv=[str(ROOT/'tools/tests/prepare_second_ten_ten_20261112_tenth.py'),str(out),'fixed']
+ try:runpy.run_path(sys.argv[0],run_name='__main__')
+ finally:sys.argv=saved
+ rows=[r for r in PLAN['changes']if r['batch']==10]
+ native='namespace SecondTenthActual{\n'+rows[1]['edits'][0]['new']+';\n'+rows[6]['edits'][0]['new']+';\n'
+ clone=rows[2]['edits'][0]['new'];native+='struct Clone{Unit*owner;Creature*me;uint32 entryId=69791;float oldHast=0;'+''.join(block(clone,r'void '+m+r'\(')for m in ['RecalcDamage','RecalcHast'])+'};\n'
+ delay=rows[4]['edits'][0]['new'];a=delay.index('caster->AddDelayedEvent');b=delay.index('\n                    });',a)+len('\n                    });');delay=delay[a:b].replace('caster->CastCustomSpell(caster, 247455, nullptr, nullptr, &multiplier, true);','ObserveSecondTenthExplosion(caster, multiplier);')
+ native+='static void Schedule(Unit*caster,uint32 fragmentCount){'+delay+'}\n}\n'
+ (out/'TenthActualNative.inc').write_text(native)
+ bindings='struct SecondTenthBinding{char const*name;char const*table;char const*column;};static SecondTenthBinding secondTenthBindings[]={'+','.join('{"'+r['binding']+'","'+('spell_script_names'if i in[1,4,6]else'areatrigger_scripts'if i==3 else'creature_template')+'","'+('ScriptName')+'"}'for i,r in enumerate(rows)if i in[0,1,2,3,4,6,7])+'};\n'
+ (out/'TenthBindings.inc').write_text(bindings)
+ print('Prepared final ten source scopes plus actual Aura/Spell/clone methods and exact delayed scheduling block; only child explosion endpoint observed. Queue/GetMaxTicks use actual linked implementations.')

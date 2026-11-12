@@ -120,7 +120,24 @@ if eighth:
  rows=ins('?CalculateAmount@spell_dru_frenzied_regeneration@');assert sites(rows,'?GetDamageTakenInPastSecs@Unit@@')and any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rbx,')for x in rows),'Actual Frenzied minimum/history retain wide calculation andtick division'
  rows=ins('?After@spell_highmountain_justice_heal@');assert sites(rows,'?GetHitHeal64@SpellScript@@')and not sites(rows,'?GetHitHeal@SpellScript@@')and {97508,97498,97506,1220,5165,40594}<=values(rows),'Actual Justice exact64 admission preserves actor/map/phase/quest gates'
  rows=ins('?HandleHeal@spell_monk_purified_healing_SpellScript@');assert sites(rows,'?SetHitHeal64@SpellScript@@')and {145055,124275,124274,124273}<=values(rows)and any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rbx')for x in rows),'Actual PurifiedHealing accumulates positive Stagger pools before percent conversion'
- rows=ins('?Absorb@spell_gen_intangible_presence@');assert {230080,230088}<=values(rows)and any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rdi,')for x in rows)and any(x.mnemonic=='cmp'and x.op_str=='rdi, rax'for x in rows),'Actual positive Intangible aura amount converts to64 before legal damage minimum;damage remains native32'
+ rows=ins('?Absorb@spell_gen_intangible_presence@')
+ outlined=sites(rows,'?FromFloat@HealingAmount@@')
+ if outlined:
+  assert len(outlined)==1 and any(x.mnemonic=='cmp'and x.op_str=='rax, rcx'for x in rows[outlined[0]+1:outlined[0]+8])and any(x.mnemonic=='cmovb'and x.op_str=='rcx, rax'for x in rows[outlined[0]+1:outlined[0]+8]),'Actual outlined conversion returns64bit RAX before native legal-damage minimum'
+  # This compiler outlined the shared conversion into a stackless leaf >64 bytes.
+  # Its exact public symbol interval, terminal return and internal branch targets
+  # prove the bounds without interpreting arbitrary adjacent code.
+  from five_ten_20261111_pe import decoder
+  address=n['symbol']('?FromFloat@HealingAmount@@');end=min(a for a in n['symbols'].values()if a>address);assert 0<end-address<512
+  at=n['offset'](address);helper=list(decoder.disasm(n['binary'][at:at+end-address],address))
+  while helper and helper[-1].mnemonic in ('int3','nop'):helper.pop()
+  assert helper and helper[-1].mnemonic=='ret'and not any(x.mnemonic=='call'or 'rsp'in x.op_str for x in helper),'Proven stackless conversion leaf'
+  for x in helper:
+   if x.mnemonic.startswith('j'):assert address<=int(x.op_str,16)<helper[-1].address+helper[-1].size
+  assert any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rax,')for x in helper)and any(x.mnemonic=='mov'and x.op_str=='rax, 0xffffffffffffffff'for x in helper),'Shared positive conversion retains64bit result and saturation'
+ else:
+  assert any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rdi,')for x in rows)and any(x.mnemonic=='cmp'and x.op_str=='rdi, rax'for x in rows),'Actual inlined positive conversion precedes64bit minimum'
+ assert {230080,230088}<=values(rows),'Actual Intangible source and child spells remain linked;damage remains native32'
  rows=ins('?Trigger@spell_dk_anti_magic_shell_self_AuraScript@');assert {49088,210852,210862,207188}<=values(rows)and any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and sites(rows,'?CountPctFromMaxHealth@Unit@@'),'Actual AMS health threshold/remainder division is64bit andretainsnative resource/optionalheal gates'
  print('PASS linked eighth10:native64 class healing,integer multipliers,Justice heal admission,positiveStagger/aura amounts andAMS threshold/remainders;Smite bounded-damage falsepositive withdrawn,ordinarycorehealing remainsseparate')
 
