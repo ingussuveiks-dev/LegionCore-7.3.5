@@ -316,8 +316,8 @@ public:
         ObjectGuid UghostGUID;
         ObjectGuid TheldanisGUID;
 
-        Creature* Ughost;
-        Creature* Theldanis;
+
+
 
         void Reset()
         {
@@ -353,23 +353,29 @@ public:
                 case 15:
                     DoScriptText(SAY_WP_2, me);
                 case 21:
-                    Theldanis = GetClosestCreatureWithEntry(me, NPC_THEL_DANIS, 150);
-                    DoScriptText(SAY_WP_3, Theldanis);
+                    if (Creature* Theldanis = GetClosestCreatureWithEntry(me, NPC_THEL_DANIS, 150))
+                        DoScriptText(SAY_WP_3, Theldanis);
                     break;
                 case 22:
                     break;
                 case 23:
-                    Ughost = me->SummonCreature(NPC_GHOST_UTHER, 971.86f, -1825.42f, 81.99f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
-                    Ughost->SetDisableGravity(true);
-                    DoScriptText(SAY_WP_4, Ughost, me);
+                    UghostGUID.Clear();
+                    if (Creature* Ughost = me->SummonCreature(NPC_GHOST_UTHER, 971.86f, -1825.42f, 81.99f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
+                    {
+                        UghostGUID = Ughost->GetGUID();
+                        Ughost->SetDisableGravity(true);
+                        DoScriptText(SAY_WP_4, Ughost, me);
+                    }
                     m_uiChatTimer = 4000;
                     break;
                 case 24:
-                    DoScriptText(SAY_WP_5, Ughost, me);
+                    if (Creature* Ughost = ObjectAccessor::GetCreature(*me, UghostGUID))
+                        DoScriptText(SAY_WP_5, Ughost, me);
                     m_uiChatTimer = 4000;
                     break;
                 case 25:
-                    DoScriptText(SAY_WP_6, Ughost, me);
+                    if (Creature* Ughost = ObjectAccessor::GetCreature(*me, UghostGUID))
+                        DoScriptText(SAY_WP_6, Ughost, me);
                     m_uiChatTimer = 4000;
                     break;
                 case 26:
