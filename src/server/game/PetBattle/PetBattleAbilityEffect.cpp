@@ -798,8 +798,6 @@ bool PetBattleAbilityEffect::Execute()
 
         auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();
         result &= _result;
-        if (result)
-            break;
     }
 
     return result;
