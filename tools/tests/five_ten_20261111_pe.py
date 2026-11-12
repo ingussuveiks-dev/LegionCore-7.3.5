@@ -30,7 +30,9 @@ def ins(prefix):
             base_register=x.reg_name(operand.mem.base)
             proved=any(y.mnemonic=='lea'and y.op_str.startswith(base_register+', [rip')and y.address+y.size+y.operands[1].mem.disp==n['base']for y in rows[:i]if len(y.operands)>1 and y.operands[1].type==CS_OP_MEM)
             before=[y for y in rows if y.address<table]
-            if not proved or not before or before[-1].mnemonic!='ret' or before[-1].address+before[-1].size!=table:continue
+            terminal=next((y for y in reversed(before)if y.mnemonic not in ('nop','int3')),None)
+            closed=terminal is not None and (terminal.mnemonic=='ret'or terminal.mnemonic=='jmp'and terminal.operands[0].type==CS_OP_IMM and terminal.operands[0].imm<table)
+            if not proved or not before or not closed or before[-1].address+before[-1].size!=table:continue
             raw=n['offset'](table);targets=[n['base']+struct.unpack_from('<I',n['binary'],raw+4*j)[0]for j in range(2)]
             assert all(address<=t<table and any(y.address==t for y in before)for t in targets),'Recognized switch table has invalid first two code targets'
             return before

@@ -53,3 +53,21 @@ if any(row['batch']==4 for row in PLAN['changes']):
   tail=rows[calls[0]+1:calls[0]+5];assert any(x.mnemonic=='test'and x.op_str=='rax, rax'for x in tail)and any(x.mnemonic in ('je','jne')for x in tail),(cls,'lookup null result is branched before use')
  rows=ins('?MovementInform@npc_stillpine_capitiveAI@');assert any(x.mnemonic=='cmp'and x.op_str=='byte ptr [rcx + 0x68], 0'for x in rows[:14]),'Captive repeated movement callbacks are rejected before live owner lookup'
  print('PASS linked fourth10: eleven actual AI callbacks perform typed live GUID lookups and null-result branches; captive credit is guarded against repeats. Both Cho gall elementals are one owner-lifetime family. Complete-class ASAN, native script bindings, ordinary startup and client traversal are separate scopes.')
+if any(row['batch']==5 for row in PLAN['changes']):
+ checks=[('npc_anchorite_truuenAI','WaypointReached','GetCreature',2),('boss_infinite_corruptorAI','JustReachedHome','GetCreature',1),('go_q39262AI','UpdateAI','GetPlayer',1),('npc_amber_monsterAI','SpellHitTarget','GetPlayer',1),('npc_amber_monsterAI','UpdateAI','GetPlayer',1),('boss_mephistrothAI','JustSummoned','GetCreature',1),('boss_naltiraAI','SpellHitTarget','GetUnit',1),('boss_advisor_melandrusAI','UpdateAI','GetCreature',1),('boss_morchokAI','UpdateAI','GetCreature',1)]
+ for cls,method,lookup,count in checks:
+  rows=ins('?'+method+'@'+cls+'@');calls=sites(rows,'?'+lookup+'@ObjectAccessor@@');assert len(calls)==count,(cls,'actual delayed GUID lookups')
+  if cls=='boss_morchokAI':
+   at=calls[0];assert rows[at+2].mnemonic=='mov'and rows[at+2].op_str=='r14, rax','Actual twin lookup is retained in r14'
+   first=next(i for i,x in enumerate(rows)if '[r14 +'in x.op_str);assert any(x.mnemonic=='test'and x.op_str=='r14, r14'and rows[i+1].mnemonic=='je'for i,x in enumerate(rows[:first])),'Current twin result is guarded before its first dereference'
+   continue
+  for at in calls:
+   tail=rows[at+1:at+9];assert any(x.mnemonic=='test'and x.op_str=='rax, rax'and tail[i+1].mnemonic in ('je','jne')for i,x in enumerate(tail[:-1])),(cls,'lookup result is guarded')
+ rows=ins('?UpdateAI@npc_monk_wind_spiritAI@');calls=sites(rows,'?GetUnit@ObjectAccessor@@');assert len(calls)==2
+ tail=rows[calls[-1]+1:calls[-1]+7];assert any(x.mnemonic=='test'and x.op_str=='rbx, rbx'for x in tail)and any(x.mnemonic=='test'and x.op_str=='rax, rax'for x in tail),'Wind launch validates both resolved actors'
+ rows=ins('?SpellHitTarget@npc_amber_monsterAI@');remove,=sites(rows,'?RemoveAllPassengers@Vehicle@@');lookup,=sites(rows,'?GetPlayer@ObjectAccessor@@');assert remove<lookup,'Fling resolves actual passenger again after native removal callbacks'
+ rows=ins('?PassengerBoarded@npc_amber_monsterAI@');assert sites(rows,'?CancelEvent@EventMap@@'),'Actual unboarding cancels pending fling'
+ rows=ins('?UpdateAI@boss_advisor_melandrusAI@');summon,=sites(rows,'?SummonCreature@');tail=rows[summon+1:summon+10];assert 5000 in values(tail)and any(x.mnemonic=='test'and x.op_str=='rax, rax'for x in tail),'Failed authored actor retry retains five-second dialogue cadence and guards its result'
+ rows=ins('?UpdateAI@npc_temple_adeptAI@');nearest,=sites(rows,'?FindNearestCreature@');assert any(x.mnemonic=='add'and x.op_str=='rdi, 4'for x in rows[nearest:])and any(x.mnemonic=='jmp'and x.op_str==hex(rows[nearest-3].address)for x in rows[nearest:]),'Four authored ally types are searched with a genuine loop rather than nested else branches'
+ assert 87779 in values(rows)and any(x.mnemonic=='comiss'for x in rows),'Original Greater Heal and injured-health admission remain linked'
+ print('PASS linked fifth10: complete native GUID guards for escort/rift/cage/spirit/passenger/Illidan/web/dialogue/twin callbacks, post-unboarding rider re-resolution, canceled stale fling, guarded authored intro retry and genuine first-injured ally search; native catalogue, source ASAN and client scopes separate.')
