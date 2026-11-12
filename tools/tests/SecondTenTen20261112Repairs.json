@@ -1,0 +1,167 @@
+{
+  "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
+  "authorized_total": 100,
+  "changes": [
+    {
+      "key": "PetBattleForfeitPenalty",
+      "title": "Respect the ignore-abandon-penalty contract",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "if (ignoreAbandonPenalty && aborted && winnerTeamID != currentTeamID)",
+          "new": "if (!ignoreAbandonPenalty && aborted && winnerTeamID != currentTeamID)"
+        }
+      ]
+    },
+    {
+      "key": "WildPetBattleRelease",
+      "title": "Release actual wild creatures at battle completion",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "if (!currentPet || currentPet->OriginalCreature)",
+          "new": "if (!currentPet || !currentPet->OriginalCreature)"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleFinishOnce",
+      "title": "Reject repeated completion before rewards or cleanup",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPenalty)\n{",
+          "new": "void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPenalty)\n{\n    if (BattleStatus == PETBATTLE_STATUS_FINISHED || BattleStatus == PETBATTLE_STATUS_PENDING_DELETE)\n        return;"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleExperienceEligibility",
+      "title": "Count living teammates independently of temporary swap admission",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "uint32 availablePetCount = Teams[currentTeamID]->GetAvailablesPets().size();",
+          "new": "uint32 availablePetCount = 0;\n            for (auto const& pet : Teams[currentTeamID]->TeamPets)\n                if (pet && pet->IsAlive())\n                    ++availablePetCount;"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleMultipleLevelRewards",
+      "title": "Consume every earned native experience threshold up to the level cap",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "                    auto xpToNextLevel = currentPet->GetMaxXPForCurrentLevel();\n                    if (currentPet->XP + xpEarn >= xpToNextLevel)\n                    {\n                        currentPet->XP = currentPet->XP + xpEarn - xpToNextLevel;\n                        currentPet->Level++;\n                        currentPet->UpdateStats();\n                        currentPet->UpdateAbilities();\n                        currentPet->Health = currentPet->InfoMaxHealth;\n\n                        if (currentPet->Level == BATTLEPET_MAX_LEVEL)\n                            currentPet->XP = 0;\n\n                        if (auto speciesInfo = sBattlePetSpeciesStore.LookupEntry(currentPet->Species))\n                        {\n                            player->UpdateAchievementCriteria(CRITERIA_TYPE_BATTLEPET_LEVEL_UP, currentPet->Level, speciesInfo->PetTypeEnum, currentPet->Species);\n                            player->UpdateAchievementCriteria(CRITERIA_TYPE_LEVEL_BATTLE_PET_CREDIT, speciesInfo->ID, currentPet->Level, currentPet->Species);\n                        }\n\n                        if (currentPet->Level >= 3)\n                        {\n                            /// Quest progress for 12 x Level Up!\n                            player->KilledMonsterCredit(65876);\n                        }\n                    }\n                    else\n                        currentPet->XP += xpEarn;",
+          "new": "                    uint64 remainingXP = uint64(currentPet->XP) + xpEarn;\n                    uint32 xpToNextLevel = currentPet->GetMaxXPForCurrentLevel();\n                    while (currentPet->Level < BATTLEPET_MAX_LEVEL && xpToNextLevel && remainingXP >= xpToNextLevel)\n                    {\n                        remainingXP -= xpToNextLevel;\n                        currentPet->Level++;\n                        currentPet->UpdateStats();\n                        currentPet->UpdateAbilities();\n                        currentPet->Health = currentPet->InfoMaxHealth;\n\n                        if (auto speciesInfo = sBattlePetSpeciesStore.LookupEntry(currentPet->Species))\n                        {\n                            player->UpdateAchievementCriteria(CRITERIA_TYPE_BATTLEPET_LEVEL_UP, currentPet->Level, speciesInfo->PetTypeEnum, currentPet->Species);\n                            player->UpdateAchievementCriteria(CRITERIA_TYPE_LEVEL_BATTLE_PET_CREDIT, speciesInfo->ID, currentPet->Level, currentPet->Species);\n                        }\n\n                        if (currentPet->Level >= 3)\n                        {\n                            /// Quest progress for 12 x Level Up!\n                            player->KilledMonsterCredit(65876);\n                        }\n                        xpToNextLevel = currentPet->GetMaxXPForCurrentLevel();\n                    }\n                    currentPet->XP = currentPet->Level == BATTLEPET_MAX_LEVEL ? 0 : uint32(remainingXP);"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleLeaveInput",
+      "title": "Dispatch the valid zero-valued leave action",
+      "batch": 1,
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandlePetBattleInput(WorldPackets::BattlePet::PetBattleInput& packet)\n{\n    if (packet.MoveType == PETBATTLE_ACTION_LEAVE_PETBATTLE)\n    {\n        SendPetBattleFinished();\n        return;\n    }\n\n    if (!_player->_petBattleId)\n    {\n        SendPetBattleFinished();\n        return;\n    }\n\n    auto petBattle = sPetBattleSystem->GetBattle(_player->_petBattleId);\n    if (!petBattle || petBattle->BattleStatus == PETBATTLE_STATUS_FINISHED)\n    {\n        SendPetBattleFinished();\n        return;\n    }\n\n    if (packet.Round + 1 != petBattle->Turn)\n    {\n        sPetBattleSystem->ForfeitBattle(petBattle->ID, _player->GetGUID(), packet.IgnoreAbandonPenalty);\n        return;\n    }\n\n    if (!packet.MoveType)\n        return;\n\n    uint32 playerTeamID = 0;\n    if (petBattle->Teams[PETBATTLE_TEAM_2]->PlayerGuid == _player->GetGUID())\n        playerTeamID = PETBATTLE_TEAM_2;\n\n    auto& battleTeam = petBattle->Teams[playerTeamID];\n\n    if (petBattle->BattleType == PETBATTLE_TYPE_PVE)\n    {\n        petBattle->Teams[PETBATTLE_TEAM_1]->isRun = true;\n        petBattle->Teams[PETBATTLE_TEAM_2]->isRun = true;\n    }\n    else\n        battleTeam->isRun = true;\n\n    if (battleTeam->Ready)\n        return;\n\n    switch (packet.MoveType)\n    {\n        case PETBATTLE_ACTION_REQUEST_LEAVE:\n            sPetBattleSystem->ForfeitBattle(petBattle->ID, _player->GetGUID(), packet.IgnoreAbandonPenalty);\n            break;\n        case PETBATTLE_ACTION_CAST:\n            if (petBattle->CanCast(playerTeamID, packet.AbilityID))\n                petBattle->PrepareCast(playerTeamID, packet.AbilityID);\n            break;\n        case PETBATTLE_ACTION_CATCH:\n            if (battleTeam->CanCatchOpponentTeamFrontPet() == PETBATTLE_TEAM_CATCH_FLAG_ENABLE_TRAP)\n                petBattle->PrepareCast(playerTeamID, battleTeam->GetCatchAbilityID());\n            break;\n        case PETBATTLE_ACTION_SWAP_OR_PASS:\n        {\n            packet.NewFrontPet = (playerTeamID == PETBATTLE_TEAM_2 ? MAX_PETBATTLE_SLOTS : 0) + packet.NewFrontPet;\n\n            if (!battleTeam->CanSwap(packet.NewFrontPet))\n                return;\n\n            petBattle->SwapPet(playerTeamID, packet.NewFrontPet);\n            break;\n        }\n        default:\n            break;\n    }\n}",
+          "new": "void WorldSession::HandlePetBattleInput(WorldPackets::BattlePet::PetBattleInput& packet)\n{\n    if (packet.MoveType == PETBATTLE_ACTION_LEAVE_PETBATTLE)\n    {\n        SendPetBattleFinished();\n        return;\n    }\n\n    if (!_player->_petBattleId)\n    {\n        SendPetBattleFinished();\n        return;\n    }\n\n    auto petBattle = sPetBattleSystem->GetBattle(_player->_petBattleId);\n    if (!petBattle || petBattle->BattleStatus == PETBATTLE_STATUS_FINISHED)\n    {\n        SendPetBattleFinished();\n        return;\n    }\n\n    if (packet.Round + 1 != petBattle->Turn)\n    {\n        sPetBattleSystem->ForfeitBattle(petBattle->ID, _player->GetGUID(), packet.IgnoreAbandonPenalty);\n        return;\n    }\n\n    uint32 playerTeamID = 0;\n    if (petBattle->Teams[PETBATTLE_TEAM_2]->PlayerGuid == _player->GetGUID())\n        playerTeamID = PETBATTLE_TEAM_2;\n\n    auto& battleTeam = petBattle->Teams[playerTeamID];\n\n    if (petBattle->BattleType == PETBATTLE_TYPE_PVE)\n    {\n        petBattle->Teams[PETBATTLE_TEAM_1]->isRun = true;\n        petBattle->Teams[PETBATTLE_TEAM_2]->isRun = true;\n    }\n    else\n        battleTeam->isRun = true;\n\n    if (battleTeam->Ready)\n        return;\n\n    switch (packet.MoveType)\n    {\n        case PETBATTLE_ACTION_REQUEST_LEAVE:\n            sPetBattleSystem->ForfeitBattle(petBattle->ID, _player->GetGUID(), packet.IgnoreAbandonPenalty);\n            break;\n        case PETBATTLE_ACTION_CAST:\n            if (petBattle->CanCast(playerTeamID, packet.AbilityID))\n                petBattle->PrepareCast(playerTeamID, packet.AbilityID);\n            break;\n        case PETBATTLE_ACTION_CATCH:\n            if (battleTeam->CanCatchOpponentTeamFrontPet() == PETBATTLE_TEAM_CATCH_FLAG_ENABLE_TRAP)\n                petBattle->PrepareCast(playerTeamID, battleTeam->GetCatchAbilityID());\n            break;\n        case PETBATTLE_ACTION_SWAP_OR_PASS:\n        {\n            packet.NewFrontPet = (playerTeamID == PETBATTLE_TEAM_2 ? MAX_PETBATTLE_SLOTS : 0) + packet.NewFrontPet;\n\n            if (!battleTeam->CanSwap(packet.NewFrontPet))\n                return;\n\n            petBattle->SwapPet(playerTeamID, packet.NewFrontPet);\n            break;\n        }\n        default:\n            break;\n    }\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleQueueStrictOrder",
+      "title": "Use a strict ordering for equal-weight queued opponents",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleSystem.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "return a->Weight >= b->Weight;",
+          "new": "return a->Weight > b->Weight;"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleProposalFreshConsent",
+      "title": "Reset answers when issuing a new match proposal",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleSystem.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "l_Right->ProposalTime = GameTime::GetGameTime();",
+          "new": "l_Right->ProposalTime = GameTime::GetGameTime();\n                            l_Left->ProposalAnswer = LFBAnswer::LFB_ANSWER_PENDING;\n                            l_Right->ProposalAnswer = LFBAnswer::LFB_ANSWER_PENDING;"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleRequestReplacement",
+      "title": "Release an earlier request before replacing its owning map entry",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleSystem.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "    _battleRequests[requesterGuid] = new PetBattleRequest();",
+          "new": "    RemoveRequest(requesterGuid);\n    _battleRequests[requesterGuid] = new PetBattleRequest();"
+        }
+      ]
+    },
+    {
+      "key": "PetBattleOpponentGeometry",
+      "title": "Evaluate the two participants in shared opponent admission",
+      "batch": 1,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleSystem.cpp",
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "            if (!player2->IsWithinDist3d(player2, INTERACTION_DISTANCE))\n                return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;\n\n            if (!player2->IsWithinLOSInMap(player2))",
+          "new": "            if (!player->IsWithinDist3d(player2, INTERACTION_DISTANCE))\n                return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;\n\n            if (!player->IsWithinLOSInMap(player2))"
+        },
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "    battleRequest->IsPvPReady[PETBATTLE_TEAM_1] = true;\n    opposant->GetSession()->SendPetBattlePvPChallenge(battleRequest);",
+          "new": "    auto admission = sPetBattleSystem->CanPlayerEnterInPetBattle(_player, battleRequest);\n    if (admission != PETBATTLE_REQUEST_OK)\n    {\n        SendPetBattleRequestFailed(admission);\n        sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n        return;\n    }\n\n    battleRequest->IsPvPReady[PETBATTLE_TEAM_1] = true;\n    opposant->GetSession()->SendPetBattlePvPChallenge(battleRequest);"
+        },
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "    if (!packet.Canceled && battleRequest && opposant)\n    {\n        _player->SetFlag",
+          "new": "    if (!packet.Canceled && battleRequest && opposant)\n    {\n        auto admission = sPetBattleSystem->CanPlayerEnterInPetBattle(opposant, battleRequest);\n        if (admission != PETBATTLE_REQUEST_OK)\n        {\n            SendPetBattleRequestFailed(admission);\n            sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n            return;\n        }\n\n        _player->SetFlag"
+        }
+      ]
+    }
+  ]
+}

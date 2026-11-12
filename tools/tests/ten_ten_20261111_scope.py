@@ -5,6 +5,7 @@ claim. Historical certificates retain the exact pre-task source view.
 """
 from pathlib import Path
 import functools,json,subprocess
+from second_ten_ten_20261112_scope import normalize as normalize_later,verify as verify_later
 ROOT=Path(__file__).resolve().parents[2]
 PLAN=json.loads((ROOT/'tools/tests/TenTen20261111Repairs.json').read_text(encoding='utf8'))
 def normalize(path,source):
@@ -17,9 +18,10 @@ def normalize(path,source):
  return source
 @functools.lru_cache(None)
 def verify():
+ verify_later()
  assert PLAN['authorized_total']==100 and len(PLAN['changes'])<=100 and len({e['key']for e in PLAN['changes']})==len(PLAN['changes'])
  for path in sorted({p for row in PLAN['changes']for p in row['paths']}):
-  source=(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape')
+  source=normalize_later(path,(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape'))
   pinned=subprocess.run(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path],capture_output=True)
   if pinned.returncode:
    assert not subprocess.check_output(['git','-C',str(ROOT),'ls-tree','--name-only',PLAN['baseline'],'--',path]).strip(),path
@@ -29,10 +31,10 @@ def verify():
   assert normalize(path,source)==old,'Undeclared amendment:'+path
  return True
 def retained_source(path,source=None):
- verify();return normalize(path,source if source is not None else(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape'))
+ verify();return normalize(path,normalize_later(path,source if source is not None else(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape')))
 def require_fixed(keys=None):
  verify();selected=[e for e in PLAN['changes']if keys is None or e['key']in keys]
- sources={p:(ROOT/p).read_text(encoding='utf-8-sig',errors='surrogateescape')for e in PLAN['changes']for p in e['paths']}
+ sources={p:normalize_later(p,(ROOT/p).read_text(encoding='utf-8-sig',errors='surrogateescape'))for e in PLAN['changes']for p in e['paths']}
  chosen={e['key']for e in selected}
  for e in reversed(PLAN['changes']):
   for edit in reversed(e['edits']):
