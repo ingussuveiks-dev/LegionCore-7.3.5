@@ -1593,11 +1593,12 @@ public:
 
         void IsSummonedBy(Unit* summoner) override
         {
-            _summoner = nullptr;
+            _summonerGuid.Clear();
+            _events.Reset();
 
-            if (Player* player = summoner->ToPlayer())
+            if (Player* player = summoner ? summoner->ToPlayer() : nullptr)
             {
-                _summoner = player;
+                _summonerGuid = player->GetGUID();
                 _events.ScheduleEvent(EVENT_CAST_RIDE_SPELL, 1 * IN_MILLISECONDS);
             }
         }
@@ -1612,7 +1613,10 @@ public:
                 switch (eventId)
                 {
                     case EVENT_CAST_RIDE_SPELL:
-                        me->CastSpell(_summoner, SPELL_RIDE_RED_DRAGON_TRIGGERED, true);
+                        if (Player* summoner = ObjectAccessor::GetPlayer(*me, _summonerGuid))
+                            me->CastSpell(summoner, SPELL_RIDE_RED_DRAGON_TRIGGERED, true);
+                        else
+                            me->DespawnOrUnsummon();
                         break;
                 }
             }
@@ -1635,7 +1639,7 @@ public:
         }
 
     private:
-        Player* _summoner;
+        ObjectGuid _summonerGuid;
         EventMap _events;
     };
 
