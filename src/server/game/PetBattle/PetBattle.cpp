@@ -1618,8 +1618,6 @@ bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID
     // Search same auras
     for (auto& aura : PetAuras)
     {
-        auraSlot = aura->ID;
-
         if (!aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)
         {
             ++auraCount;
