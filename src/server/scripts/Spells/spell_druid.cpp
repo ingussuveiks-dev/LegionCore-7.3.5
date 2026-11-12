@@ -2299,10 +2299,11 @@ class spell_dru_natures_guardian : public AuraScript
     {
         if (DamageInfo* dmgInfo = eventInfo.GetDamageInfo())
         {
-            if (dmgInfo->GetSpellInfo()->Id == 227034)
+            SpellInfo const* sourceSpell = dmgInfo->GetSpellInfo();
+            if (sourceSpell && sourceSpell->Id == 227034)
                 return;
 
-            if (uint32 heal = dmgInfo->GetDamage())
+            if (uint64 heal = dmgInfo->GetDamage())
             {
                 if (Unit* dru = GetUnitOwner())
                 {
