@@ -22,6 +22,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "HealingAmount.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -365,13 +366,13 @@ class spell_sha_chain_heal : public SpellScript
 
         if (Unit* target = GetHitUnit())
         {
-            int32 _heal = GetHitHeal();
+            uint64 _heal = GetHitHeal64();
             if (AuraEffect const* aurEff = caster->GetAuraEffect(200076, EFFECT_0)) // Deluge
             {
                 if (target->HasAura(200075, caster->GetGUID()) || target->HasAura(61295, caster->GetGUID()))
-                    _heal += CalculatePct(_heal, aurEff->GetAmount());
+                    _heal = HealingAmount::Add(_heal, CalculatePct(_heal, aurEff->GetAmount()));
             }
-            SetHitHeal(_heal);
+            SetHitHeal64(_heal);
         }
     }
 
