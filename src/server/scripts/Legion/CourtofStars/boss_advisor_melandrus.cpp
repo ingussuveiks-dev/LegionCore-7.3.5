@@ -65,14 +65,15 @@ public:
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-            elisanda = me->SummonCreature(110443, 871.28f, 3111.11f, 54.93f, 5.87f);
+            if (Creature* elisanda = me->SummonCreature(110443, 871.28f, 3111.11f, 54.93f, 5.87f))
+                elisandaGuid = elisanda->GetGUID();
             introDone = false;
             event = false;
             checkrange = true;
             checkrangetimer = 1000;
         }
         
-        Creature* elisanda;
+        ObjectGuid elisandaGuid;
         bool introDone;
         bool event;
         bool queue;
@@ -115,9 +116,19 @@ public:
         void UpdateAI(uint32 diff) override
         {
             if (event)
-                if (elisanda)
-                    if (timer <= diff)
+                if (timer <= diff)
                     {
+                        Creature* elisanda = ObjectAccessor::GetCreature(*me, elisandaGuid);
+                        if (!elisanda)
+                        {
+                            elisanda = me->SummonCreature(110443, 871.28f, 3111.11f, 54.93f, 5.87f);
+                            if (!elisanda)
+                            {
+                                timer = 5000; // Retry within the existing dialogue cadence.
+                                return;
+                            }
+                            elisandaGuid = elisanda->GetGUID();
+                        }
                         if (queue)
                             Talk(text);
                         else
