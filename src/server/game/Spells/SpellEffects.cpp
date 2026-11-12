@@ -1259,36 +1259,13 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 }
                 case 45206: // Copy Off-hand Weapon
                 case 69892:
-                {
-                    unitTarget->CastSpell(m_caster, damage, true);
-                    if (unitTarget->IsPlayer())
-                        break;
-
-                    if (m_caster->IsPlayer())
-                    {
-                        if (Item* offItem = m_caster->ToPlayer()->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
-                            unitTarget->SetVirtualItem(1, offItem->GetEntry());
-                    }
-                    else
-                        unitTarget->SetVirtualItem(1, m_caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 1));
-                    break;
-                }
                 case 41055: // Copy Mainhand Weapon
                 case 63416:
                 case 69891:
-                {
-                    if (unitTarget->IsPlayer())
-                        break;
-
-                    if (m_caster->IsPlayer())
-                    {
-                        if (Item* mainItem = m_caster->ToPlayer()->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
-                            unitTarget->SetVirtualItem(0, mainItem->GetEntry());
-                    }
-                    else
-                        unitTarget->SetVirtualItem(0, m_caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS));
+                    // The child aura copies and restores the original equipment.
+                    // Keep the owner-to-image direction used by native consumers.
+                    m_caster->CastSpell(unitTarget, uint32(damage), true);
                     break;
-                }
                 case 97383: // Capturing
                 {
                     m_caster->CastSpell(unitTarget, 97388);
