@@ -1729,15 +1729,43 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     if (!abilityInfo)
         return PETBATTLE_CAST_INVALID_ID;
 
-    // These native turn1 sequences end with the user's sacrifice. An enemy
-    // dying to an earlier damage row must not discard that terminal row (or
-    // Armageddon's remaining enemy slots). Other stop/chain rules still apply.
+    // Preserve authored terminal and sibling rows after an earlier enemy
+    // death: sacrifices, Hourglass, self-type attacks and Pound's backline.
+    // Other stop/chain rules still apply.
     bool const selfSacrifice = p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE &&
         (abilityID == 282 || abilityID == 321 || abilityID == 663 || abilityID == 836 || abilityID == 1025);
     bool const hourglassAttack = abilityID == 1927 && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
-    bool const selfTypeAttack = (abilityID == 1717 || abilityID == 1398) && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
-    if ((selfSacrifice || hourglassAttack || selfTypeAttack) && !Pets[casterPetID]->IsAlive())
+    bool const completeDamageRows = (abilityID == 1717 || abilityID == 1398 || abilityID == 1587) && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
+    if ((selfSacrifice || hourglassAttack || completeDamageRows) && !Pets[casterPetID]->IsAlive())
         return PETBATTLE_CAST_INTERNAL_ERROR;
+
+    // Pound authors one active-pet hit followed by two smaller backline hits.
+    // Snapshot the actual opposing roster before damage/death callbacks can
+    // change its front. A missing/dead slot must not redirect another row.
+    uint32 const noPoundTarget = MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS;
+    uint32 poundTargets[MAX_PETBATTLE_SLOTS] = {noPoundTarget, noPoundTarget, noPoundTarget};
+    uint32 poundTeam = MAX_PETBATTLE_TEAM;
+    if (abilityID == 1587 && completeDamageRows)
+    {
+        if (Pets[casterPetID]->TeamID >= MAX_PETBATTLE_TEAM)
+            return PETBATTLE_CAST_INTERNAL_ERROR;
+        poundTeam = !Pets[casterPetID]->TeamID;
+        auto team = Teams[poundTeam];
+        uint32 const base = poundTeam * MAX_PETBATTLE_SLOTS;
+        if (!team || uint32(team->ActivePetID) < base || uint32(team->ActivePetID) >= base + MAX_PETBATTLE_SLOTS)
+            return PETBATTLE_CAST_INTERNAL_ERROR;
+        poundTargets[0] = team->ActivePetID;
+        uint32 next = 1;
+        for (uint32 slot = 0; slot < MAX_PETBATTLE_SLOTS && slot < team->TeamPetCount && next < MAX_PETBATTLE_SLOTS; ++slot)
+        {
+            if (base + slot == poundTargets[0])
+                continue;
+            auto const& pet = team->TeamPets[slot];
+            if (pet && pet->ID == base + slot && pet->TeamID == poundTeam && Pets[pet->ID] == pet)
+                poundTargets[next] = pet->ID;
+            ++next;
+        }
+    }
 
     // States
     if (!p_Turn && p_TriggerFlag == PETBATTLE_CAST_TRIGGER_NONE)
@@ -1760,6 +1788,13 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
         {
             if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)
                 continue;
+            if (poundTeam < MAX_PETBATTLE_TEAM)
+            {
+                if (!Pets[casterPetID])
+                    return PETBATTLE_CAST_INTERNAL_ERROR;
+                if (!Pets[casterPetID]->IsAlive())
+                    break;
+            }
 
             PetBattleAbilityEffect abilityEffect;
             abilityEffect.EffectInfo = abilityEffectInfo;
@@ -1773,6 +1808,16 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             abilityEffect.AuraOwnerPetID = auraOwnerPetID;
             abilityEffect.ReportFailAsImmune = false;
             abilityEffect.SelectTargets();
+            if (poundTeam < MAX_PETBATTLE_TEAM && abilityEffectInfo->BattlePetEffectPropertiesID == 24)
+            {
+                abilityEffect.Targets.clear();
+                if (abilityEffectInfo->OrderIndex >= 1 && abilityEffectInfo->OrderIndex <= MAX_PETBATTLE_SLOTS)
+                {
+                    uint32 const target = poundTargets[abilityEffectInfo->OrderIndex - 1];
+                    if (target < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS && Pets[target] && Pets[target]->TeamID == poundTeam)
+                        abilityEffect.AddTarget(target);
+                }
+            }
             // A proc's remove-aura row names the aura owner, which may differ
             // from the original hostile caster. Other effects keep their native
             // selectors (e.g. Clone/Murloc attacks still hit the opponent).
@@ -1782,13 +1827,13 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             if (!abilityEffect.Execute())
                 abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);
 
-            bool const sacrificeDamage = (selfSacrifice || hourglassAttack || selfTypeAttack) &&
+            bool const continuingDamage = (selfSacrifice || hourglassAttack || completeDamageRows) &&
                 (abilityEffectInfo->BattlePetEffectPropertiesID == 24 || abilityEffectInfo->BattlePetEffectPropertiesID == 68 ||
-                    (selfTypeAttack && abilityEffectInfo->BattlePetEffectPropertiesID == 222));
-            if (abilityEffect.StopChain && !sacrificeDamage)
+                    (completeDamageRows && abilityEffectInfo->BattlePetEffectPropertiesID == 222));
+            if (abilityEffect.StopChain && !continuingDamage)
                 break;
 
-            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice && !hourglassAttack && !selfTypeAttack)
+            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice && !hourglassAttack && !completeDamageRows)
                 return PETBATTLE_CAST_OK;
         }
     }

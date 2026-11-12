@@ -1,0 +1,182 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "POUND1587_NATIVE_FRONT_BACKLINE_DAMAGE_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "56363b6c1",
+  "problem": "Twelve native observations across both teams and all original active positions showed all three1587 damage rows hitting the active enemy for40 total; reserves received0. A lethal first row stopped remaining enemy damage. Matching native1587 rows3030/3032/3033 author20/10/10 points.",
+  "repair": "PetBattle::Cast snapshots the original opposite active and two original roster identities before damage, using out-of-range6 for missing cells. Only actual1587 turn1/nonproc255 property24 rows select the corresponding original living recipient by bounded OrderIndex1..3. Pointer,ID,team and three-slot bounds prevent redirection to unrelated/missing actors. Damage rows continue after a recipient death while the actual caster remains alive; true Mechanical revival can continue, final reflected death stops. Existing1717/1398 continuation remains. No SQL, passive1586/immunity/timer, encounter completion grant, layout or native kit change.",
+  "tests": {
+    "native": "112 counted real native cases/24 groups: both teams/all three active positions;20/10/10 damage and actual receipts; exact-lethal/all-dead/Mechanical/enemy corpses; missing actor and original-front slots without redirect; independent miss/front-miss/block/immunity; complete selected PrepareCast/ProceedRound and lethal first row; actual swaps between roots and recasts; bounded OrderIndex; missing/dead caster; wrong/invalid team; ordinary ability and owner context; real native315/316 Spiked Skin reflection with final death versus actual Mechanical revival. Actual mid-cast enemy swap was not reproduced; cache/dataflow is linked-code proved. Controlled block state is not a full native block-spell traversal. Test abilities are memory-only assigned to native species; no character data writes.",
+    "counterfactuals": "Three complete pinned56363b6c1 controls fail split/lethal/round assertions with expected exit1; corrected112 pass. Original12 observations and failures remain byte-preserved.",
+    "candidate_and_fixture_repairs": "The first undeployed candidate used PETBATTLE_NULL_ID=0, which is a valid pet0, for missing targets; native missing-slot regression caught the redirection. Corrected to6, rebuilt and retested. A later reflection assertion assumed20 despite actual Spiked Skin mitigation; fixture now calibrates the actual3030 damage after real315/316 activation. Initial PE role and naive reachability checks failed; roles were resolved from actual x64 dataflow and target-read proof strengthened to CFG edge dominance with loop revalidation. These failed candidates/checks are resolved evidence,not passing baselines or suppressed diagnostics.",
+    "retained": "120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 PE checks,complete retained pet proof chain and unchanged packet writer PE pass. No new106 claim.",
+    "pe": "Actual canonical x64 proves pre-damage original active/roster cache,invalid6 initialization,team/identity/pointer checks,bounded OrderIndex read dominated by validated1..3 guard,real living AddTarget and per-row caster liveness. Earlier compiler register/stack roles updated precisely; shared64-byte unknown-leaf and original handler-table bounds remain unchanged.",
+    "runtime": "Owned canonical PID11380 fresh ready/shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Relinked bnet native .text equals preceding rollback byte-for-byte; no separate fresh bnet startup claim.",
+    "diagnostics": "Pre/post canonical and own crash/log inventories,exit status/stdout/stderr reviewed. No new/changed crash,appended DBErrors or unexplained server warnings/errors/assertions. Full build compiler warnings are a subset of the preceding static build after line-number normalization. Failed candidate/test/proof evidence preserved.",
+    "client": "Actual 7.3.5 target labels,damage animation,round presentation,Rocko encounter and whole pet battles remain pending. Modeled/native/linked checks are separate from client traversal."
+  },
+  "native_world_path_correction": "Raw battlepet_npc_team_member records forRocko98572 andDefiledEarth94650 are swapped,but these templates are WILD_BATTLE_PET1073741824 with empty AI/ScriptName. That table is consumed by PetBattleTrainer,not their wild request. Actual initialized wild cache reads battlepet_info98572->1811 and94650->1686; native quest41624 objective282591/type12 requires1811. Zone DB2 adjusts actual wild level. No speculative SQL swap/trainer binding/quest credit/quality override made. Earlier raw trainer-table references do not establish live wild kits.",
+  "canonical": {
+    "worldserver.exe": "832ed4e06d00a128f62043c31cd613bd2e7cb0a2cee77533fea4337235830927",
+    "worldserver.map": "0d1cb3a1248acbeddd7a1b46c63f4a19425d02177029bf0244710280822230eb",
+    "bnetserver.exe": "db1022b42b1b36c0e1cfe058795d6c8e212fc83deb824aef6f46125e3313e7f8",
+    "bnetserver.map": "523fa75d52c2fc6cfdf10b57e27d2d3b53bf945bc2f83595ea64307b777492d6"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/fixed3-driver.log",
+      "sha256": "503d2f71103d59e2acaab15b2f7751f3c7d559c7658905a823ef8ae2eb9c6f9c"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-static120-driver.log",
+      "sha256": "699ae182e121d24d6e2042bbcd9d7e2f0bd1c7ef771ea0bc7bde3fe7b4c9d125"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-threshold78-driver.log",
+      "sha256": "51da00049c36993b946d4f50e9868e8a24797146d435fd853f05fbb64dd4b07c"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-roboflauge48-driver.log",
+      "sha256": "7ac107b1dd2bed31e89004b91dc29a888b277e399e2216104c485b85323fb968"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-frenzy24-driver.log",
+      "sha256": "1aff6cad2bbe324871fbaaaf0758b3946617275de51a197dbfc0e6c359e24bc4"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-variance144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-ward50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-roster48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-cheat28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-hourglass34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-bend26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-racial13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-sacrifice44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/retained-unholy16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/full-SecondTenTen20261112Native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/full-TenTen20261111Native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/hundred-stage.log",
+      "sha256": "cea2c67117d82a34d0016338edf98d4283918e57fb08af8e2e141c7b4ede5ffe"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/second-hundred-stage.log",
+      "sha256": "0c4f71d40d9c5cf40cb0ef33e7fd1e80ad0a96e3c19cafa1fa32a70f18219f60"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/writer-stage.log",
+      "sha256": "0222685d3c8da10e4a3d67e081197d1d2ef0ab120340831e7156700187e231b2"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/canonical-linked.log",
+      "sha256": "cce3dfba06e30083406dad66c50f75d4c9efc214546713d7a5b28595cacb79f2"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/startup-driver.log",
+      "sha256": "66fe8963da5356f33fdaa47f0541f8d100f533337d2f265f7ac42ed51cc9c5a6"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/scepter-driver.log",
+      "sha256": "71267b1942216489fb11280a9284eb3c120f397fedf6dbf3f7ae6eed7fe777fc"
+    },
+    {
+      "path": ".codex/pet-pound-open-2026-11-13/cleanup-driver.log",
+      "sha256": "a92d8cb29d1f57a6b274daf13b1a7377cd019a4ec16df3d3fe61c4d4c3895a6e"
+    }
+  ],
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-pound-2026-11-13",
+    "ManifestSHA256": "413AABF4FC4A09675C3753D84CEB7F83D38D69654264E248F23CBE0CC1B41128",
+    "Archived": 676,
+    "Removed": 80,
+    "ReclaimedBytes": 937052039.0,
+    "Retained": "Canonical runtime/configuration/DLLs/certs/shared data/main libraries,regression sources and reusable tools;three newest pre-Pound/pre-static/pre-threshold recovery sets and exact cdca106-certified pre-Ward executable/maps. Redundant pre-Roboflauge files superseded,original deployment manifest retained. Resolved112 Pound cases,12 prior observations,three pinned controls,initial sentinel0 candidate defect and corrected6,Spiked Skin calibration,old/new PE checks and retained120/78/all earlier native/two full100 scopes archived. OPEN Haunt/Crumble/other183/native wild-vs-trainer data research remains outside fixed with unique probes. Slaghammer/LINK2/Lady/mixedDBErrors/personal/character/database/security files untouched. No current106 or full client certification."
+  },
+  "superseded_rollback_copies": [
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-roboflauge-2026-11-12",
+      "manifest_sha256": "50f296c40be97e29de0573de7df00c3c518fec0c70cff888f05a1e9c6ff4227c",
+      "repair_commit": "8d96b12a0"
+    }
+  ],
+  "rollback_cleanup_note": "Redundant pre-Roboflauge owned binaries/maps removed after current deployment,checks and hash-verified archive;original deployment manifest remains. Historical Protected-path inventories are point-in-time records superseded for those files by this deletion manifest. Three latest recovery sets and exact cdca106 executable/maps remain. No mixed research,personal/character/database backup or security evidence removed.",
+  "final_verification": {
+    "status": "PASS",
+    "native_pound_cases": 112,
+    "retained_native_cases": [
+      120,
+      78,
+      48,
+      24,
+      144,
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "832ed4e06d00a128f62043c31cd613bd2e7cb0a2cee77533fea4337235830927",
+      "worldserver.map": "0d1cb3a1248acbeddd7a1b46c63f4a19425d02177029bf0244710280822230eb",
+      "bnetserver.exe": "db1022b42b1b36c0e1cfe058795d6c8e212fc83deb824aef6f46125e3313e7f8",
+      "bnetserver.map": "523fa75d52c2fc6cfdf10b57e27d2d3b53bf945bc2f83595ea64307b777492d6"
+    },
+    "bnet_native_code_section_unchanged": true,
+    "archive_records": 676,
+    "removed": 80,
+    "removed_bytes": 937052039.0,
+    "older_owned_rollback_sets_removed": 1,
+    "recent_rollback_sets_retained": 3,
+    "historical106_binary_and_maps_retained": true,
+    "protected_evidence_configuration_and_rollback_unchanged": true,
+    "new_compiler_warnings": 0
+  },
+  "remaining": [
+    "Client verification remains pending.",
+    "Crumble1586/1739 timer/self-death and immunity ordering,Haunt652/653 ghost/return,remaining six species183/five abilities,DarkRebirth794/795,Ominitron1595 producer,Apocalypse,clone122/123/124 and generic159 remain OPEN. New readonly native death/species/wild-path research remains outside fixed with unique probes.",
+    "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+  ],
+  "next": "Reproduce owned final-dead positive health persistence through actual Finish/journal update,then repair only if demonstrated;continue complete native lifecycle investigations without guessed timers."
+}

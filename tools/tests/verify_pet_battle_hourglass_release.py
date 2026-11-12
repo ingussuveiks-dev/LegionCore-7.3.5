@@ -4,8 +4,8 @@ from pet_hourglass_scope import verify
 import hashlib,json,struct
 verify()
 cast=ins('?Cast@PetBattle@@');select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@');execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@')
-assert {('cmp','r8d, 0x78c'),('cmp','r12d, 7'),('mov','r10d, dword ptr [rbp + 0x5f]'),('cmp','dword ptr [rdx], r10d'),('cmp','dword ptr [rdx + 8], r15d'),('cmp','dword ptr [rdx + 0xc], r14d'),('cmp','byte ptr [rdx + 0x20], 0'),('cmp','r14d, 5'),('mov','dword ptr [rbp - 0x25], eax'),('cmp','r10d, 0x787'),('mov','byte ptr [rsp + 0x42], bl')}<=set(pairs(cast[:select]))
-assert {('or','dword ptr [rsp + 0x48], eax'),('movzx','edx, byte ptr [rsp + 0x42]'),('test','dl, dl'),('cmp','ax, 0x18'),('cmp','dword ptr [r11 + 0x84], 3')}<=set(pairs(cast[execute:execute+55])),'Actual kill row continuation retains native chain-failure receipt'
+assert {('cmp','r8d, 0x78c'),('cmp','r15d, 7'),('mov','r10d, dword ptr [rsp + 0x44]'),('cmp','dword ptr [rdx], r10d'),('cmp','dword ptr [rdx + 8], r12d'),('cmp','dword ptr [rdx + 0xc], r14d'),('cmp','byte ptr [rdx + 0x20], 0'),('cmp','r14d, 5'),('mov','dword ptr [rbp - 0x14], eax'),('cmp','r10d, 0x787'),('mov','byte ptr [rsp + 0x42], cl')}<=set(pairs(cast[:select]))
+assert {('or','dword ptr [rsp + 0x60], eax'),('movzx','edx, byte ptr [rsp + 0x42]'),('test','dl, dl'),('cmp','ax, 0x18'),('cmp','dword ptr [r11 + 0x84], 3')}<=set(pairs(cast[execute:execute+55])),'Actual kill row continuation retains native chain-failure receipt'
 producer=ins('?HandleForbiddenHourglass@PetBattleAbilityEffect@@')
 assert {('test','dword ptr [rcx + 0x44], 0x29a'),('cmp','dword ptr [rcx + 0x18], 0x787'),('cmp','dword ptr [rax + 0x15], 0xd9b'),('test','byte ptr [rax], 1'),('cmp','dword ptr [rcx + 0x3c], eax'),('mov','eax, dword ptr [rcx + 0x1c]'),('mov','ecx, dword ptr [rax + 0x70]'),('movzx','edx, word ptr [rax + 0xa]'),('movzx','r9d, word ptr [rax + 0xe]'),('movzx','r8d, word ptr [rax + 0xc]')}<=set(pairs(producer))
 alive,=sites(producer,'?IsAlive@BattlePetInstance@@');hit,=sites(producer,'?CalculateHit@PetBattleAbilityEffect@@');aura,=sites(producer,'?AddAura@PetBattleAbilityEffect@@')

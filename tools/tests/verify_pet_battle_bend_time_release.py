@@ -2,7 +2,7 @@
 from verify_pet_battle_unholy_ascension_release import ins,sites,pairs,reaches,n
 import hashlib,json
 cast=ins('?Cast@PetBattle@@');select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@')
-assert {('movsxd','r14, dword ptr [rbp + 0x7f]'),('mov','r10d, r8d'),('cmp','r8d, 0x770'),('cmp','r12d, 0xa'),('test','r9d, r9d'),('cmp','r14d, 5'),('cmp','dword ptr [rcx + 0x70], r14d'),('cmp','byte ptr [rdx + 0x20], 0'),('mov','r10d, dword ptr [rbp + 0x5f]'),('cmp','dword ptr [rdx], r10d'),('cmp','dword ptr [rdx + 8], r15d'),('cmp','dword ptr [rdx + 0xc], r14d'),('mov','dword ptr [rbp - 0x25], eax')}<=set(pairs(cast[:select]))
+assert {('movsxd','r14, dword ptr [rbp + 0x90]'),('mov','r10d, r8d'),('cmp','r8d, 0x770'),('cmp','r15d, 0xa'),('test','r9d, r9d'),('cmp','r14d, 5'),('cmp','dword ptr [rcx + 0x70], r14d'),('cmp','byte ptr [rdx + 0x20], 0'),('mov','r10d, dword ptr [rsp + 0x44]'),('cmp','dword ptr [rdx], r10d'),('cmp','dword ptr [rdx + 8], r12d'),('cmp','dword ptr [rdx + 0xc], r14d'),('mov','dword ptr [rbp - 0x14], eax')}<=set(pairs(cast[:select]))
 positive=ins('?HandlePositiveAura@PetBattleAbilityEffect@@');remove=ins('?HandleRemoveAura@PetBattleAbilityEffect@@')
 for body in (positive,remove):
  hit,=sites(body,'?CalculateHit@PetBattleAbilityEffect@@')

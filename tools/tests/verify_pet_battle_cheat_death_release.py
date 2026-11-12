@@ -5,8 +5,8 @@ from capstone import CS_OP_IMM
 import hashlib,json,re
 verify()
 cast=ins('?Cast@PetBattle@@');select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@');execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@')
-assert {('cmp','r8d, 0x773'),('cmp','r12d, 7'),('mov','byte ptr [rsp + 0x40], r13b'),('cmp','byte ptr [r9 + 0x129], 0'),('cmp','byte ptr [r9 + 0x128], 0')}<=set(pairs(cast[:select])),'Actual issued1907 owner context rejects both captured flags before dispatch'
-assert {('mov','eax, dword ptr [rbp + 0x7f]'),('cmp','byte ptr [rsp + 0x40], 0'),('mov','dword ptr [rsp + 0x58], eax'),('lea','rax, [rsp + 0x58]')}<=set(pairs(cast[select:execute])),'Known1907 self rows use the actual holder, retaining the original source'
+assert {('cmp','r8d, 0x773'),('cmp','r15d, 7'),('mov','byte ptr [rsp + 0x40], r13b'),('cmp','byte ptr [r9 + 0x129], 0'),('cmp','byte ptr [r9 + 0x128], 0')}<=set(pairs(cast[:select])),'Actual issued1907 owner context rejects both captured flags before dispatch'
+assert {('mov','eax, dword ptr [rsp + 0x64]'),('cmp','byte ptr [rsp + 0x40], 0'),('mov','dword ptr [rsp + 0x68], eax'),('lea','rax, [rsp + 0x68]')}<=set(pairs(cast[select:execute])),'Known1907 self rows use the actual holder, retaining the original source'
 process=ins('?Process@PetBattleAura@@');expire,=sites(process,'?Expire@PetBattleAura@@')
 assert {('cmp','r8d, 0x773'),('cmp','dword ptr [rcx + 0x1c], 0'),('cmp','dword ptr [rcx + 0x18], 0'),('cmp','dword ptr [rcx + 0x10], 1')}<=set(pairs(process[:expire]))
 gate=next(i for i,x in enumerate(process[:expire])if(x.mnemonic,x.op_str)==('cmp','dword ptr [rcx + 0x10], 1'))

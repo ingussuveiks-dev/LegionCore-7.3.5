@@ -39,6 +39,6 @@ renew=next(i for i in calls if{('mov','r8d, 0x56d'),('mov','dword ptr [rsp + 0x2
 assert all(renew<i for i in sites(rounds,'?DoCasts@PetBattleTeam@@')),'Native passive renewal precedes ordinary ability actions'
 swap=ins('?SwapPet@PetBattle@@');assert sites(swap,'?IsRoboflaugeSource@PetBattle@@')and ('cmp','dword ptr [rax + 0x12c], r12d')in pairs(swap)
 cast=ins('?Cast@PetBattle@@');assert len(sites(cast,'?IsRoboflaugeSource@PetBattle@@'))==1
-assert {('cmp','r8d, 0x56d'),('cmp','r14d, -1'),('cmp','dword ptr [rbp + 0x77], -1'),('mov','eax, 0x441'),('bt','eax, r12d')}<=set(pairs(cast)),'Actual native source receipt, empty aura-owner and exact apply/start/swap proc mask retained'
+assert {('cmp','r8d, 0x56d'),('cmp','r14d, -1'),('cmp','dword ptr [rbp + 0x88], -1'),('mov','eax, 0x441'),('bt','eax, r15d')}<=set(pairs(cast)),'Actual native source receipt, empty aura-owner and exact apply/start/swap proc mask retained'
 print('PASS linked native1504/183/1389 bounded real living roster source, same-team229 targets, initial-before-snapshot/round-before-actions/own-swap native callbacks and exact proc authority; all retained pet proofs pass')
 print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'species':1504,'passive_state':183,'ability':1389,'native_cases':48,'verified_stack_free_leaf_bytes':end-start}))
