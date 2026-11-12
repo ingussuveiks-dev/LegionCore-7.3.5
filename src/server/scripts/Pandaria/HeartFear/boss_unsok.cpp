@@ -516,13 +516,13 @@ public:
 
         InstanceScript* pInstance;
         EventMap events;
-        Unit* owner;
+        ObjectGuid ownerGuid;
 
         void Reset() {}
         
         void IsSummonedBy(Unit* summoner)
         {
-            owner = summoner;
+            ownerGuid = summoner ? summoner->GetGUID() : ObjectGuid::Empty;
             DoCast(me, SPELL_BUBBLING_AMBER_VIS, true);
             events.ScheduleEvent(EVENT_1, 500);
             events.ScheduleEvent(EVENT_2, 4000);
@@ -545,7 +545,8 @@ public:
                 switch (eventId)
                 {
                     case EVENT_1:
-                        me->CastSpell(owner, 124014, false); //visual beam
+                        if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))
+                            me->CastSpell(owner, 124014, false); //visual beam
                         break;
                     case EVENT_2:
                         DoCast(123020); //dmg
