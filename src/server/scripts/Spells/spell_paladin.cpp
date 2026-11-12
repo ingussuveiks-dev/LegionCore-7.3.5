@@ -2706,7 +2706,7 @@ class spell_pal_the_light_saves : public SpellScriptLoader
 
                     if (AuraEffect const* aurEff = caster->GetAuraEffect(TheLightSavesBuff, EFFECT_0)) // The Light Saves
                     {
-                        SetHitHeal(GetHitHeal() + CalculatePct(GetHitHeal(), aurEff->GetAmount()));
+                        SetHitHeal64(HealingAmount::Add(GetHitHeal64(), HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), aurEff->GetAmount()))));
                         aurEff->GetBase()->Remove();
                     }
                 }
