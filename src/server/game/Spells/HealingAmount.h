@@ -15,6 +15,14 @@ namespace HealingAmount
         return left + std::min(right, std::numeric_limits<uint64>::max() - left);
     }
 
+    // Integer target/cloud counts must not lose ordinary low bits through float.
+    inline uint64 Multiply(uint64 amount, uint64 count)
+    {
+        if (count && amount > std::numeric_limits<uint64>::max() / count)
+            return std::numeric_limits<uint64>::max();
+        return amount * count;
+    }
+
     inline uint64 FromFloat(float amount)
     {
         if (!(amount > 0.0f))

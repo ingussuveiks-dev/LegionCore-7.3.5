@@ -22,6 +22,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "HealingAmount.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "CreatureAI.h"
@@ -1830,7 +1831,7 @@ class spell_monk_zen_pulse : public SpellScriptLoader
             void HandleHeal(SpellEffIndex /*effIndex*/)
             {
                 if (GetSpell()->GetTargetParentCount() > 2)
-                    SetHitHeal(GetHitHeal() * (GetSpell()->GetTargetParentCount() - 1));
+                    SetHitHeal64(HealingAmount::Multiply(GetHitHeal64(), GetSpell()->GetTargetParentCount() - 1));
             }
 
             void Register() override
