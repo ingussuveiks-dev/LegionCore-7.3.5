@@ -504,10 +504,15 @@ void PetBattleSystem::Update(uint32 diff)
 
                         if (leftPlayer && rightPlayer)
                         {
+                            // Detach the old pair before a survivor can be matched
+                            // again later in this same update and cleanup pass.
+                            l_Left->MatchingOpponent = nullptr;
+                            l_Right->MatchingOpponent = nullptr;
                             if (l_Left->ProposalAnswer == LFBAnswer::LFB_ANSWER_DENY)
                             {
                                 rightPlayer->GetSession()->SendPetBattleQueueStatus(l_Left->JoinTime, l_Left->TicketID, LFBUpdateStatus::LFB_OPPONENT_PROPOSAL_DECLINED, _LFBAvgWaitTime);
                                 ticketsToRemove.push_back(l_Left->RequesterGUID);
+                                l_Left->State = LFB_STATE_FINISHED;
                                 p_LeftRemoved = true;
                             }
 
@@ -515,6 +520,7 @@ void PetBattleSystem::Update(uint32 diff)
                             {
                                 leftPlayer->GetSession()->SendPetBattleQueueStatus(l_Left->JoinTime, l_Left->TicketID, LFBUpdateStatus::LFB_OPPONENT_PROPOSAL_DECLINED, _LFBAvgWaitTime);
                                 ticketsToRemove.push_back(l_Right->RequesterGUID);
+                                l_Right->State = LFB_STATE_FINISHED;
                                 p_RightRemoved = true;
                             }
 
