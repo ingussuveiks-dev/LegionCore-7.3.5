@@ -1649,55 +1649,39 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
 
 bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 maxAllowed, uint32 fromAbilityEffectID, uint32 flags)
 {
-    PetBattleAura* oldAura = nullptr;
-    uint32 auraSlot = 0;
-    int32 auraCount = 0;
-
     if (!maxAllowed)
         maxAllowed = 1;
-
-    // Search same auras
-    for (auto& aura : PetAuras)
-    {
+    int32 count = 0;
+    uint32 existingSlot = 0;
+    for (auto aura : PetAuras)
         if (!aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)
         {
-            ++auraCount;
-            if (!oldAura)
-            {
-                auraSlot = aura->ID;
-                oldAura = aura;
-            }
+            ++count;
+            if (!existingSlot)
+                existingSlot = aura->ID;
         }
-        else if (!auraCount && aura->ID > auraSlot)
-            auraSlot = aura->ID;
+    if (!flags && count >= maxAllowed)
+    {
+        int32 remove = 1 + count - maxAllowed;
+        for (auto aura : PetAuras)
+            if (remove > 0 && !aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)
+            {
+                aura->Expire(this);
+                --remove;
+            }
     }
-
-    if (!auraCount)
-        ++auraSlot;
-
-    // Event
-    PetBattleEvent battleEvent(auraCount ? PETBATTLE_EVENT_BUFF_CHANGE : PETBATTLE_EVENT_BUFF_APPLY, casterPetID, flags, fromAbilityEffectID, RoundTurn++, 0, 1);
-    battleEvent.UpdateBuff(targetPetID, auraSlot, abilityID, duration, 0);
-    RoundEvents.push_back(battleEvent);
-
+    // Expiration callbacks may themselves add auras. Allocate after they finish,
+    // and give every live instance its own protocol identity.
+    uint32 slot = 1;
+    for (auto aura : PetAuras)
+        slot = std::max(slot, aura->ID + 1);
+    if (flags && existingSlot)
+        slot = existingSlot;
+    PetBattleEvent event(flags && existingSlot ? PETBATTLE_EVENT_BUFF_CHANGE : PETBATTLE_EVENT_BUFF_APPLY, casterPetID, flags, fromAbilityEffectID, RoundTurn++, 0, 1);
+    event.UpdateBuff(targetPetID, slot, abilityID, duration, 0);
+    RoundEvents.push_back(event);
     if (flags)
         return false;
-
-    // Remove old aura if at max allowed count
-    if (!flags && maxAllowed && auraCount >= maxAllowed)
-    {
-        auto remainingAuraToRemove = 1 + auraCount - maxAllowed;
-        for (auto itr = PetAuras.begin(); itr != PetAuras.end() && remainingAuraToRemove > 0; ++itr)
-        {
-            if (!(*itr)->Expired && (*itr)->AbilityID == abilityID && (*itr)->TargetPetID == targetPetID)
-            {
-                (*itr)->Expire(this);
-                --remainingAuraToRemove;
-            }
-        }
-    }
-
-    // Create aura
     auto aura = new PetBattleAura();
     aura->AbilityID = abilityID;
     aura->TriggerId = fromAbilityEffectID;
@@ -1706,12 +1690,10 @@ bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID
     aura->MaxDuration = duration;
     aura->Turn = 1;
     aura->TargetPetID = targetPetID;
-    aura->ID = auraSlot;
+    aura->ID = slot;
     aura->Expired = false;
-
     PetAuras.push_back(aura);
     aura->Apply(this);
-
     return true;
 }
 
