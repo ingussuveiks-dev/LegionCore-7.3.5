@@ -628,12 +628,12 @@ class spell_dru_frenzied_regeneration : public AuraScript
         if (Unit* caster = GetCaster())
         {
             float bp0 = caster->CanPvPScalar() ? GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster) / 2 : GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster);
-            int32 heal = int32(CalculatePct(caster->GetMaxHealth(), GetSpellInfo()->Effects[EFFECT_3]->CalcValue(caster)));
-            int32 damageTaken = caster->GetDamageTakenInPastSecs(GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster), true, true);
+            uint64 heal = CalculatePct(caster->GetMaxHealth(), GetSpellInfo()->Effects[EFFECT_3]->CalcValue(caster));
+            uint64 damageTaken = caster->GetDamageTakenInPastSecs(GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster), true, true);
             if (damageTaken > 3)
-                heal += int32(CalculatePct(damageTaken, bp0));
+                heal = HealingAmount::Add(heal, CalculatePct(damageTaken, bp0));
             if (Player* plr = caster->ToPlayer())
-                AddPct(heal, plr->GetFloatValue(PLAYER_FIELD_VERSATILITY) + plr->GetFloatValue(PLAYER_FIELD_VERSATILITY_BONUS));
+                heal = HealingAmount::Add(heal, CalculatePct(heal, plr->GetFloatValue(PLAYER_FIELD_VERSATILITY) + plr->GetFloatValue(PLAYER_FIELD_VERSATILITY_BONUS)));
 
             heal /= aurEff->GetTotalTicks();
             amount += heal;

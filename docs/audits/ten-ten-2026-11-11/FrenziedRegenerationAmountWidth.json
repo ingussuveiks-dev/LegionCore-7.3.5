@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "FrenziedRegenerationAmountWidth",
+  "batch": 8,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Preserve wide maximum-health and unsigned damage inputs in Frenzied Regeneration",
+  "paths": [
+    "src/server/scripts/Spells/spell_druid.cpp"
+  ],
+  "binding": "spell_dru_frenzied_regeneration",
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 8 -Case FrenziedRegenerationAmountWidth",
+  "counterfactual": "Add -Baseline; expected-broken control, paired with repaired pass.",
+  "checks": {
+    "asan": "Ten complete production scopes pass: raid/nonraid Tranquility, native integer Zen/cloud multiplication including ordinary low bits anduint64 saturation, real cloud cleanup/Shaohao requests, six-tick Revival coefficient, valid Funnel4percent self cost with8percent wider heal, Frenzied minimum/history/PvP/versatility/ticks, exact64 Justice eligibility/once-per-actor/zero-heal/expired sortie, positive Stagger pool, large Intangible aura limit,andAMS4+4+2b legal hit remainder. External cast,aura,flight andquery endpoints controlled. Sixth regression rerun with native bounded-damage fixture.",
+    "baseline": "All ten pinned controls fail repaired expectations andpaired repaired runs pass. Initial AMS equal5b/5b synthetic case accidentally preserved a modular ratio anddid not distinguish old/new; replaced with asymmetric,legal4+4+2b hits. No synthetic hit beyond the native non-healing UINT32_MAX domain isused as proof.",
+    "native": "Ten actual bindings/matching26972 effects. Real Player/Group raid,Spell parent count/native64 integer low bits,Revival trait,Funnel native valid cost andwide heal,Frenzied actual history/tick contract,Justice BeforeHit/AfterHit APIs with unrelated actor guards,actual Stagger/Intangible/AMS AuraScript dispatch,owned auras andhealth thresholds. Cloud query supplies controlled retired placeholders;nonnull cloud cleanup isASAN;resource/optional child requests observed. Eligible Justice whole flight/credit remains production-model covered,not native/client traversed. First seventy scopes retained.",
+    "linked": "Canonical14521713 Release contains native64 heal paths,integer multiplier checks,wide Frenzied tick division,unchanged Justice entry/map/phase/quest gates,positive Stagger accumulation,positive Intangible aura conversion and64bit AMS health/remainder division. First seventy linked checks retained.",
+    "retained": "Whole retained Justice flight/boarding/linear route/exit/credit/retry/cancel/death/phase/timeout/logout/recovery source model passes after adding its named64 getter. Previous50 and65-file healing source certificates pass;Scepter Release check passes. Sixth ASAN rerun honors native damage domain.",
+    "runtime": "Task-owned canonical PID23136 fresh ready,gracefulshutdown0,exit0/gone,empty stderr. No new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. User/unknown servers untouched;configuration/DLL/certs preserved.",
+    "investigation": "The actual DamageInfo constructor clamps non-healing damage toUINT32_MAX,while healing information isuint64. Smite local uint32 was alreadycorrect:production candidate fully reverted,excluded,andnot counted. Replaced by genuine positive Stagger amount narrowing. Intangible keeps its correct bounded damage local andrepairs only positive aura amount conversion. Native history period isprivate;fixture derives its actual120constant anduses a typed member pointer. Comment-derived AMS enum collision was a fixture extraction error,corrected. Ordinary core heal/periodic effect accumulation andcumulative damage-history width remain explicit OPEN investigations for the remaining20;these consumer/native amount checks donot certify whole spell/client chains."
+  },
+  "canonical_worldserver_sha256": "1452171343f47a99d53218f1c6c4ff9145088ab95c26a27bbcba71c7970b6055",
+  "scope": "Authored IDs,percentages,ticks,integer target/cloud counts,proc ownership,group/PvP/faction gates andtimings retained. Native non-healing DamageInfo stays bounded toUINT32_MAX. Each shared class family is counted once. Native binary32 percentage rounding and existing unsigned64 API are preserved. No database/schema/character/packet changes.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch08; after focused commits.",
+  "pending": "Ordinary effect accumulation outside explicit native64 inputs is a separate OPEN engine limitation for the remaining groups. Actual client visuals, combat, movement, healing and full affected encounters remain unverified. Lady authentic finale, LINK2/Slaghammer, original handshake and all36 whole chains retain their existing OPEN evidence; mixed DBErrors is unchanged."
+}
