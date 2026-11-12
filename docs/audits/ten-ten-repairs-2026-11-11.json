@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 40,
-  "remaining": 60,
-  "completed_batches": 4,
+  "completed": 50,
+  "remaining": 50,
+  "completed_batches": 5,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -271,16 +271,83 @@
         "investigation": "Nativeeffect0probe initiallymistookparentDUMMY41055/63416/69891/45206/69892forAuraIDs. CoreSpellMgr/EffectDummy andactualScriptName rowsidentifyrealchildAuraIDs,nowrepaired;57594isalreadyAura. InitialunsupportednativeAuraasserts retained andpairedwith6actualpassingAura cases. ParentcoreDummyroute direction/stride isseparatenextrepair;notclaimedasverifiedwholeweaponcopychain."
       },
       "support_commit": "3dd974fafe35973d39d649b460b3dbf5e3287cff"
+    },
+    {
+      "batch": 5,
+      "historical_group": 56,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "CloneWeaponDummyDispatch",
+          "commit": "1754a2f47a182199135607a49680223378c196df",
+          "audit": "docs/audits/ten-ten-2026-11-11/CloneWeaponDummyDispatch.json"
+        },
+        {
+          "key": "ShaFigmentWeaponFallback",
+          "commit": "67bf0a0f1455bc85aff252dba4d841181bfe2be5",
+          "audit": "docs/audits/ten-ten-2026-11-11/ShaFigmentWeaponFallback.json"
+        },
+        {
+          "key": "KingDredRaptorCountLifecycle",
+          "commit": "d9fb07b7f0b678c36c9e2cc46d8959318ac006aa",
+          "audit": "docs/audits/ten-ten-2026-11-11/KingDredRaptorCountLifecycle.json"
+        },
+        {
+          "key": "MillificentLaughCountLifecycle",
+          "commit": "57d28260726c7eecb31322f96c6cac058506d12d",
+          "audit": "docs/audits/ten-ten-2026-11-11/MillificentLaughCountLifecycle.json"
+        },
+        {
+          "key": "SalsalabimPetSurrenderCredit",
+          "commit": "f1086ec0f3c7330488f26e51f64d609c6375fb1f",
+          "audit": "docs/audits/ten-ten-2026-11-11/SalsalabimPetSurrenderCredit.json"
+        },
+        {
+          "key": "SartharionTsunamiSummonFailure",
+          "commit": "8aff1d3c5688e59316645b5e8bf916be35392aa9",
+          "audit": "docs/audits/ten-ten-2026-11-11/SartharionTsunamiSummonFailure.json"
+        },
+        {
+          "key": "MalygosDiskSummonFailure",
+          "commit": "667915de4caefd1b997d6b163f22e62261386ae9",
+          "audit": "docs/audits/ten-ten-2026-11-11/MalygosDiskSummonFailure.json"
+        },
+        {
+          "key": "GarfrostLeaderSummonFailure",
+          "commit": "5c34d61aca236848f185ece36b4961f2525187c1",
+          "audit": "docs/audits/ten-ten-2026-11-11/GarfrostLeaderSummonFailure.json"
+        },
+        {
+          "key": "HalfusDrakeSummonFailure",
+          "commit": "76968c073e712d1eda3215d632ef8aa81e9434c1",
+          "audit": "docs/audits/ten-ten-2026-11-11/HalfusDrakeSummonFailure.json"
+        },
+        {
+          "key": "NithoggStaticOrbStunRecovery",
+          "commit": "bd46f6467c8eb91019927cde5f025ac3f4832a59",
+          "audit": "docs/audits/ten-ten-2026-11-11/NithoggStaticOrbStunRecovery.json"
+        }
+      ],
+      "checks": {
+        "asan": "All ten repaired expectations pass using extracted production methods and affected wave/dispatch decisions. Covers five parent copies, three paired figment fallbacks and item priority, cold/wipe/long raptor counts, five laughs/reset, player/pet/two-level guardian/null attackers, every failed wave/disk/faction-leader/drake/whelp spawn, and stunned-orb retry/proximity/missing-player cleanup. Summon, movement, spell, group and instance endpoints are controlled.",
+        "baseline": "All ten pinned pre-task counterfactuals fail the repaired expectations or reproduce expected null accesses. Baselines are expected-broken controls paired with repaired passes.",
+        "native": "Ten actual database binding families. All five native DUMMY parent/child relations, actual Spell::EffectDummy forward child creation and matching SpellScript dispatcher/default prevention. Actual Player inventory-empty fallback and six equipment fields; real player/pet/two-level guardian owner resolution and native health; actual Creature stun admission and retry. Group, selected spatial query, follow and optional child-cast endpoints are explicitly observed. First forty native checks retained.",
+        "linked": "Canonical cc5346da Release contains actual DUMMY hook, child route, three paired equipment getters, cold/reset counters, nullable affecting-player/native group event, four guarded disk sites, five guarded tsunami actors, guarded common faction leader path, independent Halfus null gates and stun-before-consumption with 500ms retry. First forty linked checks retained.",
+        "retained": "Exact prior 50-repair source certificate and 65-file unsigned64 healing certificate pass. Canonical Scepter login Release verification passes.",
+        "runtime": "Task-owned canonical PID13640 reached fresh ready; graceful shutdown0, exit0, no remaining owned server and empty stderr. Post-test diagnostics report no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions. Protected configuration/DLL/certificates remain unchanged.",
+        "investigation": "Live database and matching26972 data were checked first. Modern local TrinityCore reverse-copy helper was considered but is incompatible with existing local owner-to-image consumers; their forward direction is retained. Child Aura lifecycle was repaired separately in batch4. Illidan and ThunderForge scouts were false positives; Tushui trainee is unregistered/unbound and not counted. Native fixture initially lacked spell proc loaders and used SUMMONED_BY instead of native ownership CREATED_BY; those fixture prerequisites were corrected and final actual-core probes pass. ASAN fixture initially assigned a symbolic index-stride label instead of native MAX_MELEE_HOVER_DISK_SPAWNPOINTS=4; corrected, with failure evidence retained. No production error is claimed for these fixture failures."
+      },
+      "support_commit": "9efe8686b78e3f63b15e0e6fe2e14600b550e7bd"
     }
   ],
   "canonical": {
-    "worldserver.exe": "9e1563a6d2045b283e892869c7bb2fac8e17999598d98417b2bba7688c948255",
-    "worldserver.map": "b16f2bb806ed611bf5bc85d3ffe3a15973705a31e6ad34a658c2ea032aa13ddd",
-    "bnetserver.exe": "d76b79c2004c2f8b4aee87487fe036d3658ee45cb0712cef627873bf0f16d8a4",
-    "bnetserver.map": "cf3efa430a5730dada720403e37450a660954381f411f296a5014823e94c6c9f"
+    "worldserver.exe": "cc5346da6bfee47652fb3866facf9b04915123c2e17bfbc4b3fced207e2e6ce7",
+    "worldserver.map": "700e472a7b337f91c591b180680bfad12e245af04b8ca6cbb5114aeef1d7f8ce",
+    "bnetserver.exe": "de55d32f8609e3acbe168ff7ea89161a2d512ec8217091a8353f3e4c87ffd40e",
+    "bnetserver.map": "cd84887a4c587a0427c00c34e29a7ae802eeef8d432baab7907244651bc11e65"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches5..10 to reach100genuine repairs. Next trace/repair native parent copyweapon Dummy route (distinct from nowverified6childAuras). Actualclient/fullchains andLady/LINK2/Slaghammer/handshake remainOPEN.",
+  "pending": "Continue batches6..10 to reach100 genuine repairs; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -322,6 +389,17 @@
     "logical_removed_bytes": 1627719058,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/batch04-deletions.json",
     "deletion_manifest_sha256": "cee8dcba9e22c5774beb2f20df60526e3fb174bec43e39e3afb4502d1420c935",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch05": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch05",
+    "manifest_sha256": "8a7bd2db64fd0b9e20241d3b5f1b630a9d31812ae237e7f0c88ce948fbb3bd0e",
+    "archived_files": 2055,
+    "removed_files": 48,
+    "logical_removed_bytes": 1104519259,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch05-deletions.json",
+    "deletion_manifest_sha256": "4ff88979b043ebc6daef73612c9a1c7da1d6dd1e03a1d4759e0f43d4dd92504f",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }

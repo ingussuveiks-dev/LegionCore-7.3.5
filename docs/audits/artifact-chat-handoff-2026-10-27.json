@@ -1,17 +1,17 @@
 {
   "latest_ten_ten_repairs_2026_11_11": {
-    "status": "IN_PROGRESS_40_OF_100_TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
-    "request": "Turpini 10×10",
-    "completed": 40,
-    "remaining": 60,
-    "completed_batches": 4,
+    "status": "IN_PROGRESS_50_OF_100_TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+    "request": "Turpini 10\u00c3\u201410",
+    "completed": 50,
+    "remaining": 50,
+    "completed_batches": 5,
     "audit": "docs/audits/ten-ten-repairs-2026-11-11.json",
-    "last_implementation_commit": "26f82c3ba3cc3fcf34cde949bce992df216713e4",
+    "last_implementation_commit": "bd46f6467c8eb91019927cde5f025ac3f4832a59",
     "canonical": {
-      "worldserver.exe": "9e1563a6d2045b283e892869c7bb2fac8e17999598d98417b2bba7688c948255",
-      "worldserver.map": "b16f2bb806ed611bf5bc85d3ffe3a15973705a31e6ad34a658c2ea032aa13ddd",
-      "bnetserver.exe": "d76b79c2004c2f8b4aee87487fe036d3658ee45cb0712cef627873bf0f16d8a4",
-      "bnetserver.map": "cf3efa430a5730dada720403e37450a660954381f411f296a5014823e94c6c9f"
+      "worldserver.exe": "cc5346da6bfee47652fb3866facf9b04915123c2e17bfbc4b3fced207e2e6ce7",
+      "worldserver.map": "700e472a7b337f91c591b180680bfad12e245af04b8ca6cbb5114aeef1d7f8ce",
+      "bnetserver.exe": "de55d32f8609e3acbe168ff7ea89161a2d512ec8217091a8353f3e4c87ffd40e",
+      "bnetserver.map": "cd84887a4c587a0427c00c34e29a7ae802eeef8d432baab7907244651bc11e65"
     },
     "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
     "cleanup_batch02": {
@@ -25,7 +25,7 @@
       "deletion_manifest_sha256": "a38a4630ad2574998375f6fab21ac269d846967de7fabe587711fd59193fe621",
       "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
     },
-    "pending": "Continue batches5..10 to reach100genuine repairs. Next trace/repair native parent copyweapon Dummy route (distinct from nowverified6childAuras). Actualclient/fullchains andLady/LINK2/Slaghammer/handshake remainOPEN.",
+    "pending": "Continue batches6..10 to reach100 genuine repairs; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
     "cleanup_batch03": {
       "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
       "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch03",
@@ -47,11 +47,22 @@
       "deletion_manifest": ".codex/ten-ten-2026-11-11/batch04-deletions.json",
       "deletion_manifest_sha256": "cee8dcba9e22c5774beb2f20df60526e3fb174bec43e39e3afb4502d1420c935",
       "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+    },
+    "cleanup_batch05": {
+      "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+      "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch05",
+      "manifest_sha256": "8a7bd2db64fd0b9e20241d3b5f1b630a9d31812ae237e7f0c88ce948fbb3bd0e",
+      "archived_files": 2055,
+      "removed_files": 48,
+      "logical_removed_bytes": 1104519259,
+      "deletion_manifest": ".codex/ten-ten-2026-11-11/batch05-deletions.json",
+      "deletion_manifest_sha256": "4ff88979b043ebc6daef73612c9a1c7da1d6dd1e03a1d4759e0f43d4dd92504f",
+      "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
     }
   },
   "latest_third_five_ten_repairs_2026_11_11": {
     "status": "TECHNICAL_50_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
-    "request": "Turpini 5×10",
+    "request": "Turpini 5\u00c3\u201410",
     "completed": 50,
     "batches": 5,
     "focused_commits": 50,
