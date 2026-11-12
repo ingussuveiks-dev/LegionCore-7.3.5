@@ -215,16 +215,13 @@ public:
                         if (*itr)
                             targetMove = (*itr)->GetGUID();
 
-                        if ((*itr) && !(*itr)->HasAura(212943) && !(*itr)->HasAura(212887))
+                        if ((*itr) && !(*itr)->HasAura(212943) && !(*itr)->HasAura(212887) && !me->HasUnitState(UNIT_STATE_STUNNED))
                         {
                             moveTimer = 1000;
                             moveComplete = false;
                             CheckComplete = true;
-                            if (!me->HasUnitState(UNIT_STATE_STUNNED))
-                            {
-                                me->GetMotionMaster()->MoveFollow((*itr), PET_FOLLOW_DIST, (*itr)->GetFollowAngle());
-                                me->CastSpell((*itr), 212943);
-                            }
+                            me->GetMotionMaster()->MoveFollow((*itr), PET_FOLLOW_DIST, (*itr)->GetFollowAngle());
+                            me->CastSpell((*itr), 212943);
                         }
                         else
                         {
