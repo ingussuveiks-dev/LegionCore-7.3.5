@@ -864,15 +864,14 @@ bool PetBattleAbilityEffect::HandleStateDamage()
     if (EffectInfo->Param[2] != 0 && !GetState(Caster, EffectInfo->Param[2]))
         return false;
 
+    if (EffectInfo->Param[3] && !GetState(Target, EffectInfo->Param[3]))
+        return false;
+
     if (EffectInfo->Param[4])
         Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;
 
     CalculateHit(EffectInfo->Param[1]);
     int32 damage = CalculateDamage(EffectInfo->Param[0]);
-
-    /// Double base damage is the state in Prop[3] is on
-    if (EffectInfo->Param[3] != 0 && GetState(Target, EffectInfo->Param[3]) == 1)
-        damage *= 2;
 
     return Damage(Target, damage);
 }
