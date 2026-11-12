@@ -958,7 +958,6 @@ class npc_temple_adept : public CreatureScript
             npc_temple_adeptAI(Creature* pCreature) : ScriptedAI(pCreature) {}
 
             EventMap events;
-            Creature* _target;
 
             void Reset() override
             {
@@ -996,18 +995,15 @@ class npc_temple_adept : public CreatureScript
                         events.ScheduleEvent(EVENT_DESPERATE_SPEED, urand(20000, 30000));
                         break;
                     case EVENT_GREATER_HEAL:
-                        if (_target = me->FindNearestCreature(NPC_EXECUTOR_OF_THE_CALIPH, 30.0f))
-                            if (_target->GetHealthPct() < 50)
-                                DoCast(_target, SPELL_GREATER_HEAL);
-                        else if (_target = me->FindNearestCreature(NPC_MINISTER_OF_AIR, 30.0f))
-                            if (_target->GetHealthPct() < 50)
-                                DoCast(_target, SPELL_GREATER_HEAL);
-                        else if (_target = me->FindNearestCreature(NPC_SERVANT_OF_ASAAD, 30.0f))
-                            if (_target->GetHealthPct() < 50)
-                                DoCast(_target, SPELL_GREATER_HEAL);
-                        else if (_target = me->FindNearestCreature(NPC_TEMPEST_ADEPT, 30.0f))
-                            if (_target->GetHealthPct() < 50)
-                                DoCast(_target, SPELL_GREATER_HEAL);
+                        for (uint32 entry : { NPC_EXECUTOR_OF_THE_CALIPH, NPC_MINISTER_OF_AIR, NPC_SERVANT_OF_ASAAD, NPC_TEMPEST_ADEPT })
+                        {
+                            if (Creature* target = me->FindNearestCreature(entry, 30.0f))
+                                if (target->GetHealthPct() < 50)
+                                {
+                                    DoCast(target, SPELL_GREATER_HEAL);
+                                    break;
+                                }
+                        }
                         events.ScheduleEvent(EVENT_GREATER_HEAL, urand(5000, 6000));
                         break;
                     }
