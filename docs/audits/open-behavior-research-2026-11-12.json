@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-12",
+  "status": "RESEARCH_ONLY_AUTHENTIC_BEHAVIOR_AND_NATIVE_PIPELINES_REMAIN_OPEN",
+  "production_changes": "No C++, SQL, runtime configuration or binary changed by this investigation. No missing action was replaced by a no-op, log suppression, invented health threshold, kill timer or progression grant.",
+  "lady": {
+    "status": "OPEN_AUTHENTIC_LIVING_FINALE",
+    "prior_audit": "docs/audits/sharasdal-living-lady-research-2026-10-31.json",
+    "matching_native": "Real Lady104856/spawn362095 is distinct from illusion362091. Upper Grash105298/spawn362092 uses Vehicle4720. Native209457 is control-vehicle236 with nearby-entry38 and seats0/16549,1/16550. Native209552 creates conversation1906; its authored lines4028..4032 run at0/6267/10932/15983/20866ms, conversation lifetime28788ms. Native209487 GetSteppedOn is dummy3/explicit25/800ms, visual55051/castkit66752/AnimKit8204/Anim181; it does not supply a native kill or50397 credit producer.",
+    "reference_urls": [
+      "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/main/src/server/scripts/Legion/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/main/src/server/scripts/Legion/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp"
+    ],
+    "reference_result": "Matching-era reference still uses old actual-death nearest-player50397 and killer conversation1923. No1906 activation/surrender/Grash finale producer found. Its implementation was not copied.",
+    "reference_files": [
+      {
+        "path": ".codex/open-closeout-2026-11-12/reference-Sharasdal.cpp",
+        "bytes": 29949,
+        "sha256": "5812d315ae076f8af68f8167539c0440a26a35d2ca8d4c0af26e21d1fdb3cd40"
+      },
+      {
+        "path": ".codex/open-closeout-2026-11-12/reference-instance_sharasdal.cpp",
+        "bytes": 2038,
+        "sha256": "7c50b13ed10ca55ee4ed10e2b14a7b62b4abcb2518d3f1267a1b33681f644599"
+      }
+    ],
+    "video_review": "Retained wmKA8X7QX0U reference exists locally. This turn inspected sheets covering886..897s and full frames880s/886s only. Earlier audit reviewed sampled frames, not continuous footage/audio. No claim of full-video review. The selected frames show combat/Control Thoughts and later held Lady, but do not establish an exact threshold or server producer.",
+    "still_needed": "Authoritative activation and surrender producer, conversation1906 creation/actor acknowledgement, Grash finisher and exact cleanup/real-death transition. Keep original50397 actual-death owner/group credit separate from living presentation and acquisition conversation1923. Player/pet/guardian one-hit/retry/missing-actor/reentry/client paths remain unverified."
+  },
+  "link2": {
+    "status": "OPEN_ORIGINAL_ACTION_PAYLOADS_MISSING",
+    "fresh_live_read": "Read-only SELECT of smart_scripts for101430/103151 reached explicit EOF. Both source0/id2 rows remain absent. No DDL/DML, updater input or shared script changed.",
+    "live_capture": {
+      "path": ".codex/open-closeout-2026-11-12/live-link2-reviewed/rows.tsv",
+      "bytes": 890,
+      "sha256": "ddbe31dac34ec4b0f74e364c63b909bba6c9f91c8ac49dd442b408c84bacb0b9"
+    },
+    "native_client_stderr": "Initial read captured the native MariaDB SSL-verification/passwordless-login warning and did not count as a completed test because the stderr guard rejected it. Reviewed repeat retains the exact warning in stderr.log and accepts only that identified client warning; any additional stderr fails. It is a native client connection-policy warning, not a SQL parse failure or appended worldserver diagnostic. No authentication or TLS setting was changed.",
+    "reference_url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/main/sql/base/world/world_database_05.sql",
+    "reference_files": [
+      {
+        "path": ".codex/open-closeout-2026-11-12/reference-world_database_05.sql",
+        "bytes": 48984430,
+        "sha256": "940582548afec961acb2372a4189543ae91b5b820fb2a14d3adb218e7b08de1c"
+      },
+      {
+        "path": ".codex/open-closeout-2026-11-12/reference-shared-link2-rows.txt",
+        "bytes": 1409,
+        "sha256": "5c4ea3873267e4df31f08c2476ff4ba4b378881e5abdc92c2699ae10463f9259"
+      }
+    ],
+    "reference_result": "All14 matching source0 rows extracted from the donor smart_scripts table still omit both id2 actions. Its schema differs; rows were not applied.101430 has1->2 after200165/conversation1031;103151 has1->2 after202014.103151 is shared with Zakajz, so removing links/despawning the actor would alter unrelated behavior.",
+    "protected_cache": {
+      "path": "build-extractors/runtime-test/legion-legendary-catalog/SlaghammerHandoffNative.exe",
+      "bytes": 31795712,
+      "sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c"
+    },
+    "classification": "Slaghammer wrapper rejection of missing-LINK errors is not established as an OS crash. Preserve original cache and unresolved evidence outside fixed. Late handoff owner/credit repair was already completed; it does not repair these initial missing actions."
+  },
+  "mixed_log": {
+    "status": "PRESERVED_UNTRUNCATED",
+    "file": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1"
+    },
+    "classification": "OPEN LINK2 history plus two historical custom-area11869 action1 validation errors. The latter were already repaired and deployed in docs/audits/custom-area-action-admission-2026-11-06.json. The log is mixed; no rotation or truncation is justified."
+  },
+  "native_pet": {
+    "status": "OPEN_COMPLETE_PIPELINE_NOT_IMPLEMENTED",
+    "property246": "Current effect table has235 entries, so property246 is outside it. Matching26972 labels are Index/CooldownModification. Nine native effects use slots1/2/3 across Bend Time1904 and Forbidden Hourglass1932;245/247 have no native effect rows. Complete owner/recipient/proc semantics must be preserved, not an unchecked table extension.",
+    "proc_and_target_context": "SwapPet dispatches global aura swap-in/out procedures without selecting only the swapped team.1904 is reached from1905;1932 is reached through1927 property230. Correct friendly/new-front versus original caster, enemy, dead and other living recipients are not established by a direct cooldown handler.",
+    "resurrection_source_trace": "Trigger(target, ability) records target in the event but Cast uses Caster and no aura-owner context. Effect Kill first calls PetBattle::Kill, which expires target auras, marks dead and sets CATCH_OR_KILL; default-context Cast then returns before the mechanical723/undead242 follow-up can execute. Ordinary AddTarget rejects dead pets. HandleResurect sets health before clearing death. Nonpassive effect Kill also calls native Kill a second time. These are source-traced unresolved interactions; no full native repaired pipeline or client proof is claimed.",
+    "other_open": "Effect properties122/123/124 clone selection, defensive-type controller229, complete resurrection/death-aura/once semantics, and wider ordinary core healing/periodic widths remain open. Property IDs are not ability IDs; already repaired Tail Sweep ability122 is separate.",
+    "required_regression": "Exercise the complete actual native dispatcher from real death/swap/kill, not a direct isolated handler. Include both teams, inactive/dead pets, same-turn follow-ups, once-only passives, cancellation, shared aura ownership and native cooldown/update packets."
+  },
+  "client": {
+    "status": "NO_NEW_ACTUAL_CLIENT_VERIFICATION",
+    "pending": "Original intermittent handshake-silence cause, all36whole artifact chains, actual living Lady/Grash progression, LINK2/shared-crypt sequence, native pet battle presentation and prior encounter/boost/pet visual checks. Source/native/PE passes and clean startup do not establish these.",
+    "availability": "User availability question remained unanswered during independent work; no client traversal is inferred from elapsed time."
+  },
+  "time_loop": "Historical OPEN full-heal item is technically resolved by ad8f15d598d90e4c99f80cec9139b7fbd5bd0986 and docs/audits/time-loop-full-healing-2026-11-11.json. Actual encounter/client verification remains separate.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}
