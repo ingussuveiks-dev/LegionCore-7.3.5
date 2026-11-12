@@ -22,6 +22,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "HealingAmount.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "Group.h"
@@ -983,7 +984,7 @@ class spell_pal_healing_storm : public SpellScript
     {
         if (Unit* owner = GetCaster()->GetOwner())
             if (AuraEffect const* echo = owner->GetAuraEffect(EchoOfTheHighlord, EFFECT_0))
-                SetHitHeal(CalculatePct(GetHitHeal(), echo->GetAmount()));
+                SetHitHeal64(HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), echo->GetAmount())));
     }
 
     void Register() override
