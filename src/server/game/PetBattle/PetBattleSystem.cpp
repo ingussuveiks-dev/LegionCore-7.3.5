@@ -292,6 +292,8 @@ void PetBattleSystem::Update(uint32 diff)
 
                             l_Left->ProposalTime = GameTime::GetGameTime();
                             l_Right->ProposalTime = GameTime::GetGameTime();
+                            l_Left->ProposalAnswer = LFBAnswer::LFB_ANSWER_PENDING;
+                            l_Right->ProposalAnswer = LFBAnswer::LFB_ANSWER_PENDING;
 
                             leftPlayer->GetSession()->SendPetBattleQueueStatus(l_Left->JoinTime, l_Left->TicketID, LFBUpdateStatus::LFB_PROPOSAL_BEGIN, _LFBAvgWaitTime);
                             rightPlayer->GetSession()->SendPetBattleQueueStatus(l_Right->JoinTime, l_Right->TicketID, LFBUpdateStatus::LFB_PROPOSAL_BEGIN, _LFBAvgWaitTime);
