@@ -1626,18 +1626,18 @@ class spell_monk_purified_healing : public SpellScriptLoader
                     if (Aura* bonusAura = caster->GetAura(145055)) // Item - Monk T16 Brewmaster 4P Bonus
                     {
                         int32 perc = bonusAura->GetEffect(EFFECT_0)->GetAmount();
-                        int32 _amount = 0;
+                        uint64 _amount = 0;
                         if (Aura* staggerAura = caster->GetAura(124275))
                             if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))
-                                _amount += eff->GetAmount();
+                                _amount = HealingAmount::Add(_amount, HealingAmount::FromFloat(eff->GetAmount()));
                         if (Aura* staggerAura = caster->GetAura(124274))
                             if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))
-                                _amount += eff->GetAmount();
+                                _amount = HealingAmount::Add(_amount, HealingAmount::FromFloat(eff->GetAmount()));
                         if (Aura* staggerAura = caster->GetAura(124273))
                             if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))
-                                _amount += eff->GetAmount();
+                                _amount = HealingAmount::Add(_amount, HealingAmount::FromFloat(eff->GetAmount()));
                         if(_amount)
-                            SetHitHeal(CalculatePct(_amount, perc));
+                            SetHitHeal64(HealingAmount::FromFloat(CalculatePct(float(_amount), perc)));
                     }
                 }
             }
