@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_60_OF_100",
+  "status": "IN_PROGRESS_70_OF_100",
   "authorized_total": 100,
-  "completed": 60,
+  "completed": 70,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -447,6 +447,79 @@
         "Archived": 2137
       },
       "canonical_worldserver_sha256": "853385804a121294a1526ba130cc30f972e6ce5b67daef5b35f7b7d4903c026b"
+    },
+    {
+      "batch": 7,
+      "historical_group": 68,
+      "commits": [
+        {
+          "key": "PetChargedAttackLifetime",
+          "commit": "a69b9d6e831f630c7bbbf9ab29659f376bba2c5d",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetChargedAttackLifetime.json"
+        },
+        {
+          "key": "PetStockpileLifetime",
+          "commit": "e2ee5780e4d4e0143c86fd35d49eed6a47057a15",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetStockpileLifetime.json"
+        },
+        {
+          "key": "PetPlantAccumulationLifecycle",
+          "commit": "45ce2d796b3a8ecb2f87c8f80ed5b63cb2ece2de",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetPlantAccumulationLifecycle.json"
+        },
+        {
+          "key": "PetWallChargeLifetime",
+          "commit": "db724fa5b5b0f9d69560cec6b42d145faa52b438",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetWallChargeLifetime.json"
+        },
+        {
+          "key": "PetConditionalAdditionalDamage",
+          "commit": "b00c8948f39ebbde2c4b63c571b9379d042a2c5b",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetConditionalAdditionalDamage.json"
+        },
+        {
+          "key": "PetPercentageDamagePower",
+          "commit": "5a38cabc3b6a88fa93e8bcd206f9c5eafbb9f88d",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetPercentageDamagePower.json"
+        },
+        {
+          "key": "PetConsumeCorpseLifecycle",
+          "commit": "0d8a473dd3060049fb1c563ca623abb79f243b70",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetConsumeCorpseLifecycle.json"
+        },
+        {
+          "key": "PetBoundedStateRecovery",
+          "commit": "1bd9939b32f993602c1607f54bf1a9200ca4a0b1",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBoundedStateRecovery.json"
+        },
+        {
+          "key": "PetDamageFeedbackPower",
+          "commit": "7e43c21ab0103deb74aff3d006045aff75b3ad00",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetDamageFeedbackPower.json"
+        },
+        {
+          "key": "PetSelfDuelAdmission",
+          "commit": "339ed4de6012884b92fd03f184aefd52f08d9db1",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetSelfDuelAdmission.json"
+        }
+      ],
+      "support_commit": "e5a9a9aa41877e142010a7c6004b0e9de0142c90",
+      "checks": {
+        "counterfactual": "Ten exact pinned baseline assertions fail at exit1 and all paired complete-method MSVC ASAN cases pass. Selected core/effect/aura and full admission methods are extracted; external stores/session/geometry and unselected handler endpoints are controlled. Actual full linked core is separately exercised; no full-core ASAN claim.",
+        "native": "All eight actual native charged attacks retain their preparation and release exactly once. Actual Stockpile290/289 retains damage reduction and its authored20-percent maximum-health reserve, then restores the health fraction before healing. Native state289/2/20 is routed only for this reserve to percentage state99; Healthy577 hundredths-per-level scaling remains unchanged and its full prior regression passes. Plant303 accumulates three native12-point nutrient rounds, heals36 once, resets on restart and caps at10 across12 ticks. All six native walls survive a round and block exactly two real110 attacks; third hits land. Takedown419 conditions distinguish absent, present and stacked state. Four actual percentage-damage rows and both Vengeance/Reflective Shield rows retain identical results at power0/2000. Full Consume Corpse665 admission refuses a living roster, consumes one actual allied corpse and heals50percent once, rejects reuse. Charge1547 removes10000 priority from11000 back to1000. Actual self-duel admission rejects the same Player. Retained first30/sixth10 native and full previous100 native pass.",
+        "linked": "All selected70, retained previous100 and Scepter PE checks pass on the actual canonical binary. Indefinite activation/consumption paths, state gating, power-independent arguments, corpse-state admission/consumption, signed directional bounds and self-identity branch are linked. Existing CanCast dead/lockdown and ModState signed-argument proofs follow the actual compiler register allocation; functional conditions remain required. Original game/scripts/Main final-link inputs and source hashes were checked.",
+        "startup": "Owned worldserver PID=23168\nPASS owned PID=23168 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged; stderr empty; no new crashes, appended DBErrors, unexplained errors, warnings or assertions.",
+        "limitations": "Actual client aura icons/health displays, charged second-use presentation, timed combat, corpse-selection UI and PvP challenge UI remain separate. Living Lady Sharasdal sequence, LINK2/Slaghammer, mixed DBErrors, original client handshake silence and all36wholeclientchains remain OPEN. Pet property246, clone122/123/124, defensive type controller229, resurrection pipeline and wider core heal/periodic widths remain OPEN."
+      },
+      "cleanup": {
+        "Archived": 2497,
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "Removed": 73,
+        "ReclaimedBytes": 1291873558,
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch7",
+        "ManifestSHA256": "4CD5ED232F970F48047CB9B6B0CEFDF0E67A6ADBF3A4B89C948DB0FBA81FB870"
+      },
+      "canonical_worldserver_sha256": "d8490d712ba46374e942e90e5f9debced93da37f584a0eb0e11200d8e2ee7b51"
     }
   ],
   "selected_not_yet_verified": [],
@@ -459,6 +532,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 40,
-  "completed_batches": 6
+  "remaining": 30,
+  "completed_batches": 7
 }
