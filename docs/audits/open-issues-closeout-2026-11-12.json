@@ -1,4 +1,61 @@
 {
+  "latest_native_roboflauge_repair_2026_11_12": {
+    "status": "ROBOFLAUGE_NATIVE_SPECIES183_TEAM_PASSIVE_FIXED_DEPLOYED_CLIENT_PENDING",
+    "fix_commit": "8d96b12a091cb3cc499d08b180f631a2542a0abf",
+    "canonical": {
+      "worldserver.exe": "5ef80e53915e203a8d9a0702439c24b9dad68e0c98d04d874b1f2a88e22b5087",
+      "worldserver.map": "2a0338c5add912e4f7f02dabde112781dc2759e476c9a02a7df59261ab600362",
+      "bnetserver.exe": "d2504834fda6d4c01d1eb46b413eacb8cc98dbcb161e0aa32b5b32545574bf64",
+      "bnetserver.map": "b866db4895a9008a867b137fa6d51e91e67693405aa627def47a5e92829569cf"
+    },
+    "remaining": [
+      "Actual99505 learned-kit encounter, initial aura/type display, animations, reserve-source behavior and client re-entry remain pending.",
+      "Ominitron1595 authentic producer/owner/cleanup and full99878 encounter/team variants remain OPEN; only two active species rows1817/1597 and1818/1670 observed by the current reader.",
+      "Other12 state183 source records/10 distinct abilities, Dark Rebirth794/795 state146/protected-window/penalty796, Haunt, Apocalypse, clone122/123/124 and generic159 remain OPEN.",
+      "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, LINK2/Slaghammer/mixed DBErrors, intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
+    ],
+    "next": "Continue actual native Ominitron1595/1597/1670 and other species183 callback data research, without inventing missing aura producers or enabling all passive semantics at once.",
+    "audit": "docs/audits/pet-roboflauge-2026-11-12.json",
+    "checks": {
+      "native": "48 real native cases in10 groups using actual AddPet, matching species/breed/quality states and Begin, four front/reserve source positions across both teams: initial source/three own marks/trusted root1/active-kit preservation; five real idle rounds without consuming active ability/cooldown; admitted/refused own swaps and opponent swap isolation; actual type damage and Mechanical racial/species preservation; absent recipient and oversized team count bounded to actual three slots; native accuracy failure retaining unrelated Elemental mark; unissued/stale/captured source refusal in both Cast/direct Execute; real final death after Mechanical reaction and finite cleanup; Mechanical once-only survival followed by correct renewal; no invented251/other183 activation. Memory-only actors, native stores/read-only Hotfix, no character writes or fake endpoint progress.",
+      "controls": "Complete pinned061c035 PetBattle.cpp+PetBattleAbilityEffect.cpp begin and swaps controls fail exact assertions with exit1. Fixed48 pass; four earlier no-mark AddPet/Begin observations are paired historical reproductions, not successful gameplay.",
+      "retained": "Current24 Frenzy,144 variance/all63 rows,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 linked scopes, entire pet proof chain, actual bounded source/roster/proc receipt and before-snapshot/before-actions ordering, unchanged writer PE and Scepter -VerifyReleaseBinary pass.",
+      "pe": "The160byte stack-free source predicate has no unwind record. General ins()64byte unknown-leaf limit is unchanged; this named predicate independently proves a <=512byte next-symbol bound, contiguous decode/padding, no call/stack frame and closed immediate-branch CFG before source/team/member checks. Original handler-table CFG bounds proof remains. Existing compiler register/slot/accumulator/snapshot lookups were updated to actual output; GetAura rematerialized and rejoins the one hit/add tail. Earlier failed lookups remain archived, paired with complete passing proofs.",
+      "harness": "Initial AddPet helper omitted Slot, so actual admission rejected the pets; my later print dereferenced a null entry and two private probes exited ACCESS_VIOLATION. Trace confirms Begin returned and fault occurred at that print. Corrected valid native slots plus immediate admission assertion complete. A linker MAP pragma was rejected withLNK4229 and removed; original traces/diagnostics preserved. These were test-helper errors, not claimed server crash reproductions. No crash report file was generated or hidden.",
+      "runtime": "Owned canonical PID2468 ready/shutdown0/exit0/gone, stderr empty. Known Scepter C4244/C4389 fixture warnings retained; no user/unknown server stopped.",
+      "packet": "Sender/writer source unchanged from Ward/Rot nine-path18-packet extracted-sender ASAN; current writer proof passes. Full native-core ASAN/client snapshot/render traversal is not claimed.",
+      "certificate": "Historical106/106 remains tied to cdca. Current5ef8 has listed focused/retained checks; no fresh full106 claim."
+    },
+    "cleanup": {
+      "status": "PASS",
+      "native_roboflauge_cases": 48,
+      "retained_native_cases": [
+        24,
+        144,
+        28,
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "5ef80e53915e203a8d9a0702439c24b9dad68e0c98d04d874b1f2a88e22b5087",
+        "worldserver.map": "2a0338c5add912e4f7f02dabde112781dc2759e476c9a02a7df59261ab600362",
+        "bnetserver.exe": "d2504834fda6d4c01d1eb46b413eacb8cc98dbcb161e0aa32b5b32545574bf64",
+        "bnetserver.map": "b866db4895a9008a867b137fa6d51e91e67693405aa627def47a5e92829569cf"
+      },
+      "archive_records": 600,
+      "removed": 63,
+      "removed_bytes": 722996660.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    }
+  },
   "latest_native_feathered_frenzy_repair_2026_11_12": {
     "status": "FEATHERED_FRENZY_NATIVE_FLYING_MARK_AND_LETHAL_BENEFITS_FIXED_DEPLOYED_CLIENT_PENDING",
     "fix_commit": "061c035c2190d283a83c62fbf17928cf5fb32292",
