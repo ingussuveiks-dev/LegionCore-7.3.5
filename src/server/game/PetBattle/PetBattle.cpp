@@ -1259,7 +1259,7 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                 if (currentPet->Health < 0)
                     currentPet->Health = 0;
 
-                if (ignoreAbandonPenalty && aborted && winnerTeamID != currentTeamID)
+                if (!ignoreAbandonPenalty && aborted && winnerTeamID != currentTeamID)
                     currentPet->Health = AddPct(currentPet->Health, -GetForfeitHealthPenalityPct());
 
                 if (winnerTeamID == currentTeamID && availablePetCount && BattleType == PETBATTLE_TYPE_PVE && currentPet->IsAlive() && currentPet->Level < BATTLEPET_MAX_LEVEL && FightedPets.find(currentPet->ID) != FightedPets.end())
