@@ -246,7 +246,7 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 220 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 221 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 222 */{&PetBattleAbilityEffect::HandleDamageRange,                PETBATTLE_TARGET_TARGET},
-    /* EFFECT 223 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
+    /* EFFECT 223 */{&PetBattleAbilityEffect::HandlePetTypeAura,                       PETBATTLE_TARGET_CASTER},
     /* EFFECT 224 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 225 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 226 */{&PetBattleAbilityEffect::HandleDamageWithBonus,            PETBATTLE_TARGET_TARGET},
@@ -1031,6 +1031,29 @@ bool PetBattleAbilityEffect::HandlePositiveAura()
     CalculateHit(EffectInfo->Param[1]);
 
     return AddAura(Target, EffectInfo->Param[2], 0);
+}
+
+bool PetBattleAbilityEffect::HandlePetTypeAura()
+{
+    if (EffectInfo->OrderIndex < 2)
+        return false;
+    uint32 otherSlot = EffectInfo->OrderIndex - 2;
+    auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
+    for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)
+    {
+        auto pet = team->TeamPets[slot];
+        if (!pet || pet->ID == Caster)
+            continue;
+        if (otherSlot--)
+            continue;
+        auto species = sBattlePetSpeciesStore.LookupEntry(pet->Species);
+        if (!pet->IsAlive() || !species || (EffectInfo->Param[3] && species->PetTypeEnum + 1 != EffectInfo->Param[3]))
+            return false;
+        Target = pet->ID;
+        CalculateHit(EffectInfo->Param[1]);
+        return AddAura(Target, EffectInfo->Param[2], 0);
+    }
+    return false;
 }
 
 bool PetBattleAbilityEffect::HandleHealPetType()

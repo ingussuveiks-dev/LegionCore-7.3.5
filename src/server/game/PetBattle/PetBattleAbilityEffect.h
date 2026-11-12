@@ -122,6 +122,7 @@ struct PetBattleAbilityEffect
     bool HandlePowerlessAura();
     bool HandleHealPercent();
     bool HandleHealPetType();
+    bool HandlePetTypeAura();
     bool HandleExtraAttack();
     bool HandleHealCasterPercentNotState();
     bool HandleDamagePercent();
