@@ -390,6 +390,9 @@ void WorldSession::HandlePetBattleRequestUpdate(WorldPackets::BattlePet::Request
 {
     auto battleRequest = sPetBattleSystem->GetRequest(packet.TargetGUID);
     auto opposant = ObjectAccessor::FindPlayer(packet.TargetGUID);
+    if (!battleRequest || battleRequest->OpponentGuid != _player->GetGUID() ||
+        battleRequest->RequestType != PETBATTLE_TYPE_PVP_DUEL)
+        return;
 
     if (!packet.Canceled && battleRequest && opposant)
     {
