@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Position.h"
 #include "ObjectAccessor.h"
+#include <limits>
 
 #define PETBATTLE_DELETE_INTERVAL (1 * 30 * IN_MILLISECONDS)
 #define PETBATTLE_LFB_INTERVAL 500
@@ -243,9 +244,11 @@ void PetBattleSystem::Update(uint32 diff)
             if (count > 0)
                 continue;
 
-            auto queuedTime = uint32(GameTime::GetGameTime() - ticket->JoinTime);
-            auto oldNumber = _LFBNumWaitTimeAvg++;
-            _LFBAvgWaitTime = int32((_LFBAvgWaitTime * oldNumber + queuedTime) / _LFBNumWaitTimeAvg);
+            auto elapsed = GameTime::GetGameTime() - ticket->JoinTime;
+            uint32 queuedTime = elapsed > 0 ? uint32(std::min<uint64>(elapsed, std::numeric_limits<int32>::max())) : 0;
+            uint64 samples = uint64(_LFBNumWaitTimeAvg) + 1;
+            _LFBAvgWaitTime = int32((uint64(_LFBAvgWaitTime) * _LFBNumWaitTimeAvg + queuedTime) / samples);
+            _LFBNumWaitTimeAvg = uint32(std::min<uint64>(samples, std::numeric_limits<uint32>::max()));
 
             switch (ticket->State)
             {
