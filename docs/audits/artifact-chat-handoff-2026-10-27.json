@@ -1,4 +1,70 @@
 {
+  "latest_native_final_owned_health_repair_2026_11_13": {
+    "status": "RESOLVED_PLAYER_OWNED_FINAL_DEATH_JOURNAL_HEALTH_FIXED_DEPLOYED_CLIENT_PENDING",
+    "fix_commit": "01c4ec15519061332b7d6d8f8eb2ef84edc19a22",
+    "canonical": {
+      "worldserver.exe": "5fd55f9f83fae5b1074395b5c2e4c03c17d47f2c2bec483dbb888771edf072bc",
+      "worldserver.map": "6bebde87cd6f19338f61b6f032cf74dc5b7657edc1d948ac8f889d459c259aee",
+      "bnetserver.exe": "ce1a9bc9f9567b9a3a6b7c116c3ef076b6ada0e6dc75a7823abb4dd0fbf62fe1",
+      "bnetserver.map": "7f8c11d0faecd906d53e569fd6a2870fcb1b5a4ece6d37b38af0c0a6bc1b3d34"
+    },
+    "remaining": [
+      "Actual client and offline/logout/disconnect paths remain pending as scoped above.",
+      "Crumble1586/1739 timer/self-death and immunity ordering,Haunt652/653 ghost/return,remaining six species183/five abilities,DarkRebirth794/795,Ominitron1595 producer,Apocalypse,clone122/123/124 and generic159 remain OPEN. Raw trainer-team rows do not establish live wild kits;actual Rocko wild cache is1811. Mixed research and unique probes remain outside fixed.",
+      "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+    ],
+    "next": "Continue actual native Crumble1586/1739 full producer/timer/recipient/death/retry observations against matching data;keep actual offline lifecycle and other unproven alternatives explicitly open.",
+    "audit": "docs/audits/pet-final-health-2026-11-13.json",
+    "checks": {
+      "native": "102 counted real linked native cases: six team/slot positions each exercise four final-dead Explode outcomes(win/loss/ordinary forfeit/ignored penalty),real owned journal needSave/Health,repeat Finish and actual CloneForBattle/AddPet re-entry;four living controls preserve80 or72 with ordinary10percent penalty;native lethal damage and pre-existing negative clamp;real291/723 Mechanical20HP;real291/724 still-alive Undead1HP;real1906/1907 delayed Cheat Death50HP;missing original journal;missing actual Player skip;NPC/unowned positive-health death remains unchanged;actual242 two-Process expiry already produces0 before Finish. All player/journal objects are memory-only;both database connections readonly and empty private TEMP login account prevents persistent destructor writes. Existing full native100 retains actual XP thresholds,wild cleanup,input/forfeit and terminal guard checks.",
+      "controls": "Two complete pinned31af6b87f PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail sacrifice/forfeit assertions with expected exit1;fixed102 pass. Twelve observations are historical reproductions,not corrected behavior.",
+      "fixture_corrections": "Initial bootstrap builds lacked the established Legion include directory and generated Althea shared bootstrap includes;new reusable Prepare-PetBattleOwnedNative extracts the same complete source/pinned helper blocks and actual native quest query. An attempted Undead-expiry counterfactual failed a fixture assumption: actual242 already zeros HP;corrected to a passing unchanged-path control,never claimed a demonstrated expiry bug. First fixed fixture addressed re-entry by old roster ID;actual AddPet compacts the new one-pet roster to team*3,so the assertion now follows its native new ID. Initial inspection assumed an exported UpdateOriginalInstance symbol;the compiler inlines it in Finish,which the final proof checks directly. An initial writer verifier path was nonexistent;actual round_bits verifier passes. Failed evidence is retained and does not count as ordinary passing runs.",
+      "retained": "112 Pound,120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Complete retained pet PE chain,both100 PE checks,actual new Finish/journal/sender proof and original3-bit/alignment writer proof pass. No new106 or full native-core ASAN claim.",
+      "pe": "Canonical actual RDI pet dead-state0x150 selects the Health0x60 zero store,alive nonnegative health skips it;established R9D0 is preserved. The real dead-state guard skips XP level-up healing directly to actual inlined OriginalBattlePet0x480;that code copies normalized Health and marks needSave. Actual SendBattlePetUpdates and SendPetBattleFinalRound remain,with the latter reading actual pet Health. Shared leaf/handler CFG helpers unchanged.",
+      "runtime": "Owned canonical PID4560 fresh ready/shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Current bnet native .text equals preceding rollback byte-for-byte;no separate fresh bnet start claim.",
+      "diagnostics": "Canonical and own pre/post crash/log inventories,exit status/stdout/stderr reviewed. No new/changed crashes,appended DBErrors or unexplained runtime errors/warnings/assertions. Full game build warning set is a subset of preceding Pound build after line normalization. Resolved build/fixture/proof failures retained separately.",
+      "client": "Actual client journal,death presentation,forfeit/re-entry and network disconnect/reconnect remain pending. A socket-free session exercises real methods but does not capture client-rendered final packets or durable DB round-trip."
+    },
+    "cleanup": {
+      "status": "PASS",
+      "native_final_health_cases": 102,
+      "retained_native_cases": [
+        112,
+        120,
+        78,
+        48,
+        24,
+        144,
+        28,
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "5fd55f9f83fae5b1074395b5c2e4c03c17d47f2c2bec483dbb888771edf072bc",
+        "worldserver.map": "6bebde87cd6f19338f61b6f032cf74dc5b7657edc1d948ac8f889d459c259aee",
+        "bnetserver.exe": "ce1a9bc9f9567b9a3a6b7c116c3ef076b6ada0e6dc75a7823abb4dd0fbf62fe1",
+        "bnetserver.map": "7f8c11d0faecd906d53e569fd6a2870fcb1b5a4ece6d37b38af0c0a6bc1b3d34"
+      },
+      "bnet_native_code_section_unchanged": true,
+      "archive_records": 647,
+      "removed": 80,
+      "removed_bytes": 961215889.0,
+      "older_owned_rollback_sets_removed": 1,
+      "recent_rollback_sets_retained": 3,
+      "historical106_binary_and_maps_retained": true,
+      "protected_evidence_configuration_and_rollback_unchanged": true,
+      "new_compiler_warnings": 0
+    },
+    "scope_and_open_alternatives": "Only actual resolved Player-owned Finish was repaired. Six missing-Player controls retain the existing skip,no fabricated offline journal update;actual disconnect/logout completion,persistence ordering and abandoned battle cleanup remain OPEN and are not certified by this repair. Six unowned/NPC death controls retain native positive intermediate health,avoiding a global rewrite of capture-threshold/full-health capture reward semantics. Actual successful capture persistence is outside this readonly test. Actual currently-alive Undead revival remains alive;no new retail policy for premature battle-end immortality is asserted."
+  },
   "latest_native_pound_repair_2026_11_13": {
     "status": "POUND1587_NATIVE_FRONT_BACKLINE_DAMAGE_FIXED_DEPLOYED_CLIENT_PENDING",
     "fix_commit": "31af6b87f4fdccca9bd3cb7ddf7a80dd0abef3d7",
