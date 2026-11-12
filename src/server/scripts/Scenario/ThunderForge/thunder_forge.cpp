@@ -3436,7 +3436,7 @@ public:
 
             bool operator()(WorldObject* target)
             {
-                return target->GetEntry() != NPC_SHA_AMALGAMATION || target->GetEntry() != NPC_SHA_FIEND || target->GetEntry() != NPC_SHA_BEAST;
+                return target->GetEntry() != NPC_SHA_AMALGAMATION && target->GetEntry() != NPC_SHA_FIEND && target->GetEntry() != NPC_SHA_BEAST;
             }
         };
     };
