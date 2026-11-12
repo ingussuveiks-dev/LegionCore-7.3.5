@@ -92,3 +92,20 @@ if sixth:
  rows=ins('?HandleProc@spell_sha_ancestral_guidance@');assert any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rcx')for x in rows[:25])and 114911 in values(rows)and len(sites(rows,'?CastCustomSpell@Unit@@'))==1,'Actual Guidance retains64bit heal/damage input before native percent conversion'
  rows=ins('?HandleHeal@spell_dk_death_strike_SpellScript@');at,=sites(rows,'?CastCustomSpell@Unit@@');assert any(x.mnemonic=='cmp'and x.op_str=='rdi, rcx'for x in rows[:at])and any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rdi')for x in rows[:at])and {45470,66188,137006,246426,48792}<=values(rows),'Actual DeathStrike chooses wide minimum/history andpreserves child,Frost andHeartOfIce gates'
  print('PASS linked sixth10:actual authored target IDs andAzerite queue,native64 Guardian/Shell/Halo/Penance/Chain/Guidance/DeathStrike calculations;ordinary effect accumulation remains separately scoped')
+seventh=[e for e in PLAN['changes']if e['batch']==7]
+if seventh:
+ methods={'cloudburst':'HandleHeal','mists':'HandleHeal','upkeep':'HandleHeal','hymn':'HandleOnHit','mend':'HandleHeal','covenant':'HandleHeal','atonement':'HandleOnHit','storm':'HandleHeal','shock':'HandleOnHit','saves':'HandleOnHit'}
+ for e in seventh:
+  rows=ins('?'+methods[e['case']]+'@'+e['cls']+'@');assert sites(rows,'?GetHitHeal64@SpellScript@@')and not sites(rows,'?GetHitHeal@SpellScript@@')and not sites(rows,'?SetHitHeal@SpellScript@@'),(e['key'],'actual native64 source channel')
+  if e['case']not in('mend','covenant'):assert sites(rows,'?SetHitHeal64@SpellScript@@'),(e['key'],'actual native64 result channel')
+ for cls in('spell_sha_cloudburst_heal','spell_sha_restorative_mists'):
+  rows=ins('?HandleHeal@'+cls+'@');assert any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and any(x.mnemonic=='test'and rows[i+1].mnemonic=='je'for i,x in enumerate(rows[:-1])),(cls,'real64 division retains nonzero recipient guard')
+ rows=ins('?HandleHeal@spell_sha_cumulative_upkeep@');assert sites(rows,'?GetAnyOwner@Unit@@')and {207362,208205}<=values(rows),'Actual native owner/trait/stacked aura admission retained'
+ rows=ins('?HandleOnHit@spell_pri_divine_hymn_SpellScript@');assert sites(rows,'?isRaidGroup@Group@@'),'Actual raid gate remains before doubled heal'
+ rows=ins('?HandleHeal@spell_pri_shadow_mend@');assert {193063,193065,187464,81749,214205,194384}<=values(rows),'Actual Masochism/penalty/Atonement alternatives retained'
+ rows=ins('?HandleHeal@spell_pri_shadow_covenant@');assert {219518,219521}<=values(rows),'Actual Covenant passive andabsorb child retained'
+ rows=ins('?HandleOnHit@spell_pri_atonement_heal@');assert {197815,81782}<=values(rows)and sites(rows,'?IsCritForTarget@Spell@@'),'Actual own Barrier andcrit alternatives retained'
+ rows=ins('?HandleHeal@spell_pal_healing_storm@');assert sites(rows,'?GetOwner@Unit@@')and 186788 in values(rows),'Actual image owner/Highlord trait retained'
+ rows=ins('?HandleOnHit@spell_pal_holy_shock_heal_SpellScript@');assert 200657 in values(rows),'Actual one-use SilverHand aura retained'
+ rows=ins('?HandleOnHit@spell_pal_the_light_saves_SpellScript@');assert {53563,156910,200025,200423}<=values(rows),'Actual3owned Beacon variants andone-use LightSaves buff retained'
+ print('PASS linked seventh10:native64 recipient splitting andowner/raid/trait/critical/one-use healing modifiers;allfirst60 linked checks retained')

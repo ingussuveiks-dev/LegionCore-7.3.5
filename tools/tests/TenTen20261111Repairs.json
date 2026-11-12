@@ -1605,6 +1605,233 @@
           "count": 1
         }
       ]
+    },
+    {
+      "key": "CloudburstSplitHealWidth",
+      "title": "Split the full native64 Cloudburst pool between selected injured allies",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 61,
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ],
+      "cls": "spell_sha_cloudburst_heal",
+      "case": "cloudburst",
+      "binding": "spell_sha_cloudburst_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_shaman.cpp",
+          "old": "class spell_sha_cloudburst_heal : public SpellScript\n{\n    PrepareSpellScript(spell_sha_cloudburst_heal);\n\n    uint32 targetCount = 0;\n\n    void CountTargets(std::list<WorldObject*>& targets)\n    {\n        targets.remove_if([](WorldObject* object)\n        {\n            Unit* unit = object ? object->ToUnit() : nullptr;\n            return !unit || unit->IsFullHealth();\n        });\n\n        targetCount = uint32(targets.size());\n    }\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (targetCount)\n            SetHitHeal(GetHitHeal() / targetCount);\n    }\n\n    void Register() override\n    {\n        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_cloudburst_heal::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);\n        OnEffectHitTarget += SpellEffectFn(spell_sha_cloudburst_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_sha_cloudburst_heal : public SpellScript\n{\n    PrepareSpellScript(spell_sha_cloudburst_heal);\n\n    uint32 targetCount = 0;\n\n    void CountTargets(std::list<WorldObject*>& targets)\n    {\n        targets.remove_if([](WorldObject* object)\n        {\n            Unit* unit = object ? object->ToUnit() : nullptr;\n            return !unit || unit->IsFullHealth();\n        });\n\n        targetCount = uint32(targets.size());\n    }\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (targetCount)\n            SetHitHeal64(GetHitHeal64() / targetCount);\n    }\n\n    void Register() override\n    {\n        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_cloudburst_heal::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);\n        OnEffectHitTarget += SpellEffectFn(spell_sha_cloudburst_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "RestorativeMistsSplitWidth",
+      "title": "Split the full native64 Restorative Mists heal between actual recipients",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 62,
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ],
+      "cls": "spell_sha_restorative_mists",
+      "case": "mists",
+      "binding": "spell_sha_restorative_mists",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_shaman.cpp",
+          "old": "class spell_sha_restorative_mists : public SpellScript\n{\n    PrepareSpellScript(spell_sha_restorative_mists);\n\n    uint32 targetCount = 0;\n\n    void CountTargets(std::list<WorldObject*>& targets)\n    {\n        targetCount = uint32(targets.size());\n    }\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (targetCount)\n            SetHitHeal(GetHitHeal() / targetCount);\n    }\n\n    void Register() override\n    {\n        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_restorative_mists::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);\n        OnEffectHitTarget += SpellEffectFn(spell_sha_restorative_mists::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_sha_restorative_mists : public SpellScript\n{\n    PrepareSpellScript(spell_sha_restorative_mists);\n\n    uint32 targetCount = 0;\n\n    void CountTargets(std::list<WorldObject*>& targets)\n    {\n        targetCount = uint32(targets.size());\n    }\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (targetCount)\n            SetHitHeal64(GetHitHeal64() / targetCount);\n    }\n\n    void Register() override\n    {\n        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_restorative_mists::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);\n        OnEffectHitTarget += SpellEffectFn(spell_sha_restorative_mists::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "CumulativeUpkeepHealWidth",
+      "title": "Preserve native64 Healing Tide input through Cumulative Upkeep bonuses",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 63,
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ],
+      "cls": "spell_sha_cumulative_upkeep",
+      "case": "upkeep",
+      "binding": "spell_sha_cumulative_upkeep",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_shaman.cpp",
+          "old": "class spell_sha_cumulative_upkeep : public SpellScript\n{\n    PrepareSpellScript(spell_sha_cumulative_upkeep);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* totem = GetCaster();\n        Unit* target = GetHitUnit();\n        Unit* owner = totem ? totem->GetAnyOwner() : nullptr;\n        if (!owner || !target || !owner->HasAura(207362))\n            return;\n\n        if (Aura* aura = target->GetAura(208205, owner->GetGUID()))\n        {\n            float heal = GetHitHeal();\n            AddPct(heal, aura->GetEffect(EFFECT_0)->GetAmount() * aura->GetStackAmount());\n            SetHitHeal(heal);\n        }\n\n        owner->CastSpell(target, 208205, true);\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_sha_cumulative_upkeep::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_sha_cumulative_upkeep : public SpellScript\n{\n    PrepareSpellScript(spell_sha_cumulative_upkeep);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* totem = GetCaster();\n        Unit* target = GetHitUnit();\n        Unit* owner = totem ? totem->GetAnyOwner() : nullptr;\n        if (!owner || !target || !owner->HasAura(207362))\n            return;\n\n        if (Aura* aura = target->GetAura(208205, owner->GetGUID()))\n        {\n            float heal = GetHitHeal64();\n            AddPct(heal, aura->GetEffect(EFFECT_0)->GetAmount() * aura->GetStackAmount());\n            SetHitHeal64(HealingAmount::FromFloat(heal));\n        }\n\n        owner->CastSpell(target, 208205, true);\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_sha_cumulative_upkeep::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "DivineHymnHealWidth",
+      "title": "Preserve native64 Divine Hymn healing and its non-raid doubling",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 64,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_divine_hymn_SpellScript",
+      "case": "hymn",
+      "binding": "spell_pri_divine_hymn",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_divine_hymn_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pri_divine_hymn_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                    if (Player* _player = caster->ToPlayer())\n                        if (Group* group = _player->GetGroup())\n                            if (group->isRaidGroup())\n                                return;\n\n                SetHitHeal(GetHitHeal() * 2);\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pri_divine_hymn_SpellScript::HandleOnHit);\n            }\n        }",
+          "new": "class spell_pri_divine_hymn_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pri_divine_hymn_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                    if (Player* _player = caster->ToPlayer())\n                        if (Group* group = _player->GetGroup())\n                            if (group->isRaidGroup())\n                                return;\n\n                uint64 heal = GetHitHeal64();\n                SetHitHeal64(HealingAmount::Add(heal, heal));\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pri_divine_hymn_SpellScript::HandleOnHit);\n            }\n        }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "ShadowMendChildHealWidth",
+      "title": "Derive Shadow Mend child values from the full native64 heal",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 65,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_shadow_mend",
+      "case": "mend",
+      "binding": "spell_pri_shadow_mend",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_shadow_mend: public SpellScript\n{\n    PrepareSpellScript(spell_pri_shadow_mend);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (Unit* caster = GetCaster())\n        {\n            if (Unit* target = GetHitUnit())\n            {\n                float bp0 = GetHitHeal() / 20.f;\n                float bp1 = GetHitHeal() / 2.f;\n\n                if (caster->HasAura(81749) && !caster->HasAura(214205))\n                    caster->CastSpell(target, 194384, true);\n\n                if (caster->GetGUID() == target->GetGUID() && caster->HasAura(193063)) // Masochism\n                {\n                    caster->CastCustomSpell(caster, 193065, &bp0, nullptr, nullptr, true);\n                    return;\n                }\n\n                if (target->isInCombat())\n                {\n                    if (AuraEffect const* tamingTheShadows = caster->GetAuraEffect(197779, EFFECT_0))\n                        if (roll_chance_i(tamingTheShadows->GetAmount()))\n                            return;\n\n                    caster->CastCustomSpell(target, 187464, &bp1, nullptr, nullptr, true); // send penalty proc dmg\n                }\n            }\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pri_shadow_mend::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_pri_shadow_mend: public SpellScript\n{\n    PrepareSpellScript(spell_pri_shadow_mend);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (Unit* caster = GetCaster())\n        {\n            if (Unit* target = GetHitUnit())\n            {\n                float bp0 = GetHitHeal64() / 20.f;\n                float bp1 = GetHitHeal64() / 2.f;\n\n                if (caster->HasAura(81749) && !caster->HasAura(214205))\n                    caster->CastSpell(target, 194384, true);\n\n                if (caster->GetGUID() == target->GetGUID() && caster->HasAura(193063)) // Masochism\n                {\n                    caster->CastCustomSpell(caster, 193065, &bp0, nullptr, nullptr, true);\n                    return;\n                }\n\n                if (target->isInCombat())\n                {\n                    if (AuraEffect const* tamingTheShadows = caster->GetAuraEffect(197779, EFFECT_0))\n                        if (roll_chance_i(tamingTheShadows->GetAmount()))\n                            return;\n\n                    caster->CastCustomSpell(target, 187464, &bp1, nullptr, nullptr, true); // send penalty proc dmg\n                }\n            }\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pri_shadow_mend::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "ShadowCovenantAbsorbWidth",
+      "title": "Derive Shadow Covenant absorption from the full native64 heal",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 66,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_shadow_covenant",
+      "case": "covenant",
+      "binding": "spell_pri_shadow_covenant",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_shadow_covenant : public SpellScript\n{\n    PrepareSpellScript(spell_pri_shadow_covenant);\n\n    void FilterTargets(std::list<WorldObject*>& targets)\n    {\n        Unit* explicitTarget = GetExplTargetUnit();\n        uint32 maxTargets = GetSpellInfo()->Effects[EFFECT_2]->CalcValue(GetCaster());\n        if (!maxTargets || targets.size() <= maxTargets)\n            return;\n\n        targets.sort([explicitTarget](WorldObject* left, WorldObject* right)\n        {\n            if (left == explicitTarget)\n                return true;\n            if (right == explicitTarget)\n                return false;\n\n            Unit* leftUnit = left ? left->ToUnit() : nullptr;\n            Unit* rightUnit = right ? right->ToUnit() : nullptr;\n            if (!leftUnit || !rightUnit)\n                return leftUnit != nullptr;\n\n            return leftUnit->GetHealthPct() < rightUnit->GetHealthPct();\n        });\n        targets.resize(maxTargets);\n    }\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* caster = GetCaster();\n        Unit* target = GetHitUnit();\n        if (!caster || !target)\n            return;\n\n        int32 absorbPct = 0;\n        if (AuraEffect const* effect = caster->GetAuraEffect(219518, EFFECT_0))\n            absorbPct = effect->GetAmount();\n        else if (SpellInfo const* passive = sSpellMgr->GetSpellInfo(219518))\n            absorbPct = passive->Effects[EFFECT_0]->CalcValue(caster);\n\n        if (absorbPct > 0)\n        {\n            float absorb = CalculatePct(GetHitHeal(), absorbPct);\n            caster->CastCustomSpell(target, 219521, &absorb, nullptr, nullptr, true);\n        }\n    }\n\n    void Register() override\n    {\n        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_shadow_covenant::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);\n        OnEffectHitTarget += SpellEffectFn(spell_pri_shadow_covenant::HandleHeal, EFFECT_1, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_pri_shadow_covenant : public SpellScript\n{\n    PrepareSpellScript(spell_pri_shadow_covenant);\n\n    void FilterTargets(std::list<WorldObject*>& targets)\n    {\n        Unit* explicitTarget = GetExplTargetUnit();\n        uint32 maxTargets = GetSpellInfo()->Effects[EFFECT_2]->CalcValue(GetCaster());\n        if (!maxTargets || targets.size() <= maxTargets)\n            return;\n\n        targets.sort([explicitTarget](WorldObject* left, WorldObject* right)\n        {\n            if (left == explicitTarget)\n                return true;\n            if (right == explicitTarget)\n                return false;\n\n            Unit* leftUnit = left ? left->ToUnit() : nullptr;\n            Unit* rightUnit = right ? right->ToUnit() : nullptr;\n            if (!leftUnit || !rightUnit)\n                return leftUnit != nullptr;\n\n            return leftUnit->GetHealthPct() < rightUnit->GetHealthPct();\n        });\n        targets.resize(maxTargets);\n    }\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* caster = GetCaster();\n        Unit* target = GetHitUnit();\n        if (!caster || !target)\n            return;\n\n        int32 absorbPct = 0;\n        if (AuraEffect const* effect = caster->GetAuraEffect(219518, EFFECT_0))\n            absorbPct = effect->GetAmount();\n        else if (SpellInfo const* passive = sSpellMgr->GetSpellInfo(219518))\n            absorbPct = passive->Effects[EFFECT_0]->CalcValue(caster);\n\n        if (absorbPct > 0)\n        {\n            float absorb = float(HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), absorbPct)));\n            caster->CastCustomSpell(target, 219521, &absorb, nullptr, nullptr, true);\n        }\n    }\n\n    void Register() override\n    {\n        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_shadow_covenant::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);\n        OnEffectHitTarget += SpellEffectFn(spell_pri_shadow_covenant::HandleHeal, EFFECT_1, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "AtonementHealWidth",
+      "title": "Preserve native64 Atonement through Barrier and critical-heal adjustments",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 67,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_atonement_heal",
+      "case": "atonement",
+      "binding": "spell_pri_atonement_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_atonement_heal : public SpellScript\n{\n    PrepareSpellScript(spell_pri_atonement_heal);\n\n    void HandleOnHit(SpellEffIndex /*effIndex*/)\n    {\n        auto caster = GetCaster();\n        auto target = GetHitUnit();\n        if (!caster || !target)\n            return;\n\n        if (AuraEffect const* barrierForTheDevoted = caster->GetAuraEffect(197815, EFFECT_0))\n            if (target->HasAura(81782, caster->GetGUID()))\n                SetHitHeal(GetHitHeal() + CalculatePct(GetHitHeal(), barrierForTheDevoted->GetAmount()));\n\n        if (GetSpell()->IsCritForTarget(target))\n        {\n            float mod = caster->CanPvPScalar() ? 0.75f : 0.5f;\n            SetHitHeal(GetHitHeal() * mod);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pri_atonement_heal::HandleOnHit, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_pri_atonement_heal : public SpellScript\n{\n    PrepareSpellScript(spell_pri_atonement_heal);\n\n    void HandleOnHit(SpellEffIndex /*effIndex*/)\n    {\n        auto caster = GetCaster();\n        auto target = GetHitUnit();\n        if (!caster || !target)\n            return;\n\n        if (AuraEffect const* barrierForTheDevoted = caster->GetAuraEffect(197815, EFFECT_0))\n            if (target->HasAura(81782, caster->GetGUID()))\n                SetHitHeal64(HealingAmount::Add(GetHitHeal64(), HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), barrierForTheDevoted->GetAmount()))));\n\n        if (GetSpell()->IsCritForTarget(target))\n        {\n            float mod = caster->CanPvPScalar() ? 0.75f : 0.5f;\n            SetHitHeal64(HealingAmount::Apply(GetHitHeal64(), 0, mod));\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pri_atonement_heal::HandleOnHit, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "HealingStormEchoHealWidth",
+      "title": "Preserve the full native64 Healing Storm input in Highlord echoes",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 68,
+      "paths": [
+        "src/server/scripts/Spells/spell_paladin.cpp"
+      ],
+      "cls": "spell_pal_healing_storm",
+      "case": "storm",
+      "binding": "spell_pal_healing_storm",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_paladin.cpp",
+          "old": "#include \"ScriptMgr.h\"",
+          "new": "#include \"ScriptMgr.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_paladin.cpp",
+          "old": "class spell_pal_healing_storm : public SpellScript\n{\n    PrepareSpellScript(spell_pal_healing_storm);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (Unit* owner = GetCaster()->GetOwner())\n            if (AuraEffect const* echo = owner->GetAuraEffect(EchoOfTheHighlord, EFFECT_0))\n                SetHitHeal(CalculatePct(GetHitHeal(), echo->GetAmount()));\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pal_healing_storm::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_pal_healing_storm : public SpellScript\n{\n    PrepareSpellScript(spell_pal_healing_storm);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (Unit* owner = GetCaster()->GetOwner())\n            if (AuraEffect const* echo = owner->GetAuraEffect(EchoOfTheHighlord, EFFECT_0))\n                SetHitHeal64(HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), echo->GetAmount())));\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pal_healing_storm::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 1
+    },
+    {
+      "key": "HolyShockSilverHandHealWidth",
+      "title": "Add Silver Hand healing to the full native64 Holy Shock amount",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 69,
+      "paths": [
+        "src/server/scripts/Spells/spell_paladin.cpp"
+      ],
+      "cls": "spell_pal_holy_shock_heal_SpellScript",
+      "case": "shock",
+      "binding": "spell_pal_holy_shock_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_paladin.cpp",
+          "old": "class spell_pal_holy_shock_heal_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pal_holy_shock_heal_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                    if (AuraEffect const* aurEff = caster->GetAuraEffect(200657, EFFECT_0)) // Power of the Silver Hand\n                    {\n                        SetHitHeal(GetHitHeal() + aurEff->GetAmount());\n                        aurEff->GetBase()->Remove();\n                    }\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pal_holy_shock_heal_SpellScript::HandleOnHit);\n            }\n        }",
+          "new": "class spell_pal_holy_shock_heal_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pal_holy_shock_heal_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                    if (AuraEffect const* aurEff = caster->GetAuraEffect(200657, EFFECT_0)) // Power of the Silver Hand\n                    {\n                        SetHitHeal64(HealingAmount::ApplySpellMod(GetHitHeal64(), aurEff->GetAmount(), 1.0f));\n                        aurEff->GetBase()->Remove();\n                    }\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pal_holy_shock_heal_SpellScript::HandleOnHit);\n            }\n        }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "TheLightSavesHealWidth",
+      "title": "Apply The Light Saves to native64 heals while retaining owned Beacon admission",
+      "kind": "heal_channel",
+      "batch": 7,
+      "index": 70,
+      "paths": [
+        "src/server/scripts/Spells/spell_paladin.cpp"
+      ],
+      "cls": "spell_pal_the_light_saves_SpellScript",
+      "case": "saves",
+      "binding": "spell_pal_the_light_saves",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_paladin.cpp",
+          "old": "class spell_pal_the_light_saves_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pal_the_light_saves_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    Unit* target = GetHitUnit();\n                    if (!target)\n                        return;\n\n                    ObjectGuid casterGuid = caster->GetGUID();\n                    if (!target->HasAura(BeaconOfLight, casterGuid)\n                        && !target->HasAura(BeaconOfFaith, casterGuid)\n                        && !target->HasAura(BeaconOfVirtue, casterGuid))\n                        return;\n\n                    if (AuraEffect const* aurEff = caster->GetAuraEffect(TheLightSavesBuff, EFFECT_0)) // The Light Saves\n                    {\n                        SetHitHeal(GetHitHeal() + CalculatePct(GetHitHeal(), aurEff->GetAmount()));\n                        aurEff->GetBase()->Remove();\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pal_the_light_saves_SpellScript::HandleOnHit);\n            }\n        }",
+          "new": "class spell_pal_the_light_saves_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pal_the_light_saves_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    Unit* target = GetHitUnit();\n                    if (!target)\n                        return;\n\n                    ObjectGuid casterGuid = caster->GetGUID();\n                    if (!target->HasAura(BeaconOfLight, casterGuid)\n                        && !target->HasAura(BeaconOfFaith, casterGuid)\n                        && !target->HasAura(BeaconOfVirtue, casterGuid))\n                        return;\n\n                    if (AuraEffect const* aurEff = caster->GetAuraEffect(TheLightSavesBuff, EFFECT_0)) // The Light Saves\n                    {\n                        SetHitHeal64(HealingAmount::Add(GetHitHeal64(), HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), aurEff->GetAmount()))));\n                        aurEff->GetBase()->Remove();\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pal_the_light_saves_SpellScript::HandleOnHit);\n            }\n        }",
+          "count": 1
+        }
+      ]
     }
   ],
   "excluded_candidates": [

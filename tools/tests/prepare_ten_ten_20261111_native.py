@@ -74,3 +74,17 @@ if sixth:
   if e['case']=='deathstrike':body=body.replace('caster->CastCustomSpell(caster, SPELL_DK_DEATH_STRIKE_HEAL, &heal, nullptr, nullptr, true);','ObserveSixHeal(caster, caster, SPELL_DK_DEATH_STRIKE_HEAL, heal);')
   text+=body+';\n'
  text+='}\n';(out/'TenTenSixthNative.inc').write_text(text,encoding='utf8');print('Prepared sixth actual classes/native IDs and battleground create hook;only specified cast/animation/capture endpoints observed')
+seventh=[e for e in PLAN['changes']if e['batch']==7]
+if seventh:
+ assert len(seventh)==10
+ definitions=(ROOT/'src/server/scripts/Spells/spell_paladin.cpp').read_text();labels=['EchoOfTheHighlord','BeaconOfLight','BeaconOfFaith','BeaconOfVirtue','TheLightSavesBuff']
+ text='struct SeventhBinding{char const*name;};static SeventhBinding seventhBindings[]={'+','.join('{"'+e['binding']+'"}'for e in seventh)+'};\nnamespace SeventhNative{enum{'+','.join(label+'='+re.search(r'\b'+label+r'\s*=\s*(\d+)',definitions)[1]for label in labels)+'};\n'
+ for e in seventh:
+  body=e['edits'][e.get('class_edit_index',0)]['new']
+  if e['case']=='upkeep':body=body.replace('owner->CastSpell(target, 208205, true);','ObserveProtection(owner, target, 208205, true);')
+  if e['case']=='mend':
+   for target,id_,bp in [('caster','193065','bp0'),('target','187464','bp1')]:
+    before=f'caster->CastCustomSpell({target}, {id_}, &{bp}, nullptr, nullptr, true);';assert before in body;body=body.replace(before,f'ObserveSixHeal(caster, {target}, {id_}, {bp});')
+  if e['case']=='covenant':body=body.replace('caster->CastCustomSpell(target, 219521, &absorb, nullptr, nullptr, true);','ObserveSixHeal(caster, target, 219521, absorb);')
+  text+=body+';\n'
+ text+='}\n';(out/'TenTenSeventhNative.inc').write_text(text,encoding='utf8');print('Prepared ten seventh actual classes/native trait IDs;only optional refresh/child casts observed')
