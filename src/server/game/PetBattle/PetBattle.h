@@ -210,6 +210,7 @@ enum BattlePetState
     BATTLEPET_STATE_Cosmetic_Chaos                  = 158,
     BATTLEPET_STATE_Passive_Boss                    = 162,
     BATTLEPET_STATE_Cosmetic_TreasureGoblin         = 176,
+    BATTLEPET_STATE_Internal_SpeciesAbility        = 183,
     BATTLEPET_STATE_Ignore_Damage_Below_Threshold   = 191,
     BATTLEPET_STATE_Cosmetic_Spectral_Blue          = 196,
     BATTLEPET_STATE_Special_Egg                     = 199,
@@ -569,6 +570,7 @@ public:
     bool AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 p_MaxAllowed, uint32 fromAbilityEffectID, uint32 flags);
     void SetPetState(uint32 sourcePetID, uint32 targetPetID, uint32 fromAbilityEffectID, uint32 stateID, int32 value, bool fromCapture = false, uint32 flags = 0);
     bool RefreshPetTypeOverride(uint32 sourcePetID, uint32 targetPetID);
+    bool IsRoboflaugeSource(uint32 petID) const;
     void Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, bool fromCapture = false, uint32 flags = 0);
     void Catch(int8 p_Catcher, int8 p_CatchedTarget, uint32 fromAbilityEffectID);
 

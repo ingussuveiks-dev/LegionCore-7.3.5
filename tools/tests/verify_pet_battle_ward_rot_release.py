@@ -13,12 +13,12 @@ for cmp in [('cmp','edx, 6'),('cmp','esi, 6')]:
  branch=refresh[gate+1];assert branch.mnemonic=='jae'
  assert refresh[write].address not in reaches(refresh,branch.operands[0].imm)
 handler=ins('?HandleDefensiveTypeAura@PetBattleAbilityEffect@@')
-lookup=next(i for i,x in enumerate(handler)if(x.mnemonic,x.op_str)==('mov','rcx, qword ptr [rbx + 0x10]'))
+lookup,=sites(handler,'?GetAura@PetBattleAbilityEffect@@')
 hit,=sites(handler,'?CalculateHit@PetBattleAbilityEffect@@');add,=sites(handler,'?AddAura@PetBattleAbilityEffect@@')
-assert lookup<hit<add
-assert {('test','dword ptr [rcx + 0x44], 0x29a'),('cmp','word ptr [r9 + 0x12], 0x7c'),('cmp','word ptr [r9 + 0x10], 0'),('cmp','ecx, 0x23e'),('cmp','ecx, 0x1dc'),('mov','r8d, 0x334'),('mov','r8d, 0x58a')}<=set(pairs(handler[:lookup]))
-assert {('mov','r10d, dword ptr [rbx + 0x3c]'),('mov','rcx, qword ptr [rcx + 0x148]'),('cmp','byte ptr [rdx + 0x20], 0'),('cmp','dword ptr [rdx + 0xc], r10d'),('cmp','dword ptr [rdx], r8d'),('test','rdx, rdx'),('mov','eax, dword ptr [rbx + 0x1c]'),('cmp','dword ptr [rdx + 8], eax')}<=set(pairs(handler[lookup:hit])),'Actual inlined GetAura scans unexpired real holder/ability and retains original source guard'
-gate=next(i for i,x in enumerate(handler[:hit])if(x.mnemonic,x.op_str)==('cmp','dword ptr [rdx + 8], eax'))
+assert hit<add and handler[hit].address in reaches(handler,handler[lookup+1].address),'Real parent lookup rejoins the one native hit/add tail'
+assert {('test','dword ptr [rcx + 0x44], 0x29a'),('cmp','word ptr [rdi + 0x12], 0x7c'),('cmp','word ptr [rdi + 0x10], 0'),('cmp','ecx, 0x23e'),('cmp','ecx, 0x1dc'),('mov','r8d, 0x334'),('mov','r8d, 0x58a'),('mov','edx, dword ptr [rbx + 0x3c]')}<=set(pairs(handler[:lookup]))
+assert {('test','rax, rax'),('mov','ecx, dword ptr [rbx + 0x1c]'),('cmp','dword ptr [rax + 8], ecx')}<=set(pairs(handler[lookup:])),'Actual native GetAura result retains original source guard'
+gate=next(i for i,x in enumerate(handler)if(x.mnemonic,x.op_str)==('cmp','dword ptr [rax + 8], ecx'))
 assert handler[gate+1].mnemonic=='jne'and handler[hit].address not in reaches(handler,handler[gate+1].operands[0].imm)
 execute=ins('?Execute@PetBattleAbilityEffect@@')
 table=next(x.address+x.size+x.operands[1].mem.disp for x in execute if x.mnemonic=='lea'and x.op_str.startswith('r12, [rip')and x.operands[1].type==CS_OP_MEM)
@@ -33,7 +33,7 @@ assert {('mov','rax, qword ptr [rbx + 0x28]'),('mov','qword ptr [rbx + 0x30], ra
 reset=ins('?HandleResetState@PetBattleAbilityEffect@@');call,=sites(reset,'?RefreshPetTypeOverride@PetBattle@@')
 assert ('cmp','edx, 0x7c')in pairs(reset[:call]) and sites(reset,'?SetState@PetBattleAbilityEffect@@')
 rounds=ins('?ProceedRound@PetBattle@@')
-calls=sites(rounds,'?Cast@PetBattle@@');start=next(i for i in calls if('mov','dword ptr [rsp + 0x20], 6')in pairs(rounds[i-9:i]))
+calls=sites(rounds,'?Cast@PetBattle@@');start=next(i for i in calls if{('mov','dword ptr [rsp + 0x20], 6'),('mov','r8d, dword ptr [rdx]')}<=set(pairs(rounds[i-9:i])))
 assert {('cmp','dword ptr [rax], 0x58a'),('cmp','byte ptr [rdx + 0x20], 0'),('mov','eax, dword ptr [rdx + 0xc]'),('mov','dword ptr [rsp + 0x30], eax'),('mov','edx, dword ptr [rdx + 8]')}<=set(pairs(rounds[:start]))
 ordinary=sites(rounds,'?DoCasts@PetBattleTeam@@');assert len([i for i in ordinary if i>start])>=2
 remove=ins('?HandleRemoveAura@PetBattleAbilityEffect@@')

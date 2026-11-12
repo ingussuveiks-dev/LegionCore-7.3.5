@@ -3,13 +3,13 @@ from verify_pet_battle_lifecycle_release import ins,sites,values,pairs,reaches,n
 import hashlib,json
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 assert {282,663,836,1025,68,24}<=values(selector)
-assert {('cmp','esi, 6'),('mov','esi, dword ptr [rax + 0x70]'),('test','rcx, rcx')}<=set(pairs(selector))
+assert {('mov','edx, dword ptr [rdx + 0x70]'),('mov','rcx, rbx')}<=set(pairs(selector))
 slot=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','eax, 0x401'))
-assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','word ptr [r8 + 6], 0x18')
+assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','word ptr [rcx + 6], 0x18')
 # The compiler merges the two roster selectors' target-admission tail.
 addresses=reaches(selector,selector[slot+4].address)
 roster=[x for x in selector if x.address in addresses]
-assert {('movzx','r9d, byte ptr [r8 + 0x14]'),('dec','r9d'),('cmp','r9d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(roster))
+assert {('movzx','r8d, byte ptr [rcx + 0x14]'),('dec','r8d'),('cmp','r8d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(roster))
 assert len(sites(roster,'?AddTarget@PetBattleAbilityEffect@@'))==1
 admission=ins('?AddTarget@PetBattleAbilityEffect@@QEAA_NI@Z')
 assert {('cmp','edx, 6'),('test','rcx, rcx')}<=set(pairs(admission[:16]))
@@ -32,8 +32,8 @@ assert body[kill].address not in reaches(body,branch.operands[0].imm)
 cast=ins('?Cast@PetBattle@@')
 select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@')
 assert {282,663,836,1025}<=values(cast[:select])
-assert {('mov','bl, 1'),('mov','byte ptr [rsp + 0x43], bl'),('cmp','esi, 0xff'),('cmp','r14d, ebx'),('cmp','dword ptr [r10 + 0x150], 0')}<=set(pairs(cast[:select]))
+assert {('mov','r8b, 1'),('mov','byte ptr [rsp + 0x43], r8b'),('cmp','r12d, 0xff'),('cmp','ebx, 1'),('cmp','dword ptr [rsi + 0x150], 0')}<=set(pairs(cast[:select]))
 execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@');flow=cast[execute:execute+52]
-assert {('movzx','r9d, byte ptr [rsp + 0x43]'),('movzx','edx, byte ptr [rsp + 0x42]'),('cmp','ax, 0x18'),('cmp','ax, 0x44'),('cmp','byte ptr [rbp - 0x31], 0'),('test','dl, dl'),('cmp','dword ptr [r8 + 0x84], 3')}<=set(pairs(flow))
+assert {('movzx','r8d, byte ptr [rsp + 0x43]'),('movzx','edx, byte ptr [rsp + 0x42]'),('cmp','ax, 0x18'),('cmp','ax, 0x44'),('cmp','byte ptr [rbp - 0x31], 0'),('test','dl, dl'),('cmp','dword ptr [r11 + 0x84], 3')}<=set(pairs(flow))
 print('PASS actual linked four-sacrifice enemy/roster admission, no second power scaling, user-only terminal/native immunity/282+1025Failsafe prohibition and scoped lethal-row continuation; retained native racial proof also passes')
 print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'abilities':[282,663,836,1025],'actual_native_cases':44}))

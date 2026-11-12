@@ -2,7 +2,7 @@
 from verify_pet_battle_unholy_ascension_release import ins,sites,pairs,reaches,n
 import hashlib,json
 cast=ins('?Cast@PetBattle@@');select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@')
-assert {('movsxd','r11, dword ptr [rbp + 0x7f]'),('mov','r9d, r8d'),('cmp','r8d, 0x770'),('cmp','esi, 0xa'),('test','r14d, r14d'),('cmp','r11d, 5'),('cmp','dword ptr [rcx + 0x70], r11d'),('cmp','byte ptr [rdx + 0x20], 0'),('mov','ebx, dword ptr [rbp + 0x5f]'),('cmp','dword ptr [rdx], ebx'),('cmp','dword ptr [rdx + 8], r12d'),('cmp','dword ptr [rdx + 0xc], r11d'),('mov','dword ptr [rbp - 0x25], r11d')}<=set(pairs(cast[:select]))
+assert {('movsxd','r14, dword ptr [rbp + 0x7f]'),('mov','r10d, r8d'),('cmp','r8d, 0x770'),('cmp','r12d, 0xa'),('test','r9d, r9d'),('cmp','r14d, 5'),('cmp','dword ptr [rcx + 0x70], r14d'),('cmp','byte ptr [rdx + 0x20], 0'),('mov','r10d, dword ptr [rbp + 0x5f]'),('cmp','dword ptr [rdx], r10d'),('cmp','dword ptr [rdx + 8], r15d'),('cmp','dword ptr [rdx + 0xc], r14d'),('mov','dword ptr [rbp - 0x25], eax')}<=set(pairs(cast[:select]))
 positive=ins('?HandlePositiveAura@PetBattleAbilityEffect@@');remove=ins('?HandleRemoveAura@PetBattleAbilityEffect@@')
 for body in (positive,remove):
  hit,=sites(body,'?CalculateHit@PetBattleAbilityEffect@@')
@@ -11,10 +11,10 @@ for body in (positive,remove):
  assert body[hit].address not in reaches(body,branch.operands[0].imm),'Native zero accuracy must skip the hit roll'
 assert ('test','dword ptr [r12 + 0x44], 0x29a')in pairs(remove),'Native removal retains existing failure flags'
 swap=ins('?SwapPet@PetBattle@@')
-assert {('cmp','dword ptr [r8 + 0x12c], r13d'),('mov','dword ptr [rsp + 0x30], ecx'),('mov','dword ptr [rsp + 0x20], 0xa'),('mov','r8d, 0x770'),('mov','edx, dword ptr [rdx + 8]')}<=set(pairs(swap))
+assert {('cmp','dword ptr [r8 + 0x12c], r12d'),('mov','dword ptr [rsp + 0x30], ecx'),('mov','dword ptr [rsp + 0x20], 0xa'),('mov','r8d, 0x770'),('mov','edx, dword ptr [rdx + 8]')}<=set(pairs(swap))
 assert sites(swap,'?CanSwap@PetBattleTeam@@')and sites(swap,'?Cast@PetBattle@@')
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
-assert {('mov','ecx, 0xf6'),('cmp','ax, cx'),('cmp','eax, 0x770'),('movsxd','rax, dword ptr [rbx + 0x4c]'),('cmp','eax, 5'),('mov','eax, dword ptr [rcx + 0x12c]'),('mov','edx, dword ptr [rdx + 0x70]')}<=set(pairs(selector))
+assert {('mov','edx, 0xf6'),('cmp','ax, dx'),('cmp','eax, 0x770'),('movsxd','rax, dword ptr [rbx + 0x4c]'),('cmp','eax, 5'),('mov','eax, dword ptr [rcx + 0x12c]'),('mov','edx, dword ptr [rdx + 0x70]')}<=set(pairs(selector))
 execute=ins('?Execute@PetBattleAbilityEffect@@');dispatch,=sites(execute,'?HandleBendTimeCooldown@PetBattleAbilityEffect@@')
 assert {('mov','eax, 0xf6'),('cmp','cx, ax'),('cmp','eax, 0x770'),('cmp','rax, 4'),('mov','dword ptr [rbx + 0x3c], eax')}<=set(pairs(execute[:dispatch]))
 assert {('cmp','ecx, 0x770'),('cmp','word ptr [r9 + 6], 0x31'),('cmp','dword ptr [rbx + 0x4c], r8d')}<=set(pairs(execute[dispatch:])),'The actual holder cleanup must bypass hostile-target hit gating'

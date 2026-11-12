@@ -1080,6 +1080,13 @@ void PetBattle::Begin()
             player->UnsummonCurrentBattlePetIfAny(true);
     }
 
+    // Species1504 authors passive1389 in native species-state183. It is
+    // inherent to its living source, not a fabricated infinite aura.
+    // Prepare its marks before the initial aura snapshot/first-round packet.
+    for (uint32 petID = 0; petID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++petID)
+        if (IsRoboflaugeSource(petID))
+            Cast(petID, 1389, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_APPLY, PETBATTLE_CAST_TRIGGER_ALL);
+
     /// In PVE battle the front pets (slot 0) are auto lock
     if (BattleType == PETBATTLE_TYPE_PVE)
     {
@@ -1155,6 +1162,10 @@ void PetBattle::ProceedRound()
     RoundFirstTeamCasting = GetFirstAttackingTeam();
 
     uint32 firstTeam = RoundFirstTeamCasting;
+
+    for (uint32 petID = 0; petID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++petID)
+        if (IsRoboflaugeSource(petID))
+            Cast(petID, 1389, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START, PETBATTLE_CAST_TRIGGER_ALL);
 
     // Renew Rot's issued one-round mark before either team attacks.
     std::vector<PetBattleAura*> rotStart;
@@ -1566,6 +1577,11 @@ void PetBattle::SwapPet(uint32 teamID, int32 newFrontPetID, bool initial)
                     Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL);
             }
 
+    if (petChanged && !initial)
+        for (uint32 petID = 0; petID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++petID)
+            if (IsRoboflaugeSource(petID) && Pets[petID]->TeamID == teamID)
+                Cast(petID, 1389, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL);
+
     Teams[teamID]->ActiveAbilityId = 0;
     Teams[teamID]->activeAbilityTurn = 0;
     Teams[teamID]->activeAbilityTurnMax = 0;
@@ -1635,6 +1651,12 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     bool const rotTypeStart = abilityID == 1418 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START;
     bool const ownedController = bendSwap || hourglassEnd || cheatDeathEnd || rotTypeStart;
     if (casterPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[casterPetID])
+        return PETBATTLE_CAST_INTERNAL_ERROR;
+    if (abilityID == 1389 && (!IsRoboflaugeSource(casterPetID) || auraOwnerPetID != PETBATTLE_NULL_SLOT ||
+        p_TriggerFlag != PETBATTLE_CAST_TRIGGER_ALL ||
+        (p_Turn == 0 ? (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_APPLY &&
+            p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN) :
+            (p_Turn != 1 || p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_NONE))))
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (racialTrigger && ((abilityID != 723 && abilityID != 724) || p_Turn != 1 ||
         p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_NONE || Pets[casterPetID]->IsAlive()))
@@ -1802,6 +1824,22 @@ bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID
     PetAuras.push_back(aura);
     aura->Apply(this);
     return true;
+}
+
+bool PetBattle::IsRoboflaugeSource(uint32 petID) const
+{
+    // Pin this supported producer to the matching26972 species/183/ability
+    // binding; other native species-state183 abilities have separate semantics.
+    if (petID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[petID] || Pets[petID]->ID != petID ||
+        Pets[petID]->Species != 1504 || Pets[petID]->States[BATTLEPET_STATE_Internal_SpeciesAbility] != 1389 ||
+        !Pets[petID]->IsAlive() || Pets[petID]->Captured || Pets[petID]->Caged || Pets[petID]->TeamID >= MAX_PETBATTLE_TEAM)
+        return false;
+    auto team = Teams[Pets[petID]->TeamID];
+    if (team)
+        for (uint32 slot = 0; slot < MAX_PETBATTLE_SLOTS && slot < team->TeamPetCount; ++slot)
+            if (team->TeamPets[slot] == Pets[petID])
+                return true;
+    return false;
 }
 
 bool PetBattle::RefreshPetTypeOverride(uint32 sourcePetID, uint32 targetPetID)

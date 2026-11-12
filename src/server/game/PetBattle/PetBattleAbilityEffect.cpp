@@ -808,7 +808,17 @@ void PetBattleAbilityEffect::SelectTargets()
     Targets.clear();
     if (EffectInfo->BattlePetEffectPropertiesID == 229)
     {
-        if (AbilityID == 476)
+        if (AbilityID == 1389)
+        {
+            if (PetBattleInstance->IsRoboflaugeSource(Caster))
+            {
+                auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
+                for (uint32 slot = 0; slot < MAX_PETBATTLE_SLOTS && slot < team->TeamPetCount; ++slot)
+                    if (team->TeamPets[slot])
+                        AddTarget(team->TeamPets[slot]->ID);
+            }
+        }
+        else if (AbilityID == 476)
             AddTarget(GetActiveOpponent());
         else if (AbilityID == 574 || AbilityID == 820 || AbilityID == 1717 || AbilityID == 1398)
             AddTarget(Caster);
@@ -1154,6 +1164,14 @@ bool PetBattleAbilityEffect::HandleDefensiveTypeAura()
     if ((Flags & FailFlags) || EffectInfo->Param[5] != BATTLEPET_STATE_Special_TypeOverride || EffectInfo->Param[4] ||
         (EffectInfo->Param[0] && AbilityTurn->ChainFailure))
         return false;
+    if (AbilityID == 1389)
+    {
+        if (!PetBattleInstance->IsRoboflaugeSource(Caster) ||
+            PetBattleInstance->Pets[Target]->TeamID != PetBattleInstance->Pets[Caster]->TeamID)
+            return false;
+        CalculateHit(EffectInfo->Param[1]);
+        return AddAura(Target, EffectInfo->Param[2], EffectInfo->Param[3]);
+    }
     uint32 controller = 0;
     if (AbilityID == 574 || AbilityID == 820)
         controller = 820;
