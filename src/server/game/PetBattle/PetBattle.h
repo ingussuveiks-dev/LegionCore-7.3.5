@@ -482,6 +482,7 @@ public:
     int32 Duration;               ///< Remaining duration (client sinc)
     int32 MaxDuration;            ///< Max aura duration
     bool Expired;                ///< Aura is expired ?
+    std::vector<std::pair<uint32, int32>> AppliedStates; ///< Only state changes actually applied by this aura.
 };
 
 /// Team flags 1

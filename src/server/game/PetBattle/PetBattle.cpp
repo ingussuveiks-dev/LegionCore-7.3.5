@@ -501,6 +501,7 @@ PetBattleEvent& PetBattleEvent::Trigger(int8 targetPetID, uint32 p_AbilityId)
 
 void PetBattleAura::Apply(PetBattle* petBattle)
 {
+    AppliedStates.clear();
     for (auto const& v : sBattlePetAbilityStateStore)
     {
         if (v->BattlePetAbilityID != AbilityID)
@@ -534,7 +535,10 @@ void PetBattleAura::Apply(PetBattle* petBattle)
 
         int32 value = petBattle->Pets[TargetPetID]->States[v->BattlePetStateID];
         if (!flags)
+        {
             value += v->Value;
+            AppliedStates.emplace_back(v->BattlePetStateID, v->Value);
+        }
 
         petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, value, false, flags);
     }
@@ -563,9 +567,9 @@ void PetBattleAura::Remove(PetBattle* petBattle)
     if (AbilityID == petBattle->WeatherAbilityId)
         petBattle->WeatherAbilityId = 0;
 
-    for (auto const& v : sBattlePetAbilityStateStore)
-        if (v->BattlePetAbilityID == AbilityID)
-            petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, petBattle->Pets[TargetPetID]->States[v->BattlePetStateID] - v->Value);
+    for (auto const& state : AppliedStates)
+        petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);
+    AppliedStates.clear();
 
     if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up
     {
