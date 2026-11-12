@@ -1,0 +1,121 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "FORBIDDEN_HOURGLASS_NATIVE_KILL_AND_OTHER_ALIVE_ROSTER_COOLDOWNS_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "6ca2296649aa07862fddbbf67a60016ca0a1323a",
+  "problem": "Native1927 damage killed the opponent, then the dispatcher discarded its authored230 producer. Property230 had no handler and1932 had no actual round-end7 dispatch; its six246 rows could not reset the other pets. Eight retained native observations reproduce this on both teams.",
+  "native_data": "Matching Legion26972/read-only Hotfix:1927 turn3305 effect3482 property24 damage25 accuracy100, then3483 property230 aura1932 duration2. Native tooltip explicitly says other alive pets. Controller1932 turn3315 event7 orders1..6 has property246 slots1/2/3 twice, each modification1;3499 property49 removes1932 with native accuracy0. Haunt652 also uses230 with different state/target semantics and remains separately OPEN.",
+  "repair": "Continue1927 native damage row after a kill, preserving the initial closed-round/dead-caster gates and real ChainFailure bit0. The scoped registered230 producer requires actual3483, successful prior damage, same caster/recipient and an opponent still finally dead after immediate racial reactions. Bind actual unexpired1932 source/holder to a snapshot of issued round-end7 controllers, before ordinary cooldown decrement. Map each three-row group to its fixed other roster slot without compacting dead/missing pets. Native living-target admission and learned/ready/unlearned/lockdown guards remain. Use authored1 so the normal tick emits ready0. Remove only actual owned controller; retain1932 through holder death but expire ordinary Poison379. Preserve foreign stored source while using holder team and cleanup. No new data timer, health threshold, quest/item grant or generic230 implementation. No class size/member ABI change.",
+  "tests": {
+    "current_native": "34 actual linked native cases on both teams, ten groups: lethal producer waits for round-end and excludes both front cooldowns; nonlethal/miss; old corpse, invalid/unissued/foreign owner; Mechanical/Undead immediate revival; all three owner roster positions; dead holder plus ordinary Poison cleanup; two full legitimate-ready ProceedRound sequences and no replay; foreign stored source/untargetable owner; ready -1/0/1, unlearned slots and lockdowns; dead/missing other slots with remaining sibling. Memory-only six pets, matching native stores and read-only Hotfix, no character/login/save or gameplay endpoint mocks.",
+    "counterfactual": "Complete pinned6ca229664 PetBattle.cpp plus PetBattleAbilityEffect.cpp fails exact lethal1932 controller assertion with exit1; repaired34 pass. Earlier eight observations are paired reproductions, not claimed successful gameplay.",
+    "retained": "Current final1767 native26 Bend Time,13 racial,44 four-sacrifice,16 Unholy and both100 native suites pass. Extra first batches of two source ASAN suites also pass; they are ten cases each and are not mislabeled as the full native100 suites.",
+    "linked": "Current canonical native producer registration and prior-hit/final-death gates, actual owner/source context, fixed roster mapping, round-end snapshot and native1->0 timing pass. All retained pet proofs, two100 scopes and unchanged round-writer proof pass. Compiler register changes required updating exact instruction/dataflow checks; the original failed lookups remain paired with passing complete proofs. Handler-table CFG bounds remain checked.",
+    "runtime": "Owned PID=10376 reached fresh ready\nPASS owned PID=10376 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "scepter": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes on canonical Release.",
+    "historical106": "The prior immutable106/106 certificate in docs/audits/pet-bend-time-2026-11-12/certificate-results.json belongs to9338 before this focused change. This audit claims the current relevant native/source/linked/runtime checks separately, not a new full106 run.",
+    "packet": "Current packet-writer PE proof passes; the earlier nine sender paths/18 cooldown packets and writer/ByteBuffer extracted-sender ASAN belong to9338. Writer implementation unchanged. Full native-core ASAN and actual client presentation are not claimed."
+  },
+  "canonical": {
+    "worldserver.exe": "1767bdbd6d22bbf620ddb9c3e6aa5ca3caff0ee3a5981c46078cdbb164439619",
+    "worldserver.map": "be5c120e6512a7cb7da766cb574658ca6e6d5b346cae9185bd5b4e09a7a0d874",
+    "bnetserver.exe": "3994214e3fe3b3f97deafd294d6028edc981ad12a45f008770af94bbc0b7e8f5",
+    "bnetserver.map": "a5283b2531a4958637d6605407f21df875d26385b8c8824e99e84aaf4998e858"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/fixed-table-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/retained26-table-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/retained13-table-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/retained44-table-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/retained16-table-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/retained100-table-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/retained-prior100-table-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/canonical-linked.log",
+      "sha256": "0f969033c59448b7a78dcfd726f50e3ee5b49db6460e9d23db2082fdd6a8f980"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/first100-final-stage.log",
+      "sha256": "7f5a23470f4960a8325c6f87a4d778fe54f03f5bc446b1576050a2426e64281e"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/second100-stage.log",
+      "sha256": "2479ac0435b6d6262294c53797c3bc84741ff3fdca76d7a631857a2db0de5387"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/packet-stage.log",
+      "sha256": "c158e435ecbf7539f98acf1e7a73ad379e2505c4123a649fc85254e4217bcd86"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/startup-driver.log",
+      "sha256": "ccc66bd556a606ae46904a823051d0ceaa79e18cd7baf78d61561e74d9b98b0d"
+    },
+    {
+      "path": ".codex/pet-hourglass-open-2026-11-12/baseline-lethal-driver.log",
+      "sha256": "2ea2e6185ac0cb3cb2016c5594ca2fc010c730b1282649e274b02f3673dd7515"
+    }
+  ],
+  "diagnostics": "All final native/linked checks and formal canonical deployment/startup retain pre/post canonical and own crash/log snapshots. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Initial owned preliminary startup15752 exit0/stdout/stderr retained and reviewed; formal startup repeated with dedicated pre/post snapshots. No user/unknown server stopped; no task-owned server left. Mixed7111byte DBErrors, Slaghammer, configs/DLLs/certs and rollback hashes unchanged.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-hourglass-2026-11-12",
+    "ManifestSHA256": "B9527D95649473F18055201303EA16B873413F34FAF31A872A2DEB78A2F24B5A",
+    "Archived": 666,
+    "Removed": 61,
+    "ReclaimedBytes": 1004592270.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent f7fd/0f947/4c86/c6c5 rollback copies,regression sources and reusable tools. Resolved native Hourglass observations/control archived with paired34 current native cases; unresolved other death/shared-proc/Lady/LINK2 evidence stays outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_hourglass_cases": 34,
+    "retained_native_cases": [
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "current_linked_hundred_scopes": 2,
+    "canonical": {
+      "worldserver.exe": "1767bdbd6d22bbf620ddb9c3e6aa5ca3caff0ee3a5981c46078cdbb164439619",
+      "worldserver.map": "be5c120e6512a7cb7da766cb574658ca6e6d5b346cae9185bd5b4e09a7a0d874",
+      "bnetserver.exe": "3994214e3fe3b3f97deafd294d6028edc981ad12a45f008770af94bbc0b7e8f5",
+      "bnetserver.map": "a5283b2531a4958637d6605407f21df875d26385b8c8824e99e84aaf4998e858"
+    },
+    "archive_records": 666,
+    "removed": 61,
+    "removed_bytes": 1004592270.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Dark Rebirth795/Cheat Death1907 round-end death reactions, Haunt/Apocalypse, generic159/clone122/123/124, type229 and wider core health remain OPEN.",
+    "Actual PvE/PvP learned-kit UI, cooldown display, animations and battle log remain client checks; all36 whole artifact chains remain unverified.",
+    "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2/mixed DBErrors and original intermittent client handshake cause remain OPEN. Pet1906 is a separate namespace."
+  ],
+  "next": "Continue actual native Dark Rebirth and Cheat Death complete owner/death/round-end/resurrection/cleanup sequence, preserving captured-pet and ordinary aura cleanup."
+}

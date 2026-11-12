@@ -160,11 +160,11 @@ if ninth:
  # Prove the fallback guard dominates its real indexed read, rather than
  # assuming the guard has to remain among the first25 instructions.
  rows=ins('?SelectTargets@PetBattleAbilityEffect@@')
- guard=next(i for i,x in enumerate(rows)if(x.mnemonic,x.op_str)==('mov','ecx, 0xeb'))
- assert [(x.mnemonic,x.op_str)for x in rows[guard+1:guard+2]]==[('cmp','ax, cx')]
+ guard=next(i for i,x in enumerate(rows)if(x.mnemonic,x.op_str)==('mov','eax, 0xeb'))
+ assert [(x.mnemonic,x.op_str)for x in rows[guard+1:guard+2]]==[('cmp','cx, ax')]
  branch=rows[guard+2];assert branch.mnemonic=='jb'
  lookup=next(i for i,x in enumerate(rows)if x.address==branch.operands[0].imm)
- assert [(x.mnemonic,x.op_str)for x in rows[lookup:lookup+2]]==[('mov','rdx, rax'),('add','rdx, rdx')]
+ assert [(x.mnemonic,x.op_str)for x in rows[lookup:lookup+2]]==[('mov','rdx, rcx'),('add','rdx, rdx')]
  assert rows[lookup+2].mnemonic=='lea'and rows[lookup+2].op_str.startswith('rax, [rip + ')
  assert (rows[lookup+3].mnemonic,rows[lookup+3].op_str)==('mov','edx, dword ptr [rax + rdx*8]')
  def native_reaches(code,start,blocked=None):

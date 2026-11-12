@@ -253,7 +253,7 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 227 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 228 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 229 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 230 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
+    /* EFFECT 230 */{&PetBattleAbilityEffect::HandleForbiddenHourglass,          PETBATTLE_TARGET_NONE},
     /* EFFECT 231 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 232 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 233 */{&PetBattleAbilityEffect::HandleExtraAttackIfMoreFaster,                       PETBATTLE_TARGET_TARGET},
@@ -788,6 +788,39 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 void PetBattleAbilityEffect::SelectTargets()
 {
     Targets.clear();
+    if (EffectInfo->BattlePetEffectPropertiesID == 230 && AbilityID == 1927)
+    {
+        Targets.push_back(Caster);
+        return;
+    }
+    if (EffectInfo->BattlePetEffectPropertiesID == 246 && AbilityID == 1932)
+    {
+        if (AuraOwnerPetID < 0 || AuraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !PetBattleInstance->Pets[AuraOwnerPetID] ||
+            EffectInfo->OrderIndex < 1 || EffectInfo->OrderIndex > 6)
+            return;
+        auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[AuraOwnerPetID]->TeamID];
+        uint32 ownerSlot = MAX_PETBATTLE_SLOTS;
+        for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)
+            if (team->TeamPets[slot] && team->TeamPets[slot]->ID == uint32(AuraOwnerPetID))
+                ownerSlot = slot;
+        if (ownerSlot == MAX_PETBATTLE_SLOTS)
+            return;
+        uint32 otherSlot = (uint32(EffectInfo->OrderIndex) - 1) / MAX_PETBATTLE_ABILITIES;
+        for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)
+        {
+            if (slot == ownerSlot)
+                continue;
+            if (otherSlot)
+            {
+                --otherSlot;
+                continue;
+            }
+            if (team->TeamPets[slot])
+                AddTarget(team->TeamPets[slot]->ID);
+            break;
+        }
+        return;
+    }
     if (EffectInfo->BattlePetEffectPropertiesID == 246 && AbilityID == 1904)
     {
         if (AuraOwnerPetID >= 0 && AuraOwnerPetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS && PetBattleInstance->Pets[AuraOwnerPetID])
@@ -829,9 +862,9 @@ void PetBattleAbilityEffect::SelectTargets()
 
 bool PetBattleAbilityEffect::Execute()
 {
-    // These three native rows are outside the legacy table and address one
-    // actual incoming pet. All other unknown effects retain the diagnostics.
-    if (EffectInfo->BattlePetEffectPropertiesID == 246 && AbilityID == 1904)
+    // These native cooldown rows are outside the legacy handler table. Other
+    // unknown effects retain the table bound and selector diagnostics.
+    if (EffectInfo->BattlePetEffectPropertiesID == 246 && (AbilityID == 1904 || AbilityID == 1932))
     {
         if (Targets.size() != 1)
             return false;
@@ -855,7 +888,7 @@ bool PetBattleAbilityEffect::Execute()
         Target = target;
         Flags = 0;
 
-        bool const bendCleanup = AbilityID == 1904 && EffectInfo->BattlePetEffectPropertiesID == 49 && AuraOwnerPetID == int32(Target);
+        bool const bendCleanup = (AbilityID == 1904 || AbilityID == 1932) && EffectInfo->BattlePetEffectPropertiesID == 49 && AuraOwnerPetID == int32(Target);
         if (!bendCleanup && PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
             Flags |= PETBATTLE_EVENT_FLAG_DODGE;
 
@@ -1535,16 +1568,29 @@ bool PetBattleAbilityEffect::HandleBendTimeCooldown()
         Target >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !PetBattleInstance->Pets[AuraOwnerPetID] || !PetBattleInstance->Pets[Target] ||
         !PetBattleInstance->Pets[Target]->IsAlive() || EffectInfo->Param[0] < 1 || EffectInfo->Param[0] > MAX_PETBATTLE_ABILITIES || EffectInfo->Param[1] != 1)
         return false;
-    auto aura = GetAura(AuraOwnerPetID, 1904);
+    auto aura = GetAura(AuraOwnerPetID, AbilityID);
     auto pet = PetBattleInstance->Pets[Target];
     auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[AuraOwnerPetID]->TeamID];
-    if (!aura || aura->CasterPetID != Caster || team->ActivePetID != Target || Target == uint32(AuraOwnerPetID) ||
+    if ((AbilityID != 1904 && AbilityID != 1932) || !aura || aura->CasterPetID != Caster ||
+        (AbilityID == 1904 && team->ActivePetID != Target) || Target == uint32(AuraOwnerPetID) ||
         pet->TeamID != PetBattleInstance->Pets[AuraOwnerPetID]->TeamID)
         return false;
     uint32 slot = EffectInfo->Param[0] - 1;
     if (pet->Abilities[slot] && sBattlePetAbilityStore.LookupEntry(pet->Abilities[slot]) && pet->Cooldowns[slot] > 1)
         pet->Cooldowns[slot] = 1; // Native end-round decrement emits the ready0 update.
     return true;
+}
+
+bool PetBattleAbilityEffect::HandleForbiddenHourglass()
+{
+    // Native3482/order1 must have actually hit a living opponent, and its
+    // immediate death reactions must have left that opponent finally dead.
+    // A miss, old corpse or Mechanical/Undead revival cannot issue1932.
+    if ((Flags & FailFlags) || AbilityID != 1927 || EffectInfo->ID != 3483 ||
+        (AbilityTurn->ChainFailure & 1) || Target != Caster || PetBattleInstance->Pets[GetActiveOpponent()]->IsAlive())
+        return false;
+    CalculateHit(EffectInfo->Param[1]);
+    return AddAura(Target, EffectInfo->Param[2], EffectInfo->Param[3]);
 }
 
 bool PetBattleAbilityEffect::HandleDamageToggleAura()

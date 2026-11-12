@@ -137,6 +137,7 @@ struct PetBattleAbilityEffect
     bool HandleResurect();
     bool HandleKill();
     bool HandleBendTimeCooldown();
+    bool HandleForbiddenHourglass();
     bool HandleDamageToggleAura();
     bool HandleHealStateToggleAura();
     bool HandleResetState();

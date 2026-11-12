@@ -1175,6 +1175,17 @@ void PetBattle::ProceedRound()
     Teams[firstTeam]->DoCasts(PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END);
     Teams[!firstTeam]->DoCasts(PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END);
 
+    // The native Hourglass controller clears the other living roster pets at
+    // round end, before their ordinary cooldown decrement. Snapshot issued
+    // instances so cleanup/new auras cannot replay this phase.
+    std::vector<PetBattleAura*> hourglassEnd;
+    for (auto aura : PetAuras)
+        if (!aura->Expired && aura->AbilityID == 1932)
+            hourglassEnd.push_back(aura);
+    for (auto aura : hourglassEnd)
+        if (!aura->Expired)
+            Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END, PETBATTLE_CAST_TRIGGER_ALL, aura->TargetPetID);
+
     // Passive: Humanoid
     for (uint8 i = 0; i < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++i)
         if (Pets[i] && Pets[i]->States[BATTLEPET_STATE_Passive_Humanoid] && Pets[i]->States[BATTLEPET_STATE_Condition_DidDamageThisRound])
@@ -1590,6 +1601,8 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
 {
     bool const racialTrigger = auraOwnerPetID == PETBATTLE_RACIAL_TRIGGER;
     bool const bendSwap = abilityID == 1904 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN;
+    bool const hourglassEnd = abilityID == 1932 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END;
+    bool const ownedCooldown = bendSwap || hourglassEnd;
     if (casterPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[casterPetID])
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (racialTrigger && ((abilityID != 723 && abilityID != 724) || p_Turn != 1 ||
@@ -1597,17 +1610,17 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (auraOwnerPetID != PETBATTLE_NULL_SLOT && !racialTrigger &&
         (auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] || p_Turn != 0 ||
-            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED && !bendSwap)))
+            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED && !ownedCooldown)))
         return PETBATTLE_CAST_INTERNAL_ERROR;
 
-    if (bendSwap)
+    if (ownedCooldown)
     {
         if (p_Turn != 0 || auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] ||
-            Teams[Pets[auraOwnerPetID]->TeamID]->ActivePetID == auraOwnerPetID)
+            (bendSwap && Teams[Pets[auraOwnerPetID]->TeamID]->ActivePetID == auraOwnerPetID))
             return PETBATTLE_CAST_INTERNAL_ERROR;
         bool ownedAura = false;
         for (auto aura : PetAuras)
-            if (!aura->Expired && aura->AbilityID == 1904 && aura->CasterPetID == casterPetID && aura->TargetPetID == auraOwnerPetID)
+            if (!aura->Expired && aura->AbilityID == abilityID && aura->CasterPetID == casterPetID && aura->TargetPetID == auraOwnerPetID)
                 ownedAura = true;
         if (!ownedAura)
             return PETBATTLE_CAST_INTERNAL_ERROR;
@@ -1629,7 +1642,8 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     // Armageddon's remaining enemy slots). Other stop/chain rules still apply.
     bool const selfSacrifice = p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE &&
         (abilityID == 282 || abilityID == 321 || abilityID == 663 || abilityID == 836 || abilityID == 1025);
-    if (selfSacrifice && !Pets[casterPetID]->IsAlive())
+    bool const hourglassAttack = abilityID == 1927 && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
+    if ((selfSacrifice || hourglassAttack) && !Pets[casterPetID]->IsAlive())
         return PETBATTLE_CAST_INTERNAL_ERROR;
 
     // States
@@ -1675,12 +1689,12 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             if (!abilityEffect.Execute())
                 abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);
 
-            bool const sacrificeDamage = selfSacrifice &&
+            bool const sacrificeDamage = (selfSacrifice || hourglassAttack) &&
                 (abilityEffectInfo->BattlePetEffectPropertiesID == 24 || abilityEffectInfo->BattlePetEffectPropertiesID == 68);
             if (abilityEffect.StopChain && !sacrificeDamage)
                 break;
 
-            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice)
+            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice && !hourglassAttack)
                 return PETBATTLE_CAST_OK;
         }
     }
@@ -1785,10 +1799,10 @@ void PetBattle::Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, b
         Teams[Pets[target]->TeamID]->activeAbilityTurnMax = 0;
     }
 
-    // Bend Time addresses the next incoming teammate, including a forced
-    // replacement after its holder dies. Other death cleanup stays native.
+    // These issued cooldown controllers benefit the remaining living team,
+    // even after their holder dies. Other death cleanup stays native.
     for (auto& aura : PetAuras)
-        if (aura->TargetPetID == target && aura->AbilityID != 1904)
+        if (aura->TargetPetID == target && aura->AbilityID != 1904 && aura->AbilityID != 1932)
             aura->Expire(this);
 
     // TC_LOG_DEBUG("battlepet", "PetBattle::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
