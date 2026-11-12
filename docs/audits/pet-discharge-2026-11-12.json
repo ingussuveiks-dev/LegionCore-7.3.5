@@ -1,0 +1,140 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "DISCHARGE_NATIVE_CRITTER_MARK_AND_FINITE_CONTROLLER_CLEANUP_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "14555a17bce1458e8061f233286b2eef78449a6c",
+  "problem": "Discharge1717 dealt native damage and applied finite controller1718, but unimplemented229 selection left its intended Critter1419 defensive mark absent. Implementing the infinite mark without source/producer-bound expiry would leave it indefinitely or remove another producer\u2019s Critter mark. Native lethal damage also stopped before the authored self-type cost/cooldown.",
+  "native_data": "Matching26972/read-only Hotfix:1717 turn2941 effects3200 damage40/accuracy100,3201 reset124,3202 positive aura1718 duration2,3203 property229 aura1419 duration65535/maxAllowed1/state124.1718 turn2942 periodic3198 renews1419; removal5 turn2943 effect3199 guaranteed100 removes1419.1419 categorical state124=5 means defensive Critter. Tooltip explicitly says the user\u2019s type is transformed for a short time. Other roots1398/1595/1389 remain separate.",
+  "repair": "Extend scoped229 only to1717 caster and1718 actual stored/periodic holder. Require its real unexpired same-source1718 parent and retain native accuracy, infinite mark and finite controller duration. Exact3199 cleanup reaches the actual holder and bypasses accuracy only for native guaranteed100, preserving failure flags/fresh live controller. Remove only same-source3198/3203 receipts. Let actual living turn1 non-proc1717 finish its authored self-type/cooldown after lethal damage, retaining other StopChain/proc behavior. No source/member ABI, species, racial passive, timer, SQL or character data changes.",
+  "tests": {
+    "native": "28 actual native cases in9 groups on both teams: root damage/controller/infinite mark/family damage, actual learned full rounds and native cooldown5, finite expiry, negative-accuracy cleanup, all four Roboflauge producer IDs, another original source with the same producer ID, reserve holders with foreign sources/untargettable cleanup, misses/failed parents, lethal damage/cooldown, final death and stale/fresh controller callbacks. Memory-only pets, real native stores/callbacks, read-only Hotfix.",
+    "controls": "Complete pinned14555 PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail exact root and lethal self-cost assertions with exit1. Repaired28 pass.",
+    "retained": "Current50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Additional source batch1 ten-case suites pass. Full retained pet proof chain, actual229 native1717/1718 parent lookup, exact3199/3198/3203 cleanup, living turn1/non-proc flag CFG rejoin, lethal self-cost continuation, both100 linked scopes and actual packet writer linked proof pass.",
+    "harness": "Initial fixture used absent PetBattleTeam::TeamID; corrected to actual team pointer. Initial old-register PE lookups and a physically-before-call slice failed after compiler register/CFG layout changes; corrected to actual registers and explicit predecessor rejoin. Failed harness evidence remains paired with passing current checks. No server error was hidden.",
+    "runtime": "Owned canonical PID20988 reached fresh ready then shutdown0/exit0/gone, stderr empty. Scepter -VerifyReleaseBinary passes. Known fixture C4244/C4389 compiler warnings retained. No user/unknown server stopped.",
+    "packet": "Actual writer/sender source unchanged from immediately prior Ward/Rot native nine-path/18-packet extracted-sender ASAN; current linked writer proof passes. No new full native-core ASAN/client traversal claim.",
+    "certificate": "Historical106/106 applies to cdca, not current458d. This binary has the listed focused/retained proofs; no fresh106 claim."
+  },
+  "canonical": {
+    "worldserver.exe": "458d4135383bfa07538a4b572f0db881caa4732f62828fda792d7921e1ea9e4f",
+    "worldserver.map": "60f8762c321dec1dcd01810d4efd150c81a129f776b19a60e40b438805d92d48",
+    "bnetserver.exe": "5a2b6b0fd19d9c2a07ebfea8e3cb3a8fc96d9dece30798a8d2841796a59f2b53",
+    "bnetserver.map": "71ea603d738554da31e3a13c1571399d4cc63f34a6daaa53f6d971af882d760f"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/final28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/full100-native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/full-prior100-native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/canonical-final28.log",
+      "sha256": "f040559361db2111be234fa708b2f9616f023041e49e54ccf792692171a9c6a5"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/hundred-stage.log",
+      "sha256": "58d19a5773b9ce1f718d245243a418018bc57501fa2565707b783c350c493117"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/second-hundred-stage.log",
+      "sha256": "ec89e5d59eef5b723ff75d5f1ea085a55570fa4a0d21b15649b0e41cd12c89b6"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/writer-stage.log",
+      "sha256": "917136a90d28fa092d8b8e7602dbb191bb5775b3728b9341fe5466eba1513047"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/startup-driver.log",
+      "sha256": "fbc1a792249e6ba4c0d343521f744227aa749e4c8d70710da69f2fb069adaf38"
+    },
+    {
+      "path": ".codex/pet-discharge-open-2026-11-12/cleanup-driver.log",
+      "sha256": "88885f298b8ac85b25e1cb291e37745c4a9a7322f5c232d1cf8b508639ef604d"
+    }
+  ],
+  "diagnostics": "All formal test pre/post canonical/own crash/log inventories reviewed. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Mixed7111byte DBErrors and Slaghammer unchanged. Mixed NPC type229/Dark Rebirth/Lady/LINK2 evidence and unique research executables stay outside fixed.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-discharge-2026-11-12",
+    "ManifestSHA256": "580C9D52095197C4D53949C8F19B77E6A0F4285AC2D385AA16A5EE2B9524C8BD",
+    "Archived": 534,
+    "Removed": 59,
+    "ReclaimedBytes": 695107190.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent per-issue rollback copies for pending client comparisons,regression sources and reusable tools. Resolved Discharge28 cases, two pinned controls, retained50 and earlier native/linked checks archived. Historical106 remains tied to preceding cdca binary; no new full106 claim. Mixed Dark Rebirth795/state146 and type229 research, their unique executables and other shared-proc/Lady/LINK2 evidence remain outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_discharge_cases": 28,
+    "retained_native_cases": [
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "458d4135383bfa07538a4b572f0db881caa4732f62828fda792d7921e1ea9e4f",
+      "worldserver.map": "60f8762c321dec1dcd01810d4efd150c81a129f776b19a60e40b438805d92d48",
+      "bnetserver.exe": "5a2b6b0fd19d9c2a07ebfea8e3cb3a8fc96d9dece30798a8d2841796a59f2b53",
+      "bnetserver.map": "71ea603d738554da31e3a13c1571399d4cc63f34a6daaa53f6d971af882d760f"
+    },
+    "archive_records": 534,
+    "removed": 59,
+    "removed_bytes": 695107190.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Actual client learned-kit UI, family damage presentation, animation and overlap priority remain pending. Newest-live categorical mark policy remains the prior documented inference.",
+    "Roboflauge1389 full team passive producer/swap/start sequence, Feathered Frenzy1398 and Ominitron1595 remain OPEN. Mixed native NPC metadata/observations retained outside fixed; its inherited output footer incorrectly says all50 and is not a50-case certificate.",
+    "Dark Rebirth794/795 missing state146/protected window/penalty796, Haunt, Apocalypse, clone122/123/124 and generic159 remain OPEN.",
+    "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, original LINK2/Slaghammer/mixed DBErrors, original intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
+  ],
+  "next": "Continue actual native Feathered Frenzy1398 producer/damage-failure/type duration sequence and preserve missing NPC passive producer/owner evidence."
+}
