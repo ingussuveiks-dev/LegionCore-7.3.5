@@ -99,7 +99,7 @@ class boss_kurinnaxx : public CreatureScript
                             break;
                         case EVENT_TRASH:
                             DoCast(me, SPELL_TRASH);
-                            events.ScheduleEvent(EVENT_WIDE_SLASH, 16000);
+                            events.ScheduleEvent(EVENT_TRASH, 16000);
                             break;
                         default:
                             break;
