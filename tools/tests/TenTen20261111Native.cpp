@@ -36,6 +36,7 @@ static void RunThirdNative(InstanceMap&map){
 #include "TenTen20261111SixthNative.h"
 #include "TenTen20261111SeventhNative.h"
 #include "TenTen20261111EighthNative.h"
+#include "TenTen20261111NinthNative.h"
 struct IndomScriptsTag{using Type=std::vector<AuraScript*> Aura::*;friend Type Access(IndomScriptsTag);};template struct FixtureAccess<IndomScriptsTag,&Aura::m_loadedScripts>;
 static Aura*BindIndom(Actor&actor){static std::string name="spell_sinestra_indomitable";auto aura=actor.AddAura(90044,&actor);Require(aura&&aura->GetEffect(EFFECT_0),"Native Indomitable aura missing");auto script=new TenTenFirst::spell_sinestra_indomitable_AuraScript;script->_Init(&name,90044);Require(script->_Load(aura),"Native Indomitable Load");script->_Register();auto&loaded=aura->*Access(IndomScriptsTag{});Require(loaded.empty(),"Unexpected automatic native Indomitable script");loaded.push_back(script);return aura;}
 static void Tick(Aura*aura,Actor&actor){auto app=aura->GetApplicationOfTarget(actor.GetGUID());Require(app,"Real target application missing");Require(!aura->CallScriptEffectPeriodicHandlers(aura->GetEffect(EFFECT_0),app),"Original periodic handler does not prevent default action");}
@@ -56,5 +57,6 @@ int main(int argc,char**argv){try{
  RunSixthNative(map);
  RunSeventhNative(map);
  RunEighthNative(map);
+ RunNinthNative();
  CloseAltheaNative();std::cout<<"PASS first20native scopes:23actual registered CLI command paths/localized refusal and real independent Indomitable AuraScript instances/periodic hooks/native control state plus second batch ownership/protection. Child cast endpoints/clocks controlled;in-game BG/visual/full encounter client traversal pending\n";return 0;
  }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}

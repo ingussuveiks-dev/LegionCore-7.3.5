@@ -123,3 +123,26 @@ if eighth:
  rows=ins('?Absorb@spell_gen_intangible_presence@');assert {230080,230088}<=values(rows)and any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rdi,')for x in rows)and any(x.mnemonic=='cmp'and x.op_str=='rdi, rax'for x in rows),'Actual positive Intangible aura amount converts to64 before legal damage minimum;damage remains native32'
  rows=ins('?Trigger@spell_dk_anti_magic_shell_self_AuraScript@');assert {49088,210852,210862,207188}<=values(rows)and any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and sites(rows,'?CountPctFromMaxHealth@Unit@@'),'Actual AMS health threshold/remainder division is64bit andretainsnative resource/optionalheal gates'
  print('PASS linked eighth10:native64 class healing,integer multipliers,Justice heal admission,positiveStagger/aura amounts andAMS threshold/remainders;Smite bounded-damage falsepositive withdrawn,ordinarycorehealing remainsseparate')
+
+ninth=[e for e in PLAN['changes']if e['batch']==9]
+if ninth:
+ from five_ten_20261111_pe import decoder
+ def pet_leaf(prefix):
+  try:return ins(prefix)
+  except AssertionError as error:
+   assert str(error).startswith('Unknown leaf bounds:')
+   assert prefix=='?CanSwap@PetBattleTeam@@'
+   address=n['symbol'](prefix);end=min(a for a in n['symbols'].values()if a>address);assert 0<end-address<1024
+   at=n['offset'](address);return list(decoder.disasm(n['binary'][at:at+end-address],address))
+ rows=ins('?Update@PetBattle@@');calls=sites(rows,'?Update@PetBattleTeam@@');assert len(calls)==2 and all(rows[i+1].mnemonic=='test'and rows[i+2].mnemonic=='jne'for i in calls),'Both actual team terminal results dominate the shared finish exit'
+ assert any(x.mnemonic=='mov'and x.op_str.endswith(', 2')for x in rows),'Actual disabled-pet loop covers two teams'
+ rows=pet_leaf('?CanSwap@PetBattleTeam@@');assert 5 in values(rows)and any(x.mnemonic=='cmp'and x.op_str=='dl, 0xff'for x in rows),'Actual incoming slot zero is distinguished from negative no-replacement sentinel'
+ rows=ins('?SwapPet@PetBattle@@');assert 5 in values(rows)and sites(rows,'?CanSwap@PetBattleTeam@@'),'Actual bounded incoming replacement passes native owner/lock admission'
+ for prefix in ('?Execute@PetBattleAbilityEffect@@','?SelectTargets@PetBattleAbilityEffect@@'):
+  rows=ins(prefix);assert 235 in values(rows[:25])and any(x.mnemonic in('jae','jb')for x in rows[:25]),'Native handler table boundary precedes indexing'
+ rows=ins('?Execute@PetBattleAbilityEffect@@');at=next(i for i,x in enumerate(rows)if x.mnemonic=='call'and x.op_str=='rdx');assert rows[at+1].mnemonic=='and'and rows[at+2].mnemonic=='add'and rows[at+3].mnemonic=='cmp'and rows[at+4].mnemonic=='jne','Actual effect loop advances by selected target rather than exiting on success'
+ rows=ins('?HandleHealPercent@PetBattleAbilityEffect@@');assert 726 in values(rows)and sites(rows,'?Heal@PetBattleAbilityEffect@@'),'Actual humanoid passive reaches native health/event update'
+ rows=ins('?Process@PetBattleAura@@');assert any(x.mnemonic=='cmp'and x.op_str.endswith(', -1')and rows[i+1].mnemonic=='je'and rows[i+2].mnemonic=='dec'for i,x in enumerate(rows[:-2])),'Actual aura tick preserves infinite sentinel before decrement'
+ assert sites(rows,'?Execute@PetBattleAbilityEffect@@')and any(x.mnemonic=='mov'and x.op_str=='dword ptr [rax + 0x20], ecx'for x in rows),'Actual periodic dispatch writes BuffTurn on appended event nodes'
+ assert ins('?AddAura@PetBattle@@')and ins('?CalculateDamage@PetBattleAbilityEffect@@'),'Actual native slot/critical calculation paths linked; complete behavior separately exercised in the native probe'
+ print('PASS linked ninth10:two-team terminal flow,valid incoming slot0,owner/lock call,bounded table dispatch,all-target execution,actual humanoid heal,infinite duration andappended BuffTurn;native slot/crit/selection behavior separately passed')

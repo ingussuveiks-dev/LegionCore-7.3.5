@@ -2087,6 +2087,245 @@
         }
       ],
       "class_edit_index": 0
+    },
+    {
+      "key": "PetAuraSlotIdentity",
+      "title": "Preserve pet battle aura slot identity across unrelated auras",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 81,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetAuraSlotIdentity",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 maxAllowed, uint32 fromAbilityEffectID, uint32 flags)\n{\n    PetBattleAura* oldAura = nullptr;\n    uint32 auraSlot = 0;\n    int32 auraCount = 0;\n\n    if (!maxAllowed)\n        maxAllowed = 1;\n\n    // Search same auras\n    for (auto& aura : PetAuras)\n    {\n        auraSlot = aura->ID;\n\n        if (!aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)\n        {\n            ++auraCount;\n            if (!oldAura)\n            {\n                auraSlot = aura->ID;\n                oldAura = aura;\n            }\n        }\n        else if (!auraCount && aura->ID > auraSlot)\n            auraSlot = aura->ID;\n    }\n\n    if (!auraCount)\n        ++auraSlot;\n\n    // Event\n    PetBattleEvent battleEvent(auraCount ? PETBATTLE_EVENT_BUFF_CHANGE : PETBATTLE_EVENT_BUFF_APPLY, casterPetID, flags, fromAbilityEffectID, RoundTurn++, 0, 1);\n    battleEvent.UpdateBuff(targetPetID, auraSlot, abilityID, duration, 0);\n    RoundEvents.push_back(battleEvent);\n\n    if (flags)\n        return false;\n\n    // Remove old aura if at max allowed count\n    if (!flags && maxAllowed && auraCount >= maxAllowed)\n    {\n        auto remainingAuraToRemove = 1 + auraCount - maxAllowed;\n        for (auto itr = PetAuras.begin(); itr != PetAuras.end() && remainingAuraToRemove > 0; ++itr)\n        {\n            if (!(*itr)->Expired && (*itr)->AbilityID == abilityID && (*itr)->TargetPetID == targetPetID)\n            {\n                (*itr)->Expire(this);\n                --remainingAuraToRemove;\n            }\n        }\n    }\n\n    // Create aura\n    auto aura = new PetBattleAura();\n    aura->AbilityID = abilityID;\n    aura->TriggerId = fromAbilityEffectID;\n    aura->CasterPetID = casterPetID;\n    aura->Duration = duration;\n    aura->MaxDuration = duration;\n    aura->Turn = 1;\n    aura->TargetPetID = targetPetID;\n    aura->ID = auraSlot;\n    aura->Expired = false;\n\n    PetAuras.push_back(aura);\n    aura->Apply(this);\n\n    return true;\n}",
+          "new": "bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 maxAllowed, uint32 fromAbilityEffectID, uint32 flags)\n{\n    PetBattleAura* oldAura = nullptr;\n    uint32 auraSlot = 0;\n    int32 auraCount = 0;\n\n    if (!maxAllowed)\n        maxAllowed = 1;\n\n    // Search same auras\n    for (auto& aura : PetAuras)\n    {\n        if (!aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)\n        {\n            ++auraCount;\n            if (!oldAura)\n            {\n                auraSlot = aura->ID;\n                oldAura = aura;\n            }\n        }\n        else if (!auraCount && aura->ID > auraSlot)\n            auraSlot = aura->ID;\n    }\n\n    if (!auraCount)\n        ++auraSlot;\n\n    // Event\n    PetBattleEvent battleEvent(auraCount ? PETBATTLE_EVENT_BUFF_CHANGE : PETBATTLE_EVENT_BUFF_APPLY, casterPetID, flags, fromAbilityEffectID, RoundTurn++, 0, 1);\n    battleEvent.UpdateBuff(targetPetID, auraSlot, abilityID, duration, 0);\n    RoundEvents.push_back(battleEvent);\n\n    if (flags)\n        return false;\n\n    // Remove old aura if at max allowed count\n    if (!flags && maxAllowed && auraCount >= maxAllowed)\n    {\n        auto remainingAuraToRemove = 1 + auraCount - maxAllowed;\n        for (auto itr = PetAuras.begin(); itr != PetAuras.end() && remainingAuraToRemove > 0; ++itr)\n        {\n            if (!(*itr)->Expired && (*itr)->AbilityID == abilityID && (*itr)->TargetPetID == targetPetID)\n            {\n                (*itr)->Expire(this);\n                --remainingAuraToRemove;\n            }\n        }\n    }\n\n    // Create aura\n    auto aura = new PetBattleAura();\n    aura->AbilityID = abilityID;\n    aura->TriggerId = fromAbilityEffectID;\n    aura->CasterPetID = casterPetID;\n    aura->Duration = duration;\n    aura->MaxDuration = duration;\n    aura->Turn = 1;\n    aura->TargetPetID = targetPetID;\n    aura->ID = auraSlot;\n    aura->Expired = false;\n\n    PetAuras.push_back(aura);\n    aura->Apply(this);\n\n    return true;\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetRoundTeamSymmetry",
+      "title": "Apply disabled turn handling to both pet battle teams and stop after a finish",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 82,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetRoundTeamSymmetry",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattle::Update(uint32 diff)\n{\n    if (BattleStatus != PETBATTLE_STATUS_RUNNING)\n        return;\n\n    if (RoundStatus == PETBATTLE_ROUND_RUNNING)\n        return;\n\n    m_UpdateTimer.Update(diff);\n\n    if (m_UpdateTimer.Passed())\n    {\n        m_UpdateTimer.Reset();\n\n        Teams[PETBATTLE_TEAM_1]->Update();\n        if (Teams[PETBATTLE_TEAM_2]->Update())\n        {\n            Teams[PETBATTLE_TEAM_1]->Ready = false;\n            Teams[PETBATTLE_TEAM_2]->Ready = false;\n            return;\n        }\n\n        for (uint8 i = 0; i < PETBATTLE_TEAM_2; i++)\n        {\n            if (!Teams[i]->Ready && Teams[i]->ActivePetID != PETBATTLE_NULL_ID && !Pets[Teams[i]->ActivePetID]->CanAttack())\n            {\n                if (Teams[i]->isRun)\n                    Teams[i]->Ready = true;\n\n                Teams[i]->ActiveAbilityId = 0;\n                Teams[i]->activeAbilityTurn = 0;\n                Teams[i]->activeAbilityTurnMax = 0;\n            }\n        }\n\n        if (Teams[PETBATTLE_TEAM_1]->Ready && Teams[PETBATTLE_TEAM_2]->Ready)\n        {\n            ProceedRound();\n\n            Teams[PETBATTLE_TEAM_1]->Ready = false;\n            Teams[PETBATTLE_TEAM_2]->Ready = false;\n        }\n    }\n}",
+          "new": "void PetBattle::Update(uint32 diff)\n{\n    if (BattleStatus != PETBATTLE_STATUS_RUNNING)\n        return;\n\n    if (RoundStatus == PETBATTLE_ROUND_RUNNING)\n        return;\n\n    m_UpdateTimer.Update(diff);\n\n    if (m_UpdateTimer.Passed())\n    {\n        m_UpdateTimer.Reset();\n\n        bool const firstFinished = Teams[PETBATTLE_TEAM_1]->Update();\n        bool const secondFinished = !firstFinished && Teams[PETBATTLE_TEAM_2]->Update();\n        if (firstFinished || secondFinished)\n        {\n            Teams[PETBATTLE_TEAM_1]->Ready = false;\n            Teams[PETBATTLE_TEAM_2]->Ready = false;\n            return;\n        }\n\n        for (uint8 i = 0; i < MAX_PETBATTLE_TEAM; i++)\n        {\n            if (!Teams[i]->Ready && Teams[i]->ActivePetID >= 0 && Teams[i]->ActivePetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS && Pets[Teams[i]->ActivePetID] && !Pets[Teams[i]->ActivePetID]->CanAttack())\n            {\n                if (Teams[i]->isRun)\n                    Teams[i]->Ready = true;\n\n                Teams[i]->ActiveAbilityId = 0;\n                Teams[i]->activeAbilityTurn = 0;\n                Teams[i]->activeAbilityTurnMax = 0;\n            }\n        }\n\n        if (Teams[PETBATTLE_TEAM_1]->Ready && Teams[PETBATTLE_TEAM_2]->Ready)\n        {\n            ProceedRound();\n\n            Teams[PETBATTLE_TEAM_1]->Ready = false;\n            Teams[PETBATTLE_TEAM_2]->Ready = false;\n        }\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetSwapAdmission",
+      "title": "Validate pet battle replacement range ownership and incoming locks",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 83,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp",
+        "src/server/game/PetBattle/PetBattle.h"
+      ],
+      "cls": "",
+      "case": "PetSwapAdmission",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "bool PetBattleTeam::CanSwap(int8 replacementPet)\n{\n    if (HasPendingMultiTurnCast())\n        return false;\n\n    if (PetBattleInstance->Pets[ActivePetID]->IsAlive() && (PetBattleInstance->Pets[ActivePetID]->States[BATTLEPET_STATE_swapOutLock] || PetBattleInstance->Pets[ActivePetID]->States[BATTLEPET_STATE_Mechanic_IsWebbed]))\n        return false;\n\n    if (replacementPet != PETBATTLE_NULL_ID)\n    {\n        if (!PetBattleInstance->Pets[replacementPet]->IsAlive())\n            return false;\n\n        if (PetBattleInstance->Pets[replacementPet]->States[BATTLEPET_STATE_swapInLock])\n            return false;\n    }\n\n    return true;\n}",
+          "new": "bool PetBattleTeam::CanSwap(int8 replacementPet)\n{\n    if (HasPendingMultiTurnCast())\n        return false;\n\n    if (PetBattleInstance->Pets[ActivePetID]->IsAlive() && (PetBattleInstance->Pets[ActivePetID]->States[BATTLEPET_STATE_swapOutLock] || PetBattleInstance->Pets[ActivePetID]->States[BATTLEPET_STATE_Mechanic_IsWebbed]))\n        return false;\n\n    if (replacementPet != PETBATTLE_NULL_SLOT)\n    {\n        uint32 const teamID = PetBattleInstance->Teams[PETBATTLE_TEAM_1] == this ? PETBATTLE_TEAM_1 : PETBATTLE_TEAM_2;\n        if (replacementPet < 0 || replacementPet >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS ||\n            !PetBattleInstance->Pets[replacementPet] || PetBattleInstance->Pets[replacementPet]->TeamID != teamID)\n            return false;\n\n        if (!PetBattleInstance->Pets[replacementPet]->IsAlive())\n            return false;\n\n        if (PetBattleInstance->Pets[replacementPet]->States[BATTLEPET_STATE_swapInLock])\n            return false;\n    }\n\n    return true;\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattle::SwapPet(uint32 teamID, int32 newFrontPetID, bool initial)\n{\n    assert(teamID < MAX_PETBATTLE_TEAM);\n\n    if (newFrontPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS)\n        return;\n\n    if (!Pets[newFrontPetID])\n        return;\n\n    if (!Teams[teamID]->CanSwap())\n        return;\n\n    int32 oldTeamFrontPetID = Teams[teamID]->ActivePetID;\n    bool const petChanged = newFrontPetID != oldTeamFrontPetID;\n\n    if (petChanged)\n        for (auto& aura : PetAuras)\n            if (!aura->Expired)\n                Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_OUT, PETBATTLE_CAST_TRIGGER_ALL);\n\n    uint32 eventFlags = 0;\n\n    if (!petChanged && BattleStatus != PETBATTLE_STATUS_CREATION)\n        eventFlags |= PETBATTLE_EVENT_FLAG_SKIP_TURN;\n\n    Teams[teamID]->ActivePetID = newFrontPetID;\n\n    PetBattleEvent battleEvent(PETBATTLE_EVENT_PET_SWAP, newFrontPetID, eventFlags);\n    battleEvent.UpdateFrontPet(!initial && newFrontPetID == oldTeamFrontPetID ? PETBATTLE_NULL_ID : newFrontPetID);\n\n    RoundEvents.push_back(battleEvent);\n\n    if (petChanged)\n        for (auto& aura : PetAuras)\n            if (!aura->Expired)\n                Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL);\n\n    Teams[teamID]->ActiveAbilityId = 0;\n    Teams[teamID]->activeAbilityTurn = 0;\n    Teams[teamID]->activeAbilityTurnMax = 0;\n\n    if (!initial && Teams[teamID]->isRun)\n        Teams[teamID]->Ready = true;\n\n    FightedPets[newFrontPetID] = true;\n}",
+          "new": "void PetBattle::SwapPet(uint32 teamID, int32 newFrontPetID, bool initial)\n{\n    assert(teamID < MAX_PETBATTLE_TEAM);\n\n    if (newFrontPetID < 0 || newFrontPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS)\n        return;\n\n    if (!Pets[newFrontPetID])\n        return;\n\n    if (!Teams[teamID]->CanSwap(newFrontPetID))\n        return;\n\n    int32 oldTeamFrontPetID = Teams[teamID]->ActivePetID;\n    bool const petChanged = newFrontPetID != oldTeamFrontPetID;\n\n    if (petChanged)\n        for (auto& aura : PetAuras)\n            if (!aura->Expired)\n                Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_OUT, PETBATTLE_CAST_TRIGGER_ALL);\n\n    uint32 eventFlags = 0;\n\n    if (!petChanged && BattleStatus != PETBATTLE_STATUS_CREATION)\n        eventFlags |= PETBATTLE_EVENT_FLAG_SKIP_TURN;\n\n    Teams[teamID]->ActivePetID = newFrontPetID;\n\n    PetBattleEvent battleEvent(PETBATTLE_EVENT_PET_SWAP, newFrontPetID, eventFlags);\n    battleEvent.UpdateFrontPet(!initial && newFrontPetID == oldTeamFrontPetID ? PETBATTLE_NULL_ID : newFrontPetID);\n\n    RoundEvents.push_back(battleEvent);\n\n    if (petChanged)\n        for (auto& aura : PetAuras)\n            if (!aura->Expired)\n                Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL);\n\n    Teams[teamID]->ActiveAbilityId = 0;\n    Teams[teamID]->activeAbilityTurn = 0;\n    Teams[teamID]->activeAbilityTurnMax = 0;\n\n    if (!initial && Teams[teamID]->isRun)\n        Teams[teamID]->Ready = true;\n\n    FightedPets[newFrontPetID] = true;\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.h",
+          "old": "bool CanSwap(int8 replacementPet = PETBATTLE_NULL_ID);",
+          "new": "bool CanSwap(int8 replacementPet = PETBATTLE_NULL_SLOT);",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetCriticalStatSource",
+      "title": "Use the attacking pet critical chance for battle pet damage",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 84,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "cls": "",
+      "case": "PetCriticalStatSource",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "int32 PetBattleAbilityEffect::CalculateDamage(int32 damage)\n{\n    /// Modifiers\n    damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);\n    damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);\n\n    /// Power\n    int32 modPct = CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5);\n\n    /// Mod Dealt / Taken\n    modPct += GetState(Caster, BATTLEPET_STATE_Mod_DamageDealtPercent);\n    modPct += GetState(Target, BATTLEPET_STATE_Mod_DamageTakenPercent);\n\n    /// Pet type damage mod\n    int32 abilityPetType = GetPetType();\n    uint32 targetPetType = BATTLEPET_PETTYPE_HUMANOID;\n\n    if (BattlePetSpeciesEntry const* targetSpeciesInfo = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Target]->Species))\n        targetPetType = targetSpeciesInfo->PetTypeEnum;\n\n    int32 modPetTypeDamagePercent = -100;\n\n    if (auto const& damageModInfo = sBattlePetTypeDamageModTable.GetRow(abilityPetType + 1))\n    {\n        switch (targetPetType)\n        {\n            case BATTLEPET_PETTYPE_HUMANOID:\n                modPetTypeDamagePercent += damageModInfo->Humanoid * 100;\n                break;\n            case BATTLEPET_PETTYPE_DRAGONKIN:\n                modPetTypeDamagePercent += damageModInfo->Dragonkin * 100;\n                break;\n            case BATTLEPET_PETTYPE_FLYING:\n                modPetTypeDamagePercent += damageModInfo->Flying * 100;\n                break;\n            case BATTLEPET_PETTYPE_UNDEAD:\n                modPetTypeDamagePercent += damageModInfo->Undead * 100;\n                break;\n            case BATTLEPET_PETTYPE_CRITTER:\n                modPetTypeDamagePercent += damageModInfo->Critter * 100;\n                break;\n            case BATTLEPET_PETTYPE_MAGIC:\n                modPetTypeDamagePercent += damageModInfo->Magic * 100;\n                break;\n            case BATTLEPET_PETTYPE_ELEMENTAL:\n                modPetTypeDamagePercent += damageModInfo->Elemental * 100;\n                break;\n            case BATTLEPET_PETTYPE_BEAST:\n                modPetTypeDamagePercent += damageModInfo->Beast * 100;\n                break;\n            case BATTLEPET_PETTYPE_AQUATIC:\n                modPetTypeDamagePercent += damageModInfo->Aquatic * 100;\n                break;\n            case BATTLEPET_PETTYPE_MECHANICAL:\n                modPetTypeDamagePercent += damageModInfo->Mechanical * 100;\n                break;\n            default:\n                break;\n        }\n    }\n\n    if (GetState(Caster, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Caster, BATTLEPET_STATE_Mod_PetTypeDamageDealtPercent);\n\n    if (GetState(Target, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Target, BATTLEPET_STATE_Mod_PetTypeDamageTakenPercent);\n\n    if (modPetTypeDamagePercent > 0)\n        Flags |= PETBATTLE_EVENT_FLAG_STRONG;\n    else if (modPetTypeDamagePercent < 0)\n        Flags |= PETBATTLE_EVENT_FLAG_WEAK;\n\n    // Critical\n    if (roll_chance_i(GetState(Target, BATTLEPET_STATE_Stat_CritChance)))\n    {\n        modPct += 100;\n        Flags |= PETBATTLE_EVENT_FLAG_CRITICAL;\n    }\n\n    // Passive: beast\n    if (GetState(Caster, BATTLEPET_STATE_Passive_Beast))\n        if (GetHealth(Caster) * 100 / GetMaxHealth(Caster) < 50)\n            modPetTypeDamagePercent += 25;\n\n    // Calculate result\n    damage += int32(CalculatePct(damage, modPct));\n    damage += int32(CalculatePct(damage, modPetTypeDamagePercent));\n\n    // Passive: magic\n    if (GetState(Target, BATTLEPET_STATE_Passive_Magic))\n        if (damage * 100 / GetMaxHealth(Target) >= 35)\n            damage = CalculatePct(GetMaxHealth(Target), 35);\n\n    return damage;\n}",
+          "new": "int32 PetBattleAbilityEffect::CalculateDamage(int32 damage)\n{\n    /// Modifiers\n    damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);\n    damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);\n\n    /// Power\n    int32 modPct = CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5);\n\n    /// Mod Dealt / Taken\n    modPct += GetState(Caster, BATTLEPET_STATE_Mod_DamageDealtPercent);\n    modPct += GetState(Target, BATTLEPET_STATE_Mod_DamageTakenPercent);\n\n    /// Pet type damage mod\n    int32 abilityPetType = GetPetType();\n    uint32 targetPetType = BATTLEPET_PETTYPE_HUMANOID;\n\n    if (BattlePetSpeciesEntry const* targetSpeciesInfo = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Target]->Species))\n        targetPetType = targetSpeciesInfo->PetTypeEnum;\n\n    int32 modPetTypeDamagePercent = -100;\n\n    if (auto const& damageModInfo = sBattlePetTypeDamageModTable.GetRow(abilityPetType + 1))\n    {\n        switch (targetPetType)\n        {\n            case BATTLEPET_PETTYPE_HUMANOID:\n                modPetTypeDamagePercent += damageModInfo->Humanoid * 100;\n                break;\n            case BATTLEPET_PETTYPE_DRAGONKIN:\n                modPetTypeDamagePercent += damageModInfo->Dragonkin * 100;\n                break;\n            case BATTLEPET_PETTYPE_FLYING:\n                modPetTypeDamagePercent += damageModInfo->Flying * 100;\n                break;\n            case BATTLEPET_PETTYPE_UNDEAD:\n                modPetTypeDamagePercent += damageModInfo->Undead * 100;\n                break;\n            case BATTLEPET_PETTYPE_CRITTER:\n                modPetTypeDamagePercent += damageModInfo->Critter * 100;\n                break;\n            case BATTLEPET_PETTYPE_MAGIC:\n                modPetTypeDamagePercent += damageModInfo->Magic * 100;\n                break;\n            case BATTLEPET_PETTYPE_ELEMENTAL:\n                modPetTypeDamagePercent += damageModInfo->Elemental * 100;\n                break;\n            case BATTLEPET_PETTYPE_BEAST:\n                modPetTypeDamagePercent += damageModInfo->Beast * 100;\n                break;\n            case BATTLEPET_PETTYPE_AQUATIC:\n                modPetTypeDamagePercent += damageModInfo->Aquatic * 100;\n                break;\n            case BATTLEPET_PETTYPE_MECHANICAL:\n                modPetTypeDamagePercent += damageModInfo->Mechanical * 100;\n                break;\n            default:\n                break;\n        }\n    }\n\n    if (GetState(Caster, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Caster, BATTLEPET_STATE_Mod_PetTypeDamageDealtPercent);\n\n    if (GetState(Target, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Target, BATTLEPET_STATE_Mod_PetTypeDamageTakenPercent);\n\n    if (modPetTypeDamagePercent > 0)\n        Flags |= PETBATTLE_EVENT_FLAG_STRONG;\n    else if (modPetTypeDamagePercent < 0)\n        Flags |= PETBATTLE_EVENT_FLAG_WEAK;\n\n    // Critical\n    if (roll_chance_i(GetState(Caster, BATTLEPET_STATE_Stat_CritChance)))\n    {\n        modPct += 100;\n        Flags |= PETBATTLE_EVENT_FLAG_CRITICAL;\n    }\n\n    // Passive: beast\n    if (GetState(Caster, BATTLEPET_STATE_Passive_Beast))\n        if (GetHealth(Caster) * 100 / GetMaxHealth(Caster) < 50)\n            modPetTypeDamagePercent += 25;\n\n    // Calculate result\n    damage += int32(CalculatePct(damage, modPct));\n    damage += int32(CalculatePct(damage, modPetTypeDamagePercent));\n\n    // Passive: magic\n    if (GetState(Target, BATTLEPET_STATE_Passive_Magic))\n        if (damage * 100 / GetMaxHealth(Target) >= 35)\n            damage = CalculatePct(GetMaxHealth(Target), 35);\n\n    return damage;\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetImplicitTargetSelection",
+      "title": "Select all authored battle pet team slots and both head targets",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 85,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "cls": "",
+      "case": "PetImplicitTargetSelection",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget /*target*/)\n{\n    PetBattleTeam* battleTeam;\n    switch (Handlers[EffectInfo->BattlePetEffectPropertiesID].ImplicitTarget)\n    {\n        case PETBATTLE_TARGET_CASTER:\n            return AddTarget(Caster);\n        case PETBATTLE_TARGET_TARGET:\n            return AddTarget(GetActiveOpponent());\n        case PETBATTLE_TARGET_CASTER_TEAM:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            for (size_t slot = 0; slot < battleTeam->TeamPetCount; ++slot)\n                AddTarget(battleTeam->TeamPets[slot]->ID);\n            return true;\n        case PETBATTLE_TARGET_CASTER_TEAM_0:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount <= 1)\n                return AddTarget(battleTeam->TeamPets[0]->ID);\n            return false;\n        case PETBATTLE_TARGET_CASTER_TEAM_1:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount <= 2)\n                return AddTarget(battleTeam->TeamPets[1]->ID);\n            return false;\n        case PETBATTLE_TARGET_CASTER_TEAM_2:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount <= 3)\n                return AddTarget(battleTeam->TeamPets[2]->ID);\n            return false;\n        case PETBATTLE_TARGET_TARGET_TEAM:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            for (auto slot = 0; slot < battleTeam->TeamPetCount; ++slot)\n                return AddTarget(battleTeam->TeamPets[slot]->ID);\n            return true;\n        case PETBATTLE_TARGET_TARGET_TEAM_0:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount <= 1)\n                return AddTarget(battleTeam->TeamPets[PETBATTLE_TEAM_1]->ID);\n            return false;\n        case PETBATTLE_TARGET_TARGET_TEAM_1:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount <= 2)\n                return AddTarget(battleTeam->TeamPets[1]->ID);\n            return false;\n        case PETBATTLE_TARGET_TARGET_TEAM_2:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount <= 3)\n                return AddTarget(battleTeam->TeamPets[2]->ID);\n            return false;\n        case PETBATTLE_TARGET_ALL:\n            for (size_t slot = 0; slot < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++slot)\n                AddTarget(slot);\n            return true;\n        case PETBATTLE_TARGET_CASTER_TEAM_UNCONDITIONAL:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            for (size_t slot = 0; slot < battleTeam->TeamPetCount; ++slot)\n                if (PetBattleInstance->Pets[slot])\n                    Targets.push_back(battleTeam->TeamPets[slot]->ID);\n            return true;\n        case PETBATTLE_TARGET_HEAD:\n            return AddTarget(Caster) || AddTarget(GetActiveOpponent());\n        default:\n            return false;\n    }\n}",
+          "new": "bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget target)\n{\n    PetBattleTeam* battleTeam;\n    switch (target)\n    {\n        case PETBATTLE_TARGET_CASTER:\n            return AddTarget(Caster);\n        case PETBATTLE_TARGET_TARGET:\n            return AddTarget(GetActiveOpponent());\n        case PETBATTLE_TARGET_CASTER_TEAM:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            for (size_t slot = 0; slot < battleTeam->TeamPetCount; ++slot)\n                AddTarget(battleTeam->TeamPets[slot]->ID);\n            return true;\n        case PETBATTLE_TARGET_CASTER_TEAM_0:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount > 0)\n                return AddTarget(battleTeam->TeamPets[0]->ID);\n            return false;\n        case PETBATTLE_TARGET_CASTER_TEAM_1:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount > 1)\n                return AddTarget(battleTeam->TeamPets[1]->ID);\n            return false;\n        case PETBATTLE_TARGET_CASTER_TEAM_2:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount > 2)\n                return AddTarget(battleTeam->TeamPets[2]->ID);\n            return false;\n        case PETBATTLE_TARGET_TARGET_TEAM:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            for (auto slot = 0; slot < battleTeam->TeamPetCount; ++slot)\n                AddTarget(battleTeam->TeamPets[slot]->ID);\n            return true;\n        case PETBATTLE_TARGET_TARGET_TEAM_0:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount > 0)\n                return AddTarget(battleTeam->TeamPets[PETBATTLE_TEAM_1]->ID);\n            return false;\n        case PETBATTLE_TARGET_TARGET_TEAM_1:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount > 1)\n                return AddTarget(battleTeam->TeamPets[1]->ID);\n            return false;\n        case PETBATTLE_TARGET_TARGET_TEAM_2:\n            battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n            if (battleTeam->TeamPetCount > 2)\n                return AddTarget(battleTeam->TeamPets[2]->ID);\n            return false;\n        case PETBATTLE_TARGET_ALL:\n            for (size_t slot = 0; slot < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++slot)\n                AddTarget(slot);\n            return true;\n        case PETBATTLE_TARGET_CASTER_TEAM_UNCONDITIONAL:\n            battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n            for (size_t slot = 0; slot < battleTeam->TeamPetCount; ++slot)\n                if (battleTeam->TeamPets[slot])\n                    Targets.push_back(battleTeam->TeamPets[slot]->ID);\n            return true;\n        case PETBATTLE_TARGET_HEAD:\n        {\n            bool const casterAdded = AddTarget(Caster);\n            bool const opponentAdded = AddTarget(GetActiveOpponent());\n            return casterAdded || opponentAdded;\n        }\n        default:\n            return false;\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetMultiTargetExecution",
+      "title": "Execute pet battle effects for every selected target",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 86,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "cls": "",
+      "case": "PetMultiTargetExecution",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::Execute()\n{\n    if (!Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)\n        return false;\n\n    if (Targets.empty())\n        return false;\n\n    StopChain = false;\n    bool result = true;\n\n    for (auto target : Targets)\n    {\n        Target = target;\n        Flags = 0;\n\n        if (PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])\n            Flags |= PETBATTLE_EVENT_FLAG_DODGE;\n\n        auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();\n        result &= _result;\n        if (result)\n            break;\n    }\n\n    return result;\n}",
+          "new": "bool PetBattleAbilityEffect::Execute()\n{\n    if (!Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)\n        return false;\n\n    if (Targets.empty())\n        return false;\n\n    StopChain = false;\n    bool result = true;\n\n    for (auto target : Targets)\n    {\n        Target = target;\n        Flags = 0;\n\n        if (PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])\n            Flags |= PETBATTLE_EVENT_FLAG_DODGE;\n\n        auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();\n        result &= _result;\n    }\n\n    return result;\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetEffectHandlerBounds",
+      "title": "Reject battle pet effect indices outside the handler table",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 87,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "cls": "",
+      "case": "PetEffectHandlerBounds",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "void PetBattleAbilityEffect::SelectTargets()\n{\n    if (EffectInfo->BattlePetEffectPropertiesID > MAX_PETBATTLE_EFFECT_TYPES)\n        TC_LOG_ERROR(\"battlepet\", \"Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u\", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);\n\n    Targets.clear();\n    AddTarget(Handlers[EffectInfo->BattlePetEffectPropertiesID].ImplicitTarget);\n}",
+          "new": "void PetBattleAbilityEffect::SelectTargets()\n{\n    Targets.clear();\n    if (EffectInfo->BattlePetEffectPropertiesID >= MAX_PETBATTLE_EFFECT_TYPES)\n    {\n        TC_LOG_ERROR(\"battlepet\", \"Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u\", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);\n        return;\n    }\n    AddTarget(Handlers[EffectInfo->BattlePetEffectPropertiesID].ImplicitTarget);\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::Execute()\n{\n    if (!Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)\n        return false;\n\n    if (Targets.empty())\n        return false;\n\n    StopChain = false;\n    bool result = true;\n\n    for (auto target : Targets)\n    {\n        Target = target;\n        Flags = 0;\n\n        if (PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])\n            Flags |= PETBATTLE_EVENT_FLAG_DODGE;\n\n        auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();\n        result &= _result;\n    }\n\n    return result;\n}",
+          "new": "bool PetBattleAbilityEffect::Execute()\n{\n    if (EffectInfo->BattlePetEffectPropertiesID >= MAX_PETBATTLE_EFFECT_TYPES ||\n        !Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)\n        return false;\n\n    if (Targets.empty())\n        return false;\n\n    StopChain = false;\n    bool result = true;\n\n    for (auto target : Targets)\n    {\n        Target = target;\n        Flags = 0;\n\n        if (PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])\n            Flags |= PETBATTLE_EVENT_FLAG_DODGE;\n\n        auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();\n        result &= _result;\n    }\n\n    return result;\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetHumanoidPassiveHeal",
+      "title": "Apply the humanoid pet passive heal instead of returning its amount as a boolean",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 88,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "cls": "",
+      "case": "PetHumanoidPassiveHeal",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleHealPercent()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    /// No sure if all ability should not use spell power on this effect\n    /// Passive humanoid http://wowhead.com/petability=726\n    if (AbilityID == 726)\n    {\n        int32 modPct = 1;\n        int32 heal = CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]);\n\n        /// Modifiers Dealt / Taken\n        modPct += GetState(Caster, BATTLEPET_STATE_Mod_HealingDealtPercent);\n        modPct += GetState(Target, BATTLEPET_STATE_Mod_HealingTakenPercent);\n\n        return heal + CalculatePct(heal, modPct);\n    }\n\n    // Recovery\n    int32 heal = CalculateHeal(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));\n\n    return Heal(Target, heal);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleHealPercent()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    /// No sure if all ability should not use spell power on this effect\n    /// Passive humanoid http://wowhead.com/petability=726\n    if (AbilityID == 726)\n    {\n        int32 modPct = 0;\n        int32 heal = CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]);\n\n        /// Modifiers Dealt / Taken\n        modPct += GetState(Caster, BATTLEPET_STATE_Mod_HealingDealtPercent);\n        modPct += GetState(Target, BATTLEPET_STATE_Mod_HealingTakenPercent);\n\n        return Heal(Target, heal + CalculatePct(heal, modPct));\n    }\n\n    // Recovery\n    int32 heal = CalculateHeal(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));\n\n    return Heal(Target, heal);\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetInfiniteAuraDuration",
+      "title": "Retain the infinite duration sentinel while processing pet battle auras",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 89,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetInfiniteAuraDuration",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattleAura::Process(PetBattle* petBattle)\n{\n    if (Duration != -1 && Turn > MaxDuration && !Expired)\n    {\n        Expire(petBattle);\n        return;\n    }\n\n    if (auto abilityInfo = sBattlePetAbilityStore.LookupEntry(AbilityID))\n    {\n        PetBattleAbilityTurn abilityTurn;\n        memset(&abilityTurn, 0, sizeof abilityTurn);\n\n        uint8 turnCount = 0;\n        uint8 maxTurnID = 0;\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            turnCount++;\n            maxTurnID = std::max(maxTurnID, abilityTurnInfo->OrderIndex);\n        }\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            if (abilityTurnInfo->OrderIndex != Turn && turnCount != 1 && maxTurnID != 1)\n                continue;\n\n            if (abilityTurnInfo->TurnTypeEnum && abilityTurnInfo->EventTypeEnum != PETBATTLE_ABILITY_TURN0_PROC_ON_TURN)\n                continue;\n\n            for (auto const& abilityEffectInfo : sBattlePetAbilityEffectStore)\n            {\n                if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)\n                    continue;\n\n                PetBattleAbilityEffect effect;\n                effect.EffectInfo = abilityEffectInfo;\n                effect.AbilityTurn = &abilityTurn;\n                effect.PetBattleInstance = petBattle;\n                effect.Caster = CasterPetID;\n                effect.StopChain = false;\n                effect.AbilityID = AbilityID;\n                effect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;\n                effect.ReportFailAsImmune = false;\n                effect.Targets.push_back(TargetPetID);\n\n                auto itr = petBattle->RoundEvents.end();\n\n                if (!effect.Execute())\n                    abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);\n\n                /// Update \"buff turn\" on all event triggered by the current ability effect\n                for (; itr != petBattle->RoundEvents.end(); ++itr)\n                    itr->BuffTurn = Turn;\n\n                if (effect.StopChain)\n                    break;\n            }\n        }\n    }\n\n    PetBattleEvent eventBuffChange(PETBATTLE_EVENT_BUFF_CHANGE, CasterPetID);\n    eventBuffChange.UpdateBuff(TargetPetID, ID, AbilityID, Duration, Turn);\n    petBattle->RoundEvents.push_back(eventBuffChange);\n\n    Turn++;\n    Duration--;\n}",
+          "new": "void PetBattleAura::Process(PetBattle* petBattle)\n{\n    if (Duration != -1 && Turn > MaxDuration && !Expired)\n    {\n        Expire(petBattle);\n        return;\n    }\n\n    if (auto abilityInfo = sBattlePetAbilityStore.LookupEntry(AbilityID))\n    {\n        PetBattleAbilityTurn abilityTurn;\n        memset(&abilityTurn, 0, sizeof abilityTurn);\n\n        uint8 turnCount = 0;\n        uint8 maxTurnID = 0;\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            turnCount++;\n            maxTurnID = std::max(maxTurnID, abilityTurnInfo->OrderIndex);\n        }\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            if (abilityTurnInfo->OrderIndex != Turn && turnCount != 1 && maxTurnID != 1)\n                continue;\n\n            if (abilityTurnInfo->TurnTypeEnum && abilityTurnInfo->EventTypeEnum != PETBATTLE_ABILITY_TURN0_PROC_ON_TURN)\n                continue;\n\n            for (auto const& abilityEffectInfo : sBattlePetAbilityEffectStore)\n            {\n                if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)\n                    continue;\n\n                PetBattleAbilityEffect effect;\n                effect.EffectInfo = abilityEffectInfo;\n                effect.AbilityTurn = &abilityTurn;\n                effect.PetBattleInstance = petBattle;\n                effect.Caster = CasterPetID;\n                effect.StopChain = false;\n                effect.AbilityID = AbilityID;\n                effect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;\n                effect.ReportFailAsImmune = false;\n                effect.Targets.push_back(TargetPetID);\n\n                auto itr = petBattle->RoundEvents.end();\n\n                if (!effect.Execute())\n                    abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);\n\n                /// Update \"buff turn\" on all event triggered by the current ability effect\n                for (; itr != petBattle->RoundEvents.end(); ++itr)\n                    itr->BuffTurn = Turn;\n\n                if (effect.StopChain)\n                    break;\n            }\n        }\n    }\n\n    PetBattleEvent eventBuffChange(PETBATTLE_EVENT_BUFF_CHANGE, CasterPetID);\n    eventBuffChange.UpdateBuff(TargetPetID, ID, AbilityID, Duration, Turn);\n    petBattle->RoundEvents.push_back(eventBuffChange);\n\n    Turn++;\n    if (Duration != -1)\n        Duration--;\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetAuraEventTurn",
+      "title": "Attribute newly generated pet aura events to their actual buff turn",
+      "kind": "native_petbattle",
+      "batch": 9,
+      "index": 90,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetAuraEventTurn",
+      "binding": "native PetBattle and matching26972 BattlePetAbility data",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattleAura::Process(PetBattle* petBattle)\n{\n    if (Duration != -1 && Turn > MaxDuration && !Expired)\n    {\n        Expire(petBattle);\n        return;\n    }\n\n    if (auto abilityInfo = sBattlePetAbilityStore.LookupEntry(AbilityID))\n    {\n        PetBattleAbilityTurn abilityTurn;\n        memset(&abilityTurn, 0, sizeof abilityTurn);\n\n        uint8 turnCount = 0;\n        uint8 maxTurnID = 0;\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            turnCount++;\n            maxTurnID = std::max(maxTurnID, abilityTurnInfo->OrderIndex);\n        }\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            if (abilityTurnInfo->OrderIndex != Turn && turnCount != 1 && maxTurnID != 1)\n                continue;\n\n            if (abilityTurnInfo->TurnTypeEnum && abilityTurnInfo->EventTypeEnum != PETBATTLE_ABILITY_TURN0_PROC_ON_TURN)\n                continue;\n\n            for (auto const& abilityEffectInfo : sBattlePetAbilityEffectStore)\n            {\n                if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)\n                    continue;\n\n                PetBattleAbilityEffect effect;\n                effect.EffectInfo = abilityEffectInfo;\n                effect.AbilityTurn = &abilityTurn;\n                effect.PetBattleInstance = petBattle;\n                effect.Caster = CasterPetID;\n                effect.StopChain = false;\n                effect.AbilityID = AbilityID;\n                effect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;\n                effect.ReportFailAsImmune = false;\n                effect.Targets.push_back(TargetPetID);\n\n                auto itr = petBattle->RoundEvents.end();\n\n                if (!effect.Execute())\n                    abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);\n\n                /// Update \"buff turn\" on all event triggered by the current ability effect\n                for (; itr != petBattle->RoundEvents.end(); ++itr)\n                    itr->BuffTurn = Turn;\n\n                if (effect.StopChain)\n                    break;\n            }\n        }\n    }\n\n    PetBattleEvent eventBuffChange(PETBATTLE_EVENT_BUFF_CHANGE, CasterPetID);\n    eventBuffChange.UpdateBuff(TargetPetID, ID, AbilityID, Duration, Turn);\n    petBattle->RoundEvents.push_back(eventBuffChange);\n\n    Turn++;\n    if (Duration != -1)\n        Duration--;\n}",
+          "new": "void PetBattleAura::Process(PetBattle* petBattle)\n{\n    if (Duration != -1 && Turn > MaxDuration && !Expired)\n    {\n        Expire(petBattle);\n        return;\n    }\n\n    if (auto abilityInfo = sBattlePetAbilityStore.LookupEntry(AbilityID))\n    {\n        PetBattleAbilityTurn abilityTurn;\n        memset(&abilityTurn, 0, sizeof abilityTurn);\n\n        uint8 turnCount = 0;\n        uint8 maxTurnID = 0;\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            turnCount++;\n            maxTurnID = std::max(maxTurnID, abilityTurnInfo->OrderIndex);\n        }\n\n        for (auto const& abilityTurnInfo : sBattlePetAbilityTurnStore)\n        {\n            if (abilityTurnInfo->BattlePetAbilityID != AbilityID)\n                continue;\n\n            if (abilityTurnInfo->OrderIndex != Turn && turnCount != 1 && maxTurnID != 1)\n                continue;\n\n            if (abilityTurnInfo->TurnTypeEnum && abilityTurnInfo->EventTypeEnum != PETBATTLE_ABILITY_TURN0_PROC_ON_TURN)\n                continue;\n\n            for (auto const& abilityEffectInfo : sBattlePetAbilityEffectStore)\n            {\n                if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)\n                    continue;\n\n                PetBattleAbilityEffect effect;\n                effect.EffectInfo = abilityEffectInfo;\n                effect.AbilityTurn = &abilityTurn;\n                effect.PetBattleInstance = petBattle;\n                effect.Caster = CasterPetID;\n                effect.StopChain = false;\n                effect.AbilityID = AbilityID;\n                effect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;\n                effect.ReportFailAsImmune = false;\n                effect.Targets.push_back(TargetPetID);\n\n                auto const previousEventCount = petBattle->RoundEvents.size();\n\n                if (!effect.Execute())\n                    abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);\n\n                /// Update \"buff turn\" on all event triggered by the current ability effect\n                auto itr = petBattle->RoundEvents.begin();\n                std::advance(itr, previousEventCount);\n                for (; itr != petBattle->RoundEvents.end(); ++itr)\n                    itr->BuffTurn = Turn;\n\n                if (effect.StopChain)\n                    break;\n            }\n        }\n    }\n\n    PetBattleEvent eventBuffChange(PETBATTLE_EVENT_BUFF_CHANGE, CasterPetID);\n    eventBuffChange.UpdateBuff(TargetPetID, ID, AbilityID, Duration, Turn);\n    petBattle->RoundEvents.push_back(eventBuffChange);\n\n    Turn++;\n    if (Duration != -1)\n        Duration--;\n}",
+          "count": 1
+        }
+      ]
     }
   ],
   "excluded_candidates": [
@@ -2113,6 +2352,10 @@
     {
       "key": "SmiteAbsorbDamageWidth",
       "reason": "The native DamageInfo constructor clamps non-healing damage to UINT32_MAX;the local uint32 is correct. Withdrawal restores unchanged production code. Native healing info is separately unsigned64. Absorb fixtures now honor this domain. Intangible has a real independent positive aura amount narrowing;AMS has a real health-threshold/remainder overflow with multiple legal uint32 hits."
+    },
+    {
+      "key": "PetRoundMissingSlots",
+      "reason": "MSVC ASAN pinned baseline safely completes the two-pet round: loop member-address calculation occurs before the null guard but no cooldown value is read for an absent pet. Source cleanup withdrawn and not counted as a reproduced runtime repair; retained two-pet native traversal remains useful."
     }
   ]
 }

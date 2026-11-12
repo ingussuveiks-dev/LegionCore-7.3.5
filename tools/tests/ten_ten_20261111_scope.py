@@ -25,7 +25,12 @@ def retained_source(path,source=None):
  verify();return normalize(path,source if source is not None else(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape'))
 def require_fixed(keys=None):
  verify();selected=[e for e in PLAN['changes']if keys is None or e['key']in keys]
- for e in selected:
-  for edit in e['edits']:assert(ROOT/edit['path']).read_text(encoding='utf-8-sig',errors='surrogateescape').count(edit['new'])==edit.get('count',1),e['key']
+ sources={p:(ROOT/p).read_text(encoding='utf-8-sig',errors='surrogateescape')for e in PLAN['changes']for p in e['paths']}
+ chosen={e['key']for e in selected}
+ for e in reversed(PLAN['changes']):
+  for edit in reversed(e['edits']):
+   path=edit['path'];count=edit.get('count',1)
+   if e['key']in chosen:assert sources[path].count(edit['new'])==count,e['key']
+   sources[path]=sources[path].replace(edit['new'],edit['old'],count)
  print('PASS exact source scope for',len(selected),'implemented selected repairs;authorized total100 is separate')
 if __name__=='__main__':require_fixed()
