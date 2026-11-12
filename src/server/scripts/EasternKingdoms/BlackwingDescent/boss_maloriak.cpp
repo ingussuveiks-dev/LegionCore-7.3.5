@@ -690,12 +690,14 @@ public:
         }
 
         EventMap events;
-        Unit* creOwner;
+        ObjectGuid ownerGuid;
         void IsSummonedBy(Unit* owner)
         {
-            if (!owner->ToCreature())
+            ownerGuid.Clear();
+            if (!owner || !owner->ToCreature())
                 return;
-            creOwner = owner->ToCreature();
+            ownerGuid = owner->GetGUID();
+            Creature* creOwner = owner->ToCreature();
             me->SetOrientation(creOwner->GetOrientation());
             Position pos = owner->GetNearPosition(owner->GetObjectSize()/2.0f, 0.0f);
             me->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), me->GetPositionZ(), me->GetOrientation());
@@ -708,6 +710,12 @@ public:
 
             if (events.ExecuteEvent() == EVENT_MAGMA_JETS_T)
             {
+                Creature* creOwner = ObjectAccessor::GetCreature(*me, ownerGuid);
+                if (!creOwner || !creOwner->IsAlive())
+                {
+                    me->DespawnOrUnsummon();
+                    return;
+                }
                 Position newPos = me->GetNearPosition(5.5f, 0.0f);
                 me->NearTeleportTo(newPos.GetPositionX(), newPos.GetPositionY(), me->GetPositionZ(), me->GetOrientation());
                 if (creOwner->GetDistance(me) >= 50.0f)
