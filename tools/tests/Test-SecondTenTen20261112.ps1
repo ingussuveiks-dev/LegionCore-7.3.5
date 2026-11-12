@@ -1,14 +1,17 @@
-param([switch]$Baseline,[string]$Case='')
+param([int]$Batch=1,[switch]$Baseline,[string]$Case='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/second-ten-ten-20261112/$(Get-Date -Format yyyyMMdd-HHmmss-fff)";[void][IO.Directory]::CreateDirectory($out)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $mode=if($Baseline){'baseline'}else{'fixed'}
- & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/prepare_second_ten_ten_20261112.py" $out $mode
+ $prepare=if($Batch -eq 1){'prepare_second_ten_ten_20261112.py'}elseif($Batch -eq 2){'prepare_second_ten_ten_20261112_second.py'}else{throw 'Unimplemented batch'}
+ & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$prepare" $out $mode
  if($LASTEXITCODE){throw 'Extraction failed'}
  $keys=@(Get-Content "$out/cases.json" -Raw|ConvertFrom-Json);$indices=if($Case){$index=[Array]::IndexOf($keys,$Case);if($index -lt 0){throw 'Unknown case'};@($index)}else{@(0..9)}
  $failures=@('Ordinary forfeit applies health penalty','Actual wild GUID is released exactly once','Repeated finish cannot replay XP or callbacks','A temporary swap lock cannot cancel earned experience','All crossed native thresholds trigger their level side effects','MoveType zero must reach its leave switch arm','Equal-weight ordering must be irreflexive','A fresh proposal requires fresh answers from both sides','Replacing a pending request must release its earlier allocation','Admission must measure the actual two participants')
+ if($Batch -eq 2){$failures=@('An unrelated player cannot cancel another duel request','A dead challenged player is rejected','A webbed forfeiter cannot flee an unwebbed opponent','A dead active pet cannot admit ordinary abilities','Native type-restricted other allies receive12 once and caster is untouched','Marked target supplies the native bonus and damage is calculated once','Aquatic pet reduces native periodic fungus damage by half','Use-based ramping still advances on a miss','Native removal expires the named aura only on its actual target','Native weather bonus is included before division across three enemies')}
+ $testSource=if($Batch -eq 1){'SecondTenTen20261112FirstTest.cpp'}else{'SecondTenTen20261112SecondTest.cpp'}
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- [IO.File]::WriteAllText("$out/build.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /MD /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/SecondTenTen20261112FirstTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nexit /b %errorlevel%`n")
+ [IO.File]::WriteAllText("$out/build.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /MD /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/$testSource`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nexit /b %errorlevel%`n")
  & cmd.exe /d /c "`"$out/build.cmd`" > `"$out/build.log`" 2>&1";if($LASTEXITCODE){Get-Content "$out/build.log" -Tail 18;throw 'Fixture compilation failed'}
  foreach($index in $indices){
   [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`n`"$out/test.exe`" $index`nexit /b %errorlevel%`n")
