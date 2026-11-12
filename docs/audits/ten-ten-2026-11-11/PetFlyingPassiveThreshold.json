@@ -1,0 +1,383 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "PetFlyingPassiveThreshold",
+  "batch": 10,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Apply the flying battle pet speed passive only above half health",
+  "paths": [
+    "src/server/game/PetBattle/PetBattle.cpp"
+  ],
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 10 -Case PetFlyingPassiveThreshold",
+  "counterfactual": "Add -Baseline;expected-broken control paired with repaired pass.",
+  "checks": {
+    "asan": "Final complete production methods/classes and explicit history-record/Smart-action projections pass;actual idempotent SQL executes in a relational shadow. All ten pinned controls fail their repaired expectations andpaired fixed runs pass. Recent6b legal-hit histories,12b origin total,uint64 saturation;3.5b ShadowMend pool;3b missinghealth ->900m ordinary Protector effect;Shout float child/flat-health apply-remove/Player stat refresh;duplicate clone binding deletion;missing targets andNPC/phase source guards;wide authored health gains;elemental applied-state balance;all six weather recipients/replacement/first-expiry/final-expiry/miss;native flying half-health boundary. Shared sixth,seventh,eighth,ninth fixtures rerun.",
+    "native": "All first100 native selected scopes pass. Final group uses actual Unit::DealDamage with two legal3b hits,real per-origin unsigned64 APIs/native first-clock initialization andone-second shift;real ShadowMend calc/proc;native Protector launch/effect setter;Shout request plusreal Player aura ChangeAmount/removal andmax-health refresh;liveone-handler69893 data;real Smart missing-invoker dispatch;native LastStand/VampiricBlood;actual DB2 elemental states/all six weather recipients/partial andfinal cleanup;matching26972 Flying239 description andnative speed. Native Creature constructor/loot eligibility regression passes andprints actual member15736. Full-core ASAN isnotclaimed.",
+    "linked": "Canonical final a7c3c399 Release passes all100 focused linked paths andthe complete retained TimeLoop/native-healing/Mending/target-profile/Cordana/46group/core367 chain,including actual post-heal notification andlock. Scepter canonical Release check passes. Referenced history ABI isunsigned64;unreferenced origin-only getters may be OPTREF-discarded inworldserver butarelinked/tested in thenative probe. New Player/Creature/Unit expected physical fields arederived from real canonical accessors andthe native Creature layout check;raw decoded instructions are never rewritten.",
+    "runtime": "Final task-owned canonical PID3108 freshready,gracefulshutdown0,exit0/gone,empty stderr,protected hashesunchanged. Earlier100 promotion PID15940 also clean andapplied the clone migration. No new/changed canonical orown crash,appendedDBErrors,unexplained server warning/error/assertion. MixedDBErrorsremains7111bytes/originalhash. User/unknown servers andMariaDB service untouched.",
+    "database": "Actual updater applied2026_11_12_01_clone_weapon_single_dispatch.sql,hash7C6DA4517F647BBD767B508664095249443F0D89,stateRELEASED. Readback69893 has only spell_gen_clone_weapon_aura;the obsolete C++ class/registration isremoved toavoid unassigned-script diagnostics. No character/schema changes. Old-binary recovery requires restoring its matching obsolete binding;current deployment shouldretain the repaired one-handler data.",
+    "retained": "Previous50 and65-file healing source certificates pass after exact normalization ofall100 deltas. ABI helperscross-check three native teleport flags andthe Unit queue;native Creature counter offset15736 verifies the inherited960byte delta. Two120-entry histories add960bytes perUnit;all original game/scripts/Main final-link inputs were rebuilt. Native damage records remainUINT32 bounded;only cumulative history/healing/buff amounts arewide.",
+    "investigation": "Local matching26972 DB2/world/hotfix/native code examined first. Native Flying239 explicitly says50percent speed above50percenthealth. Whole weather removal traced:losing one recipient retains global weather until the lastrecipient expires. Baseline fixture clock0 needs its actual initial Unit::Update(0) before measuring oneelapsed interval;the first overbroad Flying-name scan incorrectly overwrote valid239evidence with unrelated flight abilities341/852. Both fixture errors corrected andevidence retained. The original Smite falsepositive andmissing-slot crash hypothesis remain excluded. Exploratory legacy artifact PE checksare compared withpre-task3f19 rollback;their unresolved assertions remain visible andarenot certified aspassed orclient traversal."
+  },
+  "canonical_worldserver_sha256": "a7c3c39959b83f8f7c5496f4445bc1c1967c6a32affac3dc1ac52ee836b73466",
+  "scope": "Each shared root family counted once. History widening includes bothorigins/capture/sums/overlap-safe shift/debugsize. Shout family includes its actual native stat/aura consumers. Clone change removes exact duplicate binding andobsolete class. Pet weather includesallrecipient replacement andpartial/final cleanup. No quest/item/progression grants,character changes ornetwork packet layout changes.",
+  "legacy_artifact_pe": {
+    "status": "OPEN_LEGACY_ARTIFACT_PE_CERTIFICATES_SEPARATE_FROM_PASSING_SELECTED100_AND_COMPLETE_CORE_CHAIN",
+    "baseline_failures": [
+      [
+        "verify_acquisition_login_recovery_release.py",
+        "verify_acquisition_login_recovery_release.py",
+        122,
+        ""
+      ],
+      [
+        "verify_ashbringer_pickup_admission_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_cue_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_guards_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_offer_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_timers_release.py",
+        "verify_hruthnir_timers_release.py",
+        75,
+        "(192, 5000, [('movdqu', 'xmmword ptr [rsp + 0x30], xmm0'), ('lea', 'rdx, [rip + 0x12680ae]'), ('mov', 'qword ptr [rbp - 0x50], rdx'), ('mov', 'qword ptr [rbp - 0x48], rbx'), ('mov', 'qword ptr [rbp - 0x40], rcx'), ('mov', 'qword ptr [rbp - 0x38], rax'), ('movdqu', 'xmmword ptr [rsp + 0x48], xmm0'), ('lea', 'rax, [rbp - 0x50]'), ('mov', 'qword ptr [rbp - 0x18], rax'), ('lea', 'r8, [rbp - 0x50]'), ('mov', 'edx, 0x1388'), ('lea', 'rcx, [rbx + 0xc0]')])"
+      ],
+      [
+        "verify_magnar_intro_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_monk_jorvinax_release.py",
+        "verify_monk_jorvinax_release.py",
+        29,
+        ""
+      ],
+      [
+        "verify_monk_nine_arrival_release.py",
+        "verify_monk_chen_presentation_release.py",
+        56,
+        ""
+      ],
+      [
+        "verify_sharasdal_acquisition_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_kraliss_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_lady_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_wave_contact_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_silver_hand_rescue_release.py",
+        "verify_silver_hand_rescue_release.py",
+        90,
+        ""
+      ],
+      [
+        "verify_truthguard_pickup_admission_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_truthguard_travel_click_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_warswords_arrival_legacy_release.py",
+        "verify_scenario_lfg_release.py",
+        54,
+        "Expected one symbol for ?_Do_call@?$_Func_impl_no_alloc@V<lambda_1>@?1??OnPlayerEnter@instance_warswords_InstanceMapScript@instance_warswords@@, got 0"
+      ],
+      [
+        "verify_warswords_helya_channel_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_warswords_return_admission_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_silver_hand_mordoth_motion_release.py",
+        "verify_silver_hand_mordoth_motion_release.py",
+        25,
+        ""
+      ],
+      [
+        "verify_tuure_ally_damage_release.py",
+        "verify_tuure_ally_damage_release.py",
+        42,
+        ""
+      ]
+    ],
+    "current_failures": [
+      [
+        "verify_acquisition_login_recovery_release.py",
+        "verify_acquisition_login_recovery_release.py",
+        122,
+        ""
+      ],
+      [
+        "verify_ashbringer_pickup_admission_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_cue_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_gossip_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_guards_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_home_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_offer_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_hruthnir_timers_release.py",
+        "verify_hruthnir_timers_release.py",
+        75,
+        "(192, 5000, [('movdqu', 'xmmword ptr [rsp + 0x30], xmm0'), ('lea', 'rdx, [rip + 0x126d8be]'), ('mov', 'qword ptr [rbp - 0x50], rdx'), ('mov', 'qword ptr [rbp - 0x48], rbx'), ('mov', 'qword ptr [rbp - 0x40], rcx'), ('mov', 'qword ptr [rbp - 0x38], rax'), ('movdqu', 'xmmword ptr [rsp + 0x48], xmm0'), ('lea', 'rax, [rbp - 0x50]'), ('mov', 'qword ptr [rbp - 0x18], rax'), ('lea', 'r8, [rbp - 0x50]'), ('mov', 'edx, 0x1388'), ('lea', 'rcx, [rbx + 0xc0]')])"
+      ],
+      [
+        "verify_magnar_finale_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_magnar_intro_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_magnar_waves_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_monk_chen_early_presentation_release.py",
+        "verify_monk_chen_presentation_release.py",
+        56,
+        ""
+      ],
+      [
+        "verify_monk_chen_presentation_release.py",
+        "verify_monk_chen_presentation_release.py",
+        56,
+        ""
+      ],
+      [
+        "verify_monk_jorvinax_release.py",
+        "verify_monk_jorvinax_release.py",
+        29,
+        ""
+      ],
+      [
+        "verify_monk_nine_arrival_release.py",
+        "verify_monk_chen_presentation_release.py",
+        56,
+        ""
+      ],
+      [
+        "verify_sharasdal_acquisition_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_companion_healing_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_kraliss_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_lady_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_sharasdal_legacy_login_release.py",
+        "verify_acquisition_login_recovery_release.py",
+        122,
+        ""
+      ],
+      [
+        "verify_sharasdal_wave_contact_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_silver_hand_ally_damage_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_silver_hand_mordoth_motion_release.py",
+        "verify_silver_hand_mordoth_motion_release.py",
+        25,
+        ""
+      ],
+      [
+        "verify_truthguard_endpoint_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_truthguard_pickup_admission_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_truthguard_ride_cast_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_truthguard_rider_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_truthguard_travel_click_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_tuure_graveyard_release.py",
+        "verify_tuure_ally_damage_release.py",
+        42,
+        ""
+      ],
+      [
+        "verify_tuure_legacy_login_release.py",
+        "verify_acquisition_login_recovery_release.py",
+        122,
+        ""
+      ],
+      [
+        "verify_warrior_login_recovery_release.py",
+        "verify_acquisition_login_recovery_release.py",
+        122,
+        ""
+      ],
+      [
+        "verify_warswords_arrival_legacy_release.py",
+        "verify_scenario_lfg_release.py",
+        54,
+        "Expected one symbol for ?_Do_call@?$_Func_impl_no_alloc@V<lambda_1>@?1??OnPlayerEnter@instance_warswords_InstanceMapScript@instance_warswords@@, got 0"
+      ],
+      [
+        "verify_warswords_helya_channel_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_warswords_intro_bubble_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_warswords_return_admission_release.py",
+        "damage_scaling_release_check.py",
+        20,
+        ""
+      ],
+      [
+        "verify_silver_hand_rescue_release.py",
+        "verify_silver_hand_rescue_release.py",
+        90,
+        ""
+      ]
+    ],
+    "passed_roots": 70,
+    "new_failure_sites": [],
+    "baseline_binary": "pre-task3f19 rollback",
+    "current_binary": "a7c3c39959b83f8f7c5496f4445bc1c1967c6a32affac3dc1ac52ee836b73466",
+    "baseline_evidence": ".codex/ten-ten-2026-11-11/batch10-legacy-baseline.log",
+    "current_evidence": ".codex/ten-ten-2026-11-11/legacy-final-comparison.json",
+    "scope": "These older source snapshots/register/call-count/lambda expectations remain unresolved;do not bypass them orclaim whole artifact-chain/client verification from selected regression passes."
+  },
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch10;resolved selected-check evidence only. Unresolvedlegacy matrix remains separately retained.",
+  "pending": "Actualclient/relog/visual/scaling/PvP/group/wholeencounter checks remain separate. Lady authentic living finale,LINK2/Slaghammer,original intermittent handshake,all36wholechains andnativeunsupported property246 remain OPEN. Ordinary coreheal/periodic effect accumulation beyond explicit unsigned64 inputs remains OPEN;recent cumulative damage history isnowrepaired."
+}

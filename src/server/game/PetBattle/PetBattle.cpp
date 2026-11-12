@@ -351,7 +351,7 @@ int32 BattlePetInstance::GetSpeed()
     int32 modPercent = States[BATTLEPET_STATE_Mod_SpeedPercent];
 
     // Passive: flying
-    if (States[BATTLEPET_STATE_Passive_Flying])
+    if (States[BATTLEPET_STATE_Passive_Flying] && int64(Health) * 2 > GetMaxHealth())
         modPercent += 50;
 
     return (States[BATTLEPET_STATE_Stat_Speed] + CalculatePct(States[BATTLEPET_STATE_Stat_Speed], modPercent)) / 100;
