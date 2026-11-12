@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_40_OF_100",
+  "status": "IN_PROGRESS_50_OF_100",
   "authorized_total": 100,
-  "completed": 40,
+  "completed": 50,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -301,6 +301,79 @@
         "ManifestSHA256": "D213F3710B3125454ABC9D42EECB398ADDB73A674CE8ACBC48EDF4ACB56600A4"
       },
       "canonical_worldserver_sha256": "6e89313d557947d2c97cf90e77c28393b845af5613d794bf39977d9433d42686"
+    },
+    {
+      "batch": 5,
+      "historical_group": 66,
+      "commits": [
+        {
+          "key": "TruuenGhostLifecycle",
+          "commit": "1bd1658b1d97e32ca049aa85cc07943291266087",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/TruuenGhostLifecycle.json"
+        },
+        {
+          "key": "InfiniteCorruptorRiftLifecycle",
+          "commit": "a16e24685b84f74787299d5b21c0ef43d9f47367",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/InfiniteCorruptorRiftLifecycle.json"
+        },
+        {
+          "key": "MardumCageOwnerLifecycle",
+          "commit": "3ba85f7db534f51c5ac79d82cf683f049d3ff3a6",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MardumCageOwnerLifecycle.json"
+        },
+        {
+          "key": "WindSpiritTargetLifecycle",
+          "commit": "792c4b1667ee5c5cab471d32414ac39d6e964f64",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/WindSpiritTargetLifecycle.json"
+        },
+        {
+          "key": "AmberMonsterPassengerLifecycle",
+          "commit": "a1d67ac4efe6601d721d7b8d1d605b74f2547c1a",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/AmberMonsterPassengerLifecycle.json"
+        },
+        {
+          "key": "MephistrothIllidanLifecycle",
+          "commit": "b9d5e80ed0c008040d4d796493925c2c1743c7d4",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MephistrothIllidanLifecycle.json"
+        },
+        {
+          "key": "NaltiraWebPartnerLifecycle",
+          "commit": "7d152db5786191a51384a4a8f0788dda6ebac4c8",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/NaltiraWebPartnerLifecycle.json"
+        },
+        {
+          "key": "MelandrusIntroActorLifecycle",
+          "commit": "9616b235785a526a5a9cd76d6122d1f876403d8a",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MelandrusIntroActorLifecycle.json"
+        },
+        {
+          "key": "MorchokTwinLifecycle",
+          "commit": "f3aabeb7002f0d46a1e0008306f1700706f501d5",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MorchokTwinLifecycle.json"
+        },
+        {
+          "key": "TempleAdeptHealSelection",
+          "commit": "a5b03654f44893636747139cb0c2546264385f81",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/TempleAdeptHealSelection.json"
+        }
+      ],
+      "support_commit": "dd74975b9c6fc5dc3ecd16f6bf26e6867aff3c74",
+      "checks": {
+        "counterfactual": "Nine pinned production callback controls reproduce heap-use-after-free; the tenth reproduces the exact missing-first-ally heal refusal. All ten paired repaired complete affected callback methods pass MSVC ASAN. Class scaffolding, unrelated encounter methods, cast/motion/instance/quest endpoints are explicitly controlled; no full-core ASAN or full dungeon traversal claim.",
+        "native": "Actual linked native probe verifies nine creature script bindings plus read-only native WorldDatabase mapping for personal GO245045/go_q39262, against the matching26972 runtime; first30 pet core-native regressions still pass. The native bootstrap loads creatures but not GO templates, so cage binding is queried directly rather than treating an unloaded container as missing data. The ten new AI callbacks themselves use complete extracted-method ASAN and actual Release PE checks.",
+        "linked": "All selected50 and retained previous100 checks pass. Each native affected method contains expected typed GUID lookup and before-use guard; Morchok explicitly retains lookup result in r14 and guards its first dereference. Wind spirit resolves and checks both actors. Amber Monster resolves saved passenger again after real removal callbacks and cancels/replaces pending fling. Elisande failed summon is guarded and retries within existing five-second dialogue cadence without consuming the pending line. Greater Heal searches all four authored types, retains50percent admission and one heal per event. Original script/game/Main builds and linked canonical Scepter pass.",
+        "startup": "Owned worldserver PID=13732\nPASS owned PID=13732 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;no new crashes, appended DBErrors or unexplained runtime errors/warnings/assertions.",
+        "limitations": "Actual raid/dungeon/escort/client dialogue, visual/boarding timing and whole36artifact chains remain client checks. Mephistroth phase actor summon failure recovery beyond safe new-shadow assignment is not certified. Existing authorial combat/credit rules are preserved; no invented HP threshold or killing timer."
+      },
+      "cleanup": {
+        "Archived": 1674,
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "ManifestSHA256": "7CACE50E724761752F3FC2A9FA9F1789383215F73BBF55DE1DCD4ABE4373F366",
+        "ReclaimedBytes": 723374519,
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch5",
+        "Removed": 33
+      },
+      "canonical_worldserver_sha256": "201fd76e876abe6f01ccf0b480c1553f8bfc1c0063cfe03b8489d9912bd98b21"
     }
   ],
   "selected_not_yet_verified": [],
@@ -313,6 +386,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 60,
-  "completed_batches": 4
+  "remaining": 50,
+  "completed_batches": 5
 }
