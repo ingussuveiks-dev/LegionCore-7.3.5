@@ -45,7 +45,7 @@ class spell_pri_spirit_shell : public SpellScriptLoader
                 if (!target || !caster)
                     return;
 
-                float bp = GetHitHeal();
+                float bp = GetHitHeal64();
                 if (GetSpellInfo()->Id == 2061)
                 {
                     if (AuraEffect* aurEff = caster->GetAuraEffect(200128, 0)) // Trail of Light
@@ -80,10 +80,11 @@ class spell_pri_spirit_shell : public SpellScriptLoader
                 {
                     if (AuraEffect* aurEff = target->GetAuraEffect(114908, 0))
                         bp += aurEff->GetAmount();
-                    if (bp > int32(CalculatePct(target->GetMaxHealth(), 60)))
-                        bp = int32(CalculatePct(target->GetMaxHealth(), 60));
+                    float maxAbsorb = float(CalculatePct(target->GetMaxHealth(), 60));
+                    if (bp > maxAbsorb)
+                        bp = maxAbsorb;
                     caster->CastCustomSpell(target, 114908, &bp, NULL, NULL,  true);
-                    SetHitHeal(0);
+                    SetHitHeal64(0);
                 }
             }
 
