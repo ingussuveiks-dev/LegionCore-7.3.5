@@ -830,6 +830,7 @@ class npc_alysrazor_fiery_vortex : public CreatureScript
 
             void Reset()
             {
+            events.Reset();
             }
 
             void EnterCombat(Unit* who)
