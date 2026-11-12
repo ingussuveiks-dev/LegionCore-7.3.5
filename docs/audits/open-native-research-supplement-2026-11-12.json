@@ -1,4 +1,10 @@
 {
+  "latest_hourglass_resolution_2026_11_12": {
+    "status": "1927_230_1932_246_ROUND_END_PIPELINE_FIXED_CLIENT_PENDING",
+    "fix_commit": "94b0133fbda2b1e5dcb274b8a01ce13de74610a5",
+    "audit": "docs/audits/pet-hourglass-2026-11-12.json",
+    "supersedes": "Earlier eight Hourglass observations are historical failures now paired with34 passing actual native cases. Resolved caches archived and removed after current canonical deployment/startup. Haunt230 and other proc/death behavior remain separately OPEN."
+  },
   "latest_bend_time_resolution_2026_11_12": {
     "status": "BEND_TIME_AND_ZERO_ACCURACY_ADMISSION_FIXED_OTHER_PIPELINES_OPEN",
     "fix_commits": {

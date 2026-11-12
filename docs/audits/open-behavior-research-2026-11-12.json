@@ -1,4 +1,45 @@
 {
+  "latest_native_hourglass_repair_2026_11_12": {
+    "status": "HOURGLASS_BEND_TIME_AND_PRIOR_NATIVE_REPAIRS_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
+    "fix_commit": "94b0133fbda2b1e5dcb274b8a01ce13de74610a5",
+    "audit": "docs/audits/pet-hourglass-2026-11-12.json",
+    "canonical": {
+      "worldserver.exe": "1767bdbd6d22bbf620ddb9c3e6aa5ca3caff0ee3a5981c46078cdbb164439619",
+      "worldserver.map": "be5c120e6512a7cb7da766cb574658ca6e6d5b346cae9185bd5b4e09a7a0d874",
+      "bnetserver.exe": "3994214e3fe3b3f97deafd294d6028edc981ad12a45f008770af94bbc0b7e8f5",
+      "bnetserver.map": "a5283b2531a4958637d6605407f21df875d26385b8c8824e99e84aaf4998e858"
+    },
+    "checks": "Current34 native Hourglass cases and complete pinned6ca lethal control, current26/13/44/16 and both100 native suites; actual current Hourglass/Bend/retained pet/two100/packet-writer linked proofs; exact source/build/protected/rollback/archive hashes; Scepter and owned formal PID10376 ready/shutdown0/exit0/gone. No new crash or unexplained appended server/DB failure. Historical106/106 certificate belongs to prior9338, not current1767.",
+    "cleanup": {
+      "status": "PASS",
+      "native_hourglass_cases": 34,
+      "retained_native_cases": [
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "current_linked_hundred_scopes": 2,
+      "canonical": {
+        "worldserver.exe": "1767bdbd6d22bbf620ddb9c3e6aa5ca3caff0ee3a5981c46078cdbb164439619",
+        "worldserver.map": "be5c120e6512a7cb7da766cb574658ca6e6d5b346cae9185bd5b4e09a7a0d874",
+        "bnetserver.exe": "3994214e3fe3b3f97deafd294d6028edc981ad12a45f008770af94bbc0b7e8f5",
+        "bnetserver.map": "a5283b2531a4958637d6605407f21df875d26385b8c8824e99e84aaf4998e858"
+      },
+      "archive_records": 666,
+      "removed": 61,
+      "removed_bytes": 1004592270.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    },
+    "remaining": [
+      "Dark Rebirth795/Cheat Death1907 round-end death reactions, Haunt/Apocalypse, generic159/clone122/123/124, type229 and wider core health remain OPEN.",
+      "Actual PvE/PvP learned-kit UI, cooldown display, animations and battle log remain client checks; all36 whole artifact chains remain unverified.",
+      "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2/mixed DBErrors and original intermittent client handshake cause remain OPEN. Pet1906 is a separate namespace."
+    ],
+    "next": "Continue actual native Dark Rebirth and Cheat Death complete owner/death/round-end/resurrection/cleanup sequence, preserving captured-pet and ordinary aura cleanup."
+  },
   "latest_native_cooldown_repair_2026_11_12": {
     "status": "BEND_TIME_AND_EMPTY_ROUND_BITS_FIXED_DEPLOYED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
     "fix_commits": {
