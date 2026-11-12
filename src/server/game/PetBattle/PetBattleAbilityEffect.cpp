@@ -274,10 +274,43 @@ int32 PetBattleAbilityEffect::GetPetType()
     return BATTLEPET_PETTYPE_HUMANOID;
 }
 
+bool PetBattleAbilityEffect::ConsumeBlockCharge(uint32 target)
+{
+    int32 charges = GetState(target, BATTLEPET_STATE_Special_BlockedAttackCount);
+    if (charges <= 0)
+        return false;
+    SetState(target, BATTLEPET_STATE_Special_BlockedAttackCount, charges - 1);
+    PetBattleAura* consumed = nullptr;
+    for (auto aura : PetBattleInstance->PetAuras)
+    {
+        if (aura->Expired || aura->TargetPetID != target)
+            continue;
+        for (auto& state : aura->AppliedStates)
+            if (state.first == BATTLEPET_STATE_Special_BlockedAttackCount && state.second > 0)
+            {
+                --state.second;
+                if (state.second == 0)
+                    consumed = aura;
+                Flags |= PETBATTLE_EVENT_FLAG_BLOCKED;
+                if (consumed)
+                    consumed->Expire(PetBattleInstance);
+                return true;
+            }
+    }
+    Flags |= PETBATTLE_EVENT_FLAG_BLOCKED;
+    if (charges == 1)
+        if (auto aura = GetAura(target, GetState(target, BATTLEPET_STATE_Special_ObjectRedirectionAuraID)))
+            aura->Expire(PetBattleInstance);
+    return true;
+}
+
 bool PetBattleAbilityEffect::Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged)
 {
     if (!(Flags & FailFlags) && damage <= 0)
         Flags |= PETBATTLE_EVENT_FLAG_MISS;
+
+    if (!(Flags & FailFlags) && !cantBeAvoidBlockedDodged && !GetState(target, BATTLEPET_STATE_Mechanic_IsWall))
+        ConsumeBlockCharge(target);
 
     if (!(Flags & FailFlags) && !cantBeAvoidBlockedDodged)
     {
@@ -291,22 +324,8 @@ bool PetBattleAbilityEffect::Damage(uint32 target, int32 damage, bool cantBeAvoi
                 if (PetBattleInstance->Pets[petID]->TeamID == PetBattleInstance->Pets[Caster]->TeamID && !GetState(petID, BATTLEPET_STATE_Special_BlockedFriendlyMode))
                     continue;
 
-                int32 blockedAttackCount = GetState(petID, BATTLEPET_STATE_Special_BlockedAttackCount);
-
-                if (blockedAttackCount > 0)
-                {
-                    blockedAttackCount -= 1;
-
-                    SetState(petID, BATTLEPET_STATE_Special_BlockedAttackCount, blockedAttackCount);
-
-                    Flags |= PETBATTLE_EVENT_FLAG_BLOCKED;
-
-                    if (!blockedAttackCount)
-                        if (auto aura = GetAura(petID, GetState(petID, BATTLEPET_STATE_Special_ObjectRedirectionAuraID)))
-                            aura->Expire(PetBattleInstance);
-
+                if (ConsumeBlockCharge(petID))
                     break;
-                }
             }
         }
     }

@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-12",
+  "key": "PetPersonalBlockCharges",
+  "title": "Consume native personal block charges once and preserve tracked aura state on removal",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 6,
+  "historical_group": 67,
+  "baseline": "942b68867c093a19153e6b398fe70fd280e0df51",
+  "paths": [
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+    "src/server/game/PetBattle/PetBattleAbilityEffect.h"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 6 -Case PetPersonalBlockCharges",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten pinned controls fail their exact named assertion at exit1; all paired repaired MSVC ASAN cases pass. Complete selected core/effect/aura methods and actual native enums/handler table are extracted. Nonselected handlers and external DB2/session endpoints are explicitly controlled; ordinary terminal Kill endpoint is controlled in the fixture. Actual full linked core is separately native-tested; no full-core ASAN claim.",
+    "native": "Matching26972 full native Tail Sweep122 uses exactly the18/25 branch for real casting order; actual effect1326 removes signed1000 speed through optional bounds; actual refresh1573/787 retains phase3 and permits three remaining real periodic ticks; row550 encodes duration65535 to -1. Native Sunlight403 state99 plus50 updates max/current HP symmetrically, native Healthy577 retains/restores its fraction, one-health living fade remains alive. Actual personal759 block consumes once without negative state; real full Refuge1344 applies user and living critter ally shield and blocks exactly one native110 attack. Actual Wish485 heals50percent independent of power while retaining healing-taken modifier. Real lethal Poison379 cancels itself without stale live update. Native stacking/replacement uses unique live IDs, cancellation before replacement apply, and failed existing application retains its actual slot and explicit miss. First30 native and the full retained previous100 native sequences pass; source/linked callbacks for groups4/5 remain their recorded scopes.",
+    "linked": "All selected60 and retained previous100 PE checks pass. Actual raw handler table pointers/selectors for233/234/223 are read from the linked image. Native signed deltas, expiry/remaining packet fields, sentinel decode, widened state99, both max-health refresh hooks, shared personal/wall charge lifecycle, power-free percentage healing, terminal aura processing and cancel-before-apply packet order are verified. Existing percent-heal and flying proofs are adapted to the intentionally unified percentage branch and actual dynamic GetMaxHealth call/registers; inlined aura removal still requires native SetPetState. Original libraries/Main final inputs and Scepter pass.",
+    "startup": "Owned worldserver PID=19568\nPASS owned PID=19568 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;no new crash reports, appended DBErrors or unexplained runtime warnings/errors/assertions.",
+    "limitations": "Actual client aura icons, HP bars, pet combat animation/branch order, expiry/refresh and PvP UI remain separate. Whole36artifact chains and authentic living Lady sequence remain OPEN. Native encoded sentinel proof is distinct from a65000-round client traversal. Native property246, Clone122/123/124, ConsumeCorpse144/61, temporary defensive-type controller229 and ordinary core heal/periodic width remain OPEN."
+  },
+  "fixture_setup_failures_resolved": [
+    "A proposed killing-cast cooldown repair was withdrawn: the complete pinned ordinary-kill control already passes because StopChain breaks before the old early return. Its source change was reverted and it is not counted.",
+    "A proposed defensive pet-type damage consumer alone was withdrawn because its native229 controller is also unimplemented; no incomplete consumer repair is counted. Native effect ID iteration was already monotonic by OrderIndex in matching data; no speculative ordering repair is counted.",
+    "First actual Refuge validation exposed a missing native personal block-charge path. Tracked personal and wall charges now reduce their applied-state contribution before normal expiration so removing the aura cannot make charges negative. Full native one-hit consumption passes.",
+    "The first slot-lifecycle native assertion incorrectly expected application to be the very last packet; actual Apply legitimately emits state updates afterward. It now checks actual last-cancel versus last-apply order without excluding state events.",
+    "The retained previous100 native suite found a real regression in a failed existing-aura update: it must name the existing live slot. The final implementation preserves that identity and BUFF_CHANGE for the failed update, while successful new instances keep unique live IDs and cancellation-before-apply ordering. The unchanged retained assertion and full previous100 native suite pass.",
+    "Max-health final review added the living-one-health fade guard; native and complete-method regressions pass without reviving zero-health pets.",
+    "PE setup expected standalone Remove and previous flying registers. Compiler now inlines removal into Expire and calls the enlarged dynamic maximum helper; proofs follow those actual instruction paths and full native elemental/weather/flying scopes pass."
+  ],
+  "canonical_worldserver_sha256": "853385804a121294a1526ba130cc30f972e6ce5b67daef5b35f7b7d4903c026b",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch6; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}

@@ -75,6 +75,7 @@ struct PetBattleAbilityEffect
     int32 GetMaxHealth(uint32 target);
     int32 GetSpeed(uint32 target);
     bool SetHealth(uint32 target, int32 value);
+    bool ConsumeBlockCharge(uint32 target);
     bool Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged = false);
     bool Heal(uint32 target, int32 heal);
     bool SetState(uint32 target, uint32 state, int32 value);
