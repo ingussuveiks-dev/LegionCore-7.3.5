@@ -107,7 +107,7 @@ public:
                         break;
                     case EVENT_PUMMEL:
                         DoCast(me->getVictim(), SPELL_PUMMEL);
-                        events.RescheduleEvent(EVENT_MORTAL_STRIKE, 16 * IN_MILLISECONDS);
+                        events.RescheduleEvent(EVENT_PUMMEL, 16 * IN_MILLISECONDS);
                         break;
                     case EVENT_THROW_AXE:
                         DoCast(me->getVictim(), SPELL_THROWAXE);

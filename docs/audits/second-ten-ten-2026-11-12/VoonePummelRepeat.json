@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-12",
+  "key": "VoonePummelRepeat",
+  "title": "Reschedule Voone Pummel under its own event instead of replacing Mortal Strike",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 8,
+  "historical_group": 69,
+  "baseline": "70aa0a73504d57bfa2627aeda5d59a15acae079e",
+  "paths": [
+    "src/server/scripts/EasternKingdoms/BlackrockSpire/boss_warmaster_voone.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 8 -Case VoonePummelRepeat",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "Nine exact pinned named assertions fail at exit1 and the tenth pinned absent-caster case reproduces an MSVC ASAN access violation. Every paired repaired complete-callback/full-AuraScript case passes. Eight Reset/EnterCombat/UpdateAI sequences and complete HighSeas ExecuteTargetEvent are extracted; constructors, other hooks, creature/instance/spatial/dialogue endpoints and random minimum are controlled. Both AuraScript classes are extracted in full. This is not full-core ASAN or full NPC combat execution.",
+    "native": "All ten actual database script bindings and authored matching26972 spell IDs pass. Actual linked EventMap executes the eight complete combat callback sequences with controlled creature/instance endpoints: all four evolved zealot abilities repeat; first/repeated Fiery Slash obey cast deferral and encounter cleanup; hatchling authored first deadline and cleanup; all three Quilen attacks repeat and no-victim/Frenzy guards remain; captain first1500ms and repeat10600ms use the same native base queue, reset clears it and repeated combat notification does not duplicate; both felhunter5s/15s clocks survive cast deferral; native-clock Pummel and ShadowPower repeat under their own IDs without disturbing MortalStrike or adding SawBlade schedules. Actual Aura/AuraApplication proc dispatch accepts a legal five-billion HEALING DamageInfo record, retains nullable source spells and requests the expected NatureGuardian child amount. Actual foreign Flame imprint persists after its creator leaves the map; GetCaster is confirmed null and proc safely returns. Missing proc record/actor is rejected and the separate valid Shadow imprint keeps its child request. Child casts are observed endpoints; full engine damage/AI combat/client traversal are separate. Retained first30/sixth10/seventh10 native and full previous100 native pass.",
+    "linked": "Selected80, retained previous100 and canonical Scepter checks pass. Six actual clock increments precede ExecuteEvent; captain reset/dispatch/inlined repeat share EventMap offset0x38. Pummel15615 reschedules native event5 at16seconds and ShadowPower35322 reschedules event3 at25-35seconds. NatureGuardian reads qword healing before percentage math and retains source-null/self-heal gates. Felhounds proc checks its damage record, actor and actual GetCaster result before instance lookup. Original game/scripts/Main build inputs and source snapshot hashes were verified.",
+    "startup": "Owned worldserver PID=22024\nPASS owned PID=22024 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged; stderr empty; no new crashes, appended DBErrors or unexplained runtime warnings/errors/assertions.",
+    "limitations": "Creature/instance/spatial/cast endpoints in clock fixtures are controlled; native EventMap is actual. Aura source/owner/dispatcher are actual and child requests are observed. Full NPC encounter combat, client timing/animation, faction variants and imprint child damage remain pending. All36wholeclientchains, authentic living Lady sequence, LINK2/Slaghammer, mixed canonical DBErrors, original intermittent client handshake and remaining pet246/clone/type-controller/resurrection scopes remain OPEN."
+  },
+  "fixture_setup_failures_resolved": [
+    "Broader uint32 damage candidates were withdrawn before implementation after tracing the actual native DamageInfo constructor cap. No equivalent-width ordinary-damage spelling changes or unproven item sum changes are counted; the genuine NatureGuardian path uses the independently preserved64-bit HEALING record.",
+    "Clock fixture setup initially omitted two mixed-case enum labels and a standard string include. Those scaffolding declarations were corrected; paired pinned/fixed controls now pass. Native ProcEventInfo requires all ten arguments; the probe was corrected before execution.",
+    "The first native fixture removed its creator from world visibility without removing its grid entry. A later assertion unwound the fixture and Map grid cleanup found that dangling test entry, causing a captured c0000005 stack. The test now uses actual Map::RemoveFromMap, so object-accessor and grid ownership are both removed before destruction. Original stack/stdout/exit evidence is preserved; the repaired full native suite and canonical startup pass.",
+    "Native validation caught swapped literal IDs for Shadow and Flame imprints in the test setup. Both native cases now use constants extracted directly from the matching production declarations (Flame244054, Shadow244055), and the standalone fixture uses those same identifiers. Actual vanished-Flame-caster and valid-Shadow-child checks pass.",
+    "The first PE inspection expected a standalone HighSeas helper, but the compiler inlined it into the captain UpdateAI. Final checks require identical queue receivers on actual dispatch and inlined repeat scheduling. One verifier message was accidentally written in a legacy Windows encoding; its ASCII text was corrected and final verification passes."
+  ],
+  "canonical_worldserver_sha256": "9ab1e508d721b12a8fa032aca13f3e76b6ae9202c0a10177d996c39c6379e4d4",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch8; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Native clone/type-controller/resurrection behavior",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
