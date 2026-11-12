@@ -1,0 +1,36 @@
+{
+  "baseline": "f62521fc7",
+  "scope": "Native222 Points/Variance percentage spread, actual common damage modifiers and post-roll Magic cap. Preserve ordinary zero-variance calls, accuracy, target admission, death and packet behavior; matching63 rows with zero OverrideIndex only. UI26972-family reference uses variance/200 each side. Feathered Frenzy type229 remains separate.",
+  "files": {
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp": {
+      "before_sha256": "6aa0bd9dc2aa882d4cdfcbd20a2c84c2a09e4e2d3584177e4296d7e14a0dfa25",
+      "after_sha256": "2726bde2e98ab4d5adde19b21b13e06e080c70a2e8229e1e46694ea101483e10"
+    },
+    "src/server/game/PetBattle/PetBattleAbilityEffect.h": {
+      "before_sha256": "8a6af5b2d280f6df96d4c8162819a86742de92f6ac1511a04ed18b4aa20b342e",
+      "after_sha256": "f7f86b431b4c6107115d4167824e7262388249844ba268c11e7dcff8910d9ba8"
+    }
+  },
+  "edits": [
+    {
+      "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+      "old": "\nvoid PetBattleAbilityEffect::ModState(uint32 target, uint32 stateID, int32 modValue, bool isApply)\n{\n    SetState(target, stateID, PetBattleInstance->Pets[target]->States[stateID] + (isApply ? modValue : -modValue));\n}\n\nint32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)\n{\n    /// Modifiers\n    damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);\n    damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);\n\n    /// Power\n    int32 modPct = scaleWithPower ? CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5) : 0;\n\n    /// Mod Dealt / Taken\n",
+      "new": "\nvoid PetBattleAbilityEffect::ModState(uint32 target, uint32 stateID, int32 modValue, bool isApply)\n{\n    SetState(target, stateID, PetBattleInstance->Pets[target]->States[stateID] + (isApply ? modValue : -modValue));\n}\n\nint32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)\n{\n    return CalculateDamageWithVariance(damage, scaleWithPower, 0);\n}\n\nint32 PetBattleAbilityEffect::CalculateDamageWithVariance(int32 damage, bool scaleWithPower, uint16 variance)\n{\n    /// Modifiers\n    damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);\n    damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);\n\n    /// Power\n    int32 modPct = scaleWithPower ? CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5) : 0;\n\n    /// Mod Dealt / Taken\n"
+    },
+    {
+      "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+      "old": "    // Passive: beast\n    if (GetState(Caster, BATTLEPET_STATE_Passive_Beast))\n        if (GetHealth(Caster) * 100 / GetMaxHealth(Caster) < 50)\n            modPetTypeDamagePercent += 25;\n\n    // Calculate result\n    damage += int32(CalculatePct(damage, modPct));\n    damage += int32(CalculatePct(damage, modPetTypeDamagePercent));\n\n    // Passive: magic\n    if (GetState(Target, BATTLEPET_STATE_Passive_Magic))\n        if (damage * 100 / GetMaxHealth(Target) >= 35)\n            damage = CalculatePct(GetMaxHealth(Target), 35);\n\n    return damage;\n}\n",
+      "new": "    // Passive: beast\n    if (GetState(Caster, BATTLEPET_STATE_Passive_Beast))\n        if (GetHealth(Caster) * 100 / GetMaxHealth(Caster) < 50)\n            modPetTypeDamagePercent += 25;\n\n    // Calculate result\n    damage += int32(CalculatePct(damage, modPct));\n    damage += int32(CalculatePct(damage, modPetTypeDamagePercent));\n\n    // Native Variance is the full percentage spread (e.g.60 => +/-30%).\n    // Roll after ordinary modifiers and before Magic's final damage cap.\n    if (variance && damage > 0)\n    {\n        int32 const minimum = int32(std::max<int64>(0, int64(damage) * (200 - int64(variance)) / 200));\n        int32 const maximum = int32(std::min<int64>(std::numeric_limits<int32>::max(), int64(damage) * (200 + int64(variance)) / 200));\n        damage = irand(minimum, maximum);\n    }\n\n    // Passive: magic\n    if (GetState(Target, BATTLEPET_STATE_Passive_Magic))\n        if (damage * 100 / GetMaxHealth(Target) >= 35)\n            damage = CalculatePct(GetMaxHealth(Target), 35);\n\n    return damage;\n}\n"
+    },
+    {
+      "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+      "old": "    int32 damage = CalculateDamage(CalculatePct(GetState(Caster, BATTLEPET_STATE_Last_HitTaken), EffectInfo->Param[0]), false);\n    return Damage(Target, damage);\n}\n\nbool PetBattleAbilityEffect::HandleDamageRange()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    int32 baseDamage = urand(EffectInfo->Param[0], EffectInfo->Param[2]);\n\n    return Damage(Target, CalculateDamage(baseDamage));\n}\n\nbool PetBattleAbilityEffect::HandleDamageWithBonus()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    int32 points = EffectInfo->Param[0];\n    if (EffectInfo->Param[3] && GetState(Target, EffectInfo->Param[3]))\n        points += EffectInfo->Param[2];\n",
+      "new": "    int32 damage = CalculateDamage(CalculatePct(GetState(Caster, BATTLEPET_STATE_Last_HitTaken), EffectInfo->Param[0]), false);\n    return Damage(Target, damage);\n}\n\nbool PetBattleAbilityEffect::HandleDamageRange()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    return Damage(Target, CalculateDamageWithVariance(EffectInfo->Param[0], true, EffectInfo->Param[2]));\n}\n\nbool PetBattleAbilityEffect::HandleDamageWithBonus()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    int32 points = EffectInfo->Param[0];\n    if (EffectInfo->Param[3] && GetState(Target, EffectInfo->Param[3]))\n        points += EffectInfo->Param[2];\n"
+    },
+    {
+      "path": "src/server/game/PetBattle/PetBattleAbilityEffect.h",
+      "old": "    int32 AuraOwnerPetID = -1;\n\n    uint32 GetActiveOpponent();\n    bool AddTarget(uint32 target);\n    bool AddTarget(PetBattleAbilityImplicitTarget target);\n    void SelectTargets();\n    int32 GetPetType();\n    int32 CalculateDamage(int32 damage, bool scaleWithPower = true);\n    int32 CalculateHeal(int32 heal);\n    int32 CalculateHit(int32 accuracy);\n    int32 GetHealth(uint32 target);\n    int32 GetMaxHealth(uint32 target);\n    int32 GetSpeed(uint32 target);\n    bool SetHealth(uint32 target, int32 value);\n    bool ConsumeBlockCharge(uint32 target);\n    bool Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged = false);\n",
+      "new": "    int32 AuraOwnerPetID = -1;\n\n    uint32 GetActiveOpponent();\n    bool AddTarget(uint32 target);\n    bool AddTarget(PetBattleAbilityImplicitTarget target);\n    void SelectTargets();\n    int32 GetPetType();\n    int32 CalculateDamage(int32 damage, bool scaleWithPower = true);\n    int32 CalculateDamageWithVariance(int32 damage, bool scaleWithPower, uint16 variance);\n    int32 CalculateHeal(int32 heal);\n    int32 CalculateHit(int32 accuracy);\n    int32 GetHealth(uint32 target);\n    int32 GetMaxHealth(uint32 target);\n    int32 GetSpeed(uint32 target);\n    bool SetHealth(uint32 target, int32 value);\n    bool ConsumeBlockCharge(uint32 target);\n    bool Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged = false);\n"
+    }
+  ]
+}

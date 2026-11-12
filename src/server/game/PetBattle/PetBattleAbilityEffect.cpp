@@ -434,6 +434,11 @@ void PetBattleAbilityEffect::ModState(uint32 target, uint32 stateID, int32 modVa
 
 int32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)
 {
+    return CalculateDamageWithVariance(damage, scaleWithPower, 0);
+}
+
+int32 PetBattleAbilityEffect::CalculateDamageWithVariance(int32 damage, bool scaleWithPower, uint16 variance)
+{
     /// Modifiers
     damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);
     damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);
@@ -523,6 +528,15 @@ int32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)
     // Calculate result
     damage += int32(CalculatePct(damage, modPct));
     damage += int32(CalculatePct(damage, modPetTypeDamagePercent));
+
+    // Native Variance is the full percentage spread (e.g.60 => +/-30%).
+    // Roll after ordinary modifiers and before Magic's final damage cap.
+    if (variance && damage > 0)
+    {
+        int32 const minimum = int32(std::max<int64>(0, int64(damage) * (200 - int64(variance)) / 200));
+        int32 const maximum = int32(std::min<int64>(std::numeric_limits<int32>::max(), int64(damage) * (200 + int64(variance)) / 200));
+        damage = irand(minimum, maximum);
+    }
 
     // Passive: magic
     if (GetState(Target, BATTLEPET_STATE_Passive_Magic))
@@ -1948,9 +1962,7 @@ bool PetBattleAbilityEffect::HandleDamageRange()
 {
     CalculateHit(EffectInfo->Param[1]);
 
-    int32 baseDamage = urand(EffectInfo->Param[0], EffectInfo->Param[2]);
-
-    return Damage(Target, CalculateDamage(baseDamage));
+    return Damage(Target, CalculateDamageWithVariance(EffectInfo->Param[0], true, EffectInfo->Param[2]));
 }
 
 bool PetBattleAbilityEffect::HandleDamageWithBonus()

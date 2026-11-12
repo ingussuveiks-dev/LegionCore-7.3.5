@@ -21,8 +21,8 @@ execute=ins('?Execute@PetBattleAbilityEffect@@')
 table=next(x.address+x.size+x.operands[1].mem.disp for x in execute if x.mnemonic=='lea'and x.op_str.startswith('r12, [rip')and x.operands[1].type==CS_OP_MEM)
 pointer,target=struct.unpack_from('<QI',n['binary'],n['offset'](table)+229*16)
 assert n['resolve'](pointer)==handler[0].address and target==0,'Actual handler229 dispatch with explicit native recipient selection'
-damage=ins('?CalculateDamage@PetBattleAbilityEffect@@')
-assert {('mov','eax, dword ptr [r9 + 0x33c]'),('lea','ecx, [rax - 1]'),('lea','r11d, [rax - 1]'),('cmp','ecx, 9'),('cmova','r11d, edx')}<=set(pairs(damage)),'Actual damage uses bounded state124 minus one, retaining species fallback'
+damage=ins('?CalculateDamageWithVariance@PetBattleAbilityEffect@@')
+assert {('mov','eax, dword ptr [r10 + 0x33c]'),('lea','ecx, [rax - 1]'),('lea','r11d, [rax - 1]'),('cmp','ecx, 9'),('cmova','r11d, ebx')}<=set(pairs(damage)),'Actual common damage uses bounded state124 minus one, retaining species fallback'
 apply=ins('?Apply@PetBattleAura@@');call,=sites(apply,'?RefreshPetTypeOverride@PetBattle@@')
 assert {('cmp','edi, 0x7c'),('mov','dword ptr [rdx], edi'),('mov','eax, dword ptr [r9]'),('mov','dword ptr [rdx + 4], eax'),('mov','r8d, dword ptr [r13 + 0xc]'),('mov','edx, dword ptr [r13 + 8]')}<=set(pairs(apply[:call]))
 expire=ins('?Expire@PetBattleAura@@');call,=sites(expire,'?RefreshPetTypeOverride@PetBattle@@')

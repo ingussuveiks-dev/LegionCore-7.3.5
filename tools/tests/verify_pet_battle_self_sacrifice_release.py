@@ -16,7 +16,8 @@ assert {('cmp','edx, 6'),('test','rcx, rcx')}<=set(pairs(admission[:16]))
 percent=ins('?HandleDamageCasterPercent@PetBattleAbilityEffect@@')
 assert {282,663,836}<=values(percent)
 assert {('mov','sil, 1'),('xor','sil, sil'),('movzx','r8d, sil'),('mov','edx, dword ptr [rdi + 0x3c]')}<=set(pairs(percent))
-assert len(sites(percent,'?CalculateDamage@PetBattleAbilityEffect@@'))==1
+ordinary,=sites(percent,'?CalculateDamageWithVariance@PetBattleAbilityEffect@@')
+assert ('xor','r9d, r9d')in pairs(percent[:ordinary]),'Ordinary sacrifice damage must retain zero variance'
 terminal=ins('?HandleKill@PetBattleAbilityEffect@@')
 gate=next(i for i,x in enumerate(terminal)if(x.mnemonic,x.op_str)==('cmp','r8d, 0x11a'))
 start=terminal[gate+1].operands[0].imm

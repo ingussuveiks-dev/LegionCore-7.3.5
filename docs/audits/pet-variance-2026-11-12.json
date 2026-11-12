@@ -1,0 +1,155 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "NATIVE_222_PERCENTAGE_VARIANCE_FIXED_ALL63_ROWS_DEPLOYED_CLIENT_PENDING",
+  "baseline": "f62521fc7ba5c35761ba0a64bc7539ffcc5fa799",
+  "problem": "HandleDamageRange interpreted native property222 Param2 Variance as an absolute maximum and called urand(Points,Variance). This shifted all63 matching rows away from their authored ranges. Row3208/Transmute1724 has Points21/Variance20, which reverses that old RNG interval; native urand asserts max>=min. That assertion risk is traced from actual source/data, not claimed as a reproduced client crash.",
+  "investigation_order": "Matching26972 actual stores/Hotfix and63 native effect rows first, then local newer Trinity checkout (no battle-effect implementation), available Legion/BFA upstream reference implementations (same old absolute-max code, not adapted), then original Blizzard7.3.5 UI source mirror. No gameplay video or actual client traversal is claimed.",
+  "native_data": "All63 native222 rows use Points/Accuracy/Variance, accuracy100, variance20/30/40/60 and zero OverrideIndex/unused params. Actual property labels confirm Points,Accuracy,Variance,OverrideIndex. Feathered1398 tooltip explicitly gives SimpleDamage*0.7..1.3 with variance60. State1399 damage bonus50 and1420 type3 remain separate pending Frenzy producer work.",
+  "primary_ui_reference": {
+    "url": "https://github.com/Gethe/wow-ui-source/blob/67ecbf5ce0e50cc7483c2295caecf410460f0994/FrameXML/SharedPetBattleTemplates.lua#L489",
+    "tag": "7.3.5",
+    "commit": "67ecbf5ce0e50cc7483c2295caecf410460f0994",
+    "reviewed": "StandardDamage lines489..501 computes SimpleDamage, then variance/200*damage and formats damage-minus/plus-variance. FormatDamage/FormatDamageHelper floor display values and apply family hint multiplier. Original UI mirror tag7.3.5 is a version reference; local26972 stores independently establish actual field/row compatibility.",
+    "local_sha256": "6c4788155cf90803aa7d5db1b0677245c9e7202dcc0b033dbdb0ad91af4c89f0"
+  },
+  "repair": "Retain the existing two-argument CalculateDamage API and delegate ordinary calls to a common CalculateDamageWithVariance helper with zero variance. Native222 passes actual Points and Variance with ordinary power scaling. Keep native flat/power/critical/family/dealt/taken modifiers, then select a bounded integer in floor(modifiedDamage*(200-Variance)/200)..floor(modifiedDamage*(200+Variance)/200), with widened signed products and nonnegative/int32 bounds; keep Magic\u2019s final35percent cap after the range roll. Ordinary zero-variance paths consume no extra RNG draw. Keep native accuracy, enemy selection, damage events, death and cooldown paths. Added nonvirtual method changes no member layout; native effect sizeof0x50 assertions pass. No SQL/character/runtime configuration changes.",
+  "inference_and_limits": "Percentage spread is independently supported by native labels/tooltip and Blizzard UI formula. The selected integer roll around the existing fully modified integer result preserves this core\u2019s modifier order and Magic cap. Exact retail RNG distribution, fractional rounding/order under unusual combined buffs and actual displayed ranges still need client confirmation; native scopes do not certify whole abilities or all combat.",
+  "tests": {
+    "native": "144 actual native cases: all63 rows in both orientations (128 actual dispatcher samples per row); ten power22000/critical100/dealt50/taken-25/flat-state scenarios; two Magic capped paths at power22000; four miss/untargettable refusals; two lethal hits retaining one actual death receipt. 17,408 real native ranged dispatcher samples plus64 final-cap and6 miss/death checks; no fake metadata or character writes. All63 data rows validate native shape; labels are independently read by the metadata probe. No nonzero OverrideIndex is invented.",
+    "counterfactual": "Complete pinnedf62521 PetBattle.cpp+PetBattleAbilityEffect.cpp fails the exact percentage-bound assertion on actual2799 samples with exit1. It does not invoke old3208\u2019s reversed interval. Fixed full144 includes actual3208 successfully.",
+    "retained": "Current28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 linked scopes, complete pet proof chain, actual222 table pointer/native recipient/arguments, 64bit signed bound construction, zero-variance RNG bypass and post-roll Magic cap pass. Current unchanged writer PE and Scepter -VerifyReleaseBinary pass.",
+    "harness": "Initial Magic test used unscaled power220 and InfoMaxHealth instead of native stamina-derived maximum; corrected to power22000 and actual stamina states. A result-label mismatch was corrected and final144 completed under diagnostics. Compiler inlined ordinary CalculateDamage wrapper, so PE checks follow the actual common helper with zero r9 argument; old split accumulator lookup updated r9->r10. Initial capture/lookups and critical-versus-variance RNG-site lookup failures remain archived and paired with passing checks. No new production error hidden.",
+    "runtime": "Owned canonical PID19352 ready/shutdown0/exit0/gone, empty stderr. Known Scepter C4244/C4389 fixture warnings retained; no user/unknown server stopped.",
+    "packet": "Sender/writer source unchanged from verified Ward/Rot nine-path/18-packet extracted-sender ASAN; current writer linked proof passes. Full native-core ASAN/client traversal not established.",
+    "certificate": "Historical106/106 applies to cdca. Current46b6 has listed focused/retained checks; no fresh full106 claim."
+  },
+  "canonical": {
+    "worldserver.exe": "46b6c2e8b26e8b76315bba895d0b2c594a64d98840bc8a57817ff0d1b57037d7",
+    "worldserver.map": "5bae62923ae55c1ced19d2e28e2cf5285de1ff15731762a680b383f08123c0a6",
+    "bnetserver.exe": "41ca8ebcf9e164db0d21a8d401c3837bc0907ff358995bc428fbbe435bbf9060",
+    "bnetserver.map": "62e9fc39f7d5b7786d8ce89bf03a495870d584f09cafc4eea065f85a3492b906"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/final144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/full100-native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/full-prior100-native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/canonical-linked.log",
+      "sha256": "dd3860a657829d90faa6e1de4ea54b1e3ecb550d2daa073c359c4420f922df1f"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/hundred-stage.log",
+      "sha256": "64b195b65fc54f45018dfa33a9e29595cd30c5f2c1d83ad73ae25274f6e2a113"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/second-hundred2-stage.log",
+      "sha256": "508696a5f5a87802b1411f4afe19d54d797491c2fd7790a68604d66a6a9df470"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/writer-stage.log",
+      "sha256": "651fae6e4bb3c04898226c20980379b237933dae8e0ad5476e58c47e9035a31e"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/startup-driver.log",
+      "sha256": "84c0f711f18af1c287bdaa80a395f51795a62f2996c3bb9db1618dbcaf4a0cfc"
+    },
+    {
+      "path": ".codex/pet-variance-open-2026-11-12/cleanup-driver.log",
+      "sha256": "c055359fab583e1a1cb0f36954171a367ce3f691f1975681ab623fe36536207a"
+    }
+  ],
+  "diagnostics": "Pre/post canonical and own crash/log inventories checked for every formal test. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Mixed7111byte DBErrors, Slaghammer, mixed NPC/Feathered/Dark Rebirth/Lady/LINK2 evidence and unique research executables preserved outside fixed.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-variance-2026-11-12",
+    "ManifestSHA256": "C8B70FF6C02A28F863CCD3DF8483BB80FA88CD73C963BDA3C02A82B94CAAECAD",
+    "Archived": 486,
+    "Removed": 53,
+    "ReclaimedBytes": 696987226.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent per-issue rollback copies for pending client comparisons,regression sources and reusable tools. Resolved native222 percentage range144 cases, pinned control, retained28 Discharge/50 Ward and earlier native/linked checks archived. Historical106 remains tied to preceding cdca binary; no new full106 claim. Mixed Dark Rebirth795/state146 and type229 research, their unique executables and other shared-proc/Lady/LINK2 evidence remain outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_variance_rows": 63,
+    "native_variance_cases": 144,
+    "retained_native_cases": [
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "46b6c2e8b26e8b76315bba895d0b2c594a64d98840bc8a57817ff0d1b57037d7",
+      "worldserver.map": "5bae62923ae55c1ced19d2e28e2cf5285de1ff15731762a680b383f08123c0a6",
+      "bnetserver.exe": "41ca8ebcf9e164db0d21a8d401c3837bc0907ff358995bc428fbbe435bbf9060",
+      "bnetserver.map": "62e9fc39f7d5b7786d8ce89bf03a495870d584f09cafc4eea065f85a3492b906"
+    },
+    "archive_records": 486,
+    "removed": 53,
+    "removed_bytes": 696987226.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Actual client damage ranges, combined-buff fractional rounding/RNG presentation, animations and battle log remain pending.",
+    "Feathered Frenzy1398/1399 root and Flying1420 producer, Roboflauge1389 actual team passive/swap/start admission and Ominitron1595 remain OPEN. Percentage-damage fix does not certify these producer sequences.",
+    "Dark Rebirth794/795 missing state146/protected window/penalty796, Haunt, Apocalypse, clone122/123/124 and other generic159 remain OPEN.",
+    "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, original LINK2/Slaghammer/mixed DBErrors, intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
+  ],
+  "next": "Continue Feathered Frenzy1398/1399/1420 full native hit/failure/type-duration/lethal continuation sequence using repaired222, without claiming an untested client traversal."
+}

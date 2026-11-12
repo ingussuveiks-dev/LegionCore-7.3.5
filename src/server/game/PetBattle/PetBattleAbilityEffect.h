@@ -71,6 +71,7 @@ struct PetBattleAbilityEffect
     void SelectTargets();
     int32 GetPetType();
     int32 CalculateDamage(int32 damage, bool scaleWithPower = true);
+    int32 CalculateDamageWithVariance(int32 damage, bool scaleWithPower, uint16 variance);
     int32 CalculateHeal(int32 heal);
     int32 CalculateHit(int32 accuracy);
     int32 GetHealth(uint32 target);

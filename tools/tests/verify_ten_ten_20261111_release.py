@@ -200,7 +200,7 @@ if ninth:
  else:assert 726 in values(rows)and sites(rows,'?Heal@PetBattleAbilityEffect@@'),'Actual humanoid passive reaches native health/event update'
  rows=ins('?Process@PetBattleAura@@');assert any(x.mnemonic=='cmp'and x.op_str.endswith(', -1')and rows[i+1].mnemonic=='je'and rows[i+2].mnemonic=='dec'for i,x in enumerate(rows[:-2])),'Actual aura tick preserves infinite sentinel before decrement'
  assert sites(rows,'?Execute@PetBattleAbilityEffect@@')and any(x.mnemonic=='mov'and x.op_str=='dword ptr [rax + 0x20], ecx'for x in rows),'Actual periodic dispatch writes BuffTurn on appended event nodes'
- assert ins('?AddAura@PetBattle@@')and ins('?CalculateDamage@PetBattleAbilityEffect@@'),'Actual native slot/critical calculation paths linked; complete behavior separately exercised in the native probe'
+ assert ins('?AddAura@PetBattle@@')and ins('?CalculateDamageWithVariance@PetBattleAbilityEffect@@'),'Actual native slot/critical calculation paths linked; complete behavior separately exercised in the native probe'
  print('PASS linked ninth10:two-team terminal flow,valid incoming slot0,owner/lock call,bounded table dispatch,all-target execution,actual humanoid heal,infinite duration andappended BuffTurn;native slot/crit/selection behavior separately passed')
 
 tenth=[e for e in PLAN['changes']if e['batch']==10]
