@@ -993,14 +993,14 @@ bool PetBattleAbilityEffect::HandleModState()
     assert(EffectInfo->Param[0] < NUM_BATTLEPET_STATES);
 
     /// Min check
-    if (GetState(Caster, EffectInfo->Param[0]) < EffectInfo->Param[2])
+    if (EffectInfo->Param[2] && GetState(Caster, EffectInfo->Param[0]) < int16(EffectInfo->Param[2]))
         return false;
 
     /// Max check
-    if (GetState(Caster, EffectInfo->Param[0]) > EffectInfo->Param[3])
+    if (EffectInfo->Param[3] && GetState(Caster, EffectInfo->Param[0]) > int16(EffectInfo->Param[3]))
         return false;
 
-    ModState(Target, EffectInfo->Param[0], EffectInfo->Param[1]);
+    ModState(Target, EffectInfo->Param[0], int16(EffectInfo->Param[1]));
 
     return true;
 }
