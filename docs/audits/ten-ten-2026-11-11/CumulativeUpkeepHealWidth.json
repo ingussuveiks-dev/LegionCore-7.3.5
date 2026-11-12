@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "CumulativeUpkeepHealWidth",
+  "batch": 7,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Preserve native64 Healing Tide input through Cumulative Upkeep bonuses",
+  "paths": [
+    "src/server/scripts/Spells/spell_shaman.cpp"
+  ],
+  "binding": "spell_sha_cumulative_upkeep",
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 7 -Case CumulativeUpkeepHealWidth",
+  "counterfactual": "Add -Baseline; expected-broken control, paired with repaired pass.",
+  "checks": {
+    "asan": "Ten complete production classes pass with native64 and ordinary legacy inputs. Injured-only Cloudburst split and all-recipient Mists split, empty count guards; owner-only stacked Cumulative Upkeep; raid/nonraid Hymn andsaturated doubling; combat/Masochism ShadowMend children; Covenant absorb; owned Barrier/PvE/PvP critical Atonement; owned image Echo; one-use SilverHand andthree owned Beacon alternatives for LightSaves. Native64 limits andcontrolled aura/child/cast endpoints are explicit. Sixth-group regression passes after sharing the fixture header.",
+    "baseline": "All ten pinned pre-task controls fail repaired expectations using the legacy32 getter/setter. Each is paired with passing repaired ASAN. No production/setup failure was found in the seventh native run.",
+    "native": "Ten actual binding families andmatching26972 SpellInfo validation. Actual SpellScript target/OnHit/area dispatch with exact64 values, actual injured filtering/recipient counts, real totem/image owner resolution andowned stacks, real Player/Group raid reference without group persistence, combat/Barrier/Beacon conditions, andreal one-use aura removal. Optional refresh andchild casts observed. First sixty native scopes retained.",
+    "linked": "Current canonical Release contains actual native64 getter/setter calls andwide recipient division; owner/trait/raid gates; original ShadowMend alternatives, Covenant passive, Atonement critical branch, Highlord Echo andthree Beacon IDs. First sixty linked checks retained.",
+    "retained": "Previous50 source certificate and65-file unsigned64 healing certificate pass; sixth-group shared-fixture regression passes; canonical Scepter Release check passes.",
+    "runtime": "Task-owned canonical PID19792 fresh ready,graceful shutdown0,exit0/gone,empty stderr. No new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. No user server stopped;protected runtime preserved.",
+    "investigation": "Native64 getter/setter are deliberately named separately from the legacy32 API; each affected class now uses the proper channel. Original coefficients, recipient selection, ownership,raid/crit/PvP gates andconsumption are retained. Ordinary non-exact core effect accumulation remains an explicit OPEN engine limitation to investigate before completing all100; these fixtures certify incoming exact64 values andthe listed class behavior."
+  },
+  "canonical_worldserver_sha256": "5632417d072a4d270400355bc66ceeba9e96e6e887a0e7b812054816383eab27",
+  "scope": "Authored IDs,percentages,distance formula,proc ownership,recursion guards,PvP/faction gates andtimings retained. Each shared class family is counted once. Native binary32 percentage rounding and existing unsigned64 API are preserved. No database/schema/character/packet changes.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch07; after focused commits.",
+  "pending": "Ordinary effect accumulation outside explicit native64 inputs is a separate OPEN engine limitation for the remaining groups. Actual client visuals, combat, movement, healing and full affected encounters remain unverified. Lady authentic finale, LINK2/Slaghammer, original handshake and all36 whole chains retain their existing OPEN evidence; mixed DBErrors is unchanged."
+}

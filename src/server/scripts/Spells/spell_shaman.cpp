@@ -1428,9 +1428,9 @@ class spell_sha_cumulative_upkeep : public SpellScript
 
         if (Aura* aura = target->GetAura(208205, owner->GetGUID()))
         {
-            float heal = GetHitHeal();
+            float heal = GetHitHeal64();
             AddPct(heal, aura->GetEffect(EFFECT_0)->GetAmount() * aura->GetStackAmount());
-            SetHitHeal(heal);
+            SetHitHeal64(HealingAmount::FromFloat(heal));
         }
 
         owner->CastSpell(target, 208205, true);
