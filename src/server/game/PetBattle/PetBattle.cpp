@@ -586,6 +586,9 @@ void PetBattleAura::Remove(PetBattle* petBattle)
 
 void PetBattleAura::Process(PetBattle* petBattle)
 {
+    if (Expired)
+        return;
+
     if (Duration != -1 && Turn > MaxDuration && !Expired)
     {
         Expire(petBattle);
@@ -647,6 +650,8 @@ void PetBattleAura::Process(PetBattle* petBattle)
                 for (; itr != petBattle->RoundEvents.end(); ++itr)
                     itr->BuffTurn = Turn;
 
+                if (Expired)
+                    return;
                 if (effect.StopChain)
                     break;
             }
