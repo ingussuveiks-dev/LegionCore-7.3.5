@@ -1,4 +1,51 @@
 {
+  "latest_native_feathered_frenzy_repair_2026_11_12": {
+    "status": "FEATHERED_FRENZY_NATIVE_FLYING_MARK_AND_LETHAL_BENEFITS_FIXED_DEPLOYED_CLIENT_PENDING",
+    "fix_commit": "061c035c2190d283a83c62fbf17928cf5fb32292",
+    "canonical": {
+      "worldserver.exe": "4415845bf28a059ed9debe38635fb238777aecf209f2ea0e0a50ca8aa4b58d12",
+      "worldserver.map": "3051bf9c70afc586a4592a631fc748196d94f8a3b2f80f63f55e5e2d706fcca6",
+      "bnetserver.exe": "93f82d755a0bcaa77679b7e5f24f60f856b10cb121f254faae897123cb02d5f1",
+      "bnetserver.map": "8af75f0e13668a9864ab51ac381c198d3dec48ad54a9810b53d9a5d02102806e"
+    },
+    "remaining": [
+      "Actual learned-kit UI, combat animation, full encounter/re-entry and category overlap priority remain client-pending; newest-live mark policy remains the prior explicit inference.",
+      "Roboflauge1389 actual team passive/swap/start producer and Ominitron1595 producer/owner sequence remain OPEN. Mixed NPC metadata/observations remain outside fixed.",
+      "Dark Rebirth794/795 missing state146/protected window/penalty796, Haunt, Apocalypse, clone122/123/124 and other generic159 remain OPEN.",
+      "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, LINK2/Slaghammer/mixed DBErrors, intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
+    ],
+    "next": "Trace the remaining Roboflauge/Ominitron producers through actual matching NPC teams/data/scripts before enabling them; continue independently actionable native lifecycle repairs.",
+    "audit": "docs/audits/pet-feathered-frenzy-2026-11-12.json",
+    "checks": "24 native, two complete pinned92e controls; retained144 variance/all63 rows,28 Discharge/50 Ward/48 roster/28 Cheat/34 Hourglass/26 Bend/13 racial/44 sacrifice/16 Unholy/two full100 native and linked scopes; current1398 recipient/owned-parent/222 continuation, Scepter and owned PID23104 ready/graceful0/gone. No new diagnostics; no fresh106 claim.",
+    "cleanup": {
+      "status": "PASS",
+      "native_feathered_frenzy_cases": 24,
+      "retained_native_cases": [
+        144,
+        28,
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "4415845bf28a059ed9debe38635fb238777aecf209f2ea0e0a50ca8aa4b58d12",
+        "worldserver.map": "3051bf9c70afc586a4592a631fc748196d94f8a3b2f80f63f55e5e2d706fcca6",
+        "bnetserver.exe": "93f82d755a0bcaa77679b7e5f24f60f856b10cb121f254faae897123cb02d5f1",
+        "bnetserver.map": "8af75f0e13668a9864ab51ac381c198d3dec48ad54a9810b53d9a5d02102806e"
+      },
+      "archive_records": 496,
+      "removed": 59,
+      "removed_bytes": 714106952.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    }
+  },
   "latest_native_percentage_variance_repair_2026_11_12": {
     "status": "NATIVE_222_PERCENTAGE_VARIANCE_FIXED_ALL63_ROWS_DEPLOYED_CLIENT_PENDING",
     "fix_commit": "92e783872ac544f94ca82c7513c1ddf95d99fd64",
