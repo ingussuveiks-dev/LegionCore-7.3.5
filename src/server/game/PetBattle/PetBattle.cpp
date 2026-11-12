@@ -1281,17 +1281,15 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                     }
 
                     AddPct(xpEarn, player->GetTotalAuraModifier(SPELL_AURA_MOD_BATTLE_PET_XP_GAIN));
-                    auto xpToNextLevel = currentPet->GetMaxXPForCurrentLevel();
-                    if (currentPet->XP + xpEarn >= xpToNextLevel)
+                    uint64 remainingXP = uint64(currentPet->XP) + xpEarn;
+                    uint32 xpToNextLevel = currentPet->GetMaxXPForCurrentLevel();
+                    while (currentPet->Level < BATTLEPET_MAX_LEVEL && xpToNextLevel && remainingXP >= xpToNextLevel)
                     {
-                        currentPet->XP = currentPet->XP + xpEarn - xpToNextLevel;
+                        remainingXP -= xpToNextLevel;
                         currentPet->Level++;
                         currentPet->UpdateStats();
                         currentPet->UpdateAbilities();
                         currentPet->Health = currentPet->InfoMaxHealth;
-
-                        if (currentPet->Level == BATTLEPET_MAX_LEVEL)
-                            currentPet->XP = 0;
 
                         if (auto speciesInfo = sBattlePetSpeciesStore.LookupEntry(currentPet->Species))
                         {
@@ -1304,9 +1302,9 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                             /// Quest progress for 12 x Level Up!
                             player->KilledMonsterCredit(65876);
                         }
+                        xpToNextLevel = currentPet->GetMaxXPForCurrentLevel();
                     }
-                    else
-                        currentPet->XP += xpEarn;
+                    currentPet->XP = currentPet->Level == BATTLEPET_MAX_LEVEL ? 0 : uint32(remainingXP);
                 }
 
                 currentPet->UpdateOriginalInstance(player);
