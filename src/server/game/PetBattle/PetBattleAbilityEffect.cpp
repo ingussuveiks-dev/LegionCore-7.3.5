@@ -1068,7 +1068,10 @@ bool PetBattleAbilityEffect::HandleHealState()
 bool PetBattleAbilityEffect::HandleSplittedDamage()
 {
     CalculateHit(EffectInfo->Param[1]);
-    int32 damage = CalculateDamage(EffectInfo->Param[0] / Targets.size());
+    int32 points = EffectInfo->Param[0];
+    if (EffectInfo->Param[2] && GetState(Target, EffectInfo->Param[2]))
+        points += EffectInfo->Param[3];
+    int32 damage = CalculateDamage(points / Targets.size());
     return Damage(Target, damage);
 }
 
