@@ -1,17 +1,17 @@
 {
   "latest_ten_ten_repairs_2026_11_11": {
-    "status": "IN_PROGRESS_90_OF_100_TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+    "status": "COMPLETE_100_SELECTED_REPAIRS_TECHNICAL_CHECKED_DEPLOYED_CLIENT_AND_LEGACY_PENDING",
     "request": "Turpini 10\u00c3\u201410",
-    "completed": 90,
-    "remaining": 10,
-    "completed_batches": 9,
+    "completed": 100,
+    "remaining": 0,
+    "completed_batches": 10,
     "audit": "docs/audits/ten-ten-repairs-2026-11-11.json",
-    "last_implementation_commit": "74cdd8d56eeb0ffd23283fbc9cfd253c610fc4c6",
+    "last_implementation_commit": "9e9c4ed2393ecaf168c6bd7a4e0b10db1ea504d2",
     "canonical": {
-      "worldserver.exe": "f5dc27554d8e8ef40c46615e0f978c0c4c3595d65bed4ca05d930b1384c8dc4a",
-      "worldserver.map": "57a55c95a4f27bc5e82b0af11c1b5b1a1e1f35feaa3724c67a46010e52a8ceca",
-      "bnetserver.exe": "4799761840ba9f871d25b10ae052ef1fe3f09d1f8c6013b0cf3cddbc0be6b5fb",
-      "bnetserver.map": "d4747be80b0d5242f2f976b364f4f0ba59043d9479a8461f3b192436f7722e2d"
+      "worldserver.exe": "a7c3c39959b83f8f7c5496f4445bc1c1967c6a32affac3dc1ac52ee836b73466",
+      "worldserver.map": "fc5b52e022c17cf66ce7ec7044a939c9a2dbe448f31b2ce63e2e43f5a1999491",
+      "bnetserver.exe": "ebf7a83620a2f8614d928212da75a9606a78c5a4fd7f8bfedd43b39f1ca55924",
+      "bnetserver.map": "41b1a284c1e077df33e40ddb34775648780b343f6aca140fa3c14f70b80151b8"
     },
     "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
     "cleanup_batch02": {
@@ -25,7 +25,7 @@
       "deletion_manifest_sha256": "a38a4630ad2574998375f6fab21ac269d846967de7fabe587711fd59193fe621",
       "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
     },
-    "pending": "Continue final batch10 to reach100 genuine repairs; native property246,ordinary healing,actualclient/fullchains andLady/LINK2/Slaghammer/handshake remain OPEN.",
+    "pending": "Stopped at requested100 selected repairs. Actualclient/whole36chains,Lady authentic living finale,LINK2/Slaghammer,original intermittent handshake,native property246,ordinary corehealing and36pre-existing legacy PE root failures remain OPEN.",
     "cleanup_batch03": {
       "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
       "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch03",
@@ -101,6 +101,17 @@
       "logical_removed_bytes": 954141989,
       "deletion_manifest": ".codex/ten-ten-2026-11-11/batch09-deletions.json",
       "deletion_manifest_sha256": "95fbffcf831acb2e9e45c8a8c579a3f0dd4c5f42034d1f65f045cc18fd27409d",
+      "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+    },
+    "cleanup_batch10": {
+      "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+      "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch10",
+      "manifest_sha256": "31b85f279fa585cd7d819b92739be57193273d16b77150d8b8b9356980061463",
+      "archived_files": 4949,
+      "removed_files": 78,
+      "logical_removed_bytes": 1180373843,
+      "deletion_manifest": ".codex/ten-ten-2026-11-11/batch10-deletions.json",
+      "deletion_manifest_sha256": "abdf45b8fef3c7888c6a738da478a85e1c68b0b774e752eb12a2645449de05f5",
       "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
     }
   },
