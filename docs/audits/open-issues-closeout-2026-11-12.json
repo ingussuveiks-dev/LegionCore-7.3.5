@@ -1,4 +1,49 @@
 {
+  "latest_native_discharge_repair_2026_11_12": {
+    "status": "DISCHARGE_NATIVE_CRITTER_MARK_AND_FINITE_CONTROLLER_CLEANUP_FIXED_DEPLOYED_CLIENT_PENDING",
+    "fix_commit": "f62521fc7ba5c35761ba0a64bc7539ffcc5fa799",
+    "canonical": {
+      "worldserver.exe": "458d4135383bfa07538a4b572f0db881caa4732f62828fda792d7921e1ea9e4f",
+      "worldserver.map": "60f8762c321dec1dcd01810d4efd150c81a129f776b19a60e40b438805d92d48",
+      "bnetserver.exe": "5a2b6b0fd19d9c2a07ebfea8e3cb3a8fc96d9dece30798a8d2841796a59f2b53",
+      "bnetserver.map": "71ea603d738554da31e3a13c1571399d4cc63f34a6daaa53f6d971af882d760f"
+    },
+    "remaining": [
+      "Actual client learned-kit UI, family damage presentation, animation and overlap priority remain pending. Newest-live categorical mark policy remains the prior documented inference.",
+      "Roboflauge1389 full team passive producer/swap/start sequence, Feathered Frenzy1398 and Ominitron1595 remain OPEN. Mixed native NPC metadata/observations retained outside fixed; its inherited output footer incorrectly says all50 and is not a50-case certificate.",
+      "Dark Rebirth794/795 missing state146/protected window/penalty796, Haunt, Apocalypse, clone122/123/124 and generic159 remain OPEN.",
+      "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, original LINK2/Slaghammer/mixed DBErrors, original intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
+    ],
+    "next": "Continue actual native Feathered Frenzy1398 producer/damage-failure/type duration sequence and preserve missing NPC passive producer/owner evidence.",
+    "audit": "docs/audits/pet-discharge-2026-11-12.json",
+    "checks": "28 native, two complete pinned controls, retained50/48/28/34/26/13/44/16 and both full100 native/linked scopes, unchanged writer PE, Scepter, owned PID20988 ready/graceful0/gone; no new diagnostics. No fresh106 claim.",
+    "cleanup": {
+      "status": "PASS",
+      "native_discharge_cases": 28,
+      "retained_native_cases": [
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "458d4135383bfa07538a4b572f0db881caa4732f62828fda792d7921e1ea9e4f",
+        "worldserver.map": "60f8762c321dec1dcd01810d4efd150c81a129f776b19a60e40b438805d92d48",
+        "bnetserver.exe": "5a2b6b0fd19d9c2a07ebfea8e3cb3a8fc96d9dece30798a8d2841796a59f2b53",
+        "bnetserver.map": "71ea603d738554da31e3a13c1571399d4cc63f34a6daaa53f6d971af882d760f"
+      },
+      "archive_records": 534,
+      "removed": 59,
+      "removed_bytes": 695107190.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    }
+  },
   "latest_native_ward_rot_repair_2026_11_12": {
     "status": "WARD_ROT_NATIVE_TYPE229_STATE124_DAMAGE_AND_LIFECYCLE_FIXED_DEPLOYED_CLIENT_PENDING",
     "fix_commit": "14555a17bce1458e8061f233286b2eef78449a6c",
