@@ -271,6 +271,7 @@ public:
 
         void Reset()
         {
+            events.Reset();
             _Reset();
 
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
