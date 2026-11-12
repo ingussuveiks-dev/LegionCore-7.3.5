@@ -3319,8 +3319,8 @@ public:
 
             bool operator()(WorldObject* target)
             {
-                return target->GetEntry() != GO_THUNDER_FORGE_AVNIL || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_2 || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_3 ||
-                    target->GetEntry() != GO_THUNDER_FORGE_AVNIL_4 || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_5 || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_6 ||
+                return target->GetEntry() != GO_THUNDER_FORGE_AVNIL && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_2 && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_3 &&
+                    target->GetEntry() != GO_THUNDER_FORGE_AVNIL_4 && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_5 && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_6 &&
                     target->GetEntry() != GO_THUNDER_FORGE_AVNIL_7;
             }
         };
