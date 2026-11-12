@@ -65,57 +65,92 @@ public:
             instance = creature->GetInstanceScript();
 
             for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
-                NetherEssenceTrigger[i] = NULL;
+                NetherEssenceTrigger[i].Clear();
 
             for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
-                TwilightZealotsList[i] = NULL;
+                TwilightZealotsList[i].Clear();
         }
 
         InstanceScript* instance;
         EventMap events;
-        Creature* TwilightZealotsList[3];
-        Creature* NetherEssenceTrigger[3];
+        ObjectGuid TwilightZealotsList[3];
+        ObjectGuid NetherEssenceTrigger[3];
+
+        bool PrepareChannelActors()
+        {
+            for (uint8 i = 0; i <= RAID_MODE(1, 2); ++i)
+            {
+                auto zealot = ObjectAccessor::GetCreature(*me, TwilightZealotsList[i]);
+                if (!zealot)
+                {
+                    if (auto oldTrigger = ObjectAccessor::GetCreature(*me, NetherEssenceTrigger[i]))
+                        oldTrigger->DespawnOrUnsummon();
+                    NetherEssenceTrigger[i].Clear();
+                    zealot = me->SummonCreature(NPC_TWILIGHT_ZEALOT_CORLA, summonPositions[i], TEMPSUMMON_MANUAL_DESPAWN);
+                    TwilightZealotsList[i] = zealot ? zealot->GetGUID() : ObjectGuid::Empty;
+                }
+                if (!zealot)
+                    return false;
+                if (!ObjectAccessor::GetCreature(*me, NetherEssenceTrigger[i]))
+                {
+                    auto trigger = zealot->SummonCreature(NPC_NETHER_ESSENCE_TRIGGER, summonPositions[3], TEMPSUMMON_MANUAL_DESPAWN);
+                    NetherEssenceTrigger[i] = trigger ? trigger->GetGUID() : ObjectGuid::Empty;
+                    if (!trigger)
+                        return false;
+                }
+            }
+            return true;
+        }
 
         void Reset() override
         {
             events.Reset();
             me->GetMotionMaster()->MoveTargetedHome();
             me->RemoveAllAuras();
-
-            for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
+            if (!PrepareChannelActors())
+                TC_LOG_ERROR("scripts", "Corla could not prepare its owned channel actors during reset");
+            for (uint8 i = 0; i <= RAID_MODE(1, 2); ++i)
             {
-                if (TwilightZealotsList[i] == NULL)
-                    TwilightZealotsList[i] = me->SummonCreature(NPC_TWILIGHT_ZEALOT_CORLA, summonPositions[i], TEMPSUMMON_MANUAL_DESPAWN);
-                if (NetherEssenceTrigger[i] == NULL)
-                    NetherEssenceTrigger[i] = TwilightZealotsList[i]->SummonCreature(NPC_NETHER_ESSENCE_TRIGGER, summonPositions[3], TEMPSUMMON_MANUAL_DESPAWN);
-                if (TwilightZealotsList[i]->isDead())
-                    TwilightZealotsList[i]->Respawn();
-
-                TwilightZealotsList[i]->RemoveAura(SPELL_AURA_OF_ACCELERATION);
-                TwilightZealotsList[i]->RemoveAura(SPELL_TWILIGHT_EVOLUTION);
-                TwilightZealotsList[i]->RemoveAura(SPELL_EVOLUTION);
-
-                TwilightZealotsList[i]->NearTeleportTo(summonPositions[i].GetPositionX(), summonPositions[i].GetPositionY(), summonPositions[i].GetPositionZ(), summonPositions[i].GetOrientation());
-
-                if (!TwilightZealotsList[i]->HasAura(SPELL_KNEELING_IN_SUPPLICATION))
-                    TwilightZealotsList[i]->CastSpell(TwilightZealotsList[i], SPELL_KNEELING_IN_SUPPLICATION, true);
+                if (auto zealot = ObjectAccessor::GetCreature(*me, TwilightZealotsList[i]))
+                {
+                    if (zealot->isDead())
+                        zealot->Respawn();
+                    zealot->RemoveAura(SPELL_AURA_OF_ACCELERATION);
+                    zealot->RemoveAura(SPELL_TWILIGHT_EVOLUTION);
+                    zealot->RemoveAura(SPELL_EVOLUTION);
+                    zealot->NearTeleportTo(summonPositions[i].GetPositionX(), summonPositions[i].GetPositionY(), summonPositions[i].GetPositionZ(), summonPositions[i].GetOrientation());
+                    if (!zealot->HasAura(SPELL_KNEELING_IN_SUPPLICATION))
+                        zealot->CastSpell(zealot, SPELL_KNEELING_IN_SUPPLICATION, true);
+                }
+                if (auto trigger = ObjectAccessor::GetCreature(*me, NetherEssenceTrigger[i]))
+                {
+                    if (trigger->isDead())
+                        trigger->Respawn();
+                    trigger->AI()->DoAction(ACTION_TRIGGER_STOP_CHANNELING);
+                }
             }
-            for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
-                NetherEssenceTrigger[i]->GetAI()->DoAction(ACTION_TRIGGER_STOP_CHANNELING);
             me->CastSpell(me, SPELL_DRAIN_ESSENCE_CHANNELING, true);
         }
 
         void EnterCombat(Unit* /*who*/) override
         {
+            if (!PrepareChannelActors())
+            {
+                TC_LOG_ERROR("scripts", "Corla combat refused because an owned channel actor is missing");
+                EnterEvadeMode();
+                return;
+            }
             me->CastStop();
             me->GetMotionMaster()->MoveChase(me->getVictim());
 
             events.RescheduleEvent(EVENT_DARK_COMMAND, 20000);
 
             for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
-                NetherEssenceTrigger[i]->GetAI()->DoAction(ACTION_TRIGGER_START_CHANNELING);
+                if (auto trigger = ObjectAccessor::GetCreature(*me, NetherEssenceTrigger[i]))
+                    trigger->AI()->DoAction(ACTION_TRIGGER_START_CHANNELING);
 
-            NetherEssenceTrigger[0]->CastSpell(NetherEssenceTrigger[0], SPELL_NETHERESSENCE_AURA, true);
+            if (auto trigger = ObjectAccessor::GetCreature(*me, NetherEssenceTrigger[0]))
+                trigger->CastSpell(trigger, SPELL_NETHERESSENCE_AURA, true);
             DoCast(SPELL_AURA_OF_ACCELERATION);
             Talk(SAY_AGGRO);
         }
@@ -144,13 +179,17 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
-                NetherEssenceTrigger[i]->GetAI()->DoAction(ACTION_TRIGGER_STOP_CHANNELING);
-
-            for (uint8 i = 0; i <= RAID_MODE(1, 2); i++)
+            for (uint8 i = 0; i <= RAID_MODE(1, 2); ++i)
             {
-                TwilightZealotsList[i]->DespawnOrUnsummon();
-                TwilightZealotsList[i] = NULL;
+                if (auto trigger = ObjectAccessor::GetCreature(*me, NetherEssenceTrigger[i]))
+                {
+                    trigger->AI()->DoAction(ACTION_TRIGGER_STOP_CHANNELING);
+                    trigger->DespawnOrUnsummon();
+                }
+                if (auto zealot = ObjectAccessor::GetCreature(*me, TwilightZealotsList[i]))
+                    zealot->DespawnOrUnsummon();
+                NetherEssenceTrigger[i].Clear();
+                TwilightZealotsList[i].Clear();
             }
             Talk(SAY_DEATH);
         }
