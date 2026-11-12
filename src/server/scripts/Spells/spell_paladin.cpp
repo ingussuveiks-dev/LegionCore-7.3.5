@@ -2663,7 +2663,7 @@ class spell_pal_holy_shock_heal : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (AuraEffect const* aurEff = caster->GetAuraEffect(200657, EFFECT_0)) // Power of the Silver Hand
                     {
-                        SetHitHeal(GetHitHeal() + aurEff->GetAmount());
+                        SetHitHeal64(HealingAmount::ApplySpellMod(GetHitHeal64(), aurEff->GetAmount(), 1.0f));
                         aurEff->GetBase()->Remove();
                     }
             }
