@@ -798,9 +798,9 @@ class spell_dh_spirit_bomb : public SpellScriptLoader
 
                     // The fragments are consumed immediately, while the
                     // explosion occurs one second later.
-                    caster->AddDelayedEvent(1000, [caster, fragmentCount]()
+                    caster->AddDelayedEvent(1000, [caster, fragmentCount, mapId = caster->GetMapId(), instanceId = caster->GetInstanceId()]()
                     {
-                        if (!caster->IsInWorld())
+                        if (!caster->IsInWorld() || caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
                             return;
 
                         float multiplier = float(fragmentCount);
