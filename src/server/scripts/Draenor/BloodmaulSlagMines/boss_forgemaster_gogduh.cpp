@@ -95,6 +95,7 @@ public:
 
         void Reset()
         {
+            events.Reset();
             _Reset();
 
             enableMagmolatus = 0;
