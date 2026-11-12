@@ -1,21 +1,24 @@
 """Pinned complete native Variance and categorical type-state amendment."""
 from pathlib import Path
 import functools,hashlib,json,subprocess
+from pet_feathered_frenzy_scope import normalize as normalize_frenzy,verify as verify_frenzy
 ROOT=Path(__file__).resolve().parents[2]
 PLAN=json.loads((ROOT/'tools/tests/PetBattleVarianceAmendments.json').read_text(encoding='utf8'))
-def normalize(path,source):
+def restore(path,source):
  for edit in reversed(PLAN['edits']):
   if edit['path']!=path:continue
   if source.count(edit['new'])==1:source=source.replace(edit['new'],edit['old'],1)
   else:assert source.count(edit['old'])==1,('Partial native Variance amendment',path)
  return source
+def normalize(path,source):return restore(path,normalize_frenzy(path,source))
 @functools.lru_cache(None)
 def verify():
+ verify_frenzy()
  for path,hashes in PLAN['files'].items():
-  source=(ROOT/path).read_text(encoding='utf-8-sig')
+  source=normalize_frenzy(path,(ROOT/path).read_text(encoding='utf-8-sig'))
   pinned=subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path]).decode('utf-8-sig').replace('\r\n','\n')
   assert hashlib.sha256(pinned.encode()).hexdigest()==hashes['before_sha256']
   assert hashlib.sha256(source.encode()).hexdigest()==hashes['after_sha256'],('Undeclared Variance amendment',path)
-  assert normalize(path,source)==pinned,('Variance whole-file restoration differs',path)
+  assert restore(path,source)==pinned,('Variance whole-file restoration differs',path)
  return True
 if __name__=='__main__':verify();print('PASS exact native Variance amendment and independently pinned prior whole files')

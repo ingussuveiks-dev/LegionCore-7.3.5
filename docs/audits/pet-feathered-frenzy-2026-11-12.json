@@ -1,0 +1,150 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "FEATHERED_FRENZY_NATIVE_FLYING_MARK_AND_LETHAL_BENEFITS_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "92e783872ac544f94ca82c7513c1ddf95d99fd64",
+  "problem": "Feathered Frenzy1398 applied native one-round50percent damage controller1399 but its229 Flying1420 mark was unimplemented. A lethal native222 damage row returned before the authored self benefits and cooldown.",
+  "native_data": "Matching26972/read-only Hotfix:1398 turn2324 has2798 reset124,2799 damage222 points25/variance60/accuracy100,2844 StopChain158,2845 positive aura1399 duration1,2870 type229 aura1420 duration1/state124.1399 native state23=50 and1420 native state124=3(Flying). Five actual SpeciesXAbility rows reference1398.1399 has an empty periodic turn and no removal49 payload;1420 has its own finite native lifetime. Do not invent an expiry timer or immediate shared-mark removal.",
+  "repair": "Select actual living caster for1398 type229 and require real unexpired same-source1399 parent. Preserve native finite mark/controller durations and shared categorical state restoration. Extend existing issued living turn1/non-proc self-type continuation only to1398 alongside1717, and allow its222 damage row to finish after a lethal target. Keep authored StopChain158 on native miss/block, other StopChain flags, ordinary callers and cooldown3. No species/racial/member ABI, timer, SQL or character data changes.",
+  "tests": {
+    "native": "24 actual native cases in10 groups, both teams: real root and17..32 native range, one-round own Flying/50percent bonus and defensive/outgoing calculations, memory configured ability-slot full rounds/cooldown3, misses, native one-block consumption, lethal hit benefits/cooldown, final-death cleanup, recast replacement without stacking, both categorical removal orders, missing/foreign-source parent and dead-caster refusal. Real stores/dispatcher/aura/round/death methods with memory-only six-pet teams; no character writes or real-client learned-kit traversal claim.",
+    "controls": "Complete pinned92e783 PetBattle.cpp+PetBattleAbilityEffect.cpp roots and lethal continuation controls each fail exact assertions with exit1. Fixed24 pass.",
+    "retained": "Current144 variance/all63 rows,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 linked scopes, complete earlier pet proof chain, explicit1398 caster selection,1399 inlined real holder/source/expired guards and scoped222 lethal continuation pass. Current unchanged writer PE and Scepter -VerifyReleaseBinary pass.",
+    "harness": "Compiler inlined actual GetAura after the added controller branch; old symbol-only lookups were replaced by actual aura-list, expiry, holder, ability and original-source branch checks. Discharge two-root predicate and actual CFG join are explicitly checked. One new branch-index lookup was corrected and paired with passing proof; failed harness outputs remain archived, not hidden server errors.",
+    "runtime": "Owned canonical PID23104 ready/shutdown0/exit0/gone, stderr empty; no user/unknown process stopped. Known Scepter C4244/C4389 fixture compiler warnings retained.",
+    "packet": "Writer/sender source unchanged from Ward/Rot nine-path18-packet extracted-sender ASAN; current writer linked proof passes. Full native-core ASAN/client traversal is not claimed.",
+    "certificate": "Historical106/106 remains tied to cdca. Current4415 has listed focused/retained checks; no fresh full106 claim."
+  },
+  "canonical": {
+    "worldserver.exe": "4415845bf28a059ed9debe38635fb238777aecf209f2ea0e0a50ca8aa4b58d12",
+    "worldserver.map": "3051bf9c70afc586a4592a631fc748196d94f8a3b2f80f63f55e5e2d706fcca6",
+    "bnetserver.exe": "93f82d755a0bcaa77679b7e5f24f60f856b10cb121f254faae897123cb02d5f1",
+    "bnetserver.map": "8af75f0e13668a9864ab51ac381c198d3dec48ad54a9810b53d9a5d02102806e"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/fixed-driver.log",
+      "sha256": "1aff6cad2bbe324871fbaaaf0758b3946617275de51a197dbfc0e6c359e24bc4"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/full100-native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/full-prior100-native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/canonical-linked.log",
+      "sha256": "223776daebdca9618ead58de32012bf95ec40d9c5773e312c8914745e9da00a3"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/hundred-stage.log",
+      "sha256": "7e05ca164a7943a8a96fd0987150b88a4020574009ef039b06278d078638c8e1"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/second-hundred-stage.log",
+      "sha256": "ff1209f9ea1e1ad90dc2aa7811e709777996931129a90b97acc4f0872590dd49"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/writer-stage.log",
+      "sha256": "3c2edd9ccb1385c51c7fb24101e11f60c8329735ceb910e757d911e5bb2ac6c3"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/startup-driver.log",
+      "sha256": "bdfd2966869dbee33b77aa507c34f0629831fdd1bd6e8ae03d78f88f96aa69bc"
+    },
+    {
+      "path": ".codex/pet-feathered-frenzy-open-2026-11-12/cleanup-driver.log",
+      "sha256": "eec584bc3ec334fcb36649971e8c365b05f628097a6c9e67dbce264b91b6908d"
+    }
+  ],
+  "diagnostics": "Pre/post canonical and own crash/log inventories reviewed; no new/changed crashes, appended DBErrors or unexplained server warning/error/assertion. Mixed7111byte DBErrors, Slaghammer, mixed NPC229/Dark Rebirth/Lady/LINK2 evidence and unique unresolved research executables preserved outside fixed. Resolved Feathered metadata/UI reference is archived and its regenerable probe executable removed.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-feathered-frenzy-2026-11-12",
+    "ManifestSHA256": "81668288EADCA17036F193F6A70B7E70F5281C0A03C5DE150523976803E6309C",
+    "Archived": 496,
+    "Removed": 59,
+    "ReclaimedBytes": 714106952.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent per-issue rollback copies for pending client comparisons,regression sources and reusable tools. Resolved Feathered Frenzy24 cases, two pinned controls, retained144 variance/28 Discharge/50 Ward and earlier native/linked checks archived. Feathered metadata research exe is now regenerable and removed; its source and reviewed metadata/UI reference bytes remain retained. Historical106 remains tied to preceding cdca binary; no new full106 claim. Mixed Dark Rebirth795/state146 and type229 research, their unique executables and other shared-proc/Lady/LINK2 evidence remain outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_feathered_frenzy_cases": 24,
+    "retained_native_cases": [
+      144,
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "4415845bf28a059ed9debe38635fb238777aecf209f2ea0e0a50ca8aa4b58d12",
+      "worldserver.map": "3051bf9c70afc586a4592a631fc748196d94f8a3b2f80f63f55e5e2d706fcca6",
+      "bnetserver.exe": "93f82d755a0bcaa77679b7e5f24f60f856b10cb121f254faae897123cb02d5f1",
+      "bnetserver.map": "8af75f0e13668a9864ab51ac381c198d3dec48ad54a9810b53d9a5d02102806e"
+    },
+    "archive_records": 496,
+    "removed": 59,
+    "removed_bytes": 714106952.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Actual learned-kit UI, combat animation, full encounter/re-entry and category overlap priority remain client-pending; newest-live mark policy remains the prior explicit inference.",
+    "Roboflauge1389 actual team passive/swap/start producer and Ominitron1595 producer/owner sequence remain OPEN. Mixed NPC metadata/observations remain outside fixed.",
+    "Dark Rebirth794/795 missing state146/protected window/penalty796, Haunt, Apocalypse, clone122/123/124 and other generic159 remain OPEN.",
+    "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, LINK2/Slaghammer/mixed DBErrors, intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
+  ],
+  "next": "Trace the remaining Roboflauge/Ominitron producers through actual matching NPC teams/data/scripts before enabling them; continue independently actionable native lifecycle repairs."
+}

@@ -13,10 +13,13 @@ for cmp in [('cmp','edx, 6'),('cmp','esi, 6')]:
  branch=refresh[gate+1];assert branch.mnemonic=='jae'
  assert refresh[write].address not in reaches(refresh,branch.operands[0].imm)
 handler=ins('?HandleDefensiveTypeAura@PetBattleAbilityEffect@@')
-lookup,=sites(handler,'?GetAura@PetBattleAbilityEffect@@');hit,=sites(handler,'?CalculateHit@PetBattleAbilityEffect@@');add,=sites(handler,'?AddAura@PetBattleAbilityEffect@@')
+lookup=next(i for i,x in enumerate(handler)if(x.mnemonic,x.op_str)==('mov','rcx, qword ptr [rbx + 0x10]'))
+hit,=sites(handler,'?CalculateHit@PetBattleAbilityEffect@@');add,=sites(handler,'?AddAura@PetBattleAbilityEffect@@')
 assert lookup<hit<add
-assert {('test','dword ptr [rcx + 0x44], 0x29a'),('cmp','word ptr [rdi + 0x12], 0x7c'),('cmp','word ptr [rdi + 0x10], 0'),('cmp','eax, 0x23e'),('cmp','eax, 0x1dc'),('mov','r8d, 0x334'),('mov','r8d, 0x58a'),('mov','edx, dword ptr [rcx + 0x3c]')}<=set(pairs(handler[:lookup]))
-assert {('test','rax, rax'),('mov','ecx, dword ptr [rbx + 0x1c]'),('cmp','dword ptr [rax + 8], ecx')}<=set(pairs(handler[lookup:hit]))
+assert {('test','dword ptr [rcx + 0x44], 0x29a'),('cmp','word ptr [r9 + 0x12], 0x7c'),('cmp','word ptr [r9 + 0x10], 0'),('cmp','ecx, 0x23e'),('cmp','ecx, 0x1dc'),('mov','r8d, 0x334'),('mov','r8d, 0x58a')}<=set(pairs(handler[:lookup]))
+assert {('mov','r10d, dword ptr [rbx + 0x3c]'),('mov','rcx, qword ptr [rcx + 0x148]'),('cmp','byte ptr [rdx + 0x20], 0'),('cmp','dword ptr [rdx + 0xc], r10d'),('cmp','dword ptr [rdx], r8d'),('test','rdx, rdx'),('mov','eax, dword ptr [rbx + 0x1c]'),('cmp','dword ptr [rdx + 8], eax')}<=set(pairs(handler[lookup:hit])),'Actual inlined GetAura scans unexpired real holder/ability and retains original source guard'
+gate=next(i for i,x in enumerate(handler[:hit])if(x.mnemonic,x.op_str)==('cmp','dword ptr [rdx + 8], eax'))
+assert handler[gate+1].mnemonic=='jne'and handler[hit].address not in reaches(handler,handler[gate+1].operands[0].imm)
 execute=ins('?Execute@PetBattleAbilityEffect@@')
 table=next(x.address+x.size+x.operands[1].mem.disp for x in execute if x.mnemonic=='lea'and x.op_str.startswith('r12, [rip')and x.operands[1].type==CS_OP_MEM)
 pointer,target=struct.unpack_from('<QI',n['binary'],n['offset'](table)+229*16)

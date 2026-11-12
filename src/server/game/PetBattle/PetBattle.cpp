@@ -1676,8 +1676,8 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     bool const selfSacrifice = p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE &&
         (abilityID == 282 || abilityID == 321 || abilityID == 663 || abilityID == 836 || abilityID == 1025);
     bool const hourglassAttack = abilityID == 1927 && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
-    bool const dischargeAttack = abilityID == 1717 && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
-    if ((selfSacrifice || hourglassAttack || dischargeAttack) && !Pets[casterPetID]->IsAlive())
+    bool const selfTypeAttack = (abilityID == 1717 || abilityID == 1398) && p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE;
+    if ((selfSacrifice || hourglassAttack || selfTypeAttack) && !Pets[casterPetID]->IsAlive())
         return PETBATTLE_CAST_INTERNAL_ERROR;
 
     // States
@@ -1723,12 +1723,13 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             if (!abilityEffect.Execute())
                 abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);
 
-            bool const sacrificeDamage = (selfSacrifice || hourglassAttack || dischargeAttack) &&
-                (abilityEffectInfo->BattlePetEffectPropertiesID == 24 || abilityEffectInfo->BattlePetEffectPropertiesID == 68);
+            bool const sacrificeDamage = (selfSacrifice || hourglassAttack || selfTypeAttack) &&
+                (abilityEffectInfo->BattlePetEffectPropertiesID == 24 || abilityEffectInfo->BattlePetEffectPropertiesID == 68 ||
+                    (selfTypeAttack && abilityEffectInfo->BattlePetEffectPropertiesID == 222));
             if (abilityEffect.StopChain && !sacrificeDamage)
                 break;
 
-            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice && !hourglassAttack && !dischargeAttack)
+            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice && !hourglassAttack && !selfTypeAttack)
                 return PETBATTLE_CAST_OK;
         }
     }

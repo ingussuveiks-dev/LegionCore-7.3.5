@@ -810,7 +810,7 @@ void PetBattleAbilityEffect::SelectTargets()
     {
         if (AbilityID == 476)
             AddTarget(GetActiveOpponent());
-        else if (AbilityID == 574 || AbilityID == 820 || AbilityID == 1717)
+        else if (AbilityID == 574 || AbilityID == 820 || AbilityID == 1717 || AbilityID == 1398)
             AddTarget(Caster);
         else if ((AbilityID == 1418 || AbilityID == 1718) && AuraOwnerPetID >= 0 && AuraOwnerPetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS)
             AddTarget(uint32(AuraOwnerPetID));
@@ -1161,6 +1161,8 @@ bool PetBattleAbilityEffect::HandleDefensiveTypeAura()
         controller = 1418;
     else if (AbilityID == 1717 || AbilityID == 1718)
         controller = 1718;
+    else if (AbilityID == 1398)
+        controller = 1399;
     else
         return false;
     auto parent = GetAura(Target, controller);
