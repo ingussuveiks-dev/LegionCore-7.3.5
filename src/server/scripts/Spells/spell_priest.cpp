@@ -1544,7 +1544,7 @@ class spell_pri_shadow_covenant : public SpellScript
 
         if (absorbPct > 0)
         {
-            float absorb = CalculatePct(GetHitHeal(), absorbPct);
+            float absorb = float(HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), absorbPct)));
             caster->CastCustomSpell(target, 219521, &absorb, nullptr, nullptr, true);
         }
     }
