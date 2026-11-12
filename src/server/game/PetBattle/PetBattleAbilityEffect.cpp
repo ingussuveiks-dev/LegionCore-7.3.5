@@ -1312,6 +1312,9 @@ bool PetBattleAbilityEffect::HandleDamageStateBonus()
 {
     CalculateHit(EffectInfo->Param[1]);
 
+    if (EffectInfo->Param[4])
+        Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;
+
     int32 damage = EffectInfo->Param[0];
     if (EffectInfo->Param[3] && GetState(Target, EffectInfo->Param[3]) == EffectInfo->Param[4])
         damage += EffectInfo->Param[2];

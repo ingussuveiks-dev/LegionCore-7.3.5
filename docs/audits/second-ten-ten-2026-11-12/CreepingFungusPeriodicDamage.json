@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-12",
+  "key": "CreepingFungusPeriodicDamage",
+  "title": "Retain native periodic classification for aquatic fungus damage reduction",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 2,
+  "historical_group": 63,
+  "baseline": "494378c7b9a0295ccdb848cddf148569c5e21730",
+  "paths": [
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 2 -Case CreepingFungusPeriodicDamage",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten pinned prior-batch expectations fail with their exact named assertion and exit1; paired fixed MSVC ASAN runs pass. Complete request-update/admission/Finish/CanCastAny and six ability handlers; external endpoints controlled. Retained first10 fixed fixtures pass.",
+    "native": "Actual full WorldSession request-update rejects unrelated cancellation and admits real target cancellation; real dead/fighting opponent admission, both web orientations, dead cast denial, complete native Rebuild533/HealingStream922/DraconicRemedy1956 sequences and corpse/wrong-type guards; native property226 selects opponent and applies blind/burning bonus; fungus1473 periodic damage includes native type scaling and aquatic halving; Vicious156/Huge930 misses do not grow hit counters, FrogKiss233 missed use advances use counter; real Prowl543 removal reverts actual states only on named recipient; native ArcaneStorm984/DreadfulBreath1446 effect rows include weather bonus for all3opponents. First10 native scopes also pass; character/login pools protected read-only/TEMP.",
+    "linked": "Selected20 focused paths and retained previous100 pass against staged promoted Release; Scepter canonical binary check passes. CanCastAny is inlined/OPTREF-discarded as a standalone canonical symbol: PE verifies its native dead-state guard inside actual CanCast, while native probe calls the real API. Full retained core chain passed in batch1; batch2 changes no Unit/Player ABI or healing core.",
+    "startup": "Owned worldserver PID=13656\nPASS owned PID=13656 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;canonical post-test diagnostics show no new crashes/appendedDBErrors/unexplainedserver errors or assertions.",
+    "limitations": "Actual client pet battles/UI/matchmaking/forfeit/re-entry, wild pool respawn and all36wholeartifact chains remain separate. Existing mixed DBErrors and legacy artifact PE OPEN findings retained."
+  },
+  "fixture_setup_failures_resolved": [
+    "Missing external fixture aliases/session methods were compilation setup failures followed by passing full-method paired tests.",
+    "Native fungus initial expected3 ignored its real undead-vs-humanoid type multiplier. Expected amount now uses actual native CalculateDamage before the independently asserted aquatic halving.",
+    "Native ramping sequence exposed that shared SetState rejects changes on MISS. Final repair records use-based bookkeeping independently, while preserving native hit-based Vicious/Huge Fang behavior; original CalculateHit already existed and is not claimed as a new repair.",
+    "The pinned ramping counterfactual must fail at the missed-use counter expectation; preserved fang-hit behavior is a passing boundary, not a newly repaired defect.",
+    "Read-only exploratory PE lookup for CanCastAny found no standalone canonical symbol because it is inlined/discarded. Actual inlined dead-state branch and independently linked native API are verified."
+  ],
+  "canonical_worldserver_sha256": "3d27abc7cc8c83f3379fc229d6c039fa811b267ded4c03062a95ba11b8a59e82",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch2; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
