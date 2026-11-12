@@ -1696,12 +1696,15 @@ bool PetBattleAbilityEffect::HandleRedirectionAura()
 
     CalculateHit(EffectInfo->Param[1]);
 
+    if (Flags & FailFlags)
+        return AddAura(Target, -1, 0);
+
     // remove all wall auras
     if (uint32 wallAuraId = GetState(Target, BATTLEPET_STATE_Special_ObjectRedirectionAuraID))
         if (PetBattleAura* aura = GetAura(Target, wallAuraId))
             aura->Expire(PetBattleInstance);
 
-    return AddAura(Target, 0, 0);
+    return AddAura(Target, -1, 0);
 }
 
 bool PetBattleAbilityEffect::HandleCheckFailure()
