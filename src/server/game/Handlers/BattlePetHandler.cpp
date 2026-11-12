@@ -120,10 +120,12 @@ void WorldSession::HandleBattlePetSetFlags(WorldPackets::BattlePet::SetFlags& pa
 {
     if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))
     {
-        if (battlePet->Flags & packet.Flags)
-            battlePet->Flags = battlePet->Flags & ~packet.Flags;
-        else
+        if (packet.ControlType == 1) // Native APPLY operation.
             battlePet->Flags |= packet.Flags;
+        else if (packet.ControlType == 2) // Native REMOVE operation.
+            battlePet->Flags &= ~packet.Flags;
+        else
+            return;
         battlePet->needSave = true;
     }
 }

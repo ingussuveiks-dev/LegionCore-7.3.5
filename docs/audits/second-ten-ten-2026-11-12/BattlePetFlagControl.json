@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-12",
+  "key": "BattlePetFlagControl",
+  "title": "Apply or remove journal flags according to the native packet control operation",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 3,
+  "historical_group": 64,
+  "baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+  "paths": [
+    "src/server/game/Handlers/BattlePetHandler.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 3 -Case BattlePetFlagControl",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten pinned prior-batch expectations fail their exact named assertion at exit1; repaired MSVC ASAN checks pass. Complete journal/slot/name-query/duel/lock methods; initial-health/front, starting-XP/award flag, queue arithmetic and pre-fix journal erase tail are explicitly identified source projections. Retained first20 source fixtures also pass.",
+    "native": "Actual native WorldSession APPLY/REMOVE repeat semantics, locked and noncombat slot admission/roster refresh, training/unlocked admission, real Minion summon/unowned request/same-pet dismiss/resummon and exact removal helper against real Player APIs, both-roster duel denial with no immunity/pacify leak, actual Nevermore victim casts and native separate lock/one-use aura removal, original hostile caster killed by the same attack, five real ProceedRound decrements/recast recovery; actual AddPet/Begin preserve dead slot0/select living slot1 and snapshot saved XP; full actual matchmaking Update retains999mean at1billion samples and avoids UINT32 counter rollover division by zero. Bound proc context rejects invalid pet IDs and ordinary-turn use. First20 native scopes pass; previous100 shared native regressions also pass. Memory-only player/session pools protected read-only/TEMP; no character writes.",
+    "linked": "All selected30 and retained previous100 focused PE checks pass; actual both-roster acceptance runs two distinct shared admissions before flags. New aura-owner context is a source-compatible defaulted sixth explicit C++ Cast argument; original game/scripts/Main rebuild and real native calls verify matching linkage. No object field or network packet layout change. Exact native Lockdowns0x140/deadstate0x150/OldXP0x47c and level0x478 checks, both caging/release shared cleanup calls, bound name-query field and native64 queue operations verified. Canonical Scepter passes; batch1 retained full core chain passed and no Unit/Player field ABI changes occur in group3.",
+    "startup": "Owned worldserver PID=2016\nPASS owned PID=2016 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;canonical diagnostics show no new crash reports, appended DBErrors, or unexplained server warnings/errors/assertions.",
+    "limitations": "Actual client pet journal/name-query response/UI, full matchmaking/caging/release persistence and whole36artifact chains remain separate. Native removal helper exercises memory/journal/companion cleanup; unchanged existing character-delete SQL is not executed against personal records. Native XP snapshot is real; XP-award packet boolean and name-query rejection use complete extracted/projection and linked checks. Other native on-ability Clone/Murloc/Trap full gameplay and native unsupported effect246 remain OPEN."
+  },
+  "fixture_setup_failures_resolved": [
+    "Third fixture needed external session/member/type definitions and its success marker to match the common runner; these setup failures were corrected before paired checks.",
+    "Native probe first used a signed member-pointer type for the actual unsigned queue mean and guessed a two-argument GUID-packet constructor; corrected actual types/constructor and real native runs pass.",
+    "Native full-sequence analysis extended the Nevermore family beyond writing a field: aura procs follow their actual owner; remove-aura effects retain owner identity separately from original hostile caster; other native selectors remain unchanged; bounded on-ability/on-removal proc contexts survive same-attack caster death and complete one-use cleanup.",
+    "The earlier focused PE proof expected one duel admission/register layout; group3 intentionally adds the recipient admission. It now requires exactly two calls and checks the same actual request object before them, retaining strict source/native coverage.",
+    "Matching26972 effect200 contains only three100percent pet-heal rows. A proposed percentage repair was withdrawn rather than inventing an observed partial-heal defect. SiphonLife211 explicitly heals its caster, so its Heal(Caster) implementation is retained."
+  ],
+  "canonical_worldserver_sha256": "8183191ca899e40359ffca646208648e002bbb0f3ddb9375fc6bfadc3de2b763",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch3; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
