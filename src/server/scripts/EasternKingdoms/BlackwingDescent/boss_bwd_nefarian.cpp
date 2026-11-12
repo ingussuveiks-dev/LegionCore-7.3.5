@@ -565,7 +565,7 @@ public:
                     case EVENT_SHADOWBLAZE:
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 200.0f, true))
                             DoCast(target, SPELL_SHADOWBLAZE_SPARK);
-                        events.RescheduleEvent(EVENT_TAIL_LASH, urand(18000, 21000));
+                        events.RescheduleEvent(EVENT_SHADOWBLAZE, urand(18000, 21000));
                         break;
 
                     case EVENT_REVIVE_SKELETONS:
