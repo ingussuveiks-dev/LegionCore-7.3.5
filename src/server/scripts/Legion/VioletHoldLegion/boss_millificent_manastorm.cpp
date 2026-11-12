@@ -78,7 +78,7 @@ public:
         uint32 timer;
         uint32 phase;
         uint32 CheckTimer;
-        uint8 emoteRec;
+        uint8 emoteRec = 0;
         bool event;
         bool end;
         bool check;
@@ -106,6 +106,7 @@ public:
             _Reset();
             enrage = false;
             angrycomplete = false;
+            emoteRec = 0;
             CheckTimer = 2000;
 
             if (instance->GetData(DATA_MAIN_EVENT_PHASE) == IN_PROGRESS)
