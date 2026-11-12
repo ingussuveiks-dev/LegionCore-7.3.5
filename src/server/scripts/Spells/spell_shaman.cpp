@@ -495,7 +495,7 @@ class spell_sha_cloudburst_heal : public SpellScript
     void HandleHeal(SpellEffIndex /*effIndex*/)
     {
         if (targetCount)
-            SetHitHeal(GetHitHeal() / targetCount);
+            SetHitHeal64(GetHitHeal64() / targetCount);
     }
 
     void Register() override
