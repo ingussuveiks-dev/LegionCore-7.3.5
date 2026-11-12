@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 80,
-  "remaining": 20,
-  "completed_batches": 8,
+  "completed": 90,
+  "remaining": 10,
+  "completed_batches": 9,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -539,16 +539,83 @@
         "investigation": "The actual DamageInfo constructor clamps non-healing damage toUINT32_MAX,while healing information isuint64. Smite local uint32 was alreadycorrect:production candidate fully reverted,excluded,andnot counted. Replaced by genuine positive Stagger amount narrowing. Intangible keeps its correct bounded damage local andrepairs only positive aura amount conversion. Native history period isprivate;fixture derives its actual120constant anduses a typed member pointer. Comment-derived AMS enum collision was a fixture extraction error,corrected. Ordinary core heal/periodic effect accumulation andcumulative damage-history width remain explicit OPEN investigations for the remaining20;these consumer/native amount checks donot certify whole spell/client chains."
       },
       "support_commit": "6e95d6586ffbf798c620cde710dc3f66ecff6a65"
+    },
+    {
+      "batch": 9,
+      "historical_group": 60,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "PetAuraSlotIdentity",
+          "commit": "140604cc3c590e63cb305dce509daae651f0bf33",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetAuraSlotIdentity.json"
+        },
+        {
+          "key": "PetRoundTeamSymmetry",
+          "commit": "dd71976e43d3727f51a2ca79ff6bdbe448a29a4f",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetRoundTeamSymmetry.json"
+        },
+        {
+          "key": "PetSwapAdmission",
+          "commit": "4a58e0565d2220da5ddf7fb7ba2d53cf644fd9f8",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetSwapAdmission.json"
+        },
+        {
+          "key": "PetCriticalStatSource",
+          "commit": "6fd2b03358116b46626b5a3a0acb29391daedcf3",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetCriticalStatSource.json"
+        },
+        {
+          "key": "PetImplicitTargetSelection",
+          "commit": "b46765d22773e58247e9865a0b43ad50d19ce87f",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetImplicitTargetSelection.json"
+        },
+        {
+          "key": "PetMultiTargetExecution",
+          "commit": "b8c1ab088466408fe85e6025a987b918631235d2",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetMultiTargetExecution.json"
+        },
+        {
+          "key": "PetEffectHandlerBounds",
+          "commit": "91e314ee59a2d9aa0fb4a9f3b610a7684f6df397",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetEffectHandlerBounds.json"
+        },
+        {
+          "key": "PetHumanoidPassiveHeal",
+          "commit": "b727833db70db0412dc9fea00c805700b5931c05",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetHumanoidPassiveHeal.json"
+        },
+        {
+          "key": "PetInfiniteAuraDuration",
+          "commit": "062ac36ac6059b928bf5d62f4dc132dac7bed2f5",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetInfiniteAuraDuration.json"
+        },
+        {
+          "key": "PetAuraEventTurn",
+          "commit": "74cdd8d56eeb0ffd23283fbc9cfd253c610fc4c6",
+          "audit": "docs/audits/ten-ten-2026-11-11/PetAuraEventTurn.json"
+        }
+      ],
+      "checks": {
+        "asan": "All ten complete production method scopes pass with controlled DB2/cast/session endpoints. Fixed controls cover slot identity,team terminal/symmetry handling,negative/cross-team/locked/valid swaps,attacker critical chance,team/head/fixed-slot selection,all-target execution,table bounds,humanoid actual health change,infinite aura duration,andappended BuffTurn. Fixture uses actual native NULL_ID0 and NULL_SLOT-1 contract.",
+        "baseline": "All ten pinned controls fail their repaired expectations andpaired fixed runs pass. Original missing-slot crash hypothesis was withdrawn after its baseline passed;the unchanged two-pet source remains retained coverage andisnot counted.",
+        "native": "Actual linked PetBattle methods with native objects andmatching26972 BattlePetAbility/Turn/Effect/State stores pass all ten selected behaviors. Six valid relative slots,Player-free battles,real event updates,nojournal/character writes. Invalid effect-table cases use explicit paired ASAN controls andassert one retained diagnostic. Native data reveals unsupported property246 rows3449..3451 and3493..3498 (turns3268/3315):bounds fix prevents out-of-range dispatch,actual authored implementations remain OPEN.",
+        "linked": "All first90 source scopes andlinked checks pass;actual two-team terminal-result branches,slot0 andnegative-sentinel admission,bounded incoming indices,handler-table guards,all-target loop,humanoid native heal,infinite-duration guard andappended-event writes arepresent in promoted Release.",
+        "retained": "Previous50 and65-file healing source certificates andcanonical Scepter PE check pass. Source-only normalization nowvalidates sequential prefix states so two separate repairs to one method remain independently bounded.",
+        "runtime": "Task-owned canonical fresh ready,gracefulshutdown0,exit0/gone,empty stderr. No new/changed crash,DBErrors,unexplained warnings/errors/assertions. No user orunknown server stopped.",
+        "investigation": "Local matching26972 native stores andactual core implementation examined first;modern local Trinity has no equivalent battle engine tocopy. Native probe exposed NULL_ID0 conflict withvalid pet0:localized admission uses actual range/presence,CanSwap defaultuses existingNULL_SLOT-1;global wire/event sentinels remain unchanged. Initial fixture assumptions andoverstrong all-native-properties-supported assertion were corrected,withfailed evidence retained. Client PvP,pet journal,animations andwhole battles remain pending."
+      },
+      "support_commit": "6b04c6a043df507dc3924a58dbdfa47d972afa49"
     }
   ],
   "canonical": {
-    "worldserver.exe": "1452171343f47a99d53218f1c6c4ff9145088ab95c26a27bbcba71c7970b6055",
-    "worldserver.map": "cf2843267178b789c1dba3873aadedebe03ac9660274fab68cf59dff61d0cb96",
-    "bnetserver.exe": "ff31b52d16aa5f8eef3ef3c9f9d180a750f99b8ab44d72f3f895ab8045e7c494",
-    "bnetserver.map": "1ec89ddfbec03c810f998ed6dae68b684c9df8c210a8ca05ca634ccefcb88478"
+    "worldserver.exe": "f5dc27554d8e8ef40c46615e0f978c0c4c3595d65bed4ca05d930b1384c8dc4a",
+    "worldserver.map": "57a55c95a4f27bc5e82b0af11c1b5b1a1e1f35feaa3724c67a46010e52a8ceca",
+    "bnetserver.exe": "4799761840ba9f871d25b10ae052ef1fe3f09d1f8c6013b0cf3cddbc0be6b5fb",
+    "bnetserver.map": "d4747be80b0d5242f2f976b364f4f0ba59043d9479a8461f3b192436f7722e2d"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches9..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
+  "pending": "Continue final batch10 to reach100 genuine repairs; native property246,ordinary healing,actualclient/fullchains andLady/LINK2/Slaghammer/handshake remain OPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -634,6 +701,17 @@
     "logical_removed_bytes": 965042579,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/batch08-deletions.json",
     "deletion_manifest_sha256": "7cf1876eebed342d4d155dc0e0ee6ff5b51f92e077ac0d56ed2eb87740fe1d98",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch09": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch09",
+    "manifest_sha256": "1ab6fcc43e3bb35a5f0b128e36a85fd2998aa9225b9840d16fba3809cc500b7a",
+    "archived_files": 3789,
+    "removed_files": 46,
+    "logical_removed_bytes": 954141989,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch09-deletions.json",
+    "deletion_manifest_sha256": "95fbffcf831acb2e9e45c8a8c579a3f0dd4c5f42034d1f65f045cc18fd27409d",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }

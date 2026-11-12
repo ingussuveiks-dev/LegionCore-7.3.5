@@ -1,17 +1,17 @@
 {
   "latest_ten_ten_repairs_2026_11_11": {
-    "status": "IN_PROGRESS_80_OF_100_TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+    "status": "IN_PROGRESS_90_OF_100_TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
     "request": "Turpini 10\u00c3\u201410",
-    "completed": 80,
-    "remaining": 20,
-    "completed_batches": 8,
+    "completed": 90,
+    "remaining": 10,
+    "completed_batches": 9,
     "audit": "docs/audits/ten-ten-repairs-2026-11-11.json",
-    "last_implementation_commit": "ff17531fcd04583f93189f7f02ddb7896acfeb62",
+    "last_implementation_commit": "74cdd8d56eeb0ffd23283fbc9cfd253c610fc4c6",
     "canonical": {
-      "worldserver.exe": "1452171343f47a99d53218f1c6c4ff9145088ab95c26a27bbcba71c7970b6055",
-      "worldserver.map": "cf2843267178b789c1dba3873aadedebe03ac9660274fab68cf59dff61d0cb96",
-      "bnetserver.exe": "ff31b52d16aa5f8eef3ef3c9f9d180a750f99b8ab44d72f3f895ab8045e7c494",
-      "bnetserver.map": "1ec89ddfbec03c810f998ed6dae68b684c9df8c210a8ca05ca634ccefcb88478"
+      "worldserver.exe": "f5dc27554d8e8ef40c46615e0f978c0c4c3595d65bed4ca05d930b1384c8dc4a",
+      "worldserver.map": "57a55c95a4f27bc5e82b0af11c1b5b1a1e1f35feaa3724c67a46010e52a8ceca",
+      "bnetserver.exe": "4799761840ba9f871d25b10ae052ef1fe3f09d1f8c6013b0cf3cddbc0be6b5fb",
+      "bnetserver.map": "d4747be80b0d5242f2f976b364f4f0ba59043d9479a8461f3b192436f7722e2d"
     },
     "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
     "cleanup_batch02": {
@@ -25,7 +25,7 @@
       "deletion_manifest_sha256": "a38a4630ad2574998375f6fab21ac269d846967de7fabe587711fd59193fe621",
       "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
     },
-    "pending": "Continue batches9..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
+    "pending": "Continue final batch10 to reach100 genuine repairs; native property246,ordinary healing,actualclient/fullchains andLady/LINK2/Slaghammer/handshake remain OPEN.",
     "cleanup_batch03": {
       "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
       "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch03",
@@ -90,6 +90,17 @@
       "logical_removed_bytes": 965042579,
       "deletion_manifest": ".codex/ten-ten-2026-11-11/batch08-deletions.json",
       "deletion_manifest_sha256": "7cf1876eebed342d4d155dc0e0ee6ff5b51f92e077ac0d56ed2eb87740fe1d98",
+      "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+    },
+    "cleanup_batch09": {
+      "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+      "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch09",
+      "manifest_sha256": "1ab6fcc43e3bb35a5f0b128e36a85fd2998aa9225b9840d16fba3809cc500b7a",
+      "archived_files": 3789,
+      "removed_files": 46,
+      "logical_removed_bytes": 954141989,
+      "deletion_manifest": ".codex/ten-ten-2026-11-11/batch09-deletions.json",
+      "deletion_manifest_sha256": "95fbffcf831acb2e9e45c8a8c579a3f0dd4c5f42034d1f65f045cc18fd27409d",
       "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
     }
   },
