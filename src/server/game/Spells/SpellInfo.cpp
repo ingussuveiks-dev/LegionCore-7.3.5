@@ -2782,6 +2782,7 @@ uint32 SpellInfo::GetMaxTicks() const
                 case SPELL_AURA_PERIODIC_DAMAGE:
                 case SPELL_AURA_PERIODIC_HEAL:
                 case SPELL_AURA_PERIODIC_LEECH:
+                case SPELL_AURA_PERIODIC_WEAPON_PERCENT_DAMAGE:
                     if (Effects[x]->ApplyAuraPeriod != 0)
                         return DotDuration / Effects[x]->ApplyAuraPeriod;
                     break;
