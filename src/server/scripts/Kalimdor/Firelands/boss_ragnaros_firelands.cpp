@@ -1641,6 +1641,7 @@ class npc_ragnaros_firelands_living_meteor : public CreatureScript
 
             void Reset()
             {
+            events.Reset();
                 bExplode = false;
             }
 
