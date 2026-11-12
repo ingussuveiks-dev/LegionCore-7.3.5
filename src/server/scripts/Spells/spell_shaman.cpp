@@ -608,7 +608,7 @@ class spell_sha_restorative_mists : public SpellScript
     void HandleHeal(SpellEffIndex /*effIndex*/)
     {
         if (targetCount)
-            SetHitHeal(GetHitHeal() / targetCount);
+            SetHitHeal64(GetHitHeal64() / targetCount);
     }
 
     void Register() override
