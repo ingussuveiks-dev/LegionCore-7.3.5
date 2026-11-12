@@ -1234,7 +1234,7 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
     if (BattleStatus == PETBATTLE_STATUS_FINISHED || BattleStatus == PETBATTLE_STATUS_PENDING_DELETE)
         return;
     if (aborted)
-        if (Pets[Teams[winnerTeamID]->ActivePetID] && Pets[Teams[winnerTeamID]->ActivePetID]->IsAlive() && Pets[Teams[winnerTeamID]->ActivePetID]->States[BATTLEPET_STATE_Mechanic_IsWebbed])
+        if (Pets[Teams[!winnerTeamID]->ActivePetID] && Pets[Teams[!winnerTeamID]->ActivePetID]->IsAlive() && Pets[Teams[!winnerTeamID]->ActivePetID]->States[BATTLEPET_STATE_Mechanic_IsWebbed])
             return;
 
     RoundStatus = PETBATTLE_ROUND_FINISHED;
