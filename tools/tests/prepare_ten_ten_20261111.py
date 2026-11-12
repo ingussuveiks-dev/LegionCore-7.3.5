@@ -4,6 +4,9 @@ from ten_ten_20261111_scope import ROOT,PLAN,require_fixed
 out=Path(sys.argv[1]);mode=sys.argv[2]if len(sys.argv)>2 else 'fixed';batch=int(sys.argv[3])if len(sys.argv)>3 else 1
 rows=[e for e in PLAN['changes']if e['batch']==batch];assert len(rows)==10
 case=sys.argv[4]if len(sys.argv)>4 else None
+if batch==8:
+ from prepare_ten_ten_20261111_eighth import prepare
+ prepare(out,mode);sys.exit(0)
 if batch==7:
  from prepare_ten_ten_20261111_seventh import prepare
  prepare(out,mode);sys.exit(0)

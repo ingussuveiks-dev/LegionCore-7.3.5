@@ -109,3 +109,17 @@ if seventh:
  rows=ins('?HandleOnHit@spell_pal_holy_shock_heal_SpellScript@');assert 200657 in values(rows),'Actual one-use SilverHand aura retained'
  rows=ins('?HandleOnHit@spell_pal_the_light_saves_SpellScript@');assert {53563,156910,200025,200423}<=values(rows),'Actual3owned Beacon variants andone-use LightSaves buff retained'
  print('PASS linked seventh10:native64 recipient splitting andowner/raid/trait/critical/one-use healing modifiers;allfirst60 linked checks retained')
+eighth=[e for e in PLAN['changes']if e['batch']==8]
+if eighth:
+ for cls,method in [('spell_dru_tranquility_SpellScript','HandleOnHit'),('spell_monk_zen_pulse_SpellScript','HandleHeal'),('spell_monk_sheiluns_gift_SpellScript','HandleHeal')]:
+  rows=ins('?'+method+'@'+cls+'@');assert sites(rows,'?GetHitHeal64@SpellScript@@')and sites(rows,'?SetHitHeal64@SpellScript@@')and not sites(rows,'?GetHitHeal@SpellScript@@'),(cls,'actual native64 input/output')
+ for cls in('spell_monk_zen_pulse_SpellScript','spell_monk_sheiluns_gift_SpellScript'):
+  rows=ins('?HandleHeal@'+cls+'@');assert any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and any(x.mnemonic=='imul'and x.op_str.startswith('r')for x in rows),(cls,'bounded integer multiply retains low bits')
+ rows=ins('?HandleHeal@spell_monk_revival@');assert sites(rows,'?GetHitHeal64@SpellScript@@')and {199665,199668}<=values(rows),'Actual Revival trait andchild use full input'
+ rows=ins('?HandleHeal@spell_warl_health_funnel_SpellScript@');assert sites(rows,'?SetHitHeal64@SpellScript@@')and sites(rows,'?CountPctFromMaxHealth@Unit@@'),'Actual Funnel maximum-health heal uses exact64 setter'
+ rows=ins('?CalculateAmount@spell_dru_frenzied_regeneration@');assert sites(rows,'?GetDamageTakenInPastSecs@Unit@@')and any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rbx,')for x in rows),'Actual Frenzied minimum/history retain wide calculation andtick division'
+ rows=ins('?After@spell_highmountain_justice_heal@');assert sites(rows,'?GetHitHeal64@SpellScript@@')and not sites(rows,'?GetHitHeal@SpellScript@@')and {97508,97498,97506,1220,5165,40594}<=values(rows),'Actual Justice exact64 admission preserves actor/map/phase/quest gates'
+ rows=ins('?HandleHeal@spell_monk_purified_healing_SpellScript@');assert sites(rows,'?SetHitHeal64@SpellScript@@')and {145055,124275,124274,124273}<=values(rows)and any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rbx')for x in rows),'Actual PurifiedHealing accumulates positive Stagger pools before percent conversion'
+ rows=ins('?Absorb@spell_gen_intangible_presence@');assert {230080,230088}<=values(rows)and any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rdi,')for x in rows)and any(x.mnemonic=='cmp'and x.op_str=='rdi, rax'for x in rows),'Actual positive Intangible aura amount converts to64 before legal damage minimum;damage remains native32'
+ rows=ins('?Trigger@spell_dk_anti_magic_shell_self_AuraScript@');assert {49088,210852,210862,207188}<=values(rows)and any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)and sites(rows,'?CountPctFromMaxHealth@Unit@@'),'Actual AMS health threshold/remainder division is64bit andretainsnative resource/optionalheal gates'
+ print('PASS linked eighth10:native64 class healing,integer multipliers,Justice heal admission,positiveStagger/aura amounts andAMS threshold/remainders;Smite bounded-damage falsepositive withdrawn,ordinarycorehealing remainsseparate')

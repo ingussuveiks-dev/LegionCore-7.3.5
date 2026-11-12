@@ -59,7 +59,7 @@ struct ObjectAccessor {static Creature* GetCreature(Player& p,ObjectGuid g){auto
 struct ScriptedAI {Creature* me;explicit ScriptedAI(Creature* c):me(c){c->ai=this;}virtual ~ScriptedAI()=default;bool UpdateVictim(){return false;}void DoMeleeAttackIfReady(){}virtual void UpdateAI(uint32){}bool charmReplaced=false;virtual void OnCharmed(bool){charmReplaced=true;}virtual void Reset(){}virtual void IsSummonedBy(Unit*){}virtual void PassengerBoarded(Unit*,int8,bool){}virtual void MovementInform(uint32,uint32){}virtual void CalcExitVehiclePos(Position&){};};
 void Player::ExitVehicle(){if(!vehicle)return;auto bird=vehicle;bird->kit.passenger=nullptr;bird->ai->OnCharmed(false);assert(!bird->ai->charmReplaced);bird->ai->PassengerBoarded(this,0,false);vehicle=nullptr;exitDest=*bird;bird->ai->CalcExitVehiclePos(exitDest);spline.final=false;order.push_back(4);}
 struct PlayerScript {explicit PlayerScript(char const*){}virtual void OnUpdate(Player*,uint32){}virtual void OnMapChanged(Player*){}virtual void OnLogout(Player*){};};
-struct SpellScript {Unit* caster=nullptr;Unit* target=nullptr;int heal=0;Unit* GetCaster(){return caster;}Unit* GetHitUnit(){return target;}int GetHitHeal(){return heal;}struct Hook{template<class T>void operator+=(T){}} OnCheckCast,AfterCast,BeforeHit,AfterHit;virtual void Register(){};};
+struct SpellScript {Unit* caster=nullptr;Unit* target=nullptr;uint64 heal=0;Unit* GetCaster(){return caster;}Unit* GetHitUnit(){return target;}int GetHitHeal(){return int(heal);}uint64 GetHitHeal64(){return heal;}struct Hook{template<class T>void operator+=(T){}} OnCheckCast,AfterCast,BeforeHit,AfterHit;virtual void Register(){};};
 #define PrepareSpellScript(name) public:
 #define SpellCheckCastFn(fn) &fn
 #define SpellCastFn(fn) &fn

@@ -88,3 +88,17 @@ if seventh:
   if e['case']=='covenant':body=body.replace('caster->CastCustomSpell(target, 219521, &absorb, nullptr, nullptr, true);','ObserveSixHeal(caster, target, 219521, absorb);')
   text+=body+';\n'
  text+='}\n';(out/'TenTenSeventhNative.inc').write_text(text,encoding='utf8');print('Prepared ten seventh actual classes/native trait IDs;only optional refresh/child casts observed')
+eighth=[e for e in PLAN['changes']if e['batch']==8]
+if eighth:
+ assert len(eighth)==10
+ text='struct EighthBinding{char const*name;};static EighthBinding eighthBindings[]={'+','.join('{"'+e['binding']+'"}'for e in eighth)+'};\nnamespace EighthNative{\n'
+ text+='enum{HistoryPeriod='+re.search(r'\bDAMAGE_TRACKING_PERIOD\s*=\s*(\d+)',(ROOT/'src/server/game/Entities/Unit/Unit.h').read_text())[1]+'};\n'
+ justice=(ROOT/'src/server/scripts/Legion/highmountain_justice.cpp').read_text();prefix=justice[justice.index('namespace Justice'):justice.index('bool CanStart')];prefix=re.sub(r'constexpr size_t RouteSize =[^;]+;','',prefix);text+=prefix+'}\n'
+ for e in eighth:
+  body=e['edits'][e.get('class_edit_index',0)]['new']
+  if e['case']=='gift':body=body.replace('caster->GetAreaObjectList(list, 214501);','ObserveEightClouds(caster, list);')
+  if e['case']=='revival':body=body.replace('caster->CastCustomSpell(target, 199668, &periodicHeal, nullptr, nullptr, true, nullptr, blessings);','ObserveSixHeal(caster, target, 199668, periodicHeal);')
+  if e['case']=='ams':
+   body=body.replace('target->CastCustomSpell(target, 210862, &bp, NULL, NULL, true);','ObserveSixHeal(target, target, 210862, bp);').replace('target->CastCustomSpell(target, 49088, &bp, NULL, NULL, true, NULL, aurEff);','ObserveSixHeal(target, target, 49088, bp);')
+  text+=body+';\n'
+ text+='}\n';(out/'TenTenEighthNative.inc').write_text(text,encoding='utf8');print('Prepared eighth actual classes/native Justice state definitions;cloud query/optional children/resource cast endpoints observed')

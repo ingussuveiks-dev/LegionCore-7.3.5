@@ -1832,6 +1832,261 @@
           "count": 1
         }
       ]
+    },
+    {
+      "key": "TranquilityHealWidth",
+      "title": "Preserve native64 Tranquility healing and non-raid doubling",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 71,
+      "paths": [
+        "src/server/scripts/Spells/spell_druid.cpp"
+      ],
+      "cls": "spell_dru_tranquility_SpellScript",
+      "case": "tranquility",
+      "binding": "spell_dru_tranquility",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_druid.cpp",
+          "old": "#include \"ScriptMgr.h\"",
+          "new": "#include \"ScriptMgr.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_druid.cpp",
+          "old": "class spell_dru_tranquility_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_dru_tranquility_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                    if (Player* _player = caster->ToPlayer())\n                        if (Group* group = _player->GetGroup())\n                            if (group->isRaidGroup())\n                                return;\n\n                SetHitHeal(GetHitHeal() * 2);\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_dru_tranquility_SpellScript::HandleOnHit);\n            }\n        }",
+          "new": "class spell_dru_tranquility_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_dru_tranquility_SpellScript);\n\n            void HandleOnHit()\n            {\n                if (Unit* caster = GetCaster())\n                    if (Player* _player = caster->ToPlayer())\n                        if (Group* group = _player->GetGroup())\n                            if (group->isRaidGroup())\n                                return;\n\n                uint64 heal = GetHitHeal64();\n                SetHitHeal64(HealingAmount::Add(heal, heal));\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_dru_tranquility_SpellScript::HandleOnHit);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 1
+    },
+    {
+      "key": "ZenPulseHealWidth",
+      "title": "Multiply the full native64 Zen Pulse heal by the actual parent target count",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 72,
+      "paths": [
+        "src/server/scripts/Spells/spell_monk.cpp",
+        "src/server/game/Spells/HealingAmount.h"
+      ],
+      "cls": "spell_monk_zen_pulse_SpellScript",
+      "case": "zen",
+      "binding": "spell_monk_zen_pulse",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_monk.cpp",
+          "old": "#include \"ScriptMgr.h\"",
+          "new": "#include \"ScriptMgr.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Spells/HealingAmount.h",
+          "old": "    inline uint64 FromFloat(float amount)",
+          "new": "    // Integer target/cloud counts must not lose ordinary low bits through float.\n    inline uint64 Multiply(uint64 amount, uint64 count)\n    {\n        if (count && amount > std::numeric_limits<uint64>::max() / count)\n            return std::numeric_limits<uint64>::max();\n        return amount * count;\n    }\n\n    inline uint64 FromFloat(float amount)",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_monk.cpp",
+          "old": "class spell_monk_zen_pulse_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_monk_zen_pulse_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (GetSpell()->GetTargetParentCount() > 2)\n                    SetHitHeal(GetHitHeal() * (GetSpell()->GetTargetParentCount() - 1));\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_monk_zen_pulse_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "new": "class spell_monk_zen_pulse_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_monk_zen_pulse_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (GetSpell()->GetTargetParentCount() > 2)\n                    SetHitHeal64(HealingAmount::Multiply(GetHitHeal64(), GetSpell()->GetTargetParentCount() - 1));\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_monk_zen_pulse_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 2
+    },
+    {
+      "key": "SheilunsGiftHealWidth",
+      "title": "Multiply native64 Sheilun Gift healing by consumed clouds without truncation",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 73,
+      "paths": [
+        "src/server/scripts/Spells/spell_monk.cpp"
+      ],
+      "cls": "spell_monk_sheiluns_gift_SpellScript",
+      "case": "gift",
+      "binding": "spell_monk_sheiluns_gift",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_monk.cpp",
+          "old": "class spell_monk_sheiluns_gift_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_monk_sheiluns_gift_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    std::list<AreaTrigger*> list;\n                    caster->GetAreaObjectList(list, 214501);\n                    uint32 cloudCount = std::min<uint32>(uint32(list.size()), 12);\n                    SetHitHeal(GetHitHeal() * cloudCount);\n                    if(!list.empty())\n                    {\n                        for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)\n                        {\n                            if(AreaTrigger* areaObj = (*itr))\n                                areaObj->Despawn();\n                        }\n\n                        if (caster->HasAura(238130)) // Whispers of Shaohao\n                        {\n                            // Every consumed cloud performs its own 200% SP\n                            // smart heal; cloud count is not a flat basepoint.\n                            for (uint32 i = 0; i < cloudCount; ++i)\n                                caster->CastSpell(caster, 242400, true);\n                        }\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_monk_sheiluns_gift_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "new": "class spell_monk_sheiluns_gift_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_monk_sheiluns_gift_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    std::list<AreaTrigger*> list;\n                    caster->GetAreaObjectList(list, 214501);\n                    uint32 cloudCount = std::min<uint32>(uint32(list.size()), 12);\n                    SetHitHeal64(HealingAmount::Multiply(GetHitHeal64(), cloudCount));\n                    if(!list.empty())\n                    {\n                        for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)\n                        {\n                            if(AreaTrigger* areaObj = (*itr))\n                                areaObj->Despawn();\n                        }\n\n                        if (caster->HasAura(238130)) // Whispers of Shaohao\n                        {\n                            // Every consumed cloud performs its own 200% SP\n                            // smart heal; cloud count is not a flat basepoint.\n                            for (uint32 i = 0; i < cloudCount; ++i)\n                                caster->CastSpell(caster, 242400, true);\n                        }\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_monk_sheiluns_gift_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 0
+    },
+    {
+      "key": "RevivalBlessingsHealWidth",
+      "title": "Derive Blessings of Yu lon ticks from the full native64 Revival heal",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 74,
+      "paths": [
+        "src/server/scripts/Spells/spell_monk.cpp"
+      ],
+      "cls": "spell_monk_revival",
+      "case": "revival",
+      "binding": "spell_monk_revival",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_monk.cpp",
+          "old": "class spell_monk_revival : public SpellScript\n{\n    PrepareSpellScript(spell_monk_revival);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* caster = GetCaster();\n        Unit* target = GetHitUnit();\n        AuraEffect const* blessings = caster ? caster->GetAuraEffect(199665, EFFECT_0) : nullptr;\n        if (!caster || !target || !blessings)\n            return;\n\n        // 199668 ticks once per second for six seconds. Together its ticks\n        // restore the artifact trait's percentage of the actual Revival heal.\n        float periodicHeal = CalculatePct(GetHitHeal(), blessings->GetAmount()) / 6.0f;\n        if (periodicHeal > 0)\n            caster->CastCustomSpell(target, 199668, &periodicHeal, nullptr, nullptr, true, nullptr, blessings);\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_monk_revival::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_monk_revival : public SpellScript\n{\n    PrepareSpellScript(spell_monk_revival);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* caster = GetCaster();\n        Unit* target = GetHitUnit();\n        AuraEffect const* blessings = caster ? caster->GetAuraEffect(199665, EFFECT_0) : nullptr;\n        if (!caster || !target || !blessings)\n            return;\n\n        // 199668 ticks once per second for six seconds. Together its ticks\n        // restore the artifact trait's percentage of the actual Revival heal.\n        float periodicHeal = CalculatePct(GetHitHeal64(), blessings->GetAmount()) / 6.0f;\n        if (periodicHeal > 0)\n            caster->CastCustomSpell(target, 199668, &periodicHeal, nullptr, nullptr, true, nullptr, blessings);\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_monk_revival::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 0
+    },
+    {
+      "key": "HealthFunnelHealWidth",
+      "title": "Preserve the native maximum-health Health Funnel heal through the exact64 channel",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 75,
+      "paths": [
+        "src/server/scripts/Spells/spell_warlock.cpp"
+      ],
+      "cls": "spell_warl_health_funnel_SpellScript",
+      "case": "funnel",
+      "binding": "spell_warl_health_funnel",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_warlock.cpp",
+          "old": "class spell_warl_health_funnel_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_warl_health_funnel_SpellScript);\n\n            void HandleDamage(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* target = GetHitUnit())\n                    SetHitDamage(target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_0]->BasePoints, target));\n            }\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (GetHitUnit())\n                    if (Unit* caster = GetCaster())\n                        SetHitHeal(caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->BasePoints));\n            }\n\n            void HandleCast()\n            {\n                if (Unit* caster = GetCaster())\n                    if (caster->ToPlayer())\n                        if (Pet* pet = caster->ToPlayer()->GetPet())\n                            if (pet->IsFullHealth())\n                                caster->InterruptSpell(CURRENT_CHANNELED_SPELL, false);\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_warl_health_funnel_SpellScript::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);\n                OnEffectHitTarget += SpellEffectFn(spell_warl_health_funnel_SpellScript::HandleHeal, EFFECT_1, SPELL_EFFECT_HEAL);\n                AfterCast += SpellCastFn(spell_warl_health_funnel_SpellScript::HandleCast);\n            }\n        }",
+          "new": "class spell_warl_health_funnel_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_warl_health_funnel_SpellScript);\n\n            void HandleDamage(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* target = GetHitUnit())\n                    SetHitDamage(target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_0]->BasePoints, target));\n            }\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (GetHitUnit())\n                    if (Unit* caster = GetCaster())\n                        SetHitHeal64(caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->BasePoints));\n            }\n\n            void HandleCast()\n            {\n                if (Unit* caster = GetCaster())\n                    if (caster->ToPlayer())\n                        if (Pet* pet = caster->ToPlayer()->GetPet())\n                            if (pet->IsFullHealth())\n                                caster->InterruptSpell(CURRENT_CHANNELED_SPELL, false);\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_warl_health_funnel_SpellScript::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);\n                OnEffectHitTarget += SpellEffectFn(spell_warl_health_funnel_SpellScript::HandleHeal, EFFECT_1, SPELL_EFFECT_HEAL);\n                AfterCast += SpellCastFn(spell_warl_health_funnel_SpellScript::HandleCast);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 0
+    },
+    {
+      "key": "FrenziedRegenerationAmountWidth",
+      "title": "Preserve wide maximum-health and unsigned damage inputs in Frenzied Regeneration",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 76,
+      "paths": [
+        "src/server/scripts/Spells/spell_druid.cpp"
+      ],
+      "cls": "spell_dru_frenzied_regeneration",
+      "case": "frenzied",
+      "binding": "spell_dru_frenzied_regeneration",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_druid.cpp",
+          "old": "class spell_dru_frenzied_regeneration : public AuraScript\n{\n    PrepareAuraScript(spell_dru_frenzied_regeneration);\n\n    void CalculateAmount(AuraEffect const* aurEff, float & amount, bool & /*canBeRecalculated*/)\n    {\n        if (Unit* caster = GetCaster())\n        {\n            float bp0 = caster->CanPvPScalar() ? GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster) / 2 : GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster);\n            int32 heal = int32(CalculatePct(caster->GetMaxHealth(), GetSpellInfo()->Effects[EFFECT_3]->CalcValue(caster)));\n            int32 damageTaken = caster->GetDamageTakenInPastSecs(GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster), true, true);\n            if (damageTaken > 3)\n                heal += int32(CalculatePct(damageTaken, bp0));\n            if (Player* plr = caster->ToPlayer())\n                AddPct(heal, plr->GetFloatValue(PLAYER_FIELD_VERSATILITY) + plr->GetFloatValue(PLAYER_FIELD_VERSATILITY_BONUS));\n\n            heal /= aurEff->GetTotalTicks();\n            amount += heal;\n        }\n    }\n\n    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (Unit* caster = GetCaster())\n        {\n            if (Player* plr = caster->ToPlayer())\n            {\n                if (AuraEffect const* aurEff = plr->GetAuraEffect(242236, EFFECT_0)) // Item - Druid T20 Guardian 2P Bonus\n                {\n                    int32 cdmod = CalculatePct(GetSpellInfo()->Category.ChargeRecoveryTime, aurEff->GetAmount());\n                    int32 bp = CalculatePct((100 - plr->GetHealthPct()), cdmod);\n                    plr->ModSpellChargeCooldown(GetSpellInfo()->Id, bp);\n                }\n            }\n        }\n    }\n\n    void Register() override\n    {\n        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_dru_frenzied_regeneration::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);\n        AfterEffectApply += AuraEffectApplyFn(spell_dru_frenzied_regeneration::HandleEffectApply, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);\n    }\n}",
+          "new": "class spell_dru_frenzied_regeneration : public AuraScript\n{\n    PrepareAuraScript(spell_dru_frenzied_regeneration);\n\n    void CalculateAmount(AuraEffect const* aurEff, float & amount, bool & /*canBeRecalculated*/)\n    {\n        if (Unit* caster = GetCaster())\n        {\n            float bp0 = caster->CanPvPScalar() ? GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster) / 2 : GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster);\n            uint64 heal = CalculatePct(caster->GetMaxHealth(), GetSpellInfo()->Effects[EFFECT_3]->CalcValue(caster));\n            uint64 damageTaken = caster->GetDamageTakenInPastSecs(GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster), true, true);\n            if (damageTaken > 3)\n                heal = HealingAmount::Add(heal, CalculatePct(damageTaken, bp0));\n            if (Player* plr = caster->ToPlayer())\n                heal = HealingAmount::Add(heal, CalculatePct(heal, plr->GetFloatValue(PLAYER_FIELD_VERSATILITY) + plr->GetFloatValue(PLAYER_FIELD_VERSATILITY_BONUS)));\n\n            heal /= aurEff->GetTotalTicks();\n            amount += heal;\n        }\n    }\n\n    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (Unit* caster = GetCaster())\n        {\n            if (Player* plr = caster->ToPlayer())\n            {\n                if (AuraEffect const* aurEff = plr->GetAuraEffect(242236, EFFECT_0)) // Item - Druid T20 Guardian 2P Bonus\n                {\n                    int32 cdmod = CalculatePct(GetSpellInfo()->Category.ChargeRecoveryTime, aurEff->GetAmount());\n                    int32 bp = CalculatePct((100 - plr->GetHealthPct()), cdmod);\n                    plr->ModSpellChargeCooldown(GetSpellInfo()->Id, bp);\n                }\n            }\n        }\n    }\n\n    void Register() override\n    {\n        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_dru_frenzied_regeneration::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);\n        AfterEffectApply += AuraEffectApplyFn(spell_dru_frenzied_regeneration::HandleEffectApply, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 0
+    },
+    {
+      "key": "JusticeHealingCreditChannel",
+      "title": "Recognize positive exact64 Healing Stream outcomes before native Justice credit admission",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 77,
+      "paths": [
+        "src/server/scripts/Legion/highmountain_justice.cpp"
+      ],
+      "cls": "spell_highmountain_justice_heal",
+      "case": "justice",
+      "binding": "spell_highmountain_justice_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/highmountain_justice.cpp",
+          "old": "class spell_highmountain_justice_heal : public SpellScript\n{\n    PrepareSpellScript(spell_highmountain_justice_heal);\n    bool wounded = false;\n    void Before()\n    {\n        Unit* target = GetHitUnit();\n        wounded = target && target->IsAlive() && !target->IsFullHealth();\n    }\n    void After()\n    {\n        Unit* target = GetHitUnit();\n        Unit* caster = GetCaster();\n        if (!wounded || GetHitHeal() <= 0 || !target || !target->IsAlive() ||\n            (target->GetEntry() != 97498 && target->GetEntry() != 97506) ||\n            !target->HasPhaseId(5165) || target->GetMapId() != 1220 || caster->GetEntry() != 97508)\n            return;\n        Unit* owner = caster;\n        for (unsigned i = 0; owner && !owner->ToPlayer() && i < 3; ++i) owner = owner->GetAnyOwner();\n        Player* player = owner ? owner->ToPlayer() : nullptr;\n        if (!player || !player->IsAlive() || player->GetQuestStatus(Justice::Quest) != QUEST_STATUS_INCOMPLETE ||\n            !player->InSamePhase(target) || player->GetDistance(target) > 150.0f)\n            return;\n        std::lock_guard<std::recursive_mutex> lock(Justice::mutex);\n        auto it = Justice::rides.find(player->GetGUID());\n        if (it == Justice::rides.end() || it->second.lifetime.expired() || it->second.phase != Justice::Phase::Flying ||\n            !player->GetVehicleBase() || player->GetVehicleBase()->GetGUID() != it->second.bird)\n            return;\n        // Native Healing Stream ticks every 2s. A target contributes 5% once\n        // during this sortie, not once per tick. Actual healing is unchanged.\n        if (it->second.healed.insert(target->GetGUID()).second) player->KilledMonsterCredit(97498);\n    }\n    void Register() override\n    {\n        BeforeHit += SpellHitFn(spell_highmountain_justice_heal::Before);\n        AfterHit += SpellHitFn(spell_highmountain_justice_heal::After);\n    }\n}",
+          "new": "class spell_highmountain_justice_heal : public SpellScript\n{\n    PrepareSpellScript(spell_highmountain_justice_heal);\n    bool wounded = false;\n    void Before()\n    {\n        Unit* target = GetHitUnit();\n        wounded = target && target->IsAlive() && !target->IsFullHealth();\n    }\n    void After()\n    {\n        Unit* target = GetHitUnit();\n        Unit* caster = GetCaster();\n        if (!wounded || GetHitHeal64() == 0 || !target || !target->IsAlive() ||\n            (target->GetEntry() != 97498 && target->GetEntry() != 97506) ||\n            !target->HasPhaseId(5165) || target->GetMapId() != 1220 || caster->GetEntry() != 97508)\n            return;\n        Unit* owner = caster;\n        for (unsigned i = 0; owner && !owner->ToPlayer() && i < 3; ++i) owner = owner->GetAnyOwner();\n        Player* player = owner ? owner->ToPlayer() : nullptr;\n        if (!player || !player->IsAlive() || player->GetQuestStatus(Justice::Quest) != QUEST_STATUS_INCOMPLETE ||\n            !player->InSamePhase(target) || player->GetDistance(target) > 150.0f)\n            return;\n        std::lock_guard<std::recursive_mutex> lock(Justice::mutex);\n        auto it = Justice::rides.find(player->GetGUID());\n        if (it == Justice::rides.end() || it->second.lifetime.expired() || it->second.phase != Justice::Phase::Flying ||\n            !player->GetVehicleBase() || player->GetVehicleBase()->GetGUID() != it->second.bird)\n            return;\n        // Native Healing Stream ticks every 2s. A target contributes 5% once\n        // during this sortie, not once per tick. Actual healing is unchanged.\n        if (it->second.healed.insert(target->GetGUID()).second) player->KilledMonsterCredit(97498);\n    }\n    void Register() override\n    {\n        BeforeHit += SpellHitFn(spell_highmountain_justice_heal::Before);\n        AfterHit += SpellHitFn(spell_highmountain_justice_heal::After);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 0
+    },
+    {
+      "key": "PurifiedHealingStaggerWidth",
+      "title": "Preserve positive native Stagger pools in Purified Healing",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 78,
+      "paths": [
+        "src/server/scripts/Spells/spell_monk.cpp"
+      ],
+      "cls": "spell_monk_purified_healing_SpellScript",
+      "case": "purified",
+      "binding": "spell_monk_purified_healing",
+      "binding_kind": "spell",
+      "class_edit_index": 0,
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_monk.cpp",
+          "old": "class spell_monk_purified_healing_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_monk_purified_healing_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    if (Aura* bonusAura = caster->GetAura(145055)) // Item - Monk T16 Brewmaster 4P Bonus\n                    {\n                        int32 perc = bonusAura->GetEffect(EFFECT_0)->GetAmount();\n                        int32 _amount = 0;\n                        if (Aura* staggerAura = caster->GetAura(124275))\n                            if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))\n                                _amount += eff->GetAmount();\n                        if (Aura* staggerAura = caster->GetAura(124274))\n                            if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))\n                                _amount += eff->GetAmount();\n                        if (Aura* staggerAura = caster->GetAura(124273))\n                            if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))\n                                _amount += eff->GetAmount();\n                        if(_amount)\n                            SetHitHeal(CalculatePct(_amount, perc));\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_monk_purified_healing_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "new": "class spell_monk_purified_healing_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_monk_purified_healing_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    if (Aura* bonusAura = caster->GetAura(145055)) // Item - Monk T16 Brewmaster 4P Bonus\n                    {\n                        int32 perc = bonusAura->GetEffect(EFFECT_0)->GetAmount();\n                        uint64 _amount = 0;\n                        if (Aura* staggerAura = caster->GetAura(124275))\n                            if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))\n                                _amount = HealingAmount::Add(_amount, HealingAmount::FromFloat(eff->GetAmount()));\n                        if (Aura* staggerAura = caster->GetAura(124274))\n                            if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))\n                                _amount = HealingAmount::Add(_amount, HealingAmount::FromFloat(eff->GetAmount()));\n                        if (Aura* staggerAura = caster->GetAura(124273))\n                            if(AuraEffect* eff = staggerAura->GetEffect(EFFECT_1))\n                                _amount = HealingAmount::Add(_amount, HealingAmount::FromFloat(eff->GetAmount()));\n                        if(_amount)\n                            SetHitHeal64(HealingAmount::FromFloat(CalculatePct(float(_amount), perc)));\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_monk_purified_healing_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "IntangiblePresenceAbsorbWidth",
+      "title": "Preserve positive aura amounts when limiting Intangible Presence absorption",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 79,
+      "paths": [
+        "src/server/scripts/Spells/spell_generic.cpp"
+      ],
+      "cls": "spell_gen_intangible_presence",
+      "case": "intangible",
+      "binding": "spell_gen_intangible_presence",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "old": "#include \"ScriptMgr.h\"",
+          "new": "#include \"ScriptMgr.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "old": "class spell_gen_intangible_presence : public AuraScript\n{\n    PrepareAuraScript(spell_gen_intangible_presence);\n\n    void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)\n    {\n        amount = -1;\n    }\n\n    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& dmgInfo, float& absorbAmount)\n    {\n        absorbAmount = 0;\n\n        if (Unit* owner = GetUnitOwner())\n        {\n            if (AuraEffect const* eff = owner->GetAuraEffect(230080, EFFECT_1))\n            {\n                if (Unit* attacker = dmgInfo.GetAttacker())\n                {\n                    if (SpellInfo const* spellInfo = dmgInfo.GetSpellInfo())\n                    {\n                        for (uint8 i = 0; i < RANGED_ATTACK; i++)\n                        {\n                            if (attacker->GetAutoattackSpellId(i) == spellInfo->Id)\n                                goto handleAbsorb;\n                        }\n                        return;\n                    }\n\n                    handleAbsorb:\n\n                    if (attacker->HasAura(230088, owner->GetGUID()))\n                    {\n                        uint32 amount = eff->GetAmount();\n\n                        if (uint32 damage = dmgInfo.GetDamage())\n                            absorbAmount = (amount < damage) ? amount : damage;\n                    }\n                }\n            }\n        }\n    }\n\n    void Register() override\n    {\n        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_intangible_presence::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n        OnEffectAbsorb += AuraEffectAbsorbFn(spell_gen_intangible_presence::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n    }\n}",
+          "new": "class spell_gen_intangible_presence : public AuraScript\n{\n    PrepareAuraScript(spell_gen_intangible_presence);\n\n    void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)\n    {\n        amount = -1;\n    }\n\n    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& dmgInfo, float& absorbAmount)\n    {\n        absorbAmount = 0;\n\n        if (Unit* owner = GetUnitOwner())\n        {\n            if (AuraEffect const* eff = owner->GetAuraEffect(230080, EFFECT_1))\n            {\n                if (Unit* attacker = dmgInfo.GetAttacker())\n                {\n                    if (SpellInfo const* spellInfo = dmgInfo.GetSpellInfo())\n                    {\n                        for (uint8 i = 0; i < RANGED_ATTACK; i++)\n                        {\n                            if (attacker->GetAutoattackSpellId(i) == spellInfo->Id)\n                                goto handleAbsorb;\n                        }\n                        return;\n                    }\n\n                    handleAbsorb:\n\n                    if (attacker->HasAura(230088, owner->GetGUID()))\n                    {\n                        uint64 amount = HealingAmount::FromFloat(eff->GetAmount());\n\n                        if (uint32 damage = dmgInfo.GetDamage())\n                            absorbAmount = (amount < damage) ? amount : damage;\n                    }\n                }\n            }\n        }\n    }\n\n    void Register() override\n    {\n        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_intangible_presence::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n        OnEffectAbsorb += AuraEffectAbsorbFn(spell_gen_intangible_presence::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 1
+    },
+    {
+      "key": "AntiMagicShellRunicWidth",
+      "title": "Keep Anti Magic Shell absorbed remainders and health thresholds unsigned64",
+      "kind": "native_width",
+      "batch": 8,
+      "index": 80,
+      "paths": [
+        "src/server/scripts/Spells/spell_dk.cpp"
+      ],
+      "cls": "spell_dk_anti_magic_shell_self_AuraScript",
+      "case": "ams",
+      "binding": "spell_dk_anti_magic_shell_self",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_dk.cpp",
+          "old": "class spell_dk_anti_magic_shell_self_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_dk_anti_magic_shell_self_AuraScript);\n\n            uint32 absorbPct, container;\n            int32 _damage;\n\n            bool Load() override\n            {\n                absorbPct = GetSpellInfo()->Effects[EFFECT_0]->CalcValue(GetCaster());\n                container = 0;\n                _damage = 0;\n                return true;\n            }\n\n            bool Validate(SpellInfo const* /*SpellInfo*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(49088))\n                    return false;\n                return true;\n            }\n\n            void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)\n            {\n                if(Unit* caster = GetCaster())\n                    amount = caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster));\n                else\n                    amount = 0;\n            }\n\n            void Absorb(AuraEffect* aurEff, DamageInfo & dmgInfo, float & absorbAmount)\n            {\n                absorbAmount = std::min<uint64>(CalculatePct(dmgInfo.GetDamage(), absorbPct),\n                    HealingAmount::FromFloat(aurEff->GetAmount()));\n                _damage += absorbAmount;\n            }\n\n            void Trigger(AuraEffect* aurEff, DamageInfo & /*dmgInfo*/, float & absorbAmount)\n            {\n                if (Unit* target = GetTarget()) // AMS generates 2 Runic Power for every percent of maximum health absorbed\n                {\n                    if (target->HasAura(210852)) // Acherus Drapes\n                    {\n                        float bp = absorbAmount;\n                        target->CastCustomSpell(target, 210862, &bp, NULL, NULL, true);\n                    }\n\n                    uint32 RPCap = target->CountPctFromMaxHealth(1);\n                    if (RPCap > 0)\n                    {\n                        // Keep sub-percent absorption between hits. Runic Power\n                        // is awarded for every complete 1% of maximum health.\n                        uint64 absorbed = uint64(container) + uint32(absorbAmount);\n                        uint32 absorbedPct = uint32(absorbed / RPCap);\n                        container = uint32(absorbed % RPCap);\n\n                        // Runic-power amounts use tenths internally: 2 RP for\n                        // each full 1% of maximum health absorbed is 20 here.\n                        float bp = absorbedPct * 20.0f;\n                        if (target->HasAura(207188)) // Volatile Shielding\n                            bp *= 2;\n\n                        if (bp > 0.0f)\n                            target->CastCustomSpell(target, 49088, &bp, NULL, NULL, true, NULL, aurEff);\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                 DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_dk_anti_magic_shell_self_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n                 OnEffectAbsorb += AuraEffectAbsorbFn(spell_dk_anti_magic_shell_self_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n                 AfterEffectAbsorb += AuraEffectAbsorbFn(spell_dk_anti_magic_shell_self_AuraScript::Trigger, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n            }\n        }",
+          "new": "class spell_dk_anti_magic_shell_self_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_dk_anti_magic_shell_self_AuraScript);\n\n            uint32 absorbPct;\n            uint64 container;\n\n            bool Load() override\n            {\n                absorbPct = GetSpellInfo()->Effects[EFFECT_0]->CalcValue(GetCaster());\n                container = 0;\n                return true;\n            }\n\n            bool Validate(SpellInfo const* /*SpellInfo*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(49088))\n                    return false;\n                return true;\n            }\n\n            void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)\n            {\n                if(Unit* caster = GetCaster())\n                    amount = caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster));\n                else\n                    amount = 0;\n            }\n\n            void Absorb(AuraEffect* aurEff, DamageInfo & dmgInfo, float & absorbAmount)\n            {\n                absorbAmount = std::min<uint64>(CalculatePct(dmgInfo.GetDamage(), absorbPct),\n                    HealingAmount::FromFloat(aurEff->GetAmount()));\n            }\n\n            void Trigger(AuraEffect* aurEff, DamageInfo & /*dmgInfo*/, float & absorbAmount)\n            {\n                if (Unit* target = GetTarget()) // AMS generates 2 Runic Power for every percent of maximum health absorbed\n                {\n                    if (target->HasAura(210852)) // Acherus Drapes\n                    {\n                        float bp = absorbAmount;\n                        target->CastCustomSpell(target, 210862, &bp, NULL, NULL, true);\n                    }\n\n                    uint64 RPCap = target->CountPctFromMaxHealth(1);\n                    if (RPCap > 0)\n                    {\n                        // Keep sub-percent absorption between hits. Runic Power\n                        // is awarded for every complete 1% of maximum health.\n                        uint64 absorbed = HealingAmount::Add(container, HealingAmount::FromFloat(absorbAmount));\n                        uint64 absorbedPct = absorbed / RPCap;\n                        container = absorbed % RPCap;\n\n                        // Runic-power amounts use tenths internally: 2 RP for\n                        // each full 1% of maximum health absorbed is 20 here.\n                        float bp = float(absorbedPct) * 20.0f;\n                        if (target->HasAura(207188)) // Volatile Shielding\n                            bp *= 2;\n\n                        if (bp > 0.0f)\n                            target->CastCustomSpell(target, 49088, &bp, NULL, NULL, true, NULL, aurEff);\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                 DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_dk_anti_magic_shell_self_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n                 OnEffectAbsorb += AuraEffectAbsorbFn(spell_dk_anti_magic_shell_self_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n                 AfterEffectAbsorb += AuraEffectAbsorbFn(spell_dk_anti_magic_shell_self_AuraScript::Trigger, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 0
     }
   ],
   "excluded_candidates": [
@@ -1854,6 +2109,10 @@
     {
       "key": "TushuiTraineePetCredit",
       "reason": "Registration is commented out and no matching live script binding;unreachable legacy candidate is not counted."
+    },
+    {
+      "key": "SmiteAbsorbDamageWidth",
+      "reason": "The native DamageInfo constructor clamps non-healing damage to UINT32_MAX;the local uint32 is correct. Withdrawal restores unchanged production code. Native healing info is separately unsigned64. Absorb fixtures now honor this domain. Intangible has a real independent positive aura amount narrowing;AMS has a real health-threshold/remainder overflow with multiple legal uint32 hits."
     }
   ]
 }
