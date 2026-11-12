@@ -1,4 +1,77 @@
 {
+  "latest_native_crumble_lifecycle_repair_2026_11_13": {
+    "status": "CRUMBLE_NATIVE_LIFECYCLE_FIXED_DEPLOYED_IMMUNITY_AND_CLIENT_STILL_OPEN",
+    "fix_commit": "821d0c5e9b4b69d02447ddf84b405e64d5819668",
+    "canonical": {
+      "worldserver.exe": "a4afc068f82c615d0f8f0b3c3c799f1b849ea4f4d6133c6fbe08307059695539",
+      "worldserver.map": "fb7294ae719ee35b4d6f52e552f10f3feef53504072a76cfa1aaeca21ac86010",
+      "bnetserver.exe": "d6dd6a22510cd12e8be1feff277ee9abef41eb0716290cd2577f7c287c5d4710",
+      "bnetserver.map": "b50eb6b4e09936687337c4002722da4041394c9e0e09a287ed0e752955f591a7"
+    },
+    "remaining": [
+      "Crumble damage immunity/percentage and crit ordering remains OPEN;76 lifecycle cases do not certify the entire encounter.",
+      "Actual owned offline/logout/disconnect persistence and cleanup remains OPEN;resolved online-player final health is separately fixed.",
+      "Haunt652/653 ghost/return,other five species183/four abilities(1479/1482,1496,1815,1883),DarkRebirth794/795,Ominitron1595 producer,Apocalypse,clone122/123/124 and generic159 remain OPEN. Mixed research and unique probes stay outside fixed.",
+      "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+    ],
+    "next": "Continue native immunity/percentage evidence and remaining source183 producer data;do not infer complete combat correctness or client verification from this lifecycle repair.",
+    "audit": "docs/audits/pet-crumble-2026-11-13.json",
+    "checks": {
+      "native": "76 counted real native lifecycle cases: all six source positions across both teams;actual AddPet/Begin and one ownD9 producer;ten complete native ProceedRound phases;repeat activation after two real rounds without refresh;real swap out/back without resetting countdown;actual early instant kill with one source receipt/dead-state event and normal controller removal;generic Catch defense with one receipt and existing captured/caged state;real forced Expire and repeated idempotent removal;wrong species/183 authority;wrong owner;forged active-controller terminal;already-dead replay;ordinary sources;invalid/missing ID,missing actual team and wrong passive. All teams live in memory,no character/session writes. Capture is a defensive generic endpoint test,not a claim that untameable Rocko admits an ordinary capture cast. Native rounds clear their current packet events after dispatch;client rendering is separate.",
+      "counterfactuals": "Three complete pinned01c4ec155 PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail init/terminal/early assertions with expected exit1;fixed76 pass. Initial fixture compile used nonexistent State.StateID;corrected to actual State.ID before gameplay controls,failed compile retained.",
+      "retained": "102 owned final health,112 Pound,120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 linked checks,actual3-bit/alignment writer,complete retained pet proof chain and new source/producer/selector/removal/death proof pass. No fresh106/full native-core ASAN claim.",
+      "pe": "Actual160byte named stack-free source leaf is independently next-symbol bounded<=512,contiguously decoded,padding-checked,has no calls/stack frame and a closed immediate-branch CFG;shared64byte fallback unchanged. Source ID bound dominates indexed read. Actual Begin1586 precedes first snapshots;3226 real AddTarget receives its caster;duplicate native controller cannot reach AddAura. Actual3227 path requires expired issued self1739/3226/D9 and has one source-only Kill. The existing actual early-death proof now checks two state call sites around expiry with scalar native1811/1586 rejection directly bypassing the early call;ordinary final state remains. Earlier242 proof follows its actual merged CFG tail,retaining one target-only kill. Native selector cached property/order/roster compiler roles were updated exactly;handler-table bounds and CFG helpers were not weakened.",
+      "runtime": "Owned canonical PID12744 reached fresh ready,shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Relinked bnet .text is byte-identical to prior rollback;no fresh separate bnet startup claim.",
+      "diagnostics": "Canonical/own pre/post crash/log inventories,exit/stdout/stderr reviewed. No new/changed crash,appended DBErrors or unexplained runtime warnings/errors/assertions. Header-driven full game warnings match the earlier full static-passive build after line normalization. Initial linked checks found the new scoped early state call,merged242 tail and changed cached selector roles;all exact proofs pass after correction. First new verifier import assumed an unexported reaches helper;imported the actual lifecycle helper directly and full chain now returns to caller.",
+      "limits": "Actual client countdown/icon/HP/death display,full live Rocko world-quest credit,real wild kit/quality/zone-level setup,group/client traversal and abandon/re-entry remain separate. Original positive-health NPC instant-death metadata is retained;online owned journal normalization remains separately fixed. No custom Mechanical/Undead protection policy is invented for this actual Elemental species."
+    },
+    "cleanup": {
+      "status": "PASS",
+      "native_crumble_lifecycle_cases": 76,
+      "retained_native_cases": [
+        102,
+        112,
+        120,
+        78,
+        48,
+        24,
+        144,
+        28,
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "a4afc068f82c615d0f8f0b3c3c799f1b849ea4f4d6133c6fbe08307059695539",
+        "worldserver.map": "fb7294ae719ee35b4d6f52e552f10f3feef53504072a76cfa1aaeca21ac86010",
+        "bnetserver.exe": "d6dd6a22510cd12e8be1feff277ee9abef41eb0716290cd2577f7c287c5d4710",
+        "bnetserver.map": "b50eb6b4e09936687337c4002722da4041394c9e0e09a287ed0e752955f591a7"
+      },
+      "bnet_native_code_section_unchanged": true,
+      "archive_records": 660,
+      "removed": 78,
+      "removed_bytes": 945071892.0,
+      "older_owned_rollback_sets_removed": 1,
+      "recent_rollback_sets_retained": 3,
+      "historical106_binary_and_maps_retained": true,
+      "protected_evidence_configuration_and_rollback_unchanged": true,
+      "new_compiler_warnings": 0
+    },
+    "open_immunity_evidence": {
+      "status": "OPEN_NOT_FIXED_OR_ARCHIVED_AS_RESOLVED",
+      "path": ".codex/pet-crumble-open-2026-11-13/research-20261113-011829-513/native.tsv",
+      "sha256": "9f8a74588fdff9c75039b7ecedef99d9fdf5582258b405c30aa355bd9904f938",
+      "original_probe_sha256": "b16bbd7ead4a897c91e12650422e0581ab770cdc81f2ea56e827a2344fd15793",
+      "observed": "On the pinned pre-lifecycle core,normal Bite against native24=-100 did0,guaranteed crit did20,and a controlled25percent attacker bonus did5,both orientations. CalculateDamageWithVariance and percentage/unavoidable semantics remain unchanged by this focused repair. Do not blanket-enable immunity or assert percentage-exception/crit ordering from these lifecycle tests. Entire mixed18-path research,failed setup assumptions,logs,private configurations and unique original probe remain active outside fixed for ongoing investigation."
+    }
+  },
   "latest_native_final_owned_health_repair_2026_11_13": {
     "status": "RESOLVED_PLAYER_OWNED_FINAL_DEATH_JOURNAL_HEALTH_FIXED_DEPLOYED_CLIENT_PENDING",
     "fix_commit": "01c4ec15519061332b7d6d8f8eb2ef84edc19a22",
