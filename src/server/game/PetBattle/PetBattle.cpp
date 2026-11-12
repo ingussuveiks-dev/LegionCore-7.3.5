@@ -1035,8 +1035,8 @@ void PetBattle::AddPet(uint32 teamID, std::shared_ptr<BattlePetInstance> pet)
     pet->InfoMaxHealth = int32(floor((10000.0f + pet->States[BATTLEPET_STATE_Stat_Stamina] * 5.0f) / 100.0f + 0.5));
     pet->InfoGender = pet->States[BATTLEPET_STATE_Stat_Gender];
 
-    if (pet->Health > pet->InfoMaxHealth)
-        pet->Health = pet->InfoMaxHealth;
+    pet->Health = std::max<int32>(0, std::min(pet->Health, pet->InfoMaxHealth));
+    pet->States[BATTLEPET_STATE_Is_Dead] = pet->Health == 0;
 }
 
 void PetBattle::Begin()
@@ -1051,6 +1051,12 @@ void PetBattle::Begin()
     {
         Teams[i]->ActiveAbilityId = 0;
         Teams[i]->ActivePetID = i == PETBATTLE_TEAM_2 ? MAX_PETBATTLE_SLOTS : 0;
+        for (auto const& pet : Teams[i]->TeamPets)
+            if (pet && pet->IsAlive())
+            {
+                Teams[i]->ActivePetID = pet->ID;
+                break;
+            }
 
         if (Player* player = sObjectAccessor->FindPlayer(Teams[i]->OwnerGuid))
             player->UnsummonCurrentBattlePetIfAny(true);
