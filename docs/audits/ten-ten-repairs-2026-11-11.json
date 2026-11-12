@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 70,
-  "remaining": 30,
-  "completed_batches": 7,
+  "completed": 80,
+  "remaining": 20,
+  "completed_batches": 8,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -472,16 +472,83 @@
         "investigation": "Native64 getter/setter are deliberately named separately from the legacy32 API; each affected class now uses the proper channel. Original coefficients, recipient selection, ownership,raid/crit/PvP gates andconsumption are retained. Ordinary non-exact core effect accumulation remains an explicit OPEN engine limitation to investigate before completing all100; these fixtures certify incoming exact64 values andthe listed class behavior."
       },
       "support_commit": "5372f3a790690c50a5f14a53aefcb6a92186b903"
+    },
+    {
+      "batch": 8,
+      "historical_group": 59,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "TranquilityHealWidth",
+          "commit": "8d969ba9e578f808156a8d28f9ec55492e96bb06",
+          "audit": "docs/audits/ten-ten-2026-11-11/TranquilityHealWidth.json"
+        },
+        {
+          "key": "ZenPulseHealWidth",
+          "commit": "1e731a7b376df6f8b65c6d8e0694714c7a6665d9",
+          "audit": "docs/audits/ten-ten-2026-11-11/ZenPulseHealWidth.json"
+        },
+        {
+          "key": "SheilunsGiftHealWidth",
+          "commit": "a019d34208f49239c8041b0a6b90daf181f8f19f",
+          "audit": "docs/audits/ten-ten-2026-11-11/SheilunsGiftHealWidth.json"
+        },
+        {
+          "key": "RevivalBlessingsHealWidth",
+          "commit": "6178d2f66c8559cda7a12d52f6f29d1c2eb738ce",
+          "audit": "docs/audits/ten-ten-2026-11-11/RevivalBlessingsHealWidth.json"
+        },
+        {
+          "key": "HealthFunnelHealWidth",
+          "commit": "4e37a954a07190915c1ff0e1ed1790d3d3890f2e",
+          "audit": "docs/audits/ten-ten-2026-11-11/HealthFunnelHealWidth.json"
+        },
+        {
+          "key": "FrenziedRegenerationAmountWidth",
+          "commit": "ad3dde3542a1029515f969ab0a777cb282102696",
+          "audit": "docs/audits/ten-ten-2026-11-11/FrenziedRegenerationAmountWidth.json"
+        },
+        {
+          "key": "JusticeHealingCreditChannel",
+          "commit": "fe4fbf2c9799c73ff012ce70057c16d390c77103",
+          "audit": "docs/audits/ten-ten-2026-11-11/JusticeHealingCreditChannel.json"
+        },
+        {
+          "key": "PurifiedHealingStaggerWidth",
+          "commit": "979105d40f7397e5288b784426d245ba07ca2879",
+          "audit": "docs/audits/ten-ten-2026-11-11/PurifiedHealingStaggerWidth.json"
+        },
+        {
+          "key": "IntangiblePresenceAbsorbWidth",
+          "commit": "e73d075b00e572c7e6e8d4f3f05c4a784bd09b20",
+          "audit": "docs/audits/ten-ten-2026-11-11/IntangiblePresenceAbsorbWidth.json"
+        },
+        {
+          "key": "AntiMagicShellRunicWidth",
+          "commit": "ff17531fcd04583f93189f7f02ddb7896acfeb62",
+          "audit": "docs/audits/ten-ten-2026-11-11/AntiMagicShellRunicWidth.json"
+        }
+      ],
+      "checks": {
+        "asan": "Ten complete production scopes pass: raid/nonraid Tranquility, native integer Zen/cloud multiplication including ordinary low bits anduint64 saturation, real cloud cleanup/Shaohao requests, six-tick Revival coefficient, valid Funnel4percent self cost with8percent wider heal, Frenzied minimum/history/PvP/versatility/ticks, exact64 Justice eligibility/once-per-actor/zero-heal/expired sortie, positive Stagger pool, large Intangible aura limit,andAMS4+4+2b legal hit remainder. External cast,aura,flight andquery endpoints controlled. Sixth regression rerun with native bounded-damage fixture.",
+        "baseline": "All ten pinned controls fail repaired expectations andpaired repaired runs pass. Initial AMS equal5b/5b synthetic case accidentally preserved a modular ratio anddid not distinguish old/new; replaced with asymmetric,legal4+4+2b hits. No synthetic hit beyond the native non-healing UINT32_MAX domain isused as proof.",
+        "native": "Ten actual bindings/matching26972 effects. Real Player/Group raid,Spell parent count/native64 integer low bits,Revival trait,Funnel native valid cost andwide heal,Frenzied actual history/tick contract,Justice BeforeHit/AfterHit APIs with unrelated actor guards,actual Stagger/Intangible/AMS AuraScript dispatch,owned auras andhealth thresholds. Cloud query supplies controlled retired placeholders;nonnull cloud cleanup isASAN;resource/optional child requests observed. Eligible Justice whole flight/credit remains production-model covered,not native/client traversed. First seventy scopes retained.",
+        "linked": "Canonical14521713 Release contains native64 heal paths,integer multiplier checks,wide Frenzied tick division,unchanged Justice entry/map/phase/quest gates,positive Stagger accumulation,positive Intangible aura conversion and64bit AMS health/remainder division. First seventy linked checks retained.",
+        "retained": "Whole retained Justice flight/boarding/linear route/exit/credit/retry/cancel/death/phase/timeout/logout/recovery source model passes after adding its named64 getter. Previous50 and65-file healing source certificates pass;Scepter Release check passes. Sixth ASAN rerun honors native damage domain.",
+        "runtime": "Task-owned canonical PID23136 fresh ready,gracefulshutdown0,exit0/gone,empty stderr. No new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. User/unknown servers untouched;configuration/DLL/certs preserved.",
+        "investigation": "The actual DamageInfo constructor clamps non-healing damage toUINT32_MAX,while healing information isuint64. Smite local uint32 was alreadycorrect:production candidate fully reverted,excluded,andnot counted. Replaced by genuine positive Stagger amount narrowing. Intangible keeps its correct bounded damage local andrepairs only positive aura amount conversion. Native history period isprivate;fixture derives its actual120constant anduses a typed member pointer. Comment-derived AMS enum collision was a fixture extraction error,corrected. Ordinary core heal/periodic effect accumulation andcumulative damage-history width remain explicit OPEN investigations for the remaining20;these consumer/native amount checks donot certify whole spell/client chains."
+      },
+      "support_commit": "6e95d6586ffbf798c620cde710dc3f66ecff6a65"
     }
   ],
   "canonical": {
-    "worldserver.exe": "5632417d072a4d270400355bc66ceeba9e96e6e887a0e7b812054816383eab27",
-    "worldserver.map": "079bab7afb448c5b1d4cea226b7cbf06a97fa8546deb4c6deaf73880103142ae",
-    "bnetserver.exe": "2b9fb4f520a92d15595d9049098c3c1313515322604cd9845ee525e24748a3fc",
-    "bnetserver.map": "396c4a2fa1be1724c5ce746a66dd09a60f08211db4b0bcd7684c74495b7069d9"
+    "worldserver.exe": "1452171343f47a99d53218f1c6c4ff9145088ab95c26a27bbcba71c7970b6055",
+    "worldserver.map": "cf2843267178b789c1dba3873aadedebe03ac9660274fab68cf59dff61d0cb96",
+    "bnetserver.exe": "ff31b52d16aa5f8eef3ef3c9f9d180a750f99b8ab44d72f3f895ab8045e7c494",
+    "bnetserver.map": "1ec89ddfbec03c810f998ed6dae68b684c9df8c210a8ca05ca634ccefcb88478"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches8..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
+  "pending": "Continue batches9..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -556,6 +623,17 @@
     "logical_removed_bytes": 606586489,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/batch07-deletions.json",
     "deletion_manifest_sha256": "c65248bb82f0f25d654375803a2cc65571c00b0d46ed9f85ffe384ea6754b2d2",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch08": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch08",
+    "manifest_sha256": "51f9a40e0beef26626edeced3d3b23c18f69de41bf19769be27484a734cefebc",
+    "archived_files": 3206,
+    "removed_files": 48,
+    "logical_removed_bytes": 965042579,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch08-deletions.json",
+    "deletion_manifest_sha256": "7cf1876eebed342d4d155dc0e0ee6ff5b51f92e077ac0d56ed2eb87740fe1d98",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }

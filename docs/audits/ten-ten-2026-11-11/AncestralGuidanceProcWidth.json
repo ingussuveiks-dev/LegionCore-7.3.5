@@ -24,5 +24,10 @@
   "canonical_worldserver_sha256": "5edc7875f6b265c6bb145d62d1130b61a0bd03bb0d93596c258bcfba8701b125",
   "scope": "Authored IDs,percentages,distance formula,proc ownership,recursion guards,PvP/faction gates andtimings retained. Each shared class family is counted once. Native binary32 percentage rounding and existing unsigned64 API are preserved. No database/schema/character/packet changes.",
   "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch06; after focused commits.",
-  "pending": "Ordinary effect accumulation outside explicit native64 inputs is a separate OPEN engine limitation for the remaining groups. Actual client visuals, combat, movement, healing and full affected encounters remain unverified. Lady authentic finale, LINK2/Slaghammer, original handshake and all36 whole chains retain their existing OPEN evidence; mixed DBErrors is unchanged."
+  "pending": "Ordinary effect accumulation outside explicit native64 inputs is a separate OPEN engine limitation for the remaining groups. Actual client visuals, combat, movement, healing and full affected encounters remain unverified. Lady authentic finale, LINK2/Slaghammer, original handshake and all36 whole chains retain their existing OPEN evidence; mixed DBErrors is unchanged.",
+  "validation_clarification_2026_11_12_batch08": {
+    "native_contract": "HealInfo andhealing-mode DamageInfo supportuint64. Non-healing DamageInfo clamps atUINT32_MAX in its constructor;that bound isretained. The sixth heal-branch fix remains genuine andnative checked.",
+    "fixture_correction": "Shared ASAN DamageInfo now models native non-healing clamping. The retained sixth damage alternative uses4b and20percent=800m;the independent5b HealInfo branch retains its1b conversion. Both repaired sixth branches pass;no damage-width production fix isclaimed.",
+    "evidence": "tools/tests/TenTen20261111HealFixture.h;tools/tests/TenTen20261111SixthTest.cpp;.codex/ten-ten-2026-11-11/batch8-retained6-driver.log"
+  }
 }
