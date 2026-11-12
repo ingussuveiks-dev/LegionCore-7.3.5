@@ -514,8 +514,8 @@ void Unit::Update(uint32 p_time)
 
     while (damageTrackingTimer_ <= 0)
     {
-        std::copy(npcDamageTaken_.begin(), npcDamageTaken_.end() - 1, npcDamageTaken_.begin() + 1);
-        std::copy(playerDamageTaken_.begin(), playerDamageTaken_.end() - 1, playerDamageTaken_.begin() + 1);
+        std::copy_backward(npcDamageTaken_.begin(), npcDamageTaken_.end() - 1, npcDamageTaken_.end());
+        std::copy_backward(playerDamageTaken_.begin(), playerDamageTaken_.end() - 1, playerDamageTaken_.end());
 
         npcDamageTaken_[0] = 0;
         playerDamageTaken_[0] = 0;
@@ -1024,10 +1024,10 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     }
 
     if (!IsPlayer())
-        victim->npcDamageTaken_[0] += damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);
+        victim->npcDamageTaken_[0] = HealingAmount::Add(victim->npcDamageTaken_[0], uint64(damage) + (cleanDamage ? cleanDamage->absorbed_damage : 0));
     else
     {
-        victim->playerDamageTaken_[0] += damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);
+        victim->playerDamageTaken_[0] = HealingAmount::Add(victim->playerDamageTaken_[0], uint64(damage) + (cleanDamage ? cleanDamage->absorbed_damage : 0));
         // victim->m_playerTotalDamage[GetGUID()] += damage;
 
         if (GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID) == SPEC_HUNTER_MARKSMAN)
@@ -25994,31 +25994,31 @@ void Unit::SendDispelLog(ObjectGuid const& unitTargetGuid, uint32 spellId, std::
     SendMessageToSet(dispellLog.Write(), true);
 }
 
-uint32 Unit::GetNpcDamageTakenInPastSecs(uint32 secs) const
+uint64 Unit::GetNpcDamageTakenInPastSecs(uint32 secs) const
 {
     auto const offset = std::min<size_t>(secs, npcDamageTaken_.size());
-    return std::accumulate(npcDamageTaken_.begin(), npcDamageTaken_.begin() + offset, 0u);
+    return std::accumulate(npcDamageTaken_.begin(), npcDamageTaken_.begin() + offset, uint64(0), HealingAmount::Add);
 }
 
-uint32 Unit::GetPlayerDamageTakenInPastSecs(uint32 secs) const
+uint64 Unit::GetPlayerDamageTakenInPastSecs(uint32 secs) const
 {
     auto const offset = std::min<size_t>(secs, playerDamageTaken_.size());
-    return std::accumulate(playerDamageTaken_.begin(), playerDamageTaken_.begin() + offset, 0u);
+    return std::accumulate(playerDamageTaken_.begin(), playerDamageTaken_.begin() + offset, uint64(0), HealingAmount::Add);
 }
 
-uint32 Unit::GetDamageTakenInPastSecs(uint32 secs, bool fromNpc, bool fromPlayer) const
+uint64 Unit::GetDamageTakenInPastSecs(uint32 secs, bool fromNpc, bool fromPlayer) const
 {
     static_assert(std::is_same<decltype(npcDamageTaken_), decltype(playerDamageTaken_)>::value, "npcDamageTaken_ and playerDamageTaken_ must have same type");
 
     auto const offset = std::min<size_t>(secs, npcDamageTaken_.size());
 
-    uint32 damage = 0;
+    uint64 damage = 0;
     for (size_t i = 0; i < offset; ++i)
     {
         if (fromNpc)
-            damage += npcDamageTaken_[i];
+            damage = HealingAmount::Add(damage, npcDamageTaken_[i]);
         if (fromPlayer)
-            damage += playerDamageTaken_[i];
+            damage = HealingAmount::Add(damage, playerDamageTaken_[i]);
     }
 
     return damage;
@@ -28215,7 +28215,7 @@ uint32 Unit::GetSize()
         ChatHandler(player).PSendSysMessage("Unit TimeTrackerSmall size %u", sizeof(TimeTrackerSmall));
         ChatHandler(player).PSendSysMessage("Unit Diminishing size %u", sizeof(Diminishing));
         ChatHandler(player).PSendSysMessage("Unit FollowerRefManager size %u", sizeof(FollowerRefManager));
-        ChatHandler(player).PSendSysMessage("Unit playerDamageTaken_ size %u", sizeof(std::array<uint32, DAMAGE_TRACKING_PERIOD>));
+        ChatHandler(player).PSendSysMessage("Unit playerDamageTaken_ size %u", sizeof(playerDamageTaken_));
         ChatHandler(player).PSendSysMessage("Unit FunctionProcessor size %u", sizeof(FunctionProcessor));
     }
     return size;

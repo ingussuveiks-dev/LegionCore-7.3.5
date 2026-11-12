@@ -2410,9 +2410,9 @@ class TC_GAME_API Unit : public WorldObject
         bool IsFocusing(Spell const* focusSpell);
         void ReleaseFocus(Spell const* focusSpell);
 
-        uint32 GetNpcDamageTakenInPastSecs(uint32 secs) const;
-        uint32 GetPlayerDamageTakenInPastSecs(uint32 secs) const;
-        uint32 GetDamageTakenInPastSecs(uint32 secs, bool fromNpc = true, bool fromPlayer = true) const;
+        uint64 GetNpcDamageTakenInPastSecs(uint32 secs) const;
+        uint64 GetPlayerDamageTakenInPastSecs(uint32 secs) const;
+        uint64 GetDamageTakenInPastSecs(uint32 secs, bool fromNpc = true, bool fromPlayer = true) const;
         uint32 GetTotalDamageTakenFromPlayer(ObjectGuid guid) { return m_playerTotalDamage[guid]; }
 
         int32 GetHighestExclusiveSameEffectSpellGroupValue(AuraEffect const* aurEff, AuraType auraType, bool checkMiscValue = false, int32 miscValue = 0) const;
@@ -2691,8 +2691,8 @@ class TC_GAME_API Unit : public WorldObject
 
         int32 damageTrackingTimer_;
 
-        std::array<uint32, DAMAGE_TRACKING_PERIOD> playerDamageTaken_;
-        std::array<uint32, DAMAGE_TRACKING_PERIOD> npcDamageTaken_;
+        std::array<uint64, DAMAGE_TRACKING_PERIOD> playerDamageTaken_;
+        std::array<uint64, DAMAGE_TRACKING_PERIOD> npcDamageTaken_;
 
         // used to track total damage each player has made to the unit
         std::map<ObjectGuid, uint32> m_playerTotalDamage;
