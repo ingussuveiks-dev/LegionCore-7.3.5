@@ -4,7 +4,7 @@ if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $path='src/server/game/Entities/Unit/Unit.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
-if($source.Contains('creature->NotifyHealApplied(this, addhealth, gain);')){
+if($source.Contains('creature->NotifyHealApplied(this, addhealth, gain);') -or $source.Contains('creature->NotifyHealApplied64(this, addhealth, gain);')){
  & "$PSScriptRoot/Test-CreatureHealApplied.ps1" -ScopeOnly
  $source=(& git -C $repo show "5a4a13649:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged damage context missing'}
 }

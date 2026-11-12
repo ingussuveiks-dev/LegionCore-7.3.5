@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-12",
+  "status": "FOCUSED_CERTIFICATE_REPAIR_PASS_FINAL_COLLECTION_RECORDED_SEPARATELY",
+  "title": "Preserve native damage saturation and unsigned64 healing in legacy certificates",
+  "cause_and_repair": "Tie the actual clamped conversion register to the mutable damage store, keep current/disabled AI identity and post-hook zero/death exits, and prove native received/done hooks precede bounded unsigned64 health application and actual-gain notification. Four Silver Hand selected factories require qword healing guards; the second Travard successor must Recover before its actual clock/CompleteProcession dispatch. The 160-case historical callback fixture uses an explicit bounded32 test endpoint adapter; it is not a full-width six-billion health test. Actual linked unsigned64 application and five rejected in-memory semantic mutations provide separate evidence. The 209-case damage fixture retains the native UINT32 ceiling; ordinary damage is not widened.",
+  "production_changes": "None. No C++ or SQL change, no rebuilt/promoted binary. These repairs address stale test assumptions against the already deployed production implementation.",
+  "files": [
+    "tools/tests/Test-CreatureHealApplied.ps1",
+    "tools/tests/Test-DamageScalingBounds.ps1",
+    "tools/tests/damage_scaling_release_check.py",
+    "tools/tests/heal_application_release_check.py",
+    "tools/tests/verify_heal_damage_certificate_mutations.py",
+    "tools/tests/verify_sharasdal_companion_healing_release.py",
+    "tools/tests/verify_silver_hand_rescue_release.py",
+    "tools/tests/verify_silver_hand_ally_damage_release.py",
+    "tools/tests/verify_tuure_ally_damage_release.py"
+  ],
+  "evidence": [
+    {
+      "path": ".codex/open-closeout-2026-11-12/numeric-fixed.log",
+      "sha256": "892a6d08aaad857a5124ab3f7dba953a1df9671ed475d7dd44f8365a14e4d1b0"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/heal-callback.log",
+      "sha256": "1bc583779219a221171576303c29a8a7fb4f9e59888946009444f9f02f0a4af4"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/mutations-public.log",
+      "sha256": "d3d382aaecb828df515a7beaf138196c66f06f7f49e94b7a8a27103b2ca90bf3"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/silver-ally-repaired2.log",
+      "sha256": "1aaa1860006261663e4335e943c7977a98b169bde338aed030850c815ab9bf20"
+    }
+  ],
+  "worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+  "post_test_diagnostics": "Every formal run wrapped with canonical and own crash/log before/after inventories. No new/changed crash, appended DBErrors, or unexplained server warning/error/assertion. Failed intermediate certificate assertions were retained and paired with the focused passing root; they are not ordinary passing runs.",
+  "counterfactual": "Pinned32f7dc012 tool controls inspect this same current EXE. These reproduce stale certificate failures; they are not broken gameplay binary controls. See final closeout for the complete immutable-source collection and counterfactual results.",
+  "limitations": "Selected linked code and controlled native/source fixtures do not establish actual client traversal, rendering, whole36chains, authentic living Lady finale, missing LINK2 actions, intermittent handshake cause, remaining native pet effects or ordinary core-wide healing/periodic widths.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}

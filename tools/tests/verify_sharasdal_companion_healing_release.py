@@ -58,7 +58,8 @@ for script,flag,pending in [('npc_erunak_stonespeaker',0x59,0x5b),('npc_grash',0
 heal_body=instructions('?DealHeal@Unit@@')
 receiver=[i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xb0]
 healer=[i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xb8]
-applied,=sites(heal_body,'?ModifyHealth@Unit@@')
+from heal_application_release_check import check as check_heal_application
+applied=check_heal_application(native,instructions)
 assert len(receiver)==len(healer)==1 and receiver[0]<healer[0]<applied
 update=instructions('?Update@Creature@@')
 dispatch=[i for i,x in enumerate(update) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x110]

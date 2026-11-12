@@ -8,7 +8,7 @@ $paths=@('src/server/game/Entities/Unit/Unit.cpp','src/server/game/Entities/Crea
 $sources=@{};$bases=@{}
 foreach($path in $paths){$sources[$path]=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$bases[$path]=(& git -C $repo show "5a4a13649:$path") -join "`n";if($LASTEXITCODE){throw "Missing pinned $path"}}
 $liveSources=$sources.Clone()
-if($sources[$paths[0]].Contains('int64 Unit::DealHeal(')){
+if($sources[$paths[0]].Contains('int64 Unit::DealHeal(') -or $sources[$paths[0]].Contains('uint64 Unit::DealHeal(')){
  & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_native_heal_scope.py"
  if($LASTEXITCODE){throw 'Separately declared native heal API scope differs'}
  # Historical whole-file proof predates later core repairs. Keep its original

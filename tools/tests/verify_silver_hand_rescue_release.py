@@ -85,7 +85,7 @@ queue, = sites(body, '?AddDelayedEvent@FunctionProcessor@@')
 assert owner < valid < guid < queue
 assert body[valid + 1].op_str == 'rax, rax' and body[valid + 2].mnemonic == 'je'
 assert not reaches(body, body[valid + 2].operands[0].imm, body[queue].address)
-for operands, branch in (('byte ptr [rcx + 0x38], 0', 'jne'), ('dword ptr [r8], 0', 'je'),
+for operands, branch in (('byte ptr [rcx + 0x38], 0', 'jne'), ('qword ptr [r8], 0', 'je'),
                          ('rdx, rdx', 'je'), ('qword ptr [rbx + 8], rax', 'jne')):
     position = next(index for index, entry in enumerate(body) if entry.op_str == operands)
     assert body[position + 1].mnemonic == branch and not reaches(body, body[position + 1].operands[0].imm, body[queue].address)
@@ -166,7 +166,8 @@ assert min(sites(creature, '?Update@Unit@@')) > ticks[1]
 heal = instructions('?DealHeal@Unit@@')
 received, = [index for index, entry in enumerate(heal) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xb0]
 done, = [index for index, entry in enumerate(heal) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xb8]
-apply, = sites(heal, '?ModifyHealth@Unit@@')
+from heal_application_release_check import check as check_heal_application
+apply = check_heal_application(native, instructions)
 assert received < done < apply
 enqueue = instructions('?AddDelayedEvent@FunctionProcessor@@')
 insert, = sites(enqueue, '??$insert@U?$pair@_KV?$function')

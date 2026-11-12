@@ -68,19 +68,27 @@ for script, speech in (('npc_travar_first', (9, 10)), ('npc_travar_second', (1, 
     assert struct.unpack_from('<Q', native['binary'], tables[0] + 0xb0)[0] == native['symbol'](heal_name)
     heal = leaf(heal_name, 17)
     assert [(entry.mnemonic, entry.op_str) for entry in (heal[0], heal[2], heal[4], heal[5])] == [
-        ('cmp', f'byte ptr [rcx + {hex(flag)}], 0'), ('cmp', 'dword ptr [r8], 0'),
+        ('cmp', f'byte ptr [rcx + {hex(flag)}], 0'), ('cmp', 'qword ptr [r8], 0'),
         ('mov', f'byte ptr [rcx + {hex(pending)}], 1'), ('ret', '')]
     assert all(heal[index].mnemonic == 'je' and heal[index].operands[0].imm == heal[-1].address for index in (1, 3))
     lifecycle = '?UpdateLifecycle@' + script + 'AI@'
     assert struct.unpack_from('<Q', native['binary'], tables[0] + 0x110)[0] == native['symbol'](lifecycle)
-    if script in ('npc_travar_first', 'npc_travar_third'):
+    if script in ('npc_travar_first', 'npc_travar_second', 'npc_travar_third'):
         adapter = instructions(lifecycle)
         recover, = calls(adapter, '?Recover@SilverHandCompanion@@')
         for operands in (f'r8, [rcx + {hex(flag)}]', f'rdx, [rcx + {hex(pending)}]', 'rcx, qword ptr [rcx + 0x20]'):
             assert any(entry.op_str == operands for entry in adapter[:recover])
-        assert adapter[-1].mnemonic == 'jmp' and native['resolve'](adapter[-1].operands[0].imm) == native['symbol']('?Update@FunctionProcessor@@')
-        entry_offset = 0xf0 if script == 'npc_travar_first' else 0xe0
-        assert any(entry.op_str == f'rcx, [rbx + {entry_offset:#x}]' for entry in adapter[recover + 1:])
+        if script == 'npc_travar_second':
+            # The selected procession successor now keeps its clock after
+            # Recover and tail-dispatches the acknowledged completion path.
+            assert {('mov','ebx, edx'),('mov','rdi, rcx')} <= {(x.mnemonic,x.op_str) for x in adapter[:recover]}
+            assert ('add','qword ptr [rdi + 0xf0], rbx') in [(x.mnemonic,x.op_str) for x in adapter[recover+1:]]
+            target='?CompleteProcession@npc_travar_secondAI@'
+            assert adapter[-1].mnemonic=='jmp' and native['resolve'](adapter[-1].operands[0].imm)==native['symbol'](target)
+        else:
+            assert adapter[-1].mnemonic == 'jmp' and native['resolve'](adapter[-1].operands[0].imm) == native['symbol']('?Update@FunctionProcessor@@')
+            entry_offset = 0xf0 if script == 'npc_travar_first' else 0xe0
+            assert any(entry.op_str == f'rcx, [rbx + {entry_offset:#x}]' for entry in adapter[recover + 1:])
     else:
         adapter = leaf(lifecycle, 17)
         assert [(entry.mnemonic, entry.op_str) for entry in adapter[:3]] == [
@@ -124,7 +132,8 @@ assert len([entry for entry in recovery if entry.mnemonic == 'call']) == 4
 heal = instructions('?DealHeal@Unit@@')
 received, = [index for index, entry in enumerate(heal) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xb0]
 done, = [index for index, entry in enumerate(heal) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xb8]
-apply, = calls(heal, '?ModifyHealth@Unit@@')
+from heal_application_release_check import check as verify_heal_application
+apply = verify_heal_application(native, instructions)
 assert received < done < apply
 creature = instructions('?Update@Creature@@')
 ticks = [index for index, entry in enumerate(creature) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x110]

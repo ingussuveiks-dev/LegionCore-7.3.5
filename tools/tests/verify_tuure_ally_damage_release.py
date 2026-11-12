@@ -39,7 +39,8 @@ assert body[site+2].mnemonic=='comiss' and body[site+3].mnemonic=='ja'
 heal_body=instructions('?DealHeal@Unit@@')
 received=next(i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xb0)
 done=next(i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xb8)
-applied=next(i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and n['resolve'](x.operands[0].imm)==n['symbol']('?ModifyHealth@Unit@@'))
+from heal_application_release_check import check as check_heal_application
+applied=check_heal_application(n,instructions)
 assert received<done<applied
 assert len([x for x in instructions('?Update@Creature@@') if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x110])==2
 print('PASS selected Tuure ally factories: native final-scaled wound204237/Talk10, positive-heal pending/Reset and locked lifecycle0x110 with actual40pct recovery; native HealReceived/HealDone/application order retained. Initial Boros95pct/arrival and actual client spell/healing remain separate checks.')
