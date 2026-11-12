@@ -157,5 +157,6 @@
     "Haunt652/653 actual4-round230/state68/fake-death/return sequence,Dark Rebirth794/795 missing146/protected window/penalty796,Apocalypse,clone122/123/124 and other generic159 remain OPEN. Mixed metadata/observations and unique probes stay outside fixed.",
     "Living Lady activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer/mixed DBErrors,intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or killing timer."
   ],
-  "next": "Trace and implement the independently verifiable static species183 modifiers251/485/1673,including native initialization/reset and actual accuracy/crit/dodge/damage dispatch. Preserve uncertain global/team/periodic/resurrection producers as OPEN."
+  "next": "Trace and implement the independently verifiable static species183 modifiers251/485/1673,including native initialization/reset and actual accuracy/crit/dodge/damage dispatch. Preserve uncertain global/team/periodic/resurrection producers as OPEN.",
+  "fix_commit": "c04fcef56e7f464d19ede6068db5250b7fce0c13"
 }

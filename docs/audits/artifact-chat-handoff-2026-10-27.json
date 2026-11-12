@@ -1,4 +1,62 @@
 {
+  "latest_native_damage_threshold_repair_2026_11_12": {
+    "status": "NATIVE_IRON_THREAD_AND_MAGIC_SCALES_DAMAGE_THRESHOLDS_FIXED_DEPLOYED_CLIENT_PENDING",
+    "fix_commit": "c04fcef56e7f464d19ede6068db5250b7fce0c13",
+    "canonical": {
+      "worldserver.exe": "9eaa2715ac31aa536a18f95b2d9b250f4ef4f703a5ef1479cd585c0761cb4b1d",
+      "worldserver.map": "c6fab3c9095b7689efdd7f2bf3d04d90d4e7e7e3d4b65c45aaf971bc13a299d7",
+      "bnetserver.exe": "efbd94e690bb0a5565583ad75ce9b680166db2aae9db05089e93269ce763f99f",
+      "bnetserver.map": "97fe86c3d80a8369d37358fdc0586a63361bdc1f7b617f1d1d1ac062990f76e1"
+    },
+    "remaining": [
+      "Actual Stitches/Weebomination/Chromaddon encounters,passive UI,damage/immune presentation,real learned/World kits,client re-entry and all whole pet encounters remain pending.",
+      "Other9 species183 records/8 abilities:251,485,1377,1387,1586,1588,1673,1672 remain OPEN. Ominitron1595 still lacks an authentic producer;actual99878 team1817/1597 and1818/1670 force opponent high-health swaps through native145,not an observed1595 activation. Both species have native17/20 states and no183. No invented binding added.",
+      "Haunt652/653 actual4-round230/state68/fake-death/return sequence,Dark Rebirth794/795 missing146/protected window/penalty796,Apocalypse,clone122/123/124 and other generic159 remain OPEN. Mixed metadata/observations and unique probes stay outside fixed.",
+      "Living Lady activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer/mixed DBErrors,intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or killing timer."
+    ],
+    "next": "Trace and implement the independently verifiable static species183 modifiers251/485/1673,including native initialization/reset and actual accuracy/crit/dodge/damage dispatch. Preserve uncertain global/team/periodic/resurrection producers as OPEN.",
+    "audit": "docs/audits/pet-damage-threshold-2026-11-12.json",
+    "checks": {
+      "native": "78 counted native cases in12 groups: real AddPet/Begin/read-only native species initialization on both teams; three values around each threshold; ignored attacks preserve finite block and damage/death receipts; misses retain cause; actual outgoing/returning swaps without transfer/stacking; periodic/unavoidable damage; ordinary species; native451/758 payment-row Damage path; actual re-AddPet reset; actual CalculateDamage type-modified input; selected native110 through complete ProceedRound; ignored lethal/scaled one-hit without consuming racial. Memory-only actors and controlled assigned kits,no character writes or client certification.",
+      "control": "Complete pinned8d96b12a0 PetBattle.cpp+PetBattleAbilityEffect.cpp fails exact native initialization assertion exit1; fixed78 execute and pass. Six older actual threshold observations paired and archived after deployment.",
+      "retained": "48 Roboflauge,24 Frenzy,144 percentage variance/all63 rows,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 PE scopes,complete retained pet proof chain,new threshold native-state write/strict branches/early return and unchanged writer PE pass. Historical106 is still tied to cdca; no fresh106 claim.",
+      "runtime": "Owned canonical PID21868 reached fresh ready,shutdown0,exit0,gone;stderr empty. Scepter -VerifyReleaseBinary passes. Current bnet .text equals verified preceding rollback .text byte-for-byte; new whole-file hash comes from relinking. No separate new bnet startup claim.",
+      "diagnostics": "Formal native/build/PE/deployment/startup/Scepter/cleanup runs retain canonical and own pre/post crash/log records. No new/changed crash or appended DBErrors/unexplained server warnings/errors/assertions. Existing C4018 in unchanged generic target-team loop is also present in prior Roboflauge build; retained Scepter C4244/C4389 fixture warnings are unchanged.",
+      "helper_repairs": "First full100 helper extraction failed before native dispatch because this shell omitted PYTHONUTF8=1; original failed output retained,explicit UTF8 rerun succeeds through both full suites. First cleanup selected similarly named fixed-*.log files instead of directories and failed hashing an archive directory before any deletion. Corrected is_dir filtering and explicit directory validation;first diagnostic Completed=false is preserved. One byte-identical historical Discharge log copy is retained and explicitly manifested. Corrected archive/copy/delete checks pass. No production crash is inferred from either helper error.",
+      "packet": "Round writer/sender source unchanged; current writer PE passes. Prior nine-sender18-packet extracted-source ASAN is retained as historical wire coverage. This does not establish full native-core ASAN or actual client rendering."
+    },
+    "cleanup": {
+      "status": "PASS",
+      "native_threshold_cases": 78,
+      "retained_native_cases": [
+        48,
+        24,
+        144,
+        28,
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "9eaa2715ac31aa536a18f95b2d9b250f4ef4f703a5ef1479cd585c0761cb4b1d",
+        "worldserver.map": "c6fab3c9095b7689efdd7f2bf3d04d90d4e7e7e3d4b65c45aaf971bc13a299d7",
+        "bnetserver.exe": "efbd94e690bb0a5565583ad75ce9b680166db2aae9db05089e93269ce763f99f",
+        "bnetserver.map": "97fe86c3d80a8369d37358fdc0586a63361bdc1f7b617f1d1d1ac062990f76e1"
+      },
+      "bnet_native_code_section_unchanged": true,
+      "archive_records": 522,
+      "removed": 64,
+      "removed_bytes": 731378070.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    }
+  },
   "latest_native_roboflauge_repair_2026_11_12": {
     "status": "ROBOFLAUGE_NATIVE_SPECIES183_TEAM_PASSIVE_FIXED_DEPLOYED_CLIENT_PENDING",
     "fix_commit": "8d96b12a091cb3cc499d08b180f631a2542a0abf",
