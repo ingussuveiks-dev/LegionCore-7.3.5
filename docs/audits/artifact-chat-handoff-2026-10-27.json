@@ -1,4 +1,36 @@
 {
+  "latest_native_cooldown_repair_2026_11_12": {
+    "status": "BEND_TIME_AND_EMPTY_ROUND_BITS_FIXED_DEPLOYED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
+    "fix_commits": {
+      "round_bits": "e51be539bcb18cacf3665d1ed59a75eff8ea3ff5",
+      "bend_time": "6ca2296649aa07862fddbbf67a60016ca0a1323a"
+    },
+    "audits": [
+      "docs/audits/pet-battle-round-bits-2026-11-12.json",
+      "docs/audits/pet-bend-time-2026-11-12.json"
+    ],
+    "canonical": {
+      "worldserver.exe": "9338a262825601ed6a2b1f1ba0816ab890657046003b484ee9de8c98f00ed596",
+      "worldserver.map": "30838799f5909798a498c077297d3be81f8e23a09fa307161dc32769b156c8fe",
+      "bnetserver.exe": "d94f6fa01f50743c0aabd65418157985803c655825ef86e402ef4b6b147d66a2",
+      "bnetserver.map": "0c51ae93f646d3d6ef3246c1db77ee8b1b23cfb2d9b98448c8b6a008abe0d367"
+    },
+    "checks": "26 actual native Bend Time cases plus complete pinned failing root control; current retained13/44/16 and two100 native suites; nine actual packet sender paths with nine ready0/idle-1 pairs and real writer/ByteBuffer ASAN; current Bend/retained pet/writer linked proofs; immutable106/106 canonical Release scopes; Scepter; owned PID18488 ready/shutdown0/exit0/gone. Final source snapshots and all source/tool/binary/archive/configuration/rollback/protected hashes verified. No new crash or unexplained appended server/DB failure.",
+    "cleanup": {
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/native-pet-cooldown-2026-11-12",
+      "ManifestSHA256": "DB0BB6D00C5F00EA66515C7A67C60AD7405DE8DD1766647379FB5E23C2CAA526",
+      "Archived": 627,
+      "Removed": 41,
+      "ReclaimedBytes": 728181361.0,
+      "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent f7fd/0f947/4c86/c6c5 rollback copies,regression sources and reusable tools. Resolved zero-accuracy research and packet-truncation controls archived with paired current passing native/wire regressions;unresolved Hourglass/shared-proc/Lady/LINK2 evidence stays outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+    },
+    "remaining": [
+      "Forbidden Hourglass1927/property230/controller1932/ROUND_END7 remains OPEN: eight actual native observations show lethal damage without its reset controller. Matching native tooltip limits reset recipients to other alive pets.",
+      "Dark Rebirth795/Cheat Death1907 round-end and other owner/death reactions, Haunt/Apocalypse, generic159, clone122/123/124, type229 and wider core health remain OPEN. Zero-accuracy pet1906 root admission is fixed; its later death reaction is not.",
+      "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2 and mixed DBErrors, original intermittent client handshake cause, all36 complete artifact chains and actual pet/quest/boost presentation remain OPEN."
+    ],
+    "next": "Continue scoped native Forbidden Hourglass full root/lethal receipt/1932 actual owner/other-living-roster cooldown/round-end/cleanup sequence, then other independently verifiable OPEN paths."
+  },
   "latest_native_unholy_repair_2026_11_12": {
     "status": "UNHOLY_ASCENSION_AND_PRIOR_RACIAL_FOUR_SACRIFICES_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
     "fix_commit": "6fb37efdd8dd453a2a9c27f1b83495b86cbdb4fb",

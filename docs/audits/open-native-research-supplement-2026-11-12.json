@@ -1,4 +1,16 @@
 {
+  "latest_bend_time_resolution_2026_11_12": {
+    "status": "BEND_TIME_AND_ZERO_ACCURACY_ADMISSION_FIXED_OTHER_PIPELINES_OPEN",
+    "fix_commits": {
+      "round_bits": "e51be539bcb18cacf3665d1ed59a75eff8ea3ff5",
+      "bend_time": "6ca2296649aa07862fddbbf67a60016ca0a1323a"
+    },
+    "audits": [
+      "docs/audits/pet-battle-round-bits-2026-11-12.json",
+      "docs/audits/pet-bend-time-2026-11-12.json"
+    ],
+    "supersedes": "Historical zero-accuracy observations are paired with current26 actual native cases and archived only after repair/deployment/regressions. Current1932 Hourglass observations and other unresolved death/proc evidence remain outside fixed. The missing empty-round death-count byte is a separately fixed defect, not evidence for the original login handshake cause."
+  },
   "latest_unholy_resolution_2026_11_12": {
     "status": "321_REPAIRED_NATIVE_AND_LINKED_CLIENT_PENDING",
     "fix_commit": "6fb37efdd8dd453a2a9c27f1b83495b86cbdb4fb",
