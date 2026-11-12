@@ -35,9 +35,9 @@ assert {('mov','edi, edx'),('mov','r8d, edx')}<=set(pairs(trigger[:event]))
 assert {('mov','dword ptr [rsp + 0x30], 0xfffffffe'),('mov','dword ptr [rsp + 0x28], 0xffffffff'),
         ('mov','dword ptr [rsp + 0x20], 0xff'),('mov','r9d, 1'),('mov','edx, edi')}<=set(pairs(trigger[native_cast-8:native_cast]))
 # Actual slot/racial/turn/proc/death admission precedes the effect construction.
-assert {('mov','r9d, r8d'),('mov','r12d, edx'),('cmp','r12d, 6'),('cmp','r11d, -2'),('lea','eax, [r8 - 0x2d3]'),('mov','r14d, 1'),('cmp','eax, r14d'),
-        ('cmp','ebx, r14d'),('cmp','esi, 0xff'),('cmp','dword ptr [r10 + 0x150], 0')}<=set(pairs(cast[:75]))
 select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@');execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@')
+assert {('mov','r9d, r8d'),('mov','r12d, edx'),('cmp','r12d, 6'),('cmp','r11d, -2'),('lea','eax, [r8 - 0x2d3]'),('mov','r14d, 1'),('cmp','eax, r14d'),
+        ('cmp','ebx, r14d'),('cmp','esi, 0xff'),('cmp','dword ptr [r10 + 0x150], 0')}<=set(pairs(cast[:select]))
 assert select<execute and pairs(cast[select-5:select-1])==[('movzx','eax, byte ptr [rsp + 0x43]'),('mov','byte ptr [rbp - 0x38], al'),('mov','dword ptr [rbp - 0x25], r11d'),('mov','byte ptr [rbp - 0x29], 0')]
 revive=ins('?HandleResurect@PetBattleAbilityEffect@@')
 hp,=sites(revive,'?SetHealth@PetBattleAbilityEffect@@');alive,=sites(revive,'?SetState@PetBattleAbilityEffect@@')

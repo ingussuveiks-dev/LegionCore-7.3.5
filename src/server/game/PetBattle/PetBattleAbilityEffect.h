@@ -107,6 +107,7 @@ struct PetBattleAbilityEffect
     bool HandleRemoveAura();
     bool HandleModState();
     bool HandlePositiveAura();
+    bool HandleDefensiveTypeAura();
     bool HandleHealState();
     bool HandleExtraAttackIfMoreFaster();
     bool HandleSplittedDamage();

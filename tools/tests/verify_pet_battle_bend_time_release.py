@@ -17,7 +17,7 @@ selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 assert {('mov','ecx, 0xf6'),('cmp','ax, cx'),('cmp','eax, 0x770'),('movsxd','rax, dword ptr [rbx + 0x4c]'),('cmp','eax, 5'),('mov','eax, dword ptr [rcx + 0x12c]'),('mov','edx, dword ptr [rdx + 0x70]')}<=set(pairs(selector))
 execute=ins('?Execute@PetBattleAbilityEffect@@');dispatch,=sites(execute,'?HandleBendTimeCooldown@PetBattleAbilityEffect@@')
 assert {('mov','eax, 0xf6'),('cmp','cx, ax'),('cmp','eax, 0x770'),('cmp','rax, 4'),('mov','dword ptr [rbx + 0x3c], eax')}<=set(pairs(execute[:dispatch]))
-assert {('cmp','ecx, 0x770'),('cmp','word ptr [rax + 6], 0x31'),('cmp','dword ptr [rbx + 0x4c], r8d')}<=set(pairs(execute[dispatch:])),'The actual holder cleanup must bypass hostile-target hit gating'
+assert {('cmp','eax, 0x770'),('cmp','word ptr [r8 + 6], 0x31'),('cmp','dword ptr [rbx + 0x4c], ecx')}<=set(pairs(execute[dispatch:])),'The actual holder cleanup must bypass hostile-target hit gating'
 cooldown=ins('?HandleBendTimeCooldown@PetBattleAbilityEffect@@')
 assert {('test','dword ptr [rcx + 0x44], 0x29a'),('movsxd','rax, dword ptr [rcx + 0x4c]'),('cmp','eax, 5'),('cmp','ecx, 6'),('cmp','ax, 2'),('cmp','word ptr [rcx + 0xa], 1'),('mov','r8d, dword ptr [rbx + 0x18]'),('cmp','ecx, 0x770'),('cmp','ecx, 0x78c'),('cmp','dword ptr [r8 + 8], eax'),('cmp','dword ptr [r11 + 0x70], eax'),('cmp','dword ptr [rbx + 0x3c], r10d'),('cmp','dword ptr [rdx + 0x12c], r9d'),('mov','eax, dword ptr [rdx + rcx*4 + 0x54]'),('cmp','dword ptr [rdx + r8*4 + 0x134], 1'),('mov','dword ptr [rdx + r8*4 + 0x134], 1')}<=set(pairs(cooldown))
 assert len(sites(cooldown,'?GetAura@PetBattleAbilityEffect@@'))==1

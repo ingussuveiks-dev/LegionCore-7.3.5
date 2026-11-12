@@ -252,7 +252,7 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 226 */{&PetBattleAbilityEffect::HandleDamageWithBonus,            PETBATTLE_TARGET_TARGET},
     /* EFFECT 227 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 228 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 229 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
+    /* EFFECT 229 */{&PetBattleAbilityEffect::HandleDefensiveTypeAura,          PETBATTLE_TARGET_NONE},
     /* EFFECT 230 */{&PetBattleAbilityEffect::HandleForbiddenHourglass,          PETBATTLE_TARGET_NONE},
     /* EFFECT 231 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 232 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
@@ -451,6 +451,10 @@ int32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)
 
     if (BattlePetSpeciesEntry const* targetSpeciesInfo = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Target]->Species))
         targetPetType = targetSpeciesInfo->PetTypeEnum;
+
+    int32 const defensiveType = GetState(Target, BATTLEPET_STATE_Special_TypeOverride);
+    if (defensiveType > 0 && defensiveType <= NUM_BATTLEPET_PETTYPES)
+        targetPetType = defensiveType - 1;
 
     int32 modPetTypeDamagePercent = -100;
 
@@ -788,6 +792,16 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 void PetBattleAbilityEffect::SelectTargets()
 {
     Targets.clear();
+    if (EffectInfo->BattlePetEffectPropertiesID == 229)
+    {
+        if (AbilityID == 476)
+            AddTarget(GetActiveOpponent());
+        else if (AbilityID == 574 || AbilityID == 820)
+            AddTarget(Caster);
+        else if (AbilityID == 1418 && AuraOwnerPetID >= 0 && AuraOwnerPetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS)
+            AddTarget(uint32(AuraOwnerPetID));
+        return;
+    }
     if (EffectInfo->BattlePetEffectPropertiesID == 230 && AbilityID == 1927)
     {
         Targets.push_back(Caster);
@@ -890,7 +904,8 @@ bool PetBattleAbilityEffect::Execute()
 
         bool const bendCleanup = (AbilityID == 1904 || AbilityID == 1932) && EffectInfo->BattlePetEffectPropertiesID == 49 && AuraOwnerPetID == int32(Target);
         bool const ownedRevival = AbilityID == 1907 && AuraOwnerPetID == int32(Target);
-        if (!bendCleanup && !ownedRevival && PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
+        bool const typeCleanup = (AbilityID == 820 || AbilityID == 1418) && EffectInfo->BattlePetEffectPropertiesID == 49 && AuraOwnerPetID == int32(Target);
+        if (!bendCleanup && !ownedRevival && !typeCleanup && PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
             Flags |= PETBATTLE_EVENT_FLAG_DODGE;
 
         auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();
@@ -1066,7 +1081,13 @@ bool PetBattleAbilityEffect::HandleHealLastHitTaken()
 
 bool PetBattleAbilityEffect::HandleRemoveAura()
 {
-    if (EffectInfo->Param[0])
+    bool const typeCleanup = AuraOwnerPetID == int32(Target) && EffectInfo->Param[0] == 100 &&
+        ((AbilityID == 820 && EffectInfo->ID == 2834) || (AbilityID == 1418 && EffectInfo->ID == 2837));
+    if (typeCleanup)
+        if (auto active = GetAura(Target, AbilityID))
+            if (active->CasterPetID == Caster)
+                return true;
+    if (EffectInfo->Param[0] && !typeCleanup)
         CalculateHit(EffectInfo->Param[0]);
     if (Flags & FailFlags)
         return false;
@@ -1076,7 +1097,13 @@ bool PetBattleAbilityEffect::HandleRemoveAura()
     std::vector<PetBattleAura*> selected;
     for (auto aura : PetBattleInstance->PetAuras)
         if (!aura->Expired && aura->TargetPetID == Target && aura->AbilityID == EffectInfo->AuraBattlePetAbilityID)
+        {
+            if (typeCleanup && (aura->CasterPetID != Caster ||
+                (AbilityID == 820 && aura->TriggerId != 2831 && aura->TriggerId != 2833) ||
+                (AbilityID == 1418 && aura->TriggerId != 2838 && aura->TriggerId != 2846)))
+                continue;
             selected.push_back(aura);
+        }
     for (auto aura : selected)
         aura->Expire(PetBattleInstance);
     return true;
@@ -1105,6 +1132,25 @@ bool PetBattleAbilityEffect::HandlePositiveAura()
         CalculateHit(EffectInfo->Param[1]);
 
     return AddAura(Target, EffectInfo->Param[2], 0);
+}
+
+bool PetBattleAbilityEffect::HandleDefensiveTypeAura()
+{
+    if ((Flags & FailFlags) || EffectInfo->Param[5] != BATTLEPET_STATE_Special_TypeOverride || EffectInfo->Param[4] ||
+        (EffectInfo->Param[0] && AbilityTurn->ChainFailure))
+        return false;
+    uint32 controller = 0;
+    if (AbilityID == 574 || AbilityID == 820)
+        controller = 820;
+    else if (AbilityID == 476 || AbilityID == 1418)
+        controller = 1418;
+    else
+        return false;
+    auto parent = GetAura(Target, controller);
+    if (!parent || parent->CasterPetID != Caster)
+        return false;
+    CalculateHit(EffectInfo->Param[1]);
+    return AddAura(Target, EffectInfo->Param[2], EffectInfo->Param[3]);
 }
 
 bool PetBattleAbilityEffect::HandlePetTypeAura()
@@ -1644,6 +1690,8 @@ bool PetBattleAbilityEffect::HandleHealStateToggleAura()
 
 bool PetBattleAbilityEffect::HandleResetState()
 {
+    if (EffectInfo->Param[0] == BATTLEPET_STATE_Special_TypeOverride)
+        return PetBattleInstance->RefreshPetTypeOverride(Caster, Target);
     return SetState(Target, EffectInfo->Param[0], 0);
 }
 

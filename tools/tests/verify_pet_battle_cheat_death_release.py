@@ -5,8 +5,8 @@ from capstone import CS_OP_IMM
 import hashlib,json,re
 verify()
 cast=ins('?Cast@PetBattle@@');select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@');execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@')
-assert {('cmp','r8d, 0x773'),('cmp','esi, 7'),('mov','byte ptr [rsp + 0x41], dil'),('cmp','byte ptr [r9 + 0x129], 0'),('cmp','byte ptr [r9 + 0x128], 0')}<=set(pairs(cast[:select])),'Actual issued1907 owner context rejects both captured flags before dispatch'
-assert {('mov','eax, dword ptr [rbp + 0x7f]'),('cmp','byte ptr [rsp + 0x41], 0'),('mov','dword ptr [rsp + 0x48], eax'),('lea','rax, [rsp + 0x48]')}<=set(pairs(cast[select:execute])),'Known1907 self rows use the actual holder, retaining the original source'
+assert {('cmp','r8d, 0x773'),('cmp','esi, 7'),('mov','byte ptr [rsp + 0x40], dil'),('cmp','byte ptr [r9 + 0x129], 0'),('cmp','byte ptr [r9 + 0x128], 0')}<=set(pairs(cast[:select])),'Actual issued1907 owner context rejects both captured flags before dispatch'
+assert {('mov','eax, dword ptr [rbp + 0x7f]'),('cmp','byte ptr [rsp + 0x40], 0'),('mov','dword ptr [rsp + 0x48], eax'),('lea','rax, [rsp + 0x48]')}<=set(pairs(cast[select:execute])),'Known1907 self rows use the actual holder, retaining the original source'
 process=ins('?Process@PetBattleAura@@');expire,=sites(process,'?Expire@PetBattleAura@@')
 assert {('cmp','r8d, 0x773'),('cmp','dword ptr [rcx + 0x1c], 0'),('cmp','dword ptr [rcx + 0x18], 0'),('cmp','dword ptr [rcx + 0x10], 1')}<=set(pairs(process[:expire]))
 gate=next(i for i,x in enumerate(process[:expire])if(x.mnemonic,x.op_str)==('cmp','dword ptr [rcx + 0x10], 1'))
@@ -17,7 +17,7 @@ end=next(i for i in calls if ('mov','dword ptr [rsp + 0x20], 7')in pairs(rounds[
 expire=next(i for i in sites(rounds,'?Expire@PetBattleAura@@')if i>end)
 assert {('cmp','byte ptr [rbx + 0x20], 0'),('cmp','dword ptr [rbx], 0x773'),('cmp','dword ptr [rbx + 0x1c], 0'),('cmp','dword ptr [rbx + 0x18], 0')}<=set(pairs(rounds[end:expire])),'Issued native0 controller expires even when its living check stops before removal'
 dispatch=ins('?Execute@PetBattleAbilityEffect@@')
-assert {('cmp','ecx, 0x773'),('cmp','dword ptr [rbx + 0x4c], r8d'),('test','al, al')}<=set(pairs(dispatch)),'Only the actual beneficial holder bypasses hostile-target gating'
+assert {('cmp','eax, 0x773'),('cmp','dword ptr [rbx + 0x4c], ecx'),('test','dl, dl')}<=set(pairs(dispatch)),'Only the actual beneficial holder bypasses hostile-target gating'
 revive=ins('?HandleResurect@PetBattleAbilityEffect@@');alive,=sites(revive,'?SetState@PetBattleAbilityEffect@@')
 assert {('cmp','dword ptr [rcx + 0x18], 0x773'),('cmp','dword ptr [rcx + 0x4c], eax'),('cmp','byte ptr [rdx + 0x129], 0'),('cmp','byte ptr [rdx + 0x128], 0')}<=set(pairs(revive[:alive]))
 symbols={}

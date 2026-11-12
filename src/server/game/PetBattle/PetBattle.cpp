@@ -562,6 +562,12 @@ void PetBattleAura::Apply(PetBattle* petBattle)
         int32 value = petBattle->Pets[TargetPetID]->States[stateID];
         if (!flags)
         {
+            if (stateID == BATTLEPET_STATE_Special_TypeOverride)
+            {
+                AppliedStates.emplace_back(stateID, v->Value);
+                petBattle->RefreshPetTypeOverride(CasterPetID, TargetPetID);
+                continue;
+            }
             value += v->Value;
             AppliedStates.emplace_back(stateID, v->Value);
         }
@@ -582,9 +588,15 @@ void PetBattleAura::Remove(PetBattle* petBattle)
         }))
         petBattle->WeatherAbilityId = 0;
 
+    bool refreshType = false;
     for (auto const& state : AppliedStates)
-        petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);
+        if (state.first == BATTLEPET_STATE_Special_TypeOverride)
+            refreshType = true;
+        else
+            petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);
     AppliedStates.clear();
+    if (refreshType)
+        petBattle->RefreshPetTypeOverride(CasterPetID, TargetPetID);
 
     UpdatePetBattleAuraMaxHealth(petBattle, this, oldMaximum);
 }
@@ -1144,6 +1156,15 @@ void PetBattle::ProceedRound()
 
     uint32 firstTeam = RoundFirstTeamCasting;
 
+    // Renew Rot's issued one-round mark before either team attacks.
+    std::vector<PetBattleAura*> rotStart;
+    for (auto aura : PetAuras)
+        if (!aura->Expired && aura->AbilityID == 1418)
+            rotStart.push_back(aura);
+    for (auto aura : rotStart)
+        if (!aura->Expired)
+            Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START, PETBATTLE_CAST_TRIGGER_ALL, aura->TargetPetID);
+
     Teams[firstTeam]->DoCasts(PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START);
     Teams[!firstTeam]->DoCasts(PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START);
 
@@ -1611,7 +1632,8 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     bool const bendSwap = abilityID == 1904 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN;
     bool const hourglassEnd = abilityID == 1932 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END;
     bool const cheatDeathEnd = abilityID == 1907 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END;
-    bool const ownedController = bendSwap || hourglassEnd || cheatDeathEnd;
+    bool const rotTypeStart = abilityID == 1418 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_START;
+    bool const ownedController = bendSwap || hourglassEnd || cheatDeathEnd || rotTypeStart;
     if (casterPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[casterPetID])
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (racialTrigger && ((abilityID != 723 && abilityID != 724) || p_Turn != 1 ||
@@ -1777,6 +1799,26 @@ bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID
     aura->Expired = false;
     PetAuras.push_back(aura);
     aura->Apply(this);
+    return true;
+}
+
+bool PetBattle::RefreshPetTypeOverride(uint32 sourcePetID, uint32 targetPetID)
+{
+    if (sourcePetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || targetPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS ||
+        !Pets[sourcePetID] || !Pets[targetPetID])
+        return false;
+    uint32 newest = 0;
+    int32 type = 0;
+    for (auto aura : PetAuras)
+        if (!aura->Expired && aura->TargetPetID == targetPetID && aura->ID > newest)
+            for (auto const& state : aura->AppliedStates)
+                if (state.first == BATTLEPET_STATE_Special_TypeOverride && state.second > 0 && state.second <= NUM_BATTLEPET_PETTYPES)
+                {
+                    newest = aura->ID;
+                    type = state.second;
+                }
+    // Native state124 is a categorical one-based type, not an additive stat.
+    SetPetState(sourcePetID, targetPetID, 0, BATTLEPET_STATE_Special_TypeOverride, type);
     return true;
 }
 

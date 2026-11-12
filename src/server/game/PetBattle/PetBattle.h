@@ -568,6 +568,7 @@ public:
 
     bool AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 p_MaxAllowed, uint32 fromAbilityEffectID, uint32 flags);
     void SetPetState(uint32 sourcePetID, uint32 targetPetID, uint32 fromAbilityEffectID, uint32 stateID, int32 value, bool fromCapture = false, uint32 flags = 0);
+    bool RefreshPetTypeOverride(uint32 sourcePetID, uint32 targetPetID);
     void Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, bool fromCapture = false, uint32 flags = 0);
     void Catch(int8 p_Catcher, int8 p_CatchedTarget, uint32 fromAbilityEffectID);
 

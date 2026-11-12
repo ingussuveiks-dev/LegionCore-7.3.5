@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "WARD_ROT_NATIVE_TYPE229_STATE124_DAMAGE_AND_LIFECYCLE_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "72e54ac8cce57458a1be91ad88619635d32f8c16",
+  "problem": "Nature\u2019s Ward574/820 and Rot476/1418 created their native controllers but property229 was unimplemented, so no defensive type mark was applied. Direct marks added categorical state124 values into invalid totals and damage ignored the state. Native reset124 could erase an unrelated live mark. Rot round-start renewal and owned cleanup were missing.",
+  "native_data": "Matching26972 read-only stores/Hotfix: Ward574 root2833/820 periodic2831 apply1417(Elemental7), Rot476 root2838/1418 round-start2846 apply968(Undead4). Native mark durations1, controller durations5; guaranteed cleanup2834/2837. State124 is Special_TypeOverride, one-based category. Retain actual native duration, accuracy, failed casts, parent ownership, source, holder, damage and racial data. No SQL/character data changed.",
+  "repair": "Register229 only for these four verified Ward/Rot roots/controllers. Require actual unexpired same-source parent before mark creation, preserve original holder on periodic/round-start processing, renew Rot before ordinary round actions. Store categorical applied receipts and rebuild bounded state124 from live actual-holder marks after apply/removal/reset. Damage uses the valid one-based override minus one for defensive family only. Original species, ability school and racial passives remain. Cleanup is native guaranteed100 for exact own expiry rows, retaining failure flags, and removes only original-source/producer marks; fresh same-source controller callbacks are preserved.",
+  "inference": "When different native type marks overlap, highest actual aura protocol ID selects the current category; removing it restores the surviving mark. This deterministic newest-applied policy is an implementation inference. Actual7.3.5 client overlap presentation/retail priority has not been independently established. Rebuilding state124 rather than blindly clearing unrelated live marks preserves their actual aura receipts.",
+  "tests": {
+    "native": "50 actual native cases on both teams in12 groups: roots, damage across four native marks, both overlap/removal orders, unrelated reset, legitimate-ready full rounds/expiry, guaranteed cleanup under negative accuracy/untargettable, original-source and producer receipts/fresh callbacks, reserve holders, unissued/stale contexts, Mechanical racial preservation, misses, death cleanup. Memory-only six pets with real native stores and callbacks; no character writes or mocked progression.",
+    "controls": "Three complete pinned72e54 PetBattle.cpp+PetBattleAbilityEffect.cpp counterfactuals each fail the exact roots/damage/overlap assertion with exit1; repaired50 pass. Expected-broken controls are not ordinary successful runs.",
+    "retained": "Current48/28/34/26/13/44/16 and both100 native suites pass. Both100 linked scopes, complete earlier pet proof chain, actual229 table pointer/recipient, bounded categorical receipts, actual damage consumer, Apply/inlined Remove/Reset and Rot round-start linked paths pass. Earlier register-location proof failures remain archived and are paired with passing current compiler-aware checks; existing CFG table-bounds proof is retained.",
+    "packets": "Nine actual native sender paths and18 cooldown packets pass with real7.3.5 BattleRound writer/ByteBuffer and extracted-sender ASAN. Full native-core ASAN and client traversal are not claimed.",
+    "runtime": "Canonical Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Owned worldserver PID13300 ready/shutdown0/exit0/gone with empty stderr; no user/unknown process stopped. Existing fixture C4244/C4389 compiler warnings retained.",
+    "certificate": "Previous immutable106/106 certificate applies to cdca Stench/Inebriate binary. This Ward/Rot binary has the listed focused and retained checks; a fresh full106 certificate is not claimed."
+  },
+  "canonical": {
+    "worldserver.exe": "1124b108d1349be022fdd7cd5b2906d532b5bb80bdc350f9ac16cc8e81934488",
+    "worldserver.map": "9773234d7df06f6d50a206802e86b9d8aeaa5c6144f6acdb93e47a1d311c76cb",
+    "bnetserver.exe": "8ecc2cd191f484d42af2171443b2a6d83641cdd2aedd61c0dd26bd0836ac948b",
+    "bnetserver.map": "9d5dce17f7e17973148f9aee7dad7e97596932849de98b3262e3de58fdc72d6d"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/fixed-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained100-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/retained-prior100-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/canonical-linked.log",
+      "sha256": "06cda2e3300a6b4ced714cc4af38e4ea94ac6a81d032efd35cc565b50b063d0c"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/hundred-linked-stage.log",
+      "sha256": "64ed02ac7fbb0e64999784bf4682467d5c471667ee3fd2f1dd634b20f1b9dc84"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/second-hundred-linked-stage.log",
+      "sha256": "abff48b9595918c458e788d0215cccb21657961aa34fb5c89b70f188079f3a83"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/writer-linked-stage.log",
+      "sha256": "f975f0624fce37f6dec9e46e3aa98b960c0fc380d4526fc530e372764e9ae628"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/round-packets-driver.log",
+      "sha256": "8a1d961d6379b7d9832bce4e02648d5f9ded2392fd338c390047c9e4caa43b48"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/startup-driver.log",
+      "sha256": "903e2cf9f524e33efa67c0aaa1344032d2d9d52d542dfe6352dae29faed126bb"
+    },
+    {
+      "path": ".codex/pet-ward-rot-open-2026-11-12/cleanup-driver.log",
+      "sha256": "a2b5368002a09dc30536cd0b7dc2f349658031af6286d6d4eb777d30205db5b9"
+    }
+  ],
+  "diagnostics": "Pre/post canonical and own crash/log inventories reviewed; no new/changed crashes, appended DBErrors or unexplained server warning/error/assertion. Mixed7111byte DBErrors remains unchanged. Slaghammer, mixed NPC type229/Dark Rebirth research and unique executables, configs/certificates/DLLs/shared data and recent rollback copies are preserved.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-ward-rot-2026-11-12",
+    "ManifestSHA256": "6DE91C615A0532115B727B02F59525CFBDFB7C6BC89AAD55759520F5B616DEE0",
+    "Archived": 493,
+    "Removed": 51,
+    "ReclaimedBytes": 753647235.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent per-issue rollback copies for pending client comparisons,regression sources and reusable tools. Resolved Ward/Rot50 cases, three pinned controls, retained native and linked checks archived. Historical106 remains tied to preceding cdca binary; no new full106 claim. Mixed Dark Rebirth795/state146 and type229 research, their unique executables and other shared-proc/Lady/LINK2 evidence remain outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_cases": 50,
+    "retained_native_cases": [
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "1124b108d1349be022fdd7cd5b2906d532b5bb80bdc350f9ac16cc8e81934488",
+      "worldserver.map": "9773234d7df06f6d50a206802e86b9d8aeaa5c6144f6acdb93e47a1d311c76cb",
+      "bnetserver.exe": "8ecc2cd191f484d42af2171443b2a6d83641cdd2aedd61c0dd26bd0836ac948b",
+      "bnetserver.map": "9d5dce17f7e17973148f9aee7dad7e97596932849de98b3262e3de58fdc72d6d"
+    },
+    "archive_records": 493,
+    "removed": 51,
+    "removed_bytes": 753647235.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Actual learned-kit battle UI, animation, family damage display and overlap priority require client confirmation.",
+    "NPC type229 producers1389 Roboflauge,1398 Feathered Frenzy,1595 Ominitron Swap and1717/1718 Discharge remain OPEN; they are not enabled by this scoped handler. Mixed14-observation research stays outside fixed.",
+    "Dark Rebirth794/795 state146/protected-window/penalty796, Haunt, Apocalypse, clone chains and generic159 roots remain OPEN.",
+    "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, LINK2/mixed DBErrors, original intermittent handshake cause and all36 whole artifact chains remain OPEN."
+  ],
+  "next": "Trace matching native NPC type229 producers through their actual owner/target/proc/expiry sequences; preserve Ward/Rot producer receipts and all unresolved evidence."
+}
