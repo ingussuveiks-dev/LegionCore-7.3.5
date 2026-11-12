@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "baseline": "6fb37efdd8dd453a2a9c27f1b83495b86cbdb4fb",
+  "canonical": {
+    "worldserver.exe": "9338a262825601ed6a2b1f1ba0816ab890657046003b484ee9de8c98f00ed596",
+    "worldserver.map": "30838799f5909798a498c077297d3be81f8e23a09fa307161dc32769b156c8fe",
+    "bnetserver.exe": "d94f6fa01f50743c0aabd65418157985803c655825ef86e402ef4b6b147d66a2",
+    "bnetserver.map": "0c51ae93f646d3d6ef3246c1db77ee8b1b23cfb2d9b98448c8b6a008abe0d367"
+  },
+  "build_scope": "The deployed binary contains both the independent empty-round writer repair and Bend Time implementation. Separate focused commits describe their own source changes; this combined immutable build is the one certified here. Original final-link libraries were used; no global OutDir override. No Unit/Creature/Player ABI change.",
+  "certificate": "docs/audits/pet-bend-time-2026-11-12/certificate-results.json",
+  "diagnostics": "Pre/post canonical and per-test crash/log inventories reviewed. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Owned canonical PID18488 reached ready, graceful shutdown0, exit0 and gone; stderr empty. No user/unknown server stopped. Mixed7111byte DBErrors and original Slaghammer cache preserved. Configuration, certificates and DLL hashes unchanged.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/native-pet-cooldown-2026-11-12",
+    "ManifestSHA256": "DB0BB6D00C5F00EA66515C7A67C60AD7405DE8DD1766647379FB5E23C2CAA526",
+    "Archived": 627,
+    "Removed": 41,
+    "ReclaimedBytes": 728181361.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent f7fd/0f947/4c86/c6c5 rollback copies,regression sources and reusable tools. Resolved zero-accuracy research and packet-truncation controls archived with paired current passing native/wire regressions;unresolved Hourglass/shared-proc/Lady/LINK2 evidence stays outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "remaining": [
+    "Forbidden Hourglass1927/property230/controller1932/ROUND_END7, other death and owner proc paths, Haunt/Apocalypse, generic159, clone122/123/124 and type229 remain OPEN.",
+    "Actual pet PvE/PvP UI, animations and battle log require client checks. Extracted sender ASAN is not full-core ASAN.",
+    "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2, original intermittent client handshake cause and all36 complete artifact chains remain OPEN. Pet ability1906 is a separate namespace."
+  ],
+  "status": "BEND_TIME_NATIVE_ROOT_SWAP_COOLDOWNS_CLEANUP_FIXED_DEPLOYED_CLIENT_PENDING",
+  "problem": "Native1905 zero-accuracy aura admission failed;1904 swap rows property246 were unsupported, had no actual stored-owner recipient context and could not perform the authored cooldown and owner cleanup sequence.",
+  "native_data": "Matching26972/read-only Hotfix:1905 effect3447 property26 accuracy0 ->1904 duration2;1904 event10 turn0 has3449/3450/3451 property246 learned slots1/2/3 modification1 and3492 property49 remove1904 accuracy0. Cooldown1 is intentional: ordinary end-round decrement emits ready0; prematurely assigning0 would decrement to omitted-1.",
+  "repair": "Use actual bounded matching aura source/holder and changed owner-team front for the scoped1904 swap. Preserve original stored caster. Dispatch246 only for1904 to the actual incoming teammate; modify learned nonzero cooldowns above1 to1 and retain ready/unlearned/lockdowns. Require a real unexpired matching aura. Cleanup only actual holder, including foreign stored source/untargetable holder. Retain1904 on holder death for forced replacement while ordinary Poison379 expiry stays native. Zero accuracy on positive-aura/removal is the native no-hit-roll sentinel; nonzero accuracy and existing failures remain. Owner context reuses tail padding, effect size0x50 unchanged.",
+  "tests": {
+    "native": "26 actual linked native cases, both teams, eight groups: zero/-100 accuracy root and nonzero failure control; own/enemy/repeated swaps; invalid/locked/dead/missing fronts and forged owner/source; holder death/forced replacement with ordinary Poison expiry; learned/ready/unlearned/lockdown cooldowns and end-round1->0; finite expiry/idempotence; two full ProceedRound sequences; foreign stored source and untargetable holder. Memory-only six-pet teams, read-only Hotfix, no character/login/save or endpoint mocks. Pet1906 root admission checked; its later death reaction remains OPEN.",
+    "counterfactual": "Complete pinned6fb37efdd PetBattle.cpp plus PetBattleAbilityEffect.cpp root case fails exact native1905 aura assertion, exit1; repaired26 exit0.",
+    "retained": "Current13 racial,44 four-sacrifice,16 Unholy and both100 native suites passed on the Bend candidate; subsequent packet-only build changes no pet implementation. Current combined binary linked proofs retain those pet scopes.",
+    "linked": "Actual owner/context, swap, scoped single recipient, cooldown write, cleanup, death retention and accuracy-zero branches checked. Earlier Execute bound proof now checks CFG domination of every real indexed table read; known246 direct dispatch returns before the table. Compiler shape lookup failures are paired with corrected complete dataflow proof; diagnostics not disabled.",
+    "full106": "106/106 immutable canonical Release certificate passes; Scepter binary regression and controlled canonical startup pass."
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/fixed-padding-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/retained-racial-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/retained100-driver.log",
+      "sha256": "71f16005ac8c5c9385f3211ec7bedfffbc5ea3e2704e4eb2f7b03d929a2771e2"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/retained-prior100-driver.log",
+      "sha256": "cca247403741428426eebd5ab3ba6616075c482505d60f5a4172b83e5015563f"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/canonical-bend.log",
+      "sha256": "e084f56ebc26252718bf6e0a5f3e7de5134947630f6efb272a3b0f04eba80d27"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/canonical-packet.log",
+      "sha256": "775395c6e733764cede557b76ef3a23f623ba5836aaf9f65120db827ded74955"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/round-packets-fixed-driver.log",
+      "sha256": "8a1d961d6379b7d9832bce4e02648d5f9ded2392fd338c390047c9e4caa43b48"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/startup-driver.log",
+      "sha256": "fe59fd660b841d47448b08d054547201600df617fc0d3995c126d673c8f36dfa"
+    },
+    {
+      "path": ".codex/pet-cooldown-open-2026-11-12/baseline-root-driver.log",
+      "sha256": "680d766c17eb472a4378cfdebae12f7babd9a63409e1098d837828799dd3de5f"
+    }
+  ]
+}

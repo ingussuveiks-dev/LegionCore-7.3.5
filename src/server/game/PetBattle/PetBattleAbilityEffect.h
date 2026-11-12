@@ -63,6 +63,7 @@ struct PetBattleAbilityEffect
     bool StopChain;
     uint32 Flags;
     bool ReportFailAsImmune;
+    int32 AuraOwnerPetID = -1;
 
     uint32 GetActiveOpponent();
     bool AddTarget(uint32 target);
@@ -135,6 +136,7 @@ struct PetBattleAbilityEffect
     bool HandleInitialization();
     bool HandleResurect();
     bool HandleKill();
+    bool HandleBendTimeCooldown();
     bool HandleDamageToggleAura();
     bool HandleHealStateToggleAura();
     bool HandleResetState();

@@ -788,6 +788,12 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 void PetBattleAbilityEffect::SelectTargets()
 {
     Targets.clear();
+    if (EffectInfo->BattlePetEffectPropertiesID == 246 && AbilityID == 1904)
+    {
+        if (AuraOwnerPetID >= 0 && AuraOwnerPetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS && PetBattleInstance->Pets[AuraOwnerPetID])
+            AddTarget(PetBattleInstance->Teams[PetBattleInstance->Pets[AuraOwnerPetID]->TeamID]->ActivePetID);
+        return;
+    }
     if (EffectInfo->BattlePetEffectPropertiesID == 68 && (AbilityID == 282 || AbilityID == 663 || AbilityID == 836))
     {
         AddTarget(GetActiveOpponent());
@@ -823,6 +829,17 @@ void PetBattleAbilityEffect::SelectTargets()
 
 bool PetBattleAbilityEffect::Execute()
 {
+    // These three native rows are outside the legacy table and address one
+    // actual incoming pet. All other unknown effects retain the diagnostics.
+    if (EffectInfo->BattlePetEffectPropertiesID == 246 && AbilityID == 1904)
+    {
+        if (Targets.size() != 1)
+            return false;
+        Target = Targets.front();
+        Flags = 0;
+        StopChain = false;
+        return HandleBendTimeCooldown();
+    }
     if (EffectInfo->BattlePetEffectPropertiesID >= MAX_PETBATTLE_EFFECT_TYPES ||
         !Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)
         return false;
@@ -838,7 +855,8 @@ bool PetBattleAbilityEffect::Execute()
         Target = target;
         Flags = 0;
 
-        if (PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
+        bool const bendCleanup = AbilityID == 1904 && EffectInfo->BattlePetEffectPropertiesID == 49 && AuraOwnerPetID == int32(Target);
+        if (!bendCleanup && PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
             Flags |= PETBATTLE_EVENT_FLAG_DODGE;
 
         auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();
@@ -1014,7 +1032,8 @@ bool PetBattleAbilityEffect::HandleHealLastHitTaken()
 
 bool PetBattleAbilityEffect::HandleRemoveAura()
 {
-    CalculateHit(EffectInfo->Param[0]);
+    if (EffectInfo->Param[0])
+        CalculateHit(EffectInfo->Param[0]);
     if (Flags & FailFlags)
         return false;
 
@@ -1048,7 +1067,8 @@ bool PetBattleAbilityEffect::HandleModState()
 
 bool PetBattleAbilityEffect::HandlePositiveAura()
 {
-    CalculateHit(EffectInfo->Param[1]);
+    if (EffectInfo->Param[1])
+        CalculateHit(EffectInfo->Param[1]);
 
     return AddAura(Target, EffectInfo->Param[2], 0);
 }
@@ -1507,6 +1527,24 @@ bool PetBattleAbilityEffect::HandleKill()
         Kill(Caster);
 
     return !(Flags & FailFlags);
+}
+
+bool PetBattleAbilityEffect::HandleBendTimeCooldown()
+{
+    if ((Flags & FailFlags) || AuraOwnerPetID < 0 || AuraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS ||
+        Target >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !PetBattleInstance->Pets[AuraOwnerPetID] || !PetBattleInstance->Pets[Target] ||
+        !PetBattleInstance->Pets[Target]->IsAlive() || EffectInfo->Param[0] < 1 || EffectInfo->Param[0] > MAX_PETBATTLE_ABILITIES || EffectInfo->Param[1] != 1)
+        return false;
+    auto aura = GetAura(AuraOwnerPetID, 1904);
+    auto pet = PetBattleInstance->Pets[Target];
+    auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[AuraOwnerPetID]->TeamID];
+    if (!aura || aura->CasterPetID != Caster || team->ActivePetID != Target || Target == uint32(AuraOwnerPetID) ||
+        pet->TeamID != PetBattleInstance->Pets[AuraOwnerPetID]->TeamID)
+        return false;
+    uint32 slot = EffectInfo->Param[0] - 1;
+    if (pet->Abilities[slot] && sBattlePetAbilityStore.LookupEntry(pet->Abilities[slot]) && pet->Cooldowns[slot] > 1)
+        pet->Cooldowns[slot] = 1; // Native end-round decrement emits the ready0 update.
+    return true;
 }
 
 bool PetBattleAbilityEffect::HandleDamageToggleAura()

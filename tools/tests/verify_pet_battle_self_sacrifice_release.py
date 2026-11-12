@@ -29,9 +29,10 @@ failed=next(i for i,x in enumerate(body)if(x.mnemonic,x.op_str)==('test','dword 
 branch=body[failed+2];assert branch.mnemonic=='jne'
 assert body[kill].address not in reaches(body,branch.operands[0].imm)
 cast=ins('?Cast@PetBattle@@')
-assert {282,663,836,1025}<=values(cast[:110])
-assert {('mov','byte ptr [rsp + 0x40], 1'),('cmp','r12d, 0xff'),('cmp','ebx, 1'),('cmp','dword ptr [r8 + 0x150], r9d')}<=set(pairs(cast[:110]))
+select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@')
+assert {282,663,836,1025}<=values(cast[:select])
+assert {('mov','byte ptr [rbp + 0x7f], 1'),('cmp','edi, 0xff'),('cmp','ebx, 1'),('cmp','dword ptr [r9 + 0x150], r10d')}<=set(pairs(cast[:select]))
 execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@');flow=cast[execute:execute+52]
-assert {('movzx','r8d, byte ptr [rsp + 0x40]'),('cmp','ax, 0x18'),('cmp','ax, 0x44'),('cmp','byte ptr [rbp - 0x31], 0'),('test','r8b, r8b'),('cmp','dword ptr [rax + 0x84], 3')}<=set(pairs(flow))
+assert {('movzx','r9d, byte ptr [rbp + 0x7f]'),('cmp','ax, 0x18'),('cmp','ax, 0x44'),('cmp','byte ptr [rbp - 0x31], 0'),('test','r9b, r9b'),('cmp','dword ptr [r11 + 0x84], 3')}<=set(pairs(flow))
 print('PASS actual linked four-sacrifice enemy/roster admission, no second power scaling, user-only terminal/native immunity/282+1025Failsafe prohibition and scoped lethal-row continuation; retained native racial proof also passes')
 print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'abilities':[282,663,836,1025],'actual_native_cases':44}))

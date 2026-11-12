@@ -1516,7 +1516,15 @@ void PetBattle::SwapPet(uint32 teamID, int32 newFrontPetID, bool initial)
     if (petChanged)
         for (auto& aura : PetAuras)
             if (!aura->Expired)
-                Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL);
+            {
+                if (aura->AbilityID == 1904)
+                {
+                    if (aura->TargetPetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS && Pets[aura->TargetPetID] && Pets[aura->TargetPetID]->TeamID == teamID)
+                        Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL, aura->TargetPetID);
+                }
+                else
+                    Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN, PETBATTLE_CAST_TRIGGER_ALL);
+            }
 
     Teams[teamID]->ActiveAbilityId = 0;
     Teams[teamID]->activeAbilityTurn = 0;
@@ -1581,6 +1589,7 @@ void PetBattle::PrepareCast(uint32 teamID, uint32 abilityID)
 PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32 p_Turn, uint32 p_Turn0ProcCondition, uint32 p_TriggerFlag, int32 auraOwnerPetID)
 {
     bool const racialTrigger = auraOwnerPetID == PETBATTLE_RACIAL_TRIGGER;
+    bool const bendSwap = abilityID == 1904 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN;
     if (casterPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[casterPetID])
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (racialTrigger && ((abilityID != 723 && abilityID != 724) || p_Turn != 1 ||
@@ -1588,8 +1597,21 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (auraOwnerPetID != PETBATTLE_NULL_SLOT && !racialTrigger &&
         (auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] || p_Turn != 0 ||
-            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED)))
+            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED && !bendSwap)))
         return PETBATTLE_CAST_INTERNAL_ERROR;
+
+    if (bendSwap)
+    {
+        if (p_Turn != 0 || auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] ||
+            Teams[Pets[auraOwnerPetID]->TeamID]->ActivePetID == auraOwnerPetID)
+            return PETBATTLE_CAST_INTERNAL_ERROR;
+        bool ownedAura = false;
+        for (auto aura : PetAuras)
+            if (!aura->Expired && aura->AbilityID == 1904 && aura->CasterPetID == casterPetID && aura->TargetPetID == auraOwnerPetID)
+                ownedAura = true;
+        if (!ownedAura)
+            return PETBATTLE_CAST_INTERNAL_ERROR;
+    }
 
     if (!Pets[casterPetID])
         return PETBATTLE_CAST_INTERNAL_ERROR;
@@ -1641,6 +1663,7 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             abilityEffect.AbilityID = abilityID;
             abilityEffect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;
             abilityEffect.AllowDeadCaster = racialTrigger;
+            abilityEffect.AuraOwnerPetID = auraOwnerPetID;
             abilityEffect.ReportFailAsImmune = false;
             abilityEffect.SelectTargets();
             // A proc's remove-aura row names the aura owner, which may differ
@@ -1762,8 +1785,10 @@ void PetBattle::Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, b
         Teams[Pets[target]->TeamID]->activeAbilityTurnMax = 0;
     }
 
+    // Bend Time addresses the next incoming teammate, including a forced
+    // replacement after its holder dies. Other death cleanup stays native.
     for (auto& aura : PetAuras)
-        if (aura->TargetPetID == target)
+        if (aura->TargetPetID == target && aura->AbilityID != 1904)
             aura->Expire(this);
 
     // TC_LOG_DEBUG("battlepet", "PetBattle::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
