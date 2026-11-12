@@ -7,7 +7,7 @@ out=Path(sys.argv[1]);mode=sys.argv[2];require_fixed();out.mkdir(parents=True,ex
 def src(path):
  if mode=='baseline':return subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['batch_baselines']['6']+':'+path]).decode('utf-8-sig',errors='surrogateescape').replace('\r\n','\n')
  return(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape')
-pb=src('src/server/game/PetBattle/PetBattle.cpp');pe=src('src/server/game/PetBattle/PetBattleAbilityEffect.cpp');h=(ROOT/'src/server/game/PetBattle/PetBattle.h').read_text();eh=(ROOT/'src/server/game/PetBattle/PetBattleAbilityEffect.h').read_text()
+pb=src('src/server/game/PetBattle/PetBattle.cpp');pe=src('src/server/game/PetBattle/PetBattleAbilityEffect.cpp');h=src('src/server/game/PetBattle/PetBattle.h');eh=src('src/server/game/PetBattle/PetBattleAbilityEffect.h')
 enums=[]
 for text in [h,eh]:
  for m in re.finditer(r'(?m)^enum(?: class)? (\w+)',text):enums.append(block(text[m.start():],r'enum(?: class)? '+m[1]+r'\b')+';')

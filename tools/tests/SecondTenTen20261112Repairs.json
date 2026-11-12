@@ -1248,6 +1248,242 @@
           "new": "bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 maxAllowed, uint32 fromAbilityEffectID, uint32 flags)\n{\n    if (!maxAllowed)\n        maxAllowed = 1;\n    int32 count = 0;\n    uint32 existingSlot = 0;\n    for (auto aura : PetAuras)\n        if (!aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)\n        {\n            ++count;\n            if (!existingSlot)\n                existingSlot = aura->ID;\n        }\n    if (!flags && count >= maxAllowed)\n    {\n        int32 remove = 1 + count - maxAllowed;\n        for (auto aura : PetAuras)\n            if (remove > 0 && !aura->Expired && aura->AbilityID == abilityID && aura->TargetPetID == targetPetID)\n            {\n                aura->Expire(this);\n                --remove;\n            }\n    }\n    // Expiration callbacks may themselves add auras. Allocate after they finish,\n    // and give every live instance its own protocol identity.\n    uint32 slot = 1;\n    for (auto aura : PetAuras)\n        slot = std::max(slot, aura->ID + 1);\n    if (flags && existingSlot)\n        slot = existingSlot;\n    PetBattleEvent event(flags && existingSlot ? PETBATTLE_EVENT_BUFF_CHANGE : PETBATTLE_EVENT_BUFF_APPLY, casterPetID, flags, fromAbilityEffectID, RoundTurn++, 0, 1);\n    event.UpdateBuff(targetPetID, slot, abilityID, duration, 0);\n    RoundEvents.push_back(event);\n    if (flags)\n        return false;\n    auto aura = new PetBattleAura();\n    aura->AbilityID = abilityID;\n    aura->TriggerId = fromAbilityEffectID;\n    aura->CasterPetID = casterPetID;\n    aura->Duration = duration;\n    aura->MaxDuration = duration;\n    aura->Turn = 1;\n    aura->TargetPetID = targetPetID;\n    aura->ID = slot;\n    aura->Expired = false;\n    PetAuras.push_back(aura);\n    aura->Apply(this);\n    return true;\n}"
         }
       ]
+    },
+    {
+      "key": "PetChargedAttackLifetime",
+      "title": "Retain undated native charged attacks until their second activation",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "HandleDamageToggleAura"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleDamageToggleAura()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    if (Flags & FailFlags)\n        return SetHealth(Target, GetHealth(Target));\n\n    if (PetBattleAura* aura = GetAura(Caster, EffectInfo->AuraBattlePetAbilityID))\n    {\n        aura->Expire(PetBattleInstance);\n\n        // Damage\n        return Damage(Target, CalculateDamage(EffectInfo->Param[0]));\n    }\n    // No aura, add it\n    return AddAura(Caster, EffectInfo->Param[2], 0);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleDamageToggleAura()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    if (Flags & FailFlags)\n        return SetHealth(Target, GetHealth(Target));\n\n    if (PetBattleAura* aura = GetAura(Caster, EffectInfo->AuraBattlePetAbilityID))\n    {\n        aura->Expire(PetBattleInstance);\n\n        // Damage\n        return Damage(Target, CalculateDamage(EffectInfo->Param[0]));\n    }\n    // No aura, add it\n    return AddAura(Caster, EffectInfo->BattlePetEffectPropertiesID == 77 ? EffectInfo->Param[2] : -1, 0);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetStockpileLifetime",
+      "title": "Retain Stockpile and apply its authored percentage health until the reserve is consumed",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "methods": [
+        "HandleHealToggleAura",
+        "Apply"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleHealToggleAura()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    if (Flags & FailFlags)\n        return SetHealth(Target, GetHealth(Target));\n\n    if (PetBattleAura* aura = GetAura(Target, EffectInfo->AuraBattlePetAbilityID))\n    {\n        aura->Expire(PetBattleInstance);\n\n        // Heal\n        return Heal(Target, CalculateHeal(EffectInfo->Param[0]));\n    }\n    // No aura, add it\n    return AddAura(Target, EffectInfo->Param[2], 0);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleHealToggleAura()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    if (Flags & FailFlags)\n        return SetHealth(Target, GetHealth(Target));\n\n    if (PetBattleAura* aura = GetAura(Target, EffectInfo->AuraBattlePetAbilityID))\n    {\n        aura->Expire(PetBattleInstance);\n\n        // Heal\n        return Heal(Target, CalculateHeal(EffectInfo->Param[0]));\n    }\n    // No aura, add it\n    return AddAura(Target, EffectInfo->Param[2] ? EffectInfo->Param[2] : -1, 0);\n}"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattleAura::Apply(PetBattle* petBattle)\n{\n    int32 oldMaximum = petBattle->Pets[TargetPetID]->GetMaxHealth();\n    AppliedStates.clear();\n    for (auto const& v : sBattlePetAbilityStateStore)\n    {\n        if (v->BattlePetAbilityID != AbilityID)\n            continue;\n\n        uint32 flags = 0;\n\n        // Passive: elemental\n        // TODO: add state flags for positive / negative\n        // FIXME: need more work; check weather ability, dont change state value on remove\n        if (petBattle->Pets[TargetPetID]->States[BATTLEPET_STATE_Passive_Elemental])\n        {\n            switch (v->BattlePetStateID)\n            {\n                case BATTLEPET_STATE_Mod_HealingTakenPercent:\n                case BATTLEPET_STATE_Stat_Accuracy:\n                    if (v->Value < 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                case BATTLEPET_STATE_Mechanic_IsBlind:\n                case BATTLEPET_STATE_Mechanic_IsChilled:\n                case BATTLEPET_STATE_Mechanic_IsBurning:\n                case BATTLEPET_STATE_swapOutLock:\n                    if (v->Value > 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n        int32 value = petBattle->Pets[TargetPetID]->States[v->BattlePetStateID];\n        if (!flags)\n        {\n            value += v->Value;\n            AppliedStates.emplace_back(v->BattlePetStateID, v->Value);\n        }\n\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, value, false, flags);\n    }\n\n    UpdatePetBattleAuraMaxHealth(petBattle, this, oldMaximum);\n}",
+          "new": "void PetBattleAura::Apply(PetBattle* petBattle)\n{\n    int32 oldMaximum = petBattle->Pets[TargetPetID]->GetMaxHealth();\n    AppliedStates.clear();\n    for (auto const& v : sBattlePetAbilityStateStore)\n    {\n        if (v->BattlePetAbilityID != AbilityID)\n            continue;\n\n        uint32 flags = 0;\n\n        // Passive: elemental\n        // TODO: add state flags for positive / negative\n        // FIXME: need more work; check weather ability, dont change state value on remove\n        if (petBattle->Pets[TargetPetID]->States[BATTLEPET_STATE_Passive_Elemental])\n        {\n            switch (v->BattlePetStateID)\n            {\n                case BATTLEPET_STATE_Mod_HealingTakenPercent:\n                case BATTLEPET_STATE_Stat_Accuracy:\n                    if (v->Value < 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                case BATTLEPET_STATE_Mechanic_IsBlind:\n                case BATTLEPET_STATE_Mechanic_IsChilled:\n                case BATTLEPET_STATE_Mechanic_IsBurning:\n                case BATTLEPET_STATE_swapOutLock:\n                    if (v->Value > 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n        // Stockpile290 authors a20-percent reserve. Its legacy aura289 uses\n        // state2 with value20, unlike Healthy577's hundredths-per-level value.\n        // Route only this reserve through the native percentage-health state.\n        uint32 stateID = AbilityID == 289 && v->BattlePetStateID == BATTLEPET_STATE_maxHealthBonus\n            ? BATTLEPET_STATE_Mod_MaxHealthPercent : v->BattlePetStateID;\n        int32 value = petBattle->Pets[TargetPetID]->States[stateID];\n        if (!flags)\n        {\n            value += v->Value;\n            AppliedStates.emplace_back(stateID, v->Value);\n        }\n\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, stateID, value, false, flags);\n    }\n\n    UpdatePetBattleAuraMaxHealth(petBattle, this, oldMaximum);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetPlantAccumulationLifecycle",
+      "title": "Retain Plant across rounds and heal from its bounded native nutrient counter",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "HandleHealStateToggleAura"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleHealStateToggleAura()\n{\n    if (PetBattleAura* aura = GetAura(Caster, EffectInfo->AuraBattlePetAbilityID))\n    {\n        aura->Expire(PetBattleInstance);\n\n        // Heal\n        int32 stateValue = std::min(GetState(Caster, EffectInfo->Param[1]), int32(EffectInfo->Param[2]));\n        int32 heal = EffectInfo->Param[0] + EffectInfo->Param[3] * stateValue;\n        return Heal(Target, CalculateHeal(heal));\n    }\n    // No aura, add it\n    return AddAura(Caster, 0, 0);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleHealStateToggleAura()\n{\n    if (PetBattleAura* aura = GetAura(Caster, EffectInfo->AuraBattlePetAbilityID))\n    {\n        // Capture the accumulated rounds before normal aura removal resets its states.\n        int32 stateValue = std::min(GetState(Caster, EffectInfo->Param[1]), int32(EffectInfo->Param[2]));\n        int32 heal = EffectInfo->Param[0] * stateValue;\n        aura->Expire(PetBattleInstance);\n        SetState(Caster, EffectInfo->Param[3], 0);\n        return Heal(Target, CalculateHeal(heal));\n    }\n    // No aura, add it\n    SetState(Caster, EffectInfo->Param[1], 0);\n    return AddAura(Caster, -1, 0);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetWallChargeLifetime",
+      "title": "Keep undated native walls alive until their two authored block charges are consumed",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "HandleRedirectionAura"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleRedirectionAura()\n{\n    if (EffectInfo->Param[0] && AbilityTurn->ChainFailure)\n        return false;\n\n    CalculateHit(EffectInfo->Param[1]);\n\n    // remove all wall auras\n    if (uint32 wallAuraId = GetState(Target, BATTLEPET_STATE_Special_ObjectRedirectionAuraID))\n        if (PetBattleAura* aura = GetAura(Target, wallAuraId))\n            aura->Expire(PetBattleInstance);\n\n    return AddAura(Target, 0, 0);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleRedirectionAura()\n{\n    if (EffectInfo->Param[0] && AbilityTurn->ChainFailure)\n        return false;\n\n    CalculateHit(EffectInfo->Param[1]);\n\n    if (Flags & FailFlags)\n        return AddAura(Target, -1, 0);\n\n    // remove all wall auras\n    if (uint32 wallAuraId = GetState(Target, BATTLEPET_STATE_Special_ObjectRedirectionAuraID))\n        if (PetBattleAura* aura = GetAura(Target, wallAuraId))\n            aura->Expire(PetBattleInstance);\n\n    return AddAura(Target, -1, 0);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetConditionalAdditionalDamage",
+      "title": "Gate native additional-damage rows on their actual caster and target states without doubling twice",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "HandleStateDamage"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleStateDamage()\n{\n    /// In some case, proc only if caster state Param[2] is on\n    if (EffectInfo->Param[2] != 0 && !GetState(Caster, EffectInfo->Param[2]))\n        return false;\n\n    if (EffectInfo->Param[4])\n        Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;\n\n    CalculateHit(EffectInfo->Param[1]);\n    int32 damage = CalculateDamage(EffectInfo->Param[0]);\n\n    /// Double base damage is the state in Prop[3] is on\n    if (EffectInfo->Param[3] != 0 && GetState(Target, EffectInfo->Param[3]) == 1)\n        damage *= 2;\n\n    return Damage(Target, damage);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleStateDamage()\n{\n    /// In some case, proc only if caster state Param[2] is on\n    if (EffectInfo->Param[2] != 0 && !GetState(Caster, EffectInfo->Param[2]))\n        return false;\n\n    if (EffectInfo->Param[3] && !GetState(Target, EffectInfo->Param[3]))\n        return false;\n\n    if (EffectInfo->Param[4])\n        Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;\n\n    CalculateHit(EffectInfo->Param[1]);\n    int32 damage = CalculateDamage(EffectInfo->Param[0]);\n\n    return Damage(Target, damage);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetPercentageDamagePower",
+      "title": "Keep maximum-health percentage damage independent of caster power",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.h",
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "CalculateDamage",
+        "HandleDamagePercent"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.h",
+          "old": "int32 CalculateDamage(int32 damage);",
+          "new": "int32 CalculateDamage(int32 damage, bool scaleWithPower = true);"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "int32 PetBattleAbilityEffect::CalculateDamage(int32 damage)\n{\n    /// Modifiers\n    damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);\n    damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);\n\n    /// Power\n    int32 modPct = CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5);\n\n    /// Mod Dealt / Taken\n    modPct += GetState(Caster, BATTLEPET_STATE_Mod_DamageDealtPercent);\n    modPct += GetState(Target, BATTLEPET_STATE_Mod_DamageTakenPercent);\n\n    /// Pet type damage mod\n    int32 abilityPetType = GetPetType();\n    uint32 targetPetType = BATTLEPET_PETTYPE_HUMANOID;\n\n    if (BattlePetSpeciesEntry const* targetSpeciesInfo = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Target]->Species))\n        targetPetType = targetSpeciesInfo->PetTypeEnum;\n\n    int32 modPetTypeDamagePercent = -100;\n\n    if (auto const& damageModInfo = sBattlePetTypeDamageModTable.GetRow(abilityPetType + 1))\n    {\n        switch (targetPetType)\n        {\n            case BATTLEPET_PETTYPE_HUMANOID:\n                modPetTypeDamagePercent += damageModInfo->Humanoid * 100;\n                break;\n            case BATTLEPET_PETTYPE_DRAGONKIN:\n                modPetTypeDamagePercent += damageModInfo->Dragonkin * 100;\n                break;\n            case BATTLEPET_PETTYPE_FLYING:\n                modPetTypeDamagePercent += damageModInfo->Flying * 100;\n                break;\n            case BATTLEPET_PETTYPE_UNDEAD:\n                modPetTypeDamagePercent += damageModInfo->Undead * 100;\n                break;\n            case BATTLEPET_PETTYPE_CRITTER:\n                modPetTypeDamagePercent += damageModInfo->Critter * 100;\n                break;\n            case BATTLEPET_PETTYPE_MAGIC:\n                modPetTypeDamagePercent += damageModInfo->Magic * 100;\n                break;\n            case BATTLEPET_PETTYPE_ELEMENTAL:\n                modPetTypeDamagePercent += damageModInfo->Elemental * 100;\n                break;\n            case BATTLEPET_PETTYPE_BEAST:\n                modPetTypeDamagePercent += damageModInfo->Beast * 100;\n                break;\n            case BATTLEPET_PETTYPE_AQUATIC:\n                modPetTypeDamagePercent += damageModInfo->Aquatic * 100;\n                break;\n            case BATTLEPET_PETTYPE_MECHANICAL:\n                modPetTypeDamagePercent += damageModInfo->Mechanical * 100;\n                break;\n            default:\n                break;\n        }\n    }\n\n    if (GetState(Caster, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Caster, BATTLEPET_STATE_Mod_PetTypeDamageDealtPercent);\n\n    if (GetState(Target, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Target, BATTLEPET_STATE_Mod_PetTypeDamageTakenPercent);\n\n    if (modPetTypeDamagePercent > 0)\n        Flags |= PETBATTLE_EVENT_FLAG_STRONG;\n    else if (modPetTypeDamagePercent < 0)\n        Flags |= PETBATTLE_EVENT_FLAG_WEAK;\n\n    // Critical\n    if (roll_chance_i(GetState(Caster, BATTLEPET_STATE_Stat_CritChance)))\n    {\n        modPct += 100;\n        Flags |= PETBATTLE_EVENT_FLAG_CRITICAL;\n    }\n\n    // Passive: beast\n    if (GetState(Caster, BATTLEPET_STATE_Passive_Beast))\n        if (GetHealth(Caster) * 100 / GetMaxHealth(Caster) < 50)\n            modPetTypeDamagePercent += 25;\n\n    // Calculate result\n    damage += int32(CalculatePct(damage, modPct));\n    damage += int32(CalculatePct(damage, modPetTypeDamagePercent));\n\n    // Passive: magic\n    if (GetState(Target, BATTLEPET_STATE_Passive_Magic))\n        if (damage * 100 / GetMaxHealth(Target) >= 35)\n            damage = CalculatePct(GetMaxHealth(Target), 35);\n\n    return damage;\n}",
+          "new": "int32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)\n{\n    /// Modifiers\n    damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);\n    damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);\n\n    /// Power\n    int32 modPct = scaleWithPower ? CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5) : 0;\n\n    /// Mod Dealt / Taken\n    modPct += GetState(Caster, BATTLEPET_STATE_Mod_DamageDealtPercent);\n    modPct += GetState(Target, BATTLEPET_STATE_Mod_DamageTakenPercent);\n\n    /// Pet type damage mod\n    int32 abilityPetType = GetPetType();\n    uint32 targetPetType = BATTLEPET_PETTYPE_HUMANOID;\n\n    if (BattlePetSpeciesEntry const* targetSpeciesInfo = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Target]->Species))\n        targetPetType = targetSpeciesInfo->PetTypeEnum;\n\n    int32 modPetTypeDamagePercent = -100;\n\n    if (auto const& damageModInfo = sBattlePetTypeDamageModTable.GetRow(abilityPetType + 1))\n    {\n        switch (targetPetType)\n        {\n            case BATTLEPET_PETTYPE_HUMANOID:\n                modPetTypeDamagePercent += damageModInfo->Humanoid * 100;\n                break;\n            case BATTLEPET_PETTYPE_DRAGONKIN:\n                modPetTypeDamagePercent += damageModInfo->Dragonkin * 100;\n                break;\n            case BATTLEPET_PETTYPE_FLYING:\n                modPetTypeDamagePercent += damageModInfo->Flying * 100;\n                break;\n            case BATTLEPET_PETTYPE_UNDEAD:\n                modPetTypeDamagePercent += damageModInfo->Undead * 100;\n                break;\n            case BATTLEPET_PETTYPE_CRITTER:\n                modPetTypeDamagePercent += damageModInfo->Critter * 100;\n                break;\n            case BATTLEPET_PETTYPE_MAGIC:\n                modPetTypeDamagePercent += damageModInfo->Magic * 100;\n                break;\n            case BATTLEPET_PETTYPE_ELEMENTAL:\n                modPetTypeDamagePercent += damageModInfo->Elemental * 100;\n                break;\n            case BATTLEPET_PETTYPE_BEAST:\n                modPetTypeDamagePercent += damageModInfo->Beast * 100;\n                break;\n            case BATTLEPET_PETTYPE_AQUATIC:\n                modPetTypeDamagePercent += damageModInfo->Aquatic * 100;\n                break;\n            case BATTLEPET_PETTYPE_MECHANICAL:\n                modPetTypeDamagePercent += damageModInfo->Mechanical * 100;\n                break;\n            default:\n                break;\n        }\n    }\n\n    if (GetState(Caster, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Caster, BATTLEPET_STATE_Mod_PetTypeDamageDealtPercent);\n\n    if (GetState(Target, BATTLEPET_STATE_Mod_PetType_ID) == abilityPetType)\n        modPetTypeDamagePercent += GetState(Target, BATTLEPET_STATE_Mod_PetTypeDamageTakenPercent);\n\n    if (modPetTypeDamagePercent > 0)\n        Flags |= PETBATTLE_EVENT_FLAG_STRONG;\n    else if (modPetTypeDamagePercent < 0)\n        Flags |= PETBATTLE_EVENT_FLAG_WEAK;\n\n    // Critical\n    if (roll_chance_i(GetState(Caster, BATTLEPET_STATE_Stat_CritChance)))\n    {\n        modPct += 100;\n        Flags |= PETBATTLE_EVENT_FLAG_CRITICAL;\n    }\n\n    // Passive: beast\n    if (GetState(Caster, BATTLEPET_STATE_Passive_Beast))\n        if (GetHealth(Caster) * 100 / GetMaxHealth(Caster) < 50)\n            modPetTypeDamagePercent += 25;\n\n    // Calculate result\n    damage += int32(CalculatePct(damage, modPct));\n    damage += int32(CalculatePct(damage, modPetTypeDamagePercent));\n\n    // Passive: magic\n    if (GetState(Target, BATTLEPET_STATE_Passive_Magic))\n        if (damage * 100 / GetMaxHealth(Target) >= 35)\n            damage = CalculatePct(GetMaxHealth(Target), 35);\n\n    return damage;\n}"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleDamagePercent()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    if (EffectInfo->Param[2])\n        Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;\n\n    int32 damage = CalculateDamage(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));\n    return Damage(Target, damage);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleDamagePercent()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    if (EffectInfo->Param[2])\n        Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;\n\n    int32 damage = CalculateDamage(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]), false);\n    return Damage(Target, damage);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetConsumeCorpseLifecycle",
+      "title": "Consume an eligible allied corpse once and heal its living user by the native percentage",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "methods": [
+        "HandleHealCasterPercentNotState",
+        "CanCast"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleHealCasterPercentNotState()\n{\n    if (EffectInfo->Param[2] && !GetState(Caster, EffectInfo->Param[2]))\n        return false;\n\n    if (EffectInfo->Param[3] && !GetState(Target, EffectInfo->Param[3]))\n        return false;\n\n    // It's caster who need to be heal\n    Target = Caster;\n\n    CalculateHit(EffectInfo->Param[1]);\n\n    int32 heal = CalculateHeal(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));\n    return Heal(Target, heal);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleHealCasterPercentNotState()\n{\n    if (EffectInfo->Param[2] && !GetState(Caster, EffectInfo->Param[2]))\n        return false;\n    auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];\n    for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)\n    {\n        auto corpse = team->TeamPets[slot];\n        if (!corpse || corpse->ID == Caster || corpse->IsAlive() || GetState(corpse->ID, EffectInfo->Param[3]))\n            continue;\n        Target = Caster;\n        CalculateHit(EffectInfo->Param[1]);\n        if (Flags & FailFlags)\n            return Heal(Caster, 0);\n        int32 heal = CalculatePct(GetMaxHealth(Caster), EffectInfo->Param[0]);\n        int32 modifier = GetState(Caster, BATTLEPET_STATE_Mod_HealingDealtPercent) + GetState(Caster, BATTLEPET_STATE_Mod_HealingTakenPercent);\n        Heal(Caster, heal + CalculatePct(heal, modifier));\n        return SetState(corpse->ID, EffectInfo->Param[3], 1);\n    }\n    return false;\n}"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "    /* EFFECT 144 */{nullptr,                                                         PETBATTLE_TARGET_NONE}, // Dummy select dead target",
+          "new": "    /* EFFECT 144 */{&PetBattleAbilityEffect::HandleDummy, PETBATTLE_TARGET_CASTER},"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "    /* EFFECT 61  */{&PetBattleAbilityEffect::HandleHealCasterPercentNotState,  PETBATTLE_TARGET_CASTER_TEAM_UNCONDITIONAL},",
+          "new": "    /* EFFECT 61 */{&PetBattleAbilityEffect::HandleHealCasterPercentNotState, PETBATTLE_TARGET_CASTER},"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "bool PetBattle::CanCast(uint32 teamID, uint32 abilityID)\n{\n    assert(teamID < MAX_PETBATTLE_TEAM);\n\n    auto team = Teams[teamID];\n    if (!team)\n        return false;\n\n    if (!team->CanCastAny())\n        return false;\n\n    if (!sBattlePetAbilityStore.LookupEntry(abilityID))\n        return false;\n\n    for (uint32 i = 0; i < MAX_PETBATTLE_ABILITIES; i++)\n        if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0 && Pets[team->ActivePetID]->Lockdowns[i] <= 0)\n            return true;\n\n    return false;\n}",
+          "new": "bool PetBattle::CanCast(uint32 teamID, uint32 abilityID)\n{\n    assert(teamID < MAX_PETBATTLE_TEAM);\n\n    auto team = Teams[teamID];\n    if (!team)\n        return false;\n\n    if (!team->CanCastAny())\n        return false;\n\n    if (!sBattlePetAbilityStore.LookupEntry(abilityID))\n        return false;\n\n    if (abilityID == 665)\n    {\n        bool available = false;\n        for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)\n        {\n            auto pet = team->TeamPets[slot];\n            if (pet && pet->ID != team->ActivePetID && !pet->IsAlive() && !pet->States[BATTLEPET_STATE_Special_ConsumedCorpse])\n                available = true;\n        }\n        if (!available)\n            return false;\n    }\n\n    for (uint32 i = 0; i < MAX_PETBATTLE_ABILITIES; i++)\n        if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0 && Pets[team->ActivePetID]->Lockdowns[i] <= 0)\n            return true;\n\n    return false;\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetBoundedStateRecovery",
+      "title": "Allow signed state recovery across an upper bound and stop positive accumulation at the native limit",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "HandleModState"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleModState()\n{\n    assert(EffectInfo->Param[0] < NUM_BATTLEPET_STATES);\n\n    /// Min check\n    if (EffectInfo->Param[2] && GetState(Caster, EffectInfo->Param[0]) < int16(EffectInfo->Param[2]))\n        return false;\n\n    /// Max check\n    if (EffectInfo->Param[3] && GetState(Caster, EffectInfo->Param[0]) > int16(EffectInfo->Param[3]))\n        return false;\n\n    ModState(Target, EffectInfo->Param[0], int16(EffectInfo->Param[1]));\n\n    return true;\n}",
+          "new": "bool PetBattleAbilityEffect::HandleModState()\n{\n    assert(EffectInfo->Param[0] < NUM_BATTLEPET_STATES);\n\n    /// Min check\n    if (int16(EffectInfo->Param[1]) < 0 && EffectInfo->Param[2] && GetState(Target, EffectInfo->Param[0]) <= int16(EffectInfo->Param[2]))\n        return false;\n\n    /// Max check\n    if (int16(EffectInfo->Param[1]) > 0 && EffectInfo->Param[3] && GetState(Target, EffectInfo->Param[0]) >= int16(EffectInfo->Param[3]))\n        return false;\n\n    ModState(Target, EffectInfo->Param[0], int16(EffectInfo->Param[1]));\n\n    return true;\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetDamageFeedbackPower",
+      "title": "Do not amplify already-recorded damage by caster power in Vengeance and Reflective Shield",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "methods": [
+        "HandleDamagePercentTaken"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleDamagePercentTaken()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    int32 damage = CalculateDamage(CalculatePct(GetState(Caster, BATTLEPET_STATE_Last_HitTaken), EffectInfo->Param[0]));\n    return Damage(Target, damage);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleDamagePercentTaken()\n{\n    CalculateHit(EffectInfo->Param[1]);\n\n    int32 damage = CalculateDamage(CalculatePct(GetState(Caster, BATTLEPET_STATE_Last_HitTaken), EffectInfo->Param[0]), false);\n    return Damage(Target, damage);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetSelfDuelAdmission",
+      "title": "Reject a pet duel whose two participants are the same player",
+      "batch": 7,
+      "kind": "native_pet_effect",
+      "test_baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleSystem.cpp"
+      ],
+      "methods": [
+        "CanPlayerEnterInPetBattle"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, PetBattleRequest* petBattleRequest)\n{\n    if (!player || !player->IsInWorld())\n        return PETBATTLE_REQUEST_CREATE_FAILED;\n\n    if (player->isDead())\n        return PETBATTLE_REQUEST_NOT_WHILE_DEAD;\n\n    // Player can't be already in battle\n    if (player->_petBattleId)\n        return PETBATTLE_REQUEST_IN_BATTLE;\n\n    if (petBattleRequest->OpponentGuid.IsPlayer())\n    {\n        if (auto player2 = ObjectAccessor::FindPlayer(petBattleRequest->OpponentGuid))\n        {\n            if (!player2->IsInWorld())\n                return PETBATTLE_REQUEST_TARGET_INVALID;\n            if (player2->isDead())\n                return PETBATTLE_REQUEST_NOT_WHILE_DEAD;\n            if (player2->isInCombat())\n                return PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT;\n            if (player2->_petBattleId)\n                return PETBATTLE_REQUEST_IN_BATTLE;\n\n            if (!player->IsWithinDist3d(player2, INTERACTION_DISTANCE))\n                return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;\n\n            if (!player->IsWithinLOSInMap(player2))\n                return PETBATTLE_REQUEST_NOT_HERE_OBSTRUCTED;\n        }\n        else\n            return PETBATTLE_REQUEST_TARGET_INVALID;\n    }\n    else if (petBattleRequest->OpponentGuid.IsCreature())\n    {\n        if (!player->GetNPCIfCanInteractWith(petBattleRequest->OpponentGuid, 0))\n            return PETBATTLE_REQUEST_TARGET_INVALID;\n\n        auto creature = sObjectAccessor->GetCreature(*player, petBattleRequest->OpponentGuid);\n        if (creature->_petBattleId)\n            return PETBATTLE_REQUEST_WILD_PET_TAPPED;\n\n        if (!player->IsWithinDist3d(creature, INTERACTION_DISTANCE))\n            return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;\n\n        if (!player->IsWithinLOSInMap(creature))\n            return PETBATTLE_REQUEST_NOT_HERE_OBSTRUCTED;\n    }\n\n    if (player->isInCombat())\n        return PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT;\n\n    // Check positions\n    for (const auto& itr : petBattleRequest->TeamPosition)\n        if (player->GetMap()->getObjectHitPos(player->GetPhases(), true, petBattleRequest->PetBattleCenterPosition, itr, 0.0f))\n            return PETBATTLE_REQUEST_NOT_HERE_UNEVEN_GROUND;\n\n    auto petSlots = player->GetBattlePetCombatTeam();\n    size_t playerPetCount = 0;\n    size_t playerDeadPetCount = 0;\n\n    for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n    {\n        if (!petSlots[i])\n            continue;\n\n        if (playerPetCount >= MAX_PETBATTLE_SLOTS || playerPetCount >= player->GetUnlockedPetBattleSlot())\n            break;\n\n        if (petSlots[i]->Health < 1)\n            playerDeadPetCount++;\n\n        ++playerPetCount;\n    }\n\n    if (!playerPetCount)\n        return PETBATTLE_REQUEST_NO_PETS_IN_SLOT;\n\n    if (playerPetCount == playerDeadPetCount)\n        return PETBATTLE_REQUEST_ALL_PETS_DEAD;\n\n    return PETBATTLE_REQUEST_OK;\n}",
+          "new": "eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, PetBattleRequest* petBattleRequest)\n{\n    if (!player || !player->IsInWorld())\n        return PETBATTLE_REQUEST_CREATE_FAILED;\n\n    if (player->isDead())\n        return PETBATTLE_REQUEST_NOT_WHILE_DEAD;\n\n    // Player can't be already in battle\n    if (player->_petBattleId)\n        return PETBATTLE_REQUEST_IN_BATTLE;\n\n    if (petBattleRequest->OpponentGuid.IsPlayer())\n    {\n        if (auto player2 = ObjectAccessor::FindPlayer(petBattleRequest->OpponentGuid))\n        {\n            if (player2 == player)\n                return PETBATTLE_REQUEST_TARGET_INVALID;\n            if (!player2->IsInWorld())\n                return PETBATTLE_REQUEST_TARGET_INVALID;\n            if (player2->isDead())\n                return PETBATTLE_REQUEST_NOT_WHILE_DEAD;\n            if (player2->isInCombat())\n                return PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT;\n            if (player2->_petBattleId)\n                return PETBATTLE_REQUEST_IN_BATTLE;\n\n            if (!player->IsWithinDist3d(player2, INTERACTION_DISTANCE))\n                return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;\n\n            if (!player->IsWithinLOSInMap(player2))\n                return PETBATTLE_REQUEST_NOT_HERE_OBSTRUCTED;\n        }\n        else\n            return PETBATTLE_REQUEST_TARGET_INVALID;\n    }\n    else if (petBattleRequest->OpponentGuid.IsCreature())\n    {\n        if (!player->GetNPCIfCanInteractWith(petBattleRequest->OpponentGuid, 0))\n            return PETBATTLE_REQUEST_TARGET_INVALID;\n\n        auto creature = sObjectAccessor->GetCreature(*player, petBattleRequest->OpponentGuid);\n        if (creature->_petBattleId)\n            return PETBATTLE_REQUEST_WILD_PET_TAPPED;\n\n        if (!player->IsWithinDist3d(creature, INTERACTION_DISTANCE))\n            return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;\n\n        if (!player->IsWithinLOSInMap(creature))\n            return PETBATTLE_REQUEST_NOT_HERE_OBSTRUCTED;\n    }\n\n    if (player->isInCombat())\n        return PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT;\n\n    // Check positions\n    for (const auto& itr : petBattleRequest->TeamPosition)\n        if (player->GetMap()->getObjectHitPos(player->GetPhases(), true, petBattleRequest->PetBattleCenterPosition, itr, 0.0f))\n            return PETBATTLE_REQUEST_NOT_HERE_UNEVEN_GROUND;\n\n    auto petSlots = player->GetBattlePetCombatTeam();\n    size_t playerPetCount = 0;\n    size_t playerDeadPetCount = 0;\n\n    for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n    {\n        if (!petSlots[i])\n            continue;\n\n        if (playerPetCount >= MAX_PETBATTLE_SLOTS || playerPetCount >= player->GetUnlockedPetBattleSlot())\n            break;\n\n        if (petSlots[i]->Health < 1)\n            playerDeadPetCount++;\n\n        ++playerPetCount;\n    }\n\n    if (!playerPetCount)\n        return PETBATTLE_REQUEST_NO_PETS_IN_SLOT;\n\n    if (playerPetCount == playerDeadPetCount)\n        return PETBATTLE_REQUEST_ALL_PETS_DEAD;\n\n    return PETBATTLE_REQUEST_OK;\n}"
+        }
+      ]
     }
   ],
   "batch_baselines": {
@@ -1255,6 +1491,7 @@
     "3": "f12a3f413a58078e76f2df99c3913eccb917c225",
     "4": "e82bb1e56165eb39b356cff307c569733e57544e",
     "5": "d1df9bc665e2b38729859d330c74dc323c81ac34",
-    "6": "942b68867c093a19153e6b398fe70fd280e0df51"
+    "6": "942b68867c093a19153e6b398fe70fd280e0df51",
+    "7": "071d9a65398e894a041e3319d64dd94594449f2e"
   }
 }

@@ -14,8 +14,11 @@ static void FillSecond(PetBattle&b,Player*player=nullptr){
 #include "SecondTenTen20261112SecondNative.h"
 #include "SecondTenTen20261112ThirdNative.h"
 #include "SecondTenTen20261112SixthNative.h"
+#include "SecondTenTen20261112SeventhNative.h"
+#include "SecondTenTen20261112SpellCatalogue.h"
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
+ ReadSecondPetSpellCandidates();
  for(auto row:sBattlePetAbilityStateStore)if(row->BattlePetStateID==BATTLEPET_STATE_Mod_MaxHealthPercent||row->BattlePetStateID==BATTLEPET_STATE_Special_TypeOverride)std::cout<<"PET_NATIVE_STATE "<<row->BattlePetAbilityID<<" state="<<uint32(row->BattlePetStateID)<<" value="<<row->Value<<"\n";
  for(auto row:sBattlePetAbilityStateStore)if(row->BattlePetAbilityID==759||row->BattlePetStateID==BATTLEPET_STATE_Mechanic_IsWall)std::cout<<"PET_NATIVE_BARRIER "<<row->BattlePetAbilityID<<" state="<<uint32(row->BattlePetStateID)<<" value="<<row->Value<<"\n";
  for(char const*name:{"npc_corstilax_quarantine","npc_corstilax_suppression_protocol","npc_hatecoil_monsoon","npc_skovald_honored_ancestor","npc_stillpine_capitive","npc_bethtilac_cinderweb_spiderling","npc_magma_jet","npc_chogall_fire_elemental","npc_chogall_shadow_lord","npc_wyrmrest_skytalon","npc_amber_pool_stalker"}){auto script=sObjectMgr->GetScriptId(name);uint32 bound=0;std::cout<<"ACTOR_BINDING "<<name<<" script="<<script;for(auto const&row:*sObjectMgr->GetCreatureTemplates()){auto info=sObjectMgr->GetCreatureTemplate(row.first);if(script&&info&&info->ScriptID==script){++bound;std::cout<<" entry="<<row.first<<" vehicle="<<info->VehicleId;}}std::cout<<"\n";Require(bound>0,"Fourth-group script has no actual matching native creature binding");}
@@ -42,6 +45,7 @@ int main(int argc,char**argv){try{
  RunSecondPetNative(map,player,session);
  RunThirdPetNative(map,player,session);
  RunSixthPetNative();
+ RunSeventhPetNative(player);
  }
  session->SetPlayer(nullptr);delete session;
  CloseAltheaNative();std::cout<<"PASS actual linked Finish ordinary/ignored forfeits,swap-independent XP,multiple native thresholds,repeated finish,wild actor cleanup,and owning request replacement;queue/source ASAN and actual client checks separate\n";return 0;
