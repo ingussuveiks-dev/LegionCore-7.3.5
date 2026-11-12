@@ -130,6 +130,18 @@ void WorldSession::HandleBattlePetSetFlags(WorldPackets::BattlePet::SetFlags& pa
     }
 }
 
+static void RemoveBattlePetJournalEntry(Player* player, ObjectGuid journalID)
+{
+    if (!player->GetBattlePet(journalID))
+        return;
+    if (auto companion = player->GetSummonedBattlePet())
+        if (companion->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) == journalID)
+            player->UnsummonCurrentBattlePetIfAny(false);
+    player->GetBattlePets()->erase(journalID);
+    player->UpdateBattlePetCombatTeam();
+    player->GetSession()->SendPetBattleSlotUpdates();
+}
+
 void WorldSession::HandleCageBattlePet(WorldPackets::BattlePet::BattlePetGuidRead& packet)
 {
     // ReSharper disable once CppUnreachableCode
@@ -157,7 +169,7 @@ void WorldSession::HandleCageBattlePet(WorldPackets::BattlePet::BattlePetGuidRea
 
     SendBattlePetDeleted(packet.BattlePetGUID);
     battlePet->Remove(nullptr);
-    _player->_battlePets.erase(packet.BattlePetGUID);
+    RemoveBattlePetJournalEntry(_player, packet.BattlePetGUID);
 }
 
 void WorldSession::HandleBattlePetSetSlot(WorldPackets::BattlePet::SetBattleSlot& packet)
@@ -632,7 +644,7 @@ void WorldSession::HandleBattlePetDelete(WorldPackets::BattlePet::BattlePetGuidR
 
     SendBattlePetDeleted(packet.BattlePetGUID);
     battlePet->Remove(nullptr);
-    _player->_battlePets.erase(packet.BattlePetGUID);
+    RemoveBattlePetJournalEntry(_player, packet.BattlePetGUID);
 }
 
 void WorldSession::HandleBattlePetRequestJournal(WorldPackets::BattlePet::NullCmsg& /*packet*/)
