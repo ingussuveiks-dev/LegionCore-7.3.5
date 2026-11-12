@@ -1626,7 +1626,14 @@ bool PetBattleAbilityEffect::HandleResetAuraDuration()
 {
     for (auto aura : PetBattleInstance->PetAuras)
         if (!aura->Expired && aura->TargetPetID == Target && aura->AbilityID == EffectInfo->AuraBattlePetAbilityID)
-            aura->Duration = EffectInfo->Param[0];
+        {
+            int32 duration = EffectInfo->Param[0] == 0xFFFF ? -1 : EffectInfo->Param[0];
+            aura->Duration = duration;
+            aura->MaxDuration = duration == -1 ? -1 : int32(aura->Turn) - 1 + duration;
+            PetBattleEvent event(PETBATTLE_EVENT_BUFF_CHANGE, Caster, Flags, EffectInfo->ID, PetBattleInstance->RoundTurn++, aura->Turn, 1);
+            event.UpdateBuff(Target, aura->ID, aura->AbilityID, duration, aura->Turn);
+            PetBattleInstance->RoundEvents.push_back(event);
+        }
     return true;
 }
 
