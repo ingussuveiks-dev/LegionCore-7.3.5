@@ -389,28 +389,25 @@ public:
                         summoner->CastSpell(creature, SPELL_COPY_WEAPON_2, false);
                         creature->setFaction(14);
 
-                        uint32 prevItem = creature->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS);
-
                         if (auto player = summoner->ToPlayer())
                         {
                             if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
                                 creature->SetVirtualItem(0, mainItem->GetEntry());
                             else
-                                creature->SetVirtualItem(0, summoner->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS));
-
-                            prevItem = creature->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS) + 1;
+                                creature->SetVirtualItem(0, summoner->GetVirtualItemId(0),
+                                    summoner->GetVirtualItemAppearanceMod(0), summoner->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + 1, 1));
 
                             if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
                                 creature->SetVirtualItem(1, offItem->GetEntry());
                             else
-                                creature->SetVirtualItem(1, summoner->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 1));
-
-                            prevItem = creature->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS) + 2;
+                                creature->SetVirtualItem(1, summoner->GetVirtualItemId(1),
+                                    summoner->GetVirtualItemAppearanceMod(1), summoner->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + 3, 1));
 
                             if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
                                 creature->SetVirtualItem(2, rangedItem->GetEntry());
                             else
-                                creature->SetVirtualItem(2, summoner->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 2));
+                                creature->SetVirtualItem(2, summoner->GetVirtualItemId(2),
+                                    summoner->GetVirtualItemAppearanceMod(2), summoner->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + 5, 1));
                         }
                     }
                 }

@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "ShaFigmentWeaponFallback",
+  "batch": 5,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Read the correct native weapon slot pairs for Sha figment equipment",
+  "paths": [
+    "src/server/scripts/Pandaria/TempleJadeSerpent/instance_temple_of_jade_serpent.cpp"
+  ],
+  "binding": "instance_temple_of_jade_serpent",
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 5 -Case ShaFigmentWeaponFallback",
+  "counterfactual": "Add -Baseline; expected-broken control, paired with repaired pass.",
+  "checks": {
+    "asan": "All ten repaired expectations pass using extracted production methods and affected wave/dispatch decisions. Covers five parent copies, three paired figment fallbacks and item priority, cold/wipe/long raptor counts, five laughs/reset, player/pet/two-level guardian/null attackers, every failed wave/disk/faction-leader/drake/whelp spawn, and stunned-orb retry/proximity/missing-player cleanup. Summon, movement, spell, group and instance endpoints are controlled.",
+    "baseline": "All ten pinned pre-task counterfactuals fail the repaired expectations or reproduce expected null accesses. Baselines are expected-broken controls paired with repaired passes.",
+    "native": "Ten actual database binding families. All five native DUMMY parent/child relations, actual Spell::EffectDummy forward child creation and matching SpellScript dispatcher/default prevention. Actual Player inventory-empty fallback and six equipment fields; real player/pet/two-level guardian owner resolution and native health; actual Creature stun admission and retry. Group, selected spatial query, follow and optional child-cast endpoints are explicitly observed. First forty native checks retained.",
+    "linked": "Canonical cc5346da Release contains actual DUMMY hook, child route, three paired equipment getters, cold/reset counters, nullable affecting-player/native group event, four guarded disk sites, five guarded tsunami actors, guarded common faction leader path, independent Halfus null gates and stun-before-consumption with 500ms retry. First forty linked checks retained.",
+    "retained": "Exact prior 50-repair source certificate and 65-file unsigned64 healing certificate pass. Canonical Scepter login Release verification passes.",
+    "runtime": "Task-owned canonical PID13640 reached fresh ready; graceful shutdown0, exit0, no remaining owned server and empty stderr. Post-test diagnostics report no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions. Protected configuration/DLL/certificates remain unchanged.",
+    "investigation": "Live database and matching26972 data were checked first. Modern local TrinityCore reverse-copy helper was considered but is incompatible with existing local owner-to-image consumers; their forward direction is retained. Child Aura lifecycle was repaired separately in batch4. Illidan and ThunderForge scouts were false positives; Tushui trainee is unregistered/unbound and not counted. Native fixture initially lacked spell proc loaders and used SUMMONED_BY instead of native ownership CREATED_BY; those fixture prerequisites were corrected and final actual-core probes pass. ASAN fixture initially assigned a symbolic index-stride label instead of native MAX_MELEE_HOVER_DISK_SPAWNPOINTS=4; corrected, with failure evidence retained. No production error is claimed for these fixture failures."
+  },
+  "canonical_worldserver_sha256": "cc5346da6bfee47652fb3866facf9b04915123c2e17bfbc4b3fced207e2e6ce7",
+  "scope": "Original thresholds, spell IDs, timings, faction/mode gates and native progression helpers retained. Each shared family is counted once. Halfus legacy comments are preserved byte-for-byte through surrogate-safe source normalization. No database/schema/character/packet changes.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch05; after focused commits.",
+  "pending": "Actual client visuals, combat, flight/movement, group credit and full affected encounters remain unverified. Lady authentic finale, LINK2/Slaghammer, original handshake and all36 whole chains retain their existing OPEN evidence; mixed DBErrors is unchanged."
+}
