@@ -741,11 +741,11 @@ class spell_dk_death_strike : public SpellScriptLoader
                 int32 lastTime = GetSpellInfo()->GetEffect(EFFECT_3)->CalcValue();
                 int32 pctHeal = GetSpellInfo()->GetEffect(EFFECT_4)->CalcValue();
 
-                int32 minHeal = CalculatePct(caster->GetMaxHealth(), pctHeal);
-                int32 dmg = CalculatePct(caster->GetDamageTakenInPastSecs(lastTime, true, true), pctDamage);
-                int32 heal = std::max(minHeal, dmg);
+                uint64 minHeal = CalculatePct(caster->GetMaxHealth(), pctHeal);
+                uint64 dmg = CalculatePct(caster->GetDamageTakenInPastSecs(lastTime, true, true), pctDamage);
+                float heal = float(std::max(minHeal, dmg));
 
-                caster->CastCustomSpell(SPELL_DK_DEATH_STRIKE_HEAL, SPELLVALUE_BASE_POINT0, heal, caster, true);
+                caster->CastCustomSpell(caster, SPELL_DK_DEATH_STRIKE_HEAL, &heal, nullptr, nullptr, true);
 
                 if (caster->HasAura(SPELL_DK_FROST))
                     caster->CastSpell(GetHitUnit(), SPELL_DK_DEATH_STRIKE_OFFHAND, true);
