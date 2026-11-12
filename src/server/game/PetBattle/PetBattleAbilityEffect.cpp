@@ -1476,15 +1476,16 @@ bool PetBattleAbilityEffect::HandleHealStateToggleAura()
 {
     if (PetBattleAura* aura = GetAura(Caster, EffectInfo->AuraBattlePetAbilityID))
     {
-        aura->Expire(PetBattleInstance);
-
-        // Heal
+        // Capture the accumulated rounds before normal aura removal resets its states.
         int32 stateValue = std::min(GetState(Caster, EffectInfo->Param[1]), int32(EffectInfo->Param[2]));
-        int32 heal = EffectInfo->Param[0] + EffectInfo->Param[3] * stateValue;
+        int32 heal = EffectInfo->Param[0] * stateValue;
+        aura->Expire(PetBattleInstance);
+        SetState(Caster, EffectInfo->Param[3], 0);
         return Heal(Target, CalculateHeal(heal));
     }
     // No aura, add it
-    return AddAura(Caster, 0, 0);
+    SetState(Caster, EffectInfo->Param[1], 0);
+    return AddAura(Caster, -1, 0);
 }
 
 bool PetBattleAbilityEffect::HandleResetState()
