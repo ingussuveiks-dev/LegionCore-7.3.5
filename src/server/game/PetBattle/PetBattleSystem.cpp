@@ -579,6 +579,8 @@ eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, Pe
     {
         if (auto player2 = ObjectAccessor::FindPlayer(petBattleRequest->OpponentGuid))
         {
+            if (player2 == player)
+                return PETBATTLE_REQUEST_TARGET_INVALID;
             if (!player2->IsInWorld())
                 return PETBATTLE_REQUEST_TARGET_INVALID;
             if (player2->isDead())
