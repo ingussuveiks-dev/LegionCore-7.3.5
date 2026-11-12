@@ -1,4 +1,25 @@
 {
+  "latest_open_closeout_2026_11_12": {
+    "status": "LEGACY_CERTIFICATE_OPEN_CLOSED_AUTHENTIC_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
+    "audit": "docs/audits/open-issues-closeout-2026-11-12.json",
+    "certificate_results": "docs/audits/artifact-certificate-repairs-2026-11-12/results.json",
+    "canonical": {
+      "worldserver.exe": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+      "worldserver.map": "59d0c7b2fe34b9ca6dbc3bbbab1ba5cbe8e59a2d02613a03b3ea7e4d7c91ea56",
+      "bnetserver.exe": "172b1c4327b228da6f4a8970ea055a354a7f368c1614753992a481e2cf9b70d3",
+      "bnetserver.map": "3e4f26f212cfe491dd49d23047aec3b364689e4db4730fa1836d8e5caf7009b6"
+    },
+    "closed": "All106retained artifact binary roots now pass;old36legacyfailures and old TimeLoop full-heal OPEN are superseded by their exact resolution records. No new gameplay/binary patch in this test-only closeout.",
+    "remaining": [
+      "LivingLadySharasdal:OPEN_AUTHENTIC_SEQUENCE",
+      "SharedLink2Slaghammer:OPEN_ORIGINAL_ACTIONS_MISSING",
+      "MixedDBErrors:PRESERVED_UNTRUNCATED",
+      "NativePetPipelines:OPEN",
+      "WiderCoreHealth:OPEN_NOT_CERTIFIED",
+      "ClientHandshakeAndWholeChains:OPEN_NO_NEW_CLIENT_TRAVERSAL"
+    ],
+    "history": "Earlier latest_* records and retained_open lists describe their historical run. Read this dated overlay and the linked closeout before treating an old failure or old binary hash as current."
+  },
   "latest_ten_ten_repairs_2026_11_11": {
     "status": "COMPLETE_100_SELECTED_REPAIRS_TECHNICAL_CHECKED_DEPLOYED_CLIENT_AND_LEGACY_PENDING",
     "request": "Turpini 10\u00c3\u201410",

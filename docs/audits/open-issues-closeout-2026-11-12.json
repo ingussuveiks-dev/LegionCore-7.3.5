@@ -1,0 +1,163 @@
+{
+  "date": "2026-11-12",
+  "request": "Pabeidz open lietas",
+  "status": "LEGACY_CERTIFICATE_OPEN_CLOSED_AUTHENTIC_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
+  "prior_handoff_commit": "32f7dc01263cc5f312252b5b08df69b24381e448",
+  "closed": [
+    {
+      "key": "LegacyArtifactPeCertificates",
+      "result": "106/106 retained roots pass against unchanged canonical Release. The old70-pass/36-fail manifest is historical, superseded for this actual EXE by the complete result certificate. These are test/tool repairs, not106newgameplayfixes.",
+      "results": "docs/audits/artifact-certificate-repairs-2026-11-12/results.json"
+    },
+    {
+      "key": "StaleTimeLoopOpenEntry",
+      "result": "The old full-heal OPEN was already technically repaired by ad8f15d598d90e4c99f80cec9139b7fbd5bd0986. Keep its pending actual encounter/client checks separate.",
+      "audit": "docs/audits/time-loop-full-healing-2026-11-11.json"
+    }
+  ],
+  "focused_audits": [
+    "docs/audits/artifact-certificate-repairs-2026-11-12/native-health.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/acquisition-route.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/hruthnir-receiver.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/monk-state.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/smartai-motion.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/sharasdal-members.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/warswords-successors.json",
+    "docs/audits/artifact-certificate-repairs-2026-11-12/collection-runner.json"
+  ],
+  "commits_before_final_handoff": [
+    "9b945880fabd90c603f35e4c2c07a1df91e1d37a test: certify native damage bounds and unsigned64 heal application",
+    "996e3180344cd2841f9f048bc154fb3216011353 test: read the actual acquisition scenario member during login recovery",
+    "7ab5ef73c2c28393456ef20f3d4bb2c37cf68b43 test: trace the original Hruthnir receiver into native timer queues",
+    "c72a4c0d6c4aa957b99a719432624ca55dd229f3 test: prove current Monk epoch and instance receiver data flow",
+    "d79b99fcf3942747fdfad01f91ebf2683bfb637b test: follow the linked SmartAI combat movement field and rejection branch",
+    "660a17b5b894d6ca593fbbfa9f847fc4a6554768 test: derive Sharasdal inherited queue and waypoint members from native accessors",
+    "86a85364403ef36fbc05d9bb623cb71318b87568 test: certify selected Warswords recovery and native intro queue ownership",
+    "2fe9888441c21aa0fc8e74a37df100213ce3b04d docs: retain unresolved Lady LINK2 and native pet lifecycle findings",
+    "19e3bb34472436acb203c148ce9bf130112fe81a test: collect every artifact certificate with immutable inputs and pinned controls"
+  ],
+  "production": "No C++, SQL, database data, runtime configuration, DLL or binary change in this closeout. No Release rebuild/promotion needed; previously deployed100fixes remain. Canonical EXE/map hashes checked before/after all collections and cleanup.",
+  "canonical": {
+    "worldserver.exe": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+    "worldserver.map": "59d0c7b2fe34b9ca6dbc3bbbab1ba5cbe8e59a2d02613a03b3ea7e4d7c91ea56",
+    "bnetserver.exe": "172b1c4327b228da6f4a8970ea055a354a7f368c1614753992a481e2cf9b70d3",
+    "bnetserver.map": "3e4f26f212cfe491dd49d23047aec3b364689e4db4730fa1836d8e5caf7009b6"
+  },
+  "checks": {
+    "certificates": "106/106 complete ordinary roots,all exit0;EXE/map and every Python/PowerShell test source frozen throughout. Every transitive certificate body executes. Fifteen pinned32f7dc012 historical tool controls reproduce their real assertion/missing-obsolete-symbol failures on the same EXE; these are not broken gameplay binaries.",
+    "damage": "209 actual numeric-prefix cases with MSVC ASAN retain nativeUINT32 saturation and rounding/monotonic behavior. Invalid negative/NaN asset multipliers are outside this fixture.",
+    "healing": "160 historical final-heal matrices plus nested/exception/default/player/negative cases pass. Controlled historical health endpoint is explicitly bounded32; this fixture alone does not prove wide healing. Actual linked unsigned64 callback/application/notification data flow is verified separately.",
+    "mutations": "Two unchanged linked positive paths and five rejected in-memory semantic counterfactuals: missing damage store,missing current/suspended AI comparison,wrong saturation constant,missing health bound,narrowed healing quantity. No executable/map writes.",
+    "scepter": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes actual canonical recovery. Existing compiler narrowing/signedness warnings remain captured, not suppressed.",
+    "live_link2": "Read-only current SQL reached EOF,missing source0/id2 rows count0;no DDL/DML. Identified native MariaDB client TLS warning retained and classified in research audit; no connection settings changed.",
+    "startup": "Owned PID=21856 reached fresh ready\nPASS owned PID=21856 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "diagnostics": "Every formal test wrapped in canonical+own before/after crash/log inventory. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Intermediate assertion failures and exploratory harness failures are retained as failures and paired with repaired runs. No client traversal performed."
+  },
+  "cleanup": {
+    "support": {
+      "ArchiveManifestSHA256": "F7D04574A5E781C5610F7381409B3683ECBC92E4312DAB128BE35F9F33A06A86",
+      "ReclaimedBytes": 27702409.0,
+      "Removed": 8,
+      "Deleted": [
+        {
+          "Bytes": 1099776,
+          "SHA256": "6B26E1A21C7667AACFF7074110BC41C4B7122A354AEFE1923C55AA38E3DD4CF7",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\damage-scaling-bounds\\test.exe"
+        },
+        {
+          "Bytes": 695790,
+          "SHA256": "ECF87CBF79C2A033A9648AFA6F3EE49B83D5E8F36B736CE2E7EA9104B995D405",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\damage-scaling-bounds\\test.obj"
+        },
+        {
+          "Bytes": 11579392,
+          "SHA256": "76274B8C039A596E2099F2406DD966AD4CE5452AA553049F6CF051C759368C4E",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\damage-scaling-bounds\\test.pdb"
+        },
+        {
+          "Bytes": 1138688,
+          "SHA256": "88E8A204EE9FE712291EDF7FD0C414D5D373B9AFA4D19CFD3C37B7EB951B55FC",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\creature-heal-applied\\test.exe"
+        },
+        {
+          "Bytes": 957692,
+          "SHA256": "1A972542D8DD5542B41B25CEABECFC3F735D6176973B6FCC044DC0DEAED32552",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\creature-heal-applied\\test.obj"
+        },
+        {
+          "Bytes": 11710464,
+          "SHA256": "7889DB4FA331F35E346EAC53CB3888199CF7FA68B33F1B93D9FE3DC893BCF230",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\creature-heal-applied\\test.pdb"
+        },
+        {
+          "Bytes": 281600,
+          "SHA256": "BF7D4FDD93E281D2DDF7D67543073118F822524113264CA1105C18617E58D54C",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.exe"
+        },
+        {
+          "Bytes": 239007,
+          "SHA256": "292F15C2ABA8D95DF2DD80C969D5641684D9AC6EF79D486E98501C42AB0045A5",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.obj"
+        }
+      ],
+      "Retained": "Regression source/tools and small generated source fragments retained. No runtime configuration, canonical binary/library/data, personal backup, security quarantine, mixed DBErrors, unresolved research or protected Slaghammer cache removed.",
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/open-closeout-2026-11-12/native-support",
+      "Archived": 30
+    },
+    "certificates": {
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/open-closeout-2026-11-12/certificates",
+      "ManifestSHA256": "6BE77F905521AE4CAA4E71185A3CB6787C6A9E47FAE148CE79386EBC9091011E",
+      "Classification": "Resolved certificate assertion and harness failures paired with final106pass; actual expected-broken old-tool controls retained as counterfactuals, not gameplay failures. No unresolved crash/cache/research or mixed active log placed in fixed.",
+      "Deleted": 0,
+      "RetainedOutsideFixed": "Both read-only live LINK2 captures,raw reference worldSQL/code/trees and original Lady video/cache evidence. No active runtime file or log removed/truncated.",
+      "Bytes": 10023185.0,
+      "Archived": 741
+    },
+    "canonical_crashes": "No active unresolved crash report was found or removed. No mixed/error log truncated.",
+    "retained": "Canonical configurations/DLLs/certs/extracted data/main build libraries/recent required rollback copies and all personal backups/security quarantine preserved. Unresolved Lady/LINK2 source/video/SQL evidence remains outside fixed; protected Slaghammer cache retained unchanged."
+  },
+  "remaining": [
+    {
+      "key": "LivingLadySharasdal",
+      "status": "OPEN_AUTHENTIC_SEQUENCE",
+      "needed": "Actual activation/surrender producer,conversation1906/Grash finisher and cleanup;no invented HP threshold or kill timer."
+    },
+    {
+      "key": "SharedLink2Slaghammer",
+      "status": "OPEN_ORIGINAL_ACTIONS_MISSING",
+      "needed": "Authentic id2 payloads for101430/103151;fresh current DB and matching-era donor both omit them. Preserve shared Zakajz behavior and original cache."
+    },
+    {
+      "key": "MixedDBErrors",
+      "status": "PRESERVED_UNTRUNCATED",
+      "needed": "Resolve remaining LINK2 entries before full-log archive/truncation;the two custom11869 entries are historically repaired."
+    },
+    {
+      "key": "NativePetPipelines",
+      "status": "OPEN",
+      "needed": "Property246 complete cooldown/owner/swap pipeline,clone effect properties122/123/124,defensive controller229 and real death/resurrection/aura/once pipeline."
+    },
+    {
+      "key": "WiderCoreHealth",
+      "status": "OPEN_NOT_CERTIFIED",
+      "needed": "Ordinary core healing/periodic numeric widths beyond explicit repaired64paths;ordinary damage retains its native32bit channel."
+    },
+    {
+      "key": "ClientHandshakeAndWholeChains",
+      "status": "OPEN_NO_NEW_CLIENT_TRAVERSAL",
+      "needed": "Actual intermittent handshake cause and all36whole artifact chains plus pending encounter/boost/pet visual/travel checks."
+    }
+  ],
+  "research": "docs/audits/open-behavior-research-2026-11-12.json",
+  "next": "Use the authentic living-Lady producer and original missing LINK2 payloads when located; exercise remaining pet changes through the full actual native dispatcher and real client. Passing binary roots/ready output do not certify missing gameplay or client checks.",
+  "post_cleanup_verification": {
+    "status": "PASS",
+    "report": ".codex/open-closeout-2026-11-12/final-verification.json",
+    "report_sha256": "47A539BA2600C1DAB8FA5B729227E8B06D61C3A586CC2B3F46FF697C48B4EBC2",
+    "diagnostics": ".codex/open-closeout-2026-11-12/final-check-evidence/diagnostics-after.json",
+    "diagnostics_sha256": "3185E9965A53B97482ED2FF69874B75AC403C0BD4C7B44F1A1E8DE7D06D5A1A8",
+    "rehashed_archive_records": 771,
+    "server_processes_remaining": 0,
+    "final_test_tool_commit": "19e3bb344"
+  }
+}

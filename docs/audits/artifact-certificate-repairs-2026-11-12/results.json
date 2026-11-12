@@ -1,0 +1,659 @@
+{
+  "status": "PASS_106_DECLARED_BINARY_ROOTS_CLIENT_AND_WHOLE_CHAINS_SEPARATE",
+  "date": "2026-11-12",
+  "canonical": {
+    "worldserver.exe": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+    "worldserver.map": "59d0c7b2fe34b9ca6dbc3bbbab1ba5cbe8e59a2d02613a03b3ea7e4d7c91ea56"
+  },
+  "roots": [
+    {
+      "root": "verify_acquisition_login_recovery_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "c1c5658d5b629a895e4596d60aa53e38739383f90faef5f5d8dcd8cd5d92d037"
+    },
+    {
+      "root": "verify_akaari_opening_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "df4e316dab8ef268d55d5bb51f8026d8427668c932e2509e2a9f0c4a2e71276a"
+    },
+    {
+      "root": "verify_althea_credit_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "e42f15cc72a1cca9068a9633a0d8dfaf84a2ed5a1f3ceb0c70bcdd30a57d5478"
+    },
+    {
+      "root": "verify_althea_death_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "f413fb8a3387f7be18ca488dd333dec35d95cac3df2a86341a9175689d7d4615"
+    },
+    {
+      "root": "verify_althea_intro_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "adcf953d207d77b340b82a1801da19c1c6c73e3ab642c3cb6442d6467465387f"
+    },
+    {
+      "root": "verify_arms_graveyard_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "fd7381143bea2cad8294f2c484bb1dc13dac6eee4491b74631f6e2bedea8fe76"
+    },
+    {
+      "root": "verify_ashbringer_pickup_admission_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "6b8e3f0155c0c9321d174aaea300f54bf2341ed89ab6f39cb209dcb68c31d659"
+    },
+    {
+      "root": "verify_creature_heal_applied_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "d8f6ee33ce4738573a330cd2c7cdb7d3223b3ef2828dccb795b2a3f1abe6dd8b"
+    },
+    {
+      "root": "verify_devourer_clones_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "f7813de1877b27b7084aab7f3979a8fee28b37566eb1b5b5a062734164477698"
+    },
+    {
+      "root": "verify_devourer_door_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "85af387d8cc3a67db7d7c8d9e526542e46716bc6af4d0491983a64ff5b694ff9"
+    },
+    {
+      "root": "verify_earthwarder_pickup_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "e3d17178367a9bf2e5c6b014bcb7c523e336b95dc92490e4b1b84caf391c14fe"
+    },
+    {
+      "root": "verify_earthwarder_return_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "519a878fd43f439a2e7ab1cfc73ad3f01d6560b23d291e86255189cbf40470f9"
+    },
+    {
+      "root": "verify_fourteenth_ten_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "0bc234b0edc5bc3676d3bbc04ed26622c0df13728de2e02a83abe6502521b456"
+    },
+    {
+      "root": "verify_fuzan_brewing_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "eaed687b3e484acfea113e900ad5c352ae17b1cda00b0a90fe4c4f7dcb6a80d5"
+    },
+    {
+      "root": "verify_fuzan_wave_entry_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "3d23546c3514d6faca3fa163b0a64fa7726b040a960afe9aa7c3d4e4f93864c1"
+    },
+    {
+      "root": "verify_hait_defeat_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "a7ec5fc759a2d9511c0d160f8def79121f8d87f3bce8cc99693b48c2c51b88a2"
+    },
+    {
+      "root": "verify_hait_opening_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "cc7ea26b0b25662f60e869e99c6bf79a9e749a598d98b61ab69afc6a017251e9"
+    },
+    {
+      "root": "verify_hruthnir_approach_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "98663365e01a1b2706a0c7e54133d91207b17402142dc7501b83455ceb5ef96f"
+    },
+    {
+      "root": "verify_hruthnir_barrier_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "24160ad33b7070d1813a0a29c7ea4a5d73e0997e6a825a739f6dce0fed6a0ebc"
+    },
+    {
+      "root": "verify_hruthnir_cue_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "62ff82ecdc6f1ee55037050da5307956a4848574faf7447d716dc080334c53cf"
+    },
+    {
+      "root": "verify_hruthnir_cursor_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "211f596d27a96ec0f6d44670b9e63d700581b4f8ee5da6f16ae6b4a2b11973a1"
+    },
+    {
+      "root": "verify_hruthnir_gossip_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "bd3826d4dcd7b4cc6ec8ca77919dd263b8a6fa7abc530cce82d95a2244e29594"
+    },
+    {
+      "root": "verify_hruthnir_guards_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "147fb5b9430a1626c9a5f6c1f386dc2cf3e11b5ceaf3d66135803ea884375664"
+    },
+    {
+      "root": "verify_hruthnir_home_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "ae2767a9418f12ab956b0a42e8be682a87f8d89f09ecbca1125b165b15488e10"
+    },
+    {
+      "root": "verify_hruthnir_offer_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "81301ab7a0d77832b5600e4362e944c8b0923b082fbfb4af122c735a3c67420e"
+    },
+    {
+      "root": "verify_hruthnir_primary_approach_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "8d021e6a3ce18cd292fc8be388c3318d7c7dbcffeef304f9775ea373ac6f9cb2"
+    },
+    {
+      "root": "verify_hruthnir_start_recovery_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "a64b955c1e5416ffc1e4237a4c1b43b881fc3f2d4f33fb5bb2838a5d47e04673"
+    },
+    {
+      "root": "verify_hruthnir_timers_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "14ba0aec76d1d87e5e3b9c913562f066edb7ca0946f3c79f13528c14a81881fc"
+    },
+    {
+      "root": "verify_kingslayers_gate_order_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "ace438679627820645645c55f6ad200611947371ec6b4211445ef02337caa64a"
+    },
+    {
+      "root": "verify_kingslayers_intro_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "6e908b580dcb97d48ee018e3cd08e720fb806fb356a85c2f13cc56ea4ed39a9b"
+    },
+    {
+      "root": "verify_kingslayers_smoke_offer_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "ba9de97bf08fdba042b7a04148da96ffaa75665462488352cc75557b5e15cc3a"
+    },
+    {
+      "root": "verify_kingslayers_smoke_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "9bdb188a6a696c87a6daa43b1697fb3bb81375e4d3af51c7e70ded47514d378f"
+    },
+    {
+      "root": "verify_magnar_combat_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "592776a20ddd2980ccaa4f6dfe72d95d1970406844deaf14502afcc4fbe73166"
+    },
+    {
+      "root": "verify_magnar_duel_recreation_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "daf750ad3c3325acac8e93f5c1662f5f05372d9f3c2c2c75289ea4d02af29c8d"
+    },
+    {
+      "root": "verify_magnar_finale_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "41e1d33e0f43086af4fa9bdb2fd6826e4f60a65a4ecd8e6304b377c10d359158"
+    },
+    {
+      "root": "verify_magnar_intro_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "a65f05a554b2323580d147ae091571e07515c7b2156d2af279ae3fb1d6d72d44"
+    },
+    {
+      "root": "verify_magnar_recreation_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "0da2e4cb0410495be704130866f8f8de6ef30007555814c6ad1fca9a892fca8b"
+    },
+    {
+      "root": "verify_magnar_reset_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "c4ef0f2afc7c0f0ff552794718e4f241f6e3b1fcd44f006b8ecbcb99e3bfae95"
+    },
+    {
+      "root": "verify_magnar_waves_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "aa72455235705e74fdcd8b940296c1613c4d707a8c19827e8337fd24ed7fb96e"
+    },
+    {
+      "root": "verify_merlis_handoff_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "76a63b2068e5110e408fdd8fb315d256930d579bfb58ad4ddb64b2830f68a4a4"
+    },
+    {
+      "root": "verify_monk_chen_arrival_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "4905a1ee4337da304859b30c1111fbda17bee32bf3fe00ea1d14aa8b4a811456"
+    },
+    {
+      "root": "verify_monk_chen_early_presentation_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "5ff4ac19f89cbe92ec6d68b29fc90333ba34b1faab00ad55c17fe1ac39b1536e"
+    },
+    {
+      "root": "verify_monk_chen_presentation_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "21bc946efbc450f63b10eb0e1f533b3fdf3c4cc94ff1faac7151089aaecb360a"
+    },
+    {
+      "root": "verify_monk_chen_rescue_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "71a56fa08e70ef7483b61f2f6f1b5056e5815c5ca6fd0465cee34913289842c4"
+    },
+    {
+      "root": "verify_monk_chen_routes_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "d3fe36d57ff5ab19fcd52814e1a7d817fa1d1498acf76ef052088f02ec8b0eae"
+    },
+    {
+      "root": "verify_monk_fel_stone_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "2f719afdf9a80ff07250a2e9b4855322e09a1c341a76e645b7122497770dc83e"
+    },
+    {
+      "root": "verify_monk_hait_click_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "ec5c95867b5bc5cdff4bb0d22431127929fbd81f27471635c69724d422d3ec2f"
+    },
+    {
+      "root": "verify_monk_hait_timers_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "56facecbdcdd257a887fbf1a215497e27b20be10f3564e14baf207a679ff14cb"
+    },
+    {
+      "root": "verify_monk_jorvinax_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "76122ae7329a951ebf4d3db60c5df4d22a1270cbd10f3655296b6a2f1b3d604c"
+    },
+    {
+      "root": "verify_monk_nine_arrival_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "f5535b799f80c34f3902b0a27930b3a5819b108783802c251c96ca2cfcd33ef5"
+    },
+    {
+      "root": "verify_native_loot_damage_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "0a98f410605cdca80d1914776ce55a2c40692591a7acab86c265773ed098849d"
+    },
+    {
+      "root": "verify_pet_follow_formation_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "26b888904ec3d34737133b800f1badcbdb04e442aae327cddbb97769eec5a914"
+    },
+    {
+      "root": "verify_ragnvald_second_battle_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "6a08214e20112fed067a15dc65c2ae05ac67c09685a9e79a3791bec47f46e0a8"
+    },
+    {
+      "root": "verify_seven_lifecycle_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "e2e8b3bf98ea0f9caa87459ef62f99c481b177850ba83db8994b460e6c4723d1"
+    },
+    {
+      "root": "verify_sharasdal_acquisition_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "d7c077ee1413ca124190817500210e4b7e861dd23a01bb4ccd9b0036c84340d9"
+    },
+    {
+      "root": "verify_sharasdal_companion_healing_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "a4ff25bb83f179b423b092abc4c6b4468288c10cb7d5cec68d96cede5e291b76"
+    },
+    {
+      "root": "verify_sharasdal_kraliss_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "c5196ea002c81dab4a94a9ec7f0ffcd1f41e88aabc60ba7424290c22511f703c"
+    },
+    {
+      "root": "verify_sharasdal_lady_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "6878f945067b7e7bf2c3c6d53eeef10b81b2dd0e3d2428db33055c0fa7009843"
+    },
+    {
+      "root": "verify_sharasdal_legacy_login_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "d29b3304de4d2611a11fcee49ced63fba6eedc52d171f7ff861237858b3c7fc7"
+    },
+    {
+      "root": "verify_sharasdal_wave_contact_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "8319c1cb4de319f6396b647a1e31a4261e964640a4563e687e3f78a362da48cc"
+    },
+    {
+      "root": "verify_sheilun_acquisition_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "2d9fe908adbef79b1fb10e44f1e31556eadbbcfb92ef867b5d9bafc90ca87e44"
+    },
+    {
+      "root": "verify_sheilun_login_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "50f42647c8bc10107c76702066488e983431dc311c68d9d90ca3c5afa366f0bb"
+    },
+    {
+      "root": "verify_silver_hand_aberration_credit_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "8ea373302487ba5a5fbd685ee1f6f61e63c50cbded1dea5129b48aab59e15abb"
+    },
+    {
+      "root": "verify_silver_hand_ally_damage_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "0e78e9b7c9e8155cf1f0eb538a8a34eb7cc59c159128d83e2a31b0e5f356c3a0"
+    },
+    {
+      "root": "verify_silver_hand_collapse_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "616bb6a6575079fe058c9b223fc9aad9f6fc42708e904b7848f556d94012391e"
+    },
+    {
+      "root": "verify_silver_hand_entrance_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "b9af6177ba71418a5f2bc9dce413db186a9a981a821e30e11d77b0155882f9f8"
+    },
+    {
+      "root": "verify_silver_hand_final_entry_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "824d5cc1db31868acaa08293c199ea0d4c183533f7b8ae653281a30e975f8ecc"
+    },
+    {
+      "root": "verify_silver_hand_first_fight_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "1492e23a71052d41aeffbfe1df58637791b4b61e8b084852ad63fd2238682c4f"
+    },
+    {
+      "root": "verify_silver_hand_first_path_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "fdc4c5900c70bda3848cdec1125b5ae651ee9596eb4ede6bb17c1be32e01a18e"
+    },
+    {
+      "root": "verify_silver_hand_first_room_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "cfaa8a43f0f69e19228cde798736d63a0ddb4a56da2fba072993f2588bc70364"
+    },
+    {
+      "root": "verify_silver_hand_initial_motion_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "fe34ee1f4b36d06ea3e25f703990af76c72b5b2461394dfaa4578bcc2f7e078a"
+    },
+    {
+      "root": "verify_silver_hand_mordoth_motion_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "678e0586e570e611b9804069862102c80f4ad9ba29c5382e4457efc9d040d572"
+    },
+    {
+      "root": "verify_silver_hand_pickup_admission_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "8a0c62279998c0933ae41c211beadd563541c954d946a6360a4f28121885129c"
+    },
+    {
+      "root": "verify_silver_hand_real_loot_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "68146d609206d22b2df89451cb40adf270c6377e909dd47b3cad692c6b916608"
+    },
+    {
+      "root": "verify_silver_hand_rescue_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "245fc17b2dbb7addbd277cccc80ffbda00e57672fb67c5b5e91d58151e39aa5a"
+    },
+    {
+      "root": "verify_silver_hand_ritual_arrival_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "23c147b515a10223df1f7c6199efa2028d8f5f1dba454dd64ecb13a9c1f92315"
+    },
+    {
+      "root": "verify_silver_hand_ritual_entry_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "397d899be51105ce6fa3d7eea27633bb643a7e67c2f19fe0aaaf40690df44fd2"
+    },
+    {
+      "root": "verify_silver_hand_ritual_waypoints_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "413124edffb14e8eed2c33442131eaab4974edca7e28ced8b00c700c18c074de"
+    },
+    {
+      "root": "verify_silver_hand_second_gossip_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "0dbb42579c2f7dd304f37b8cc1be7d4a312ba84a63070eb69cc69be3c0f3935d"
+    },
+    {
+      "root": "verify_silver_hand_wave_deaths_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "f95aedd25d57a3b0087f38635a9fa057f1188ce4874a990ca867e2cbbea13528"
+    },
+    {
+      "root": "verify_silver_hand_wave_lifetime_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "2dbc462ee1431638b43c1db74f4420e806574c05587fb6d5c8832d8819ee01c8"
+    },
+    {
+      "root": "verify_skyhold_artifact_return_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "2da9957a562679bf68642ca521e2513c24826a4afb030f376ba30e7c1dfc0b47"
+    },
+    {
+      "root": "verify_stromkar_exit_hole_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "5c474b05d39a477398d3b3cbbd13fb722f76317b0e778dba7275e51d97cd3384"
+    },
+    {
+      "root": "verify_taxi_flight_completion_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "79afcf23ad94d00f4bb37298e01576589a8e55c474ea00fe6a5e70de23196ab5"
+    },
+    {
+      "root": "verify_ten_spell_lifecycles_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "88b07611ec327b655a57547acf0c0f05d2d73ff5f1611f8800e4811d3ad36e69"
+    },
+    {
+      "root": "verify_ten_ten_20261111_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "513eb6a01b7fad900541edba8c555e4722abb512b742bdcea7661a587351e66b"
+    },
+    {
+      "root": "verify_time_loop_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "dbddb73fe800a323296c6c592580d8b710f85efe81d2a5cec05c7cf30f139403"
+    },
+    {
+      "root": "verify_truthguard_endpoint_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "32fc87849d53673467f3766910990b41c2d3ba68130ac62ed9993792c4f98832"
+    },
+    {
+      "root": "verify_truthguard_pickup_admission_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "bdc44d86dac1e44614b9beb1413d6c68c4469830aaac889fb46dbf1f8aba69af"
+    },
+    {
+      "root": "verify_truthguard_ride_cast_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "968d50f844ef91e139e040fc2ae22e52315f51899a363df5d1ba0330c88f743e"
+    },
+    {
+      "root": "verify_truthguard_rider_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "71faac6987a639137624a0d79d2eeb177b2c65bfd3ecee92891ed2f5035d2c65"
+    },
+    {
+      "root": "verify_truthguard_travel_click_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "227382bf120313e9811a12fe4fe0d32bf6906d32d57c4ee9e8a1721e86dbab63"
+    },
+    {
+      "root": "verify_tuure_graveyard_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "cdb07b9abc167b0eb1a32d706b78abd77c0b80c2e9c813cd972fc0f40e03bb43"
+    },
+    {
+      "root": "verify_tuure_legacy_login_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "20db4ae96a2574ae39dea26a464c40b588bec8c1b310c6dbb462a6959a876042"
+    },
+    {
+      "root": "verify_twin_emperors_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "2ba6f408cf84392df57fa6eab9319c52fd94805296d38b191d3a0952066e61f6"
+    },
+    {
+      "root": "verify_warrior_first_wave_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "d193a4148017954d9410b0ba26c8092a8b485bc28a8c6c5dd1e2406e569c5277"
+    },
+    {
+      "root": "verify_warrior_intro_handoffs_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "efe754808229759297a2014f9b49795b0c8675f0bf96f8d69aa42b58f760c751"
+    },
+    {
+      "root": "verify_warrior_intro_timers_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "96c3fe77974ec37aad39df0000e9a4dfcb22640e7b0296bc8b67d13d5ea88eb5"
+    },
+    {
+      "root": "verify_warrior_login_recovery_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "c1c5658d5b629a895e4596d60aa53e38739383f90faef5f5d8dcd8cd5d92d037"
+    },
+    {
+      "root": "verify_warrior_opening_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "ee37b0ac5c6d54cffc36e30c22c5f4f9be5b6e1428b0ed556c25cabd9faf2d65"
+    },
+    {
+      "root": "verify_warrior_scenario_resume_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "54240a5a13f60ce619303a0cd08a9a9f02355de23695bae10c309306bb966b79"
+    },
+    {
+      "root": "verify_warswords_arrival_legacy_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "3900aec32ac7fa2489f91dc1e507368b86fbdde841c381a3bca4e7feffb87de7"
+    },
+    {
+      "root": "verify_warswords_helya_channel_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "8199e3ccba6e584959386b7a6fb31407534145b95cf1170a8ab9b76a1b36bb50"
+    },
+    {
+      "root": "verify_warswords_intro_bubble_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "18c51c0feaccca0421c1dda104047166c6985ee72729e424f34ab032168b4d0a"
+    },
+    {
+      "root": "verify_warswords_return_admission_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "099a79c0cda84ef898f9af0c56978436eba27bef7ebb6ae3062c64f15bba796b"
+    },
+    {
+      "root": "verify_zirus_intro_release.py",
+      "exit": 0,
+      "complete": true,
+      "log_sha256": "c74431e21cf733e99c0de91042848094b20aa57a80b57210868dc73205db9458"
+    }
+  ],
+  "full_local_manifest": ".codex/open-closeout-2026-11-12/final-current/results.json",
+  "full_manifest_sha256": "02a570010056589f28bb0c856871387f6f552c9ef18443cdb1239bad13541cfe",
+  "all_python_powershell_tool_hashes_sha256": "6d71f9863392ae016a500a114d6228058dcdc4c5a1e8e5302988ae685865b655",
+  "immutable_inputs": "EXE/map plus all Python/PowerShell test sources identical before/after; collection refuses mixed results. Every declared root body completed and returned; no failed root skipped.",
+  "counterfactual": {
+    "commit": "32f7dc01263cc5f312252b5b08df69b24381e448",
+    "failed": 15,
+    "passed": 0,
+    "same_binary": true,
+    "manifest_sha256": "f56e61ff43826872505577e50468eeb1e2e605733f265df70999989f2e562875",
+    "limitations": "Historical tool counterfactual only; not a broken gameplay-binary baseline."
+  },
+  "limitations": "Selected linked/native code is not actual client traversal, rendering, all36wholeartifactchains or proof of remaining authentic behavior."
+}

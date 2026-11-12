@@ -1,0 +1,359 @@
+{
+  "date": "2026-11-12",
+  "status": "15_EXPECTED_HISTORICAL_TOOL_FAILURES_SAME_CURRENT_BINARY",
+  "commit": "32f7dc01263cc5f312252b5b08df69b24381e448",
+  "artifacts": {
+    "worldserver.exe": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+    "worldserver.map": "59d0c7b2fe34b9ca6dbc3bbbab1ba5cbe8e59a2d02613a03b3ea7e4d7c91ea56"
+  },
+  "controls": [
+    {
+      "root": "verify_acquisition_login_recovery_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_acquisition_login_recovery_release.py",
+      "line": 122,
+      "pinned_excerpt": [
+        {
+          "line": 121,
+          "source": "    assert load[status + 1].mnemonic == 'je' and load[status + 1].operands[0].imm == load[status + 9].address"
+        },
+        {
+          "line": 122,
+          "source": "    assert load[status + 2].op_str == 'dword ptr [rsi], 0x3cc'"
+        },
+        {
+          "line": 123,
+          "source": "    assert load[status + 3].mnemonic == 'jne' and load[status + 3].operands[0].imm == skip"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "9b17f55816f6324451a2e957a5858c84cafd0148c8742d5c520ad200dc48d8fd",
+      "raw_log_sha256": "b51245a9cf12485161e30df494057a9ab12159f4403a33d1cd6767f697a1ea4f"
+    },
+    {
+      "root": "verify_hruthnir_timers_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_hruthnir_timers_release.py",
+      "line": 75,
+      "pinned_excerpt": [
+        {
+          "line": 74,
+          "source": "  owner=('lea','rcx, [rdi + 0xc0]' if current_cold_route and body is parents[1] else 'rcx, [rbx + 0xc0]') if member==0xc0 else ('add',unit_queue_operand('rcx, 0x36a0'))"
+        },
+        {
+          "line": 75,
+          "source": "  assert owner in window and ('mov',f'edx, {delay:#x}') in window,(member,delay,window)"
+        },
+        {
+          "line": 76,
+          "source": "callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'npc_hrutnirAI@' in name]"
+        }
+      ],
+      "exception": "AssertionError: (192, 5000, [('movdqu', 'xmmword ptr [rsp + 0x30], xmm0'), ('lea', 'rdx, [rip + 0x126ebbe]'), ('mov', 'qword ptr [rbp - 0x50], rdx'), ('mov', 'qword ptr [rbp - 0x48], rbx'), ('mov', 'qword ptr [rbp - 0x40], rcx'), ('mov', 'qword ptr [rbp - 0x38], rax'), ('movdqu', 'xmmword ptr [rsp + 0x48], xmm0'), ('lea', 'rax, [rbp - 0x50]'), ('mov', 'qword ptr [rbp - 0x18], rax'), ('lea', 'r8, [rbp - 0x50]'), ('mov', 'edx, 0x1388'), ('lea', 'rcx, [rbx + 0xc0]')])",
+      "source_sha256": "fb652190aa83b4c8d09ceb47b0570f901ef55d520e36a69593a030b008f2631a",
+      "raw_log_sha256": "a8b925cde3e14a86a772d7d37e51f88d5128507ef5b6cac4e37e523aa749a24b"
+    },
+    {
+      "root": "verify_monk_chen_early_presentation_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_monk_chen_presentation_release.py",
+      "line": 56,
+      "pinned_excerpt": [
+        {
+          "line": 55,
+          "source": "needs(update,context('Actor'),context('Progress'),context('EscortStage'),context('EscortLeaf'),context('Current'),presentation('Owner'),presentation('Guide'),'?getMSTime@@','?SendChat@CreatureTextMgr@@','?MovePoint@MotionMaster@@')"
+        },
+        {
+          "line": 56,
+          "source": "assert {('cmp','byte ptr [rcx + 0x11], 0'),('mov','qword ptr [rsi + 8], rcx'),('mov','byte ptr [rsi + 0x10], 0'),"
+        },
+        {
+          "line": 57,
+          "source": "        ('mov','byte ptr [rbx], 1'),('mov','byte ptr [rbx], 0'),('mov','edi, dword ptr [rdi + 0xc4]'),"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "0e8b58ac642a5ba30cd8c69b70c41baaeb1461239d24da27071e3fc52d194ab0",
+      "raw_log_sha256": "f178b58b89275630e4ca7f8a573abeaac139db2c0fbe2d07cdb70fa082d998a1"
+    },
+    {
+      "root": "verify_monk_chen_presentation_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_monk_chen_presentation_release.py",
+      "line": 56,
+      "pinned_excerpt": [
+        {
+          "line": 55,
+          "source": "needs(update,context('Actor'),context('Progress'),context('EscortStage'),context('EscortLeaf'),context('Current'),presentation('Owner'),presentation('Guide'),'?getMSTime@@','?SendChat@CreatureTextMgr@@','?MovePoint@MotionMaster@@')"
+        },
+        {
+          "line": 56,
+          "source": "assert {('cmp','byte ptr [rcx + 0x11], 0'),('mov','qword ptr [rsi + 8], rcx'),('mov','byte ptr [rsi + 0x10], 0'),"
+        },
+        {
+          "line": 57,
+          "source": "        ('mov','byte ptr [rbx], 1'),('mov','byte ptr [rbx], 0'),('mov','edi, dword ptr [rdi + 0xc4]'),"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "0e8b58ac642a5ba30cd8c69b70c41baaeb1461239d24da27071e3fc52d194ab0",
+      "raw_log_sha256": "537b9ea3881fa2c7c4ebf70d861ca1093a64342fbc45718febb3562c2a351248"
+    },
+    {
+      "root": "verify_monk_jorvinax_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_monk_jorvinax_release.py",
+      "line": 29,
+      "pinned_excerpt": [
+        {
+          "line": 28,
+          "source": "if presentation_successor:"
+        },
+        {
+          "line": 29,
+          "source": "    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))"
+        },
+        {
+          "line": 30,
+          "source": "registration,script=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "4469cb120547322883fe140ca76f561d98cc3197423b869e6c28c351cb8370c1",
+      "raw_log_sha256": "c179f688a4f3faf4e26b7ecbc2d07da124dd5658167de065ce0140a07d0f525c"
+    },
+    {
+      "root": "verify_monk_nine_arrival_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_monk_chen_presentation_release.py",
+      "line": 56,
+      "pinned_excerpt": [
+        {
+          "line": 55,
+          "source": "needs(update,context('Actor'),context('Progress'),context('EscortStage'),context('EscortLeaf'),context('Current'),presentation('Owner'),presentation('Guide'),'?getMSTime@@','?SendChat@CreatureTextMgr@@','?MovePoint@MotionMaster@@')"
+        },
+        {
+          "line": 56,
+          "source": "assert {('cmp','byte ptr [rcx + 0x11], 0'),('mov','qword ptr [rsi + 8], rcx'),('mov','byte ptr [rsi + 0x10], 0'),"
+        },
+        {
+          "line": 57,
+          "source": "        ('mov','byte ptr [rbx], 1'),('mov','byte ptr [rbx], 0'),('mov','edi, dword ptr [rdi + 0xc4]'),"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "0e8b58ac642a5ba30cd8c69b70c41baaeb1461239d24da27071e3fc52d194ab0",
+      "raw_log_sha256": "5742cebec6fa29cd5f735e2469f7e772544aa54bbdd3034468c3426b3ef04384"
+    },
+    {
+      "root": "verify_sharasdal_lady_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/damage_scaling_release_check.py",
+      "line": 20,
+      "pinned_excerpt": [
+        {
+          "line": 19,
+          "source": "    assert struct.unpack_from('<d', native['binary'], native['offset'](address))[0] == 4294967295.0"
+        },
+        {
+          "line": 20,
+          "source": "    assert [(x.mnemonic, x.op_str) for x in body[division + 3:division + 6]] == ["
+        },
+        {
+          "line": 21,
+          "source": "        ('minsd', 'xmm2, xmm1'), ('cvttsd2si', 'rcx, xmm2'), ('mov', 'dword ptr [rsp + 0x60], ecx')]"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "3ab33702be39a8085f1d322492a5f34dfdd459faa7f64245aa34928fbd534f1b",
+      "raw_log_sha256": "bf16dec29760a7b3eeef26ca29ab94513d1139b3e2cc88995324401fe8d8c207"
+    },
+    {
+      "root": "verify_sharasdal_wave_contact_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/damage_scaling_release_check.py",
+      "line": 20,
+      "pinned_excerpt": [
+        {
+          "line": 19,
+          "source": "    assert struct.unpack_from('<d', native['binary'], native['offset'](address))[0] == 4294967295.0"
+        },
+        {
+          "line": 20,
+          "source": "    assert [(x.mnemonic, x.op_str) for x in body[division + 3:division + 6]] == ["
+        },
+        {
+          "line": 21,
+          "source": "        ('minsd', 'xmm2, xmm1'), ('cvttsd2si', 'rcx, xmm2'), ('mov', 'dword ptr [rsp + 0x60], ecx')]"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "3ab33702be39a8085f1d322492a5f34dfdd459faa7f64245aa34928fbd534f1b",
+      "raw_log_sha256": "dca532152e0540a12efd92d0ef5897f5625a8db80592e72b1879a54fae269497"
+    },
+    {
+      "root": "verify_silver_hand_ally_damage_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/damage_scaling_release_check.py",
+      "line": 20,
+      "pinned_excerpt": [
+        {
+          "line": 19,
+          "source": "    assert struct.unpack_from('<d', native['binary'], native['offset'](address))[0] == 4294967295.0"
+        },
+        {
+          "line": 20,
+          "source": "    assert [(x.mnemonic, x.op_str) for x in body[division + 3:division + 6]] == ["
+        },
+        {
+          "line": 21,
+          "source": "        ('minsd', 'xmm2, xmm1'), ('cvttsd2si', 'rcx, xmm2'), ('mov', 'dword ptr [rsp + 0x60], ecx')]"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "3ab33702be39a8085f1d322492a5f34dfdd459faa7f64245aa34928fbd534f1b",
+      "raw_log_sha256": "2095a003103a66167a263d4591eba1ee8299e59b4a3882d4cdf956597bc80367"
+    },
+    {
+      "root": "verify_silver_hand_mordoth_motion_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_silver_hand_mordoth_motion_release.py",
+      "line": 25,
+      "pinned_excerpt": [
+        {
+          "line": 24,
+          "source": "assert body[attack[1] + 2].operands[0].imm > body[chase].address"
+        },
+        {
+          "line": 25,
+          "source": "combat = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rdi + 0x1dc], 0')"
+        },
+        {
+          "line": 26,
+          "source": "assert body[combat + 4].mnemonic == 'je' and body[combat + 4].operands[0].imm > body[chase].address"
+        }
+      ],
+      "exception": "StopIteration",
+      "source_sha256": "42114a82ea7c09a68f6722fae9ba222a64957e028f971faa289266c485ae6502",
+      "raw_log_sha256": "134dbcb441f54f1bd74e4d4865a001604000624f6cd26b17bab4b13cb82fcd63"
+    },
+    {
+      "root": "verify_silver_hand_rescue_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_silver_hand_rescue_release.py",
+      "line": 90,
+      "pinned_excerpt": [
+        {
+          "line": 89,
+          "source": "                         ('rdx, rdx', 'je'), ('qword ptr [rbx + 8], rax', 'jne')):"
+        },
+        {
+          "line": 90,
+          "source": "    position = next(index for index, entry in enumerate(body) if entry.op_str == operands)"
+        },
+        {
+          "line": 91,
+          "source": "    assert body[position + 1].mnemonic == branch and not reaches(body, body[position + 1].operands[0].imm, body[queue].address)"
+        }
+      ],
+      "exception": "StopIteration",
+      "source_sha256": "1062d7a399b412aafcea6d61c92dd2be102766cf18ac11007d6ec89bbbbbae25",
+      "raw_log_sha256": "f46b0c84cb8d8a85f3b2ff7ff3e3715c92bdd0c701b769e7ef7ece0a0ad0f3a5"
+    },
+    {
+      "root": "verify_tuure_ally_damage_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_tuure_ally_damage_release.py",
+      "line": 42,
+      "pinned_excerpt": [
+        {
+          "line": 41,
+          "source": "done=next(i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xb8)"
+        },
+        {
+          "line": 42,
+          "source": "applied=next(i for i,x in enumerate(heal_body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and n['resolve'](x.operands[0].imm)==n['symbol']('?ModifyHealth@Unit@@'))"
+        },
+        {
+          "line": 43,
+          "source": "assert received<done<applied"
+        }
+      ],
+      "exception": "StopIteration",
+      "source_sha256": "fc1a2eb1e5dc7b95d0bad5224e149088870ed2a5f205bfa90cad57980d7c04ad",
+      "raw_log_sha256": "02bb8918464c34733998d5675abec5f005dbf41c9dc40b4c158a4512155c1e8b"
+    },
+    {
+      "root": "verify_warswords_arrival_legacy_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/verify_scenario_lfg_release.py",
+      "line": 54,
+      "pinned_excerpt": [
+        {
+          "line": 53,
+          "source": "    if len(matches) != 1:"
+        },
+        {
+          "line": 54,
+          "source": "        raise ValueError(f\"Expected one symbol for {prefix}, got {len(matches)}\")"
+        },
+        {
+          "line": 55,
+          "source": "    return resolve(matches[0])"
+        }
+      ],
+      "exception": "ValueError: Expected one symbol for ?_Do_call@?$_Func_impl_no_alloc@V<lambda_1>@?1??OnPlayerEnter@instance_warswords_InstanceMapScript@instance_warswords@@, got 0",
+      "source_sha256": "72f95a522073927cee651adaaeb9d567d885e899cae6f3a0ba45c07fdc849cb4",
+      "raw_log_sha256": "0eac7cdeff7b7b07163a7f4fbefcb2a6fa6f1735e7d2d52bac4bd98ce54e0468"
+    },
+    {
+      "root": "verify_warswords_helya_channel_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/damage_scaling_release_check.py",
+      "line": 20,
+      "pinned_excerpt": [
+        {
+          "line": 19,
+          "source": "    assert struct.unpack_from('<d', native['binary'], native['offset'](address))[0] == 4294967295.0"
+        },
+        {
+          "line": 20,
+          "source": "    assert [(x.mnemonic, x.op_str) for x in body[division + 3:division + 6]] == ["
+        },
+        {
+          "line": 21,
+          "source": "        ('minsd', 'xmm2, xmm1'), ('cvttsd2si', 'rcx, xmm2'), ('mov', 'dword ptr [rsp + 0x60], ecx')]"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "3ab33702be39a8085f1d322492a5f34dfdd459faa7f64245aa34928fbd534f1b",
+      "raw_log_sha256": "3387d94501a4aa05434600769e506d2309b0c858b77ee308a7c9ec6ef8045cef"
+    },
+    {
+      "root": "verify_warswords_intro_bubble_release.py",
+      "exit": 1,
+      "pinned_source_file": "tools/tests/damage_scaling_release_check.py",
+      "line": 20,
+      "pinned_excerpt": [
+        {
+          "line": 19,
+          "source": "    assert struct.unpack_from('<d', native['binary'], native['offset'](address))[0] == 4294967295.0"
+        },
+        {
+          "line": 20,
+          "source": "    assert [(x.mnemonic, x.op_str) for x in body[division + 3:division + 6]] == ["
+        },
+        {
+          "line": 21,
+          "source": "        ('minsd', 'xmm2, xmm1'), ('cvttsd2si', 'rcx, xmm2'), ('mov', 'dword ptr [rsp + 0x60], ecx')]"
+        }
+      ],
+      "exception": "AssertionError",
+      "source_sha256": "3ab33702be39a8085f1d322492a5f34dfdd459faa7f64245aa34928fbd534f1b",
+      "raw_log_sha256": "2407c72620db38e3c53d46f166c8ffdf7888de476405dd1d2cd393e697e80de3"
+    }
+  ],
+  "diagnostic_limitation": "Python default unhandled tracebacks can reread current physical source for display even though the executed code object came from pinned Git source. Raw logs are preserved. These excerpts are separately resolved from the hashed frozen baseline-sources.json and the executed traceback filename/line; do not treat a current-file display excerpt as historical code.",
+  "frozen_sources_sha256": "94334d889b17c671ad8d428317f391fe943f95376ea62a35c09c6e232ed79ef6",
+  "limitations": "A certificate-tool counterfactual, not a broken gameplay-binary control."
+}
