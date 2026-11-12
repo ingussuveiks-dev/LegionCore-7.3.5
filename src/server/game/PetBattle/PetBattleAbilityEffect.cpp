@@ -249,7 +249,7 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 223 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 224 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 225 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 226 */{&PetBattleAbilityEffect::HandleDamageWithBonus,            PETBATTLE_TARGET_NONE},
+    /* EFFECT 226 */{&PetBattleAbilityEffect::HandleDamageWithBonus,            PETBATTLE_TARGET_TARGET},
     /* EFFECT 227 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 228 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 229 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
@@ -1709,11 +1709,10 @@ bool PetBattleAbilityEffect::HandleDamageRange()
 bool PetBattleAbilityEffect::HandleDamageWithBonus()
 {
     CalculateHit(EffectInfo->Param[1]);
-
-    uint32 damage = CalculateDamage(EffectInfo->Param[0]);
-
-    if (EffectInfo->Param[3] && GetState(Caster, EffectInfo->Param[3]))
-        damage += CalculateDamage(EffectInfo->Param[2]);
-
-    return Damage(Target, damage);
+    int32 points = EffectInfo->Param[0];
+    if (EffectInfo->Param[3] && GetState(Target, EffectInfo->Param[3]))
+        points += EffectInfo->Param[2];
+    if (EffectInfo->Param[4])
+        Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;
+    return Damage(Target, CalculateDamage(points));
 }
