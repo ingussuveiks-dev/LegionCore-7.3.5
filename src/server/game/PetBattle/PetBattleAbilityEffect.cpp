@@ -935,8 +935,8 @@ bool PetBattleAbilityEffect::HandleRampingDamage()
 
     if (GetState(Caster, BATTLEPET_STATE_Ramping_DamageID) != AbilityID)
     {
-        SetState(Caster, BATTLEPET_STATE_Ramping_DamageID, AbilityID);
-        SetState(Caster, BATTLEPET_STATE_Ramping_DamageUses, 0);
+        PetBattleInstance->SetPetState(Caster, Caster, EffectInfo->ID, BATTLEPET_STATE_Ramping_DamageID, AbilityID);
+        PetBattleInstance->SetPetState(Caster, Caster, EffectInfo->ID, BATTLEPET_STATE_Ramping_DamageUses, 0);
     }
 
     int32 bonusDamage = damageIncrementPerUse * GetState(Caster, BATTLEPET_STATE_Ramping_DamageUses);
@@ -948,7 +948,10 @@ bool PetBattleAbilityEffect::HandleRampingDamage()
             SetState(Target, EffectInfo->Param[4], 1);
     }
 
-    ModState(Caster, BATTLEPET_STATE_Ramping_DamageUses, 1);
+    // Native Vicious Fang156 and Huge Fang930 grow on hits; the other native
+    // ramping attacks explicitly grow on uses, including a missed use.
+    if ((AbilityID != 156 && AbilityID != 930) || !(Flags & FailFlags))
+        PetBattleInstance->SetPetState(Caster, Caster, EffectInfo->ID, BATTLEPET_STATE_Ramping_DamageUses, GetState(Caster, BATTLEPET_STATE_Ramping_DamageUses) + 1);
 
     return Damage(Target, CalculateDamage(baseDamage + bonusDamage));
 }
