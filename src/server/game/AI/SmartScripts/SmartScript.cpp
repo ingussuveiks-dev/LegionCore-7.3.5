@@ -2683,8 +2683,9 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_SUMMON_CREATURE_IN_PERS_VISIBILITY:
         {
-            ObjectList* targets = GetTargets(e, unit);
-            if (!targets && !me)
+            std::unique_ptr<ObjectList> targets(GetTargets(e, unit));
+            if (!targets || (e.action.sumCreaturePV.summmonInNPCPosition && !me) ||
+                (e.action.sumCreaturePV.getphases && !GetBaseObject()))
                 break;
 
             for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
@@ -2709,7 +2710,6 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     }
                 }
             }
-            delete targets;
             break;
         }
         case SMART_ACTION_SET_HEALTH_IN_PERCENT:
