@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "PenanceHealWidth",
+  "batch": 6,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Preserve unsigned64 Penance healing through Power of the Dark Side",
+  "paths": [
+    "src/server/scripts/Spells/spell_priest.cpp"
+  ],
+  "binding": "spell_pri_penance_heal",
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 5 -Case PenanceHealWidth",
+  "counterfactual": "Add -Baseline; expected-broken control, paired with repaired pass.",
+  "checks": {
+    "asan": "Ten complete production class/create-hook scopes pass. All seven anvil IDs, three sha IDs and unrelated/empty target lists; both Azerite variants and3s animation; lethal/nonlethal Guardian Spirit, Shell cap/conversion, Halo distance and ordinary rounding, Penance/Deluge native64 input andbounded addition, Ancestral heal/damage/nonrecursive proc, DeathStrike minimum/history/PvP branches. Cast/aura/spatial endpoints are controlled.",
+    "baseline": "All ten pinned pre-task counterfactuals fail their repaired expectations; paired with passing repaired runs. Initial float cap expectation was corrected to retain native binary32 percent rounding; no production rounding rule was changed.",
+    "native": "Ten actual database binding families and matching26972 effect/child data. Seven real anvil entries and three sha entries through native registered target handlers; typed native GameObject entry fields and actual FunctionProcessor3s queue, with capture/animation endpoints observed. Actual Guardian lethal absorb dispatcher and native maximum health; actual SpiritShell/Halo/Penance/ChainHeal GetHitHeal64/SetHitHeal64 roundtrip and own aura gates; real HealInfo proc and DeathStrike native maximum-health minimum. Child cast endpoints observed. First fifty native checks retained.",
+    "linked": "Canonical5edc7875 Release contains all authored anvil/sha/Azerite IDs, original3s node queue, unsigned64 Guardian conversion, four actual native64 SpellScript getter/setter pairs, wide Guidance input andDeathStrike choice/child. First fifty linked checks retained.",
+    "retained": "Prior50 focused-repair and65-file unsigned64 healing source certificates pass. Canonical Scepter Release verification passes.",
+    "runtime": "Task-owned canonical PID19936 fresh ready, graceful shutdown0,exit0/gone,empty stderr. No new/changed crash,appended DBErrors or unexplained server warnings/errors/assertions. No user server stopped;configuration/DLL/certificates preserved.",
+    "investigation": "Local live bindings, native26972 spells/effects/IDs and core APIs checked first. Named GetHitHeal64/SetHitHeal64 are required;changing only the variable type would still read the legacy32 channel. Native fixture initially lacked PageText/GameObjectTemplate loaders; added real loader prerequisites. First PE assertion expected an out-of-line GameObject wrapper; actual compiler inlines it and calls FunctionProcessor::AddDelayedEvent,now checked. Ordinary non-exact effect accumulation remains a separate discovered engine limitation to investigate in the remaining groups; these tests certify explicit native64 channel inputs and listed class calculations only."
+  },
+  "canonical_worldserver_sha256": "5edc7875f6b265c6bb145d62d1130b61a0bd03bb0d93596c258bcfba8701b125",
+  "scope": "Authored IDs,percentages,distance formula,proc ownership,recursion guards,PvP/faction gates andtimings retained. Each shared class family is counted once. Native binary32 percentage rounding and existing unsigned64 API are preserved. No database/schema/character/packet changes.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch06; after focused commits.",
+  "pending": "Ordinary effect accumulation outside explicit native64 inputs is a separate OPEN engine limitation for the remaining groups. Actual client visuals, combat, movement, healing and full affected encounters remain unverified. Lady authentic finale, LINK2/Slaghammer, original handshake and all36 whole chains retain their existing OPEN evidence; mixed DBErrors is unchanged."
+}

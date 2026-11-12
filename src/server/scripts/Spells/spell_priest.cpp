@@ -2059,9 +2059,9 @@ class spell_pri_penance_heal : public SpellScript
     {
         if (AuraEffect const* powerOfTheDarkSide = GetCaster()->GetAuraEffect(198069, EFFECT_0))
         {
-            int32 heal = GetHitHeal();
-            AddPct(heal, powerOfTheDarkSide->GetAmount());
-            SetHitHeal(heal);
+            uint64 heal = GetHitHeal64();
+            heal = HealingAmount::Add(heal, CalculatePct(heal, powerOfTheDarkSide->GetAmount()));
+            SetHitHeal64(heal);
         }
     }
 
