@@ -15,6 +15,8 @@ static void FillSecond(PetBattle&b,Player*player=nullptr){
 #include "SecondTenTen20261112ThirdNative.h"
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
+ for(char const*name:{"npc_corstilax_quarantine","npc_corstilax_suppression_protocol","npc_hatecoil_monsoon","npc_skovald_honored_ancestor","npc_stillpine_capitive","npc_bethtilac_cinderweb_spiderling","npc_magma_jet","npc_chogall_fire_elemental","npc_chogall_shadow_lord","npc_wyrmrest_skytalon","npc_amber_pool_stalker"}){auto script=sObjectMgr->GetScriptId(name);uint32 bound=0;std::cout<<"ACTOR_BINDING "<<name<<" script="<<script;for(auto const&row:*sObjectMgr->GetCreatureTemplates()){auto info=sObjectMgr->GetCreatureTemplate(row.first);if(script&&info&&info->ScriptID==script){++bound;std::cout<<" entry="<<row.first<<" vehicle="<<info->VehicleId;}}std::cout<<"\n";Require(bound>0,"Fourth-group script has no actual matching native creature binding");}
+
  dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1600,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1600,{}}});
  MapInstanced parent(1600,300);InstanceMap map(1600,300,9999810,DIFFICULTY_N_SCENARIO,&parent);auto session=Session();
  {

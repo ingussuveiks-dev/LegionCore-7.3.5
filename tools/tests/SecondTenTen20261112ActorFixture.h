@@ -1,0 +1,30 @@
+#pragma once
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using uint64=uint64_t;using int8=int8_t;using int32=int32_t;
+#include "Labels.inc"
+#define RAND(a,b,c) (a)
+static void Require(bool yes,char const*why){if(!yes)throw std::runtime_error(why);}
+struct ObjectGuid{uint64 value=0;static ObjectGuid const Empty;ObjectGuid()=default;ObjectGuid(uint64 v):value(v){}void Clear(){value=0;}bool IsEmpty()const{return value==0;}explicit operator bool()const{return value!=0;}friend bool operator<(ObjectGuid a,ObjectGuid b){return a.value<b.value;}friend bool operator==(ObjectGuid a,ObjectGuid b){return a.value==b.value;}};ObjectGuid const ObjectGuid::Empty{};
+struct Position{float m_positionX=0,m_positionY=0,m_positionZ=0,m_orientation=0;float GetPositionX()const{return m_positionX;}float GetPositionY()const{return m_positionY;}float GetPositionZ()const{return m_positionZ;}};static Position addsPos[8]{};
+struct Unit;struct Player;struct Creature;struct InstanceScript;static std::map<ObjectGuid,Unit*>actors;
+struct Unit{ObjectGuid guid;Position pos{100,0,0,0};int map=1,credits=0,removedAuras=0;bool alive=true,inWorld=true;int kind=TYPEID_UNIT;explicit Unit(uint64 id):guid(id){actors[guid]=this;}virtual ~Unit(){actors.erase(guid);}ObjectGuid GetGUID()const{return guid;}int GetTypeId()const{return kind;}Player*ToPlayer();Creature*ToCreature();bool IsAlive()const{return alive;}bool IsInWorld()const{return inWorld;}float GetPositionX()const{return pos.m_positionX;}float GetPositionY()const{return pos.m_positionY;}float GetPositionZ()const{return pos.m_positionZ;}float GetOrientation()const{return pos.m_orientation;}Position GetPosition()const{return pos;}float GetObjectSize(){return 1;}Position GetNearPosition(float distance,float){auto result=pos;result.m_positionX+=distance;return result;}float GetDistance(Unit const*p)const{auto dx=pos.m_positionX-p->pos.m_positionX;return std::abs(dx);}void RemoveAurasDueToSpell(uint32){++removedAuras;}void ClearUnitState(uint32){}bool HasAura(uint32){return false;}void KilledMonsterCredit(uint32,ObjectGuid){++credits;}template<class...T>void CastSpell(T...){};};
+struct Player:Unit{explicit Player(uint64 id):Unit(id){kind=TYPEID_PLAYER;}};
+struct GameObject{void SetLootState(int){}void SetGoState(int){}};
+struct Motion{Creature*me;int points=0,follows=0,clears=0;uint64 target=0;void MovePoint(uint32,Position const&){++points;}void MovePoint(uint32,float,float,float){++points;}void MoveFollow(Unit*p,float,float){target=p->GetGUID().value;++follows;}void MovementExpired(bool){}void Clear(){++clears;}};
+struct Creature:Unit{Motion motion{this};InstanceScript*instance=nullptr;Creature*nearest=nullptr;int despawns=0,casts=0;uint32 lastSpell=0;uint64 lastTarget=0;bool moving=false;explicit Creature(uint64 id):Unit(id){}void SetReactState(int){}void SetWalk(bool){}void ApplySpellImmune(int,int,int,bool){}void SetFlag(int,int){}void setFaction(int){}void SetOrientation(float angle){pos.m_orientation=angle;}void SetVisible(bool){}void SetSpeed(int,float,bool){}void AddThreat(Unit*,float){}void ClearUnitState(uint32){}bool HasUnitState(uint32){return false;}Motion*GetMotionMaster(){return &motion;}InstanceScript*GetInstanceScript(){return instance;}Creature*FindNearestCreature(uint32,float){return nearest;}GameObject*FindNearestGameObject(uint32,float){return nullptr;}bool isMoving(){return moving;}uint32 GetEntry(){return 299;}void NearTeleportTo(float x,float y,float z,float a){pos={x,y,z,a};}void DespawnOrUnsummon(uint32=0){++despawns;}void CastSpell(Unit*p,uint32 spell,bool=false){if(p)lastTarget=p->GetGUID().value;lastSpell=spell;++casts;}};
+Player*Unit::ToPlayer(){return kind==TYPEID_PLAYER?static_cast<Player*>(this):nullptr;}Creature*Unit::ToCreature(){return kind!=TYPEID_PLAYER?static_cast<Creature*>(this):nullptr;}
+struct InstanceScript{ObjectGuid boss;int state=IN_PROGRESS;ObjectGuid GetGuidData(uint32){return boss;}int GetBossState(uint32){return state;}};
+namespace ObjectAccessor{static Unit*GetUnit(Creature&me,ObjectGuid id){auto i=actors.find(id);return i!=actors.end()&&i->second->inWorld&&i->second->map==me.map?i->second:nullptr;}static Player*GetPlayer(Creature&me,ObjectGuid id){auto unit=GetUnit(me,id);return unit?unit->ToPlayer():nullptr;}static Creature*GetCreature(Creature&me,ObjectGuid id){auto unit=GetUnit(me,id);return unit?unit->ToCreature():nullptr;}}
+struct EventMap{uint64 now=0;std::map<uint32,uint64>due;void Reset(){now=0;due.clear();}void Update(uint32 diff){now+=diff;}void ScheduleEvent(uint32 id,uint32 delay){due[id]=now+delay;}void RescheduleEvent(uint32 id,uint32 delay){ScheduleEvent(id,delay);}uint32 ExecuteEvent(){auto it=std::min_element(due.begin(),due.end(),[](auto const&a,auto const&b){return a.second<b.second;});if(it==due.end()||it->second>now)return 0;auto id=it->first;due.erase(it);return id;}};
+struct SpellInfo{uint32 Id=0;};using DamageEffectType=int;
+struct ScriptedAI{Creature*me;explicit ScriptedAI(Creature*c):me(c){}virtual ~ScriptedAI()=default;virtual void Reset(){}virtual void UpdateAI(uint32){}virtual void IsSummonedBy(Unit*){}virtual void OnSpellClick(Unit*){}virtual void SpellHit(Unit*,SpellInfo const*){}virtual void SpellHitTarget(Unit*,SpellInfo const*){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void PassengerBoarded(Unit*,int8,bool){}virtual void MovementInform(uint32,uint32){}bool UpdateVictim(){return true;}void AttackStart(Unit*){}void DoZoneInCombat(Creature*,float){}void Talk(uint32,ObjectGuid){}void DoCast(Unit*p,uint32 spell,bool=false){me->CastSpell(p,spell);}void DoCast(uint32 spell){me->CastSpell(me,spell);}};using Scripted_NoMovementAI=ScriptedAI;struct VehicleAI:ScriptedAI{using ScriptedAI::ScriptedAI;void UpdateAI(uint32)override{}};
+static void DoScriptText(int,Creature*,Player*){}

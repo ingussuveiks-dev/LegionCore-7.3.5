@@ -1,7 +1,8 @@
 """Small independent x64 reader for the selected new implementation paths."""
 from pathlib import Path
 import bisect,functools,runpy
-from capstone import Cs,CS_ARCH_X86,CS_MODE_64,CS_OP_IMM
+from capstone import Cs,CS_ARCH_X86,CS_MODE_64,CS_OP_IMM,CS_OP_MEM
+import struct
 n=runpy.run_path(str(Path(__file__).with_name('verify_scenario_lfg_release.py')))
 decoder=Cs(CS_ARCH_X86,CS_MODE_64);decoder.detail=True
 @functools.lru_cache(None)
@@ -17,7 +18,23 @@ def ins(prefix):
             if b!=end or n['root'](b,u)!=origin:break
             end=e
     at=n['offset'](address)
-    return list(decoder.disasm(n['binary'][at:at+end+n['base']-address],address))
+    rows=list(decoder.disasm(n['binary'][at:at+end+n['base']-address],address))
+    # MSVC can include an RVA switch table after the final return within the
+    # unwind range. Prove its image-base addressing and real in-body targets
+    # before excluding those data bytes from instruction/call-site searches.
+    for i,x in enumerate(rows):
+        for operand in x.operands:
+            if operand.type!=CS_OP_MEM or operand.mem.scale!=4 or not operand.mem.index:continue
+            table=n['base']+operand.mem.disp
+            if not address<table<end+n['base']:continue
+            base_register=x.reg_name(operand.mem.base)
+            proved=any(y.mnemonic=='lea'and y.op_str.startswith(base_register+', [rip')and y.address+y.size+y.operands[1].mem.disp==n['base']for y in rows[:i]if len(y.operands)>1 and y.operands[1].type==CS_OP_MEM)
+            before=[y for y in rows if y.address<table]
+            if not proved or not before or before[-1].mnemonic!='ret' or before[-1].address+before[-1].size!=table:continue
+            raw=n['offset'](table);targets=[n['base']+struct.unpack_from('<I',n['binary'],raw+4*j)[0]for j in range(2)]
+            assert all(address<=t<table and any(y.address==t for y in before)for t in targets),'Recognized switch table has invalid first two code targets'
+            return before
+    return rows
 
 @functools.lru_cache(None)
 def targets(prefix):return {n['resolve'](a)for name,a in n['symbols'].items()if name.startswith(prefix)}
