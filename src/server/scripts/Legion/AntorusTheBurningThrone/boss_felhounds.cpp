@@ -990,8 +990,12 @@ class spell_felhounds_touched_proc : public AuraScript
 
     void OnProc(AuraEffect const* auraEffect, ProcEventInfo& eventInfo)
     {
-        SpellInfo const* spellInfo = eventInfo.GetDamageInfo()->GetSpellInfo();
-        if (!spellInfo || !GetTarget() || eventInfo.GetActor()->GetGUID() == GetTarget()->GetGUID())
+        auto damageInfo = eventInfo.GetDamageInfo();
+        auto actor = eventInfo.GetActor();
+        if (!damageInfo || !actor)
+            return;
+        SpellInfo const* spellInfo = damageInfo->GetSpellInfo();
+        if (!spellInfo || !GetTarget() || actor->GetGUID() == GetTarget()->GetGUID())
             return;
 
         if (GetId() == SPELL_SHADOWTOUCHED)
@@ -1003,7 +1007,10 @@ class spell_felhounds_touched_proc : public AuraScript
         {
             if (spellInfo->GetSchoolMask() & SPELL_SCHOOL_MASK_SHADOW)
             {
-                if (auto instance = GetCaster()->GetInstanceScript())
+                auto caster = GetCaster();
+                if (!caster)
+                    return;
+                if (auto instance = caster->GetInstanceScript())
                     if (auto shatug = instance->instance->GetCreature(instance->GetGuidData(NPC_SHATUG)))
                     {
                         shatug->CastSpell(GetTarget(), SPELL_BURNING_FLASH, true);
