@@ -727,11 +727,11 @@ class npc_bethtilac_cinderweb_spiderling : public CreatureScript
         {
             npc_bethtilac_cinderweb_spiderlingAI(Creature* pCreature) : ScriptedAI(pCreature)
             {
-                pDrone = NULL;
+                droneGuid.Clear();
                 me->SetReactState(REACT_PASSIVE);
             }
 
-            Unit* pDrone;
+            ObjectGuid droneGuid;
             EventMap events;
 
             void EnterCombat(Unit* who)
@@ -751,10 +751,12 @@ class npc_bethtilac_cinderweb_spiderling : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_CHECK_DRONE:
+                            Creature* pDrone = ObjectAccessor::GetCreature(*me, droneGuid);
                             if (!pDrone || !pDrone->IsAlive())
                             {
                                 if (Creature* pTarget = me->FindNearestCreature(NPC_CINDERWEB_DRONE, 500.0f))
                                 {
+                                    droneGuid = pTarget->GetGUID();
                                     pDrone = pTarget;
                                     me->GetMotionMaster()->MovementExpired(false);
                                     me->GetMotionMaster()->MoveFollow(pDrone, 0.0f, 0.0f);
