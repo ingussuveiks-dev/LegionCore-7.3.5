@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected x64 upper Erunak ownership, presentation and re-entry checks."""
 from sharasdal_erunak_entry_pe import method,sites,values,fields,floats
 from capstone import CS_OP_MEM
@@ -89,7 +90,7 @@ def verify(n):
  assert {102826,362093}<=values(created) and 0x464 in fields(created)
  los=ins(method('MoveInLineOfSight'))
  lower,=[x for x in los if x.mnemonic=='je' and x.operands[0].imm==n['symbol'](method('AcceptLowerEntry'))]
- assert lower.address>los[5].address and los[5].op_str=='qword ptr [rax + 0x3a88], 0x5864f'
+ assert lower.address>los[5].address and los[5].op_str==inherited_operand('qword ptr [rax + 0x3a88], 0x5864f')
  assert sites(n,los,method('AcceptUpperIntro'))
  for body in (accept,complete,cancel,probe,rearm,los):
   for forbidden in ('?AddItem@Player@@','?CompleteQuest@Player@@','?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@',

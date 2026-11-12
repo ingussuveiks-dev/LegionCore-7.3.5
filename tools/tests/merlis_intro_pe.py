@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Certify the actual registered Merlis state machine in the selected PE."""
 import re
 import struct
@@ -40,7 +41,7 @@ def verify(n):
                           ('?GetQuestRewardStatus@Player@@', 1), ('?GetQuestStatus@Player@@', 2)]:
         assert len(sites(n, eligible, prefix)) == count, (prefix, count)
     assert {('cmp', 'dword ptr [rcx + 0xa18], 0'), ('cmp', 'dword ptr [rbx + 0xa18], 0'),
-            ('test', 'byte ptr [rbx + 0x4ff0], 1'), ('cmp', 'al, 4')} <= pairs(eligible)
+            ('test', inherited_operand('byte ptr [rbx + 0x4ff0], 1')), ('cmp', 'al, 4')} <= pairs(eligible)
     assert 70.0 in floats(n, eligible) and sites(n, eligible, '?CanUpdateCriteria@Scenario@@')
     assert sites(n, eligible, method('IntroReceipt')) and ('cmp', 'qword ptr [rbx + 8], rax') in pairs(eligible)
     assert {1123, 48587} <= values(receipt)

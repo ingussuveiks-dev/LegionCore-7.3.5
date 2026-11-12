@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify the registered Holy collapse bridge and native exit consumers."""
 from pathlib import Path
 import re
@@ -25,7 +26,7 @@ for operands, branch in (('rdx, rdx', 'je'), ('dword ptr [rdx + 4], 0x4f4', 'jne
                          ('dword ptr [rdx], 0x653', 'jne'), ('rax, 8', 'jne'),
                          ('qword ptr [r8], rax', 'jne'), ('rbx, rbx', 'je'),
                          ('dword ptr [rbx + 0xa18], r14d', 'jne'),
-                         ('byte ptr [rbx + 0x6848], r14b', 'jne'), ('byte ptr [rbx + 0x6849], r14b', 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6848], r14b'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], r14b'), 'jne'),
                          ('qword ptr [rbx + 8], r14', 'je'), ('dword ptr [rbx + 0xe0], 0x603', 'jne')):
     position = next(index for index, entry in enumerate(body[:cast]) if entry.mnemonic in ('cmp', 'test') and entry.op_str == operands)
     reject(position, branch)

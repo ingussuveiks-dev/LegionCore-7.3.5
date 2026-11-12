@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Check selected ride rejection cleanup through native summon and deferred-despawn bridges."""
 from pathlib import Path
 import runpy
@@ -77,7 +78,7 @@ tail = next(index for index, entry in enumerate(empty) if entry.mnemonic == 'jmp
 assert empty[tail - 1].op_str == 'rcx, 0x30' and empty[tail + 1].op_str == 'al, al' and empty[tail + 1].mnemonic == 'xor'
 assert empty[tail + 2].mnemonic == 'ret', 'Missing seat is not conservative false'
 despawn = instructions('?DespawnOrUnsummon@Creature@@')
-assert find(despawn, 'byte ptr [rcx + 0x39c5], 0', 'cmp') < call(despawn, '?IsInWorld@Object@@')
+assert find(despawn, inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'cmp') < call(despawn, '?IsInWorld@Object@@')
 virtual = next(index for index, entry in enumerate(despawn) if entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax + 0x2b8]')
 assert find(despawn, 'byte ptr [rsi + 0x30e8], 1', 'test') < virtual and despawn[virtual - 2].op_str == 'edx, ebp'
 unsummon = native['symbol']('?UnSummon@TempSummon@@')

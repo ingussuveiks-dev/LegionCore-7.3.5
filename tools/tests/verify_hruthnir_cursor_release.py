@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind the instance-owned corridor cursor to the actual selected Release."""
 from pathlib import Path
 import runpy,struct
@@ -21,7 +22,7 @@ def check(n,ins):
     store=find(remember,'dword ptr [rsi + 0x388], r15d','mov')
     has(remember[:query],'edx, 0x42b','r12d, dword ptr [rsi + 0x35c]',
         'byte ptr [rsi + 0x356], 0','byte ptr [rsi + 0x357], 0','eax, 0x38d','eax, 3',
-        'eax, 0x178d4','qword ptr [rbx + 0x3a88], 0x5835a','qword ptr [rbx + 8], rax',
+        'eax, 0x178d4',inherited_operand('qword ptr [rbx + 0x3a88], 0x5835a'),'qword ptr [rbx + 8], rax',
         'byte ptr [rbx + 0x858], 0','r14, qword ptr [rbx + 0x9c0]','dword ptr [rcx + 0x1c], 0x1b57')
     # A caller provides only the generation. The cursor is pulled through the
     # actual AI vtable, bounded and identity/epoch revalidated before storage.
@@ -29,7 +30,7 @@ def check(n,ins):
     assert len(sites(remember,'?GetScenario@ScenarioMgr@@'))==2
     has(remember[query:store],'ecx, [r15 - 1]','ecx, 0xc','r12d, dword ptr [rsi + 0x35c]',
         'qword ptr [rdi + 0x9c0], r14','byte ptr [rsi + 0x356], 0','byte ptr [rsi + 0x357], 0',
-        'eax, 0x178d4','qword ptr [rdi + 0x3a88], 0x5835a','qword ptr [rdi + 8], rax',
+        'eax, 0x178d4',inherited_operand('qword ptr [rdi + 0x3a88], 0x5835a'),'qword ptr [rdi + 8], rax',
         'byte ptr [rdi + 0x858], 0','dword ptr [rcx + 0x1c], 0x1b57','eax, 0x38d','eax, 3')
     assert sites(remember[query:store],'??8ObjectGuid@@')
     setter=ins('?SetData'+shared)
@@ -41,7 +42,7 @@ def check(n,ins):
     has(reset,'dword ptr [rdi + 0x388], ebp')
     creation=ins('?OnCreatureCreate'+shared)
     clear=find(creation,'dword ptr [rdi + 0x388], 0','mov')
-    has(creation[:clear],'eax, 0x178d4','qword ptr [rbx + 0x3a88], 0x5835a','rcx, [rdi + 0x336]')
+    has(creation[:clear],'eax, 0x178d4',inherited_operand('qword ptr [rbx + 0x3a88], 0x5835a'),'rcx, [rdi + 0x336]')
     assert creation[clear-1].mnemonic=='je' and creation[clear-1].operands[0].imm>creation[clear].address
     assert sites(creation[:clear],'??9ObjectGuid@@')
     has(creation[clear:],'xmmword ptr [rdi + 0x336], xmm0')

@@ -90,7 +90,7 @@ if sixth:
  for method,cls in [('HandleOnHit','spell_pri_spirit_shell_SpellScript'),('HandleHeal','spell_pri_halo_heal_SpellScript'),('HandleHeal','spell_pri_penance_heal'),('HandleHeal','spell_sha_chain_heal')]:
   rows=ins('?'+method+'@'+cls+'@');assert len(sites(rows,'?GetHitHeal64@SpellScript@@'))==1 and len(sites(rows,'?SetHitHeal64@SpellScript@@'))==1 and not sites(rows,'?GetHitHeal@SpellScript@@')and not sites(rows,'?SetHitHeal@SpellScript@@'),(cls,'Actual effect reads/writes the native exact64 healing channel')
  rows=ins('?HandleProc@spell_sha_ancestral_guidance@');assert any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rcx')for x in rows[:25])and 114911 in values(rows)and len(sites(rows,'?CastCustomSpell@Unit@@'))==1,'Actual Guidance retains64bit heal/damage input before native percent conversion'
- rows=ins('?HandleHeal@spell_dk_death_strike_SpellScript@');at,=sites(rows,'?CastCustomSpell@Unit@@');assert any(x.mnemonic=='cmp'and x.op_str=='rdi, rcx'for x in rows[:at])and any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rdi')for x in rows[:at])and {45470,66188,137006,246426,48792}<=values(rows),'Actual DeathStrike chooses wide minimum/history andpreserves child,Frost andHeartOfIce gates'
+ rows=ins('?HandleHeal@spell_dk_death_strike_SpellScript@');at,=sites(rows,'?CastCustomSpell@Unit@@');assert any(x.mnemonic=='cmp'and re.fullmatch(r'r(?:[a-z]+|\d+), r(?:[a-z]+|\d+)',x.op_str)for x in rows[:at])and any(x.mnemonic=='cvtsi2ss'and re.search(r', r(?:[a-z]+|\d+)$',x.op_str)for x in rows[:at])and {45470,66188,137006,246426,48792}<=values(rows),'Actual DeathStrike chooses wide minimum/history andpreserves child,Frost andHeartOfIce gates'
  print('PASS linked sixth10:actual authored target IDs andAzerite queue,native64 Guardian/Shell/Halo/Penance/Chain/Guidance/DeathStrike calculations;ordinary effect accumulation remains separately scoped')
 seventh=[e for e in PLAN['changes']if e['batch']==7]
 if seventh:
@@ -146,3 +146,27 @@ if ninth:
  assert sites(rows,'?Execute@PetBattleAbilityEffect@@')and any(x.mnemonic=='mov'and x.op_str=='dword ptr [rax + 0x20], ecx'for x in rows),'Actual periodic dispatch writes BuffTurn on appended event nodes'
  assert ins('?AddAura@PetBattle@@')and ins('?CalculateDamage@PetBattleAbilityEffect@@'),'Actual native slot/critical calculation paths linked; complete behavior separately exercised in the native probe'
  print('PASS linked ninth10:two-team terminal flow,valid incoming slot0,owner/lock call,bounded table dispatch,all-target execution,actual humanoid heal,infinite duration andappended BuffTurn;native slot/crit/selection behavior separately passed')
+
+tenth=[e for e in PLAN['changes']if e['batch']==10]
+if tenth:
+ def tenth_leaf(prefix):
+  try:return ins(prefix)
+  except AssertionError as error:
+   assert str(error).startswith('Unknown leaf bounds:')and prefix in('?CalcDamage@spell_pri_shadow_mend_aura@','?GetSpeed@BattlePetInstance@@')
+   address=n['symbol'](prefix);end=min(a for a in n['symbols'].values()if a>address);assert 0<end-address<1024;at=n['offset'](address);return list(decoder.disasm(n['binary'][at:at+end-address],address))
+ rows=ins('?HandleOnHit@spell_pal_light_of_the_protector_SpellScript@');assert sites(rows,'?SetEffectValueFloat@SpellScript@@')and not sites(rows,'?SetEffectValue@SpellScript@@'),'Actual Protector stores its wide-health percentage in the native float effect channel'
+ rows=ins('?SetEffectValueFloat@SpellScript@@');assert any(x.mnemonic=='movss'and x.op_str.startswith('dword ptr [')for x in rows),'Named setter writes the native float effect field behind its hook guard'
+ rows=tenth_leaf('?CalcDamage@spell_pri_shadow_mend_aura@');assert any(x.mnemonic=='div'and x.op_str.startswith('r')for x in rows)or any(x.mnemonic=='mul'and x.op_str.startswith('r')for x in rows),'Actual penalty budget divides unsigned64 between ten ticks'
+ rows=ins('?HandleDummy@spell_warr_commanding_shout@');assert sites(rows,'?CastCustomSpell@Unit@@')and any(x.mnemonic=='cvtsi2ss'and x.op_str.endswith(', rax')for x in rows),'Actual Shout preserves full maximum health before float child request'
+ rows=ins('?UpdateMaxHealth@Player@@');assert sites(rows,'?SetMaxHealth@Unit@@')and any(x.mnemonic=='cvttss2si'and x.op_str.startswith('rdx,')for x in rows),'Actual Player stat refresh reaches unsigned64 maximum-health setter'
+ rows=ins('?HandleAuraModIncreaseHealth@AuraEffect@@');assert any(x.mnemonic=='cvttss2si'and x.op_str.startswith('r')for x in rows)and sites(rows,'?ModifyHealth@Unit@@'),'Actual flat-health lifecycle retains signed64 delta domain'
+ for method in ('HandleAuraModIncreaseHealthOrPercent','HandleAuraModIncreaseHealthPercent'):
+  rows=ins('?'+method+'@AuraEffect@@');assert sites(rows,'?CountPctFromMaxHealth@Unit@@')and sites(rows,'?SetHealth@Unit@@'),(method,'actual native percent/positive gain path remains linked')
+ assert not any('spell_copy_melee_weapon@'in name for name in n['symbols']),'Obsolete duplicate clone class/registration is absent from linked Release'
+ for prefix in ('?GetNpcDamageTakenInPastSecs@Unit@@','?GetPlayerDamageTakenInPastSecs@Unit@@','?GetDamageTakenInPastSecs@Unit@@'):
+  names=[name for name in n['symbols']if name.startswith(prefix)];assert (len(names)==1 or prefix!='?GetDamageTakenInPastSecs@Unit@@'and not names)and all('@@QEBA_K'in name for name in names),(prefix,'referenced canonical history ABI returns unsigned64;unreferenced origin-only getters may be discarded by OPTREF andarenative-tested')
+ rows=tenth_leaf('?GetSpeed@BattlePetInstance@@');assert any(x.mnemonic=='cmp'and x.op_str=='rax, rcx'for x in rows)and any(x.mnemonic=='jle'for x in rows),'Actual flying speed path checks current versus maximum health'
+ rows=ins('?HandleWeatherAura@PetBattleAbilityEffect@@');assert (sites(rows,'?AddAura@PetBattleAbilityEffect@@')or sites(rows,'?AddAura@PetBattle@@'))and sites(rows,'?Expire@PetBattleAura@@'),'Actual weather replacement tracks application and expires previous auras'
+ rows=ins('?Apply@PetBattleAura@@');assert sites(rows,'?SetPetState@PetBattle@@'),'Actual aura application still emits native state diagnostics'
+ rows=ins('?Remove@PetBattleAura@@');assert sites(rows,'?SetPetState@PetBattle@@'),'Actual removal restores captured state deltas through native event handling'
+ print('PASS linked tenth10:unsigned64 history ABI,wide penalty/effect/health paths,obsolete clone registration removed,actual Smart dispatch andnative state/weather/flying methods;live migration andcomplete native behavior separately required')

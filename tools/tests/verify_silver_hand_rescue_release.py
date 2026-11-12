@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify selected rescue post-heal callback, native queue and scoped recipient."""
 from pathlib import Path
 import runpy
@@ -18,8 +20,8 @@ def reject(position, branch):
     assert body[position + 1].mnemonic == branch and body[position + 1].operands[0].imm == deny
 
 
-for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), ('byte ptr [rbx + 0x4ff0], 1', 'jne'),
-                         ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), (inherited_operand('byte ptr [rbx + 0x4ff0], 1'), 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                          ('dword ptr [rdi + 0xa18], 0', 'jne'), ('dword ptr [rdi + 0xe0], 0x603', 'jne'),
                          ('rax, rax', 'je'), ('rax, qword ptr [rdi + 8]', 'jne'),
                          ('dword ptr [rbx + 0x3b8], eax', 'jne')):
@@ -156,8 +158,8 @@ assert destroy[release - 1].op_str == 'rcx, 0x48'
 creature = instructions('?Update@Creature@@')
 ticks = [index for index, entry in enumerate(creature) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x110]
 assert len(ticks) == 2
-assert any(entry.op_str == 'byte ptr [rsi + 0x3a9d], 1' for entry in creature[ticks[0] - 10:ticks[0]])
-assert creature[ticks[1] + 1].op_str == 'byte ptr [rsi + 0x3a9d], 0'
+assert any(entry.op_str == inherited_operand('byte ptr [rsi + 0x3a9d], 1') for entry in creature[ticks[0] - 10:ticks[0]])
+assert creature[ticks[1] + 1].op_str == inherited_operand('byte ptr [rsi + 0x3a9d], 0')
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[ticks[0] - 8:ticks[0]])
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
 assert min(sites(creature, '?Update@Unit@@')) > ticks[1]

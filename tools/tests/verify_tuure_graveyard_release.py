@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected registered Holy cemetery and preserved native instance lifecycle."""
 from pathlib import Path
 import runpy
@@ -55,7 +56,7 @@ if hodir is not None:
 null_branch = next(o for o in body[sites('?GetScenario@ScenarioMgr@@')[0] + 1:scoped] if o.mnemonic == 'je')
 assert null_branch.operands[0].imm == fallback
 data_reg, map_reg, map_word = ('rsi', 'edi', 'di') if blood is not None else ('rdi', 'esi', 'si')
-lookup = at(data_reg + ', qword ptr [rax + 0xab40]', 'mov')  #5480*8
+lookup = at(data_reg + inherited_operand(', qword ptr [rax + 0xab40]'), 'mov')  #5480*8
 identity = at('dword ptr [' + data_reg + '], 0x1568', 'cmp')
 failure = body[identity + 1].operands[0].imm
 assert body[lookup + 2].operands[0].imm == failure

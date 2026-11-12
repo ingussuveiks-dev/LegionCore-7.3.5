@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Selected shipped brewing factories/hooks and native receipt/cleanup paths."""
 from pathlib import Path
 import hashlib
@@ -27,7 +28,7 @@ delivery=require('?Delivery'+suffix,('?Current'+suffix,'?CanContact@Player@@','?
 hit=require('?Hit@spell_fuzan_brewing_receipt@@',('?GetHitCreature@SpellScript@@','?Delivery'+suffix,
     '?GetPower@Unit@@','?CastSpell@Unit@@','?GetQuestStatus@Player@@','?Stop'+suffix),(217335,42868,115359,5515))
 assert len(sites(n,hit,'?CastSpell@Unit@@'))==1,'One actual selected-owner217335 energize'
-assert 60.0 in floats(n,delivery) and {0xa18,0x6848,0x6849,0xe8}<=fields(delivery),'Final receipt retains native alive/teleport/distance/nonce guards'
+assert 60.0 in floats(n,delivery) and {0xa18,player_offset(0x6848),player_offset(0x6849),0xe8}<=fields(delivery),'Final receipt retains native alive/teleport/distance/nonce guards'
 energize=sites(n,hit,'?CastSpell@Unit@@')[0]
 alive=[i for i,op in enumerate(delivery) if op.mnemonic=='cmp' and '0xa18]' in op.op_str and op.op_str.endswith(', 0')]
 assert len(alive)==1 and delivery[alive[0]+1].mnemonic=='jne'

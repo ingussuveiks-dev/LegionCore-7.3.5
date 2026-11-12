@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Check the linked Magnar scaled-lethal policy and actual selected recipient."""
 from pathlib import Path
 import runpy
@@ -105,7 +106,7 @@ cancel = next(index for index, entry in enumerate(creation_body) if entry.addres
 remove = positions(creation_body, '?Remove@Conversation@@')[0]
 assert cancel <= remove and creation_body[remove - 1].op_str == 'rcx, rsi', 'Revoked504 is not removed by its own pointer'
 for operand, branch in (('byte ptr [rdi + 0xd2], 0', 'je'), ('byte ptr [rdi + 0xd1], 0', 'jne'),
-                        ('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx + 0x39c5], 0', 'jne'),
+                        ('dword ptr [rcx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'jne'),
                         ('eax, 0x17722', 'jne'), ('dword ptr [rax + 0xe0], 0x5d7', 'jne'),
                         ('qword ptr [rax + 8], r12', 'jne'), ('dword ptr [rax + 0x3b8], r15d', 'jne')):
     assert any(entry.mnemonic == 'cmp' and entry.op_str == operand and creation_body[index + 1].mnemonic == branch
@@ -146,7 +147,7 @@ assert any(entry.op_str == 'xmmword ptr [rdi + 0xf0], xmm0' for entry in creatio
 handoff_body = instructions(handoff)
 inactive = handoff_body[8].operands[0].imm
 for operand, branch in (('byte ptr [rcx + 0xd1], 0', 'jne'), ('byte ptr [rcx + 0xd2], 0', 'je'),
-                        ('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx + 0x39c5], 0', 'jne'),
+                        ('dword ptr [rcx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'jne'),
                         ('eax, 0x17722', 'jne'), ('dword ptr [rcx + 0xe0], 0x5d7', 'jne'),
                         ('qword ptr [rcx + 8], 0', 'je'), ('dword ptr [rcx + 0x3b8], eax', 'jne')):
     assert any(entry.mnemonic == 'cmp' and entry.op_str == operand and handoff_body[index + 1].mnemonic == branch
@@ -184,7 +185,7 @@ assert handoff_body[stage + 3].op_str == 'dword ptr [rdi + 0x110], 0x1770'
 retry = next(entry for entry in handoff_body if entry.address == handoff_body[stage + 1].operands[0].imm)
 assert retry.op_str == 'byte ptr [rdi + 0x118], 1', 'Unadvanced native stage does not remain retryable'
 for operand, branch in (('byte ptr [rdi + 0xd1], r14b', 'jne'), ('dword ptr [rcx + 0xa18], r14d', 'jne'),
-                        ('byte ptr [rcx + 0x39c5], r14b', 'jne'), ('eax, 0x17722', 'jne'),
+                        (inherited_operand('byte ptr [rcx + 0x39c5], r14b'), 'jne'), ('eax, 0x17722', 'jne'),
                         ('dword ptr [rcx + 0xe0], 0x5d7', 'jne'), ('qword ptr [rcx + 8], rbp', 'jne'),
                         ('dword ptr [rcx + 0x3b8], eax', 'jne'), ('eax, 0x38d', 'jne')):
     assert any(entry.mnemonic == 'cmp' and entry.op_str == operand and handoff_body[index + 1].mnemonic == branch

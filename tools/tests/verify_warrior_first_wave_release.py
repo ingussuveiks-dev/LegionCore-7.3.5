@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify actual instance-owned first-wave death and native criteria receipts."""
 from pathlib import Path
 import hashlib,json,runpy
@@ -39,7 +40,7 @@ needs(body,progress,'?Quest@MalgalorFinale@@','?GetQuestStatus@Player@@',
       '?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@',update)
 for operand,jump in (('byte ptr [r12 + 0x34], 0','jne'),('eax, 1','ja'),
                      ('qword ptr [r15 + 8], rax','jne'),('dword ptr [r15 + 0xa18], 0','je'),
-                     ('eax, 0x1923a','jne'),('qword ptr [r15 + 0x3a88], 0x582b2','jne')):
+                     ('eax, 0x1923a','jne'),(inherited_operand('qword ptr [r15 + 0x3a88], 0x582b2'),'jne')):
     at=next(i for i,op in enumerate(body[:capture]) if op.mnemonic=='cmp' and op.op_str==operand)
     assert body[at+1].mnemonic==jump
     assert body[capture].address not in reachable(body,body[at+1].operands[0].imm)

@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Registered opening Akaari1864 qualification, acknowledged one-shot and stationary retry."""
 from pathlib import Path
 import re
@@ -36,7 +37,7 @@ assert eligible[step+1].op_str=='eax, eax' and eligible[step+2].mnemonic=='je'
 assert {105536,1607,1078,41924,1,3,4} <= values(eligible) and 25.0 in floats(n,eligible)
 for target,count in [('?IsInWorld@Object@@',2),('?IsPreDelete@Object@@',2),('?IsQuestObjectExpired@WorldObject@@',2),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestStatus@Player@@',1),('?GetInstanceScript@WorldObject@@',1),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?InSamePhaseId@WorldObject@@Q',1),('?GetExactDist2d@Position@@',1),('?IsWithinDistInMap@WorldObject@@',1),('?IsWithinLOSInMap@WorldObject@@',1),('?GetQuestRewardStatus@Player@@',1),('?GetScenario@ScenarioMgr@@',1),('?GetScenarioId@Scenario@@',1),('?GetCurrentStep@Scenario@@',1)]:
     assert len(sites(n,eligible,target))==count,target
-assert {('cmp','dword ptr [rcx + 0xa18], 0'),('cmp','dword ptr [rbx + 0xa18], 0'),('test','byte ptr [rbx + 0x4ff0], 1'),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax')} <= pairs(eligible)
+assert {('cmp','dword ptr [rcx + 0xa18], 0'),('cmp','dword ptr [rbx + 0xa18], 0'),('test',inherited_operand('byte ptr [rbx + 0x4ff0], 1')),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax')} <= pairs(eligible)
 assert {('cmp','byte ptr [rdx + 0x16], 4'),('cmovne','rdx, rax')} <= pairs(los) and len(sites(n,los,method('TryIntro')))==1
 create, = sites(n,attempt,'?CreateConversation@Conversation@@')
 assert 1864 in values(attempt[:create]) and ('mov','r9, r13') in pairs(attempt[:create])

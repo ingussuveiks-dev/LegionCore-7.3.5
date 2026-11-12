@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify the installed guarded Truthguard travel click and native empty-row dispatch."""
 from pathlib import Path
 import runpy
@@ -99,7 +100,7 @@ los = click_call('?IsWithinLOSInMap@WorldObject@@')
 assert same_phase < contact < npc < visible < los < helper_calls[0]
 assert click[contact - 1].op_str == 'rcx, rbx' and click[contact + 1].op_str == 'al, al'
 assert click[contact + 2].mnemonic == 'je' and click[contact + 2].operands[0].imm == rejected
-for operand in ('byte ptr [rbx + 0x6848], 0', 'byte ptr [rbx + 0x6849], 0'):
+for operand in (player_operand('byte ptr [rbx + 0x6848], 0'), player_operand('byte ptr [rbx + 0x6849], 0')):
     gate = click_find(operand, 'cmp')
     assert contact < gate < npc and click[gate + 1].mnemonic == 'jne' and click[gate + 1].operands[0].imm == rejected
 assert [entry.op_str for entry in click[npc - 7:npc]] == ['rbp, qword ptr [rdi + 0x20]', 'rdx, [rsp + 0x20]', 'r9d, r9d', 'r8d, 0x1000000', 'rcx, rbx', 'xmm0, xmmword ptr [rax]', 'xmmword ptr [rsp + 0x20], xmm0']

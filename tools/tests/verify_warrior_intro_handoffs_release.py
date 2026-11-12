@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Immediate shared-actor calls use original targets and typed finite recovery."""
 from pathlib import Path
 import hashlib,json,re,runpy
@@ -87,7 +88,7 @@ else:
  remaining=next(i for i,op in enumerate(body) if op.mnemonic=='test' and op.op_str=='sil, sil')
  assert body[remaining+1].mnemonic=='jne' and body[queue].address in reachable(body,body[remaining+1].operands[0].imm)
  assert body[queue].address not in reachable(body,body[remaining+2].address)
- assert {('mov','rbx, rcx'),('lea','rcx, [rbx + 0x36a0]'),('mov','edx, 0x1f4'),('mov','qword ptr [rsp + 0xa8], rbx'),('mov','byte ptr [rsp + 0xb0], sil'),('mov','eax, dword ptr [rbx + 0x3b8]'),('mov','dword ptr [rsp + 0xb4], eax')}<=set(pairs(body))
+ assert {('mov','rbx, rcx'),('lea',unit_queue_operand('rcx, [rbx + 0x36a0]')),('mov','edx, 0x1f4'),('mov','qword ptr [rsp + 0xa8], rbx'),('mov','byte ptr [rsp + 0xb0], sil'),('mov','eax, dword ptr [rbx + 0x3b8]'),('mov','dword ptr [rsp + 0xb4], eax')}<=set(pairs(body))
  assert sites(n,body,'?ShouldLog@Log@@') and sites(n,body,'?outMessage@Log@@')
  assert b'Warrior intro: Ragnvald %s is missing native933 stage3 or matching AI after 10 battle handoff retries' in n['binary']
  retry,=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'ResumeBattle@npc_ragnvald_dragonbornAI@' in name]

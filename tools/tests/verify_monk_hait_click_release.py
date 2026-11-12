@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected actual registered native197120 Hight admission and receipt path."""
 from pathlib import Path
 import hashlib
@@ -32,7 +33,7 @@ assert 1014 in values(ins(spell('Load')))
 actor=ins('?GetAI@npc_master_hait@@')
 assert {1014,362105,0x1000000}<=values(actor) and {0xb8,0xc0,0xc8,0xd0}<=fields(actor)
 setflag,=sites(n,actor,'?SetFlag@Object@@')
-assert [('cmp','dword ptr [rcx + 0xe0], 0x3f6'),('cmp','qword ptr [rcx + 0x3a88], 0x58679')]==[(op.mnemonic,op.op_str) for op in actor[:setflag] if op.mnemonic=='cmp']
+assert [('cmp','dword ptr [rcx + 0xe0], 0x3f6'),('cmp',inherited_operand('qword ptr [rcx + 0x3a88], 0x58679'))]==[(op.mnemonic,op.op_str) for op in actor[:setflag] if op.mnemonic=='cmp']
 assert ins('?OnSpellClick@npc_master_haitAI@')[0].mnemonic=='ret'
 check=ins(spell('Check'));contact=ins(helper('Contact'));current=ins(helper('Current'))
 require(check,'?GetOriginalTargetGUID@SpellScript@@','?GetCreature@Map@@',helper('Contact'),helper('Current'),'?getQuestStatus@Player@@')

@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify actual last Travard LOS admission before ritual effects and wave queue."""
 from pathlib import Path
 import runpy
@@ -10,8 +12,8 @@ policy = instructions(helper)
 deny = next(entry.address for index, entry in enumerate(policy[:-1]) if entry.op_str == 'rbx, qword ptr [rsp + 0x40]'
             and policy[index + 1].mnemonic == 'xor' and policy[index + 1].op_str == 'al, al')
 for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                         ('byte ptr [rbx + 0x4ff0], 1', 'jne'), ('byte ptr [rbx + 0x6848], 0', 'jne'),
-                         ('byte ptr [rbx + 0x6849], 0', 'jne'), ('al, 2', 'jne'),
+                         (inherited_operand('byte ptr [rbx + 0x4ff0], 1'), 'jne'), (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'), ('al, 2', 'jne'),
                          ('dword ptr [rdi + 0xa18], 0', 'jne'), ('eax, 0x1a119', 'jne'),
                          ('dword ptr [rdi + 0xe0], 0x603', 'jne'), ('rax, rax', 'je'),
                          ('rax, qword ptr [rdi + 8]', 'jne'), ('dword ptr [rbx + 0x3b8], eax', 'jne'),

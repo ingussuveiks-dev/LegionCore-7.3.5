@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify four selected Silver Hand final-damage and wound/heal implementations."""
 from pathlib import Path
 import runpy
@@ -128,8 +129,8 @@ assert received < done < apply
 creature = instructions('?Update@Creature@@')
 ticks = [index for index, entry in enumerate(creature) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x110]
 assert len(ticks) == 2
-assert any(entry.op_str == 'byte ptr [rsi + 0x3a9d], 1' for entry in creature[ticks[0] - 10:ticks[0]])
-assert creature[ticks[1] + 1].op_str == 'byte ptr [rsi + 0x3a9d], 0'
+assert any(entry.op_str == inherited_operand('byte ptr [rsi + 0x3a9d], 1') for entry in creature[ticks[0] - 10:ticks[0]])
+assert creature[ticks[1] + 1].op_str == inherited_operand('byte ptr [rsi + 0x3a9d], 0')
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[ticks[0] - 8:ticks[0]])
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
 assert min(calls(creature, '?Update@Unit@@')) > ticks[1]

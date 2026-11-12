@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify installed tracked wave deaths, release barrier and advance ordering."""
 from pathlib import Path
 import runpy
@@ -168,7 +169,7 @@ else:
     rejection = started[duplicate + 2].operands[0].imm
     world = calls_to(started, '?IsInWorld@Object@@')[0]
     assert started[world + 1].op_str == 'al, al' and started[world + 2].mnemonic == 'je' and started[world + 2].operands[0].imm == rejection
-    for operand in ('dword ptr [rcx + 0xa18], 0', 'byte ptr [rcx + 0x39c5], 0', 'eax, 0x17722', 'dword ptr [rax + 0xe0], 0x5d7'):
+    for operand in ('dword ptr [rcx + 0xa18], 0', inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'eax, 0x17722', 'dword ptr [rax + 0xe0], 0x5d7'):
         position = next(index for index, entry in enumerate(started) if entry.mnemonic == 'cmp' and entry.op_str == operand)
         assert started[position + 1].mnemonic == 'jne' and started[position + 1].operands[0].imm == rejection
     selection = calls_to(started, '?GetEncounterPlayer' + suffix)[0]

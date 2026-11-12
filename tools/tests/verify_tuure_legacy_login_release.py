@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected linked legacy-receipt repair, with retained acquisition/return checks.
 
 This is not a complete saved-character or client traversal.
@@ -51,7 +52,7 @@ for text in checks:
     at = find(h, text)
     assert h[at + 1].mnemonic in ('je', 'jne') and h[at + 1].operands[0].imm == refused, text
 assert len(sites(h, '?GetScenarioSteps@ScenarioMgr@@')) == 1
-find(h, 'rsi, qword ptr [rax + 0xab40]')  #5480*8 native DB2 pointer lookup
+find(h, inherited_operand('rsi, qword ptr [rax + 0xab40]'))  #5480*8 native DB2 pointer lookup
 raw = [i for i, o in enumerate(h) if o.mnemonic == 'subss' and 'rip' in o.op_str][4:8]
 for at, value in zip(raw, (-43.1440964, 1160.33679, -74.353569, 27.7250366)):
     near(h[at], value)
@@ -79,8 +80,8 @@ else:
     compare = at + 2
     assert p[compare].op_str == 'eax, 2'
 assert p[compare + 1].mnemonic == 'jne'
-reset = find(p, 'qword ptr [rsi + 0x6bd8], 0', compare)
-selector = find(p, 'word ptr [rsi + 0x6ba8], di', reset)
+reset = find(p, inherited_operand('qword ptr [rsi + 0x6bd8], 0'), compare)
+selector = find(p, inherited_operand('word ptr [rsi + 0x6ba8], di'), reset)
 live = sites(p, '?GetScenario@ScenarioMgr@@')[0]
 assert at < reset < selector < live
 # Optimized logging branches share the later function epilogue. Walk both
@@ -109,14 +110,14 @@ while pending:
     pending.append(i + 1)
 assert returns and reset in seen and selector in seen
 complete = sites(p, '?IsCompleted@Scenario@@')[0]
-keep = find(p, 'dword ptr [rsi + 0x6bdc], eax', complete)
+keep = find(p, inherited_operand('dword ptr [rsi + 0x6bdc], eax'), complete)
 repair = find(p, 'dword ptr [rsp + '+('0x34' if sharasdal else '0x50')+'], 1', keep, 'cmp')
 live_sub = [i for i, o in enumerate(p[repair:repair + 20], repair) if o.mnemonic == 'subss' and 'rip' in o.op_str]
 assert len(live_sub) == 2
 for i, value in zip(live_sub, (-828.85, 4372)):
     near(p[i], value)
 if sharasdal:
-    for register, offset, slot in [('rax', '0x6bd4', '0x70'), ('rcx', '0x6bd0', '0x78'), ('rdx', '0x6bcc', '0x80'), ('r8', '0x6bc8', '0x88')]:
+    for register, offset, slot in [('rax', inherited_operand('0x6bd4'), '0x70'), ('rcx', inherited_operand('0x6bd0'), '0x78'), ('rdx', inherited_operand('0x6bcc'), '0x80'), ('r8', inherited_operand('0x6bc8'), '0x88')]:
         source = find(p, register+', [rsi + '+offset+']', 0, 'lea')
         assert p[source + 1].op_str == 'qword ptr [rsp + '+slot+'], '+register
     relocate = next(i for i in sites(p, '?Relocate@Position@@') if live_sub[-1] < i < live_sub[-1] + 20)

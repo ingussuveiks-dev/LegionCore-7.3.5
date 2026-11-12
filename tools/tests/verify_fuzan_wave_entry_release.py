@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected linked wave-entry hooks; native/client coverage is reported separately."""
 from pathlib import Path
 import hashlib
@@ -32,7 +33,7 @@ if not sites(n,update,'?Minion'+suffix):
     pairs=[(op.mnemonic,op.op_str) for op in scan]
     for guard in (('cmp','dword ptr [rax + 0xa18], 0'),
                   ('test','byte ptr [r14 + 0x30e8], 1'),
-                  ('movups','xmm0, xmmword ptr [r14 + 0x3b64]'),
+                  ('movups',inherited_operand('xmm0, xmmword ptr [r14 + 0x3b64]')),
                   ('lea','rdx, [rsi + 0x638]'),('mov','edx, 0x7c')):
         assert guard in pairs,('Inlined native alive/summon/128-bit-owner/created-spell guard',guard)
     alive=pairs.index(('cmp','dword ptr [rax + 0xa18], 0'))

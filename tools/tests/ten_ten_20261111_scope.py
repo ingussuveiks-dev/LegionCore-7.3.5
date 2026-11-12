@@ -19,7 +19,14 @@ def normalize(path,source):
 def verify():
  assert PLAN['authorized_total']==100 and len(PLAN['changes'])<=100 and len({e['key']for e in PLAN['changes']})==len(PLAN['changes'])
  for path in sorted({p for row in PLAN['changes']for p in row['paths']}):
-  source=(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape');old=subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path]).decode('utf-8-sig',errors='surrogateescape').replace('\r\n','\n');assert normalize(path,source)==old,'Undeclared amendment:'+path
+  source=(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape')
+  pinned=subprocess.run(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path],capture_output=True)
+  if pinned.returncode:
+   assert not subprocess.check_output(['git','-C',str(ROOT),'ls-tree','--name-only',PLAN['baseline'],'--',path]).strip(),path
+   assert any(ed['path']==path and ed['old']==''for e in PLAN['changes']for ed in e['edits']),path
+   old=''
+  else:old=pinned.stdout.decode('utf-8-sig',errors='surrogateescape').replace('\r\n','\n')
+  assert normalize(path,source)==old,'Undeclared amendment:'+path
  return True
 def retained_source(path,source=None):
  verify();return normalize(path,source if source is not None else(ROOT/path).read_text(encoding='utf-8-sig',errors='surrogateescape'))

@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Check actual linked callback captures, origin guards and credit admission."""
 from pathlib import Path
 import runpy
@@ -36,8 +37,8 @@ factory=ins('?GetAI@?$GenericCreatureScript@Uboss_high_botanist_telarn@@@@')
 # Follow its actual factory call;keep the original500ms/Unit queue proof.
 ctor=ins('??0boss_high_botanist_telarn@@')if sites(factory,'??0boss_high_botanist_telarn@@')else factory
 assert sites(ctor,'?AddDelayedEvent@FunctionProcessor@@')and 500 in values(ctor),'actual creature function queue initialization'
-inline_queue=any(x.mnemonic=='mov'and x.op_str=='rcx, qword ptr [rdi + 0x20]'for x in ctor)and any(x.mnemonic=='add'and x.op_str=='rcx, 0x36a0'for x in ctor)
-outlined_queue=any(x.mnemonic=='mov'and x.op_str=='rdx, qword ptr [rbx + 0x20]'for x in ctor)and any(x.mnemonic=='lea'and x.op_str=='rcx, [rdx + 0x36a0]'for x in ctor)
+inline_queue=any(x.mnemonic=='mov'and x.op_str=='rcx, qword ptr [rdi + 0x20]'for x in ctor)and any(x.mnemonic=='add'and x.op_str==unit_queue_operand('rcx, 0x36a0')for x in ctor)
+outlined_queue=any(x.mnemonic=='mov'and x.op_str=='rdx, qword ptr [rbx + 0x20]'for x in ctor)and any(x.mnemonic=='lea'and x.op_str==unit_queue_operand('rcx, [rdx + 0x36a0]')for x in ctor)
 assert inline_queue or outlined_queue,'constructor queues on actual Creature Unit::m_Functions'
 r=ins('?UpdateAI@npc_dramock@@');assert sites(r,'?GetPlayer@ObjectAccessor@@')and sites(r,'?GetQuestStatus@Player@@')and sites(r,'?GetReqKillOrCastCurrentCount@Player@@')and sites(r,'?KilledMonsterCredit@Player@@')and 47430 in values(r),'native current quest/objective/credit dispatch'
 snapshot,=callbacks('npc_dramock','MoveInLineOfSight');r=expanded(snapshot);assert any(x.mnemonic=='mov'and x.op_str=='rax, qword ptr [rcx + 0x70]'for x in r)and any(x.mnemonic=='cmp'and 'rax'in x.op_str for x in r),'pending snapshot generation checked'

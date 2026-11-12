@@ -1,3 +1,4 @@
+from linked_player_abi import creature_loot_operand
 """Native scaled shared damage, owner admission and exactly-once paired death."""
 from pathlib import Path
 import re,runpy,struct
@@ -28,7 +29,7 @@ first=ins('?Reset@boss_veknilashAI@boss_veknilash@@');second=ins('?Reset@boss_ve
 assert op(first,'mov','word ptr [rbx + 0x50], 0') and op(second,'mov','word ptr [rbx + 0x50], di') and op(second,'xor','edi, edi'),'both original resets clear yell+death checkpoint'
 tag=ins('?RegisterSharedDamage@boss_twinemperorsAI@@')
 assert sites(tag,'?GetAffectingPlayer@Unit@@') and sites(tag,'?hasLootRecipient@Creature@@') and sites(tag,'?SetLootRecipient@Creature@@')
-assert op(tag,'cmp','rcx, rdi') and op(tag,'cmovb','edi, eax') and op(tag,'mov','dword ptr [rbx + 0x39b8], edi'),'native saturating positive contribution'
+assert op(tag,'cmp','rcx, rdi') and op(tag,'cmovb','edi, eax') and op(tag,'mov',creature_loot_operand('dword ptr [rbx + 0x39b8], edi')),'native saturating positive contribution'
 brother=ins('?GetLivingBrother@boss_twinemperorsAI@@')
 assert op(brother,'cmp','rax, qword ptr [rbx + 0x20]') and op(brother,'cmp','dword ptr [rax + 0xa18], 0') and 15276 in values(brother),'real alive opposite entry,not self/wrong actor'
 damage=ins('?DealDamage@Unit@@');guards=[i for i,x in enumerate(damage) if x.mnemonic=='cmp' and x.op_str=='dword ptr [rbx + 0xa18], 0'];assert len(guards)==3

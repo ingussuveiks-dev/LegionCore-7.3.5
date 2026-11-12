@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Select actual native wave contact, retry and completed seat acknowledgement."""
 from pathlib import Path
 import re
@@ -66,7 +67,7 @@ seat = sequence(action, [('mov', 'r8b, 1'), ('mov', 'byte ptr [rsp + 0x50], r8b'
 assert bases[0] < seat < empty
 late = at(action, 'cmp', 'dword ptr [r13 + 0xa18], 0')
 end = action[late+1].operands[0].imm
-for operands in ('qword ptr [r13 + 8], rax', 'byte ptr [rax + 0x6848], 0', 'byte ptr [rax + 0x6849], 0'):
+for operands in ('qword ptr [r13 + 8], rax', player_operand('byte ptr [rax + 0x6848], 0'), player_operand('byte ptr [rax + 0x6849], 0')):
     i = at(action, 'cmp', operands)
     assert passenger < i < empty and action[i+1].mnemonic == 'jne' and action[i+1].operands[0].imm == end
 assert action[empty+2].mnemonic == 'je' and action[empty+2].operands[0].imm == end

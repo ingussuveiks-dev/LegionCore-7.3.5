@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Check native SetMinion's ordered full-GUID formation and incoming-object path."""
 from pathlib import Path
 import runpy
@@ -32,8 +33,8 @@ for position in lookups:
     join = next(index for index, entry in enumerate(body) if entry.address == body[equality + 4].operands[0].imm)
     assert join == position + 2 and body[join].op_str == 'rdi, rdi'
     assert any(entry.op_str == 'r12b, r12b' and entry.mnemonic == 'test' for entry in body[equality - 8:equality])
-    assert any(entry.op_str == 'dword ptr [rdi + 0x3b14], xmm6' for entry in body[join:join + 30])
-    assert any(entry.op_str == 'dword ptr [rdi + 0x3b18], xmm0' for entry in body[join:join + 35])
+    assert any(entry.op_str == inherited_operand('dword ptr [rdi + 0x3b14], xmm6') for entry in body[join:join + 30])
+    assert any(entry.op_str == inherited_operand('dword ptr [rdi + 0x3b18], xmm0') for entry in body[join:join + 35])
 assert not sites('?MoveFollow@MotionMaster@@'), 'Formation must not restart an existing movement command'
 for caller in ('?InitStats@Minion@@', '?LoadPetFromDB@Pet@@'):
     assert native['symbol']('?SetMinion@Unit@@') in native['calls'](caller), 'Actual summon/load must reach formation'

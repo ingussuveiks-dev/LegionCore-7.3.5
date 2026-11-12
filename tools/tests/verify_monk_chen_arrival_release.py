@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Trace real final-node receipt, native46947 and original owner's outro in PE."""
 from pathlib import Path
 import runpy,json,hashlib
@@ -20,7 +21,7 @@ assert 4 in values(issued)
 needs(issued,state('Retained'),state('Leaf'),state('Actor'),'?GetMotionSlot@MotionMaster@@')
 needs(request,helper('Pose'),state('UpdateArrival'),'??8ObjectGuid@@','??9ObjectGuid@@')
 assert {('cmp','dword ptr [rbx + 0x2c], 0x966fbd'),('cmp','dword ptr [rbx + 0x18], 0'),
-        ('cmp','dword ptr [rsi + 0x3b1c], -1'),('mov','byte ptr [rdi + 0x93], 1')}<=set(pairs(issued))
+        ('cmp',inherited_operand('dword ptr [rsi + 0x3b1c], -1')),('mov','byte ptr [rdi + 0x93], 1')}<=set(pairs(issued))
 assert {('cmp','dword ptr [rdi + 0x18], 5'),('cmp','qword ptr [rsi + rax*8 + 0x2f98], rdi'),
         ('mov','byte ptr [rbx + 0x94], 1')}<=set(pairs(request))
 data=ins(helper('Data'));pose=ins(helper('Pose'))
@@ -45,7 +46,7 @@ assert 29070 in values(leaf);needs(leaf,state('Progress'),'?GetAchievementMgr@Sc
 needs(update,state('Progress'),state('Retained'),state('Current'),state('Actor'),state('Content'),state('EscortLeaf'),state('Cancel'),helper('Pose'),'?getMSTime@@','?outMessage@Log@@')
 needs(update,'?GetPathScript@WaypointMgr@@' if routes_successor else helper('Data'))
 assert {46947,94343,92,2000,4,5,9859005}<=values(update)
-assert {('cmp','dword ptr [rax + 0x3b1c], 5'),('mov','byte ptr [rdi + 0x94], 1'),
+assert {('cmp',inherited_operand('dword ptr [rax + 0x3b1c], 5')),('mov','byte ptr [rdi + 0x94], 1'),
         ('cmp','eax, dword ptr [rdi + 0x6c]'),('cmp','ecx, 0x7d0'),
         ('cmovbe','ecx, edx'),('lea','ecx, [rdx - 1]'),('mov','dword ptr [rdi + 0x98], eax'),
         ('movups','xmmword ptr [rdi + 0x73], xmm0'),('movups','xmmword ptr [rdi + 0x83], xmm0'),
@@ -65,7 +66,7 @@ equal,=sites(n,movement,'??9ObjectGuid@@');assert movement[equal+2].mnemonic=='j
 assert movement[talks[1]].address not in reachable(movement,movement[equal+2].operands[0].imm)
 assert {94344,94345,94346,46947}<=values(movement)
 credit,=sites(n,movement,'?UpdateAchievementCriteria@Player@@')
-source_guard=next(i for i,o in enumerate(movement[talks[1]:credit],talks[1]) if (o.mnemonic,o.op_str)==('cmp','qword ptr [rbx + 0x3a88], 0x586d9'))
+source_guard=next(i for i,o in enumerate(movement[talks[1]:credit],talks[1]) if (o.mnemonic,o.op_str)==('cmp',inherited_operand('qword ptr [rbx + 0x3a88], 0x586d9')))
 assert movement[source_guard+1].mnemonic=='je' and movement[source_guard+1].operands[0].imm==movement[credit+1].address
 route=next(name for name in n['symbols'] if name.startswith('?_Do_call@') and '??SetData@npc_monk_chen_porterAI@npc_monk_chen_porter@@' in name and '<lambda_3>' in name)
 route=ins(route);needs(route,'?MovePath@MotionMaster@@','?GetInstanceScript@WorldObject@@')
@@ -73,9 +74,9 @@ if routes_successor:
     assert {9859005,94348}<=values(route)
     actual_routes=ins(state('UpdateRoutes'))
     needs(actual_routes,'?MovePath@MotionMaster@@',state('Routed'))
-    assert ('mov','dword ptr [r13 + 0x3b1c], 0xffffffff') in pairs(actual_routes)
+    assert ('mov',inherited_operand('dword ptr [r13 + 0x3b1c], 0xffffffff')) in pairs(actual_routes)
 else:
-    assert {9859005,94347}<=values(route) and ('mov','dword ptr [rcx + 0x3b1c], 0xffffffff') in pairs(route)
+    assert {9859005,94347}<=values(route) and ('mov',inherited_operand('dword ptr [rcx + 0x3b1c], 0xffffffff')) in pairs(route)
 for body in (update,movement,request):
  for forbidden in ('?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
   assert not sites(n,body,forbidden)

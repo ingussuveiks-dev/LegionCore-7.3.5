@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify the selected Garona intro AI, GUID resolution and owned event queue."""
 from pathlib import Path
 import runpy
@@ -42,7 +44,7 @@ assert any(entry.op_str=='ecx, 0x78' for entry in factory)
 assert {108015,1620,1123,42504,42627}<=values(eligible)
 for prefix,count in [('?IsInWorld@Object@@',2),('?IsPreDelete@Object@@',2),('?IsQuestObjectExpired@WorldObject@@',2),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestRewardStatus@Player@@',1),('?GetQuestStatus@Player@@',2)]:
  assert len(linked_sites(native,eligible,prefix))==count,prefix
-assert {('test','byte ptr [rbx + 0x4ff0], 1'),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax'),('cmp','byte ptr [rbx + 0x6848], 0'),('cmp','byte ptr [rbx + 0x6849], 0'),('cmp','byte ptr [rbx + 0x6851], 0')}<=pairs(eligible)
+assert {('test',inherited_operand('byte ptr [rbx + 0x4ff0], 1')),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax'),('cmp',player_operand('byte ptr [rbx + 0x6848], 0')),('cmp',player_operand('byte ptr [rbx + 0x6849], 0')),('cmp',player_operand('byte ptr [rbx + 0x6851], 0'))}<=pairs(eligible)
 lookup,=linked_sites(native,recipient,'?GetPlayer@ObjectAccessor@@');identity,=linked_sites(native,recipient,'??8ObjectGuid@@');qualified,=linked_sites(native,recipient,method('OpeningPlayer'))
 assert lookup<identity<qualified and recipient[qualified].mnemonic=='jmp'
 assert recipient[identity+1].op_str=='al, al' and recipient[identity+2].mnemonic=='je'

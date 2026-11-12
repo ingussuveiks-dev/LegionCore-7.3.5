@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify live admission in the installed, original-instance Warswords departure."""
 from pathlib import Path
 import runpy
@@ -25,7 +26,7 @@ else:
 
 
     for condition, branch in (('rbx, rbx', 'je'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                              ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+                              (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                               ('qword ptr [rbx + 8], 0', 'je'), ('dword ptr [rbx + 0xe0], 0x5e7', 'jne'),
                               ('dword ptr [rbx + 0x3b8], edi', 'jne')):
         position = next(index for index, entry in enumerate(body[:cast]) if entry.op_str == condition and entry.mnemonic in ('test', 'cmp'))

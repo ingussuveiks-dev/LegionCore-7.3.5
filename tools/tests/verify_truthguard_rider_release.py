@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Check installed summoner/rider identity gates and native boarding dispatch order."""
 from pathlib import Path
 import runpy
@@ -54,7 +55,7 @@ for index, entry in enumerate(body):
         continue
     assert cookie and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == int(cookie[1], 16), 'Missing rider reaches endpoint side effects'
     assert body[index - 1].op_str == 'rcx, rsp' and body[index - 2].op_str.startswith('rcx, qword ptr [rsp + ')
-for operand in ('r14d, 0x43a', 'word ptr [rdi + 0x6ba8], r14w', 'r8d, 0x333f4', 'r8d, 0x335b8', 'edx, 0x1f4'):
+for operand in ('r14d, 0x43a', inherited_operand('word ptr [rdi + 0x6ba8], r14w'), 'r8d, 0x333f4', 'r8d, 0x335b8', 'edx, 0x1f4'):
     find(body, operand)
 assert native['symbol']('?GetAnyOwner@Unit@@') not in native['calls'](arrived)
 tables = []

@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Selected Release endpoints for retryable497 -> actual Magnar acceptance.
 
 Native/source matrices separately exercise branches. This certificate binds
@@ -43,7 +45,7 @@ def check(native, instructions):
         assert continuation[receipt + 1].op_str == 'eax, eax'
     assert continuation[receipts[1] + 2].mnemonic == 'je' and continuation[receipts[1] + 2].operands[0].imm < continuation[command].address
     assert continuation[receipts[0] + 2].mnemonic == 'jne' and continuation[receipts[0] + 2].operands[0].imm > continuation[command].address
-    has(continuation[lookup:claim], 'dword ptr [rdi + 0xa18], 0', 'byte ptr [rdi + 0x39c5], 0', 'byte ptr [rdi + 0x858], 0')
+    has(continuation[lookup:claim], 'dword ptr [rdi + 0xa18], 0', inherited_operand('byte ptr [rdi + 0x39c5], 0'), 'byte ptr [rdi + 0x858], 0')
     factory = calls(continuation, '?StartMagnarConversation' + hr)[0]
     assert continuation[factory + 1].op_str == 'al, al' and continuation[factory + 2].mnemonic == 'je'
     assert continuation[factory + 2].operands[0].imm > continuation[factory + 3].address
@@ -52,7 +54,7 @@ def check(native, instructions):
             assert not calls(instructions(name), forbidden), 'Start recovery grants progress or moves the player'
     schedule = instructions('?ScheduleMagnarStart' + hr)
     assert calls(schedule, '?AddDelayedEvent@FunctionProcessor@@')
-    has(schedule, 'byte ptr [rcx + 0x163], 0', 'byte ptr [rcx + 0x163], 1', 'rcx, [r9 + 0x36a0]')
+    has(schedule, 'byte ptr [rcx + 0x163], 0', 'byte ptr [rcx + 0x163], 1', unit_queue_operand('rcx, [r9 + 0x36a0]'))
     assert any(entry.mnemonic == 'lock inc' and entry.op_str.endswith('+ 0xc]') for entry in schedule), 'Queue lost native weak ownership'
     callback = instructions('??$invoke@AEAV<lambda_1>@?1??ScheduleMagnarStart' + hr)
     assert calls(callback, '?TryMagnarStart' + hr)

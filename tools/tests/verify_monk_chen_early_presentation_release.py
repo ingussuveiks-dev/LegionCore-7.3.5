@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Registered Chen original4/5 NPC actions, before the native8s route.
 
 Run retained rescue/Jorvinax/Fel Stone inspectors against this same hash.
@@ -52,14 +53,14 @@ needs(student,'?IsInWorld@Object@@','?IsPreDelete@Object@@','?IsEmpty@ObjectGuid
 assert {98074,362259,2}<=values(student) and -362263 in values(student) and 70.0 in floats(n,student)
 assert {('cmp','qword ptr [rbx + 8], rcx'),('cmp','dword ptr [rbx + 0xa18], 0'),
         ('mov','edx, 0x18'),('mov','edx, 0x20'),('mov','rdx, rsi'),
-        ('mov','rdx, rbp'),('xor','r9d, r9d'),('mov','rax, qword ptr [rbx + 0x3a88]')}<=set(pairs(student))
+        ('mov','rdx, rbp'),('xor','r9d, r9d'),('mov',inherited_operand('rax, qword ptr [rbx + 0x3a88]'))}<=set(pairs(student))
 needs(valid,ctx('Progress'),ctx('Actor'),ctx('Leaf'),ctx('Retained'),'??8ObjectGuid@@','?ShouldHideFor@WorldObject@@')
 # Keep all three original callbacks for other actors, with an exact scoped
 # equality branch around each queue; do not substitute an early route request.
 setdata=ins('?SetData@npc_monk_chen_porterAI@npc_monk_chen_porter@@')
 queues=sites(n,setdata,'?AddDelayedEvent@FunctionProcessor@@');assert len(queues)==3
 for q in queues:
-    guard=max(i for i,o in enumerate(setdata[:q]) if o.mnemonic=='cmp' and o.op_str.endswith(' + 0x3a88], 0x586d9'))
+    guard=max(i for i,o in enumerate(setdata[:q]) if o.mnemonic=='cmp' and o.op_str.endswith(inherited_operand(' + 0x3a88], 0x586d9')))
     assert {1014,103148,362201}<=values(setdata[max(0,guard-14):guard+1])
     branch=setdata[guard+1];assert branch.mnemonic in ('je','jne')
     equal=branch.operands[0].imm if branch.mnemonic=='je' else branch.address+branch.size

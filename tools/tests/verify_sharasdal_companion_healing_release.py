@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify native post-application wound release, keeping story branches separate."""
 from pathlib import Path
 import runpy
@@ -62,7 +63,7 @@ assert len(receiver)==len(healer)==1 and receiver[0]<healer[0]<applied
 update=instructions('?Update@Creature@@')
 dispatch=[i for i,x in enumerate(update) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x110]
 assert len(dispatch)==2
-assert any(x.op_str=='byte ptr [rsi + 0x3a9d], 1' for x in update[dispatch[0]-12:dispatch[0]])
-assert any(x.op_str=='byte ptr [rsi + 0x3a9d], 0' for x in update[dispatch[-1]:dispatch[-1]+4])
+assert any(x.op_str==inherited_operand('byte ptr [rsi + 0x3a9d], 1') for x in update[dispatch[0]-12:dispatch[0]])
+assert any(x.op_str==inherited_operand('byte ptr [rsi + 0x3a9d], 0') for x in update[dispatch[-1]:dispatch[-1]+4])
 assert any(x.op_str=='rcx, rax' and x.mnemonic=='cmp' for x in update[dispatch[0]-6:dispatch[0]])
 print('PASS selected unchanged legacy wound markers/reset plus native HealReceived->HealDone->ModifyHealth order, locked disabled/current lifecycle0x110 and observed40pct helper. Replaced Grash/Adel lifecycle hooks delegate to their dedicated inspectors when present; no client proof')

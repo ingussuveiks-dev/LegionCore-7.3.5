@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind genuinely earned same-epoch whole-boss duel recovery to Release."""
 from pathlib import Path
 import runpy
@@ -25,7 +26,7 @@ def check(n, ins):
     removal = ins('?OnCreatureRemove' + shared)
     presentation, = sites(removal, '?RetirePresentation@MagnarCombat@@')
     owned, = sites(removal, '?Reset@MagnarCombat@@')
-    has(removal[:presentation], 'eax, 0x17722', 'qword ptr [rsi + 0x3a88], 0x583b8',
+    has(removal[:presentation], 'eax, 0x17722', inherited_operand('qword ptr [rsi + 0x3a88], 0x583b8'),
         'qword ptr [rsi + 8], rax', 'dword ptr [rcx + 0x1c], 0x1b57',
         'rcx, [rdi + 0x38c]', 'eax, dword ptr [rdi + 0x35c]',
         'dword ptr [rdi + 0x39c], eax', 'byte ptr [rdi + 0x356], 0',
@@ -85,7 +86,7 @@ def check(n, ins):
     assert update[acquire+1].op_str == 'al, al' and update[acquire+2].mnemonic == 'je'
     assert update[acquire+2].operands[0].imm <= update[ordinary].address
     has(update[health+1:reset], 'qword ptr [rdi + 0x9c0], rbx', 'byte ptr [rdi + 0x858], r12b',
-        'dword ptr [rdi + 0xa18], r12d', 'byte ptr [rdi + 0x39c5], r12b')
+        'dword ptr [rdi + 0xa18], r12d', inherited_operand('byte ptr [rdi + 0x39c5], r12b'))
     world_after_health, = sites(update[health+1:reset], '?IsInWorld@Object@@')
     world_after_health += health+1
     assert update[reset+1].mnemonic == 'jmp'
@@ -93,7 +94,7 @@ def check(n, ins):
     for guard in (find(update, 'qword ptr [rdi + 0x9c0], rbx', 'cmp'),
                   find(update, 'byte ptr [rdi + 0x858], r12b', 'cmp'),
                   find(update, 'dword ptr [rdi + 0xa18], r12d', 'cmp'),
-                  find(update, 'byte ptr [rdi + 0x39c5], r12b', 'cmp'),
+                  find(update, inherited_operand('byte ptr [rdi + 0x39c5], r12b'), 'cmp'),
                   find(update, 'byte ptr [rbx + 0xd1], r12b', 'cmp')):
         assert health < guard < reset and update[guard+1].operands[0].imm == exit_address
     assert update[world_after_health+2].mnemonic == 'je' and update[world_after_health+2].operands[0].imm == exit_address
@@ -116,7 +117,7 @@ def check(n, ins):
 
     retire = ins('?RetirePresentation@MagnarCombat@@')
     has(retire, 'rcx, qword ptr [rbx + 0x9c0]', 'rcx, qword ptr [rbx + 0x9c8]',
-        'qword ptr [rbx + 8], 0', 'eax, 0x17722', 'qword ptr [rbx + 0x3a88], 0x583b8',
+        'qword ptr [rbx + 8], 0', 'eax, 0x17722', inherited_operand('qword ptr [rbx + 0x3a88], 0x583b8'),
         'dword ptr [rbx + 0xe0], 0x5d7')
     target = b'.?AUnpc_magnar_icebreakerAI@npc_magnar_icebreaker@@\0'
     casts = []

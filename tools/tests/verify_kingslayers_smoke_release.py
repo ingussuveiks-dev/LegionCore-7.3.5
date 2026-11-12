@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Real smoke SpellScript cast/effect guards before the native scenario event."""
 from pathlib import Path
 import runpy
@@ -39,8 +41,8 @@ for target in ('?GetCaster@SpellScript@@', '?CanContact@Player@@', '?IsInWorld@O
                '?GetQuestRewardStatus@Player@@', '?GetQuestStatus@Player@@', '?GetCriteriaProgressMap@',
                '?CanUpdateCriteria@Scenario@@'):
     assert sites(n, context, target), target
-assert {('test', 'byte ptr [rbx + 0x4ff0], 1'), ('cmp', 'al, 4'),
-        ('cmp', 'byte ptr [rbx + 0x6848], ' + 'r14b'), ('cmp', 'qword ptr [rcx + 0x28], r14')} <= pairs(context)
+assert {('test', inherited_operand('byte ptr [rbx + 0x4ff0], 1')), ('cmp', 'al, 4'),
+        ('cmp', player_operand('byte ptr [rbx + 0x6848], ') + 'r14b'), ('cmp', 'qword ptr [rcx + 0x28], r14')} <= pairs(context)
 assert sites(n, check, method('SmokePlayer')) and {('mov', 'dl, 1'), ('mov', 'ecx, 0x51')} <= pairs(check)
 qualified, = sites(n, guard, method('SmokePlayer'))
 prevent, = sites(n, guard, '?PreventHitDefaultEffect@SpellScript@@')

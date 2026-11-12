@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Check the installed scoped guard deaths and acknowledged companion handoff."""
 from pathlib import Path
 import runpy
@@ -38,7 +40,7 @@ alive_memory='dword ptr [rbx + 0xa18], 0' if combat_owner else f'dword ptr [{ali
 alive_pointer = find(create, alive_memory, 'cmp') if combat_owner else find(create, f'{alive_register}, [rbx + 0xa18]', 'lea')
 assert combat_owner or alive_pointer < find(create, alive_memory, 'cmp')
 for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'sil' if combat_owner else 'bpl'), (361413, 0x324, 0x335, second_flag)):
-    gate = find(create, f'qword ptr [rbx + 0x3a88], {hex(spawn)}', 'cmp')
+    gate = find(create, inherited_operand(f'qword ptr [rbx + 0x3a88], {hex(spawn)}'), 'cmp')
     store = find(create, f'byte ptr [{owner_register} + {hex(death)}], {flag}', 'mov')
     branch = next(entry for entry in create[gate + 1:gate + 4] if entry.mnemonic.startswith('j'))
     assert gate < store and branch.mnemonic == 'jne' and branch.operands[0].imm > create[store].address
@@ -53,8 +55,8 @@ for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'sil' if combat_owner el
     assert next(entry for entry in segment if entry.address == clear).op_str == f'{flag}, {flag}'
     assert len(positions(segment, '?GetGuidValue@Object@@')) == 1
     assert segment[-1].op_str == f'xmmword ptr [{owner_register} + {hex(guid)}], xmm0'
-assert find(create, 'eax, 0x178c7', 'cmp') < find(create, 'qword ptr [rbx + 0x3a88], 0x583c4', 'cmp')
-assert find(create, 'eax, 0x178d4', 'cmp') < find(create, 'qword ptr [rbx + 0x3a88], 0x5835a', 'cmp') < find(create, f'xmmword ptr [{owner_register} + 0x336], xmm0', 'movups')
+assert find(create, 'eax, 0x178c7', 'cmp') < find(create, inherited_operand('qword ptr [rbx + 0x3a88], 0x583c4'), 'cmp')
+assert find(create, 'eax, 0x178d4', 'cmp') < find(create, inherited_operand('qword ptr [rbx + 0x3a88], 0x5835a'), 'cmp') < find(create, f'xmmword ptr [{owner_register} + 0x336], xmm0', 'movups')
 objects = instructions('?OnGameObjectCreate' + suffix)
 assert find(objects, 'eax, 0x3b8b9', 'cmp') < find(objects, 'rax, 0x20c1a', 'cmp') < find(objects, 'xmmword ptr [rdi + 0x346], xmm0', 'movups')
 
@@ -84,8 +86,8 @@ for displacement in (0x334, 0x335):
     assert body[stage + 1].operands[0].imm > body[gate + 1].address
 for operand in ('eax, 0x38d', 'eax, 2', 'eax, 3', 'byte ptr [rbp + 0x356], 0'):
     assert find(body, operand, 'cmp') < positions(body, '?UpdateAchievementCriteria@Player@@')[0]
-for operand, branch in (('byte ptr [rsi + 0x4ff0], 1', 'jne'), ('byte ptr [rsi + 0x6848], 0', 'jne'),
-                         ('byte ptr [rsi + 0x6849], 0', 'jne'), ('al, 1', 'jne'),
+for operand, branch in ((inherited_operand('byte ptr [rsi + 0x4ff0], 1'), 'jne'), (player_operand('byte ptr [rsi + 0x6848], 0'), 'jne'),
+                         (player_operand('byte ptr [rsi + 0x6849], 0'), 'jne'), ('al, 1', 'jne'),
                          ('qword ptr [rsi + 8], rcx', 'jne'), ('edi, eax', 'jne')):
     gate = find(body, operand)
     assert body[gate + 1].mnemonic == branch
@@ -103,7 +105,7 @@ epoch = epochs[1]
 assert epoch > credit and body[epoch + 1].mnemonic == 'jne'
 recheck = body[epoch:]
 for operand, branch in (('eax, 0x38d', 'jne'), ('eax, 3', 'jne'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                         ('byte ptr [rbx + 0x39c5], 0', 'jne'), ('eax, 0x178d4', 'jne'),
+                         (inherited_operand('byte ptr [rbx + 0x39c5], 0'), 'jne'), ('eax, 0x178d4', 'jne'),
                          ('byte ptr [rbx + 0x858], 0', 'je'), ('qword ptr [rbx + 0x9c0], 0', 'je'), ('eax, 0x3b8b9', 'jne')):
     gate = find(recheck, operand, 'cmp')
     assert recheck[gate + 1].mnemonic == branch

@@ -1,3 +1,6 @@
+from linked_player_abi import inherited_member_offset
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify actual registered Morvat receipt, original quest and Chen handoff."""
 from pathlib import Path
 from monk_intro_instance_pe import construction,zero_alias_pairs
@@ -117,7 +120,7 @@ assert ('mov','rbx, qword ptr [rax + 0x98]') in pairs(bridge[equal:])
 # Only the original unscoped actor uses its old nearest-player credit path.
 old_credit,=sites(n,bridge,'?UpdateAchievementCriteria@Player@@')
 source_guard=next(i for i,op in enumerate(bridge[talk:old_credit],talk)
-                  if op.mnemonic=='cmp' and op.op_str=='qword ptr [rbx + 0x3a88], 0x586d9')
+                  if op.mnemonic=='cmp' and op.op_str==inherited_operand('qword ptr [rbx + 0x3a88], 0x586d9'))
 assert bridge[source_guard+1].mnemonic=='je' and bridge[source_guard+1].operands[0].imm==bridge[old_credit+1].address
 
 progress=ins(state('Progress'));leaf=ins(state('Leaf'));death=ins(state('Death'))
@@ -142,7 +145,7 @@ assert ('cmp','qword ptr [rdi + 8], rax') in pairs(retained)
 needs(source,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@')
 assert {1014,103148,362201}<=values(source) and ('cmp','dword ptr [rbx + 0xa18], 0') in pairs(source)
 needs(current,state('Retained'),state('Actor'),'?GetCreature@Map@@','?IsInWorld@Object@@','?CanContact@Player@@','?InSamePhase@WorldObject@@','?IsWithinDistInMap@WorldObject@@')
-assert 100.0 in floats(n,current) and {0x4ff0,0x6848,0x6849,0x6851}<=fields(current)
+assert 100.0 in floats(n,current) and {inherited_member_offset(0x4ff0),player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(current)
 if jorvinax_successor:
     needs(current,'?ShouldHideFor@WorldObject@@')
     assert 0x478 in fields(ins('?ShouldHideFor@WorldObject@@'))

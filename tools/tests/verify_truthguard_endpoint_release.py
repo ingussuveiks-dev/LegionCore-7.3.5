@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify installed native-result retry/latches rather than an assumed successful teleport."""
 from pathlib import Path
 import runpy
@@ -18,8 +19,8 @@ rewarded = call_index(body, '?GetQuestRewardStatus@Player@@')
 active = find(body, 'byte ptr [rbx + 0x39], 1', 'mov')
 assert guard < quest < find(body, 'dword ptr [rdi + 0xa18], 0', 'cmp') < rewarded < active
 assert find(body, 'eax, 0xfffffffd', 'test') < active and any(entry.op_str == 'edx, 0xa421' for entry in body[guard:quest])
-saved = find(body, 'r12d, word ptr [rdi + 0x6ba8]', 'movzx')
-assert active < saved < find(body, 'word ptr [rdi + 0x6ba8], r14w', 'mov')
+saved = find(body, inherited_operand('r12d, word ptr [rdi + 0x6ba8]'), 'movzx')
+assert active < saved < find(body, inherited_operand('word ptr [rdi + 0x6ba8], r14w'), 'mov')
 cast_target = native['symbol']('?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_N')
 casts = [index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
          and native['resolve'](entry.operands[0].imm) == cast_target]
@@ -35,8 +36,8 @@ success = next(index for index, entry in enumerate(body) if entry.address == acc
 assert body[success].op_str == 'word ptr [rbx + 0x38], 1', 'Accepted/in-progress pair not latched to true/false'
 destroy = call_index(body, '?DespawnOrUnsummon@Creature@@')
 assert success < destroy and find(body, 'edx, 0x1f4', 'mov') < destroy
-restore = find(body, 'word ptr [rdi + 0x6ba8], r12w', 'mov')
-assert body[restore - 2].op_str == 'word ptr [rdi + 0x6ba8], r14w' and body[restore - 1].mnemonic == 'jne'
+restore = find(body, inherited_operand('word ptr [rdi + 0x6ba8], r12w'), 'mov')
+assert body[restore - 2].op_str == inherited_operand('word ptr [rdi + 0x6ba8], r14w') and body[restore - 1].mnemonic == 'jne'
 retry = find(body, 'dword ptr [rbx + 0x3c], 0x3e8', 'mov')
 assert result < restore < retry < success and body[retry - 1].op_str == 'byte ptr [rbx + 0x39], 0'
 assert b'Truthguard travel: endpoint cast rejected with result' in native['binary']
@@ -87,9 +88,9 @@ accumulated = [i for i, entry in enumerate(tick) if i > saved[0] and entry.mnemo
                entry.op_str == f'{name}, edx']
 assert len(accumulated) == 1
 accumulate = accumulated[0]
-assert [entry.op_str for entry in tick[accumulate - 2:accumulate]] == ['edx, dword ptr [rsi + 0x39c8]', f'edx, {name}']
+assert [entry.op_str for entry in tick[accumulate - 2:accumulate]] == [inherited_operand('edx, dword ptr [rsi + 0x39c8]'), f'edx, {name}']
 assert tick[accumulate - 2].mnemonic == 'mov' and tick[accumulate - 1].mnemonic == 'add'
-assert tick[accumulate + 1].mnemonic == 'mov' and tick[accumulate + 1].op_str == 'dword ptr [rsi + 0x39c8], edx'
+assert tick[accumulate + 1].mnemonic == 'mov' and tick[accumulate + 1].op_str == inherited_operand('dword ptr [rsi + 0x39c8], edx')
 # Follow control flow: another return path's epilogue can precede this dispatch
 # in address order, and legitimately restores the same nonvolatile register.
 tick_by_address = {entry.address: entry for entry in tick}

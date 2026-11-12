@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify the selected initial Ashbringer context gate, not delayed spell success."""
 from pathlib import Path
 import runpy
@@ -31,7 +32,7 @@ def reject(position, branch):
 
 
 for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                         ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                          ('dword ptr [rdi + 0xe0], 0x5dc', 'jne'), ('rax, rax', 'je'),
                          ('rax, qword ptr [rdi + 8]', 'jne'), ('dword ptr [rbx + 0x3b8], eax', 'jne'),
                          ('rdi, rdi', 'je'), ('rbx, rbx', 'je')):

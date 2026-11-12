@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind selected Arms cemetery checkpoints to the registered shared1539 instance."""
 from pathlib import Path
 import runpy,struct
@@ -51,7 +52,7 @@ assert [(o.mnemonic,o.op_str) for o in body[stores:stores+3]]==[('movss','dword 
 assert body[stores+3].mnemonic=='call' and n['resolve'](body[stores+3].operands[0].imm)==n['symbol']('?NormalizeOrientation@Position@@') and body[stores+4].op_str=='dword ptr [rbx + 0xc], xmm0' and body[stores+5].op_str=='rax, rbx'
 assert stores>0 and body[stores-1].op_str=='xmm0, xmm0' # General5281 retains zero facing; Arms jumps past it.
 fall=next(i for i,o in enumerate(body) if o.address==fallback);assert body[fall].op_str=='rbx, [r14 + 0x328]' and body[fall+1].op_str=='dword ptr [rbx + 0x10], 0x603'
-assert any(o.mnemonic=='mov' and o.op_str=='rcx, qword ptr [rax + 0xa508]' for o in body[fall:stores]) # Native5281 remains separate.
+assert any(o.mnemonic=='mov' and o.op_str==inherited_operand('rcx, qword ptr [rax + 0xa508]') for o in body[fall:stores]) # Native5281 remains separate.
 assert b'Stromkar graveyard: invalid native WorldSafeLocs %u for instance %u' in n['binary']
 refused=at('eax, eax','xor');assert body[refused+1].mnemonic=='jmp' and body[refused+1].operands[0].imm>body[stores+5].address
 for forbidden in ('?TeleportTo@Player@@','?ResurrectPlayer@Player@@','?SetHealth@Unit@@','?AddItem@Player@@','?CompleteQuest@Player@@','?KilledMonsterCredit@Player@@','?UpdateAchievementCriteria@Player@@','?SetCurrentStep@Scenario@@'):

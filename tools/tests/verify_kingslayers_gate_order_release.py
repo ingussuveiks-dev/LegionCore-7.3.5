@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Registered Clay controller, both native request routes and exact live actor."""
 from pathlib import Path
 import re
@@ -63,9 +65,9 @@ for target, count in [('?IsInWorld@Object@@', 2), ('?IsPreDelete@Object@@', 2),
                       ('?GetVisibilityRange@WorldObject@@', 1), ('?IsWithinDistInMap@WorldObject@@', 1),
                       ('?CanTargetQuestObject@WorldObject@@', 2), ('?GetQuestRewardStatus@Player@@', 1), ('?GetQuestStatus@Player@@', 2)]:
     assert len(sites(n, eligible, target)) == count, target
-assert {('test', 'byte ptr [rbx + 0x4ff0], 1'), ('cmp', 'al, 4'),
-        ('cmp', 'qword ptr [rbx + 8], rax'), ('cmp', 'byte ptr [rbx + 0x6848], 0'),
-        ('cmp', 'byte ptr [rbx + 0x6849], 0'), ('cmp', 'byte ptr [rbx + 0x6851], 0')} <= pairs(eligible)
+assert {('test', inherited_operand('byte ptr [rbx + 0x4ff0], 1')), ('cmp', 'al, 4'),
+        ('cmp', 'qword ptr [rbx + 8], rax'), ('cmp', player_operand('byte ptr [rbx + 0x6848], 0')),
+        ('cmp', player_operand('byte ptr [rbx + 0x6849], 0')), ('cmp', player_operand('byte ptr [rbx + 0x6851], 0'))} <= pairs(eligible)
 for body in (pending, bridge):
     lookup, = sites(n, body, '?GetPlayer@ObjectAccessor@@')
     identity, = sites(n, body, '??8ObjectGuid@@')

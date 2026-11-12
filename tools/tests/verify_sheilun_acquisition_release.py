@@ -1,3 +1,6 @@
+from linked_player_abi import inherited_member_offset
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Inspect the linked manual pickup, boarded return and logout/resume guards."""
 from pathlib import Path
 import hashlib
@@ -121,9 +124,9 @@ hook = require('?OnBeforeLogout@PlayerEvents@SheilunAcquisition@@',
                 '?CancelTransit@SheilunAcquisition@@', '?Landing@SheilunAcquisition@@'), (202831, 1514))
 no_grants(hook)
 assert not sites(n, hook, '?TeleportTo@Player@@'), 'Logout must supply the saved destination, not ignored TeleportTo'
-assert any(x.op_str == 'dword ptr [rbx + 0x6840], 0x5ea' for x in hook), 'Native saved destination map1514'
-assert any(x.op_str == 'byte ptr [rbx + 0x6849], 1' for x in hook), 'Native far-teleport save selector'
-for offset in (0x6830, 0x6834, 0x6838, 0x683c):
+assert any(x.op_str == inherited_operand('dword ptr [rbx + 0x6840], 0x5ea') for x in hook), 'Native saved destination map1514'
+assert any(x.op_str == player_operand('byte ptr [rbx + 0x6849], 1') for x in hook), 'Native far-teleport save selector'
+for offset in map(inherited_member_offset, (0x6830, 0x6834, 0x6838, 0x683c)):
     assert any(x.mnemonic == 'movss' and x.op_str.startswith(f'dword ptr [rbx + {offset:#x}],') for x in hook)
 
 maptext = (n['args'].release / 'worldserver.map').read_text(errors='replace')

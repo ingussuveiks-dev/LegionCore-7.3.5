@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify the installed aberration death recipient, admission and one-shot latch."""
 from pathlib import Path
 import runpy
@@ -18,8 +20,8 @@ def reject(position, branch):
     assert body[position + 1].mnemonic == branch and body[position + 1].operands[0].imm == deny
 
 
-for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), ('byte ptr [rbx + 0x4ff0], 1', 'jne'),
-                         ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), (inherited_operand('byte ptr [rbx + 0x4ff0], 1'), 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                          ('dword ptr [rdi + 0xa18], 0', 'je'), ('dword ptr [rdi + 0xe0], 0x603', 'jne'),
                          ('rax, rax', 'je'), ('rax, qword ptr [rdi + 8]', 'jne'),
                          ('dword ptr [rbx + 0x3b8], eax', 'jne')):

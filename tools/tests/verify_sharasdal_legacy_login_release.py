@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected linked Sharasdal legacy-receipt repair, with retained acquisition/return checks.
 
 This is not a complete saved-character or client traversal.
@@ -66,8 +67,8 @@ assert len(call) == 1
 at = call[0]
 assert p[at+1].op_str=='dword ptr [rsp + 0x30], eax'
 compare=at+2;assert p[compare].op_str=='eax, 2' and p[compare+1].mnemonic=='jne'
-reset=find(p,'qword ptr [rsi + 0x6bd8], 0',compare)
-selector = find(p, 'word ptr [rsi + 0x6ba8], di', reset)
+reset=find(p,inherited_operand('qword ptr [rsi + 0x6bd8], 0'),compare)
+selector = find(p, inherited_operand('word ptr [rsi + 0x6ba8], di'), reset)
 live = sites(p, '?GetScenario@ScenarioMgr@@')[0]
 assert at < reset < selector < live
 # Optimized logging branches share the later function epilogue. Walk both
@@ -96,7 +97,7 @@ while pending:
     pending.append(i + 1)
 assert returns and reset in seen and selector in seen
 complete = sites(p, '?IsCompleted@Scenario@@')[0]
-keep = find(p, 'dword ptr [rsi + 0x6bdc], eax', complete)
+keep = find(p, inherited_operand('dword ptr [rsi + 0x6bdc], eax'), complete)
 repair=find(p,'dword ptr [rsp + 0x30], 1',keep,'cmp')
 live_sub=[i for i,o in enumerate(p[repair:repair+12],repair) if o.mnemonic=='subss' and 'rip' in o.op_str];assert len(live_sub)==2
 for i,value in zip(live_sub,(836.16,1035.4)):near(p[i],value)

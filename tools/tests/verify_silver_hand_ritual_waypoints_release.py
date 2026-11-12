@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify third Travard's actual waypoint recipients and per-AI credit latches."""
 from pathlib import Path
 import runpy
@@ -38,8 +40,8 @@ for method, branch in (('?CanContact@Player@@', 'je'), ('?InSamePhase@WorldObjec
     position, = sites(policy, method)
     assert policy[position + 1].op_str == 'al, al'
     assert policy[position + 2].mnemonic == branch and policy[position + 2].operands[0].imm == skip
-for operands in ('rdi, rdi', 'byte ptr [rdi + 0x4ff0], 1', 'byte ptr [rdi + 0x6848], 0',
-                 'byte ptr [rdi + 0x6849], 0', 'al, 2', 'qword ptr [rdi + 8], rax',
+for operands in ('rdi, rdi', inherited_operand('byte ptr [rdi + 0x4ff0], 1'), player_operand('byte ptr [rdi + 0x6848], 0'),
+                 player_operand('byte ptr [rdi + 0x6849], 0'), 'al, 2', 'qword ptr [rdi + 8], rax',
                  'dword ptr [rdi + 0x3b8], eax'):
     position, = [index for index, entry in enumerate(policy[reference:], reference)
                  if entry.op_str == operands and entry.mnemonic in ('cmp', 'test')]

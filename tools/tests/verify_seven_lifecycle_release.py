@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Selected x64 executable paths; source/ASAN/native behavior evidence is separate."""
 from pathlib import Path
 import re,runpy,struct
@@ -30,7 +31,7 @@ remove=ins('?OnRemove@spell_mount_summon_chauffeur@@');assert any(x.mnemonic=='m
 assert sites(remove,'?DespawnOrUnsummon@Creature@@') and not sites(remove,'?RemoveVehicleKit@Unit@@')
 for cls in ('spell_flight_masters_whistle_argus','spell_masters_hunter_seeking_crystal_teleport'):
  body=lambda_body(cls);assert sites(body,'?IsInWorld@Object@@') and sites(body,'?IsPreDelete@Object@@') and sites(body,'?NearTeleportTo@Unit@@')
- for offset in (0xa18,0xe0,0x3b8,0x6848,0x6849,0x6851):
+ for offset in (0xa18,0xe0,0x3b8,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)):
   assert any(x.mnemonic=='cmp' and any(o.type==CS_OP_MEM and o.mem.disp==offset for o in x.operands) for x in body),(cls,hex(offset))
 body=ins('?Execute@VehicleJoinEvent@@');lookup,=sites(body,'?GetUnit@ObjectAccessor@@');prefix=body[:lookup]
 predelete,=sites(prefix,'?IsPreDelete@Object@@');death=next(i for i,x in enumerate(prefix) if x.mnemonic=='cmp' and x.op_str=='dword ptr [rcx + 0xa18], 0')

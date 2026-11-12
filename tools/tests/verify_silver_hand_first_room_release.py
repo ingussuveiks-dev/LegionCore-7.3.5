@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify owned first-room choreography and actual point3->50872->step4 cleanup."""
 from pathlib import Path
 import runpy
@@ -42,7 +44,7 @@ quest,=sites(body,'?GetQuestStatus@Player@@');assert body[quest+1].op_str=='eax,
 reject=body[quest+2].operands[0].imm
 for name,branch in (('?IsInWorld@Object@@','je'),('?IsPreDelete@Object@@','jne'),('?CanContact@Player@@','je'),('?InSamePhase@WorldObject@@','je'),('?IsWithinDistInMap@WorldObject@@','je'),('?GetQuestRewardStatus@Player@@','jne')):
  i=sites(body,name)[0];assert i<credit and body[i+2].mnemonic==branch and body[i+2].operands[0].imm==reject
-for op in ('byte ptr [rdi + 0x4ff0], 1','byte ptr [rdi + 0x6848], r15b','byte ptr [rdi + 0x6849], r15b','al, 2','qword ptr [rdi + 8], rax','dword ptr [rdi + 0x3b8], eax'):
+for op in (inherited_operand('byte ptr [rdi + 0x4ff0], 1'),player_operand('byte ptr [rdi + 0x6848], r15b'),player_operand('byte ptr [rdi + 0x6849], r15b'),'al, 2','qword ptr [rdi + 8], rax','dword ptr [rdi + 0x3b8], eax'):
  i=locate(body,op);assert i<credit and body[i+1].mnemonic=='jne' and body[i+1].operands[0].imm==reject
 assert not sites(body,'?FindNearestPlayer@WorldObject@@') and not any(x.op_str=='dword ptr [rdi + 0xa18], 0' for x in body)
 busy=locate(body,'byte ptr [r14 + 0x18], 1','mov');done=locate(body,'byte ptr [r14 + 0x17], 1','mov')

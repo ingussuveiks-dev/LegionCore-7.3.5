@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Check actual completed-loot, scene retry and guarded return consumers."""
 from pathlib import Path
 import runpy
@@ -109,7 +110,7 @@ def reject(position, branch):
 
 
 for operands, branch in (('rbx, rbx', 'je'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                         ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                          ('qword ptr [rbx + 8], 0', 'je'), ('dword ptr [rbx + 0xe0], 0x603', 'jne'),
                          (f'dword ptr [rbx + 0x3b8], {instance_register}', 'jne')):
     position = next(index for index, entry in enumerate(decoded[:return_cast]) if entry.op_str == operands and entry.mnemonic in ('cmp', 'test'))

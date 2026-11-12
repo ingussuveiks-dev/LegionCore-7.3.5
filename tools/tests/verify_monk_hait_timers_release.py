@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Actual Hait-owned AI work and GUID-bound vehicle cleanup in the linked PE."""
 from pathlib import Path
 import hashlib
@@ -44,9 +45,9 @@ if defeat_successor:
     assert ('mov','rdi, rcx') in [(o.mnemonic,o.op_str) for o in data]
     found,=sites(n,data,'?FindNearestCreature@WorldObject@@')
     assert (data[found+1].mnemonic,data[found+1].op_str)==('mov','rbx, rax')
-    queue(data,[('rcx, [rbx + 0x36a0]',2000),('rcx, [rbx + 0x36a0]',4000),('rcx, [rbx + 0x36a0]',7000),('rcx, [rdi + 0x38]',10000)])
+    queue(data,[(unit_queue_operand('rcx, [rbx + 0x36a0]'),2000),(unit_queue_operand('rcx, [rbx + 0x36a0]'),4000),(unit_queue_operand('rcx, [rbx + 0x36a0]'),7000),('rcx, [rdi + 0x38]',10000)])
 else:
-    queue(data,[('rcx, [rdi + 0x36a0]',2000),('rcx, [rdi + 0x36a0]',4000),('rcx, [rdi + 0x36a0]',7000),('rcx, [rbx + 0x38]',10000)])
+    queue(data,[(unit_queue_operand('rcx, [rdi + 0x36a0]'),2000),(unit_queue_operand('rcx, [rdi + 0x36a0]'),4000),(unit_queue_operand('rcx, [rdi + 0x36a0]'),7000),('rcx, [rbx + 0x38]',10000)])
 jorvinax_successor=94350 in values(move)
 move_owner='rdi' if jorvinax_successor else 'rbx'
 queue(move,[(f'rcx, [{move_owner} + 0x38]',3000),(f'rcx, [{move_owner} + 0x38]',6000)])
@@ -58,7 +59,7 @@ if opening_successor:
 else:
     queue(action,[(('add','rcx, 0x38'),1000)]+[('rcx, [rbx + 0x38]',delay) for delay in (4000,7000,10000)])
 outer=ins('??R<lambda_4>@?4??DoAction'+suffix)
-queue(outer,[('rcx, [rdi + 0x36a0]',20000),('rcx, [rdi + 0x36a0]',23000),('rcx, [rbx + 0x36a0]',8000),('rcx, [rbx + 0x36a0]',15000)])
+queue(outer,[(unit_queue_operand('rcx, [rdi + 0x36a0]'),20000),(unit_queue_operand('rcx, [rdi + 0x36a0]'),23000),(unit_queue_operand('rcx, [rbx + 0x36a0]'),8000),(unit_queue_operand('rcx, [rbx + 0x36a0]'),15000)])
 finds=sites(n,outer,'?FindNearestCreature@WorldObject@@');assert len(finds)==2 and {98001,98011}<=values(outer)
 assert (outer[finds[0]+1].mnemonic,outer[finds[0]+1].op_str)==('mov','rbx, rax')
 assert (outer[finds[1]+1].mnemonic,outer[finds[1]+1].op_str)==('mov','rdi, rax'),'Both cleanup timers belong to the actual Demon'
@@ -66,7 +67,7 @@ getguid=sites(n,outer,'?GetGuidValue@Object@@');assert len(getguid)==2
 assert [(outer[at+1].mnemonic,outer[at+1].op_str) for at in getguid]==[('movups','xmm7, xmmword ptr [rax]'),('movups','xmm6, xmmword ptr [rax]')]
 
 helper=ins(method('AttackDemon'))
-queue(helper,[('rcx, [rbx + 0x36a0]',500)])
+queue(helper,[(unit_queue_operand('rcx, [rbx + 0x36a0]'),500)])
 assert sites(n,helper,'?GetCreature@ObjectAccessor@@') and sites(n,helper,'?ShouldLog@Log@@') and sites(n,helper,'?outMessage@Log@@')
 guards=[i for i,op in enumerate(helper) if op.mnemonic=='cmp' and op.op_str in ('dword ptr [rbx + 0xa18], 0','dword ptr [rax + 0xa18], 0')]
 assert len(guards)==2 and all(helper[i+1].mnemonic=='jne' for i in guards)

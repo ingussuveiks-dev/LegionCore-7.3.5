@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Selected compiled callbacks;behavior is separately tested with ASAN/native."""
 from pathlib import Path
 import runpy
@@ -54,7 +55,7 @@ names=[k for k in symbols if k.startswith('?_Do_call@')and 'spell_undercurrent_f
 name,=names;body=ins(name)
 for dependency in ('?IsInWorld@Object@@','?IsPreDelete@Object@@','?NearTeleportTo@Unit@@'):assert sites(body,dependency),dependency
 teleport,=sites(body,'?NearTeleportTo@Unit@@')
-for offset in (0xa18,0xe0,0x3b8,0x6848,0x6849,0x6851):
+for offset in (0xa18,0xe0,0x3b8,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)):
  assert any(x.mnemonic=='cmp'and any(o.type==CS_OP_MEM and o.mem.disp==offset for o in x.operands)for x in body[:teleport]),('Undercurrent lifecycle guard',hex(offset))
 schedule=ins('?HandleAfterCast@spell_undercurrent_fishing_tele@@')
 assert 500 in values(schedule)and sites(schedule,'?AddDelayedEvent@FunctionProcessor@@')

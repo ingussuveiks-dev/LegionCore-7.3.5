@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify selected ritual POINT1, shared eligible reference and deferred completion."""
 from pathlib import Path
 import runpy
@@ -49,7 +51,7 @@ for method, branch in (('?IsInWorld@Object@@', 'je'), ('?IsPreDelete@Object@@', 
     position, = sites(complete, method)
     assert complete[position + 1].op_str == 'al, al'
     assert complete[position + 2].mnemonic == branch and complete[position + 2].operands[0].imm == skip
-for operands in ('byte ptr [rdi + 0x4ff0], 1', 'byte ptr [rdi + 0x6848], r14b', 'byte ptr [rdi + 0x6849], r14b',
+for operands in (inherited_operand('byte ptr [rdi + 0x4ff0], 1'), player_operand('byte ptr [rdi + 0x6848], r14b'), player_operand('byte ptr [rdi + 0x6849], r14b'),
                  'al, 2', 'qword ptr [rdi + 8], rax', 'dword ptr [rdi + 0x3b8], eax'):
     position = next(index for index, entry in enumerate(complete) if entry.op_str == operands)
     assert complete[position + 1].mnemonic == 'jne' and complete[position + 1].operands[0].imm == skip

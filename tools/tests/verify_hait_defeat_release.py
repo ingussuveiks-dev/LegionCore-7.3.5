@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Actual registered first Demon death, native receipt and Hait continuation."""
 from pathlib import Path
 import hashlib
@@ -72,7 +73,7 @@ for body in (death, valid, victory, contact, outro):
 # The former raw SetData and point callback payloads are retained for other
 # spawns. A matching first actor cannot reach their progress/text/AI queues.
 data = ins('?SetData@npc_master_haitAI@npc_master_hait@@')
-guard = next(i for i, o in enumerate(data) if o.mnemonic == 'cmp' and o.op_str.endswith(' + 0x3a88], 0x58679'))
+guard = next(i for i, o in enumerate(data) if o.mnemonic == 'cmp' and o.op_str.endswith(inherited_operand(' + 0x3a88], 0x58679')))
 branch = data[guard+1]
 assert branch.mnemonic == 'je' and {97778, 1014} <= values(data[:guard])
 excluded = reachable(data, branch.operands[0].imm)

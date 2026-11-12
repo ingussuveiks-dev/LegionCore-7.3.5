@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify real Kraliss death dispatch and the original participant's criterion."""
 from pathlib import Path
 import runpy
@@ -49,8 +51,8 @@ for segment,register in ((recipient[tag_at+1:owner_at],'rbx'),(recipient[owner_a
   assert sites(segment,'?GetQuestRewardStatus@Player@@') and len(sites(segment,'?GetQuestStatus@Player@@'))==2
   class_at,=sites(segment,'?GetByteValue@Object@@')
   assert segment[class_at+1].mnemonic=='cmp' and segment[class_at+1].op_str=='al, 7'
-  assert any(x.mnemonic=='test' and x.op_str==f'byte ptr [{register} + 0x4ff0], 1' for x in segment)
-  for offset in (0x6848,0x6849):assert any(x.mnemonic=='cmp' and x.op_str==f'byte ptr [{register} + {offset:#x}], 0' for x in segment)
+  assert any(x.mnemonic=='test' and x.op_str==inherited_operand(f'byte ptr [{register} + 0x4ff0], 1') for x in segment)
+  for offset in (player_offset(0x6848),player_offset(0x6849)):assert any(x.mnemonic=='cmp' and x.op_str==f'byte ptr [{register} + {offset:#x}], 0' for x in segment)
   assert 40341 in values(segment)
  assert sites(segment,'?InSamePhase@WorldObject@@') and sites(segment,'?IsWithinDistInMap@WorldObject@@')
 assert any(x.mnemonic=='movss' and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.base==X86_REG_RIP and struct.unpack_from('<f',n['binary'],n['offset'](x.address+x.size+x.operands[1].mem.disp))[0]==100.0 for x in recipient)

@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify actual instance-owned authored8s/15s route handoffs in linked PE."""
 from pathlib import Path
 import runpy,json,hashlib,re
@@ -36,9 +37,9 @@ assert {('cmp','byte ptr [rcx + 0xcd], 0'),('cmp','byte ptr [rcx + 0x93], 0'),
         ('mov','ebx, dword ptr [rsi + 0xc8]'),('cmp','ecx, 0x1f40'),('cmp','ecx, 0x3a98'),('cmp','ecx, 0x7d0'),
         ('mov','byte ptr [rsi + 0xcf], 1'),('mov','byte ptr [rsi + 0xd0], 1'),
         ('mov','byte ptr [rsi + 0xd1], 1'),('mov','byte ptr [rsi + 0xd2], 1'),
-        ('mov','dword ptr [r13 + 0x3b1c], 0xffffffff'),('mov','dword ptr [rdi + 0x3b1c], 0xffffffff'),
+        ('mov',inherited_operand('dword ptr [r13 + 0x3b1c], 0xffffffff')),('mov',inherited_operand('dword ptr [rdi + 0x3b1c], 0xffffffff')),
         ('mov','byte ptr [rsi + 0xce], 0'),('cmp','qword ptr [rdi + 8], rax'),
-        ('cmp','qword ptr [rdi + 0x3a88], 0x5871f'),('cmp','dword ptr [rdi + 0xa18], 0')}<=set(pairs(routes))
+        ('cmp',inherited_operand('qword ptr [rdi + 0x3a88], 0x5871f')),('cmp','dword ptr [rdi + 0xa18], 0')}<=set(pairs(routes))
 paths=sites(n,routes,'?MovePath@MotionMaster@@');assert len(paths)==2
 for at,path in zip(paths,(9859005,9859006)):
  assert ('mov',f'edx, {path:#x}') in pairs(routes[at-3:at])
@@ -62,7 +63,7 @@ guide=ins(guide_name)
 needs(guide,valid_name,state('Retained'),'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@','?FindNearestCreature@WorldObject@@')
 assert len(sites(n,guide,valid_name))==1
 assert {1014,97778,362271}<=values(guide) and 50.0 in floats(n,guide)
-assert {('cmp','qword ptr [rdi + 0x3a88], 0x5871f'),('cmp','dword ptr [rdi + 0xa18], 0'),('cmp','rax, rdi')}<=set(pairs(guide))
+assert {('cmp',inherited_operand('qword ptr [rdi + 0x3a88], 0x5871f')),('cmp','dword ptr [rdi + 0xa18], 0'),('cmp','rax, rdi')}<=set(pairs(guide))
 checks=sites(n,routes,guide_name);assert len(checks)==3
 assert chat[1]<checks[0]<chat[2]<checks[1]<paths[1]<checks[2]
 rescue=ins(state('Update'));arrival=ins(state('UpdateArrival'))
@@ -73,13 +74,13 @@ data=ins('?Data@MonkChenRoutes@@')
 needs(data,'?GetPathScript@WaypointMgr@@');assert {9859006,0x18c,0x2c}<=values(data)
 if sites(n,routes,'?Issued@MonkChenRoutes@@'):
  issued=ins('?Issued@MonkChenRoutes@@')
- assert {('cmp','dword ptr [rbx + 0x2c], 0x966fbe'),('cmp','dword ptr [rbx + 0x18], 0'),('cmp','dword ptr [rdi + 0x3b1c], -1')}<=set(pairs(issued))
+ assert {('cmp','dword ptr [rbx + 0x2c], 0x966fbe'),('cmp','dword ptr [rbx + 0x18], 0'),('cmp',inherited_operand('dword ptr [rdi + 0x3b1c], -1'))}<=set(pairs(issued))
 else:
  issued=routes[paths[1]+1:]
  needs(issued,'?GetMotionSlot@MotionMaster@@','?GetPathScript@WaypointMgr@@')
  assert {('sub','rax, 0x18c'),('cmp','rax, 0x2c'),('cmp','al, 2')}<=set(pairs(issued))
  consumed=next(op.address for op,pair in zip(issued,pairs(issued)) if pair==('mov','byte ptr [rsi + 0xce], 0'))
- for condition in ('dword ptr [r12 + 0x2c], 0x966fbe','dword ptr [r12 + 0x18], 0','dword ptr [rdi + 0x3b1c], -1'):
+ for condition in ('dword ptr [r12 + 0x2c], 0x966fbe','dword ptr [r12 + 0x18], 0',inherited_operand('dword ptr [rdi + 0x3b1c], -1')):
   at=next(i for i,pair in enumerate(pairs(issued)) if pair==('cmp',condition))
   assert issued[at+1].mnemonic=='jne' and consumed not in reachable(issued,issued[at+1].operands[0].imm)
 for kind,number in (('SetData',3),('MovementInform',5)):

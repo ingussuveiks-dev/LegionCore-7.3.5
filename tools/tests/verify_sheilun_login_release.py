@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify actual rejected-login routing, native inventory proof and exit pose."""
 from pathlib import Path
 import runpy
@@ -28,15 +29,15 @@ failure = body[teleport + 2].operands[0].imm
 assert body[teleport + 1].op_str == 'al, al' and body[teleport + 2].mnemonic == 'je'
 for at, branch in ((compare, 'jne'), (count, 'je'), (coord, 'je')):
     assert body[at + 2].mnemonic == branch and body[at + 2].operands[0].imm == failure
-assert any(x.mnemonic == 'mov' and x.op_str == 'rbx, qword ptr [rax + 0xb270]' for x in body[count:coord]), 'Actual native5710 table row'
+assert any(x.mnemonic == 'mov' and x.op_str == inherited_operand('rbx, qword ptr [rax + 0xb270]') for x in body[count:coord]), 'Actual native5710 table row'
 assert any(x.mnemonic == 'cmp' and x.op_str == 'word ptr [rbx + 0x1c], cx' for x in body[count:coord]), 'Actual destination MapID'
 multiplier, = [x for x in body[count:coord] if x.mnemonic == 'mulss']
 operand = multiplier.operands[1]
 assert operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP
 factor, = struct.unpack_from('<f', n['binary'], n['offset'](multiplier.address + multiplier.size + operand.mem.disp))
 assert abs(factor - 0.017453292519943295) < 1e-9, 'Native degree-to-radian conversion'
-assert any(x.op_str == 'qword ptr [rdi + 0x6bd8], rsi' for x in body[teleport + 3:]), 'Clear login IDs only after accepted transfer'
-assert any(x.op_str == 'word ptr [rdi + 0x6ba8], si' for x in body[teleport + 3:]), 'Clear consumed selector'
+assert any(x.op_str == inherited_operand('qword ptr [rdi + 0x6bd8], rsi') for x in body[teleport + 3:]), 'Clear login IDs only after accepted transfer'
+assert any(x.op_str == inherited_operand('word ptr [rdi + 0x6ba8], si') for x in body[teleport + 3:]), 'Clear consumed selector'
 for forbidden in ('?AddItem@Player@@', '?KilledMonsterCredit@Player@@', '?UpdateAchievementCriteria@Player@@',
                   '?CompleteQuest@Player@@', '?SetQuestObjectiveData@Player@@', '?DestroyItem@Player@@'):
     assert not sites(n, body, forbidden), forbidden

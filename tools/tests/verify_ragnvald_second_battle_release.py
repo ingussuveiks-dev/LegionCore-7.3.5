@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Prove the registered native933 original-participant second-battle speech owner."""
 from pathlib import Path
 import hashlib,json,runpy
@@ -60,8 +62,8 @@ assert {103661,3}<=values(retained) and any(op.mnemonic=='lock cmpxchg' for op i
 assert {('cmp','qword ptr [r8 + 0x18], rax'),('cmp','qword ptr [rdi + 8], rax')}<=set(pairs(retained))
 needs(contact,'?FindPlayer@ObjectAccessor@@','?getQuestStatus@Player@@','?IsInWorld@Object@@','?CanContact@Player@@',
       '?InSamePhase@WorldObject@@','??8ObjectGuid@@','?canSeeOrDetect@WorldObject@@','?GetVisibilityRange@WorldObject@@','?IsWithinDistInMap@WorldObject@@')
-assert {0x478,0x488,0x4a0,0x6848,0x6849,0x6851}<=fields(contact)
-assert ('test','byte ptr [rdi + 0x4ff0], 1') in pairs(contact)
+assert {0x478,0x488,0x4a0,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(contact)
+assert ('test',inherited_operand('byte ptr [rdi + 0x4ff0], 1')) in pairs(contact)
 
 body=ins(method('Update'));factory,=sites(n,body,'?CreateConversation@Conversation@@')
 accept=next(i for i,op in enumerate(body) if op.mnemonic=='mov' and op.op_str=='byte ptr [rdi + 0x59], 1')
@@ -94,7 +96,7 @@ assert discard[remove].address not in reachable(discard,discard[world+2].operand
 
 # Original source alone bypasses its raw1412 factory; its native battle still runs.
 raw_actor=ins('?DoAction@npc_ragnvald_dragonbornAI@');raw_factory,=sites(n,raw_actor,'?CreateConversation@Conversation@@')
-spawn=next(i for i,op in enumerate(raw_actor[:raw_factory]) if op.mnemonic=='cmp' and op.op_str=='qword ptr [rax + 0x3a88], 0x58286')
+spawn=next(i for i,op in enumerate(raw_actor[:raw_factory]) if op.mnemonic=='cmp' and op.op_str==inherited_operand('qword ptr [rax + 0x3a88], 0x58286'))
 assert raw_actor[spawn+1].mnemonic=='je'
 branch=raw_actor[spawn+1].operands[0].imm
 assert raw_actor[raw_factory].address not in reachable(raw_actor,branch)

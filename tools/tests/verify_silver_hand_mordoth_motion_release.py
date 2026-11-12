@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify retained SmartAI combat/home dispatch beside the data-only spawn repair."""
 from pathlib import Path
 import runpy
@@ -33,7 +34,7 @@ resume, = sites(body, '?ResumeMovement@Unit@@')
 idle, = sites(body, '?MoveIdle@MotionMaster@@')
 assert event < idle < path < resume
 assert any(entry.op_str == 'edx, 0x15' for entry in body[:event])
-addon = next(index for index, entry in enumerate(body) if entry.op_str == 'edx, dword ptr [rcx + 0x3b20]')
+addon = next(index for index, entry in enumerate(body) if entry.op_str == inherited_operand('edx, dword ptr [rcx + 0x3b20]'))
 assert body[addon + 1].op_str == 'edx, edx' and body[addon + 2].mnemonic == 'je'
 assert body[addon + 2].operands[0].imm > body[path].address and body[addon + 2].operands[0].imm < body[resume].address
 assert any(entry.op_str == 'r8b, 1' for entry in body[addon:path])

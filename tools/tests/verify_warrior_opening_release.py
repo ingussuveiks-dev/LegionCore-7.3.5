@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Instance-owned native admission/factory acknowledgement before Ragnvald battle."""
 from pathlib import Path
 import hashlib,json,runpy
@@ -65,7 +66,7 @@ speak=ins(opening('Speak'));create,=sites(n,speak,'?CreateConversation@Conversat
 needs(speak,'?IsInWorld@Object@@','?GetConversation@ObjectAccessor@@','?GetCreatures@Conversation@@','?GetCreature@Conversation@@','?canSeeOrDetect@WorldObject@@')
 assert pairs(speak[create+1:create+2])==[('test','al, al')] and speak[create+2].mnemonic=='jne'
 assert {1386,97166,361091}<=values(speak)
-assert ('cmp','qword ptr [rax + 0x3a88], 0x58283') in pairs(speak)
+assert ('cmp',inherited_operand('qword ptr [rax + 0x3a88], 0x58283')) in pairs(speak)
 view,=sites(n,speak,'?GetCreatures@Conversation@@');actors=sites(n,speak,'?GetCreature@Conversation@@')
 assert view<actors[0]<actors[1]
 count=next(i for i,row in enumerate(speak[view:actors[0]],view) if row.mnemonic=='cmp' and row.op_str=='rax, 6')

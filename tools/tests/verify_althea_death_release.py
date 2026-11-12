@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Selected Althea death receiver and preserved Garona handoff."""
 from pathlib import Path
 import runpy,json,hashlib
@@ -28,7 +29,7 @@ assert {('lea','rbx, [rdi + 0xd0]'),('mov','r9, rdi'),('mov','r8d, 0x97f'),('mov
 assert body[create+1].op_str=='al, al' and body[create+2].mnemonic=='jne'
 assert ('call','qword ptr [rax]') in pairs(body[create+3:garona])
 assert {108214,5000}<=values(body[garona-5:queue])
-assert {('mov','qword ptr [rsp + 0x58], rax'),('lea','rcx, [rax + 0x36a0]')}<=set(pairs(body[garona:queue]))
+assert {('mov','qword ptr [rsp + 0x58], rax'),('lea',unit_queue_operand('rcx, [rax + 0x36a0]'))}<=set(pairs(body[garona:queue]))
 vt,raw=table('??_7'+suffix+'6B@',82)
 assert resolved(raw)[0x130//8]==n['symbol']('?JustDied@'+suffix)
 assert vt in refs(ins('?GetAI@npc_sister_althea_ebonlocke@@'))

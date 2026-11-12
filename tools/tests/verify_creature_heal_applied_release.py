@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Inspect the linked post-heal notification and preserved CreatureAI slots."""
 import argparse
 from collections import defaultdict
@@ -44,7 +45,7 @@ def index(mnemonic,operands):
     return values[0]
 assert body[0].mnemonic=='test' and body[0].op_str=='r8, r8' and body[1].mnemonic=='je'
 bounded=index('cmp','r9, r8');assert body[bounded+1].mnemonic=='ja'
-lock=index('lea','rbx, [rcx + 0x3a9d]')
+lock=index('lea',inherited_operand('rbx, [rcx + 0x3a9d]'))
 prior=index('movzx','r15d, byte ptr [rbx]')
 claimed=index('mov','byte ptr [rbx], 1')
 active=index('mov','r14, qword ptr [rcx + 0x9c0]')

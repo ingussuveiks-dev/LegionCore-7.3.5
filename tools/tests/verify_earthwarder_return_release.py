@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify installed Protection return admission without attempted-cast arrival credit."""
 from pathlib import Path
 import runpy
@@ -31,7 +32,7 @@ else:
 
 
     for operands, branch in (('rbx, rbx', 'je'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                             ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+                             (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                              ('qword ptr [rbx + 8], 0', 'je'), ('dword ptr [rbx + 0xe0], 0x5d7', 'jne'),
                              ('dword ptr [rbx + 0x3b8], edi', 'jne')):
         check = next(index for index, item in enumerate(body[:cast]) if item.op_str == operands and item.mnemonic in ('cmp', 'test'))

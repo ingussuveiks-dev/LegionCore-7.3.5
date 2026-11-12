@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Inspect the per-recipient Skyhold gate in the actual native quest counter sink."""
 from pathlib import Path
 import runpy
@@ -55,7 +56,7 @@ for prefix, branch in (('?IsInWorld@Object@@', 'je'), ('?CanContact@Player@@', '
     assert body[position + 1].op_str == 'al, al'
     reject(position + 1, branch)
 for operands, branch in (('qword ptr [rsi + 8], 0', 'je'), ('dword ptr [rax + 0xe0], 0x5c7', 'jne'),
-                         ('byte ptr [rsi + 0x6848], 0', 'jne'), ('byte ptr [rsi + 0x6849], 0', 'jne')):
+                         (player_operand('byte ptr [rsi + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rsi + 0x6849], 0'), 'jne')):
     reject(locate('cmp', operands, start, ordinary), branch)
 klass = calls('?GetByteValue@Object@@', start, ordinary)[0]
 assert any(item.op_str == 'edx, 0x35' for item in body[klass - 3:klass])

@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Inspect the actual qualified single shared Althea victory event in Release."""
 from pathlib import Path
 import runpy,json,hashlib
@@ -37,8 +39,8 @@ for target,count in [('?IsInWorld@Object@@',1),('?IsPreDelete@Object@@',1),('?Is
 for target,count in [('?IsInWorld@Object@@',1),('?IsPreDelete@Object@@',1),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?IsWithinDistInMap@WorldObject@@',1),('?IsQuestObjectExpired@WorldObject@@',1),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestRewardStatus@Player@@',1),('?GetQuestStatus@Player@@',2)]:
     assert len(sites(n,eligible,target))==count,('Missing eligibility predicate',target)
 assert {42504,42627,1,3}<=values(eligible) and 100.0 in floats(n,eligible)
-assert {('test','byte ptr [rbx + 0x4ff0], 1'),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax')}<=set(pairs(eligible))
-for offset in (0x6848,0x6849,0x6851):assert ('cmp',f'byte ptr [rbx + {hex(offset)}], 0') in pairs(eligible)
+assert {('test',inherited_operand('byte ptr [rbx + 0x4ff0], 1')),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax')}<=set(pairs(eligible))
+for offset in (player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)):assert ('cmp',f'byte ptr [rbx + {hex(offset)}], 0') in pairs(eligible)
 assert 51654 not in values(body+helper+eligible),'Victory must not grant the independent door event'
 for target in ('?KilledMonsterCredit@Player@@','?RewardPlayerAndGroupAtEvent@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@'):
     assert not any(sites(n,part,target) for part in (body,helper,eligible))

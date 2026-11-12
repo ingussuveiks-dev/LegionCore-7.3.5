@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Actual registered late Nine arrival, original visitor and native receipts.
 
 Selected native PE checks complement the full extracted ASAN/current-world
@@ -36,7 +38,7 @@ assert {('lea','rdx, [rdi + 0x10]'),('cmp','qword ptr [rbx + 8], rcx'),('cmp','d
 needs(leaf,context('Progress'),'?GetAchievementMgr@Scenario@@','?GetCriteriaProgressMap@')
 assert 29069 in values(leaf) and ('cmp','qword ptr [rcx + 0x28], 0') in pairs(leaf)
 needs(current,context('Retained'),'?IsInWorld@Object@@','?CanContact@Player@@','?InSamePhase@WorldObject@@','?ShouldHideFor@WorldObject@@','?canSeeOrDetect@WorldObject@@')
-assert {0xa18,0x4ff0,0x6848,0x6849,0x6851}<=fields(current)
+assert {0xa18,0x4ff0,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(current)
 assert not sites(n,current,'?IsWithinDistInMap@WorldObject@@'),'Admission7yd must not truncate native later SAY range'
 capture=ins(state('Request'));update=ins(state('Update'))
 for body in (capture,update):
@@ -70,7 +72,7 @@ checks=sites(n,update,valid_name);assert len(checks)==3 and event<checks[0]<chat
 needs(valid,context('Progress'),context('Retained'),state('Actor'),state('Leaf'),'??8ObjectGuid@@','?ShouldHideFor@WorldObject@@')
 assert {('cmp','qword ptr [rcx + 0x40], rdx'),('cmp','rax, qword ptr [rbx + 8]'),('cmp','rdi, qword ptr [rax + 8]')}<=set(pairs(valid))
 los=ins('?MoveInLineOfSight@npc_nine_cziAI@npc_nine_czi@@')
-guard=next(i for i,o in enumerate(los) if (o.mnemonic,o.op_str)==('cmp','qword ptr [rdi + 0x3a88], 0x5870c'))
+guard=next(i for i,o in enumerate(los) if (o.mnemonic,o.op_str)==('cmp',inherited_operand('qword ptr [rdi + 0x3a88], 0x5870c')))
 assert {1014,97774,362252}<=values(los[:guard+1]) and los[guard+1].mnemonic=='jne'
 scope=reachable(los,los[guard+2].address)
 for forbidden in ('?FindNearestPlayer@WorldObject@@','?UpdateAchievementCriteria@Player@@','?AddDelayedEvent@FunctionProcessor@@'):

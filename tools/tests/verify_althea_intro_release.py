@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Selected actual Althea LOS/receipt/voice/guard release implementation in Release."""
 from pathlib import Path
 import runpy,re,struct
@@ -21,8 +23,8 @@ def reachable(body,start):
 eligible=ins(method('IntroPlayer'));los=ins(method('MoveInLineOfSight'));voice=ins(method('IntroVoice'));tick=ins(method('UpdateIntro'));opponent=ins(method('IntroOpponent'))
 assert {108218,1620,1123,42504,42627,48577,48585}<=values(eligible)
 for target,count in [('?IsInWorld@Object@@',2),('?IsPreDelete@Object@@',2),('?IsQuestObjectExpired@WorldObject@@',2),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestRewardStatus@Player@@',1),('?GetQuestStatus@Player@@',2)]:assert len(sites(n,eligible,target))==count,(target,count)
-assert {('cmp','dword ptr [rcx + 0xa18], 0'),('cmp','dword ptr [rbx + 0xa18], 0'),('test','byte ptr [rbx + 0x4ff0], 1'),('cmp','al, 4')}<=set(pairs(eligible))
-for offset in (0x6848,0x6849,0x6851):assert ('cmp',f'byte ptr [rbx + {hex(offset)}], 0') in pairs(eligible)
+assert {('cmp','dword ptr [rcx + 0xa18], 0'),('cmp','dword ptr [rbx + 0xa18], 0'),('test',inherited_operand('byte ptr [rbx + 0x4ff0], 1')),('cmp','al, 4')}<=set(pairs(eligible))
+for offset in (player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)):assert ('cmp',f'byte ptr [rbx + {hex(offset)}], 0') in pairs(eligible)
 assert ('cmp','qword ptr [rbx + 8], rax') in pairs(eligible)
 award,=sites(n,los,'?UpdateAchievementCriteria@Player@@');checks=sites(n,los,method('IntroPlayer'));leaves=sites(n,los,method('IntroLeaf'));voices=sites(n,los,method('IntroVoice'))
 assert len(checks)>=3 and len(leaves)==2 and len(voices)==2 and checks[0]<leaves[0]<award<checks[1]<leaves[1]<voices[0]<checks[2]<voices[1]

@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify point6/7 admission dominates real home-position writes."""
 from pathlib import Path
 import runpy
@@ -55,8 +56,8 @@ for context, home in zip(contexts[:2], (offer, arrival)):
     assert body[comparison + 1].mnemonic == 'jb' and home == comparison + 6
     assert body[comparison + 1].operands[0].imm > body[arrival].address, 'Rejected endpoint can still write home'
 setter = instructions('?SetHomePosition@Creature@@QEAAXMMMM')
-for operand in ('dword ptr [rcx + 0x3ac8], xmm1', 'dword ptr [rcx + 0x3acc], xmm2',
-                'dword ptr [rcx + 0x3ad0], xmm3', 'dword ptr [rbx + 0x3ad4], xmm0'):
+for operand in (inherited_operand('dword ptr [rcx + 0x3ac8], xmm1'), inherited_operand('dword ptr [rcx + 0x3acc], xmm2'),
+                inherited_operand('dword ptr [rcx + 0x3ad0], xmm3'), inherited_operand('dword ptr [rbx + 0x3ad4], xmm0')):
     assert any(entry.mnemonic == 'movss' and entry.op_str == operand for entry in setter), 'Actual creature home field store changed'
 assert len(positions(setter, '?NormalizeOrientation@Position@@')) == 1
 print('PASS: installed ordinary Hruthnir POINT IDs6/7 require context/ordered3D endpoint before current XYZ/orientation home writes and claims; actual Creature home fields/normalization checked. Ordinary other notifications retain legacy home; additional scoped cold POINT8 arrival is certified separately when present. No client traversal certificate.')

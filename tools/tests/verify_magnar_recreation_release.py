@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Select observed same-instance boss removal, ownership and ordinary reoffer."""
 from pathlib import Path
 import runpy
@@ -24,9 +25,9 @@ def check(n, ins):
 
     consume = ins('?ConsumeRecreation@MagnarStart@@')
     has(consume, 'rcx, rcx', 'r8, r8', 'dword ptr [rbx + 0xa18], 0',
-        'byte ptr [rbx + 0x39c5], 0', 'byte ptr [rbx + 0x858], 0',
+        inherited_operand('byte ptr [rbx + 0x39c5], 0'), 'byte ptr [rbx + 0x858], 0',
         'qword ptr [rbx + 0x9c0], rsi', 'eax, 0x178d4',
-        'qword ptr [rbx + 0x3a88], 0x5835a', 'qword ptr [rbx + 8], rax',
+        inherited_operand('qword ptr [rbx + 0x3a88], 0x5835a'), 'qword ptr [rbx + 8], rax',
         'dword ptr [rcx + 0x1c], 0x1b57', 'qword ptr [rdi + 0x9c0], 0',
         'rcx, [rsi + 0x336]', 'rcx, [rsi + 0x38c]', 'rax, rcx',
         'byte ptr [rsi + 0x3a0], 0', 'r14, [rsi + 0x470]',
@@ -58,7 +59,7 @@ def check(n, ins):
     insert, = sites(removal, '?_Insert_node@?$_Tree_val@')
     cleanup, = sites(removal, '?Reset@MagnarCombat@@')
     assert base < insert < cleanup
-    has(removal[base:insert], 'eax, 0x17722', 'qword ptr [rsi + 0x3a88], 0x583b8',
+    has(removal[base:insert], 'eax, 0x17722', inherited_operand('qword ptr [rsi + 0x3a88], 0x583b8'),
         'qword ptr [rsi + 8], rax', 'dword ptr [rcx + 0x1c], 0x1b57',
         'rcx, [rdi + 0x38c]', 'eax, dword ptr [rdi + 0x35c]',
         'dword ptr [rdi + 0x39c], eax', 'byte ptr [rdi + 0x356], 0',

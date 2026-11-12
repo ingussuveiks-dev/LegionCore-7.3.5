@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Follow the shared instance factory through a real outlined constructor."""
 from sharasdal_erunak_entry_pe import sites
 
@@ -64,7 +65,7 @@ def selected_malgalor_death(n,ins):
             if op.mnemonic.startswith('j') and op.operands[0].type==CS_OP_IMM:pending.append(op.operands[0].imm)
             if op.mnemonic!='jmp':pending.append(op.address+op.size)
         return seen
-    for condition in ('eax, 0x169c0','qword ptr [rbx + 0x3a88], 0x582cf','dword ptr [rbx + 0xe0], 0x5dc','eax, 0x3a5','eax, 4'):
+    for condition in ('eax, 0x169c0',inherited_operand('qword ptr [rbx + 0x3a88], 0x582cf'),'dword ptr [rbx + 0xe0], 0x5dc','eax, 0x3a5','eax, 4'):
         at=next(i for i,op in enumerate(body[:capture]) if op.mnemonic=='cmp' and op.op_str==condition)
         assert body[at+1].mnemonic=='jne'
         rejected=reaches(body[at+1].operands[0].imm)

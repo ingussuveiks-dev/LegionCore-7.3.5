@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Select the original point6 intent/physical arrival repair in Release."""
 from pathlib import Path
 import runpy,struct
@@ -27,7 +28,7 @@ def check(n,ins):
     record=find(helper,'qword ptr [rax + 0xb8]','call')
     intent=find(helper,'qword ptr [rsi + 0x18c], 0xc','mov')
     assert intent<record<move
-    has(helper[:intent],'edx, 0x42a','r8d, 0x429','qword ptr [rdi + 0x3a88], 0x5835a','dword ptr [rcx + 0x1c], 0x1b57')
+    has(helper[:intent],'edx, 0x42a','r8d, 0x429',inherited_operand('qword ptr [rdi + 0x3a88], 0x5835a'),'dword ptr [rcx + 0x1c], 0x1b57')
     assert sites(helper[:intent],'??8ObjectGuid@@')
     assert {struct.pack('<f',x) for x in (4884.71,-77.9149,60.9946,25.0)}<=constants(helper[:intent]), 'Original entrance recovery was overwritten'
     entrance=next(i for i,o in enumerate(helper[:intent]) if o.mnemonic=='comiss')

@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Instance-owned authored guard identities/death producer and consumer PE proof."""
 import re,struct
 from capstone import CS_OP_MEM,CS_OP_IMM,CS_OP_REG
@@ -31,7 +32,7 @@ def verify(n):
   return sorted(set(result))
  scope=ins(method('GuardSlot'));create=ins(method('OnCreatureCreateForScript'));remove=ins(method('OnCreatureRemoveForScript'));death=ins(method('CreatureDiesForScript'));state=ins(method('GetData'));guid=ins(method('GetGuidData'))
  assert {1620,3,360869,360872,360871,108216,108217}<=data_values(scope)
- assert ('cmp','qword ptr [rdi + 8], rax') in pairs(scope) and ('cmp','qword ptr [rdi + 0x3a88], rax') in pairs(scope),'Exact map and persistent spawn qualification missing'
+ assert ('cmp','qword ptr [rdi + 8], rax') in pairs(scope) and ('cmp',inherited_operand('qword ptr [rdi + 0x3a88], rax')) in pairs(scope),'Exact map and persistent spawn qualification missing'
  assert sites(n,scope,'?GetUInt32Value@Object@@'),'Actual guard entry qualification missing'
  for body,callback in ((create,'OnCreatureCreateForScript'),(remove,'OnCreatureRemoveForScript'),(death,'CreatureDiesForScript')):
   assert len(sites(n,body,method('GuardSlot')))==1 and len(sites(n,body,'?'+callback+'@InstanceScript@@'))==1

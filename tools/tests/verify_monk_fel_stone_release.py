@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Trace registered native193890 scene/children and acknowledged return in PE.
 
 Full retained Chen/Jorvinax/shared inspectors run separately against this hash.
@@ -137,7 +138,7 @@ needs(observe,helper('Retained'),'?IsInWorld@Object@@','?CanContact@Player@@','?
 assert {1514,30000,2000}<=values(observe) and {736.019,3437.01,122.146,5.0}<=floats(n,observe)
 done=next(i for i,o in enumerate(observe) if (o.mnemonic,o.op_str)==('mov','byte ptr [rax + 0x7e], 1'))
 distance,=sites(n,observe,'?IsWithinDist3d@WorldObject@@');assert distance<done
-assert {0x6848,0x6849,0x6851}<=fields(observe[:done])
+assert {player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(observe[:done])
 for at in (30,34,36,38,40,42,44,54):
     assert observe[at].mnemonic in ('je','jne') and observe[done].address not in reachable(observe,observe[at].operands[0].imm)
 for name in ('Tick','ObserveReturn','RetryChild','Cleanup','Current','Child'):

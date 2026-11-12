@@ -2326,6 +2326,378 @@
           "count": 1
         }
       ]
+    },
+    {
+      "key": "RecentDamageHistoryWidth",
+      "title": "Retain cumulative damage history across legal hits and time windows",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 91,
+      "paths": [
+        "src/server/game/Entities/Unit/Unit.h",
+        "src/server/game/Entities/Unit/Unit.cpp"
+      ],
+      "cls": "",
+      "case": "RecentDamageHistoryWidth",
+      "binding": "native",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/Entities/Unit/Unit.h",
+          "old": "uint32 GetNpcDamageTakenInPastSecs(uint32 secs) const;",
+          "new": "uint64 GetNpcDamageTakenInPastSecs(uint32 secs) const;",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.h",
+          "old": "uint32 GetPlayerDamageTakenInPastSecs(uint32 secs) const;",
+          "new": "uint64 GetPlayerDamageTakenInPastSecs(uint32 secs) const;",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.h",
+          "old": "uint32 GetDamageTakenInPastSecs(uint32 secs, bool fromNpc = true, bool fromPlayer = true) const;",
+          "new": "uint64 GetDamageTakenInPastSecs(uint32 secs, bool fromNpc = true, bool fromPlayer = true) const;",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.h",
+          "old": "std::array<uint32, DAMAGE_TRACKING_PERIOD> playerDamageTaken_",
+          "new": "std::array<uint64, DAMAGE_TRACKING_PERIOD> playerDamageTaken_",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.h",
+          "old": "std::array<uint32, DAMAGE_TRACKING_PERIOD> npcDamageTaken_",
+          "new": "std::array<uint64, DAMAGE_TRACKING_PERIOD> npcDamageTaken_",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "victim->npcDamageTaken_[0] += damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);",
+          "new": "victim->npcDamageTaken_[0] = HealingAmount::Add(victim->npcDamageTaken_[0], uint64(damage) + (cleanDamage ? cleanDamage->absorbed_damage : 0));",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "victim->playerDamageTaken_[0] += damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);",
+          "new": "victim->playerDamageTaken_[0] = HealingAmount::Add(victim->playerDamageTaken_[0], uint64(damage) + (cleanDamage ? cleanDamage->absorbed_damage : 0));",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "uint32 Unit::GetNpcDamageTakenInPastSecs(uint32 secs) const\n{\n    auto const offset = std::min<size_t>(secs, npcDamageTaken_.size());\n    return std::accumulate(npcDamageTaken_.begin(), npcDamageTaken_.begin() + offset, 0u);\n}",
+          "new": "uint64 Unit::GetNpcDamageTakenInPastSecs(uint32 secs) const\n{\n    auto const offset = std::min<size_t>(secs, npcDamageTaken_.size());\n    return std::accumulate(npcDamageTaken_.begin(), npcDamageTaken_.begin() + offset, uint64(0), HealingAmount::Add);\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "uint32 Unit::GetPlayerDamageTakenInPastSecs(uint32 secs) const\n{\n    auto const offset = std::min<size_t>(secs, playerDamageTaken_.size());\n    return std::accumulate(playerDamageTaken_.begin(), playerDamageTaken_.begin() + offset, 0u);\n}",
+          "new": "uint64 Unit::GetPlayerDamageTakenInPastSecs(uint32 secs) const\n{\n    auto const offset = std::min<size_t>(secs, playerDamageTaken_.size());\n    return std::accumulate(playerDamageTaken_.begin(), playerDamageTaken_.begin() + offset, uint64(0), HealingAmount::Add);\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "uint32 Unit::GetDamageTakenInPastSecs(uint32 secs, bool fromNpc, bool fromPlayer) const\n{\n    static_assert(std::is_same<decltype(npcDamageTaken_), decltype(playerDamageTaken_)>::value, \"npcDamageTaken_ and playerDamageTaken_ must have same type\");\n\n    auto const offset = std::min<size_t>(secs, npcDamageTaken_.size());\n\n    uint32 damage = 0;\n    for (size_t i = 0; i < offset; ++i)\n    {\n        if (fromNpc)\n            damage += npcDamageTaken_[i];\n        if (fromPlayer)\n            damage += playerDamageTaken_[i];\n    }\n\n    return damage;\n}",
+          "new": "uint64 Unit::GetDamageTakenInPastSecs(uint32 secs, bool fromNpc, bool fromPlayer) const\n{\n    static_assert(std::is_same<decltype(npcDamageTaken_), decltype(playerDamageTaken_)>::value, \"npcDamageTaken_ and playerDamageTaken_ must have same type\");\n\n    auto const offset = std::min<size_t>(secs, npcDamageTaken_.size());\n\n    uint64 damage = 0;\n    for (size_t i = 0; i < offset; ++i)\n    {\n        if (fromNpc)\n            damage = HealingAmount::Add(damage, npcDamageTaken_[i]);\n        if (fromPlayer)\n            damage = HealingAmount::Add(damage, playerDamageTaken_[i]);\n    }\n\n    return damage;\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "sizeof(std::array<uint32, DAMAGE_TRACKING_PERIOD>)",
+          "new": "sizeof(playerDamageTaken_)",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "std::copy(npcDamageTaken_.begin(), npcDamageTaken_.end() - 1, npcDamageTaken_.begin() + 1);",
+          "new": "std::copy_backward(npcDamageTaken_.begin(), npcDamageTaken_.end() - 1, npcDamageTaken_.end());",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/Unit.cpp",
+          "old": "std::copy(playerDamageTaken_.begin(), playerDamageTaken_.end() - 1, playerDamageTaken_.begin() + 1);",
+          "new": "std::copy_backward(playerDamageTaken_.begin(), playerDamageTaken_.end() - 1, playerDamageTaken_.end());",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "ShadowMendPenaltyBudget",
+      "title": "Keep Shadow Mend penalty refresh and damage consumption unsigned64",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 92,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_shadow_mend_aura",
+      "case": "ShadowMendPenaltyBudget",
+      "binding": "spell_pri_shadow_mend_aura",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_shadow_mend_aura : public AuraScript\n{\n    PrepareAuraScript(spell_pri_shadow_mend_aura);\n\n    int32 tempdamageSM = 0;\n\n    void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)\n    {\n        Unit* target = eventInfo.GetActionTarget();\n        if (!target)\n            return;\n\n        if (!eventInfo.GetDamageInfo())\n            return;\n\n        tempdamageSM -= eventInfo.GetDamageInfo()->GetDamage(); // penalty damage\n\n        if (Aura* shadowMendAura = GetAura())\n            if (tempdamageSM <= 0)\n                shadowMendAura->Remove();\n        return;\n    }\n\n    void HandlePeriodic(AuraEffect const* aurEff)\n    {\n        Unit* caster = GetCaster();\n        Unit* target = GetTarget();\n        if (!caster || !target)\n            return;\n\n        if (!target->isInCombat())\n            GetAura()->Remove(); // if leave combat, aura need remove\n        else\n            target->CastCustomSpell(186439, SPELLVALUE_BASE_POINT0, aurEff->GetAmount(), target, true, nullptr, nullptr, caster->GetGUID());\n    }\n\n    void CalcDamage(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)\n    {\n        tempdamageSM += amount; // Calculate penalty damage\n        amount = tempdamageSM / 10;\n    }\n\n    void Register() override\n    {\n        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pri_shadow_mend_aura::CalcDamage, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n        OnEffectProc += AuraEffectProcFn(spell_pri_shadow_mend_aura::OnProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n        OnEffectPeriodic += AuraEffectPeriodicFn(spell_pri_shadow_mend_aura::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n    }\n}",
+          "new": "class spell_pri_shadow_mend_aura : public AuraScript\n{\n    PrepareAuraScript(spell_pri_shadow_mend_aura);\n\n    uint64 tempdamageSM = 0;\n\n    void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)\n    {\n        Unit* target = eventInfo.GetActionTarget();\n        if (!target)\n            return;\n\n        if (!eventInfo.GetDamageInfo())\n            return;\n\n        tempdamageSM -= std::min(tempdamageSM, eventInfo.GetDamageInfo()->GetDamage()); // penalty damage\n\n        if (Aura* shadowMendAura = GetAura())\n            if (tempdamageSM <= 0)\n                shadowMendAura->Remove();\n        return;\n    }\n\n    void HandlePeriodic(AuraEffect const* aurEff)\n    {\n        Unit* caster = GetCaster();\n        Unit* target = GetTarget();\n        if (!caster || !target)\n            return;\n\n        if (!target->isInCombat())\n            GetAura()->Remove(); // if leave combat, aura need remove\n        else\n            target->CastCustomSpell(186439, SPELLVALUE_BASE_POINT0, aurEff->GetAmount(), target, true, nullptr, nullptr, caster->GetGUID());\n    }\n\n    void CalcDamage(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)\n    {\n        tempdamageSM = HealingAmount::Add(tempdamageSM, HealingAmount::FromFloat(amount)); // Calculate penalty damage\n        amount = tempdamageSM / 10;\n    }\n\n    void Register() override\n    {\n        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pri_shadow_mend_aura::CalcDamage, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n        OnEffectProc += AuraEffectProcFn(spell_pri_shadow_mend_aura::OnProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n        OnEffectPeriodic += AuraEffectPeriodicFn(spell_pri_shadow_mend_aura::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "LightProtectorMissingHealth",
+      "title": "Preserve missing health before Light of the Protector percentage calculation",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 93,
+      "paths": [
+        "src/server/scripts/Spells/spell_paladin.cpp",
+        "src/server/game/Spells/SpellScript.h",
+        "src/server/game/Spells/SpellScript.cpp"
+      ],
+      "cls": "spell_pal_light_of_the_protector_SpellScript",
+      "case": "LightProtectorMissingHealth",
+      "binding": "spell_pal_light_of_the_protector",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_paladin.cpp",
+          "old": "class spell_pal_light_of_the_protector_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pal_light_of_the_protector_SpellScript);\n\n            void HandleOnHit(SpellEffIndex /*effIndex*/)\n            {\n                Unit* caster = GetCaster();\n                Unit* target = GetHitUnit();\n                if (!caster || !target)\n                    return;\n\n                int32 bp = target->GetMaxHealth() - target->GetHealth();\n                if (bp > 0)\n                {\n                    int32 heal = CalculatePct(bp, GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster));\n                    if (AuraEffect const* scatterTheShadows = caster->GetAuraEffect(ScatterTheShadows, EFFECT_0))\n                        AddPct(heal, scatterTheShadows->GetAmount());\n\n                    SetEffectValue(heal);\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectLaunchTarget += SpellEffectFn(spell_pal_light_of_the_protector_SpellScript::HandleOnHit, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "new": "class spell_pal_light_of_the_protector_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pal_light_of_the_protector_SpellScript);\n\n            void HandleOnHit(SpellEffIndex /*effIndex*/)\n            {\n                Unit* caster = GetCaster();\n                Unit* target = GetHitUnit();\n                if (!caster || !target)\n                    return;\n\n                uint64 bp = target->GetMaxHealth() - target->GetHealth();\n                if (bp > 0)\n                {\n                    float heal = CalculatePct(float(bp), GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster));\n                    if (AuraEffect const* scatterTheShadows = caster->GetAuraEffect(ScatterTheShadows, EFFECT_0))\n                        AddPct(heal, scatterTheShadows->GetAmount());\n\n                    SetEffectValueFloat(heal);\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectLaunchTarget += SpellEffectFn(spell_pal_light_of_the_protector_SpellScript::HandleOnHit, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Spells/SpellScript.h",
+          "old": "void SetEffectValue(int32 val);",
+          "new": "void SetEffectValue(int32 val);\n        void SetEffectValueFloat(float val);",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Spells/SpellScript.cpp",
+          "old": "void SpellScript::SetEffectValue(int32 val)\n{\n    if (!IsInEffectHook())\n    {\n        TC_LOG_ERROR(\"scripts\", \"Script: `%s` Spell: `%u`: function SpellScript::SetEffectValue was called, but function has no effect in current hook!\", m_scriptName->c_str(), m_scriptSpellId);\n        return;\n    }\n    m_spell->damage = val;\n}",
+          "new": "void SpellScript::SetEffectValue(int32 val)\n{\n    if (!IsInEffectHook())\n    {\n        TC_LOG_ERROR(\"scripts\", \"Script: `%s` Spell: `%u`: function SpellScript::SetEffectValue was called, but function has no effect in current hook!\", m_scriptName->c_str(), m_scriptSpellId);\n        return;\n    }\n    m_spell->damage = val;\n}\n\nvoid SpellScript::SetEffectValueFloat(float val)\n{\n    if (!IsInEffectHook())\n    {\n        TC_LOG_ERROR(\"scripts\", \"Script: `%s` Spell: `%u`: function SpellScript::SetEffectValueFloat was called, but function has no effect in current hook!\", m_scriptName->c_str(), m_scriptSpellId);\n        return;\n    }\n    m_spell->damage = val;\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "CommandingShoutHealthLifecycle",
+      "title": "Preserve Commanding Shout through native flat health apply remove and stat refresh",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 94,
+      "paths": [
+        "src/server/scripts/Spells/spell_warrior.cpp",
+        "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+        "src/server/game/Entities/Unit/StatSystem.cpp"
+      ],
+      "cls": "spell_warr_commanding_shout",
+      "case": "CommandingShoutHealthLifecycle",
+      "binding": "spell_warr_commanding_shout",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_warrior.cpp",
+          "old": "class spell_warr_commanding_shout : public SpellScript\n{\n    PrepareSpellScript(spell_warr_commanding_shout);\n\n    bool Validate(SpellInfo const* /*spellInfo*/) override\n    {\n        return ValidateSpellInfo({ SPELL_WARRIOR_COMMANDING_SHOUT_AURA });\n    }\n\n    void HandleDummy(SpellEffIndex /*effIndex*/)\n    {\n        Unit* target = GetHitUnit();\n        if (!target)\n            return;\n\n        int32 health = CalculatePct(target->GetMaxHealth(), GetEffectValue());\n        GetCaster()->CastCustomSpell(SPELL_WARRIOR_COMMANDING_SHOUT_AURA, SPELLVALUE_BASE_POINT0, health, target, true);\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_warr_commanding_shout::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);\n    }\n}",
+          "new": "class spell_warr_commanding_shout : public SpellScript\n{\n    PrepareSpellScript(spell_warr_commanding_shout);\n\n    bool Validate(SpellInfo const* /*spellInfo*/) override\n    {\n        return ValidateSpellInfo({ SPELL_WARRIOR_COMMANDING_SHOUT_AURA });\n    }\n\n    void HandleDummy(SpellEffIndex /*effIndex*/)\n    {\n        Unit* target = GetHitUnit();\n        if (!target)\n            return;\n\n        float health = CalculatePct(float(target->GetMaxHealth()), GetEffectValue());\n        GetCaster()->CastCustomSpell(target, SPELL_WARRIOR_COMMANDING_SHOUT_AURA, &health, nullptr, nullptr, true);\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_warr_commanding_shout::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);\n    }\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+          "old": "void AuraEffect::HandleAuraModIncreaseHealth(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n    int32 amount = GetAmount();\n\n    if(target->isAnySummons())\n    {\n        if(target != GetCaster())\n            return;\n    }\n\n    if (apply)\n    {\n        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n        target->ModifyHealth(amount, nullptr, GetId());\n    }\n    else\n    {\n        if (int32(target->GetHealth()) > GetAmount())\n            target->ModifyHealth(-GetAmount(), nullptr, GetId());\n        else\n            target->SetHealth(1, GetId());\n        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n    }\n}",
+          "new": "void AuraEffect::HandleAuraModIncreaseHealth(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n    int64 amount = GetAmount() >= float(INT64_MAX) ? INT64_MAX :\n        GetAmount() <= -float(INT64_MAX) ? -INT64_MAX : int64(GetAmount());\n\n    if(target->isAnySummons())\n    {\n        if(target != GetCaster())\n            return;\n    }\n\n    if (apply)\n    {\n        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n        target->ModifyHealth(amount, nullptr, GetId());\n    }\n    else\n    {\n        if (amount <= 0 || target->GetHealth() > uint64(amount))\n            target->ModifyHealth(-amount, nullptr, GetId());\n        else\n            target->SetHealth(1, GetId());\n        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n    }\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/StatSystem.cpp",
+          "old": "#include \"Unit.h\"",
+          "new": "#include \"Unit.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Entities/Unit/StatSystem.cpp",
+          "old": "void Player::UpdateMaxHealth()\n{\n    UnitMods unitMod = UNIT_MOD_HEALTH;\n\n    float value = GetModifierValue(unitMod, BASE_VALUE) + GetCreateHealth();\n    value *= GetModifierValue(unitMod, BASE_PCT);\n    value += GetModifierValue(unitMod, TOTAL_VALUE) + GetHealthBonusFromStamina();\n    value *= GetModifierValue(unitMod, TOTAL_PCT);\n\n    SetMaxHealth(static_cast<uint32>(value)); // uint32 sure?\n\n    if (Pet* pet = GetPet())\n        if (pet->IsWarlockPet() || pet->isHunterPet())\n            pet->UpdateMaxHealth();\n}",
+          "new": "void Player::UpdateMaxHealth()\n{\n    UnitMods unitMod = UNIT_MOD_HEALTH;\n\n    float value = GetModifierValue(unitMod, BASE_VALUE) + GetCreateHealth();\n    value *= GetModifierValue(unitMod, BASE_PCT);\n    value += GetModifierValue(unitMod, TOTAL_VALUE) + GetHealthBonusFromStamina();\n    value *= GetModifierValue(unitMod, TOTAL_PCT);\n\n    SetMaxHealth(HealingAmount::FromFloat(value));\n\n    if (Pet* pet = GetPet())\n        if (pet->IsWarlockPet() || pet->isHunterPet())\n            pet->UpdateMaxHealth();\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "CloneWeaponSingleDispatch",
+      "title": "Remove duplicate melee clone aura dispatch while retaining the native shared handler",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 95,
+      "paths": [
+        "sql/updates/world/2026_11_12_01_clone_weapon_single_dispatch.sql",
+        "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp"
+      ],
+      "cls": "",
+      "case": "CloneWeaponSingleDispatch",
+      "binding": "69893 spell_gen_clone_weapon_aura",
+      "binding_kind": "sql",
+      "edits": [
+        {
+          "path": "sql/updates/world/2026_11_12_01_clone_weapon_single_dispatch.sql",
+          "old": "",
+          "new": "-- Native 69893 is already handled by the shared paired-slot clone aura.\n-- The extra Barim handler snapshots the already copied weapon and restores it last.\nDELETE FROM `spell_script_names` WHERE `spell_id` = 69893 AND `ScriptName` = 'spell_copy_melee_weapon';\n",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp",
+          "old": "class spell_copy_melee_weapon : public AuraScript\n{\n    PrepareAuraScript(spell_copy_melee_weapon)\n\n    uint32 uiTargetDefaultWeapon;\n\n    bool Load()\n    {\n        uiTargetDefaultWeapon = 0;\n        return true;\n    }\n\n    void ApplyEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        PreventDefaultAction();\n        Unit* caster = GetCaster();\n        Unit* target = GetTarget();\n\n        if (!(caster && target))\n            return;\n\n        uiTargetDefaultWeapon = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS);\n\n        if (Player* player = caster->ToPlayer())\n        {\n            if (Item* main_weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))\n                target->SetVirtualItem(0, main_weapon->GetEntry());\n        }\n        else\n            target->SetVirtualItem(0, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS));\n    }\n\n    void RemoveEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        PreventDefaultAction();\n        Unit* target = GetTarget();\n        if (!target)\n            return;\n\n        target->SetVirtualItem(0, uiTargetDefaultWeapon);\n    }\n\n    void Register() override\n    {\n        OnEffectApply += AuraEffectApplyFn(spell_copy_melee_weapon::ApplyEffect, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);\n        OnEffectRemove += AuraEffectRemoveFn(spell_copy_melee_weapon::RemoveEffect, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);\n    }\n};\n\nclass spell_repentance_player_kneel",
+          "new": "class spell_repentance_player_kneel",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp",
+          "old": "    RegisterAuraScript(spell_copy_melee_weapon);\n    RegisterAuraScript(spell_repentance_player_kneel);",
+          "new": "    RegisterAuraScript(spell_repentance_player_kneel);",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "SmartPersonalSummonTargets",
+      "title": "Validate personal summon targets and required source actors before dispatch",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 96,
+      "paths": [
+        "src/server/game/AI/SmartScripts/SmartScript.cpp"
+      ],
+      "cls": "",
+      "case": "SmartPersonalSummonTargets",
+      "binding": "native",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/AI/SmartScripts/SmartScript.cpp",
+          "old": "        case SMART_ACTION_SUMMON_CREATURE_IN_PERS_VISIBILITY:\n        {\n            ObjectList* targets = GetTargets(e, unit);\n            if (!targets && !me)\n                break;\n\n            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)\n            {\n                Position pos;\n                pos = e.action.sumCreaturePV.summmonInNPCPosition ? me->GetPosition() : Position(e.target.x, e.target.y, e.target.z, e.target.o);\n                if (Player* player = (*itr)->ToPlayer())\n                {\n                    if (Creature* summon = player->SummonCreature(e.action.sumCreaturePV.creature, pos, static_cast<TempSummonType>(e.action.sumCreaturePV.type), e.action.sumCreaturePV.duration))\n                    {\n                        summon->AddPlayerInPersonnalVisibilityList(player->GetGUID());\n                        summon->AddDelayedEvent(100, [summon] {\n                            summon->SetVisible(true);\n                        });\n                        if (e.action.sumCreaturePV.attackinvoker)\n                            summon->AI()->AttackStart((*itr)->ToUnit());\n                        if (e.action.sumCreaturePV.getphases)\n                        {\n                            summon->SetPhaseMask(GetBaseObject()->GetPhaseMask(), true);\n                            summon->SetPhaseId(GetBaseObject()->GetPhases(), false);\n                        }\n                    }\n                }\n            }\n            delete targets;\n            break;\n        }\n",
+          "new": "        case SMART_ACTION_SUMMON_CREATURE_IN_PERS_VISIBILITY:\n        {\n            std::unique_ptr<ObjectList> targets(GetTargets(e, unit));\n            if (!targets || (e.action.sumCreaturePV.summmonInNPCPosition && !me) ||\n                (e.action.sumCreaturePV.getphases && !GetBaseObject()))\n                break;\n\n            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)\n            {\n                Position pos;\n                pos = e.action.sumCreaturePV.summmonInNPCPosition ? me->GetPosition() : Position(e.target.x, e.target.y, e.target.z, e.target.o);\n                if (Player* player = (*itr)->ToPlayer())\n                {\n                    if (Creature* summon = player->SummonCreature(e.action.sumCreaturePV.creature, pos, static_cast<TempSummonType>(e.action.sumCreaturePV.type), e.action.sumCreaturePV.duration))\n                    {\n                        summon->AddPlayerInPersonnalVisibilityList(player->GetGUID());\n                        summon->AddDelayedEvent(100, [summon] {\n                            summon->SetVisible(true);\n                        });\n                        if (e.action.sumCreaturePV.attackinvoker)\n                            summon->AI()->AttackStart((*itr)->ToUnit());\n                        if (e.action.sumCreaturePV.getphases)\n                        {\n                            summon->SetPhaseMask(GetBaseObject()->GetPhaseMask(), true);\n                            summon->SetPhaseId(GetBaseObject()->GetPhases(), false);\n                        }\n                    }\n                }\n            }\n            break;\n        }\n",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PercentHealthAuraGainWidth",
+      "title": "Retain Last Stand Vampiric Blood and barrier health gains without32bit narrowing",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 97,
+      "paths": [
+        "src/server/game/Spells/Auras/SpellAuraEffects.cpp"
+      ],
+      "cls": "",
+      "case": "PercentHealthAuraGainWidth",
+      "binding": "native",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+          "old": "#include \"SpellAuraEffects.h\"",
+          "new": "#include \"SpellAuraEffects.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+          "old": "void AuraEffect::HandleAuraModIncreaseHealthOrPercent(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n\n    if(target->isAnySummons())\n    {\n        if(target != GetCaster())\n            return;\n    }\n    // Unit will keep hp% after MaxHealth being modified if unit is alive.\n    int32 amount = GetAmount();\n\n    if (amount > 100)\n    {\n        if (apply)\n        {\n            target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n            target->ModifyHealth(amount, nullptr, GetId());\n        }\n        else\n        {\n            if (target->GetHealth() > amount)\n                target->ModifyHealth(-amount, nullptr, GetId());\n            else\n                target->SetHealth(1, GetId());\n\n            target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n        }\n    }\n    else\n    {\n        uint32 percentHeal = GetAmount() / GetBase()->GetStackAmount(); // Heal only per stack, not all stack every time\n        uint32 heal = target->CountPctFromMaxHealth(percentHeal);\n        float percent = target->GetHealthPct();\n        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_PCT, float(amount), apply);\n\n        bool otherLogick = false;\n        switch (GetId())\n        {\n            case 55233: // Vampiric Blood\n            case 205725: // Anti-Magic Barrier\n                otherLogick = true;\n                break;\n        }\n\n        if (target->IsAlive())\n        {\n            if (apply && otherLogick)\n                target->ModifyHealth(heal, nullptr, GetId());\n            else\n                target->SetHealth(target->CountPctFromMaxHealth(int32(ceil(percent))), GetId());\n        }\n    }\n}",
+          "new": "void AuraEffect::HandleAuraModIncreaseHealthOrPercent(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n\n    if(target->isAnySummons())\n    {\n        if(target != GetCaster())\n            return;\n    }\n    // Unit will keep hp% after MaxHealth being modified if unit is alive.\n    int64 amount = GetAmount() >= float(INT64_MAX) ? INT64_MAX :\n        GetAmount() <= -float(INT64_MAX) ? -INT64_MAX : int64(GetAmount());\n\n    if (amount > 100)\n    {\n        if (apply)\n        {\n            target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n            target->ModifyHealth(amount, nullptr, GetId());\n        }\n        else\n        {\n            if (target->GetHealth() > amount)\n                target->ModifyHealth(-amount, nullptr, GetId());\n            else\n                target->SetHealth(1, GetId());\n\n            target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);\n        }\n    }\n    else\n    {\n        uint32 percentHeal = GetAmount() / GetBase()->GetStackAmount(); // Heal only per stack, not all stack every time\n        uint64 heal = target->CountPctFromMaxHealth(percentHeal);\n        float percent = target->GetHealthPct();\n        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_PCT, float(amount), apply);\n\n        bool otherLogick = false;\n        switch (GetId())\n        {\n            case 55233: // Vampiric Blood\n            case 205725: // Anti-Magic Barrier\n                otherLogick = true;\n                break;\n        }\n\n        if (target->IsAlive())\n        {\n            if (apply && otherLogick)\n                target->SetHealth(HealingAmount::Add(target->GetHealth(), heal), GetId());\n            else\n                target->SetHealth(target->CountPctFromMaxHealth(int32(ceil(percent))), GetId());\n        }\n    }\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+          "old": "void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n\n    if (target->isAnySummons())\n    {\n        if (target != GetCaster() && GetCaster() != target->GetAnyOwner())\n            return;\n    }\n\n    // Unit will keep hp% after MaxHealth being modified if unit is alive.\n    float percent = target->GetHealthPct();\n    uint32 percentHeal = GetAmount() / GetBase()->GetStackAmount(); // Heal only per stack, not all stack every time\n    uint32 heal = target->CountPctFromMaxHealth(percentHeal);\n\n    bool otherLogick = false;\n    switch (GetId())\n    {\n        case 12975: // Last Stand\n        case 187827: // Last Stand\n            otherLogick = true;\n            break;\n    }\n\n    target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_PCT, GetAmount(), apply);\n\n    if (target->IsAlive())\n    {\n        if (apply && otherLogick)\n            target->ModifyHealth(heal, nullptr, GetId());\n        else\n            target->SetHealth(target->CountPctFromMaxHealth(int32(ceil(percent))), GetId());\n    }\n}",
+          "new": "void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n\n    if (target->isAnySummons())\n    {\n        if (target != GetCaster() && GetCaster() != target->GetAnyOwner())\n            return;\n    }\n\n    // Unit will keep hp% after MaxHealth being modified if unit is alive.\n    float percent = target->GetHealthPct();\n    uint32 percentHeal = GetAmount() / GetBase()->GetStackAmount(); // Heal only per stack, not all stack every time\n    uint64 heal = target->CountPctFromMaxHealth(percentHeal);\n\n    bool otherLogick = false;\n    switch (GetId())\n    {\n        case 12975: // Last Stand\n        case 187827: // Last Stand\n            otherLogick = true;\n            break;\n    }\n\n    target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_PCT, GetAmount(), apply);\n\n    if (target->IsAlive())\n    {\n        if (apply && otherLogick)\n            target->SetHealth(HealingAmount::Add(target->GetHealth(), heal), GetId());\n        else\n            target->SetHealth(target->CountPctFromMaxHealth(int32(ceil(percent))), GetId());\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetElementalAuraStateBalance",
+      "title": "Remove only state changes actually applied by a battle pet aura",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 98,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.h",
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetElementalAuraStateBalance",
+      "binding": "native",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.h",
+          "old": "    bool Expired;                ///< Aura is expired ?",
+          "new": "    bool Expired;                ///< Aura is expired ?\n    std::vector<std::pair<uint32, int32>> AppliedStates; ///< Only state changes actually applied by this aura.",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattleAura::Apply(PetBattle* petBattle)\n{\n    for (auto const& v : sBattlePetAbilityStateStore)\n    {\n        if (v->BattlePetAbilityID != AbilityID)\n            continue;\n\n        uint32 flags = 0;\n\n        // Passive: elemental\n        // TODO: add state flags for positive / negative\n        // FIXME: need more work; check weather ability, dont change state value on remove\n        if (petBattle->Pets[TargetPetID]->States[BATTLEPET_STATE_Passive_Elemental])\n        {\n            switch (v->BattlePetStateID)\n            {\n                case BATTLEPET_STATE_Mod_HealingTakenPercent:\n                case BATTLEPET_STATE_Stat_Accuracy:\n                    if (v->Value < 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                case BATTLEPET_STATE_Mechanic_IsBlind:\n                case BATTLEPET_STATE_Mechanic_IsChilled:\n                case BATTLEPET_STATE_Mechanic_IsBurning:\n                case BATTLEPET_STATE_swapOutLock:\n                    if (v->Value > 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n        int32 value = petBattle->Pets[TargetPetID]->States[v->BattlePetStateID];\n        if (!flags)\n            value += v->Value;\n\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, value, false, flags);\n    }\n\n    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up\n    {\n        auto pet = petBattle->Pets[TargetPetID];\n\n        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() - 5 * pet->Level);\n\n        pet->InfoMaxHealth = pet->GetMaxHealth();\n        pet->Health = healthPct * float(pet->GetMaxHealth());\n\n        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, 0, 1);\n        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);\n        petBattle->RoundEvents.push_back(eventSetMaxHealth);\n\n        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, 0, 1);\n        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);\n        petBattle->RoundEvents.push_back(eventSetHealth);\n    }\n}",
+          "new": "void PetBattleAura::Apply(PetBattle* petBattle)\n{\n    AppliedStates.clear();\n    for (auto const& v : sBattlePetAbilityStateStore)\n    {\n        if (v->BattlePetAbilityID != AbilityID)\n            continue;\n\n        uint32 flags = 0;\n\n        // Passive: elemental\n        // TODO: add state flags for positive / negative\n        // FIXME: need more work; check weather ability, dont change state value on remove\n        if (petBattle->Pets[TargetPetID]->States[BATTLEPET_STATE_Passive_Elemental])\n        {\n            switch (v->BattlePetStateID)\n            {\n                case BATTLEPET_STATE_Mod_HealingTakenPercent:\n                case BATTLEPET_STATE_Stat_Accuracy:\n                    if (v->Value < 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                case BATTLEPET_STATE_Mechanic_IsBlind:\n                case BATTLEPET_STATE_Mechanic_IsChilled:\n                case BATTLEPET_STATE_Mechanic_IsBurning:\n                case BATTLEPET_STATE_swapOutLock:\n                    if (v->Value > 0)\n                        flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n        int32 value = petBattle->Pets[TargetPetID]->States[v->BattlePetStateID];\n        if (!flags)\n        {\n            value += v->Value;\n            AppliedStates.emplace_back(v->BattlePetStateID, v->Value);\n        }\n\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, value, false, flags);\n    }\n\n    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up\n    {\n        auto pet = petBattle->Pets[TargetPetID];\n\n        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() - 5 * pet->Level);\n\n        pet->InfoMaxHealth = pet->GetMaxHealth();\n        pet->Health = healthPct * float(pet->GetMaxHealth());\n\n        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, 0, 1);\n        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);\n        petBattle->RoundEvents.push_back(eventSetMaxHealth);\n\n        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, 0, 1);\n        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);\n        petBattle->RoundEvents.push_back(eventSetHealth);\n    }\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattleAura::Remove(PetBattle* petBattle)\n{\n    if (AbilityID == petBattle->WeatherAbilityId)\n        petBattle->WeatherAbilityId = 0;\n\n    for (auto const& v : sBattlePetAbilityStateStore)\n        if (v->BattlePetAbilityID == AbilityID)\n            petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, petBattle->Pets[TargetPetID]->States[v->BattlePetStateID] - v->Value);\n\n    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up\n    {\n        auto pet = petBattle->Pets[TargetPetID];\n\n        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() + 5 * pet->Level);\n\n        pet->InfoMaxHealth = pet->GetMaxHealth();\n        pet->Health = healthPct * float(pet->GetMaxHealth());\n\n        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);\n        petBattle->RoundEvents.push_back(eventSetHealth);\n\n        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);\n        petBattle->RoundEvents.push_back(eventSetMaxHealth);\n    }\n}",
+          "new": "void PetBattleAura::Remove(PetBattle* petBattle)\n{\n    if (AbilityID == petBattle->WeatherAbilityId)\n        petBattle->WeatherAbilityId = 0;\n\n    for (auto const& state : AppliedStates)\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);\n    AppliedStates.clear();\n\n    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up\n    {\n        auto pet = petBattle->Pets[TargetPetID];\n\n        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() + 5 * pet->Level);\n\n        pet->InfoMaxHealth = pet->GetMaxHealth();\n        pet->Health = healthPct * float(pet->GetMaxHealth());\n\n        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);\n        petBattle->RoundEvents.push_back(eventSetHealth);\n\n        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);\n        petBattle->RoundEvents.push_back(eventSetMaxHealth);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetWeatherExclusiveLifecycle",
+      "title": "Track successfully applied battle pet weather for later replacement and cleanup",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 99,
+      "paths": [
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetWeatherExclusiveLifecycle",
+      "binding": "native",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "bool PetBattleAbilityEffect::HandleWeatherAura()\n{\n    // Chain Failure\n    if (EffectInfo->Param[3] && AbilityTurn->ChainFailure)\n        return false;\n\n    CalculateHit(EffectInfo->Param[1]);\n\n    if (!(Flags & FailFlags) && PetBattleInstance->WeatherAbilityId)\n        for (auto& aura : PetBattleInstance->PetAuras)\n            if (!aura->Expired && aura->AbilityID == PetBattleInstance->WeatherAbilityId)\n                aura->Expire(PetBattleInstance);\n\n    return AddAura(Target, EffectInfo->Param[2], 0);\n}",
+          "new": "bool PetBattleAbilityEffect::HandleWeatherAura()\n{\n    // Chain Failure\n    if (EffectInfo->Param[3] && AbilityTurn->ChainFailure)\n        return false;\n\n    CalculateHit(EffectInfo->Param[1]);\n\n    uint32 const previousWeather = PetBattleInstance->WeatherAbilityId;\n    if (!(Flags & FailFlags) && previousWeather && previousWeather != EffectInfo->AuraBattlePetAbilityID)\n        for (auto& aura : PetBattleInstance->PetAuras)\n            if (!aura->Expired && aura->AbilityID == previousWeather)\n                aura->Expire(PetBattleInstance);\n\n    bool const applied = AddAura(Target, EffectInfo->Param[2], 0);\n    if (applied)\n        PetBattleInstance->WeatherAbilityId = EffectInfo->AuraBattlePetAbilityID;\n    return applied;\n}",
+          "count": 1
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "void PetBattleAura::Remove(PetBattle* petBattle)\n{\n    if (AbilityID == petBattle->WeatherAbilityId)\n        petBattle->WeatherAbilityId = 0;\n\n    for (auto const& state : AppliedStates)\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);\n    AppliedStates.clear();\n\n    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up\n    {\n        auto pet = petBattle->Pets[TargetPetID];\n\n        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() + 5 * pet->Level);\n\n        pet->InfoMaxHealth = pet->GetMaxHealth();\n        pet->Health = healthPct * float(pet->GetMaxHealth());\n\n        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);\n        petBattle->RoundEvents.push_back(eventSetHealth);\n\n        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);\n        petBattle->RoundEvents.push_back(eventSetMaxHealth);\n    }\n}",
+          "new": "void PetBattleAura::Remove(PetBattle* petBattle)\n{\n    if (AbilityID == petBattle->WeatherAbilityId &&\n        std::none_of(petBattle->PetAuras.begin(), petBattle->PetAuras.end(), [this](PetBattleAura const* other)\n        {\n            return other != this && !other->Expired && other->AbilityID == AbilityID;\n        }))\n        petBattle->WeatherAbilityId = 0;\n\n    for (auto const& state : AppliedStates)\n        petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);\n    AppliedStates.clear();\n\n    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up\n    {\n        auto pet = petBattle->Pets[TargetPetID];\n\n        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() + 5 * pet->Level);\n\n        pet->InfoMaxHealth = pet->GetMaxHealth();\n        pet->Health = healthPct * float(pet->GetMaxHealth());\n\n        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);\n        petBattle->RoundEvents.push_back(eventSetHealth);\n\n        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);\n        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);\n        petBattle->RoundEvents.push_back(eventSetMaxHealth);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "PetFlyingPassiveThreshold",
+      "title": "Apply the flying battle pet speed passive only above half health",
+      "kind": "native_lifecycle",
+      "batch": 10,
+      "index": 100,
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "cls": "",
+      "case": "PetFlyingPassiveThreshold",
+      "binding": "native",
+      "binding_kind": "native",
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "int32 BattlePetInstance::GetSpeed()\n{\n    int32 modPercent = States[BATTLEPET_STATE_Mod_SpeedPercent];\n\n    // Passive: flying\n    if (States[BATTLEPET_STATE_Passive_Flying])\n        modPercent += 50;\n\n    return (States[BATTLEPET_STATE_Stat_Speed] + CalculatePct(States[BATTLEPET_STATE_Stat_Speed], modPercent)) / 100;\n}",
+          "new": "int32 BattlePetInstance::GetSpeed()\n{\n    int32 modPercent = States[BATTLEPET_STATE_Mod_SpeedPercent];\n\n    // Passive: flying\n    if (States[BATTLEPET_STATE_Passive_Flying] && int64(Health) * 2 > GetMaxHealth())\n        modPercent += 50;\n\n    return (States[BATTLEPET_STATE_Stat_Speed] + CalculatePct(States[BATTLEPET_STATE_Stat_Speed], modPercent)) / 100;\n}",
+          "count": 1
+        }
+      ]
     }
   ],
   "excluded_candidates": [

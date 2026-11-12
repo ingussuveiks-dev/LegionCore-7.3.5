@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Bind idle-or-completed-original-route approach recovery to the selected Release controller."""
 from pathlib import Path
 import runpy
@@ -20,7 +21,7 @@ def check(native, instructions):
     assert calls(selection, '?ScheduleMagnarApproach' + suffix)[0] < calls(selection, '?MovePoint@MotionMaster@@')[0], 'Initial request is not armed before movement callbacks'
     schedule = instructions('?ScheduleMagnarApproach' + suffix)
     assert calls(schedule, '?AddDelayedEvent@FunctionProcessor@@') and 1000 in values(schedule)
-    assert any('0x36a0' in op.op_str for op in schedule), 'Retry must use the actual Unit queue'
+    assert any(unit_queue_operand('0x36a0') in op.op_str for op in schedule), 'Retry must use the actual Unit queue'
     callbacks = [name for name in native['symbols'] if name.startswith('?_Do_call@') and '??ScheduleMagnarApproach' + suffix in name]
     assert len(callbacks) == 1
     bridge = instructions(callbacks[0])

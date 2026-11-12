@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind first-phase Reset recovery to the selected controllers in Release."""
 from pathlib import Path
 import runpy
@@ -35,7 +36,7 @@ def check(n, ins):
     assert not any(v.type==CS_OP_MEM and v.mem.disp==0xe8 for op in reset[first:false] for v in op.operands),'Fresh replacement still requires its lost local encounterStarted claim'
     has(reset[cleanup:notification],f'byte ptr [rbx + 0xd5], {zero}b',f'byte ptr [rbx + 0xe8], {zero}b',flag+', '+flag,
         f'byte ptr [rdi + 0x858], {zero}b','qword ptr [rdi + 0x9c0], rbx',f'dword ptr [rdi + 0xa18], {zero}d',
-        f'byte ptr [rdi + 0x39c5], {zero}b','eax, 0x17722','dword ptr [rdi + 0xe0], 0x5d7','r8d, 0x429')
+        inherited_operand(f'byte ptr [rdi + 0x39c5], {zero}b'),'eax, 0x17722','dword ptr [rdi + 0xe0], 0x5d7','r8d, 0x429')
     assert sites(reset[cleanup:notification],'?GetCreature@Map@@'),'Reset does not resolve the instance-owned companion'
     guards=[i for i,op in enumerate(reset) if op.mnemonic=='cmp' and op.op_str=='dword ptr [rbx + 0x208], '+generation]
     assert len(guards)==2 and guards[0]<cleanup<guards[1]<notification
@@ -83,7 +84,7 @@ def check(n, ins):
     initialize,=[i for i,op in enumerate(init) if op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x20]']
     assert old<installed<initialize
     has(init[installed:initialize],'byte ptr [rbx + 0x858], 1','dword ptr [rbx + 0xa18], 0')
-    lock=next(i for i,op in enumerate(init) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rcx + 0x3a9d], 0')
+    lock=next(i for i,op in enumerate(init) if op.mnemonic=='cmp' and op.op_str==inherited_operand('byte ptr [rcx + 0x3a9d], 0'))
     assert init[lock+1].mnemonic=='je' and init[lock+1].operands[0].imm==init[old].address
     native_init=ins('?InitializeAI@ScriptedAI@@')
     assert any(op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x28]' for op in native_init),'Native InitializeAI does not call selected Reset'

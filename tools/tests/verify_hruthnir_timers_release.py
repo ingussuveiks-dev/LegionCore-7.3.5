@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Six earlier escort callbacks belong to the actual Hruthnir AI in Release."""
 from pathlib import Path
 import hashlib
@@ -64,13 +65,13 @@ assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 assert not sites(n,ins(method('Reset')),'?KillAllFunctions@FunctionProcessor@@')
 
 parents=[ins(method(name)) for name in ('EnterEvadeMode','MovementInform','MoveInLineOfSight')]
-movement_queues=[(0xc0,5000),(0xc0,4000),(0xc0,15000),(0xc0,2000),(0x36a0,13000)]
-if not current_start:movement_queues.append((0x36a0,6000))
+movement_queues=[(0xc0,5000),(0xc0,4000),(0xc0,15000),(0xc0,2000),(unit_queue_offset(),13000)]
+if not current_start:movement_queues.append((unit_queue_offset(),6000))
 for body,expected in zip(parents,[[(0xc0,5000)],movement_queues,[(0xc0,5000)]]):
  queued=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@');assert len(queued)==len(expected)
  for at,(member,delay) in zip(queued,expected):
   window=[(op.mnemonic,op.op_str) for op in body[max(0,at-12):at]]
-  owner=('lea','rcx, [rdi + 0xc0]' if current_cold_route and body is parents[1] else 'rcx, [rbx + 0xc0]') if member==0xc0 else ('add','rcx, 0x36a0')
+  owner=('lea','rcx, [rdi + 0xc0]' if current_cold_route and body is parents[1] else 'rcx, [rbx + 0xc0]') if member==0xc0 else ('add',unit_queue_operand('rcx, 0x36a0'))
   assert owner in window and ('mov',f'edx, {delay:#x}') in window,(member,delay,window)
 callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'npc_hrutnirAI@' in name]
 current_approach=any(name.startswith(method('ScheduleMagnarApproach')) for name in n['symbols'])

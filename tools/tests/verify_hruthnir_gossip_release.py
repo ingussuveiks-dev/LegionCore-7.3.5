@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify installed Hruthnir gossip admission and actual raw-option dispatch."""
 from pathlib import Path
 import runpy
@@ -34,7 +35,7 @@ body = instructions(helper)
 deny = next(entry.address for index, entry in enumerate(body[:-1])
             if entry.op_str == 'rbx, qword ptr [rsp + 0x40]' and body[index + 1].op_str == 'al, al')
 for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'),
-                         ('dword ptr [rbx + 0xa18], 0', 'jne'), ('byte ptr [rbx + 0x39c5], 0', 'jne'),
+                         ('dword ptr [rbx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rbx + 0x39c5], 0'), 'jne'),
                          ('eax, 0x178d4', 'jne'), ('dword ptr [rbx + 0xe0], 0x5d7', 'jne'),
                          ('al, 1', 'jne'), ('rax, qword ptr [rbx + 8]', 'jne'),
                          ('dword ptr [rdi + 0x3b8], eax', 'jne'), ('rax, rbx', 'jne'),

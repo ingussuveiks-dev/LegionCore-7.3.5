@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Selected registered real-death receipt and scoped Hait victory path in PE.
 
 Run verify_monk_chen_routes_release.py separately for the retained full chain.
@@ -56,7 +58,7 @@ needs(leaf,context('Progress'),'?GetAchievementMgr@Scenario@@','?GetCriteriaProg
 assert 29071 in values(leaf) and ('cmp','qword ptr [rcx + 0x28], 0') in pairs(leaf)
 needs(ready,context('Retained'),'?IsInWorld@Object@@','?CanContact@Player@@','?GetCreature@Map@@',
       '?IsPreDelete@Object@@','?InSamePhase@WorldObject@@','?ShouldHideFor@WorldObject@@','?IsWithinDistInMap@WorldObject@@')
-assert 100.0 in floats(n,ready) and {0x4ff0,0x6848,0x6849,0x6851}<=fields(ready)
+assert 100.0 in floats(n,ready) and {0x4ff0,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(ready)
 assert not sites(n,ready,context('Current')),'Victory/voice must not use distant Chen as its player anchor'
 assert {1014,97778,362271}<=values(guide)
 needs(guide,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@')
@@ -76,7 +78,7 @@ assert {('cmp','byte ptr [r14 + 0x54], 0'),('cmp','qword ptr [r14 + 0x40], rbx')
 assert {('mov','word ptr [r14 + 0x54], 0x100'),('mov','byte ptr [rax + 0xd5], 1')}<=set(pairs(update[event:chat]))
 reserve=next(i for i,o in enumerate(update) if (o.mnemonic,o.op_str)==('mov','byte ptr [rdi + 0x59], 1') and i>sites(n,update,state('Ready'))[-1])
 assert reserve<chat and ('mov','r8b, 0xf') in pairs(update[reserve:chat])
-assert ('cmp','dword ptr [rsi + 0x3b1c], 8') in pairs(update)
+assert ('cmp',inherited_operand('dword ptr [rsi + 0x3b1c], 8')) in pairs(update)
 assert ('cmp','dword ptr [rbx + 0x2c], 0x966fbe') in pairs(update)
 pose=ins('?Pose@MonkJorvinax@@');needs(pose,'?GetPathScript@WaypointMgr@@','?IsWithinDist3d@WorldObject@@')
 assert 9859006 in values(pose) and 0.5 in floats(n,pose)

@@ -1,3 +1,4 @@
+from healing_width_scope import retained_source
 """Inspect registered Kingslayers native activation and independent event boundaries."""
 from pathlib import Path
 import runpy,re,struct,subprocess
@@ -5,7 +6,7 @@ from capstone import CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 from sharasdal_erunak_entry_pe import sites,values,floats
 repo=Path(__file__).resolve().parents[2];path='src/server/game/Spells/SpellEffects.cpp'
-before=subprocess.check_output(['git','-C',str(repo),'show','a9e86af7b:'+path],text=True,encoding='utf-8');current=(repo/path).read_text(encoding='utf-8')
+before=subprocess.check_output(['git','-C',str(repo),'show','a9e86af7b:'+path],text=True,encoding='utf-8');current=retained_source(path)
 # Later reviewed Fury landing/bonfire and equipped-child repairs share this
 # file. Certify their exact whole-file boundary before the older door delta;
 # retain the actual selected Release checks below against the current binary.

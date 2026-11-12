@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify the actual pre-transport Warrior recovery and late quest admission."""
 import runpy
 import struct
@@ -47,7 +48,7 @@ else:
     assert load[seed-3].op_str == 'r8d, r8d' and load[seed-3].mnemonic == 'xor'
     assert load[seed-2].op_str == 'edx, ebx' and load[seed-1].op_str == 'rcx, r12'
     unlock=find(load,'ecx, 8',first-20,'bt');assert unlock < first and load[unlock+1].mnemonic == 'jb'
-    login=find(load,'dword ptr [r12 + 0x6bd8], 0',first,'cmp')
+    login=find(load,inherited_operand('dword ptr [r12 + 0x6bd8], 0'),first,'cmp')
     cls=find(load,'al, 1',login,'cmp')
     assert first < login < cls < find_route
     skip=load[login+1].operands[0].imm
@@ -67,7 +68,7 @@ else:
     for text in ('dword ptr [rsp + 0x260], ebx','eax, dword ptr [r15 + 4]','dword ptr [rsp + 0x268], r13d','qword ptr [rsp + 0x270], r13','rax, qword ptr [rsp + 0x80]','xmmword ptr [rax], xmm0','xmmword ptr [rax + 0x10], xmm2','qword ptr [rax + 0x20], xmm4'):
         assert validate < find(load,text,validate) < seed
     assert find(load,'r13d, r13d',validate,'xor') < find(load,'dword ptr [rsp + 0x268], r13d',validate)
-    resume_ptr=find(load,'rbx, [r15 + 0x6bb0]',0,'lea')
+    resume_ptr=find(load,inherited_operand('rbx, [r15 + 0x6bb0]'),0,'lea')
     assert load[resume_ptr+1].op_str == 'qword ptr [rsp + 0x80], rbx' and resume_ptr < first
     transport=next(i for i in sites(load,'?Reset@TransportInfo@MovementInfo@@') if seed < i < seed+24)
     assert seed < transport < warlock
@@ -83,7 +84,7 @@ else:
     assert any(o.mnemonic=='lea' and any(a.type==CS_OP_MEM and a.mem.base==X86_REG_RIP for a in o.operands) and rip(o)==table for o in prepare)
     bad=find(prepare,'ecx, dword ptr [rax + 4]',0,'cmp')
     assert prepare[bad+1].mnemonic == 'je'
-    assert bad < find(prepare,'qword ptr [rdi + 0x6bd8], rsi',bad,'mov') < find(prepare,'word ptr [rdi + 0x6ba8], si',bad,'mov')
+    assert bad < find(prepare,inherited_operand('qword ptr [rdi + 0x6bd8], rsi'),bad,'mov') < find(prepare,inherited_operand('word ptr [rdi + 0x6ba8], si'),bad,'mov')
 
     admit=ins('?CanResumeScenarioLogin@Player@@')
     assert any(o.mnemonic=='lea' and any(a.type==CS_OP_MEM and a.mem.base==X86_REG_RIP for a in o.operands) and rip(o)==table for o in admit)
@@ -94,5 +95,5 @@ else:
     assert admit[quest+1].op_str == 'al, al' and admit[quest+2].operands[0].imm == reject
     assert admit[statuses[0]+1].op_str == 'eax, 3' and admit[statuses[1]+1].op_str == 'eax, 1'
     assert admit[statuses[1]+2].operands[0].imm == reject
-    assert find(admit,'eax, dword ptr [rdi + 0x6bd8]',0,'mov') > statuses[1]
+    assert find(admit,inherited_operand('eax, dword ptr [rdi + 0x6bd8]'),0,'mov') > statuses[1]
     print('PASS selected actual pre-transport Warrior login:three native map/scenario/quest/spell rows,existing receipt first,unlock/class/map/active quest/native-source admission,zero old instance+boot and explicit Prepare(map,0),transport reset only after selected recovery;early/Warlock status flag skips later duplicate load;rewarded rows load normally and final admission rechecks exact route/active-complete/unrewarded quest. Source132/native138 and full client/persisted-character traversal remain separate.')

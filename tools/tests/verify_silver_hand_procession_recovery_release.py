@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify selected original-GUID procession retry and native phase ordering."""
 from pathlib import Path
 import runpy
@@ -50,7 +51,7 @@ for op,branch in (('byte ptr [rsi + 0x14], 0','je'),('byte ptr [rsi + 0x15], 0',
  i=locate(body,op,'cmp');assert i<lookup[0] and body[i+1].mnemonic==branch
 for begin,end,player in ((lookup[0],busy,'rdi'),(lookup[1],credit,'r15')):
  policy=next(i for i in valid if begin<i<end);assert body[policy+2].mnemonic=='je'
- guard=locate(body,f'byte ptr [{player} + 0x4ff0], 1','test');assert policy<guard<end and body[guard+1].mnemonic=='jne'
+ guard=locate(body,inherited_operand(f'byte ptr [{player} + 0x4ff0], 1'),'test');assert policy<guard<end and body[guard+1].mnemonic=='jne'
 for op in ('byte ptr [rcx + 0x858], 0','qword ptr [rcx + 0x9c0], rbx'):
  guards=[i for i,x in enumerate(body) if x.mnemonic=='cmp' and x.op_str==op]
  assert len(guards)==2 and guards[0]<lookup[0] and talk<guards[1]<lookup[1]

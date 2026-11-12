@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify completed-intro addon cleanup in the selected final Vigfus Reset."""
 from pathlib import Path
 import runpy
@@ -25,7 +26,7 @@ assert any(entry.mnemonic == 'mov' and entry.op_str == 'rcx, qword ptr [rbx + 0x
 for method, dependency in (('?LoadCreaturesAddon@Creature@@', '?GetCreatureAddon@ObjectMgr@@'), ('?LoadCreaturesAddon@Creature@@', '?GetCreatureTemplateAddon@ObjectMgr@@'), ('?LoadCreaturesAddon@Creature@@', '?AddAura@Unit@@QEAAPEAVAura@@I'), ('?_EnterEvadeMode@CreatureAI@@', '?LoadCreaturesAddon@Creature@@')):
     assert native['symbol'](dependency) in native['calls'](method), 'Native addon/evade consumer missing: ' + dependency
 addon = instructions('?LoadCreaturesAddon@Creature@@')
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'qword ptr [rcx + 0x3a88], 0' for entry in addon) and any(entry.mnemonic == 'lea' and entry.op_str == 'rdx, [rdi + 0x3a88]' for entry in addon), 'Inlined addon lookup no longer uses this creature persistent DB GUID'
+assert any(entry.mnemonic == 'cmp' and entry.op_str == inherited_operand('qword ptr [rcx + 0x3a88], 0') for entry in addon) and any(entry.mnemonic == 'lea' and entry.op_str == inherited_operand('rdx, [rdi + 0x3a88]') for entry in addon), 'Inlined addon lookup no longer uses this creature persistent DB GUID'
 poll = instructions('?UpdateIntro@npc_vigfus_bladewind_lastAI@npc_vigfus_bladewind_last@@')
 calls = [(index, native['resolve'](entry.operands[0].imm)) for index, entry in enumerate(poll) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM]
 present = next(index for index, target in calls if target == native['symbol']('?HasAura@Unit@@'))

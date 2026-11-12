@@ -102,3 +102,14 @@ if eighth:
    body=body.replace('target->CastCustomSpell(target, 210862, &bp, NULL, NULL, true);','ObserveSixHeal(target, target, 210862, bp);').replace('target->CastCustomSpell(target, 49088, &bp, NULL, NULL, true, NULL, aurEff);','ObserveSixHeal(target, target, 49088, bp);')
   text+=body+';\n'
  text+='}\n';(out/'TenTenEighthNative.inc').write_text(text,encoding='utf8');print('Prepared eighth actual classes/native Justice state definitions;cloud query/optional children/resource cast endpoints observed')
+
+tenth=[e for e in PLAN['changes']if e['batch']==10]
+if tenth:
+ assert len(tenth)==10
+ pal=(ROOT/'src/server/scripts/Spells/spell_paladin.cpp').read_text();warrior=(ROOT/'src/server/scripts/Spells/spell_warrior.cpp').read_text()
+ text='namespace TenthNative{enum{ScatterTheShadows='+re.search(r'\bScatterTheShadows\s*=\s*(\d+)',pal)[1]+',SPELL_WARRIOR_COMMANDING_SHOUT_AURA='+re.search(r'\bSPELL_WARRIOR_COMMANDING_SHOUT_AURA\s*=\s*(\d+)',warrior)[1]+'};\n'
+ for e in tenth[1:4]:
+  body=e['edits'][0]['new']
+  if e['key']=='CommandingShoutHealthLifecycle':body=body.replace('GetCaster()->CastCustomSpell(target, SPELL_WARRIOR_COMMANDING_SHOUT_AURA, &health, nullptr, nullptr, true);','ObserveSixHeal(GetCaster(), target, SPELL_WARRIOR_COMMANDING_SHOUT_AURA, health);')
+  text+=body+';\n'
+ text+='}\n';(out/'TenTenTenthNative.inc').write_text(text,encoding='utf8');print('Prepared final actual ShadowMend/Protector/Shout classes;only Shout child request observed,core health/history/Smart/pet methods linked directly')

@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Bind five acquisition routes and the earned-owner fallback to linked x64 code.
 
 This verifies selected machine-code paths, not full Character LoadFromDB, group
@@ -35,7 +37,7 @@ def verify_earned(body, start=0, inlined=False):
     mapping = find(body, f'dword ptr [{"rdi" if inlined else "rcx"} + 0xe0], 0x5d1', start, 'cmp')
     failure = body[mapping + (1 if inlined else 2)].operands[0].imm
     cls = find(body, 'al, 3', mapping, 'cmp')
-    gm = find(body, 'byte ptr [rdi + 0x4ff0], 1', cls, 'test')
+    gm = find(body, inherited_operand('byte ptr [rdi + 0x4ff0], 1'), cls, 'test')
     reward = next(i for i in sites(body, '?GetQuestRewardStatus@Player@@') if i > gm)
     status = next(i for i in sites(body, '?GetQuestStatus@Player@@') if i > reward)
     assert mapping < cls < gm < reward < status
@@ -105,7 +107,7 @@ assert first < route < early < lookup < validate < seed < warlock < normal
 unlock = find(load, 'edx, 8' if earned_marksman else 'ecx, 8', first - 20, 'bt')
 assert unlock < first and load[unlock + 1].mnemonic == 'jb'
 assert load[first - 3].op_str == 'r8d, dword ptr [rsp + 0x54]'
-login = find(load, 'dword ptr [r12 + 0x6bd8], 0', first, 'cmp')
+login = find(load, inherited_operand('dword ptr [r12 + 0x6bd8], 0'), first, 'cmp')
 skip = load[login + 1].operands[0].imm
 assert load[login + 1].mnemonic == 'jne'
 assert load[route - 2].op_str == 'edx, al' and load[route - 1].op_str == 'ecx, ebx'
@@ -133,13 +135,13 @@ zero = find(load, 'xmm0, xmm6', mapping, 'ucomiss')
 zero = find(load, 'xmm0, xmm6', zero + 1, 'ucomiss')
 assert load[zero + 2].mnemonic == 'je' and load[zero + 2].operands[0].imm > load[seed].address
 assert load[validate + 2].op_str == 'al, al' and load[validate + 3].mnemonic == 'je' and load[validate + 3].operands[0].imm > load[seed].address
-snapshots = ('dword ptr [rsp + 0x230], ebx', 'eax, dword ptr [rsi]', 'dword ptr [rsp + 0x238], r13d', 'qword ptr [rsp + 0x240], r13', 'xmmword ptr [r12 + 0x6bb0], xmm0', 'xmmword ptr [r12 + 0x6bc0], xmm2', 'qword ptr [r12 + 0x6bd0], xmm4') if earned_marksman else ('dword ptr [rsp + 0x260], ebx', 'eax, dword ptr [r15 + 4]', 'dword ptr [rsp + 0x268], r13d', 'qword ptr [rsp + 0x270], r13', 'rax, qword ptr [rsp + 0xb0]', 'xmmword ptr [rax], xmm0', 'xmmword ptr [rax + 0x10], xmm2', 'qword ptr [rax + 0x20], xmm4')
+snapshots = ('dword ptr [rsp + 0x230], ebx', 'eax, dword ptr [rsi]', 'dword ptr [rsp + 0x238], r13d', 'qword ptr [rsp + 0x240], r13', inherited_operand('xmmword ptr [r12 + 0x6bb0], xmm0'), inherited_operand('xmmword ptr [r12 + 0x6bc0], xmm2'), inherited_operand('qword ptr [r12 + 0x6bd0], xmm4')) if earned_marksman else ('dword ptr [rsp + 0x260], ebx', 'eax, dword ptr [r15 + 4]', 'dword ptr [rsp + 0x268], r13d', 'qword ptr [rsp + 0x270], r13', 'rax, qword ptr [rsp + 0xb0]', 'xmmword ptr [rax], xmm0', 'xmmword ptr [rax + 0x10], xmm2', 'qword ptr [rax + 0x20], xmm4')
 for text in snapshots:
     assert validate < find(load, text, validate) < seed
 assert find(load, 'r13d, r13d', validate, 'xor') < find(load, snapshots[2], validate)
 assert [o.op_str for o in load[seed - 3:seed]] == ['r8d, r8d', 'edx, ebx', 'rcx, r12']
 transport = next(i for i in sites(load, '?Reset@TransportInfo@MovementInfo@@') if seed < i < seed + 24)
-selected = find(load, 'dword ptr [r12 + 0x6bd8], 0' if earned_marksman else 'dword ptr [rax], 0', seed, 'cmp')
+selected = find(load, inherited_operand('dword ptr [r12 + 0x6bd8], 0') if earned_marksman else 'dword ptr [rax], 0', seed, 'cmp')
 assert seed < selected < transport < warlock and load[selected + 1].mnemonic == 'je'
 assert load[selected + 1].operands[0].imm > load[transport].address
 assert load[warlock + 1].op_str == 'byte ptr [rsp + 0x50], 1'
@@ -155,11 +157,11 @@ scenario_lookup = next(i for i in sites(load, '?GetScenario@ScenarioMgr@@') if i
 assert create < binding < scenario_lookup < normal
 if marksman:
     m1 = find(load, 'ebx, 0x5e7', binding, 'cmp')
-    selected_field = 'r12 + 0x6bd8' if earned_marksman else 'rax'
+    selected_field = inherited_operand('r12 + 0x6bd8') if earned_marksman else 'rax'
     s1 = find(load, f'dword ptr [{selected_field}], 0x3cd', m1, 'cmp')
     m2 = find(load, 'ebx, 0x5d1', s1, 'cmp')
     s2 = find(load, f'dword ptr [{selected_field}], 0x3cc', m2, 'cmp')
-    common = find(load, 'dword ptr [r12 + 0x6bb8], 0', s2, 'cmp')
+    common = find(load, inherited_operand('dword ptr [r12 + 0x6bb8], 0'), s2, 'cmp')
     skip_binding = load[common + 1].operands[0].imm
     assert binding < m1 < s1 < m2 < s2 < common < scenario_lookup
     assert load[m1 + 1].mnemonic == 'jne' and load[m1 + 1].operands[0].imm == load[m2].address
@@ -167,15 +169,15 @@ if marksman:
     assert load[s1 + 2].mnemonic == 'jmp' and load[s1 + 2].operands[0].imm == skip_binding
     for at in (m2, s2):
         assert load[at + 1].mnemonic == 'jne' and load[at + 1].operands[0].imm == skip_binding
-    tests = ('dword ptr [r12 + 0x6bb8], 0', 'qword ptr [r12 + 0x6bc0], 0')
+    tests = (inherited_operand('dword ptr [r12 + 0x6bb8], 0'), inherited_operand('qword ptr [r12 + 0x6bc0], 0'))
 else:
-    tests = ('ebx, 0x5e7', 'dword ptr [rax], 0x3cd', 'dword ptr [r12 + 0x6bb8], 0', 'qword ptr [r12 + 0x6bc0], 0')
+    tests = ('ebx, 0x5e7', 'dword ptr [rax], 0x3cd', inherited_operand('dword ptr [r12 + 0x6bb8], 0'), inherited_operand('qword ptr [r12 + 0x6bc0], 0'))
 for text in tests:
     at = find(load, text, binding, 'cmp')
     assert at < scenario_lookup and load[at + 1].mnemonic == 'jne' and load[at + 1].operands[0].imm > load[scenario_lookup].address
-clear = find(load, 'word ptr [r12 + 0x6ba8], r13w', scenario_lookup, 'mov')
+clear = find(load, inherited_operand('word ptr [r12 + 0x6ba8], r13w'), scenario_lookup, 'mov')
 assert load[scenario_lookup + 2].op_str == 'rax, rax' and load[scenario_lookup + 3].mnemonic == 'je' and load[scenario_lookup + 3].operands[0].imm > load[clear].address
-assert scenario_lookup < find(load, 'qword ptr [r12 + 0x6bd8], 0' if earned_marksman else 'dword ptr [r12 + 0x6bdc], r13d', scenario_lookup, 'mov') < clear
+assert scenario_lookup < find(load, inherited_operand('qword ptr [r12 + 0x6bd8], 0') if earned_marksman else inherited_operand('dword ptr [r12 + 0x6bdc], r13d'), scenario_lookup, 'mov') < clear
 
 prepare = ins('?PrepareScenarioLogin@Player@@')
 admit = ins('?CanResumeScenarioLogin@Player@@')
@@ -184,7 +186,7 @@ for body in (prepare, admit):
     if marksman: assert ref(body, marksman)
 bad = find(prepare, 'ecx, dword ptr [rax + 4]', 0, 'cmp')
 assert prepare[bad + 1].mnemonic == 'je'
-assert bad < find(prepare, 'qword ptr [rsi + 0x6bd8], 0', bad, 'mov') < find(prepare, 'word ptr [rsi + 0x6ba8], di', bad, 'mov')
+assert bad < find(prepare, inherited_operand('qword ptr [rsi + 0x6bd8], 0'), bad, 'mov') < find(prepare, inherited_operand('word ptr [rsi + 0x6ba8], di'), bad, 'mov')
 rewards = sites(admit, '?GetQuestRewardStatus@Player@@')
 assert len(rewards) == (2 if earned_marksman else 1)
 quest = rewards[0]
@@ -198,7 +200,7 @@ assert admit[statuses[0] + 1].op_str == 'eax, 3' and admit[statuses[1] + 1].op_s
 claims = sites(admit, '?GetQuestObjectiveData@Player@@')
 assert len(claims) == (3 if earned_marksman else 2 if marksman else 1)
 claim = claims[0]
-for text in ('dword ptr [rbx + 4], 0x3cd', 'dword ptr [rdi + 0x6bdc], 0'):
+for text in ('dword ptr [rbx + 4], 0x3cd', inherited_operand('dword ptr [rdi + 0x6bdc], 0')):
     at = find(admit, text, statuses[1], 'cmp')
     assert at < claim and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[claim + 3].address
 assert admit[claim - 3].op_str == 'edx, 0x9dc1' and admit[claim - 2].op_str == 'r8d, 0x18710'
@@ -206,8 +208,8 @@ assert admit[claim + 1].op_str == 'eax, 1' and admit[claim + 2].mnemonic == 'jge
 
 if marksman:
     bow = claims[1]
-    resume = find(admit, 'eax, dword ptr [rdi + 0x6bd8]', bow) if earned_marksman else bow + 3
-    for text in ('dword ptr [rbx + 4], 0x3cc', 'dword ptr [rdi + 0x6bb8], 0', 'qword ptr [rdi + 0x6bc0], 0'):
+    resume = find(admit, inherited_operand('eax, dword ptr [rdi + 0x6bd8]'), bow) if earned_marksman else bow + 3
+    for text in ('dword ptr [rbx + 4], 0x3cc', inherited_operand('dword ptr [rdi + 0x6bb8], 0'), inherited_operand('qword ptr [rdi + 0x6bc0], 0')):
         at = find(admit, text, claim, 'cmp')
         assert at < bow and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[resume].address
     assert admit[bow - 3].op_str == 'edx, 0x9de3' and admit[bow - 2].op_str == 'r8d, 0x19442'
@@ -243,7 +245,7 @@ screen, = sites(exit_body, '?RemoveAurasDueToSpell@Unit@@')
 assert inventory < owner < compare < count < spell < target < effect < coord < zone < teleport < screen
 failure = exit_body[teleport + 2].operands[0].imm
 assert exit_body[teleport + 1].op_str == 'al, al' and exit_body[teleport + 2].mnemonic == 'je'
-for text, mnemonic in (('dword ptr [rcx + 0xe0], 0x5e7', 'cmp'), ('al, 3', 'cmp'), ('byte ptr [rdi + 0x4ff0], 1', 'test'), ('eax, 0x3cd', 'cmp')):
+for text, mnemonic in (('dword ptr [rcx + 0xe0], 0x5e7', 'cmp'), ('al, 3', 'cmp'), (inherited_operand('byte ptr [rdi + 0x4ff0], 1'), 'test'), ('eax, 0x3cd', 'cmp')):
     at = find(exit_body, text, 0, mnemonic)
     assert at < inventory and exit_body[at + 1].operands[0].imm == failure
 reward, = sites(exit_body, '?GetQuestRewardStatus@Player@@')
@@ -262,11 +264,11 @@ assert exit_body[effect - 2].op_str == 'edx, 0xfc'
 assert find(exit_body, 'dword ptr [rbx], 0x4c4', effect, 'cmp') < coord
 assert exit_body[zone + 1].op_str == 'eax, 0x1d4e' and exit_body[zone + 2].operands[0].imm == failure
 assert exit_body[screen - 2].op_str == 'edx, 0x32315'
-for text in ('qword ptr [rdi + 0x6bd8], rsi', 'word ptr [rdi + 0x6ba8], si', 'xmmword ptr [rdi + 0x6bb0], xmm0'):
+for text in (inherited_operand('qword ptr [rdi + 0x6bd8], rsi'), inherited_operand('word ptr [rdi + 0x6ba8], si'), inherited_operand('xmmword ptr [rdi + 0x6bb0], xmm0')):
     assert find(exit_body, text, screen) > screen
 # Pending near/far guards branch around the only real transfer/cleanup.
-near = find(exit_body, 'byte ptr [rdi + 0x6848], 0', zone, 'cmp')
-far = find(exit_body, 'byte ptr [rdi + 0x6849], 0', near, 'cmp')
+near = find(exit_body, player_operand('byte ptr [rdi + 0x6848], 0'), zone, 'cmp')
+far = find(exit_body, player_operand('byte ptr [rdi + 0x6849], 0'), near, 'cmp')
 assert zone < near < far < teleport and exit_body[near + 1].operands[0].imm > exit_body[screen].address and exit_body[far + 1].operands[0].imm > exit_body[screen].address
 distance, = sites(exit_body, '?GetExactDist@Position@@')
 assert distance > screen and find(exit_body, 'dword ptr [rcx + 0x10], eax', screen, 'cmp') < distance

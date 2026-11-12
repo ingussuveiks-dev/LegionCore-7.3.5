@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Check canonical default-motion selection and distinct native waypoint stores."""
 from pathlib import Path
 import runpy
@@ -20,7 +21,7 @@ body = instructions(selector)
 idle = next(index for index, entry in enumerate(body) if entry.mnemonic == 'xor' and entry.op_str == 'bl, bl')
 kind = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rcx + 0x16], 3')
 controlled = next(index for index, entry in enumerate(body) if entry.op_str == 'qword ptr [rax + 0x2f40], rsi')
-movement = next(index for index, entry in enumerate(body) if entry.op_str == 'ebx, byte ptr [rax + 0x3a80]')
+movement = next(index for index, entry in enumerate(body) if entry.op_str == inherited_operand('ebx, byte ptr [rax + 0x3a80]'))
 assert idle < kind < controlled < movement
 assert body[kind + 1].mnemonic == 'cmovne'
 assert body[controlled + 1].mnemonic == 'jne'
@@ -38,7 +39,7 @@ for prefix in ('?LoadPath@?$WaypointMovementGenerator@VCreature', '?DoInitialize
     body = instructions(prefix)
     enabled = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rcx + 0x31], 0')
     path = next(index for index, entry in enumerate(body) if entry.op_str == 'dword ptr [rcx + 0x2c], 0')
-    inherited = next(index for index, entry in enumerate(body) if entry.op_str == 'eax, dword ptr [rdx + 0x3b20]')
+    inherited = next(index for index, entry in enumerate(body) if entry.op_str == inherited_operand('eax, dword ptr [rdx + 0x3b20]'))
     scripted = next(index for index, entry in enumerate(body) if entry.op_str == 'rcx, [rax + 0x40]')
     assert enabled < path < inherited < scripted
     assert body[enabled + 1].mnemonic == 'je' and body[path + 1].mnemonic == 'jne'

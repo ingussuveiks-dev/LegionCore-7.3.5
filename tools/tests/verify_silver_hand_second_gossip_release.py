@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify second-Travard stage admission and native packet-selected procession."""
 from pathlib import Path
 import math
@@ -20,7 +21,7 @@ def reject(position, branch):
 
 
 for operands, branch in (('rcx, rcx', 'je'), ('rdx, rdx', 'je'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
-                         ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                          ('dword ptr [rdi + 0xa18], 0', 'jne'), ('dword ptr [rdi + 0xe0], 0x603', 'jne'),
                          ('rax, rax', 'je'), ('rax, qword ptr [rdi + 8]', 'jne'),
                          ('dword ptr [rbx + 0x3b8], eax', 'jne')):

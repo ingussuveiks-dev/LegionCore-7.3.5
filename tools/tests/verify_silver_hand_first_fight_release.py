@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify actual owned G'norz receipt, lifecycle credit and instance fallback."""
 from pathlib import Path
 import runpy
@@ -40,7 +42,7 @@ body=ins('?IsOwnedBoss@SilverHandFirstFight@@')
 assert sites(body,'?CanRun@SilverHandFirstFight@@')
 for op in ('eax, 0x1a080','qword ptr [rbx + 8], rax','dword ptr [rbx + 0x3b8], eax'):
  i=locate(body,op,'cmp');assert body[i+1].mnemonic=='jne'
-assert any(x.op_str=='xmm0, xmmword ptr [rbx + 0x3b64]' for x in body)
+assert any(x.op_str==inherited_operand('xmm0, xmmword ptr [rbx + 0x3b64]') for x in body)
 assert sites(body,'??8ObjectGuid@@'), 'Owner identity is not compared with native full GUID'
 body=ins('?ObserveDeath@State@SilverHandFirstFight@@')
 assert sites(body,'?IsOwnedBoss@SilverHandFirstFight@@') and sites(body,'?Register@State@SilverHandFirstFight@@')
@@ -54,7 +56,7 @@ for p,branch in (('?IsInWorld@Object@@','je'),('?IsPreDelete@Object@@','jne'),('
  i,=sites(body,p);assert body[i+1].op_str=='al, al' and body[i+2].mnemonic==branch and body[i+2].operands[0].imm==next_player
 for op in ('qword ptr [rdi + 8], rax','dword ptr [rdi + 0x3b8], eax','al, 2'):
  i=locate(body,op,'cmp');assert body[i+1].mnemonic=='jne' and body[i+1].operands[0].imm==next_player
-for op in ('byte ptr [rdi + 0x4ff0], 1','byte ptr [rdi + 0x6848], r15b','byte ptr [rdi + 0x6849], r15b'):
+for op in (inherited_operand('byte ptr [rdi + 0x4ff0], 1'),player_operand('byte ptr [rdi + 0x6848], r15b'),player_operand('byte ptr [rdi + 0x6849], r15b')):
  i=locate(body,op);assert body[i+1].mnemonic=='jne' and body[i+1].operands[0].imm==next_player
 claim=locate(body,'byte ptr [rsi + 0x36], 1','mov');assert body[quest+2].operands[0].imm==body[claim].address and body[claim+1].op_str=='rax, rdi'
 for op in ('byte ptr [rsi + 0x35], 0','qword ptr [rsi + 0x18], rax','bl, bl','byte ptr [r14 + 0x3140], 8'):assert any(x.op_str==op for x in body)

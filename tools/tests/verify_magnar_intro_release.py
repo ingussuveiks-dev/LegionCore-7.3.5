@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Inspect the deployed native reveal launch, acknowledgement and idle retry."""
 from pathlib import Path
 import runpy
@@ -118,8 +120,8 @@ assert not positions(body, '?UpdateAchievementCriteria@Player@@') and not positi
 
 body = instructions(player_name)
 deny = body[find(body, 'rdx, rdx', 'test') + 1].operands[0].imm
-for operand, branch in (('dword ptr [rbx + 0xa18], 0', 'jne'), ('byte ptr [rbx + 0x4ff0], 1', 'jne'),
-                        ('byte ptr [rbx + 0x6848], 0', 'jne'), ('byte ptr [rbx + 0x6849], 0', 'jne'),
+for operand, branch in (('dword ptr [rbx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rbx + 0x4ff0], 1'), 'jne'),
+                        (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'), (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'),
                         ('al, 1', 'jne'), ('qword ptr [rbx + 8], rax', 'jne'), ('dword ptr [rbx + 0x3b8], eax', 'jne')):
     gate = find(body, operand)
     assert body[gate + 1].mnemonic == branch and body[gate + 1].operands[0].imm == deny
@@ -161,7 +163,7 @@ assert find(body, 'eax, 0x38d', 'cmp') < find(body, 'eax, 2', 'cmp')
 world = positions(body, '?IsInWorld@Object@@')[0]
 deny = body[world + 2].operands[0].imm
 assert body[world + 2].mnemonic == 'je'
-for operand, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx + 0x39c5], 0', 'jne'),
+for operand, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'jne'),
                         ('qword ptr [rcx + 8], 0', 'je'), ('eax, 0x178d4', 'jne'),
                         ('dword ptr [rax + 0xe0], 0x5d7', 'jne'), ('byte ptr [rax + 0x858], 0', 'je'),
                         ('qword ptr [rax + 0x9c0], rbx', 'jne'), ('rax, rax', 'je'),

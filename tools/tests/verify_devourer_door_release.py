@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected final Wardstone control: native use/receipts before key and phases."""
 from pathlib import Path
 import re
@@ -36,7 +37,7 @@ assert ('xor','al, al') in pairs(use) or sites(n,use,'?CanUse@DevourerEscape@@')
 assert {249390,1607,1078,41924,48002,48005,48004,2,3,4} <= values(context)
 for target,count in [('?IsInWorld@Object@@',2),('?IsPreDelete@Object@@',2),('?IsQuestObjectExpired@WorldObject@@',2),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestStatus@Player@@',2),('?GetQuestRewardStatus@Player@@',1),('?GetInstanceScript@WorldObject@@',1),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?InSamePhaseId@WorldObject@@Q',1),('?IsWithinLOSInMap@WorldObject@@',1),('?canSeeOrDetect@WorldObject@@',1),('?GetInteractionDistance@GameObject@@',1),('?IsWithinDistInMap@WorldObject@@',1)]:
     assert len(sites(n,context,target))==count,target
-assert {('cmp','al, 4'),('test','byte ptr [rbx + 0x4ff0], 1')} <= pairs(context)
+assert {('cmp','al, 4'),('test',inherited_operand('byte ptr [rbx + 0x4ff0], 1'))} <= pairs(context)
 assert 249391 in values(actor) and 10.0 in floats(n,actor)
 for target in ('?IsInWorld@Object@@','?IsPreDelete@Object@@','?IsQuestObjectExpired@WorldObject@@','?InSamePhase@WorldObject@@','?InSamePhaseId@WorldObject@@Q','?IsWithinDistInMap@WorldObject@@','?CanTargetQuestObject@WorldObject@@'):
     assert sites(n,actor,target),target

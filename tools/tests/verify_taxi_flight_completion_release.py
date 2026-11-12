@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify the selected taxi finalizer cleans only a truly completed native route."""
 from pathlib import Path
 import runpy
@@ -30,7 +31,7 @@ assert native['symbol']('?ClearTaxiDestinations@PlayerTaxi@@') in native['calls'
 cast, = sites('?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_NPEAVItem@@')
 assert cleanup < cast < dismount
 assert any(entry.op_str == 'r8d, 0x9af' for entry in body[cleanup:cast])
-assert any(entry.op_str == 'byte ptr [rbx + 0x3d18], 0' for entry in body[cleanup:cast])
+assert any(entry.op_str == inherited_operand('byte ptr [rbx + 0x3d18], 0') for entry in body[cleanup:cast])
 assert all(any(entry.op_str == operand for entry in body[cleanup:cast]) for operand in ('rdx, rbx', 'rcx, rbx', 'r9b, 1'))
 assert len(sites('?SetFallInformation@Player@@')) == 2
 assert sites('?empty@PlayerTaxi@@')[0] > dismount

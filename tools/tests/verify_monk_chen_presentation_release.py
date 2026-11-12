@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Registered native Chen outro ownership and original before/after ordering.
 
 Run retained full Chen/Jorvinax/Fel Stone inspectors against this same hash.
@@ -81,7 +82,7 @@ valid=ins(valid_prefix);needs(valid,context('Actor'),presentation('Owner'),'??8O
 movement=ins('?MovementInform@npc_monk_chen_porterAI@npc_monk_chen_porter@@')
 queues=sites(n,movement,'?AddDelayedEvent@FunctionProcessor@@');assert len(queues)==6
 for at in queues:
-    guard=max(i for i,o in enumerate(movement[:at]) if o.mnemonic=='cmp' and o.op_str.endswith(' + 0x3a88], 0x586d9'))
+    guard=max(i for i,o in enumerate(movement[:at]) if o.mnemonic=='cmp' and o.op_str.endswith(inherited_operand(' + 0x3a88], 0x586d9')))
     assert {1014,103148,362201}<=values(movement[max(0,guard-14):guard+1])
     branch=movement[guard+1];assert branch.mnemonic in ('je','jne')
     equal=branch.operands[0].imm if branch.mnemonic=='je' else branch.address+branch.size

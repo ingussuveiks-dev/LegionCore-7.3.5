@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Registered original Craggle offer: qualified per-player native aura receipt."""
 from pathlib import Path
 import runpy
@@ -12,7 +13,7 @@ pairs = lambda rows: {(op.mnemonic, op.op_str) for op in rows}
 dispatch, = sites(n, update, '?UpdateSmokeOffer@' + scope)
 assert {108177, 1620, 360801} <= values(update[:dispatch])
 for exact in (('cmp', 'eax, 0x1a691'), ('cmp', 'dword ptr [rax + 0xe0], 0x654'),
-              ('cmp', 'qword ptr [rax + 0x3a88], 0x58161')):
+              ('cmp', inherited_operand('qword ptr [rax + 0x3a88], 0x58161'))):
     at = max(i for i, op in enumerate(update[:dispatch]) if (op.mnemonic, op.op_str) == exact)
     assert update[at + 1].mnemonic == 'jne'
     assert update[dispatch].address not in reachable(update, update[at + 1].operands[0].imm)

@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Verify last Travard's selected full-GUID summon roster and death thresholds."""
 from pathlib import Path
 import runpy
@@ -61,7 +62,7 @@ assert [entry.op_str for entry in registration[temporary_gate + 1:temporary_gate
     'rax, rbx', 'r15d, 0', 'rax, r15', 'rax, rax']
 assert registration[temporary_gate + 3].mnemonic == 'cmove'
 owner, = sites(registration, '??9ObjectGuid@@')
-assert any(entry.op_str == 'xmm0, xmmword ptr [rax + 0x3b64]' for entry in registration[:owner])
+assert any(entry.op_str == inherited_operand('xmm0, xmmword ptr [rax + 0x3b64]') for entry in registration[:owner])
 assert registration[owner + 1].op_str == 'al, al'
 assert registration[owner + 2].mnemonic == 'jne' and registration[owner + 2].operands[0].imm == deny
 assert len(sites(registration, '??MObjectGuid@@')) == 2

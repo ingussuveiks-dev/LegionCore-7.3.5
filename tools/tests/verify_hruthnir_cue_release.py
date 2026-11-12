@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Verify native queued Hruthnir cue weak ownership, claim and reset lifetime."""
 from pathlib import Path
 import runpy
@@ -78,7 +80,7 @@ else:
     assert any(entry.op_str == 'qword ptr [rbp - 0x18], r14' for entry in body[conversation:queue])
     assert any(entry.op_str == 'dword ptr [rbp - 0x10], r15d' for entry in body[conversation:queue])
     assert any(entry.op_str == 'qword ptr [rbp - 8], rbx' for entry in body[conversation:queue])
-    assert any(entry.op_str == 'rcx, 0x36a0' and entry.mnemonic == 'add' for entry in body[conversation:queue]), 'Native Unit function queue replaced'
+    assert any(entry.op_str == unit_queue_operand('rcx, 0x36a0') and entry.mnemonic == 'add' for entry in body[conversation:queue]), 'Native Unit function queue replaced'
     assert any(entry.op_str == 'rcx, qword ptr [rbx + 0x20]' for entry in body[conversation:queue])
     assert any(entry.op_str == 'rdi, qword ptr [rbx + 0x68]' for entry in body[pending:conversation])
     assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [rdi + 0xc]' for entry in body[pending:conversation]), 'Capture lost weak-only ownership'
@@ -98,11 +100,11 @@ else:
     assert body[token + 1].mnemonic == 'jne' and body[token + 2].op_str == 'byte ptr [rax], 1'
     deny = body[token + 1].operands[0].imm
     assert body[token - 1].operands[0].imm == deny
-    for operands, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx + 0x39c5], 0', 'jne'),
+    for operands, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'jne'),
                              ('eax, 0x178d4', 'jne'), ('dword ptr [rax + 0xe0], 0x5d7', 'jne'),
                              ('dword ptr [rax + 0x3b8], edx', 'jne'), ('rax, rax', 'je'),
                              ('byte ptr [rax + 0x858], 0', 'je'), ('qword ptr [rax + 0x9c0], rcx', 'jne'),
-                             ('rcx, rcx', 'je'), ('byte ptr [rax + 0x39c5], 0', 'jne')):
+                             ('rcx, rcx', 'je'), (inherited_operand('byte ptr [rax + 0x39c5], 0'), 'jne')):
         check = next(index for index, entry in enumerate(body) if index > token and entry.mnemonic in ('cmp', 'test') and entry.op_str == operands)
         assert body[check + 1].mnemonic == branch and body[check + 1].operands[0].imm == deny, f'Missing cue lifetime gate: {operands}'
     identity = next(index for index, entry in enumerate(body) if entry.op_str == 'qword ptr [rax + 0x9c0], rcx')

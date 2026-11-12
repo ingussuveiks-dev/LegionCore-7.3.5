@@ -1,3 +1,4 @@
+from linked_player_abi import player_offset,player_operand
 """Verify selected, installed Warswords entrance and late-landing admission."""
 from pathlib import Path
 import runpy
@@ -28,8 +29,8 @@ def rejection(decoded, position, branch, destination):
     assert decoded[position + 1].mnemonic == branch and decoded[position + 1].operands[0].imm == destination, 'Rejected entrance can continue into arrival'
 
 
-for operands, branch in (('dword ptr [rbx + 0xa18], 0', 'jne'), ('byte ptr [rbx + 0x6848], 0', 'jne'),
-                         ('byte ptr [rbx + 0x6849], 0', 'jne'), ('qword ptr [rbx + 8], 0', 'je'),
+for operands, branch in (('dword ptr [rbx + 0xa18], 0', 'jne'), (player_operand('byte ptr [rbx + 0x6848], 0'), 'jne'),
+                         (player_operand('byte ptr [rbx + 0x6849], 0'), 'jne'), ('qword ptr [rbx + 8], 0', 'je'),
                          ('dword ptr [rbx + 0xe0], 0x5e7', 'jne'), ('dword ptr [rbx + 0x3b8], edi', 'jne')):
     position = next(index for index, item in enumerate(body) if item.op_str == operands and item.mnemonic == 'cmp')
     rejection(body, position, branch, rejected)

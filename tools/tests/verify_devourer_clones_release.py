@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Registered Akaari reset retires only its own native mirror images."""
 from pathlib import Path
 import re
@@ -19,7 +20,7 @@ identities=sites(n,body,'??8ObjectGuid@@')
 assert len(identities)==2 and lookup<identities[0]<identities[1]
 # First comparison is returned GUID versus the copied list GUID. The second
 # compares the summon's full128-bit summoner field with this actual source.
-assert {('lea','rdx, [rbp - 0x20]'),('movups','xmm0, xmmword ptr [rdi + 0x3b64]'),('movups','xmmword ptr [rbp - 0x30], xmm0'),('lea','rcx, [rbp - 0x30]'),('cmp','eax, 0x19c89')} <= pairs(body)
+assert {('lea','rdx, [rbp - 0x20]'),('movups',inherited_operand('xmm0, xmmword ptr [rdi + 0x3b64]')),('movups','xmmword ptr [rbp - 0x30], xmm0'),('lea','rcx, [rbp - 0x30]'),('cmp','eax, 0x19c89')} <= pairs(body)
 virtuals=[i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM]
 assert len(virtuals)==1
 unsummon=virtuals[0]

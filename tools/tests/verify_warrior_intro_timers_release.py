@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Actual registered Warrior intro timers and original-target AI recovery."""
 from pathlib import Path
 import hashlib,json,runpy
@@ -94,7 +95,7 @@ exhausted=reachable(body,body[current+8].address)
 assert body[queued].address not in exhausted and body[attack].address not in exhausted
 assert sites(n,body,'?ShouldLog@Log@@') and sites(n,body,'?outMessage@Log@@')
 assert b'Warrior intro: ally %s has no AI for its delayed attack after 10 retries' in n['binary']
-assert {('lea','rcx, [rbx + 0x36a0]'),('mov','edx, 0x1f4'),('mov','qword ptr [rsp + 0xc8], rbx'),('movups','xmm0, xmmword ptr [r14]'),('movaps','xmmword ptr [rsp + 0xd0], xmm0')}<=set(pairs(body))
+assert {('lea',unit_queue_operand('rcx, [rbx + 0x36a0]')),('mov','edx, 0x1f4'),('mov','qword ptr [rsp + 0xc8], rbx'),('movups','xmm0, xmmword ptr [r14]'),('movaps','xmmword ptr [rsp + 0xd0], xmm0')}<=set(pairs(body))
 retry,=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'AttackBattleTarget@npc_ragnvald_dragonbornAI@' in name]
 vt,raw=table('??_7'+retry[len('?_Do_call@'):].removesuffix('EEAAXXZ')+'6B@',7)
 assert vt in refs(body) and n['symbol'](retry) in resolved(raw)

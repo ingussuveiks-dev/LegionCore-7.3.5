@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Actual source/corpse updater and acknowledged original Garona handoff."""
 from pathlib import Path
 import re
@@ -76,7 +77,7 @@ for at in sites(n, body, method('OutroContext')):
 cancel = ins(method('CancelOutro'))
 assert sites(n, cancel, '?FindMap@MapManager@@') and sites(n, cancel, '??8ObjectGuid@@')
 assert {1620, 108222} <= values(cancel)
-assert {('test', 'byte ptr [rbx + 0x30e8], 1'), ('movups', 'xmm0, xmmword ptr [rbx + 0x3b64]'), ('lea', 'rdx, [rdi + 0x131]')} <= pairs(cancel), 'Cancellation must compare the actual TempSummon full summoner GUID'
+assert {('test', 'byte ptr [rbx + 0x30e8], 1'), ('movups', inherited_operand('xmm0, xmmword ptr [rbx + 0x3b64]')), ('lea', 'rdx, [rdi + 0x131]')} <= pairs(cancel), 'Cancellation must compare the actual TempSummon full summoner GUID'
 cancel_check, = [i for i, op in enumerate(cancel) if op.mnemonic == 'call' and op.operands[0].type == CS_OP_MEM and op.operands[0].mem.disp == get_slot * 8]
 cancel_remove, = sites(n, cancel, '?DespawnOrUnsummon@Creature@@')
 assert cancel[cancel_check + 1].op_str == 'eax, eax'

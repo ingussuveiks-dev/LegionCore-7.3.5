@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected x64 proofs for the original lower-ascent route and recipient."""
 import re
 import struct
@@ -64,7 +65,7 @@ def verify(n):
   assert sites(n,update,target),target
  # The polled native Creature waypoint marker is checked after actual issue;
  # only a real observed middle node permits the removed-generator fallback.
- assert any(x.op_str=='dword ptr [r14 + 0x3b1c], 5' for x in update)
+ assert any(x.op_str==inherited_operand('dword ptr [r14 + 0x3b1c], 5') for x in update)
  assert any(x.op_str=='byte ptr [rdi + 0x4aa], 1' for x in update)
  casts=sites(n,update,'?CastSpell@Unit@@');assert len(casts)==2
  for at,receiver,spell in zip(casts,('r14','r15'),(83810,208580)):
@@ -78,7 +79,7 @@ def verify(n):
  assert {0x474,0x4a8,0x4ad,0x4b1,0x4b4}<=fields(entry)
  assert any(x.op_str=='word ptr [rbx + 0x4b1], 0x101' for x in entry)
  native=ins('?OnArrived@?$WaypointMovementGenerator@VCreature@@@@')
- assert any(x.mnemonic=='mov' and '0x3b1c]' in x.op_str for x in native)
+ assert any(x.mnemonic=='mov' and inherited_operand('0x3b1c]') in x.op_str for x in native)
  select=ins('?sGossipSelect@npc_grashAI@npc_grash@@')
  get,=[i for i,x in enumerate(select) if x.mnemonic=='call' and x.op_str=='qword ptr [rax + 0x90]']
  assert select[get-3].op_str=='r8d, 0x32ec4'

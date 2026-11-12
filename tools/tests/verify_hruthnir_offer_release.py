@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Verify the installed point6 offer lifetime without certifying client arrival."""
 from pathlib import Path
 import runpy
@@ -92,7 +94,7 @@ assert any(entry.mnemonic == 'lock inc' and entry.op_str == ('dword ptr [rbx + 0
 assert any(entry.op_str == 'r12d, dword ptr [r15 + 0x3b8]' for entry in movement[context:queue])
 capture = 'dword ptr [rbp - 0x68], r12d' if primary_approach else 'dword ptr [rbp - 0x58], r12d' if cold_route else ('dword ptr [rbp - 0x68], r12d' if any(name.startswith('?TryPillikEntry' + suffix) for name in native['symbols']) else ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d'))
 assert any(entry.op_str == capture for entry in movement[context:queue])
-assert any(entry.op_str == 'rcx, 0x36a0' for entry in movement[context:queue])
+assert any(entry.op_str == unit_queue_operand('rcx, 0x36a0') for entry in movement[context:queue])
 assert any(entry.op_str == 'dl, 0xf' for entry in movement[context:queue]), 'Native Talk15 was lost'
 tables = [entry.address + entry.size + entry.operands[1].mem.disp for entry in movement[context:queue]
           if entry.mnemonic == 'lea' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP]
@@ -152,7 +154,7 @@ assert not positions(body, '?SetUInt32Value@Object@@'), 'Offer still overwrites 
 body = instructions(context_name)
 world = positions(body, '?IsInWorld@Object@@')[0]
 deny = body[world + 2].operands[0].imm
-for operand, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx + 0x39c5], 0', 'jne'),
+for operand, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), (inherited_operand('byte ptr [rcx + 0x39c5], 0'), 'jne'),
                         ('qword ptr [rcx + 8], 0', 'je'), ('eax, 0x178d4', 'jne'),
                         ('dword ptr [rax + 0xe0], 0x5d7', 'jne'), ('dword ptr [rax + 0x3b8], edi', 'jne'),
                         ('byte ptr [rax + 0x858], 0', 'je'), ('qword ptr [rax + 0x9c0], rbx', 'jne'),

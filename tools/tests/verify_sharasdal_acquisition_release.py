@@ -1,3 +1,5 @@
+from linked_player_abi import inherited_operand
+from linked_player_abi import player_offset,player_operand
 """Verify selected acquisition factories, real native equip/progression and return admission."""
 from pathlib import Path
 import runpy,struct
@@ -53,9 +55,9 @@ needs('?GetGameObjectByEntry@InstanceScript@@','??$GetObjectInMap@VGameObject@@@
 physical='?Physical@SharasdalAcquisition@@';progress='?Progress@SharasdalAcquisition@@'
 assert {1600,249342,134299,40341,1066,6}<=values(physical)
 needs(physical,'?IsInWorld@Object@@','?CanContact@Player@@')
-for operand in ['dword ptr [rbx + 0xa18], ebp','byte ptr [rbx + 0x6848], bpl','byte ptr [rbx + 0x6849], bpl']:
+for operand in ['dword ptr [rbx + 0xa18], ebp',player_operand('byte ptr [rbx + 0x6848], bpl'),player_operand('byte ptr [rbx + 0x6849], bpl')]:
  assert any(x.mnemonic=='cmp' and x.op_str==operand for x in ins(physical)),operand
-assert any(x.mnemonic=='test' and x.op_str=='byte ptr [rbx + 0x4ff0], 1' for x in ins(physical))
+assert any(x.mnemonic=='test' and x.op_str==inherited_operand('byte ptr [rbx + 0x4ff0], 1') for x in ins(physical))
 needs(physical,'?GetQuestRewardStatus@Player@@','?GetQuestStatus@Player@@','?canSeeOrDetect@WorldObject@@','?IsWithinLOSInMap@WorldObject@@','?GetExactDist@Position@@')
 assert {1066,5,47380,47133}<=values(progress)
 code=ins(progress);bound=next(i for i,x in enumerate(code) if x.mnemonic=='xor' and x.op_str=='ecx, 1')

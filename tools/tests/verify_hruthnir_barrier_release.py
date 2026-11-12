@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind native open33309/reload restoration and callback barriers to Release."""
 from pathlib import Path
 import runpy
@@ -37,7 +38,7 @@ def check(n,ins):
     after=handoff[released+1:]
     assert after[0].op_str=='r15d, dword ptr [rbp + 0x35c]' and after[1].mnemonic=='jne'
     assert sites(after,'?GetCreature@Map@@') and sites(after,'?GetScenario@ScenarioMgr@@')
-    has(after,'eax, 0x38d','eax, 3','eax, 0x178d4','dword ptr [rdi + 0xa18], 0','byte ptr [rdi + 0x39c5], 0',
+    has(after,'eax, 0x38d','eax, 3','eax, 0x178d4','dword ptr [rdi + 0xa18], 0',inherited_operand('byte ptr [rdi + 0x39c5], 0'),
         'byte ptr [rdi + 0x858], 0','qword ptr [rdi + 0x9c0], rsi','dword ptr [rax + 0x1c], 0x1b57')
     assert sites(after,'??8ObjectGuid@@'), 'Post-hook original companion full GUID lost'
     action,=[i for i,op in enumerate(after) if op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x48]']

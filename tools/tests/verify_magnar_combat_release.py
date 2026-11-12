@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind the instance-owned, earned Magnar combat handoff to Release code."""
 from pathlib import Path
 import runpy
@@ -23,9 +24,9 @@ def check(n, ins):
             find(body, text)
 
     lookup = ins('?Find@MagnarCombat@@')
-    has(lookup, 'rcx, rcx', 'dword ptr [rbx + 0xa18], 0', 'byte ptr [rbx + 0x39c5], 0',
+    has(lookup, 'rcx, rcx', 'dword ptr [rbx + 0xa18], 0', inherited_operand('byte ptr [rbx + 0x39c5], 0'),
         'dword ptr [rbx + 0xe0], 0x5d7', 'eax, 0x17722',
-        'qword ptr [rbx + 0x3a88], 0x583b8', 'byte ptr [rbx + 0x858], 0',
+        inherited_operand('qword ptr [rbx + 0x3a88], 0x583b8'), 'byte ptr [rbx + 0x858], 0',
         'qword ptr [rbx + 0x9c0], rdi', 'dword ptr [rcx + 0x1c], 0x1b57',
         'byte ptr [rax + 0x356], 0', 'byte ptr [rax + 0x357], 0',
         'rcx, [rdi + 0x38c]', 'ecx, dword ptr [rdi + 0x35c]',
@@ -47,7 +48,7 @@ def check(n, ins):
     assert len(sites(remember, '?Find@MagnarCombat@@')) == 1
     has(remember, 'byte ptr [rdi + 0x14], 0', 'eax, 0x38d', 'eax, 3',
         'byte ptr [r13 + rdi], 0', 'r15d', 'edi, 0xc', 'r15d, 0xa',
-        'byte ptr [rax + 0x30e8], 1', 'xmm0, xmmword ptr [rax + 0x3b64]',
+        'byte ptr [rax + 0x30e8], 1', inherited_operand('xmm0, xmmword ptr [rax + 0x3b64]'),
         'esi, 0x1725d', 'esi, 0x171f3', 'esi, 0x17b63', 'eax, esi',
         'dword ptr [rbx + 0xa18], 0', 'byte ptr [rcx + 0x14], al' if recreation else 'byte ptr [rcx + 0x14], 1')
     assert sites(remember, '?IsEmpty@ObjectGuid@@') and sites(remember, '??9ObjectGuid@@')
@@ -64,7 +65,7 @@ def check(n, ins):
     has(restore, 'byte ptr [rbp + 0x14], 0', 'eax, 0x38d', 'eax, 4',
         'xmm0, xmmword ptr [rbp + 0x15]', 'xmm0, qword ptr [rbp + 0xd5]',
         'eax, dword ptr [rbp + 0xdd]', 'rbp, [rbx + 0xc0]',
-        'byte ptr [rax + 0x30e8], 1', 'xmm0, xmmword ptr [rax + 0x3b64]',
+        'byte ptr [rax + 0x30e8], 1', inherited_operand('xmm0, xmmword ptr [rax + 0x3b64]'),
         'rdx, rdi', 'rcx, r14', 'rbx, 0x10', 'al, 1')
     assert len(sites(restore, '?Summon@SummonList@@')) == 1
     assert sites(restore, '?GetCreature@Map@@') and sites(restore, '??8ObjectGuid@@')
@@ -91,7 +92,7 @@ def check(n, ins):
     create = ins('?OnCreatureCreate' + shared)
     retire, = sites(create, '?Reset@MagnarCombat@@')
     has(create[:retire], 'r14, [rcx + 0x38c]', 'r15d, dword ptr [rcx + 0x35c]',
-        'eax, 0x17722', 'qword ptr [rbx + 0x3a88], 0x583b8',
+        'eax, 0x17722', inherited_operand('qword ptr [rbx + 0x3a88], 0x583b8'),
         'qword ptr [rbx + 8], r12', 'dword ptr [r14 + 0x10], r15d',
         'xmmword ptr [r14], xmm0', 'rdx, [rsp + 0x20]', 'rcx, r12')
     assert sites(create[:retire], '??8ObjectGuid@@')
@@ -106,7 +107,7 @@ def check(n, ins):
     has(initialize, 'rdx, [rdi + 0x38c]')
     cleanup = ins('?Reset@MagnarCombat@@')
     despawn, = sites(cleanup, '?DespawnOrUnsummon@Creature@@')
-    has(cleanup[:despawn], 'byte ptr [rax + 0x30e8], 1', 'xmm0, xmmword ptr [rax + 0x3b64]')
+    has(cleanup[:despawn], 'byte ptr [rax + 0x30e8], 1', inherited_operand('xmm0, xmmword ptr [rax + 0x3b64]'))
     assert sites(cleanup[:despawn], '??8ObjectGuid@@')
     destructor = ins('??_Gnpc_magnar_icebreakerAI@npc_magnar_icebreaker@@')
     clear_conversation, = sites(destructor, '?Clear@ObjectGuid@@')

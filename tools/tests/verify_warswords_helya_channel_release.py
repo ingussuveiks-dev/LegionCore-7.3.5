@@ -1,3 +1,4 @@
+from linked_player_abi import unit_queue_offset,unit_queue_operand
 """Require the installed late blessing, native recipient acknowledgement and full channel wait."""
 from pathlib import Path
 import runpy
@@ -51,7 +52,7 @@ else:
     assert targets[0] < actors[0] < cast < targets[1] < actors[1] < aura < timer, 'Late handoff can precede live native aura acknowledgement'
     assert [entry.op_str for entry in body[cast - 4:cast]] == ['r9d, r9d', 'r8d, 0x2f9f6', 'rdx, qword ptr [rdx + 0x20]', 'rcx, r14'], 'Late normal195062 is not original Helya to actual Vigfus'
     assert body[cast + 1].op_str == 'r13d, eax', 'Native cast result lost'
-    assert body[timer - 1].op_str == 'edx, 0x1b58' and body[timer - 3].op_str == 'rcx, 0x36a0', 'Engagement does not wait7000 from the actual acknowledgement'
+    assert body[timer - 1].op_str == 'edx, 0x1b58' and body[timer - 3].op_str == unit_queue_operand('rcx, 0x36a0'), 'Engagement does not wait7000 from the actual acknowledgement'
     assert all(any(entry.op_str == expected for entry in body[:cast]) for expected in ('r15, [rbx + 0x1c]', 'xmm0, xmmword ptr [r15]', 'r14, rax')), 'Late cast does not resolve the captured Helya GUID'
     assert all(any(entry.op_str == expected for entry in body[aura - 12:aura]) for expected in ('xmm0, xmmword ptr [r15]', 'r8, [rsp + 0xc0]', 'edx, 0x2f9f6', 'rcx, qword ptr [rcx + 0x20]')), 'Native aura filter lost captured caster or actual Vigfus recipient'
     assert body[aura + 1].op_str == 'al, al' and body[aura + 2].mnemonic == 'je', 'Accepted cast without native recipient aura can advance'

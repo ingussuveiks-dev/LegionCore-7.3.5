@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Registered initial Hait receipt/instance owner and native child handoff."""
 from pathlib import Path
 import runpy,struct,json,hashlib
@@ -73,7 +74,7 @@ for body in (accept,update,launch,attack,*bodies):
  for forbidden in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
   assert not sites(n,body,forbidden),('No fabricated progress',forbidden)
 action=ins('?DoAction@npc_master_haitAI@npc_master_hait@@')
-guard=next(i for i,o in enumerate(action) if o.mnemonic=='cmp' and o.op_str.endswith(' + 0x3a88], 0x58679'))
+guard=next(i for i,o in enumerate(action) if o.mnemonic=='cmp' and o.op_str.endswith(inherited_operand(' + 0x3a88], 0x58679')))
 branch=action[guard+1];assert branch.mnemonic in ('je','jne')
 equal=branch.operands[0].imm if branch.mnemonic=='je' else branch.address+branch.size
 assert all(action[i].address not in reachable(action,equal) for i in sites(n,action,'?AddDelayedEvent@FunctionProcessor@@'))

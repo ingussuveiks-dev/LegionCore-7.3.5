@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Bind shared-map Warrior entrance policy to the actual linked Release body."""
 import runpy
 from pathlib import Path
@@ -48,15 +49,15 @@ assert find('xmm9, dword ptr [rbx + 8]',coordinates[0]) < coordinates[1]
 assert find('xmm8, dword ptr [rbx + 0xc]',coordinates[0]) < coordinates[1]
 assert find('xmm0, dword ptr [rbx + 0x10]',coordinates[0]) < coordinates[1]
 assert find('xmm6, dword ptr [rbp + 0x10]',coordinates[1]) < coordinates[2]
-write = find('dword ptr [rdi + 0x6bb0], eax',coordinates[2],'mov')
+write = find(inherited_operand('dword ptr [rdi + 0x6bb0], eax'),coordinates[2],'mov')
 assert coordinates[2] < write
 assert body[coordinates[2]+2].operands[0].imm == exit_address
-for text in ('dword ptr [rdi + 0x6bc8], xmm6','dword ptr [rdi + 0x6bcc], xmm9','dword ptr [rdi + 0x6bd0], xmm8','dword ptr [rdi + 0x6bd4], xmm7'):
+for text in (inherited_operand('dword ptr [rdi + 0x6bc8], xmm6'),inherited_operand('dword ptr [rdi + 0x6bcc], xmm9'),inherited_operand('dword ptr [rdi + 0x6bd0], xmm8'),inherited_operand('dword ptr [rdi + 0x6bd4], xmm7')):
     assert find(text,write) > write
-same = find('dword ptr [rdi + 0x6bb4], eax',0,'cmp')
+same = find(inherited_operand('dword ptr [rdi + 0x6bb4], eax'),0,'cmp')
 metadata = find('eax, dword ptr [rdi + 0x3b8]',write,'mov')
 assert body[same+1].mnemonic == 'je' and body[same+1].operands[0].imm == body[metadata].address
-assert find('dword ptr [rdi + 0x6bb0], eax',0,'cmp') < same < route
+assert find(inherited_operand('dword ptr [rdi + 0x6bb0], eax'),0,'cmp') < same < route
 assert find('qword ptr [rdi + 0x30d8], r12',0,'cmp') < route
 for forbidden in ('?TeleportTo@Player@@','?NearTeleportTo@','?CastSpell@Unit@@','?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@'):
     assert not site(forbidden), 'Entrance recorder gained movement/progression: '+forbidden

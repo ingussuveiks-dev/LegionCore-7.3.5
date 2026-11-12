@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_operand
 """Selected native Danica bridge and instance-owned ritual implementation."""
 import struct
 from capstone import CS_OP_IMM,CS_OP_MEM
@@ -66,13 +67,13 @@ def verify_presentation_handoff(n,ins,refs,table,resolved,reachable):
         depart=body[leave:finish]
         assert {('lea','r15, [rdi + 0x88]'),('mov','rdi, rcx')}<=set(pairs(body[:leave]))
         assert {('movups','xmm0, xmmword ptr [r15 - 0x20]'),('movups','xmm1, xmmword ptr [r15]'),
-                ('movups','xmm0, xmmword ptr [r14 + 0x3b64]'),('mov','edx, 0x7c'),
+                ('movups',inherited_operand('xmm0, xmmword ptr [r14 + 0x3b64]')),('mov','edx, 0x7c'),
                 ('lea','ecx, [r13 + 0x321ef]'),('cmp','eax, ecx'),('cmp','r12b, 2')}<=set(pairs(depart))
     else:
         depart=ins(ritual('Depart'))
         leave,=sites(n,body,ritual('Depart'))
         assert {('lea','rbp, [rcx + 0x88]'),('movups','xmm0, xmmword ptr [rbp - 0x20]'),
-                ('movups','xmm1, xmmword ptr [rbp]'),('movups','xmm0, xmmword ptr [rdi + 0x3b64]')}<=set(pairs(depart))
+                ('movups','xmm1, xmmword ptr [rbp]'),('movups',inherited_operand('xmm0, xmmword ptr [rdi + 0x3b64]'))}<=set(pairs(depart))
     assert leave<action and 4000 in values(depart) and 40.0 in floats(n,depart)
     assert len(sites(n,depart,'?MovePoint@MotionMaster@@'))==len(sites(n,depart,'?DespawnOrUnsummon@Creature@@'))==2
     needs(n,depart,'??8ObjectGuid@@',ritual('Danica'),'?GetUInt32Value@Object@@')
@@ -137,8 +138,8 @@ def verify_state(n,ins,refs,table,resolved,reachable):
 
     native=ins(ritual('Native'));owned=ins(ritual('Owned'));progress=ins(ritual('Progress'))
     for body in (native,owned):needs(n,body,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@','?GetUInt32Value@Object@@')
-    assert {('cmp','qword ptr [rbx + 0x3a88], rsi'),('cmp','al, byte ptr [rsp + 0x50]')}<=set(pairs(native))
-    assert {('test','byte ptr [rax + 0x30e8], 1'),('movups','xmm0, xmmword ptr [rdi + 0x3b64]'),
+    assert {('cmp',inherited_operand('qword ptr [rbx + 0x3a88], rsi')),('cmp','al, byte ptr [rsp + 0x50]')}<=set(pairs(native))
+    assert {('test','byte ptr [rax + 0x30e8], 1'),('movups',inherited_operand('xmm0, xmmword ptr [rdi + 0x3b64]')),
             ('mov','edx, 0x7c'),('cmp','eax, dword ptr [rsp + 0x70]')}<=set(pairs(owned))
     needs(n,owned,'??8ObjectGuid@@')
     assert {1500,933}<=values(progress);needs(n,progress,'?GetScenario@ScenarioMgr@@')
@@ -159,7 +160,7 @@ def verify_state(n,ins,refs,table,resolved,reachable):
     observe=ins(ritual('Observe'))
     assert {102970,361138,97167,361094,97166,361091,98257,361151,103608,103688}<=values(observe)
     needs(n,observe,ritual('Progress'),ritual('Danica'),'??8ObjectGuid@@')
-    assert {('lea','ecx, [r13 + 0x321ef]'),('movups','xmm0, xmmword ptr [r14 + 0x3b64]'),
+    assert {('lea','ecx, [r13 + 0x321ef]'),('movups',inherited_operand('xmm0, xmmword ptr [r14 + 0x3b64]')),
             ('movups','xmmword ptr [rbp + 0x40], xmm0'),('cmp','byte ptr [r12], 0')}<=set(pairs(observe))
 
     accept=ins(ritual('AcceptSpirit'))
