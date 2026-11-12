@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_10_OF_100",
+  "status": "IN_PROGRESS_20_OF_100",
   "authorized_total": 100,
-  "completed": 10,
+  "completed": 20,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -76,6 +76,85 @@
         "ReclaimedBytes": 1061061561
       },
       "canonical_worldserver_sha256": "cd784bfea9fac445b5ff27e78e42e4e9c0b300325cdcce400f28cfd90e2a3978"
+    },
+    {
+      "batch": 2,
+      "historical_group": 63,
+      "commits": [
+        {
+          "key": "PetDuelReplyRecipient",
+          "commit": "188df852c5d859b18f2eb69342663e1e73dae43d",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetDuelReplyRecipient.json"
+        },
+        {
+          "key": "PetDuelOpponentReadiness",
+          "commit": "c79e18f6f63747432211f9a9d4fb0b20a43f4820",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetDuelOpponentReadiness.json"
+        },
+        {
+          "key": "PetForfeiterWebAdmission",
+          "commit": "3605fd94d823ab01e72228f639814092853244c7",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetForfeiterWebAdmission.json"
+        },
+        {
+          "key": "DeadPetAbilityAdmission",
+          "commit": "1d3563cc2357d07190a66ca9950d1b8b5e093517",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/DeadPetAbilityAdmission.json"
+        },
+        {
+          "key": "PetTypeAllyHealing",
+          "commit": "8793f590db60147b02d2359d789f9c3d7c341810",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetTypeAllyHealing.json"
+        },
+        {
+          "key": "PetTargetStateBonusDamage",
+          "commit": "456494d93c0e6bfcfa3636e14d4113eb91b3c9fd",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetTargetStateBonusDamage.json"
+        },
+        {
+          "key": "CreepingFungusPeriodicDamage",
+          "commit": "debbca4f309e126a3881a3b678bf28c5b3505cd3",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/CreepingFungusPeriodicDamage.json"
+        },
+        {
+          "key": "PetRampingUseAccounting",
+          "commit": "3fbcde41b1adf783e21c8f9469f7a3532eaf07f5",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetRampingUseAccounting.json"
+        },
+        {
+          "key": "PetNativeAuraRemoval",
+          "commit": "8357f0c92a0b5417f5ddfde79d06913b27e3b935",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetNativeAuraRemoval.json"
+        },
+        {
+          "key": "PetSplitWeatherBonus",
+          "commit": "b1717c3e7f2b782562db8b9da4ac13a3781a0236",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetSplitWeatherBonus.json"
+        }
+      ],
+      "support_commit": "5f56327f494becff48c5394a00f502663b7633d5",
+      "checks": {
+        "counterfactual": "All ten pinned prior-batch expectations fail with their exact named assertion and exit1; paired fixed MSVC ASAN runs pass. Complete request-update/admission/Finish/CanCastAny and six ability handlers; external endpoints controlled. Retained first10 fixed fixtures pass.",
+        "native": "Actual full WorldSession request-update rejects unrelated cancellation and admits real target cancellation; real dead/fighting opponent admission, both web orientations, dead cast denial, complete native Rebuild533/HealingStream922/DraconicRemedy1956 sequences and corpse/wrong-type guards; native property226 selects opponent and applies blind/burning bonus; fungus1473 periodic damage includes native type scaling and aquatic halving; Vicious156/Huge930 misses do not grow hit counters, FrogKiss233 missed use advances use counter; real Prowl543 removal reverts actual states only on named recipient; native ArcaneStorm984/DreadfulBreath1446 effect rows include weather bonus for all3opponents. First10 native scopes also pass; character/login pools protected read-only/TEMP.",
+        "linked": "Selected20 focused paths and retained previous100 pass against staged promoted Release; Scepter canonical binary check passes. CanCastAny is inlined/OPTREF-discarded as a standalone canonical symbol: PE verifies its native dead-state guard inside actual CanCast, while native probe calls the real API. Full retained core chain passed in batch1; batch2 changes no Unit/Player ABI or healing core.",
+        "startup": "Owned worldserver PID=13656\nPASS owned PID=13656 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;canonical post-test diagnostics show no new crashes/appendedDBErrors/unexplainedserver errors or assertions.",
+        "limitations": "Actual client pet battles/UI/matchmaking/forfeit/re-entry, wild pool respawn and all36wholeartifact chains remain separate. Existing mixed DBErrors and legacy artifact PE OPEN findings retained."
+      },
+      "cleanup": {
+        "ReclaimedBytes": 906182527,
+        "ManifestSHA256": "1F15DC2546788888B849D436F46224634129A7B75FD03B3F0979D704960E64F3",
+        "Removed": 63,
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-second-ten-ten-batch1-2026-11-12",
+        "Archived": 787,
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch2",
+        "CatalogCleanup": {
+          "Removed": 2,
+          "Bytes": 980406.0,
+          "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\second-ten-ten-2026-11-12\\batch2\\catalog-cleanup.json",
+          "SHA256": "EC63FB67D757B2985DB086567E6CFD4996A33A557E866FBED1AB2E6A0CEEDFE4"
+        }
+      },
+      "canonical_worldserver_sha256": "3d27abc7cc8c83f3379fc229d6c039fa811b267ded4c03062a95ba11b8a59e82"
     }
   ],
   "selected_not_yet_verified": [],
@@ -88,6 +167,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 90,
-  "completed_batches": 1
+  "remaining": 80,
+  "completed_batches": 2
 }
