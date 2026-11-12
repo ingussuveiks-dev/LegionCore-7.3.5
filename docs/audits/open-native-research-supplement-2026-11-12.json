@@ -1,4 +1,10 @@
 {
+  "latest_unholy_resolution_2026_11_12": {
+    "status": "321_REPAIRED_NATIVE_AND_LINKED_CLIENT_PENDING",
+    "fix_commit": "6fb37efdd8dd453a2a9c27f1b83495b86cbdb4fb",
+    "audit": "docs/audits/pet-unholy-ascension-2026-11-12.json",
+    "supersedes": "Older321/six-case and legacyfive observations below are historical reproductions,now paired with16+44current passing native cases. Resolved research caches archived/hash verified and redundant binaries removed. Zero-accuracy8observations remain unresolved outside fixed;no cooldown repair is yet claimed."
+  },
   "latest_native_repair_and_followup_2026_11_12": {
     "four_repaired": "docs/audits/pet-self-sacrifice-2026-11-12.json",
     "fix_commit": "27213e1242c568d35abaf49574964d849235e976",

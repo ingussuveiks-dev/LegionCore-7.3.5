@@ -1,4 +1,35 @@
 {
+  "latest_native_unholy_repair_2026_11_12": {
+    "status": "UNHOLY_ASCENSION_AND_PRIOR_RACIAL_FOUR_SACRIFICES_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
+    "fix_commit": "6fb37efdd8dd453a2a9c27f1b83495b86cbdb4fb",
+    "audit": "docs/audits/pet-unholy-ascension-2026-11-12.json",
+    "canonical": {
+      "worldserver.exe": "c6c5e8e97bf00d545d4b9d35bb723d1ab77f227e748a16c09c6e211cebacc9da",
+      "worldserver.map": "cef6534bca1a64ec37b7394aa0fddd77bb3da2cebb213993da979f40abf1aca2",
+      "bnetserver.exe": "c2030ced230c61c26e87cff3e4682246904b21e2b3792dcecfc43d1fda32a012",
+      "bnetserver.map": "545552e848cc56fce6a1246bc0f465d62f80abd8e1f29693543053e878a2cb40"
+    },
+    "current_checks": "16native321cases,3complete b716native controls,current13racial+44four-sacrifice native cases,current321/racial/four/two100linked scopes,strict whole-file source chain,Scepter and owned canonical PID17932ready/shutdown0/exit0/gone. Two100native suites passed on the initial candidate before the unsigned321index adjustment;final targeted native and linked checks cover the final build. No new crash or unexplained appended server/DB failure.",
+    "historical106": "Previous complete106/106belongs to4c86in docs/audits/pet-self-sacrifice-2026-11-12/certificate-results.json. It is not relabeled as a new full106run on currentc6c5.",
+    "cleanup": {
+      "status": "PASS",
+      "native_unholy_cases": 16,
+      "current_retained_racial_cases": 13,
+      "current_retained_four_sacrifice_cases": 44,
+      "native_controls": 3,
+      "current_linked_hundred_scopes": 2,
+      "archive_records": 476,
+      "removed": 40,
+      "removed_bytes": 653967126.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    },
+    "remaining": [
+      "BendTime1905->1904native zero-accuracy/swap recipient/246cooldown/cleanup,Hourglass1927/230/1932round-end pipeline and other owner/proc/death reactions remain OPEN.",
+      "Shared remaining135Haunt/Apocalypse,generic159/clone122/123/124,type229andwider core health remain OPEN.",
+      "LadyConversation1906authentic producer/Grash finish/cleanup,sharedLINK2/mixed7111byteDBErrors,original client handshake cause and all36whole artifact/client presentation remain OPEN. Pet ability1906CheatDeath is separate."
+    ],
+    "next": "Continue actual full native BendTime root/swap/cooldown/cleanup repair with normal end-round1->0update;then other independently verifiable OPEN paths."
+  },
   "latest_native_sacrifice_repair_2026_11_12": {
     "status": "FOUR_SACRIFICES_AND_IMMEDIATE_RACIALS_FIXED_OTHER_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
     "fix_commit": "27213e1242c568d35abaf49574964d849235e976",
