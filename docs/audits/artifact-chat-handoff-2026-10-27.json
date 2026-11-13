@@ -1,4 +1,72 @@
 {
+  "latest_native_crumble_ordinary_immunity_repair_2026_11_13": {
+    "status": "CRUMBLE_ORDINARY_PERIODIC_HOSTILE_IMMUNITY_FIXED_DEPLOYED_FULL_PERCENTAGE_POLICY_CLIENT_OPEN",
+    "fix_commit": "81275628e584fa1dac384512a7d224b9e4ede7ab",
+    "canonical": {
+      "worldserver.exe": "a00f76dc933c0e0c669f27fbad6d6cae5a260fb59ce0b6549a3dc501ec4a1232",
+      "worldserver.map": "386cd6c237f99f873164c32bffad42c6846cd4c400516df61e77b7d71fddac40",
+      "bnetserver.exe": "0f21a9644b93d7259f329e93dc48d3cec1343a34ff027604a405ccb90863cab7",
+      "bnetserver.map": "7dd6b8aa58901e280b7f943400b8793bd9b68583ac9b6b3f89ab716eeacaf661"
+    },
+    "remaining": [
+      "Complete percentage/unavoidable combat policy and actual client traversal remain OPEN as above.",
+      "Owned offline/logout/disconnect persistence and cleanup,Haunt652/653,other five species183/four abilities,DarkRebirth794/795,Ominitron1595,Apocalypse,clone122/123/124 and generic159 remain OPEN.",
+      "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+    ],
+    "next": "Check actual locally installed7.3.5.26972 client availability and safe client-test entry;continue only evidence-backed remaining lifecycle/combat work.",
+    "audit": "docs/audits/pet-crumble-immunity-2026-11-13.json",
+    "checks": {
+      "native": "84 counted actual linked cases across all six actual source positions: eight attack groups(normal Bite,guaranteed crit,attacker25percent bonus,target50percent vulnerability,power10000,flat taken+crit,real native379 Poison through a full round,actual315/316 Spiked Skin triggered by native1587 Pound with Rocko at1HP). Six controls per source preserve original miss cause,finite block count,actual native healing,self-owned direct payment,explicit nonperiodic unavoidable endpoint and unrelated species. Real source/roster/Begin and native Crumbling remain. All actors/teams live in memory,no character writes. Direct payment/unavoidable controls certify existing endpoint separation,not authentic full percentage/capture/global immunity policy.",
+      "controls": "Three complete pinned821d0c5e9 PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail exact crit/bonus/vulnerable assertions with expected exit1;corrected84 pass. Old18-path coupled Crumble research remains historical context outside fixed;its ordinary damage findings are superseded by this repair,not erased.",
+      "candidate_and_tools": "First undeployed candidate failed real Poison(target0/mode6,1481->1476) because native periodic rows set the bypass argument. Corrected by checking the actual periodic flag plus properties24/179,then rebuilt and all84 passed. Context diagnostic retained in regression. A minimal metadata probe first lacked unordered_set include;corrected before execution. Typed metadata confirms both labels. Earlier threshold PE proof needed actual targetEBP/damageR15 role updates and CFG traversal of the shared unchanged-health return merged backward;no source branch or check disabled.",
+      "retained": "76 Crumble lifecycle,102 online owned final health,112 Pound,120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 PE scopes,original3-bit/alignment writer,complete retained pet chain and new actual Damage admission/early-return proof pass. No new106 or full native-core ASAN claim.",
+      "pe": "Actual Damage preserves native argument roles,target/self/failure predicates,periodic bit16 and actual24/179 metadata,then calls the same independently bounded native source predicate. Actual IMMUNE/unchanged-health receipt returns false before zero-miss,block-charge consumption or Cast/Kill reactions. Failed source binding,existing miss,self payment and explicit nonperiodic bypass cannot reach the new guard. The earlier threshold branch still uses strict191/200 boundaries and real cloned68 payment exemption,following its backward-merged safe return. Lifecycle verifier metadata now says immunity_checked_here=false to describe its own scope rather than a global repair claim. General64byte leaf and handler CFG bounds unchanged.",
+      "runtime": "Owned canonical PID2148 fresh ready/shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Relinked bnet native .text equals prior rollback byte-for-byte;no separate new bnet startup claim.",
+      "diagnostics": "Formal tests/builds/runtime/PE have canonical and own pre/post crash/log inventories plus reviewed exits/stdout/stderr. No new/changed crash,appended DBErrors or unexplained runtime warning/error/assertion. Full game warning set is a subset of preceding Crumble full build after line normalization. First candidate and corrected repaired evidence remain separate.",
+      "limits": "Actual client IMMUNE/crit/periodic text,animations,HP,countdown and full Rocko/WQ41624/native species1811 credit remain pending. No actual client rendering,durable character round-trip or all36-chain certification."
+    },
+    "cleanup": {
+      "status": "PASS",
+      "native_crumble_ordinary_immunity_cases": 84,
+      "retained_native_cases": [
+        76,
+        102,
+        112,
+        120,
+        78,
+        48,
+        24,
+        144,
+        28,
+        50,
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "a00f76dc933c0e0c669f27fbad6d6cae5a260fb59ce0b6549a3dc501ec4a1232",
+        "worldserver.map": "386cd6c237f99f873164c32bffad42c6846cd4c400516df61e77b7d71fddac40",
+        "bnetserver.exe": "0f21a9644b93d7259f329e93dc48d3cec1343a34ff027604a405ccb90863cab7",
+        "bnetserver.map": "7dd6b8aa58901e280b7f943400b8793bd9b68583ac9b6b3f89ab716eeacaf661"
+      },
+      "bnet_native_code_section_unchanged": true,
+      "archive_records": 674,
+      "removed": 86,
+      "removed_bytes": 962326801.0,
+      "older_owned_rollback_sets_removed": 1,
+      "recent_rollback_sets_retained": 3,
+      "historical106_binary_and_maps_retained": true,
+      "protected_evidence_configuration_and_rollback_unchanged": true,
+      "new_compiler_warnings": 0
+    },
+    "remaining_percentage_policy": "OPEN: native percentage/unavoidable attack scaling,bypass exceptions,exact general modifier/crit ordering and complete Rocko combat policy. This scoped ordinary/periodic admission does not establish that existing explicit nonperiodic unavoidable behavior is authentic retail behavior;it preserves it for separate investigation. No speculative universal -100 rewrite or percentage exception added."
+  },
   "latest_native_crumble_lifecycle_repair_2026_11_13": {
     "status": "CRUMBLE_NATIVE_LIFECYCLE_FIXED_DEPLOYED_IMMUNITY_AND_CLIENT_STILL_OPEN",
     "fix_commit": "821d0c5e9b4b69d02447ddf84b405e64d5819668",

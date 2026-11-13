@@ -198,5 +198,6 @@
     "Owned offline/logout/disconnect persistence and cleanup,Haunt652/653,other five species183/four abilities,DarkRebirth794/795,Ominitron1595,Apocalypse,clone122/123/124 and generic159 remain OPEN.",
     "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
   ],
-  "next": "Check actual locally installed7.3.5.26972 client availability and safe client-test entry;continue only evidence-backed remaining lifecycle/combat work."
+  "next": "Check actual locally installed7.3.5.26972 client availability and safe client-test entry;continue only evidence-backed remaining lifecycle/combat work.",
+  "fix_commit": "81275628e584fa1dac384512a7d224b9e4ede7ab"
 }
