@@ -29,6 +29,7 @@ EndScriptData */
 #include "Chat.h"
 #include "DatabaseEnv.h"
 #include "QuestData.h"
+#include "CommandIntegerArgument.h"
 
 class go_commandscript : public CommandScript
 {
@@ -367,8 +368,8 @@ public:
         char* id = handler->extractKeyFromLink((char*)args, "Hquest");
         if (!id)
             return false;
-        uint32 questID = atoi(id);
-        if (!questID)
+        uint32 questID;
+        if (!Trinity::ParseCommandInteger(id, questID) || !questID)
             return false;
         if (!sQuestDataStore->GetQuestTemplate(questID))
         {
@@ -376,24 +377,33 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-        float x, y, z;
-        uint32 mapId;
+        float x = 0.0f, y = 0.0f, z = 0.0f;
+        uint32 mapId = 0;
+        bool found = false;
         if (QuestPOIVector const* poiData = sQuestDataStore->GetQuestPOIVector(questID))
         {
-            for (auto data = poiData->begin(); data != poiData->end(); ++data)
+            for (auto const& data : *poiData)
             {
-                mapId = data->MapID;
-                for (auto points = data->points.begin(); points != data->points.end(); ++points)
-                {
-                    x = points->X;
-                    y = points->Y;
-                    if (Map const* map = sMapMgr->CreateBaseMap(mapId))
-                        z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
-                    break;
-                }
+                if (data.points.empty())
+                    continue;
+                auto const& point = data.points.front();
+                if (!MapManager::IsValidMapCoord(data.MapID, point.X, point.Y) || sObjectMgr->IsTransportMap(data.MapID))
+                    continue;
+                Map const* map = sMapMgr->CreateBaseMap(data.MapID);
+                if (!map)
+                    continue;
+                float height = std::max(map->GetHeight(point.X, point.Y, MAX_HEIGHT), map->GetWaterLevel(point.X, point.Y));
+                if (!MapManager::IsValidMapCoord(data.MapID, point.X, point.Y, height))
+                    continue;
+                // Retain the last authored usable POI as one coherent pose.
+                mapId = data.MapID;
+                x = point.X;
+                y = point.Y;
+                z = height;
+                found = true;
             }
         }
-        else
+        if (!found)
         {
             handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, questID);
             handler->SetSentErrorMessage(true);
@@ -414,8 +424,7 @@ public:
         // save only in non-flight case
         else
             player->SaveRecallPosition();
-        player->TeleportTo(mapId, x, y, z, 0.0f);
-        return true;
+        return player->TeleportTo(mapId, x, y, z, 0.0f);
     }
 
     static bool HandleGoTriggerCommand(ChatHandler* handler, char const* args)

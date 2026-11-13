@@ -1,0 +1,28 @@
+{
+  "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
+  "authorized_total": 50,
+  "changes": [
+    {
+      "key": "GoQuestCoherentDestination",
+      "path": "src/server/scripts/Commands/cs_go.cpp",
+      "method": "HandleGoQuestCommand",
+      "kind": "go",
+      "old": "    static bool HandleGoQuestCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n        Player* player = handler->GetSession()->GetPlayer();\n        char* id = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!id)\n            return false;\n        uint32 questID = atoi(id);\n        if (!questID)\n            return false;\n        if (!sQuestDataStore->GetQuestTemplate(questID))\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, questID);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        float x, y, z;\n        uint32 mapId;\n        if (QuestPOIVector const* poiData = sQuestDataStore->GetQuestPOIVector(questID))\n        {\n            for (auto data = poiData->begin(); data != poiData->end(); ++data)\n            {\n                mapId = data->MapID;\n                for (auto points = data->points.begin(); points != data->points.end(); ++points)\n                {\n                    x = points->X;\n                    y = points->Y;\n                    if (Map const* map = sMapMgr->CreateBaseMap(mapId))\n                        z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));\n                    break;\n                }\n            }\n        }\n        else\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, questID);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        if (!MapManager::IsValidMapCoord(mapId, x, y, z) || sObjectMgr->IsTransportMap(mapId))\n        {\n            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, x, y, mapId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        // stop flight if need\n        if (player->isInFlight())\n        {\n            player->GetMotionMaster()->MovementExpired();\n            player->CleanupAfterTaxiFlight();\n        }\n        // save only in non-flight case\n        else\n            player->SaveRecallPosition();\n        player->TeleportTo(mapId, x, y, z, 0.0f);\n        return true;\n    }",
+      "new": "    static bool HandleGoQuestCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n        Player* player = handler->GetSession()->GetPlayer();\n        char* id = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!id)\n            return false;\n        uint32 questID;\n        if (!Trinity::ParseCommandInteger(id, questID) || !questID)\n            return false;\n        if (!sQuestDataStore->GetQuestTemplate(questID))\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, questID);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        float x = 0.0f, y = 0.0f, z = 0.0f;\n        uint32 mapId = 0;\n        bool found = false;\n        if (QuestPOIVector const* poiData = sQuestDataStore->GetQuestPOIVector(questID))\n        {\n            for (auto const& data : *poiData)\n            {\n                if (data.points.empty())\n                    continue;\n                auto const& point = data.points.front();\n                if (!MapManager::IsValidMapCoord(data.MapID, point.X, point.Y) || sObjectMgr->IsTransportMap(data.MapID))\n                    continue;\n                Map const* map = sMapMgr->CreateBaseMap(data.MapID);\n                if (!map)\n                    continue;\n                float height = std::max(map->GetHeight(point.X, point.Y, MAX_HEIGHT), map->GetWaterLevel(point.X, point.Y));\n                if (!MapManager::IsValidMapCoord(data.MapID, point.X, point.Y, height))\n                    continue;\n                // Retain the last authored usable POI as one coherent pose.\n                mapId = data.MapID;\n                x = point.X;\n                y = point.Y;\n                z = height;\n                found = true;\n            }\n        }\n        if (!found)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, questID);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        if (!MapManager::IsValidMapCoord(mapId, x, y, z) || sObjectMgr->IsTransportMap(mapId))\n        {\n            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, x, y, mapId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        // stop flight if need\n        if (player->isInFlight())\n        {\n            player->GetMotionMaster()->MovementExpired();\n            player->CleanupAfterTaxiFlight();\n        }\n        // save only in non-flight case\n        else\n            player->SaveRecallPosition();\n        return player->TeleportTo(mapId, x, y, z, 0.0f);\n    }",
+      "batch": 1
+    }
+  ],
+  "extra_edits": [
+    {
+      "path": "src/server/scripts/Commands/cs_go.cpp",
+      "old": "#include \"QuestData.h\"",
+      "new": "#include \"QuestData.h\"\n#include \"CommandIntegerArgument.h\""
+    }
+  ],
+  "files": {
+    "src/server/scripts/Commands/cs_go.cpp": {
+      "before_sha256": "8c05cfb18957e8d06aee0974412a7cd0cf62ff962dd4372184a127652ab9708f",
+      "after_sha256": "e398b25d3880c92bf76ffad858992bf5fb2f50c94f346cd9b4ef3b8b480b3505"
+    }
+  }
+}
