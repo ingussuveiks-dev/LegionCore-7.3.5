@@ -1449,7 +1449,9 @@ public:
         if (!stime)
             return false;
 
-        int spawnTime = atoi((char*)stime);
+        int32 spawnTime;
+        if (!Trinity::ParseCommandInteger(stime, spawnTime))
+            return false;
 
         if (spawnTime < 0)
         {
@@ -1459,7 +1461,7 @@ public:
         }
 
         Creature* creature = handler->getSelectedCreature();
-        uint32 guidLow = 0;
+        ObjectGuid::LowType guidLow = 0;
 
         if (creature)
             guidLow = creature->GetDBTableGUIDLow();

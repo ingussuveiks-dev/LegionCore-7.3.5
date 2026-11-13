@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_38_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 38,
+  "status": "IN_PROGRESS_39_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 39,
   "batches": [
     {
       "batch": 1,
@@ -287,6 +287,11 @@
           "key": "NpcSpawnDistanceFinite",
           "path": "src/server/scripts/Commands/cs_npc.cpp",
           "summary": "Reject nonfinite/malformed respawn radius before movement/death/DB changes;retain zero idle,live/dead routes and full64-bit spawn GUID."
+        },
+        {
+          "key": "NpcSpawnTimeCheckedValue",
+          "path": "src/server/scripts/Commands/cs_npc.cpp",
+          "summary": "Reject malformed/non-native signed respawn seconds before native DB/live delay;retain0 and full64-bit spawn GUID."
         }
       ],
       "checks": {
@@ -316,7 +321,7 @@
     }
   ],
   "remaining": [
-    "12 newly authorized source repairs remain;continue next independent groups.",
+    "11 newly authorized source repairs remain;continue next independent groups.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]
