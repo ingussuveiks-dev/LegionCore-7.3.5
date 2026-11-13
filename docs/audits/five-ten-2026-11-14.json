@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_20_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 20,
+  "status": "IN_PROGRESS_21_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 21,
   "batches": [
     {
       "batch": 1,
@@ -165,10 +165,44 @@
         "retained_rollback": ".codex/release-before-five-ten-20261114-batch2",
         "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report."
       }
+    },
+    {
+      "batch": 3,
+      "repairs": [
+        {
+          "key": "PlayerMoneyBoundary",
+          "path": "src/server/game/Entities/Player/Player.cpp",
+          "summary": "Native money validates post-hook zero and positive cap before subtraction;safe INT64_MIN withdrawal magnitude. Preserve original exclusive cap policy and native error/hook flow."
+        }
+      ],
+      "checks": {
+        "source_asan": "507 complete selected production method contexts including150 new;retained37 go-quest separate. Actual Player::ModifyMoney and native Tokenizer source extracted into controlled fixtures;no real account/character/world writes. Signed boundaries,post-hook0/MIN/MAX,negative currency,raw XP overflow,missing targets/security,native endpoints/defaults/zero phase covered.",
+        "counterfactuals": "Actual original core accepts above-cap positive amount through unsigned cap subtraction;original artifact command converts-1 toUINT64_MAX. Controlled old-source baselines reproduce these defects,paired with repaired cases;not ordinary passing gameplay.",
+        "native_catalog": "Matching26972 DB2/Hotfix:66175 displays,7993 phases,99 ordinary currencies,9 precision100;actual DB2Manager GetCurrencyPrecision agrees1/100. Read-only Hotfix.",
+        "release": "Original game and scripts Release libraries rebuilt;staged final link uses original inputs,no OutDir. All30 selected registrations/paths verified staged/canonical,including core post-hook cap/zero and artifact overflow CFG;Scepter VerifyReleaseBinary passes.",
+        "startup": "Owned canonical PID29020 fresh ready,shutdown0,exit0,empty stderr,gone. No user server stopped;configuration/certs/DLLs preserved.",
+        "analysis": "Focused cs_modify analysis exit0;existing conversion/deprecation warnings retained/reviewed;separate whole artifact report remains open.",
+        "diagnostics": "Final pre/post snapshots show no new/changed crash,appended DBErrors or unexplained warning/error/assertion. Test exporter initially omitted UnitDefines hexadecimal mirror flag;fixed real enum export. Native PCH unordered_set include fixed;all final checks pass. Original mixed7111-byte DBErrors and Slaghammer hashes unchanged."
+      },
+      "canonical": {
+        "bnetserver.exe": "a4d7c535222a16a43458fcd5377d15b2547dbfe90de569d4c2ec94890ad5d476",
+        "bnetserver.map": "30e384b1af9039854c4d0242f70190626ecd4be1434f8c0262010f799751aab9",
+        "worldserver.exe": "0b86ae0aa7c22e8de79b21d51ce8c41086195601b2e71f857a1046b2f9ddba55",
+        "worldserver.map": "5187f4ae08098fecb5b59e9d657c331fedd2b10f5f645c4d55162c1485acb18a"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch3",
+        "manifest_sha256": "c62542b6eda3fae8ba0fc3a01f43613a2bc19fdd1c06b6217b159297d18d31de",
+        "archived_files": 254,
+        "removed_files": 112,
+        "reclaimed_bytes": 251974059.0,
+        "retained_rollback": ".codex/release-before-five-ten-20261114-batch3",
+        "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report."
+      }
     }
   ],
   "remaining": [
-    "30 newly authorized source repairs remain;continue next independent groups.",
+    "29 newly authorized source repairs remain;continue next independent groups.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

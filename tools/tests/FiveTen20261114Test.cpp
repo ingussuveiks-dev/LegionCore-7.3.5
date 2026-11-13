@@ -9,6 +9,8 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <set>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -20,12 +22,15 @@
 using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int32_t;using uint64=uint64_t;using int64=int64_t;
 static void Require(bool b,char const* message){if(!b)throw std::runtime_error(message);}
 #include "Constants.inc"
-struct ObjectGuid{static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
+struct ObjectGuid{uint64 GetGUIDLow(){return 1;}static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
 #define TC_LOG_DEBUG(...) ((void)0)
+#include "NativeTokenizer.inc"
 struct Session;struct Player;struct Creature;
+struct Item{uint64 xp=100;uint32 writes=0,states=0;Player*owner=nullptr;uint64 GetUInt64Value(uint32 field){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field read");return xp;}void SetUInt64Value(uint32 field,uint64 value){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field write");++writes;xp=value;}void SetState(uint32 state,Player*player){Require(state==ITEM_CHANGED,"Wrong item state");++states;owner=player;}};
+struct PhaseManager{uint32 writes=0,mask=0;void SetCustomPhase(uint32 value){++writes;mask=value;}};
 struct Unit {
  uint32 writes=0,powerType=0,selectedTitle=2,spells=0,stats=0,ratings=0,nativeMoneyErrors=0;int32 maxPower=0,power=0;
- uint64 titles=5,higherTitles=0x123456789abcdef,money=100;float lastDistance=0,scale=1,average=0;bool flying=false,pvp=false;Session*session=nullptr;
+ uint64 titles=5,higherTitles=0x123456789abcdef,money=100;float lastDistance=0,scale=1,average=0;uint64 health=100,maxHealth=100;uint32 display=0,phase=1,drunk=0;std::set<uint32>phaseIds;PhaseManager phaseMgr;Item*artifact=nullptr;bool flying=false,pvp=false;Session*session=nullptr;
  std::map<uint32,float>speeds;std::map<uint16,uint32>flags;std::vector<uint32>casts,animations;
  virtual ~Unit()=default;virtual Player*ToPlayer(){return nullptr;}virtual Creature*ToCreature(){return nullptr;}
  uint32 GetTypeId(){return ToPlayer()?TYPEID_PLAYER:3;}uint32 GetValuesCount(){return ToPlayer()?PLAYER_FIELD_END:UNIT_END;}
@@ -33,7 +38,15 @@ struct Unit {
  void SetMaxPower(uint32 t,int32 v){++writes;powerType=t;maxPower=v;}
  void SetPower(uint32 t,int32 v){++writes;powerType=t;power=v;}
  void SetUInt64Value(uint32 field,uint64 v){Require(field==PLAYER_FIELD_KNOWN_TITLES,"Wrong title field");++writes;titles=v;}
- void SetUInt32Value(uint32 field,uint32 v){Require(field==PLAYER_FIELD_PLAYER_TITLE,"Wrong chosen-title field");++writes;selectedTitle=v;}
+ void SetUInt32Value(uint32 field,uint32 v){++writes;if(field==PLAYER_FIELD_PLAYER_TITLE)selectedTitle=v;else flags[uint16(field)]=v;}
+ uint32 GetUInt32Value(uint32 field){return flags[uint16(field)];}
+ void SetHealth(uint64 value){++writes;health=value;}void SetMaxHealth(uint64 value){++writes;maxHealth=value;}
+ void SetDrunkValue(uint8 value){++writes;drunk=value;}
+ void SetDisplayId(uint32 value){++writes;display=value;}
+ void SetPhaseMask(uint32 mask,bool){++writes;phase=mask;}
+ PhaseManager&GetPhaseMgr(){return phaseMgr;}void SetPhaseId(std::set<uint32>const&ids,bool){++writes;phaseIds=ids;}
+ Item*GetArtifactWeapon(){return artifact;}
+ void ModifyCurrency(uint32 id,int32 amount,bool chat,bool ignore,bool week,bool season){Require(chat&&ignore&&!week&&!season,"Currency flags changed");++writes;powerType=id;power=amount;}
  int32 GetInt32Value(uint32 field){Require(field==PLAYER_FIELD_PLAYER_TITLE,"Wrong title lookup");return selectedTitle;}
  bool HasTitle(uint32 bit){return bit<64?bool(titles&(uint64(1)<<bit)):bit<128&&bool(higherTitles&(uint64(1)<<(bit-64)));}
  void GetClosePoint(float&x,float&y,float&z,float distance){lastDistance=distance;x=distance;y=1;z=2;}
@@ -49,11 +62,11 @@ struct Unit {
  void SendEquipError(uint32 code){Require(code==EQUIP_ERR_TOO_MUCH_GOLD,"Wrong native money error");++nativeMoneyErrors;}
 
 };
-struct MoneyScripts{template<class T>void OnPlayerMoneyChanged(T*,int64&) {}} moneyScripts;auto sScriptMgr=&moneyScripts;
+struct MoneyScripts{std::function<void(int64&)>hook;template<class T>void OnPlayerMoneyChanged(T*,int64&value) {if(hook)hook(value);}} moneyScripts;auto sScriptMgr=&moneyScripts;
 #include "NativeModifyMoney.inc"
 struct Player:Unit{Player*ToPlayer()override{return this;}};
 struct Session{Player*player=nullptr;uint32 account=1;Player*GetPlayer(){return player;}uint32 GetAccountId(){return account;}};
-struct Creature:Unit{uint32 entry=0,path=77;Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetWaypointPath(){return path;}};
+struct Creature:Unit{uint32 entry=0,path=77;Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetWaypointPath(){return path;}uint32 faction=1;uint32 getFaction(){return faction;}void setFaction(uint32 value){++writes;faction=value;}ObjectGuid GetGUID(){return {};}};
 struct ChatHandler {
  Player*target=nullptr;Unit*unit=nullptr;Creature*creature=nullptr;Session*session=nullptr;bool lower=false,error=false,report=false;uint32 messages=0,databaseReached=0;
  ChatHandler()=default;explicit ChatHandler(Player*){}
@@ -62,8 +75,12 @@ struct ChatHandler {
  std::string GetNameLink(Player* =nullptr){return "fixture";}
  template<class...T>void PSendSysMessage(T...){++messages;}template<class...T>void SendSysMessage(T...){++messages;}
  void SetSentErrorMessage(bool b){error=b;}
+ char*extractKeyFromLink(char*args,char const*){return strtok(args," ");}
  uint32 extractSpellIdFromLink(char*args){char*id=strtok(args," ");return id?uint32(strtoul(id,nullptr,10)):0;}
 };
+struct NativeRow{uint32 ID;};using CurrencyTypesEntry=NativeRow;using PhaseEntry=NativeRow;
+struct NativeStore{std::map<uint32,NativeRow>rows;NativeRow const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionTemplateStore{{{1,{1}},{2,{2}}}},sCurrencyTypesStore{{{1,{1}},{2,{2}}}},sCreatureDisplayInfoStore{{{123,{123}}}},sPhaseStore{{{1,{1}},{2,{2}}}};
+struct PrecisionManager{float GetCurrencyPrecision(uint32 id){return id==2?100.f:1.f;}}sDB2Manager;
 struct CharTitlesEntry{int32 MaskID;};
 struct TitleStore{std::vector<CharTitlesEntry> rows{{0},{0},{2},{63},{64},{130},{-1}};uint32 GetNumRows(){return uint32(rows.size());}CharTitlesEntry const*LookupEntry(uint32 i){return i<rows.size()?&rows[i]:nullptr;}}sCharTitlesStore;
 struct SpellInfo{} info;
@@ -114,6 +131,12 @@ static void FloatTests(bool(*fn)(ChatHandler*,char const*),std::vector<uint32>co
 }
 #endif
 int main(){try{
+#ifdef CORE_MONEY_BASELINE
+ Player original;original.money=100;Require(original.ModifyMoney(int64(MAX_MONEY_AMOUNT)+1)&&original.money>MAX_MONEY_AMOUNT,"Original native unsigned cap underflow not reproduced");std::cout<<"COUNTERFACTUAL actual original core money accepts above-cap positive amount;controlled field only\n";return 0;
+#endif
+#ifdef ARTIFACT_XP_BASELINE
+ Player original;Item item;item.xp=0;original.artifact=&item;ChatHandler originalHandler;originalHandler.target=&original;Require(Command(CaseArtifactXP::Selected::HandleModifyArtifactXPCommand,originalHandler,"-1")&&item.xp==UINT64_MAX,"Original negative raw artifact XP not reproduced");std::cout<<"COUNTERFACTUAL actual original artifact command converts-1 toUINT64_MAX;controlled item only\n";return 0;
+#endif
 #ifdef SPEED_FLOAT_BASELINE
  Player p;ChatHandler h;h.target=&p;Require(Command(CaseSpeed::Selected::HandleModifySpeedCommand,h,"nan")&&p.writes==1&&std::isnan(p.speeds[MOVE_RUN]),"Original nonfinite speed mutation not reproduced");
  std::cout<<"COUNTERFACTUAL original speed handler accepts NaN through ordered bounds and reaches native speed setter;controlled setter,no real movement/client mutation\n";return 0;
@@ -207,6 +230,53 @@ int main(){try{
  for(auto const&row:std::vector<std::tuple<char const*,uint64,uint64>>{{"0",100,100},{"5000000000",100,5000000100},{"-5000000000",6000000000,1000000000},{"-5000000000",100,0},{"9223372036854775807",100,MAX_MONEY_AMOUNT},{"-9223372036854775808",MAX_MONEY_AMOUNT,0},{"99999999999",0,MAX_MONEY_AMOUNT},{"-50",100,50}}){Player p;p.money=std::get<1>(row);ChatHandler h;h.target=&p;h.report=true;Require(Command(CaseMoney::Selected::HandleModifyMoneyCommand,h,std::get<0>(row))&&p.money==std::get<2>(row),"Native64-bit money/clamp/subtraction changed");++cases;}
  {Player p;p.money=MAX_MONEY_AMOUNT-50;ChatHandler h;h.target=&p;Require(!Command(CaseMoney::Selected::HandleModifyMoneyCommand,h,"50")&&p.money==MAX_MONEY_AMOUNT-50&&!p.writes&&p.nativeMoneyErrors==1&&!h.messages,"Rejected native gold-cap change was reported successful");++cases;}
  for(bool selected:{false,true}){Player p;ChatHandler h;h.target=selected?&p:nullptr;h.lower=true;Require(!Command(CaseMoney::Selected::HandleModifyMoneyCommand,h,"5000000000")&&!p.writes,"Money security/selection path changed");++cases;}
+#endif
+
+#ifdef REPAIR_COREMONEY
+ for(auto const&row:std::vector<std::tuple<uint64,int64,uint64,bool>>{{100,0,100,true},{100,-1,99,true},{100,-100,0,true},{100,INT64_MIN,0,true},{MAX_MONEY_AMOUNT,INT64_MIN,0,true},{0,INT64_MAX,0,false},{100,int64(MAX_MONEY_AMOUNT)+1,100,false},{0,int64(MAX_MONEY_AMOUNT),0,false},{100,50,150,true},{MAX_MONEY_AMOUNT-50,50,MAX_MONEY_AMOUNT-50,false},{MAX_MONEY_AMOUNT-51,50,MAX_MONEY_AMOUNT-1,true}}){Player p;p.money=std::get<0>(row);Require(p.ModifyMoney(std::get<1>(row))==std::get<3>(row)&&p.money==std::get<2>(row),"Core money boundary changed");++cases;}
+ for(int64 changed:{int64(0),INT64_MIN,INT64_MAX}){Player p;p.money=MAX_MONEY_AMOUNT;moneyScripts.hook=[changed](int64&value){value=changed;};bool ok=p.ModifyMoney(1,false);Require(ok==(changed<=0)&&p.money==(changed==INT64_MIN?0:MAX_MONEY_AMOUNT)&&!p.nativeMoneyErrors,"Post-hook native money amount not validated");if(!changed)Require(!p.writes,"Zero hook wrote money");++cases;}moneyScripts.hook={};
+#endif
+#ifdef REPAIR_DRUNK
+ for(char const*arg:{""," ","-1","1x","4294967296"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseDrunk::Selected::HandleModifyDrunkCommand,h,arg)&&!p.writes,"Invalid drunk input mutated player");++cases;}
+ for(uint32 value:{0u,1u,100u,101u,256u,UINT32_MAX}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseDrunk::Selected::HandleModifyDrunkCommand,h,std::to_string(value).c_str())&&p.drunk==std::min(value,100u)&&p.writes==1,"Native drunk clamp narrowed too early");++cases;}
+ for(bool selected:{false,true}){Player p;ChatHandler h;h.target=selected?&p:nullptr;h.lower=true;Require(!Command(CaseDrunk::Selected::HandleModifyDrunkCommand,h,"50")&&!p.writes,"Drunk selection/security bypass");++cases;}
+#endif
+#ifdef REPAIR_HP
+ for(char const*arg:{""," ","0","-1","500x","2147483648","4294967297"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseHP::Selected::HandleModifyHPCommand,h,arg)&&!p.writes,"Invalid health changed player");++cases;}
+ for(int32 value:{1,500,INT32_MAX}){Player p;ChatHandler h;h.target=&p;h.report=true;Require(Command(CaseHP::Selected::HandleModifyHPCommand,h,std::to_string(value).c_str())&&p.writes==2&&p.health==uint64(value)&&p.maxHealth==uint64(value),"Valid health native endpoints changed");++cases;}
+ for(bool selected:{false,true}){Player p;ChatHandler h;h.target=selected?&p:nullptr;h.lower=true;Require(!Command(CaseHP::Selected::HandleModifyHPCommand,h,"50")&&!p.writes,"Health selection/security bypass");++cases;}
+#endif
+#ifdef REPAIR_MANA
+ for(char const*arg:{""," ","0","-1","500x","2147483648","4294967297"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseMana::Selected::HandleModifyManaCommand,h,arg)&&!p.writes,"Invalid mana changed player");++cases;}
+ for(int32 value:{1,500,INT32_MAX}){Player p;ChatHandler h;h.target=&p;h.report=true;Require(Command(CaseMana::Selected::HandleModifyManaCommand,h,std::to_string(value).c_str())&&p.writes==2&&p.power==value&&p.maxPower==value&&p.powerType==POWER_MANA,"Valid mana raw units changed");++cases;}
+ for(bool selected:{false,true}){Player p;ChatHandler h;h.target=selected?&p:nullptr;h.lower=true;Require(!Command(CaseMana::Selected::HandleModifyManaCommand,h,"50")&&!p.writes,"Mana selection/security bypass");++cases;}
+#endif
+#ifdef REPAIR_FACTION
+ for(char const*arg:{"","2x","-1","4294967298","2 1x","2 1 -1","2 1 2 4294967296","3 1 2 3"}){Creature c;ChatHandler h;h.creature=&c;Require(!Command(CaseFaction::Selected::HandleModifyFactionCommand,h,arg)&&!c.writes&&c.faction==1,"Faction partially mutated on invalid operand");++cases;}
+ for(char const*arg:{"2","2 0","2 4294967295 3 4"}){Creature c;c.flags[UNIT_FIELD_FLAGS]=5;c.flags[UNIT_FIELD_NPC_FLAGS]=6;c.flags[OBJECT_FIELD_DYNAMIC_FLAGS]=7;ChatHandler h;h.creature=&c;Require(Command(CaseFaction::Selected::HandleModifyFactionCommand,h,arg)&&c.writes==4&&c.faction==2,"Faction native writes changed");if(std::string(arg)=="2")Require(c.flags[UNIT_FIELD_FLAGS]==5&&c.flags[UNIT_FIELD_NPC_FLAGS]==6&&c.flags[OBJECT_FIELD_DYNAMIC_FLAGS]==7,"Faction defaults lost");++cases;}
+ {Creature c;ChatHandler h;h.creature=&c;Require(Command(CaseFaction::Selected::HandleModifyFactionCommand,h," ")&&!c.writes&&h.messages==1,"Faction read-only inspection lost");++cases;}
+#endif
+#ifdef REPAIR_CURRENCY
+ for(char const*arg:{""," ","1","1x 1","4294967297 1","-1 1","3 1","1 1x","1 0","1 2147483648","2 21474837","2 -21474837"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseCurrency::Selected::HandleModifyCurrencyCommand,h,arg)&&!p.writes,"Invalid/overflow currency mutated balance");++cases;}
+ for(uint32 id:{1u,2u})for(int32 value:{-21474836,-1,1,21474836}){Player p;ChatHandler h;h.target=&p;std::string arg=std::to_string(id)+" "+std::to_string(value);Require(Command(CaseCurrency::Selected::HandleModifyCurrencyCommand,h,arg.c_str())&&p.writes==1&&p.power==value*(id==2?100:1)&&p.powerType==id,"Currency precision/native sign changed");++cases;}
+ for(bool selected:{false,true}){Player p;ChatHandler h;h.target=selected?&p:nullptr;h.lower=true;Require(!Command(CaseCurrency::Selected::HandleModifyCurrencyCommand,h,"1 1")&&!p.writes,"Currency selection/security bypass");++cases;}
+#endif
+#ifdef REPAIR_ARTIFACTXP
+ for(char const*arg:{""," ","0","-1","1x","18446744073709551616","18446744073709551615"}){Player p;Item item;p.artifact=&item;ChatHandler h;h.target=&p;Require(!Command(CaseArtifactXP::Selected::HandleModifyArtifactXPCommand,h,arg)&&!item.writes&&!item.states&&item.xp==100,"Invalid/overflow artifact XP mutated item");++cases;}
+ for(uint64 value:{uint64(1),uint64(5000000000),UINT64_MAX-100}){Player p;Item item;p.artifact=&item;ChatHandler h;h.target=&p;Require(Command(CaseArtifactXP::Selected::HandleModifyArtifactXPCommand,h,std::to_string(value).c_str())&&item.writes==1&&item.states==1&&item.owner==&p&&item.xp==100+value,"Native raw artifact XP/state changed");++cases;}
+ for(uint32 mode:{0u,1u,2u}){Player p;Item item;p.artifact=mode==1?nullptr:&item;ChatHandler h;h.target=mode?&p:nullptr;h.lower=mode==2;Require(!Command(CaseArtifactXP::Selected::HandleModifyArtifactXPCommand,h,"1")&&!item.writes,"Artifact absent target/item/security bypass");++cases;}
+#endif
+#ifdef REPAIR_MORPH
+ for(char const*arg:{""," ","0","-1","123x","4294967419","124"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseMorph::Selected::HandleModifyMorphCommand,h,arg)&&!p.writes,"Invalid native display mutated unit");++cases;}
+ for(uint32 mode:{0u,1u,2u,3u}){Player p;Creature c;Session session{&p,1};ChatHandler h;h.session=&session;if(mode==1||mode==3)h.target=&p;if(mode==2)h.unit=&c;h.lower=mode==3;bool ok=Command(CaseMorph::Selected::HandleModifyMorphCommand,h,"123");Require(ok==(mode!=3),"Morph target admission changed");Unit&u=mode==2?static_cast<Unit&>(c):static_cast<Unit&>(p);Require(u.writes==(ok?2u:0u)&&(!ok||u.display==123),"Morph setter/mirror cleanup changed");++cases;}
+#endif
+#ifdef REPAIR_PHASE
+ for(char const*arg:{""," ","-1","1x","4294967296"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CasePhase::Selected::HandleModifyPhaseCommand,h,arg)&&!p.phaseMgr.writes,"Invalid phase reset visibility");++cases;}
+ for(uint32 value:{0u,1u,UINT32_MAX})for(uint32 mode:{0u,1u,2u,3u}){Player p;Creature c;Session session{&p,1};ChatHandler h;h.session=&session;if(mode==1||mode==3)h.target=&p;if(mode==2)h.unit=&c;h.lower=mode==3;bool ok=Command(CasePhase::Selected::HandleModifyPhaseCommand,h,std::to_string(value).c_str());Require(ok==(mode!=3),"Phase target security changed");if(mode==2)Require(c.writes==1&&c.phase==value,"Creature phase mask changed");else Require(p.phaseMgr.writes==(ok?1u:0u)&&(!ok||p.phaseMgr.mask==value),"Native player custom phase changed");++cases;}
+#endif
+#ifdef REPAIR_PHASEIDS
+ for(char const*arg:{""," ","-1","1x","4294967297","1 3","1 -1","1 2x"}){Player p;p.phaseIds={2};ChatHandler h;h.target=&p;Require(!Command(CasePhaseIDs::Selected::HandleModifyPhaseIDsCommand,h,arg)&&!p.writes&&p.phaseIds==std::set<uint32>{2},"Invalid phase list partially applied/cleared");++cases;}
+ for(char const*arg:{"0","1","1 2 1"," 0  1 2 "})for(uint32 mode:{0u,1u,2u,3u}){Player p;Creature c;Session session{&p,1};ChatHandler h;h.session=&session;if(mode==1||mode==3)h.target=&p;if(mode==2)h.unit=&c;h.lower=mode==3;bool ok=Command(CasePhaseIDs::Selected::HandleModifyPhaseIDsCommand,h,arg);Require(ok==(mode<2)&&!c.writes&&p.writes==(ok?1u:0u),"Phase IDs target admission changed");if(ok)Require(p.phaseIds==(std::string(arg)=="0"?std::set<uint32>{}:std::string(arg)=="1"?std::set<uint32>{1}:std::set<uint32>{1,2}),"Native phase set/zero reset changed");++cases;}
 #endif
 #ifdef REPAIR_SOUL
  for(randomChoice=0;randomChoice<3;++randomChoice){EchoUnit source,actor;CaseSoul::Selected callback;callback.me=&actor;

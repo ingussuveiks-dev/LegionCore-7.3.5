@@ -30571,11 +30571,18 @@ bool Player::ModifyMoney(int64 amount, bool sendError /*= true*/)
 
     sScriptMgr->OnPlayerMoneyChanged(this, amount);
 
+    if (!amount)
+        return true;
+
     if (amount < 0)
-        SetMoney (GetMoney() > uint64(-amount) ? GetMoney() + amount : 0);
+    {
+        uint64 const removed = uint64(-(amount + 1)) + 1;
+        SetMoney(GetMoney() > removed ? GetMoney() - removed : 0);
+    }
     else
     {
-        if (GetMoney() < MAX_MONEY_AMOUNT - static_cast<uint64>(amount))
+        if (static_cast<uint64>(amount) <= MAX_MONEY_AMOUNT &&
+            GetMoney() < MAX_MONEY_AMOUNT - static_cast<uint64>(amount))
             SetMoney(GetMoney() + amount);
         else
         {
