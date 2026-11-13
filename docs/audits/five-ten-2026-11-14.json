@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_7_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 7,
+  "status": "IN_PROGRESS_8_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 8,
   "batches": [
     {
       "batch": 1,
@@ -44,6 +44,11 @@
           "key": "ModifyEnergyCheckedUnits",
           "path": "src/server/scripts/Commands/cs_modify.cpp",
           "summary": "Validate positive native signed32 display units before multiplying by10;preserve source security,reporting and actual energy/max-power writes."
+        },
+        {
+          "key": "ModifyRageCheckedUnits",
+          "path": "src/server/scripts/Commands/cs_modify.cpp",
+          "summary": "Validate positive native signed32 display units before multiplying by10;preserve source security,reporting and actual rage/max-power writes."
         }
       ],
       "checks": {
@@ -74,7 +79,7 @@
     }
   ],
   "remaining": [
-    "43 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
+    "42 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

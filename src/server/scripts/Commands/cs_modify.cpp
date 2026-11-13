@@ -222,15 +222,15 @@ public:
         // int32 manam = atoi(pmanaMax);
         // int32 mana = atoi(pmana);
 
-        int32 rage = atoi((char*)args)*10;
-        int32 ragem = atoi((char*)args)*10;
-
-        if (rage <= 0 || ragem <= 0 || ragem < rage)
+        int32 rage;
+        if (!Trinity::ParseCommandInteger(args, rage) || rage <= 0 || rage > std::numeric_limits<int32>::max() / 10)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
             return false;
         }
+        rage *= 10;
+        int32 ragem = rage;
 
         Player* target = handler->getSelectedPlayer();
         if (!target)
