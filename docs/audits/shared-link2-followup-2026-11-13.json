@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-13",
+  "status": "UNRESOLVED_MISSING_ACTION_PAYLOADS_NO_GAMEPLAY_REPAIR",
+  "request": "Salabo to link2",
+  "baseline_commit": "000ed877dc2dbb4b5504767ab900a81ab4d8478c",
+  "current_live_capture": {
+    "directory": ".codex/shared-link2-repair-20261113",
+    "operation": "Read-only World SQL,explicit READ ONLY session,complete EOF,exit0,empty captured stderr;no DDL,DML or character/account query.",
+    "missing": [
+      "101430/source0/id1 casts native200165 conversation1031 on the original invoker,then links to missing id2. Existing original-owner late handoff remains implemented independently.",
+      "103151/source0/id1 casts native202014 Holy Wards on SELF,then links to missing id2. Seven shared static map1539 spawns and separate summoned/reveal use must not be conflated."
+    ],
+    "remaining_graph": "Both root0->1 chains and other DATA/JustSummoned/speech/path/door actions retained unchanged;no invented action2,zero-link,placeholder/despawn or log suppression applied. Missing2 is a genuine unresolved invalid graph;which original additional action was intended is still unknown."
+  },
+  "matching_local_evidence": [
+    "Reviewed prior native26972 SharedCryptLinkCatalog:200165 produces1031;202014 is infinite periodic23/1000ms->202015 dummy106;37816 Shadowform and63048 loot-sparkle are distinct. None specifies a SmartAI id2 action.",
+    "Reviewed live actor/template/addon/spawn/condition records and current derived Slaghammer State/AI,actual missing-link dispatcher and prior native OPEN admission evidence. No original cached executable was executed or overwritten.",
+    "Local newer Trinity source/old SQL and Destiny/LegionPlayerBot references do not establish a compatible missing id2. Modern cosmetics/other NPCs/spell103151 references are not NPC103151 SmartAI payloads."
+  ],
+  "additional_primary_sources": {
+    "repositories": [
+      "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5",
+      "https://github.com/n0social/AshamaneCore-Legion-7.3.5",
+      "https://github.com/planee/LegacyCore",
+      "https://github.com/zTerragor/vSLDB"
+    ],
+    "bounded_sql_scan": "568 selected world SQL files from Preservation main and n0social master inspected:562 raw downloads match API Git blob SHA1,6 filenames with spaces/# initially failed URL construction and then received successful percent-encoded downloads. No selected small file contained the four exact numeric tokens101430/103151/200165/202014 or Slaghammer. This is a bounded source scan,not every branch/repository or proof that no implementation exists anywhere.",
+    "large_files": "27 additional large n0social world SQL files are present locally in DestinyCore;all match public API blob SHA1 after LF normalization. Includes9.2MB2018_03_31_02_world_SAI with no target IDs. Numeric occurrences in WDB/name/localization records identify actors,not missing actions. Full raw trees,per-file results and local identity checks retained privately.",
+    "other_code": "vSLDB tirisfal scenario reference is a different BFA core and incomplete class/Paladin/Warrior scaffold;no accepted shared LINK2 payload. No incompatible code imported.",
+    "limitations": "grep.app returned429 and supplied no code-search result. Two codeload ZIP requests stalled after4MB and timed out;never parsed or counted as complete repository scans. Their transport failures/hashes are retained;only unusable partial ZIP bytes were removed. Search-engine numeric/name results did not supply an accepted original implementation. No new gameplay video watched."
+  },
+  "diagnostics": "Before/after current SQL and closing snapshots have no new/changed crashes,appendedDBErrors or server warnings/errors/assertions. No worldserver/bnetserver launched or stopped. Canonical Release unchanged;no rebuild/deployment/startup claimed for this read-only investigation.",
+  "preserved": {
+    "world_sha256": "c79febc6a2e2c3bd8f2ad7b88723ff0eaf6b46d201d224aaf36c350887267016",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "original_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "research": "New and original unresolved evidence stays outside fixed. No mixed log truncated or unresolved report archived as repaired."
+  },
+  "next": "Need an actual missing-action source or an observed full-sequence gameplay defect establishing what continuation must do. User asked asynchronously whether there is a Slaghammer/Warrior failure or only the mentioned log entries;no answer inferred from elapsed time. Do not describe adding an arbitrary terminal action as recovering the missing original payload.",
+  "ledger": "Unchanged17/50;this research is not a gameplay repair. Sharasdal reconstruction/Warrior Monday/client/all36 whole-chain limits remain as previously recorded."
+}
