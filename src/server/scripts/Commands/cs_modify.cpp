@@ -1069,8 +1069,10 @@ public:
         if (!pBit)
             return false;
 
-        uint16 field = atoi(pField);
-        uint32 bit   = atoi(pBit);
+        uint16 field;
+        uint32 bit;
+        if (!Trinity::ParseCommandInteger(pField, field) || !Trinity::ParseCommandInteger(pBit, bit))
+            return false;
 
         if (field < OBJECT_END || field >= target->GetValuesCount())
         {
@@ -1085,14 +1087,14 @@ public:
             return false;
         }
 
-        if (target->HasFlag(field, (1<<(bit-1))))
+        if (target->HasFlag(field, (uint32(1) << (bit - 1))))
         {
-            target->RemoveFlag(field, (1<<(bit-1)));
+            target->RemoveFlag(field, (uint32(1) << (bit - 1)));
             handler->PSendSysMessage(LANG_REMOVE_BIT, bit, field);
         }
         else
         {
-            target->SetFlag(field, (1<<(bit-1)));
+            target->SetFlag(field, (uint32(1) << (bit - 1)));
             handler->PSendSysMessage(LANG_SET_BIT, bit, field);
         }
         return true;

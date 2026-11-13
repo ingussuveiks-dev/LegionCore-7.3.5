@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_18_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 18,
+  "status": "IN_PROGRESS_19_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 19,
   "batches": [
     {
       "batch": 1,
@@ -129,6 +129,11 @@
           "key": "ModifyItemLevelFiniteInput",
           "path": "src/server/scripts/Commands/cs_modify.cpp",
           "summary": "Finite complete item-level input and lower-security admission before native PvP stat/rating updates."
+        },
+        {
+          "key": "ModifyBitCheckedField",
+          "path": "src/server/scripts/Commands/cs_modify.cpp",
+          "summary": "Validate native UInt16 field and UInt32 bit without narrowing/trailing aliases before actual toggle;preserve existing bounds/permissions."
         }
       ],
       "checks": {
@@ -158,7 +163,7 @@
     }
   ],
   "remaining": [
-    "32 newly authorized source repairs remain;continue next independent groups.",
+    "31 newly authorized source repairs remain;continue next independent groups.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]
