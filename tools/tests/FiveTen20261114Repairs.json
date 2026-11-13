@@ -311,6 +311,16 @@
       "batch": 4,
       "old": "    static bool HandleNpcSetFactionIdCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 factionId = (uint32) atoi((char*)args);\n\n        if (!sFactionTemplateStore.LookupEntry(factionId))\n        {\n            handler->PSendSysMessage(LANG_WRONG_FACTION, factionId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->setFaction(factionId);\n\n        // Faction is set in creature_template - not inside creature\n\n        // Update in memory..\n        if (CreatureTemplate const* cinfo = creature->GetCreatureTemplate())\n        {\n            const_cast<CreatureTemplate*>(cinfo)->faction = factionId;\n        }\n\n        // ..and DB\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_FACTION);\n\n        stmt->setUInt16(0, uint16(factionId));\n        stmt->setUInt32(1, creature->GetEntry());\n\n        WorldDatabase.Execute(stmt);\n\n        return true;\n    }",
       "new": "    static bool HandleNpcSetFactionIdCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint16 factionId;\n        if (!Trinity::ParseCommandInteger(args, factionId))\n            return false;\n\n        if (!sFactionTemplateStore.LookupEntry(factionId))\n        {\n            handler->PSendSysMessage(LANG_WRONG_FACTION, factionId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->setFaction(factionId);\n\n        // Faction is set in creature_template - not inside creature\n\n        // Update in memory..\n        if (CreatureTemplate const* cinfo = creature->GetCreatureTemplate())\n        {\n            const_cast<CreatureTemplate*>(cinfo)->faction = factionId;\n        }\n\n        // ..and DB\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_FACTION);\n\n        stmt->setUInt16(0, uint16(factionId));\n        stmt->setUInt32(1, creature->GetEntry());\n\n        WorldDatabase.Execute(stmt);\n\n        return true;\n    }"
+    },
+    {
+      "key": "NpcFlagsCheckedValue",
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcSetFlagCommand",
+      "case": "NpcFlags",
+      "kind": "npc",
+      "batch": 4,
+      "old": "    static bool HandleNpcSetFlagCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 npcFlags = (uint32) atoi((char*)args);\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, npcFlags);\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_NPCFLAG);\n\n        stmt->setUInt32(0, npcFlags);\n        stmt->setUInt32(1, creature->GetEntry());\n\n        WorldDatabase.Execute(stmt);\n\n        handler->SendSysMessage(LANG_VALUE_SAVED_REJOIN);\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcSetFlagCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 npcFlags;\n        if (!Trinity::ParseCommandInteger(args, npcFlags))\n            return false;\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, npcFlags);\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_NPCFLAG);\n\n        stmt->setUInt32(0, npcFlags);\n        stmt->setUInt32(1, creature->GetEntry());\n\n        WorldDatabase.Execute(stmt);\n\n        handler->SendSysMessage(LANG_VALUE_SAVED_REJOIN);\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -396,7 +406,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "e8849dbbdd6ac603404f34b5f2207f213b457bba68c2bfd9dd35bb43945e2f14",
-      "after_sha256": "6801336b94face534a867ef839d23ceaebec360b106039eb80302338d9a56d8f"
+      "after_sha256": "e02973ccbf02c32d6e6164fbccca78ff7f2c48f54029de6683d856c798752cec"
     }
   }
 }

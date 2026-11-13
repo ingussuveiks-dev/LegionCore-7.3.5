@@ -680,7 +680,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 npcFlags = (uint32) atoi((char*)args);
+        uint32 npcFlags;
+        if (!Trinity::ParseCommandInteger(args, npcFlags))
+            return false;
 
         Creature* creature = handler->getSelectedCreature();
 
