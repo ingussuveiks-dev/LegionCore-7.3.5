@@ -29,6 +29,7 @@ EndScriptData */
 #include "Log.h"
 #include "Player.h"
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
 #include "World.h"
 #include "WorldSession.h"
 
@@ -433,6 +434,8 @@ public:
         uint32 targetSecurity = 0;
         uint32 gm = 0;
         char* arg1 = strtok((char*)args, " ");
+        if (!arg1)
+            return false;
         char* arg2 = strtok(NULL, " ");
         char* arg3 = strtok(NULL, " ");
         bool isAccountNameGiven = true;
@@ -461,8 +464,7 @@ public:
         }
 
         // Check for invalid specified GM level.
-        gm = (isAccountNameGiven) ? atoi(arg2) : atoi(arg1);
-        if (gm > SEC_CONSOLE)
+        if (!Trinity::ParseCommandInteger(isAccountNameGiven ? arg2 : arg1, gm) || gm > SEC_CONSOLE)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
@@ -471,7 +473,19 @@ public:
 
         // handler->getSession() == NULL only for console
         targetAccountId = (isAccountNameGiven) ? AccountMgr::GetId(targetAccountName) : handler->getSelectedPlayer()->GetSession()->GetAccountId();
-        int32 gmRealmID = (isAccountNameGiven) ? atoi(arg3) : atoi(arg2);
+        if (!targetAccountId)
+        {
+            handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, targetAccountName.c_str());
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+        int32 gmRealmID;
+        if (!Trinity::ParseCommandInteger(isAccountNameGiven ? arg3 : arg2, gmRealmID))
+        {
+            handler->SendSysMessage(LANG_INVALID_REALMID);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
         uint32 playerSecurity;
         if (handler->GetSession())
             playerSecurity = AccountMgr::GetSecurity(handler->GetSession()->GetAccountId(), gmRealmID);
