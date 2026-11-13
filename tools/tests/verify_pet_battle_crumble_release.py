@@ -41,4 +41,4 @@ assert {('cmp','dword ptr [rax + 0x15], 0xc9b'),('cmp','dword ptr [rbx + 0x3c], 
 assert pairs(body[kill-2:kill])==[('mov','edx, dword ptr [rbx + 0x1c]'),('mov','rcx, rbx')],'Issued removal kills its actual source only'
 assert body[guard+2].mnemonic=='je'and body[kill].address not in reaches(body,body[guard+2].operands[0].imm),'Rejected source cannot reach terminal kill'
 print('PASS linked native1811/183=1586 bounded source,initial3226 self controller,once-only countdown,issued1739/3227 actual source-only removal and scoped early-death ordering;all retained proofs pass;immunity/client scopes separate')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'native_lifecycle_cases':76,'duration_from_native3226':9,'natural_expiry_round':10,'verified_stack_free_leaf_bytes':end-start,'immunity_repaired':False}))
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'native_lifecycle_cases':76,'duration_from_native3226':9,'natural_expiry_round':10,'verified_stack_free_leaf_bytes':end-start,'immunity_checked_here':False}))

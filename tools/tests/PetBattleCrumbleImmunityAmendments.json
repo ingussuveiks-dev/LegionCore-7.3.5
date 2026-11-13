@@ -1,0 +1,17 @@
+{
+  "baseline": "821d0c5e9",
+  "scope": "Actual native1811/183=1586 hostile ordinary and native24/179 periodic admission before miss/blocks/reactions;preserve failed-hit causes,self payments,explicit nonperiodic unavoidable endpoints and all percentage/calculation formulas.",
+  "files": {
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp": {
+      "before_sha256": "5d5bd65c5864333c2a1e573057ae9b5bd9648c22cf8ffe035698ce4385856d15",
+      "after_sha256": "0a361b59f1c3bf49015b1a69cbcef322c9a1808042e5c4090a3e57a6e9d5c7ab"
+    }
+  },
+  "edits": [
+    {
+      "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+      "old": "bool PetBattleAbilityEffect::Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged)\n{\n",
+      "new": "bool PetBattleAbilityEffect::Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged)\n{\n    // Native1811/183=1586 is intrinsically immune to ordinary hostile hits.\n    // A critical/power/vulnerability bonus must not cancel that protection.\n    // Preserve failed-hit causes, self payments and explicit unavoidable paths.\n    // Native24/179 also pass IsPeriodic as the avoidance-bypass argument;\n    // periodic ordinary damage still meets this intrinsic protection.\n    bool const ordinaryPeriodic = (Flags & PETBATTLE_EVENT_FLAG_PERIODIC) &&\n        (EffectInfo->BattlePetEffectPropertiesID == 24 || EffectInfo->BattlePetEffectPropertiesID == 179);\n    if (!(Flags & FailFlags) && target != Caster && (!cantBeAvoidBlockedDodged || ordinaryPeriodic) && PetBattleInstance->IsCrumbleSource(target))\n    {\n        Flags |= PETBATTLE_EVENT_FLAG_IMMUNE;\n        SetHealth(target, GetHealth(target));\n        return false;\n    }\n\n"
+    }
+  ]
+}

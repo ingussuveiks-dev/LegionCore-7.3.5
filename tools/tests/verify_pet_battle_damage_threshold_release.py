@@ -15,15 +15,15 @@ guard=next(i for i,x in enumerate(add[:write])if(x.mnemonic,x.op_str)==('test','
 assert add[guard+1].mnemonic=='jle' and add[guard+1].operands[0].imm>add[write].address
 damage=ins('?Damage@PetBattleAbilityEffect@@');block=sites(damage,'?ConsumeBlockCharge@PetBattleAbilityEffect@@')[0]
 region=damage[:block];p=pairs(region)
-assert {('cmp','r15d, dword ptr [rsi + 0x1c]'),('cmp','eax, 0x1c3'),('cmp','eax, 0x2f6'),('cmp','word ptr [rax + 6], 0x44')}<=set(p),'Only real self-targeted451/758 native68 payments bypass the attack thresholds'
+assert {('cmp','ebp, dword ptr [rsi + 0x1c]'),('cmp','eax, 0x1c3'),('cmp','eax, 0x2f6'),('cmp','word ptr [rax + 6], 0x44')}<=set(p),'Only real self-targeted451/758 native68 payments bypass the attack thresholds'
 assert {('mov','r9d, dword ptr [rax + 0x448]'),('mov','edx, dword ptr [rax + 0x46c]'),('test','r9d, r9d'),('test','edx, edx')}<=set(p),'Actual target native191/200 values are read with positive-state guards'
-low=next(i for i,x in enumerate(region)if(x.mnemonic,x.op_str)==('cmp','ebp, r9d'))
-high=next(i for i,x in enumerate(region)if(x.mnemonic,x.op_str)==('cmp','ebp, edx'))
+low=next(i for i,x in enumerate(region)if(x.mnemonic,x.op_str)==('cmp','r15d, r9d'))
+high=next(i for i,x in enumerate(region)if(x.mnemonic,x.op_str)==('cmp','r15d, edx'))
 immune=next(i for i,x in enumerate(region)if(x.mnemonic,x.op_str)==('bts','ecx, 9'))
 assert region[low+1].mnemonic=='jl' and region[low+1].operands[0].imm==region[immune].address,'Below is strictly less, so equality remains an ordinary hit'
 assert region[high+1].mnemonic=='jle' and region[high+1].operands[0].imm>region[immune].address,'Above is strictly greater, so equality remains an ordinary hit'
 health=sites(region,'?SetHealth@PetBattleAbilityEffect@@')
-assert len(health)==1 and immune<health[0]<block
+assert len(health)==1 and health[0]<block and region[health[0]].address in reaches(damage,region[immune].address),'Actual threshold immunity reaches the shared unchanged-health return even when its tail is merged backward'
 tail=reaches(damage,region[immune].address)
 assert any(x.mnemonic=='ret' and x.address in tail for x in region)
 assert not any(damage[i].address in tail for name in ('?ConsumeBlockCharge@PetBattleAbilityEffect@@','?Cast@PetBattle@@','?Kill@PetBattleAbilityEffect@@')for i in sites(damage,name)),'Ignored attack returns without consuming a block or issuing damage/death reactions'

@@ -1,0 +1,202 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "CRUMBLE_ORDINARY_PERIODIC_HOSTILE_IMMUNITY_FIXED_DEPLOYED_FULL_PERCENTAGE_POLICY_CLIENT_OPEN",
+  "baseline": "821d0c5e9",
+  "problem": "Actual native Rocko1811/183=1586 has24=-100,but ordinary critical Bite dealt20 and a25percent damage bonus dealt5;native additive calculation could offset the protection. Source76 lifecycle repair did not claim to repair this. The first new candidate handled ordinary direct hits but missed native periodic damage because shared HandleDamage passes authored IsPeriodic as its avoidance-bypass argument.",
+  "repair": "Only Damage admission changes: successful hostile ordinary hits and periodic properties24/179 against a bounded real living/noncaptured1811/183=1586 source emit native IMMUNE with unchanged actual health and return false before zero-damage MISS,finite blocks and damage/death reactions. Existing failed-hit causes,self-owned payments and explicit nonperiodic unavoidable endpoints retain their prior paths. General CalculateDamageWithVariance,crit/power/vulnerability formulas,percentage formulas,all other species,the native D9 controller and quest credit are unchanged. No SQL,layout/member/vtable/API or fabricated aura/timer change.",
+  "native_data": "Matching26972 native species1811/183=1586/base24=-100 and native Crumble description provide the inherent ordinary protection. Typed native EffectProperties24 and179 both label Param2 IsPeriodic;real533/property179 params3,100,1 belongs to315->316 Spiked Skin. Existing HandleDamage sets PERIODIC and passes that same Param2 to Damage,so a periodic native row must not accidentally borrow the explicit nonperiodic unavoidable exemption.",
+  "tests": {
+    "native": "84 counted actual linked cases across all six actual source positions: eight attack groups(normal Bite,guaranteed crit,attacker25percent bonus,target50percent vulnerability,power10000,flat taken+crit,real native379 Poison through a full round,actual315/316 Spiked Skin triggered by native1587 Pound with Rocko at1HP). Six controls per source preserve original miss cause,finite block count,actual native healing,self-owned direct payment,explicit nonperiodic unavoidable endpoint and unrelated species. Real source/roster/Begin and native Crumbling remain. All actors/teams live in memory,no character writes. Direct payment/unavoidable controls certify existing endpoint separation,not authentic full percentage/capture/global immunity policy.",
+    "controls": "Three complete pinned821d0c5e9 PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail exact crit/bonus/vulnerable assertions with expected exit1;corrected84 pass. Old18-path coupled Crumble research remains historical context outside fixed;its ordinary damage findings are superseded by this repair,not erased.",
+    "candidate_and_tools": "First undeployed candidate failed real Poison(target0/mode6,1481->1476) because native periodic rows set the bypass argument. Corrected by checking the actual periodic flag plus properties24/179,then rebuilt and all84 passed. Context diagnostic retained in regression. A minimal metadata probe first lacked unordered_set include;corrected before execution. Typed metadata confirms both labels. Earlier threshold PE proof needed actual targetEBP/damageR15 role updates and CFG traversal of the shared unchanged-health return merged backward;no source branch or check disabled.",
+    "retained": "76 Crumble lifecycle,102 online owned final health,112 Pound,120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Both100 PE scopes,original3-bit/alignment writer,complete retained pet chain and new actual Damage admission/early-return proof pass. No new106 or full native-core ASAN claim.",
+    "pe": "Actual Damage preserves native argument roles,target/self/failure predicates,periodic bit16 and actual24/179 metadata,then calls the same independently bounded native source predicate. Actual IMMUNE/unchanged-health receipt returns false before zero-miss,block-charge consumption or Cast/Kill reactions. Failed source binding,existing miss,self payment and explicit nonperiodic bypass cannot reach the new guard. The earlier threshold branch still uses strict191/200 boundaries and real cloned68 payment exemption,following its backward-merged safe return. Lifecycle verifier metadata now says immunity_checked_here=false to describe its own scope rather than a global repair claim. General64byte leaf and handler CFG bounds unchanged.",
+    "runtime": "Owned canonical PID2148 fresh ready/shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Relinked bnet native .text equals prior rollback byte-for-byte;no separate new bnet startup claim.",
+    "diagnostics": "Formal tests/builds/runtime/PE have canonical and own pre/post crash/log inventories plus reviewed exits/stdout/stderr. No new/changed crash,appended DBErrors or unexplained runtime warning/error/assertion. Full game warning set is a subset of preceding Crumble full build after line normalization. First candidate and corrected repaired evidence remain separate.",
+    "limits": "Actual client IMMUNE/crit/periodic text,animations,HP,countdown and full Rocko/WQ41624/native species1811 credit remain pending. No actual client rendering,durable character round-trip or all36-chain certification."
+  },
+  "remaining_percentage_policy": "OPEN: native percentage/unavoidable attack scaling,bypass exceptions,exact general modifier/crit ordering and complete Rocko combat policy. This scoped ordinary/periodic admission does not establish that existing explicit nonperiodic unavoidable behavior is authentic retail behavior;it preserves it for separate investigation. No speculative universal -100 rewrite or percentage exception added.",
+  "canonical": {
+    "worldserver.exe": "a00f76dc933c0e0c669f27fbad6d6cae5a260fb59ce0b6549a3dc501ec4a1232",
+    "worldserver.map": "386cd6c237f99f873164c32bffad42c6846cd4c400516df61e77b7d71fddac40",
+    "bnetserver.exe": "0f21a9644b93d7259f329e93dc48d3cec1343a34ff027604a405ccb90863cab7",
+    "bnetserver.map": "7dd6b8aa58901e280b7f943400b8793bd9b68583ac9b6b3f89ab716eeacaf661"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/fixed3-driver.log",
+      "sha256": "68c1a83c0a7c4b6c44b398772f68ca2144a907f99ead75f385c7036613915621"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/metadata2-driver.log",
+      "sha256": "e32b5ce8ca728f802f5d2ef4b32050f862bb49191351e6a5971ae41cb1f7ad86"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-crumble76-driver.log",
+      "sha256": "71ce069cc2c742195d2cda9b9c5104101a38bec8c3eec4a59df761d942c56905"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-health102-driver.log",
+      "sha256": "7bd6295033df7f06a0081fe1115c272c02c741df2eac75eae96c8d92613fd324"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-pound112-driver.log",
+      "sha256": "503d2f71103d59e2acaab15b2f7751f3c7d559c7658905a823ef8ae2eb9c6f9c"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-static120-driver.log",
+      "sha256": "699ae182e121d24d6e2042bbcd9d7e2f0bd1c7ef771ea0bc7bde3fe7b4c9d125"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-threshold78-driver.log",
+      "sha256": "51da00049c36993b946d4f50e9868e8a24797146d435fd853f05fbb64dd4b07c"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-roboflauge48-driver.log",
+      "sha256": "7ac107b1dd2bed31e89004b91dc29a888b277e399e2216104c485b85323fb968"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-frenzy24-driver.log",
+      "sha256": "1aff6cad2bbe324871fbaaaf0758b3946617275de51a197dbfc0e6c359e24bc4"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-variance144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-ward50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-roster48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-cheat28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-hourglass34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-bend26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-racial13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-sacrifice44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/retained-unholy16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/full-SecondTenTen20261112Native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/full-TenTen20261111Native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/hundred-stage.log",
+      "sha256": "e2d53d686070b8cf3214e3cdd0247bd5451e58274c46eb14e2e196aa1273d034"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/second-hundred-stage.log",
+      "sha256": "059ae919261f18ce480826d604dd2e3e97a9ae59f77787d5086d71183517838b"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/writer-stage.log",
+      "sha256": "dfe0aff6599501b6e4f0d6aec7347215903a3ca093da55e94459f42af24de56c"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/canonical-linked.log",
+      "sha256": "6438cfd5a47c999574731b84ddcfdf72574f39861464d7ed02f1fd45d3e8e5cb"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/startup-driver.log",
+      "sha256": "77c98ccd3ae677ad160108a4c0fcf66ecb37455090a9521aab4501a5d0031988"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/scepter-driver.log",
+      "sha256": "71267b1942216489fb11280a9284eb3c120f397fedf6dbf3f7ae6eed7fe777fc"
+    },
+    {
+      "path": ".codex/pet-crumble-immunity-open-2026-11-13/cleanup-driver.log",
+      "sha256": "32631aa52cf5aeed2839645de7bac5f2a8b5969fa0e1959b88ebfee39c8d0b70"
+    }
+  ],
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-crumble-immunity-2026-11-13",
+    "ManifestSHA256": "6F141A662291F3199EEFA59BA903215B6D2FAD910472FC832EA1810737841649",
+    "Archived": 674,
+    "Removed": 86,
+    "ReclaimedBytes": 962326801.0,
+    "Retained": "Canonical runtime/configuration/DLLs/certs/shared data/main libraries,regression sources and reusable tools;three newest pre-immunity/pre-Crumble/pre-final-health recovery sets and exact cdca106-certified pre-Ward executable/maps. Redundant pre-Pound files superseded,original manifest retained. Resolved84 ordinary/periodic immunity cases,retained76 Crumble lifecycle,three complete pinned controls,compiler/PE role and merged-tail proof corrections,all retained native/two full100/linked/Scepter/start scopes archived. Original18 Crumble observations retained as coupled controller/calculation counterfactual context for unresolved full percentage/unavoidable policy and its original native probe/source/configuration/logs remain outside fixed; ordinary damage repair does not certify complete percentage/unavoidable policy or fresh106/full client traversal. Other OPEN native research,Slaghammer/LINK2/Lady/mixedDBErrors/personal/character/database/security files untouched."
+  },
+  "superseded_rollback_copies": [
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-pound-2026-11-13",
+      "manifest_sha256": "50eafe986688928b5c354082c3ee69be8c55548d792bcd7b01886948c0474fef",
+      "repair_commit": "31af6b87f"
+    }
+  ],
+  "rollback_cleanup_note": "Redundant pre-Pound owned binaries/maps removed after current deployment/checks;original manifest hash retained. Earlier Protected-path inventories are point-in-time records superseded for those files by this deletion manifest. Three latest recovery sets and exact cdca106 executable/maps retained. Original coupled Crumble/source/calculation research and all other unresolved probes/mixed logs remain protected outside fixed. No personal/character/database backup or security file removed.",
+  "final_verification": {
+    "status": "PASS",
+    "native_crumble_ordinary_immunity_cases": 84,
+    "retained_native_cases": [
+      76,
+      102,
+      112,
+      120,
+      78,
+      48,
+      24,
+      144,
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "a00f76dc933c0e0c669f27fbad6d6cae5a260fb59ce0b6549a3dc501ec4a1232",
+      "worldserver.map": "386cd6c237f99f873164c32bffad42c6846cd4c400516df61e77b7d71fddac40",
+      "bnetserver.exe": "0f21a9644b93d7259f329e93dc48d3cec1343a34ff027604a405ccb90863cab7",
+      "bnetserver.map": "7dd6b8aa58901e280b7f943400b8793bd9b68583ac9b6b3f89ab716eeacaf661"
+    },
+    "bnet_native_code_section_unchanged": true,
+    "archive_records": 674,
+    "removed": 86,
+    "removed_bytes": 962326801.0,
+    "older_owned_rollback_sets_removed": 1,
+    "recent_rollback_sets_retained": 3,
+    "historical106_binary_and_maps_retained": true,
+    "protected_evidence_configuration_and_rollback_unchanged": true,
+    "new_compiler_warnings": 0
+  },
+  "remaining": [
+    "Complete percentage/unavoidable combat policy and actual client traversal remain OPEN as above.",
+    "Owned offline/logout/disconnect persistence and cleanup,Haunt652/653,other five species183/four abilities,DarkRebirth794/795,Ominitron1595,Apocalypse,clone122/123/124 and generic159 remain OPEN.",
+    "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+  ],
+  "next": "Check actual locally installed7.3.5.26972 client availability and safe client-test entry;continue only evidence-backed remaining lifecycle/combat work."
+}

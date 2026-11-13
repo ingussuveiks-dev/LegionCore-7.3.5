@@ -306,6 +306,20 @@ bool PetBattleAbilityEffect::ConsumeBlockCharge(uint32 target)
 
 bool PetBattleAbilityEffect::Damage(uint32 target, int32 damage, bool cantBeAvoidBlockedDodged)
 {
+    // Native1811/183=1586 is intrinsically immune to ordinary hostile hits.
+    // A critical/power/vulnerability bonus must not cancel that protection.
+    // Preserve failed-hit causes, self payments and explicit unavoidable paths.
+    // Native24/179 also pass IsPeriodic as the avoidance-bypass argument;
+    // periodic ordinary damage still meets this intrinsic protection.
+    bool const ordinaryPeriodic = (Flags & PETBATTLE_EVENT_FLAG_PERIODIC) &&
+        (EffectInfo->BattlePetEffectPropertiesID == 24 || EffectInfo->BattlePetEffectPropertiesID == 179);
+    if (!(Flags & FailFlags) && target != Caster && (!cantBeAvoidBlockedDodged || ordinaryPeriodic) && PetBattleInstance->IsCrumbleSource(target))
+    {
+        Flags |= PETBATTLE_EVENT_FLAG_IMMUNE;
+        SetHealth(target, GetHealth(target));
+        return false;
+    }
+
     if (!(Flags & FailFlags) && damage <= 0)
         Flags |= PETBATTLE_EVENT_FLAG_MISS;
 
