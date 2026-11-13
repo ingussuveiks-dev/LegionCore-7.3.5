@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-13",
+  "request": "Pagaid\u0101m neesmu pie datora turpini",
+  "status": "OPEN_NATIVE_OFFLINE_COUNTERFACTUAL_OBSERVED_NO_GAMEPLAY_REPAIR",
+  "implementation_head": "f8e3e7749a6e22dbc2072299552a4550ae02fa40",
+  "canonical_world_sha256": "37b28bb97e2541eb7f5e07fe27bd8178d5a2e06123c2ff1b637c27ab91b3cfd1",
+  "finding": "Ordinary world-session logout first detaches the Player through Map::RemovePlayerFromMap(false),then reaches LogoutPlayer/save. GetObjectInWorld(Player) filters IsInWorld and IsPreDelete. PetBattle::Finish uses it for both journal update and release,so an already detached but still allocated/registered Player is skipped. The new pending-arrival cleanup removes only its timer record;it intentionally does not settle or save the battle.",
+  "native_observations": {
+    "count": 12,
+    "scope": "Actual linked Player,PetBattleSystem,PetBattle::Finish/Update/ForfeitBattle,production PlayerScript callback and matching26972 data;controlled Unit::RemoveFromWorld boundary and in-memory journals. NO full WorldSession::LogoutPlayer,SaveToDB,durable account journal or actual disconnect/client traversal. Known-broken counterfactual research completion is not a passing repaired regression. Mode4 additionally calls actual Begin and enables the real input isRun state before detachment;it verifies initialized turn1 does not progress. Other Finish cases use the controlled established HealthFill fixture. Both team positions exercise endpoint ownership,not two fully traversed retail PvE setups.",
+    "cases": [
+      "OBSERVED team=0 mode=0 status=2 hp=90 journal=90 dirty=1 retainedBattleId=0",
+      "OBSERVED team=0 mode=1 status=2 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=0 mode=2 status=1 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=0 mode=3 status=0 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=0 mode=4 status=1 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=0 mode=5 status=2 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=1 mode=0 status=2 hp=90 journal=90 dirty=1 retainedBattleId=0",
+      "OBSERVED team=1 mode=1 status=2 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=1 mode=2 status=1 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=1 mode=3 status=0 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=1 mode=4 status=1 hp=100 journal=100 dirty=0 retainedBattleId=1",
+      "OBSERVED team=1 mode=5 status=2 hp=100 journal=100 dirty=0 retainedBattleId=1"
+    ],
+    "meaning": {
+      "mode0": "Online ordinary-forfeit control:FINISHED,HP90,journal90,needSave1,battleID cleared.",
+      "mode1": "Detached ordinary-forfeit:FINISHED,but HP100,journal100,needSave0 and player retains battleID.",
+      "mode2": "Living webbed active pet rejects ordinary forfeit both online and after detachment;RUNNING/needSave0 remains.",
+      "mode3": "Creation plus actual arrival then pending-map logout cleanup and detachment:system Update60000 still retains CREATION and battleID,no journal update.60000 is only an observation interval,not a proposed new timeout.",
+      "mode4": "Actual Begin reaches turn1;both native input-run flags enabled,then detachment and Update60000 remain RUNNING at turn1,needSave0. Does not require the constructor-default paused state. No artificial client input or timeout policy claimed.",
+      "mode5": "Detached natural Finish becomes FINISHED while skipping journal/release and retaining player battleID."
+    }
+  },
+  "additional_lookup_boundary": "FindPlayer(guid,false) is NOT an available fallback in this checkout:its bool parameter is unused and it still calls the same world-filtered accessor. Initial probe incorrectly assumed that flag worked,then was corrected to compare actual HashMapHolder<Player>::Find plus both filtered getters. Local false-call consumer stormheim_blessing.cpp Cleanup expects owner access after transfer;that shared lookup/ceremony cleanup requires a separate complete regression before changing global lookup behavior.",
+  "sources_order": "Traced matching local Map/WorldSession/Player/ObjectAccessor/PetBattle/PlayerScript source and readonly native data first. Local newer TrinityCore has no equivalent Legion pet combat implementation in its current source;its history is a reference only. Then inspected original upstream arrival script and Titans GitHub source. No YouTube/video review claimed.",
+  "github_references": [
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8b6d97c80700c2e61c661c7db377052fb3565c4d/src/server/game/Server/WorldSession.cpp",
+      "local": ".codex\\pet-offline-open-2026-11-13\\references\\WorldSession.cpp",
+      "sha256": "e1e8dae3c68453f4e8b7e894c583434c45cd40a1bd9205c3c8a036071052603d"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8b6d97c80700c2e61c661c7db377052fb3565c4d/src/server/game/PetBattle/PetBattleSystem.cpp",
+      "local": ".codex\\pet-offline-open-2026-11-13\\references\\PetBattleSystem.cpp",
+      "sha256": "47b98bef281998d0d409086667ae7cbf4631f3385c13fe29a6049adc78ebf298"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8b6d97c80700c2e61c661c7db377052fb3565c4d/src/server/game/PetBattle/PetBattle.cpp",
+      "local": ".codex\\pet-offline-open-2026-11-13\\references\\PetBattle.cpp",
+      "sha256": "fba7025a1bc6ca4bced32cec015d9ee5354266532de7a88388481fcb7ecdc50a"
+    }
+  ],
+  "reference_findings": "Titans introduces explicit OnPlayerLogout with a bound leaving Player,creation AbortBeforeStart and direct journal release before save,plus a substantially different shared_ptr/locking/posted-player-update architecture. This supports investigating the logout boundary;it is not copied or treated as compatible retail735 gameplay evidence. Its120-second creation timeout is not imported. Its removed webbed guard does not prove the authentic735 voluntary/forced escape distinction.",
+  "required_before_repair_complete": [
+    "Separate cancellation before Begin from an already running battle;never index uninitialized creation ActivePetID.",
+    "Finalize against the departing bound player before save,without relying on a world-filtered lookup or leaving a callback on a deleted pointer.",
+    "Keep legitimate voluntary webbed escape restrictions;establish forced disconnect/forfeit and penalty policy separately.",
+    "Cover both teams,PvE wild/trainer,PvP duel/matchmaking,other player still connected,offline final death/positive retained health,owned journal exactly-once and repeated teardown.",
+    "Preserve wild creature release,matchmaking recall/save destination,request/queue cancellation,failed arrival/re-entry and source ownership.",
+    "Run actual logout/save in isolated scratch character/auth databases and native/script/PE regressions,then real client disconnect/reconnect. Do not infer completion from the12 endpoint observations."
+  ],
+  "diagnostics": "Formal pre/post inventories and actual exits/stdout/stderr reviewed. First probe stopped at a fixture assumption with exit1,no new crash or appended DB/runtime errors. Corrected12-observation probe exit0 and all pools closed. No user/unknown server stopped,no task-owned world/bnet/client process remains. Canonical EXE and mixed DBErrors unchanged. Original Slaghammer/LINK2/Lady and all other OPEN research preserved. A supplementary corrected probe repeats all12 with actual Begin/isRun in mode4;same observations,exit0 and clean appended diagnostics. Earlier weaker paused-state observation is preserved as historical research.",
+  "retained_for_open_investigation": [
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\Research.cpp",
+      "sha256": "5625231ff6bf0453d43ad41f78066deccb75dc1657cc8b97e48f26a0ae92d3e3",
+      "bytes": 4665
+    },
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\run.ps1",
+      "sha256": "aa5b2eefbbf8d7f4866294102d88d72329cc8623bc6c525431bebaef1c9a5c78",
+      "bytes": 1903
+    },
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\observations-20261113-042022-499\\native.tsv",
+      "sha256": "2c06c41fb72d53cb06c56039d8c58a922dd06629b6b0bb75c03e16d313cbef16",
+      "bytes": 5768
+    },
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\observations-20261113-042022-499\\build.log",
+      "sha256": "8e64d6400e6c5a302af5ca4d523db9c6c69e8929933574c488b8a21c6888dd2a",
+      "bytes": 14
+    },
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\observations-20261113-042022-499\\worldserver.conf",
+      "sha256": "bfe3ab04d72ceabf4f5029131f6ce1791c9939ad29ec3ea4138cc0144bfddd34",
+      "bytes": 119453
+    },
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\observations-20261113-042022-499\\evidence\\diagnostics-before.json",
+      "sha256": "fd1b9bb7483dc7ff834c3f7eadb8e84f975c1dd4e857dd9655172cdf493c6bff",
+      "bytes": 1549
+    },
+    {
+      "path": ".codex\\pet-offline-open-2026-11-13\\observations-20261113-042022-499\\evidence\\diagnostics-after.json",
+      "sha256": "ed83182ab245fdbb88449ffeef1c5c65cb714cc0982b2bc301cb138450da1a3b",
+      "bytes": 183
+    },
+    {
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleOfflineResearchNative.exe",
+      "sha256": "19905a05342fa1af3d60a1d385a276a74d2adb2a3b7cd616c01b2cde4a310ad3",
+      "bytes": 14376448
+    },
+    {
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleOfflineResearchNative.obj",
+      "sha256": "87ab659d8647de84d37ab6925a8d8967b2c515b8d4543d8d4b8d07bc63afe237",
+      "bytes": 2498207
+    }
+  ],
+  "archive_policy": "This unresolved research,including original failed lookup assumption and the corrected native probe/configuration/output,is retained outside fixed with a concrete outstanding purpose:compare the actual repaired logout/save path against known-broken endpoints. No unresolved log cleared or crash hidden. Sensitive private config is ignored and never committed;only its hash is listed.",
+  "next": "Implement and validate a bounded departing-player lifecycle after establishing native forced/voluntary exit semantics;do not add only a late forfeit call. Completed arrival fix88296e5dd remains deployed. User absence does not block independent source/native work."
+}

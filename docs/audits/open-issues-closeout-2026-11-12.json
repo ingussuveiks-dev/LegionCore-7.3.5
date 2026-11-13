@@ -1,4 +1,11 @@
 {
+  "latest_pet_offline_investigation_2026_11_13": {
+    "status": "OPEN_NATIVE_OFFLINE_COUNTERFACTUAL_OBSERVED_NO_GAMEPLAY_REPAIR",
+    "audit": "docs/audits/pet-offline-research-2026-11-13.json",
+    "native_observations": 12,
+    "finding": "Ordinary world-session logout first detaches the Player through Map::RemovePlayerFromMap(false),then reaches LogoutPlayer/save. GetObjectInWorld(Player) filters IsInWorld and IsPreDelete. PetBattle::Finish uses it for both journal update and release,so an already detached but still allocated/registered Player is skipped. The new pending-arrival cleanup removes only its timer record;it intentionally does not settle or save the battle.",
+    "next": "Implement and validate a bounded departing-player lifecycle after establishing native forced/voluntary exit semantics;do not add only a late forfeit call. Completed arrival fix88296e5dd remains deployed. User absence does not block independent source/native work."
+  },
   "latest_pet_arrival_start_2026_11_13": {
     "status": "SCOPED_ARRIVAL_DELAY_REPAIRED_DEPLOYED_NATIVE_AND_ASAN_PASS_CLIENT_PENDING",
     "audit": "docs\\audits\\pet-arrival-start-2026-11-13.json",
