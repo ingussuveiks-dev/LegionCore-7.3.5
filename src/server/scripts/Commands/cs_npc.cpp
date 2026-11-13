@@ -1364,7 +1364,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 phasemask = (uint32) atoi((char*)args);
+        uint32 phasemask;
+        if (!Trinity::ParseCommandInteger(args, phasemask))
+            return false;
         if (phasemask == 0)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
