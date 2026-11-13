@@ -2076,7 +2076,9 @@ public:
             return false;
         }
 
-        float scale = (float)atof((char*)args);
+        float scale;
+        if (!Trinity::ParseCommandFloat(args, scale))
+            return false;
 
         if (scale < 0.0f)
         {
