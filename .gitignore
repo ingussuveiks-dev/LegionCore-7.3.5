@@ -27,6 +27,7 @@ __pycache__/
 *.pyc
 *.pyo
 /.codex/
+/.codex-attachments/
 sql/base/LegionCore_full_735.26972_2024_10_23/LegionCore_hotfixes_735.26972_2024_10_23.sql
 sql/base/LegionCore_full_735.26972_2024_10_23/LegionCore_world_735.26972_2024_10_23.sql
 
