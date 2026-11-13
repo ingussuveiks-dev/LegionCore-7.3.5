@@ -23,6 +23,8 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
+#include <limits>
 #include "ObjectMgr.h"
 #include "Chat.h"
 #include <stdlib.h>
@@ -171,15 +173,15 @@ public:
         // int32 manam = atoi(pmanaMax);
         // int32 mana = atoi(pmana);
 
-        int32 energy = atoi((char*)args)*10;
-        int32 energym = atoi((char*)args)*10;
-
-        if (energy <= 0 || energym <= 0 || energym < energy)
+        int32 energy;
+        if (!Trinity::ParseCommandInteger(args, energy) || energy <= 0 || energy > std::numeric_limits<int32>::max() / 10)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
             return false;
         }
+        energy *= 10;
+        int32 energym = energy;
 
         Player* target = handler->getSelectedPlayer();
         if (!target)
