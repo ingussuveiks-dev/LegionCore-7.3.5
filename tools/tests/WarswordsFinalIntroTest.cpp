@@ -101,6 +101,7 @@ struct Creature : Unit
     uint32 playerScans = 0;
     bool castWorks = true;
     bool auraWorks = true, aura = false, phase = true, bubble = true;
+    bool deferAura = false, pendingBlessing = false;
     ObjectGuid guid = 99, auraCaster = 99;
     std::function<void()> onCast;
     std::function<void(uint32)> onElapsed;
@@ -124,7 +125,8 @@ struct Creature : Unit
     Creature* FindNearestCreature(uint32 identity, float distance, bool aliveOnly) { assert(identity == 99043 && distance == 100 && aliveOnly); return helya; }
     Player* FindNearestPlayer(float distance, bool aliveOnly) { assert(distance == 100 && aliveOnly); return nearest; }
     void GetPlayerListInGrid(std::list<Player*>& players, float distance) { assert(distance == 40); ++playerScans; players = nearbyPlayers; }
-    uint32 CastSpell(Unit* target, uint32 identity) { auto receiver = dynamic_cast<Creature*>(target); assert(receiver && identity == 195062); ++casts; if (castWorks) { ++acceptedCasts; receiver->aura = auraWorks; receiver->auraCaster = guid; } if (onCast) onCast(); return castWorks ? 0 : 1; }
+    uint32 CastSpell(Unit* target, uint32 identity) { auto receiver = dynamic_cast<Creature*>(target); assert(receiver && identity == 195062); ++casts; if (castWorks) { ++acceptedCasts; pendingBlessing = deferAura; if (!deferAura) { receiver->aura = auraWorks; receiver->auraCaster = guid; } } if (onCast) onCast(); return castWorks ? 0 : 1; }
+    void* FindCurrentSpellBySpellId(uint32 identity) const { assert(identity == 195062); return pendingBlessing ? const_cast<Creature*>(this) : nullptr; }
     bool HasAura(uint32 identity, ObjectGuid caster) const { assert(identity == 195062); return aura && auraCaster == caster; }
     bool HasAura(uint32 identity) const { assert(identity == 205424); return bubble; }
     ObjectGuid GetGUID() const { return guid; }
@@ -222,6 +224,7 @@ struct IntroAI : ScriptedAI
 #include "RemoveConversation.inc"
 #include "IsIntroHelya.inc"
 #include "CancelIntro.inc"
+#include "UpdateBlessing.inc"
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
 #include "UpdateLifecycle.inc"

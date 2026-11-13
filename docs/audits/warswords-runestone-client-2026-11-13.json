@@ -1,7 +1,7 @@
 {
   "date": "2026-11-13",
   "status": "CLIENT_CONFIRMED_ALL_FOUR_RUNESTONES_AND_NEXT_STEP_FINAL_HELYA_INTRO_OPEN",
-  "fix_commit": "Focused implementation commit containing this audit",
+  "fix_commit": "3b5d8eb97aa75b7b7adaf6773cc08060e32cac54",
   "scope": "Fury40043/scenario944/map1511/Stage4 The Stolen Souls:four244940 Prison Runestones,DB134130..134133. One focused repair;full Fury/all36 chains remain separate.",
   "client_evidence": [
     "User confirms bonfire->Stage2/enemy appearance and later successful Stage2 combat progression. Later screenshots show Stage4;that does not independently verify every Stage3 actor/kill path.",
@@ -97,5 +97,6 @@
     "Rune hover-name encoding is visibly malformed in supplied screenshots/live template;it was not changed as part of progression repair. Authentic localized name data remains separate.",
     "The independent .go quest incomplete-POI draft is retained in ignored .codex/go-quest-destination-20261113 and restored out of production before all rune builds;not tested/deployed/counted. Resume that independent repair after this focused client check.",
     "Keep authentic living Lady/Sharasdal finale,LINK2/Slaghammer,mixed DBErrors,offline pet rewards,original intermittent handshake cause and all36 full chains OPEN."
-  ]
+  ],
+  "final_boss_followup": "docs/audits/warswords-helya-ack-client-2026-11-13.json;cause reproduced and repair deployed,actual client retest pending"
 }

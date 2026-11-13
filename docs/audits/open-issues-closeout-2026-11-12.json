@@ -6,7 +6,7 @@
     "completed_source_repairs": 12,
     "latest_batch": 2,
     "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
-    "canonical_world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
+    "canonical_world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
     "remaining": [
       "Authorized total50:batch1 is10,batch2 has2;38 remain. Do not count diagnostics/test changes or the unresolved final boss issue.",
       "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
@@ -15,7 +15,8 @@
       "Final Fury Stage6 Helya195062 cast0/no immediate aura,repeated843 dialogue and unfinishable Vigfus are newly reproduced client issues;investigate the real cast/aura/intro path before changing progression or health."
     ],
     "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted",
-    "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN"
+    "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN",
+    "final_boss_followup": "docs/audits/warswords-helya-ack-client-2026-11-13.json;deployed/native-verified,actual final combat pending,not counted yet"
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
@@ -1224,12 +1225,14 @@
     "audit": "docs/audits/warswords-runestone-client-2026-11-13.json",
     "canonical_world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
     "checks": "User confirms all4/4 and next step.48 controlled ASAN/26 real native/2 pinned suffix controls/catalog/linked PE/Scepter/owned startup pass. Later final Helya195062 warning/dialogue loop remains OPEN;no full-chain claim.",
-    "preserve": "LINK2/Slaghammer,mixed DBErrors,original offline research and all whole-chain limits unchanged."
+    "preserve": "LINK2/Slaghammer,mixed DBErrors,original offline research and all whole-chain limits unchanged.",
+    "fix_commit": "3b5d8eb97aa75b7b7adaf6773cc08060e32cac54"
   },
   "latest_warswords_final_client_2026_11_13": {
-    "status": "OPEN_195062_AURA_ACK_AND_REPEATING_DIALOGUE",
-    "evidence": ".codex/warswords-vigfus-client-20261113 and .codex/warswords-runestone-final-three-20261113",
-    "report": "Stage6 On The Trail;user cannot finish Vigfus and843/Helya speech repeats.16:12:35 WARN says195062 cast0 but expected aura missing. No invented HP/death timer or forced credit. User server stays running.",
+    "status": "NATIVE_CHANNEL_ACK_REPAIRED_DEPLOYED_FINAL_CLIENT_RETEST_PENDING",
+    "audit": "docs/audits/warswords-helya-ack-client-2026-11-13.json",
+    "canonical_world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
+    "cause": "Normal195062 accepted before native target-aura event;old synchronous check restarted843 and kept combat closed. Actual native pending/aura timing reproduced;fixed model/PE/Scepter/owned startup pass,actual final client retest pending.",
     "counted_as_repair": false
   }
 }

@@ -57,6 +57,9 @@ int main(int argc, char** argv)
             helya.CastStop();
             helya.RemoveAurasDueToSpell(195062);
             auto targetResult = helya.CastSpell(&vigfus, 195062);
+            Require(targetResult == SPELL_CAST_OK && !vigfus.HasAura(195062, helya.GetGUID()) && helya.FindCurrentSpellBySpellId(195062),
+                "Normal channel acceptance must precede its native target-aura event");
+            std::cout << "QUEUED result=0 aura=0 native-current-spell=1;accepted request is not completed aura application\n";
             TickChannel(helya, vigfus, 100);
             std::cout << "VIGFUS result=" << uint32(targetResult) << " caster-aura=" << helya.HasAura(195062, helya.GetGUID())
                 << " vigfus-aura=" << vigfus.HasAura(195062, helya.GetGUID()) << " target-link=" << ChannelTargets(helya, vigfus.GetGUID()) << '\n';

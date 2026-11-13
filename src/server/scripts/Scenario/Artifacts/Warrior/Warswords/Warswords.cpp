@@ -577,6 +577,9 @@ public:
         bool introVisualWarned = false;
         ObjectGuid introConversation = {};
         std::shared_ptr<bool> introLifetime = std::make_shared<bool>(false);
+        bool introBlessingWaiting = false;
+        ObjectGuid introBlessingPlayer = {};
+        ObjectGuid introBlessingHelya = {};
 
         void CancelSpectreRush()
         {
@@ -598,6 +601,9 @@ public:
             if (introPending)
                 introDone = false;
             introPending = false;
+            introBlessingWaiting = false;
+            introBlessingPlayer = {};
+            introBlessingHelya = {};
             introRetryTimer = 0;
             introVisualRetryTimer = 0;
             introVisualWarned = false;
@@ -798,8 +804,71 @@ public:
                 return;
             introDone = false;
             introPending = false;
+            introBlessingWaiting = false;
+            introBlessingPlayer = {};
+            introBlessingHelya = {};
             introVisualRetryTimer = 1000;
             RemoveIntroConversation();
+        }
+
+        void UpdateBlessing()
+        {
+            if (!introPending || !introBlessingWaiting)
+                return;
+            uint32 generation = introGeneration;
+            ObjectGuid playerGuid = introBlessingPlayer;
+            ObjectGuid helyaGuid = introBlessingHelya;
+            Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+            Creature* helya = ObjectAccessor::GetCreature(*me, helyaGuid);
+            if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(helya))
+            {
+                if (!introVisualWarned)
+                    TC_LOG_WARN("scripts", "Warswords intro lost its player or Helya while awaiting native195062 acknowledgement; combat remains closed");
+                introVisualWarned = true;
+                CancelIntro(generation);
+                return;
+            }
+            if (!me->HasAura(195062, helyaGuid))
+            {
+                // A normal channel is accepted before its SpellEvent applies
+                // the target aura. Keep conversation843 and wait for that hit.
+                if (helya->FindCurrentSpellBySpellId(195062))
+                    return;
+                if (!introVisualWarned)
+                    TC_LOG_WARN("scripts", "Warswords intro native Helya195062 finished without its target aura; combat remains closed");
+                introVisualWarned = true;
+                CancelIntro(generation);
+                return;
+            }
+            introBlessingWaiting = false;
+            introBlessingPlayer = {};
+            introBlessingHelya = {};
+            if (introVisualWarned)
+                TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura; waiting seven seconds after the acknowledged late blessing");
+            introVisualWarned = false;
+            std::weak_ptr<bool> lifetime = introLifetime;
+            me->AddDelayedEvent(7000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void
+            {
+                if (lifetime.expired() || generation != introGeneration || !introPending)
+                    return;
+                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, helyaGuid)))
+                {
+                    CancelIntro(generation);
+                    return;
+                }
+                me->RemoveAura(205424);
+                if (lifetime.expired() || generation != introGeneration || !introPending)
+                    return;
+                player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, helyaGuid)))
+                {
+                    CancelIntro(generation);
+                    return;
+                }
+                introPending = false;
+                AttackStart(player);
+            });
         }
 
         void MoveInLineOfSight(Unit* who) override
@@ -850,45 +919,21 @@ public:
                     CancelIntro(generation);
                     return;
                 }
+                introBlessingPlayer = playerGuid;
+                introBlessingHelya = helyaGuid;
+                introBlessingWaiting = true;
                 SpellCastResult result = helya->CastSpell(me, 195062);
                 if (lifetime.expired() || generation != introGeneration || !introPending)
                     return;
-                player = ObjectAccessor::GetPlayer(*me, playerGuid);
-                helya = ObjectAccessor::GetCreature(*me, helyaGuid);
-                if (result != SPELL_CAST_OK || !IsIntroTarget(player, 100.0f) || !IsIntroHelya(helya) ||
-                    !me->HasAura(195062, helyaGuid))
+                if (result != SPELL_CAST_OK)
                 {
                     if (!introVisualWarned)
-                        TC_LOG_WARN("scripts", "Warswords intro waiting for native Helya195062 aura (cast result %u); late blessing failed, combat remains closed", uint32(result));
+                        TC_LOG_WARN("scripts", "Warswords intro native Helya195062 request failed (cast result %u); combat remains closed", uint32(result));
                     introVisualWarned = true;
                     CancelIntro(generation);
                     return;
                 }
-                if (introVisualWarned)
-                    TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura; waiting seven seconds after the acknowledged late blessing");
-                introVisualWarned = false;
-                me->AddDelayedEvent(7000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void
-                {
-                    if (lifetime.expired() || generation != introGeneration || !introPending)
-                        return;
-                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
-                    if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, helyaGuid)))
-                    {
-                        CancelIntro(generation);
-                        return;
-                    }
-                    me->RemoveAura(205424);
-                    if (lifetime.expired() || generation != introGeneration || !introPending)
-                        return;
-                    player = ObjectAccessor::GetPlayer(*me, playerGuid);
-                    if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, helyaGuid)))
-                    {
-                        CancelIntro(generation);
-                        return;
-                    }
-                    introPending = false;
-                    AttackStart(player);
-                });
+                UpdateBlessing();
             });
         }
 
@@ -896,7 +941,8 @@ public:
         {
             if (introDone)
             {
-                if (!introPending && me->GetEntry() == 98602 && me->GetMapId() == 1511 && me->HasAura(205424))
+                UpdateBlessing();
+                if (introDone && !introPending && me->GetEntry() == 98602 && me->GetMapId() == 1511 && me->HasAura(205424))
                     me->RemoveAura(205424);
                 return;
             }

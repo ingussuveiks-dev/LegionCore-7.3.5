@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-13",
+  "status": "NATIVE_CHANNEL_ACK_REPAIRED_DEPLOYED_FINAL_CLIENT_RETEST_PENDING",
+  "fix_commit": "Focused implementation commit containing this audit",
+  "scope": "Final98602/1511/944/current5 (client Stage6 On The Trail),Helya99043,conversation843/channel195062/communion205424. Not a full Fury or all36-chain certificate.",
+  "actual_failure": [
+    "After all four runestones count and the next step starts,the user reaches final Vigfus but cannot finish him;supplied screenshot shows repeated Helya/Vigfus speech.",
+    "Actual2026-11-13_16:12:35 WARN scripts:195062 cast result0 but expected target aura is absent;late blessing canceled and combat stays closed. Preserve the mixed runestone/final client intervals outside fixed."
+  ],
+  "cause": "Native normal channeled195062 is accepted/installed as a current spell before its queued SpellEvent applies the target aura. CastSpell returnsSPELL_CAST_OK with immediate HasAura=false. The old script incorrectly treated that ordinary deferred state as failure,canceled843 and reopened its introduction retry;IsEncounterReady then kept final damage/engagement closed. Earlier controlled cast endpoint applied the aura synchronously and concealed the real native ordering.",
+  "native_evidence": "Serial real Spell/Aura probe at matching1511 Helya/Vigfus poses:normal target request result0,aura0,current195062=1;after100ms native updates,Vigfus aura1 and Helya-owned target channel are present. Typed native195062 is a positive channeled dummy aura with0 cast time/7000ms duration. Self-target control remains on Helya;recipient-removal and native7s expiry clean the channel. Null AIs/isolated map,not a production intro/controller or client-render test.",
+  "implementation": [
+    "Arm complete captured Player/Helya GUIDs before issuing normal195062. Retain the original843 creation acknowledgement,24-second late request and native current-cast/target-aura ownership. Do not force a triggered channel or add an aura manually.",
+    "While the exact native195062 remains pending and its target aura is absent,keep the same conversation and intro claim. The live target/caster/map/phase/range/quest/scenario checks still run. Missing actors,failed requests or a finished channel without its aura cancel the tracked intro for legitimate retry and keep diagnostics.",
+    "Only real195062 on Vigfus from the captured Helya claims acknowledgement and arms the existing7000ms release once. Preserve captured identity/lifetime/generation revalidation,205424 removal and AttackStart to the original eligible player. Reset/cancellation clear the new pending identities;polling rechecks the intro claim after cancellation.",
+    "No changes to HP/scaling/15percent or7percent threshold logic,death/kill timers,quest/criteria/item grants,loot/equip or return paths. Existing actual native owner/charmer/pet/guardian final-death credit46987 remains untouched."
+  ],
+  "checks": {
+    "expected_old_control": "Independently pinned3b5d8eb97 source with deferred-cast endpoint:accepted queued195062 incorrectly cancels its intro,restarts843 and never engages. Explicit expected-broken counterfactual,not passing ordinary gameplay.",
+    "controlled_source_asan": "Complete extracted intro control functions and actual FunctionProcessor code pass repaired deferred-ack,interruption/reset and retained56 stage/status,19 initial/42 delayed player contexts,Helya identity/map/phase/range,failed cast/retry,reentrant/stale-generation/lifetime/once-only combat cases. Native FunctionProcessor retains the nested7s wait after ordinary and31s/100s stalled ticks. Actor/cast/conversation services remain controlled.",
+    "native_channel": "Updated reusable Test-WarswordsHelyaTargetNative adds explicit immediate queued/no-aura assertion then real target-aura/channel/expiry/removal proof. Serial final run records unchanged source/game.lib/scripts.lib inputs before/after. An earlier overlapping build/probe is not the final certificate.",
+    "retained_death_credit": "Actual extracted final JustDied and native owner resolver pass player/pet/guardian/charmer/unresolved/null and faction-label contexts,scoped205424 cleanup and no nearby/group blanket award. It is not full live combat/group propagation.",
+    "linked_release": "Actual new factory/poll/24s closure stores128-bit Player+Helya GUIDs and arms awaiting state before native nontriggered195062. Actual aura alone installs the7s closure;queued current195062 returns without cancellation/scheduling. Native epoch/lifetime/captured identity/843 factory/cleanup checks and complete retained rune/bonfire/first10/Stormheim/pet/other artifact PE chains pass. Updated old intro verifier follows the actual outlined acknowledgement/cancellation helpers while retaining every old semantic guard. No general decoder bound increased.",
+    "canonical": "Original final-link libraries;separate stage then hash-verified canonical copy. Full canonical PE/Scepter and owned startup2352 fresh ready/graceful shutdown0/exit0/gone,stderr empty,protected configuration/cert/DLL hashes unchanged.",
+    "actual_client": "New final retest requested after fresh canonical/client crash and log baseline. No post-fix successful final combat/quest traversal claimed yet."
+  },
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
+    "bnet_sha256": "45eaf4acc99967d31ff4c9c372ed42ce772e7387a38cfd8bea1c3c3745d970a2",
+    "data": "Existing AI registration only;no new ScriptName,SQL/template/phase/creature/character changes. No user/unknown server stopped;owned2352 exited and user may launch visible servers."
+  },
+  "diagnostics": "Repaired automated/native/PE/Scepter/startup intervals append no unexplained warnings/errors/assertions or DBErrors and create no new/changed crash reports. Original actual-client195062 warning/mixed intervals stay visible outside fixed pending client confirmation. Mixed canonicalDBErrors remains7111 bytes/fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1;not truncated. Slaghammer original/offline research hashes preserved.",
+  "tool_notes": "Initial private moved driver still used its old relative diagnostics-wrapper path and did not start the test;corrected. Final native run is sequential with immutable final-link/source hashes. PE adapts real helper-owned7000ms closure and validates the outlined CancelIntro epoch/pending/cleanup path,not a missing check or a larger leaf bound.",
+  "evidence": {
+    "investigation": ".codex/warswords-helya-followup-20261113",
+    "model_fixed": ".codex\\warswords-helya-followup-20261113\\model-fixed-20261113-163113-122",
+    "model_baseline": ".codex\\warswords-helya-followup-20261113\\model-baseline-20261113-163122-388",
+    "native_serial": ".codex/warswords-helya-followup-20261113/native-serial",
+    "release": ".codex/warswords-helya-ack-build-20261113",
+    "original_client_mixed": ".codex/warswords-runestone-final-three-20261113",
+    "original_final_client": ".codex/warswords-vigfus-client-20261113",
+    "new_client": ".codex/warswords-helya-client-retest-20261113"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\warswords-helya-ack-20261113",
+    "archive_manifest_sha256": "132a6b772a5d3e106050922dd267494c499affefa7e2d4ba6a85b791228b3223",
+    "archived_files": 220,
+    "reclaimed_bytes": 420584056,
+    "protected_hashes_verified": 43,
+    "retained_rollbacks": [
+      "release-before-warswords-helya-ack-build-20261113",
+      "release-before-warswords-runestone-build-20261113",
+      "release-before-five-ten-20261113",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "deferred": [],
+    "limits": "Resolved automated normal-channel timing/acknowledgement proof only;original actual-client warning/mixed intervals and new client retest remain outside fixed. Serial native source/library hashes supersede an earlier overlapping build/probe. No active log rotated/truncated,no user process stopped. Original mixed DBErrors,Slaghammer/offline research and three meaningful recovery baselines plus certificate preserved. Includes cleanup of regenerated rune shared-use check tools.",
+    "removed_files": 39
+  },
+  "remaining": [
+    "Actual final dialogue once-only,combat readiness/Vigfus defeat/0of1 credit and next-stage transition await the user. Final weapon visibility/loot/full bags/equip/return/camera/pets and full Fury/all36 chains remain distinct checks.",
+    "Counted5x10 remains12/50 until the reported final fight is verified;the acknowledgement repair is one focused scope,not extra entries for helper/fixture/PE changes.",
+    "Keep authentic living Lady/Sharasdal activation/surrender/conversation1906/Grash cleanup,LINK2/Slaghammer,mixed DBErrors,offline pet rewards and original intermittent handshake cause OPEN. Independent incomplete-POI .go quest draft is ignored/not deployed or counted."
+  ]
+}

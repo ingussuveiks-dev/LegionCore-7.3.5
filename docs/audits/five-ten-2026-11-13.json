@@ -152,7 +152,7 @@
           "key": "WarswordsRunestoneNativeCompletion",
           "summary": "Completed8386/99 callback produces native46970 progress once per actual rune,retains native destruction/spirit effects and keeps instance-owned reload receipts. User confirms all4/4 and next step;final Helya/Vigfus bug remains separate.",
           "audit": "docs/audits/warswords-runestone-client-2026-11-13.json",
-          "fix_commit": "Focused implementation commit containing this audit"
+          "fix_commit": "3b5d8eb97aa75b7b7adaf6773cc08060e32cac54"
         }
       ],
       "canonical_world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
@@ -165,5 +165,6 @@
     "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
     "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
     "Final Fury Stage6 Helya195062 cast0/no immediate aura,repeated843 dialogue and unfinishable Vigfus are newly reproduced client issues;investigate the real cast/aura/intro path before changing progression or health."
-  ]
+  ],
+  "final_boss_followup": "docs/audits/warswords-helya-ack-client-2026-11-13.json;normal-channel acknowledgement repaired/deployed,actual final client retest pending/not counted"
 }

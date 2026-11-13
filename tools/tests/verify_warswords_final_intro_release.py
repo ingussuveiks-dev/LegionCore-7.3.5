@@ -15,10 +15,18 @@ reset = '?Reset@' + actor
 conversation = '?StartIntroConversation@' + actor
 if not any(name.startswith(conversation) for name in native['symbols']):
     conversation = opening
+acknowledger = '?UpdateBlessing@' + actor
+has_acknowledger = any(name.startswith(acknowledger) for name in native['symbols'])
 callbacks = [name for name in native['symbols'] if name.startswith('?_Do_call') and 'MoveInLineOfSight@' + actor in name]
-assert len(callbacks) == 2, 'Late blessing and engagement callbacks are missing or ambiguous'
-outer_wrapper = next(name for name in callbacks if '???R' not in name)
-callback_wrapper = next(name for name in callbacks if '???R' in name)
+if has_acknowledger:
+    outer_wrapper, = callbacks
+    callback_wrapper, = [name for name in native['symbols'] if name.startswith('?_Do_call') and 'UpdateBlessing@' + actor in name]
+    callback_owner = 'UpdateBlessing@'
+else:
+    assert len(callbacks) == 2, 'Late blessing and engagement callbacks are missing or ambiguous'
+    outer_wrapper = next(name for name in callbacks if '???R' not in name)
+    callback_wrapper = next(name for name in callbacks if '???R' in name)
+    callback_owner = 'MoveInLineOfSight@'
 callback = callback_wrapper
 wrapper_address = native['symbol'](outer_wrapper)
 wrapper_decoder = Cs(CS_ARCH_X86, CS_MODE_64)
@@ -29,7 +37,7 @@ outer, = [name for name in native['symbols'] if name.startswith('??R') and 'Move
 inner_address = native['symbol'](callback_wrapper)
 inner_wrapper = list(wrapper_decoder.disasm(native['binary'][native['offset'](inner_address):native['offset'](inner_address) + 16], inner_address))
 if inner_wrapper[0].mnemonic == 'add' and inner_wrapper[0].op_str == 'rcx, 8' and inner_wrapper[1].mnemonic == 'jmp':
-    callback, = [name for name in native['symbols'] if name.startswith('??R') and 'MoveInLineOfSight@' + actor in name and native['symbol'](name) == native['resolve'](inner_wrapper[1].operands[0].imm)]
+    callback, = [name for name in native['symbols'] if name.startswith('??R') and callback_owner + actor in name and native['symbol'](name) == native['resolve'](inner_wrapper[1].operands[0].imm)]
 
 
 def reachable(body, start):
@@ -87,7 +95,11 @@ remove = next(index for index, entry in enumerate(conversation_body) if entry.mn
 cancel_address = conversation_body[remove - 1].address
 post_create = conversation_body[success:success + 16]
 assert sum(entry.mnemonic in ('je', 'jne') and entry.operands[0].imm == cancel_address for entry in post_create) == 3, 'Post-create epoch/pending/eligible-player failures do not all remove the obsolete conversation'
-for prefix, expected in ((opening, {24000}), (conversation, {843}), (outer, {195062, 7000}), (callback, {205424})):
+expected_actions = [(opening, {24000}), (conversation, {843}), (outer, {195062} if has_acknowledger else {195062, 7000}), (callback, {205424})]
+if has_acknowledger:
+    assert native['symbol'](acknowledger) in native['calls'](outer), 'Accepted late cast must enter actual aura acknowledgement'
+    expected_actions.append((acknowledger, {195062, 7000}))
+for prefix, expected in expected_actions:
     literals = {operand.imm for entry in instructions(prefix) for operand in entry.operands if operand.type == CS_OP_IMM}
     assert expected <= literals, f'Original intro actions changed: {prefix}'
 decoded = instructions(callback)
@@ -130,7 +142,7 @@ for entry in instructions(opening):
                 installed.append(offset)
 assert len(installed) == 1, 'LOS does not install the verified late blessing closure'
 installed = []
-for entry in instructions(outer):
+for entry in instructions(acknowledger if has_acknowledger else outer):
     for operand in entry.operands:
         if entry.mnemonic == 'lea' and operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP:
             offset = native['offset'](entry.address + entry.size + operand.mem.disp)
@@ -156,9 +168,16 @@ assert [entry.mnemonic + ' ' + entry.op_str for entry in decoded_constructor[:4]
 store = next(index for index, entry in enumerate(conversation_body) if entry.op_str == 'xmmword ptr [rdi + 0x105], xmm0' and entry.mnemonic == 'movups')
 assert conversation_body[success].address < conversation_body[store].address < timer and conversation_body[store].address not in failed_flow and conversation_body[store - 3].op_str == 'rcx, r15' and conversation_body[store - 4].op_str == 'edx, edx', 'Successful captured843 GUID is not tracked after post-create guards'
 assert conversation_body[store - 2].mnemonic == 'call' and native['resolve'](conversation_body[store - 2].operands[0].imm) == native['symbol']('?GetGuidValue@Object@@'), 'Tracked identity does not come from the successful native conversation'
-for consumer in (reset, outer, callback, '?JustDied@' + actor, '?UpdateLifecycle@' + actor):
-    assert native['symbol'](cleanup) in native['calls'](consumer), 'Missing selected dialogue cleanup consumer: ' + consumer
-cleanup_edges = [entry for entry in decoded if entry.mnemonic in ('call','jmp') and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](cleanup)]
+cancel = '?CancelIntro@' + actor
+cancel_address = native['symbol'](cancel) if has_acknowledger else None
+if has_acknowledger:
+    cancel_body = instructions(cancel)
+    assert native['symbol'](cleanup) in native['calls'](cancel), 'Outlined cancellation must remove the tracked conversation'
+    assert {('cmp', 'edx, dword ptr [rcx + 0xc8]'), ('cmp', 'byte ptr [rcx + 0xc7], 0'), ('mov', 'word ptr [rcx + 0xc6], 0')} <= {(x.mnemonic, x.op_str) for x in cancel_body}, 'Outlined cancellation lost epoch/pending/claim guards'
+for consumer in (reset, outer, callback, '?JustDied@' + actor, '?UpdateLifecycle@' + actor) + ((acknowledger,) if has_acknowledger else ()):
+    calls = native['calls'](consumer)
+    assert native['symbol'](cleanup) in calls or (has_acknowledger and cancel_address in calls), 'Missing selected dialogue cleanup consumer: ' + consumer
+cleanup_edges = [entry for entry in decoded if entry.mnemonic in ('call','jmp') and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) in ({native['symbol'](cleanup), cancel_address} if has_acknowledger else {native['symbol'](cleanup)})]
 assert len(cleanup_edges) == (1 if callback == callback_wrapper else 2)
 admissions = [index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](helper)]
 helya_checks = [index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?IsIntroHelya@' + actor)]

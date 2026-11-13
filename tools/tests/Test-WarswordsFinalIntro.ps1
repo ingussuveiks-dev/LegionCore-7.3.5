@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$ConversationBaseline,[switch]$TimingBaseline,[switch]$CleanupBaseline,[switch]$BlessingBaseline,[switch]$VerifyReleaseBinary,[switch]$LifetimeBaseline,[switch]$ExportOnly,[string]$OutputDirectory='')
+param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$ConversationBaseline,[switch]$TimingBaseline,[switch]$CleanupBaseline,[switch]$BlessingBaseline,[switch]$VerifyReleaseBinary,[switch]$LifetimeBaseline,[switch]$AcknowledgementBaseline,[switch]$ExportOnly,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop'
 if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline,$ConversationBaseline,$TimingBaseline,$CleanupBaseline,$BlessingBaseline,$LifetimeBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline -or $CommunionBaseline -or $ConversationBaseline -or $TimingBaseline -or $CleanupBaseline -or $BlessingBaseline -or $LifetimeBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -8,6 +8,7 @@ New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp'
 $source=Get-Content "$repo/$path" -Raw
+if($AcknowledgementBaseline){if($VerifyReleaseBinary -or @($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline,$ConversationBaseline,$TimingBaseline,$CleanupBaseline,$BlessingBaseline,$LifetimeBaseline|Where-Object {$_}).Count){throw 'Acknowledgement baseline must run separately'};$source=(& git -C $repo show "3b5d8eb97:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned synchronous aura-check baseline missing'}}
 if($Baseline){$source=(& git -C $repo show "9dd043ad:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned final intro baseline'}}
 if($HelyaBaseline){$source=(& git -C $repo show "a5a82529:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya baseline'}}
 if($TargetBaseline){$source=(& git -C $repo show "f6b173ea:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya target baseline'}}
@@ -19,6 +20,7 @@ if($CleanupBaseline){$source=(& git -C $repo show "2d87fcfb:$path") -join "`n";i
 if($BlessingBaseline){$source=(& git -C $repo show "20ce5e37:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned premature blessing baseline'}}
 if($LifetimeBaseline){if($VerifyReleaseBinary){throw 'Lifetime counterfactual cannot certify Release'};$source=(& git -C $repo show "661a25685:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned lifetime baseline'}}
 $lateBlessing=$source.Contains('bool IsIntroHelya(')
+$ackRepaired=$source.Contains('void UpdateBlessing(')
 if($lateBlessing){
  $header=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw
  [IO.File]::WriteAllText("$out/NativeFunctionProcessor.inc",(Block $header 'class TC_COMMON_API FunctionProcessor')+';')
@@ -34,6 +36,7 @@ foreach($name in @('Reset','MoveInLineOfSight')){[IO.File]::WriteAllText("$out/$
 [IO.File]::WriteAllText("$out/StartConversation.inc",$(if($source.Contains('bool StartIntroConversation(')){Block $source 'bool StartIntroConversation('}else{''}))
 [IO.File]::WriteAllText("$out/RemoveConversation.inc",$(if($source.Contains('void RemoveIntroConversation(')){Block $source 'void RemoveIntroConversation('}else{''}))
 foreach($entry in @(@('IsIntroHelya','bool IsIntroHelya('),@('CancelIntro','void CancelIntro('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",$(if($source.Contains($entry[1])){Block $source $entry[1]}else{''}))}
+[IO.File]::WriteAllText("$out/UpdateBlessing.inc",$(if($ackRepaired){Block $source 'void UpdateBlessing('}else{''}))
 $helper=if($Baseline){''}else{Block $source 'bool IsIntroTarget('}
 [IO.File]::WriteAllText("$out/IsIntroTarget.inc",$helper)
 $retry=if($Baseline){''}else{Block $source 'void UpdateIntro('}
@@ -58,6 +61,8 @@ if($ExportOnly){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}elseif($BubbleBaseline){'/DBUBBLE_BASELINE'}elseif($CommunionBaseline){'/DCOMMUNION_BASELINE'}elseif($ConversationBaseline){'/DCONVERSATION_BASELINE'}elseif($TimingBaseline){'/DTIMING_BASELINE'}elseif($CleanupBaseline){'/DCLEANUP_BASELINE'}elseif($BlessingBaseline){'/DBLESSING_BASELINE'}elseif($lateBlessing){'/DWARSWORDS_LATE_BLESSING'}else{''}
 $test=if($lateBlessing){'WarswordsLateBlessingTest.cpp'}else{'WarswordsFinalIntroTest.cpp'}
+if($AcknowledgementBaseline){$definition+=' /DWARSWORDS_ACK_BASELINE'}
+if($ackRepaired){$definition+=' /DWARSWORDS_ACK_REPAIRED'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/$test`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Final intro native regression failed'}
 if($VerifyReleaseBinary){

@@ -59,6 +59,39 @@ void InvalidateHelya(Fixture& fixture, uint32 invalid)
 
 int main()
 {
+#ifdef WARSWORDS_ACK_BASELINE
+    {
+        Fixture fixture; fixture.helya.deferAura = true; fixture.Start(); Tick(fixture, 24000);
+        assert(fixture.helya.pendingBlessing && !fixture.actor.aura && !fixture.ai.introDone && !fixture.ai.introPending && fixture.ai.attacks == 0);
+        fixture.actor.aura = true; fixture.actor.auraCaster = fixture.helya.guid;
+        fixture.ai.TickVisual(1000); fixture.ai.UpdateIntro(1000);
+        assert(fixture.owner.acceptedConversations == 2 && fixture.ai.attacks == 0);
+        std::cout << "COUNTERFACTUAL: pinned3b5d8eb97 cancels accepted queued195062 before its real aura event,restarts843 and keeps combat closed. Deferred-cast endpoint modeled;native Spell/Aura proves actual timing separately.\n";
+        return 0;
+    }
+#endif
+#ifdef WARSWORDS_ACK_REPAIRED
+    {
+        Fixture fixture; fixture.helya.deferAura = true; fixture.Start(); Tick(fixture, 24000);
+        assert(fixture.ai.introDone && fixture.ai.introPending && fixture.ai.introBlessingWaiting && fixture.owner.acceptedConversations == 1 && fixture.ai.attacks == 0);
+        fixture.ai.UpdateIntro(1); assert(fixture.ai.introPending && fixture.owner.acceptedConversations == 1 && warningRequests == 0);
+        fixture.actor.aura = true; fixture.actor.auraCaster = fixture.helya.guid; fixture.ai.UpdateIntro(1);
+        assert(!fixture.ai.introBlessingWaiting && fixture.ai.introPending);
+        Tick(fixture, 6999); assert(fixture.ai.attacks == 0 && fixture.actor.bubble);
+        Tick(fixture, 1); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble && fixture.owner.acceptedConversations == 1);
+        fixture.ai.UpdateIntro(1000); assert(fixture.ai.attacks == 1);
+    }
+    {
+        Fixture fixture; fixture.helya.deferAura = true; fixture.Start(); Tick(fixture, 24000);
+        fixture.helya.pendingBlessing = false; fixture.ai.UpdateIntro(1);
+        assert(!fixture.ai.introDone && !fixture.ai.introPending && fixture.actor.bubble && fixture.ai.attacks == 0 && warningRequests == 1);
+    }
+    {
+        Fixture fixture; fixture.helya.deferAura = true; fixture.Start(); Tick(fixture, 24000); fixture.ai.Reset();
+        assert(!fixture.ai.introBlessingWaiting && !fixture.ai.introBlessingPlayer && !fixture.ai.introBlessingHelya);
+        fixture.actor.aura = true; fixture.actor.auraCaster = fixture.helya.guid; Tick(fixture, 7000); assert(fixture.ai.attacks == 0);
+    }
+#endif
     TestNativeBlessingTimer();
     {
         Fixture fixture;
