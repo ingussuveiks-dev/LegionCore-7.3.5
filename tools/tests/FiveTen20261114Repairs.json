@@ -281,6 +281,16 @@
       "old": "    static bool HandleModifyPhaseCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 phasemask = (uint32)atoi((char*)args);\n\n        Unit* target = handler->getSelectedUnit();    \n        if (target)    \n        {    \n            if (target->GetTypeId() == TYPEID_PLAYER)    \n                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);    \n            else    \n                target->SetPhaseMask(phasemask, true);    \n        }    \n        else    \n            handler->GetSession()->GetPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);\n\n        return true;\n    }",
       "new": "    static bool HandleModifyPhaseCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 phasemask;\n        if (!Trinity::ParseCommandInteger(args, phasemask))\n            return false;\n\n        Unit* target = handler->getSelectedUnit();    \n        if (target)\n        {\n            if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n                return false;\n            if (target->GetTypeId() == TYPEID_PLAYER)    \n                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);    \n            else    \n                target->SetPhaseMask(phasemask, true);    \n        }    \n        else    \n            handler->GetSession()->GetPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);\n\n        return true;\n    }",
       "batch": 3
+    },
+    {
+      "key": "ModifyPhaseIDsAtomicAdmission",
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyPhaseIDsCommand",
+      "kind": "modify",
+      "case": "PhaseIDs",
+      "old": "    static bool HandleModifyPhaseIDsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        std::set<uint32> phaseIds;\n        Tokenizer phasesToken((char*)args, ' ', 100);\n        for (Tokenizer::const_iterator itr = phasesToken.begin(); itr != phasesToken.end(); ++itr)\n        {\n            if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(*itr, nullptr, 10))))\n                phaseIds.insert(phase->ID);\n        }\n\n        Unit* target = handler->getSelectedUnit();\n        if (target)\n        {\n            if (target->GetTypeId() == TYPEID_PLAYER)\n                target->ToPlayer()->SetPhaseId(phaseIds, true);\n            else\n                return false;\n        }\n        else\n            handler->GetSession()->GetPlayer()->SetPhaseId(phaseIds, true);\n\n        return true;\n    }",
+      "new": "    static bool HandleModifyPhaseIDsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        std::set<uint32> phaseIds;\n        Tokenizer phasesToken((char*)args, ' ', 100, false);\n        if (phasesToken.begin() == phasesToken.end())\n            return false;\n        for (Tokenizer::const_iterator itr = phasesToken.begin(); itr != phasesToken.end(); ++itr)\n        {\n            uint32 phaseId;\n            if (!Trinity::ParseCommandInteger(*itr, phaseId))\n                return false;\n            if (!phaseId)\n                continue;\n            PhaseEntry const* phase = sPhaseStore.LookupEntry(phaseId);\n            if (!phase)\n                return false;\n            phaseIds.insert(phase->ID);\n        }\n\n        Unit* target = handler->getSelectedUnit();\n        if (target)\n        {\n            if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n                return false;\n            if (target->GetTypeId() == TYPEID_PLAYER)\n                target->ToPlayer()->SetPhaseId(phaseIds, true);\n            else\n                return false;\n        }\n        else\n            handler->GetSession()->GetPlayer()->SetPhaseId(phaseIds, true);\n\n        return true;\n    }",
+      "batch": 3
     }
   ],
   "extra_edits": [
@@ -332,7 +342,7 @@
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "a2c3dfa2e67bc324b27a3f8e04222c43ceb5bd2ec909dc0f98441fc990669dcd",
-      "after_sha256": "69d3208610e9ca45507de92530037411320252aaeaa91f5cf5c61489ca01388e"
+      "after_sha256": "8a46d0d9cb1a23623febfeec3b0fa6ccbdebe9dfefc49e718279af5ac13f6485"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "0fa980194c4399bed9bdfd37286968e29234275106b47327120f7142268216f5",

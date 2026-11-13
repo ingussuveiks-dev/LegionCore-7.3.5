@@ -1,13 +1,13 @@
 {
   "latest_five_ten_2026_11_14": {
-    "status": "IN_PROGRESS_20_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+    "status": "IN_PROGRESS_30_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
     "audit": "docs/audits/five-ten-2026-11-14.json",
     "authorized_new_repairs": 50,
-    "completed_source_repairs": 20,
-    "canonical_world_sha256": "907a60fa91b79424c9ad99f489e7a53c666e3e97d421cf1495b16e10716851c0",
-    "checks": "357 complete selected source cases plus retained37 go-quest;native formatter/parser,selected first20 PE,Scepter and owned22848 clean startup/shutdown0/exit0. Actual client/all36 checks remain separate.",
+    "completed_source_repairs": 30,
+    "canonical_world_sha256": "0b86ae0aa7c22e8de79b21d51ce8c41086195601b2e71f857a1046b2f9ddba55",
+    "checks": "507 complete selected source cases plus retained37 go-quest;native matching DB2,selected first30 PE,Scepter and owned29020 clean startup/shutdown0/exit0. Actual client/all36 checks remain separate.",
     "preserve": "Original LINK2/Slaghammer/mixedDBErrors unchanged;separate artifact static report retained open.",
-    "next": "Continue batch3;30 new source repairs remain. No task-owned hidden server running."
+    "next": "Continue batch4;20 new source repairs remain. No task-owned hidden server running."
   },
   "latest_ashbringer_storage_2026_11_13": {
     "status": "STORAGE_RECEIPT_REPAIRED_DEPLOYED_NATIVE_VERIFIED_CLIENT_PENDING",

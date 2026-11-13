@@ -1272,16 +1272,27 @@ public:
             return false;
 
         std::set<uint32> phaseIds;
-        Tokenizer phasesToken((char*)args, ' ', 100);
+        Tokenizer phasesToken((char*)args, ' ', 100, false);
+        if (phasesToken.begin() == phasesToken.end())
+            return false;
         for (Tokenizer::const_iterator itr = phasesToken.begin(); itr != phasesToken.end(); ++itr)
         {
-            if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(*itr, nullptr, 10))))
-                phaseIds.insert(phase->ID);
+            uint32 phaseId;
+            if (!Trinity::ParseCommandInteger(*itr, phaseId))
+                return false;
+            if (!phaseId)
+                continue;
+            PhaseEntry const* phase = sPhaseStore.LookupEntry(phaseId);
+            if (!phase)
+                return false;
+            phaseIds.insert(phase->ID);
         }
 
         Unit* target = handler->getSelectedUnit();
         if (target)
         {
+            if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))
+                return false;
             if (target->GetTypeId() == TYPEID_PLAYER)
                 target->ToPlayer()->SetPhaseId(phaseIds, true);
             else
