@@ -321,6 +321,16 @@
       "batch": 4,
       "old": "    static bool HandleNpcSetFlagCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 npcFlags = (uint32) atoi((char*)args);\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, npcFlags);\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_NPCFLAG);\n\n        stmt->setUInt32(0, npcFlags);\n        stmt->setUInt32(1, creature->GetEntry());\n\n        WorldDatabase.Execute(stmt);\n\n        handler->SendSysMessage(LANG_VALUE_SAVED_REJOIN);\n\n        return true;\n    }",
       "new": "    static bool HandleNpcSetFlagCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 npcFlags;\n        if (!Trinity::ParseCommandInteger(args, npcFlags))\n            return false;\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, npcFlags);\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_NPCFLAG);\n\n        stmt->setUInt32(0, npcFlags);\n        stmt->setUInt32(1, creature->GetEntry());\n\n        WorldDatabase.Execute(stmt);\n\n        handler->SendSysMessage(LANG_VALUE_SAVED_REJOIN);\n\n        return true;\n    }"
+    },
+    {
+      "key": "NpcDataCheckedDispatch",
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcSetDataCommand",
+      "case": "NpcData",
+      "kind": "npc",
+      "batch": 4,
+      "old": "    static bool HandleNpcSetDataCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* arg1 = strtok((char*)args, \" \");\n        char* arg2 = strtok((char*)NULL, \"\");\n\n        if (!arg1 || !arg2)\n            return false;\n\n        uint32 data_1 = (uint32)atoi(arg1);\n        uint32 data_2 = (uint32)atoi(arg2);\n\n        if (!data_1 || !data_2)\n            return false;\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->AI()->SetData(data_1, data_2);\n        std::string AIorScript = creature->GetNPCAIName() != \"\" ? \"AI type: \" + creature->GetNPCAIName() : (creature->GetScriptName() != \"\" ? \"Script Name: \" + creature->GetScriptName() : \"No AI or Script Name Set\");\n        handler->PSendSysMessage(LANG_NPC_SETDATA, creature->GetGUID().ToString().c_str(), creature->GetEntry(), creature->GetName(), data_1, data_2, AIorScript.c_str());\n        return true;\n    }",
+      "new": "    static bool HandleNpcSetDataCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* arg1 = strtok((char*)args, \" \");\n        char* arg2 = strtok((char*)NULL, \"\");\n\n        if (!arg1 || !arg2)\n            return false;\n\n        uint32 data_1;\n        uint32 data_2;\n        if (!Trinity::ParseCommandInteger(arg1, data_1) || !Trinity::ParseCommandInteger(arg2, data_2))\n            return false;\n\n        if (!data_1 || !data_2)\n            return false;\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!creature->AI())\n            return false;\n        creature->AI()->SetData(data_1, data_2);\n        std::string AIorScript = creature->GetNPCAIName() != \"\" ? \"AI type: \" + creature->GetNPCAIName() : (creature->GetScriptName() != \"\" ? \"Script Name: \" + creature->GetScriptName() : \"No AI or Script Name Set\");\n        handler->PSendSysMessage(LANG_NPC_SETDATA, creature->GetGUID().ToString().c_str(), creature->GetEntry(), creature->GetName(), data_1, data_2, AIorScript.c_str());\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -406,7 +416,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "e8849dbbdd6ac603404f34b5f2207f213b457bba68c2bfd9dd35bb43945e2f14",
-      "after_sha256": "e02973ccbf02c32d6e6164fbccca78ff7f2c48f54029de6683d856c798752cec"
+      "after_sha256": "12321e64c500584a94a33792caa2664c0ebadead8387df7e009450f5ebe213c8"
     }
   }
 }

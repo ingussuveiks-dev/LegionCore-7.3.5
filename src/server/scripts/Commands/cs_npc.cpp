@@ -719,8 +719,10 @@ public:
         if (!arg1 || !arg2)
             return false;
 
-        uint32 data_1 = (uint32)atoi(arg1);
-        uint32 data_2 = (uint32)atoi(arg2);
+        uint32 data_1;
+        uint32 data_2;
+        if (!Trinity::ParseCommandInteger(arg1, data_1) || !Trinity::ParseCommandInteger(arg2, data_2))
+            return false;
 
         if (!data_1 || !data_2)
             return false;
@@ -734,6 +736,8 @@ public:
             return false;
         }
 
+        if (!creature->AI())
+            return false;
         creature->AI()->SetData(data_1, data_2);
         std::string AIorScript = creature->GetNPCAIName() != "" ? "AI type: " + creature->GetNPCAIName() : (creature->GetScriptName() != "" ? "Script Name: " + creature->GetScriptName() : "No AI or Script Name Set");
         handler->PSendSysMessage(LANG_NPC_SETDATA, creature->GetGUID().ToString().c_str(), creature->GetEntry(), creature->GetName(), data_1, data_2, AIorScript.c_str());
