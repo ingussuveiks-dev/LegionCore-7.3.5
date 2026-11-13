@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "request_batch": 2,
+  "repair_index": 13,
+  "key": "ModifySpeedFiniteInput",
+  "path": "src/server/scripts/Commands/cs_modify.cpp",
+  "summary": "Reject malformed/nonfinite run speed before native setter;preserve range,permissions and flight refusal.",
+  "status": "IMPLEMENTED_TESTED_IN_SECOND_TEN_CANONICAL_RELEASE_CLIENT_PENDING",
+  "scope": "One independently callable native command repair;shared parser/tests not additional repairs.",
+  "checks_reference": "docs/audits/five-ten-2026-11-14.json",
+  "canonical_world_sha256": "907a60fa91b79424c9ad99f489e7a53c666e3e97d421cf1495b16e10716851c0",
+  "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch2",
+  "post_test_diagnostics": "Final diagnostics no new/changed crashes,appended DBErrors or unexplained warnings/errors/assertions. Fixture field/initializer and missing native PCH include corrected;PE proof updated for inlined parser and actual scale virtual dispatch,each paired with passing final run. Original mixed7111-byte DBErrors and Slaghammer hash unchanged.",
+  "client_limit": "Source/native/PE/startup proof;actual GM interactions and all36 whole artifact chains remain separate client checks.",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed archive after push."
+}

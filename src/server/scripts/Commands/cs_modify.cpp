@@ -524,9 +524,9 @@ public:
         if (!*args)
             return false;
 
-        float Speed = (float)atof((char*)args);
+        float Speed;
 
-        if (Speed > 50.0f || Speed < 0.1f)
+        if (!Trinity::ParseCommandFloat(args, Speed) || Speed > 50.0f || Speed < 0.1f)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
