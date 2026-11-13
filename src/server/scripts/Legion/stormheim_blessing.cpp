@@ -71,9 +71,9 @@ struct npc_stormheim_blessing_actor : SmartAI
     void Cleanup()
     {
         if (!scoped) return;
-        // FindPlayer also reaches the owner after changing maps. Remove only
-        // this actor's roots, never a newer ceremony or another caster's aura.
-        if (Player* player = ObjectAccessor::FindPlayer(owner, false))
+        // Map departure stops the ceremony before detaching its owner. Actor
+        // cleanup must never mutate a Player belonging to another map thread.
+        if (Player* player = Owner())
         {
             player->RemoveAurasDueToSpell(190904, me->GetGUID());
             player->RemoveAurasDueToSpell(190905, me->GetGUID());
@@ -250,17 +250,37 @@ public:
     CreatureAI* GetAI(Creature* creature) const override { return new npc_stormheim_blessing_actor(creature); }
 };
 
+namespace StormheimBlessing
+{
+void StopForPlayer(Player* player)
+{
+    offers.erase(player->GetGUID());
+    auto found = ceremonies.find(player->GetGUID());
+    if (found != ceremonies.end())
+        if (Creature* actor = ObjectAccessor::GetCreature(*player, found->second))
+            if (auto ai = dynamic_cast<npc_stormheim_blessing_actor*>(actor->AI()))
+                if (ai->scoped && ai->owner == player->GetGUID()) ai->Stop();
+}
+}
+
+class map_stormheim_blessing : public WorldMapScript
+{
+public:
+    map_stormheim_blessing() : WorldMapScript("map_stormheim_blessing", 1220) { }
+    void OnPlayerLeave(Map*, Player* player) override
+    {
+        StormheimBlessing::StopForPlayer(player);
+    }
+};
+
 class player_stormheim_blessing : public PlayerScript
 {
 public:
     player_stormheim_blessing() : PlayerScript("player_stormheim_blessing") { }
     void OnLogout(Player* player) override
     {
-        StormheimBlessing::offers.erase(player->GetGUID());
-        auto found = StormheimBlessing::ceremonies.find(player->GetGUID());
-        if (found != StormheimBlessing::ceremonies.end())
-            if (Creature* actor = ObjectAccessor::GetCreature(*player, found->second))
-                if (auto ai = dynamic_cast<npc_stormheim_blessing_actor*>(actor->AI())) ai->Stop();
+        if (player->GetMapId() == 1220)
+            StormheimBlessing::StopForPlayer(player);
     }
 };
 
@@ -268,5 +288,6 @@ void AddSC_stormheim_blessing()
 {
     new npc_stormheim_blessing();
     new player_stormheim_blessing();
+    new map_stormheim_blessing();
     RegisterAuraScript(aura_stormheim_blessing_finish);
 }

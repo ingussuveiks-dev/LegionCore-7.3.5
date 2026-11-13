@@ -97,6 +97,11 @@ struct Player:Unit {PlayerMenu menu;PlayerMenu* PlayerTalkClass=&menu;using Unit
 #include "CanCompleteQuest.inc"
 #include "PreviousQuest.inc"
 #include "QuestObjectiveSatisfy.inc"
+// This fixture covers Stormheim39597. Reject the unrelated Warrior-policy
+// branches rather than pretending this model tests their inventory checks.
+namespace SkyholdArtifactReturn {
+bool CanCredit(Player*,Quest const* quest){assert(quest->GetQuestId()!=39191&&quest->GetQuestId()!=40043&&quest->GetQuestId()!=41105);return true;}
+}
 #include "KilledMonsterCredit.inc"
 
 #include "CanRewardQuest.inc"
@@ -104,7 +109,7 @@ struct Player:Unit {PlayerMenu menu;PlayerMenu* PlayerTalkClass=&menu;using Unit
 #include "KillCreditGO.inc"
 namespace ObjectAccessor {
 Player* GetPlayer(WorldObject& source,ObjectGuid id){auto i=players.find(id);return i==players.end()||!i->second->world||i->second->map!=source.map?nullptr:i->second;}
-Player* FindPlayer(ObjectGuid id,bool world){auto i=players.find(id);return i==players.end()||(world&&!i->second->world)?nullptr:i->second;}
+Player* FindPlayer(ObjectGuid id,bool world){auto i=players.find(id);return i==players.end()||!i->second->world?nullptr:i->second;}
 GameObject* GetGameObject(WorldObject&,ObjectGuid id){auto i=objects.find(id);return i==objects.end()||!i->second->world?nullptr:i->second;}}
 Unit* Vehicle::GetPassenger(int index){auto i=Seats.find(index);return i==Seats.end()?nullptr:ObjectAccessor::FindPlayer(i->second.Passenger.Guid);}
 struct SmartAI {Creature* me;uint32 delegated=0;explicit SmartAI(Creature* c):me(c){c->ai=this;}virtual ~SmartAI()=default;
@@ -125,6 +130,8 @@ struct GameObjectScript {explicit GameObjectScript(char const*){}virtual bool On
 using CreatureAI=SmartAI;
 struct CreatureScript {explicit CreatureScript(char const*){}virtual bool OnGossipHello(Player*,Creature*){return false;}virtual CreatureAI* GetAI(Creature*)const{return nullptr;}};
 struct PlayerScript {explicit PlayerScript(char const*){}virtual void OnLogout(Player*){}};
+struct Map {};
+struct WorldMapScript {WorldMapScript(char const*,uint32){}virtual void OnPlayerLeave(Map*,Player*){}};
 struct AuraScript {Unit* caster=nullptr;Unit* target=nullptr;Aura app;Hook AfterEffectApply,AfterEffectRemove;Unit* GetCaster(){return caster;}Unit* GetTarget(){return target;}Aura* GetTargetApplication(){return &app;}virtual void Register(){}};
 #define PrepareAuraScript(x) public:
 #define AuraEffectApplyFn(F,I,A,M) (10000+(I)*1000+(A)*10+(M))
@@ -158,7 +165,7 @@ int main(){
  {Run r;failCreature=96257;r.Offer();r.Select();assert(!r.Actor()&&r.source.hidden.empty());failCreature=0;r.Start();assert(r.Actor());}
  for(int mode:{AURA_REMOVE_BY_DEFAULT,AURA_REMOVE_BY_ENEMY_SPELL}){Run r;r.Start();r.Begin();r.Expire(mode);r.Actor()->UpdateAI(6000);assert(r.Actor()->stopped&&!r.p.packets&&r.p.roots.empty());}
  {Run r;r.Start();r.Begin();r.Actor()->UpdateAI(6000);assert(!r.p.packets&&!r.Actor()->stopped);r.Expire();r.Actor()->UpdateAI(100);assert(r.p.packets==1);}
- for(int mode=0;mode<8;++mode){Run r;r.Start();r.Actor()->UpdateAI(6000);auto old=r.p.quests[39597].ScriptObjects;if(mode==0)r.p.quests[39597].Status=QUEST_STATUS_NONE;if(mode==1)r.p.alive=false;if(mode==2)r.p.map=1;if(mode==3)r.p.phase=false;if(mode==4)r.p.world=false;if(mode==5)r.Actor()->me->distance=16;if(mode==6)r.p.teleport=true;if(mode==7)r.Actor()->me->alive=false;r.Actor()->UpdateAI(6000);assert(r.Actor()->stopped&&old->cancelled&&!r.p.packets&&r.p.roots.empty()&&r.source.hidden.empty());}
+ for(int mode=0;mode<8;++mode){Run r;r.Start();r.Actor()->UpdateAI(6000);auto old=r.p.quests[39597].ScriptObjects;if(mode==0)r.p.quests[39597].Status=QUEST_STATUS_NONE;if(mode==1)r.p.alive=false;if(mode==2){map_stormheim_blessing().OnPlayerLeave(nullptr,&r.p);r.p.map=1;}if(mode==3)r.p.phase=false;if(mode==4){map_stormheim_blessing().OnPlayerLeave(nullptr,&r.p);r.p.world=false;}if(mode==5)r.Actor()->me->distance=16;if(mode==6)r.p.teleport=true;if(mode==7)r.Actor()->me->alive=false;r.Actor()->UpdateAI(6000);assert(r.Actor()->stopped&&old->cancelled&&!r.p.packets&&r.p.roots.empty()&&r.source.hidden.empty());}
  {Run r;r.Start();r.Actor()->UpdateAI(6000);r.p.roots[{190904,999}]={};player_stormheim_blessing cleanup;cleanup.OnLogout(&r.p);assert(r.Actor()->stopped&&r.source.hidden.empty()&&r.p.roots.size()==1&&r.p.GetAura(190904,{999}));r.p.roots.clear();r.Start();r.Begin();r.Finish();}
  {Run r;r.Start();auto old=r.Actor();old->UpdateAI(6000);r.p.Accept(39597);r.Start();auto fresh=r.Actor();fresh->UpdateAI(6000);auto cancelled=r.p.cancels;old->UpdateAI(6000);assert(old->stopped&&!fresh->stopped&&r.p.cancels==cancelled&&r.p.GetAura(190904,fresh->me->guid)&&r.source.hidden.count(r.p.guid));r.actors.erase(r.actors.begin());assert(r.source.hidden.count(r.p.guid));fresh->UpdateAI(6000);r.Finish();}
  {Run r;r.Start();Unit pet;pet.ownerPlayer=&r.p;r.Actor()->JustDied(&pet);assert(r.p.roots.empty()&&!r.p.packets);r.Start();r.Actor()->UpdateAI(60000);assert(r.Actor()->stopped&&!r.p.packets);}

@@ -1,4 +1,33 @@
 {
+  "latest_stormheim_departure_repair_2026_11_13": {
+    "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
+    "audit": "docs\\audits\\stormheim-departure-2026-11-13.json",
+    "fix_commit": null,
+    "canonical_world_sha256": "3f6c907b04b3de6e8c1e3f332533ef7e39a3a400d2298baa90f5a5b58a93f377",
+    "checks": "10 native departure cases + expected-broken complete-script control,whole ceremony model/live data,linked PE/Scepter and owned ready/shutdown0/exit0. Client pending.",
+    "cleanup": {
+      "archive": "build-extractors\\bin\\Release\\fixed\\stormheim-departure-2026-11-13",
+      "archive_manifest_sha256": "c1bd477ff972649985f4224d97f4b7b92c75fdeaf00e5081091e4e34353ace7c",
+      "archived_files": 258,
+      "reclaimed_bytes": 397659645,
+      "retained_rollbacks": [
+        "release-before-stormheim-departure-2026-11-13",
+        "release-before-pet-logout-2026-11-13",
+        "release-before-pet-arrival-start-2026-11-13",
+        "release-before-pet-ward-rot-2026-11-12"
+      ],
+      "protected_hashes_verified": 43,
+      "bnet_text_unchanged": true,
+      "removed_files": 31,
+      "note": "Resolved diagnostics hash-archived;31 redundant task/stage/native/symbol/config files and the superseded pre-Crumble rollback pair removed. Keep3 recent ordinary rollback sets plus exact historical cdca106 pair,original offline research and all unrelated OPEN/LINK2/Slaghammer evidence. No mixed log truncated."
+    },
+    "remaining": [
+      "Actual7.3.5 client ceremony departure/re-entry,root presentation,voice and full39597 traversal remain pending. Native endpoints use controlled accepted quest/scoped actor state;the full readiness/expiry path is separately exercised by the extracted production-source model.",
+      "Legitimate pet-battle wins finalized while the Player is temporarily outside world still need durable,exactly-once XP/achievement/capture/trainer delivery. QuestObjectiveSatisfy has no quest filter;delayed broad replay could credit a later acceptance. MapManager::Update is empty and Map::UpdateLoop runs independently,so it is not a lifetime/thread barrier for raw Player lookup. No reward or progression policy changed here.",
+      "Shared ObjectAccessor::FindPlayer(guid,false) still ignores its bool. Its sole explicit false consumer found in src was removed from Stormheim;no global lookup/lifetime contract was changed. Do not use it to implement offline rewards without a separate safe design.",
+      "Lady/Sharasdal authentic living finale,LINK2/Slaghammer evidence,Haunt/unbound183/Apocalypse/clones/Crumble full policy and all36 whole artifact chains retain their existing OPEN/client limits."
+    ]
+  },
   "latest_pet_logout_repair_2026_11_13": {
     "status": "SCOPED_LOGOUT_AND_OWNED_JOURNAL_REPAIRED_DEPLOYED_CLIENT_PENDING",
     "audit": "docs\\audits\\pet-logout-2026-11-13.json",

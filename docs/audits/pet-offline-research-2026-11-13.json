@@ -1,6 +1,6 @@
 {
   "date": "2026-11-13",
-  "request": "Pagaid\u0101m neesmu pie datora turpini",
+  "request": "Pagaidām neesmu pie datora turpini",
   "status": "OPEN_NATIVE_OFFLINE_COUNTERFACTUAL_OBSERVED_NO_GAMEPLAY_REPAIR",
   "implementation_head": "f8e3e7749a6e22dbc2072299552a4550ae02fa40",
   "canonical_world_sha256": "37b28bb97e2541eb7f5e07fe27bd8178d5a2e06123c2ff1b637c27ab91b3cfd1",
@@ -113,6 +113,12 @@
     "status": "LOGOUT_AND_JOURNAL_REPAIRED_OTHER_OFFLINE_REWARD_LOOKUP_SCOPES_OPEN",
     "audit": "docs\\audits\\pet-logout-2026-11-13.json",
     "note": "Original12 known-broken observations and exact research bytes remain historical,not erased. Actual logout now has a bound before-save lifecycle;original manual OnBeforeLogout-only projection is not the complete new session path. Offline legitimate-win reward delivery and shared FindPlayer flag remain OPEN.",
-    "fix_commit": "0237851a0e83ab3c83a243f0593b7685b74a6667"
+    "fix_commit": "0237851a0e83ab3c83a243f0593b7685b74a6667",
+    "stormheim_consumer_followup": {
+      "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
+      "audit": "docs\\audits\\stormheim-departure-2026-11-13.json",
+      "fix_commit": null,
+      "note": "Sole explicit FindPlayer(false) source consumer now uses an actual before-detach map hook and map-local cleanup,covered by native tests. Shared API bool is unchanged;offline rewards remain OPEN. Original evidence and known-broken probe hashes verified unchanged."
+    }
   }
 }

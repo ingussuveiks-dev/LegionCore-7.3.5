@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini",
+  "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
+  "fix_commit": null,
+  "baseline": "29884c644ea338dabcbb2c7b64c80feb3e7a9eb4",
+  "title": "Stop the owner-scoped Stormheim blessing before map detachment",
+  "cause": "The ceremony relied on a late actor Cleanup using FindPlayer(owner,false). This project ignores the false flag and filters out detached Players;the old OnLogout callback also runs after map removal. The readiness offer/ceremony could outlive departure and root cleanup depended on which actor tick happened before detachment. Simply exposing globally detached/cross-map Players would allow mutation from the wrong map thread.",
+  "implementation": {
+    "departure": "Register a WorldMapScript for1220. Its native OnPlayerLeave dispatcher receives the actual Player before Map::RemovePlayerFromMap calls RemoveFromWorld. Shared StopForPlayer discards the readiness offer and resolves only that map's registered actor,requiring scoped AI and the full actual owner GUID before Stop.",
+    "cleanup": "The existing idempotent Stop removes only190904/190905 from the actual owner with this actor GUID,cancels the owned scope and despawns without quest credit. Actor Cleanup now uses the existing map-local Owner lookup;it cannot reacquire a detached/other-map Player. The existing late logout fallback is source-map-only.",
+    "preserved": "Readiness,quest/faction/phase/distance/LOS gates,native dialogue and cast timings,actual190905 expiry prerequisite,exact objective96285,personal visibility,pet-killed actor cleanup and unrelated SmartAI remain covered by the retained production-source ceremony regression. No DB schema/new migration or pet-battle reward changes.",
+    "test_harness": "Corrected the old modeled FindPlayer to match the real world filter and explicitly dispatch departure before changing modeled map/world state. Added MapScript fixture support. The unrelated Skyhold103739 helper has a guarded default-only model;Warrior quest branches are rejected and remain outside this test."
+  },
+  "sources": [
+    "src/server/scripts/Legion/stormheim_blessing.cpp",
+    "src/server/game/Globals/ObjectAccessor.cpp::FindPlayer and ObjectAccessor.h::GetPlayer/GetObjectInMap",
+    "src/server/game/Maps/Map.cpp::RemovePlayerFromMap/UpdateLoop",
+    "src/server/game/Scripting/ScriptMgr.cpp::OnPlayerLeaveMap",
+    "Matching26972 native190904/190905 and actual live39597 data readback",
+    "Local Git history and origin/main both29884c644 before this repair;no external implementation needed for the established local lifecycle cause."
+  ],
+  "checks": {
+    "native": "10 actual native cases:both root spells through real Map::RemovePlayerFromMap and repeated ScriptMgr departure dispatch;unscoped AI,missing registry and scoped foreign-owner AI;exact-caster preservation,other participant preservation,late detached cleanup,scope cancellation and no quest credit. Actual26972 aura behavior is used with readonly schema pools,not a client or durable character save.",
+    "native_evidence": ".codex\\stormheim-departure-2026-11-13\\fixed-20261113-095336-566\\evidence",
+    "counterfactual": "Whole pinned29884c644 script compiled against the same native harness. Ordinary real map departure retains its actual190904 root and fails the named assertion with expected exit1. Paired repaired regression passes;not an ordinary successful baseline run.",
+    "counterfactual_evidence": ".codex\\stormheim-departure-2026-11-13\\baseline-20261113-095320-488\\evidence",
+    "ceremony": "Test-StormheimBlessing.ps1 complete extracted production-source model passes both factions,readiness/success/expiry/failures/retry/abandonment/phase/death/pet/logout and exact-caster cleanup. This remains distinct from actual client traversal.",
+    "data": "Test-StormheimBlessingData.ps1 passes actual live localized readiness/native quest,actor/expiry-hook bindings and preserved shared data,idempotent existing migration. No new migration introduced.",
+    "binary": "Staged and canonical verify_stormheim_departure_release.py passes native1220 registration,actual Player callback,scoped/full-owner gate,map-local cleanup and both real caster-filter removals. Imports full retained pet/logout PE check chain. Scepter -VerifyReleaseBinary passes canonical.",
+    "build": "Original Release game/scripts project paths,original static-library dependencies,isolated final link and exact source snapshot verified. Only stormheim_blessing.cpp needed recompilation in scripts. No global OutDir.",
+    "startup": "Owned canonical worldserver PID25248 reached fresh ready,graceful server shutdown0,exit0,gone;captured stderr empty and stdout diagnostics0. No user/unknown process stopped. bnet .text unchanged against the retained prior binary;no separate new bnet runtime launch claimed.",
+    "diagnostics": "All pre/post snapshots retained;no new/changed crash reports,no appended DBErrors or server warnings/errors/assertions. Mixed activeDBErrors remains7111 bytes with originalfa3db826... hash;activeCrashes empty.",
+    "resolved_test_iterations": "Initial native fixture compilation omitted GossipDef.h and used the wrong AddToGrid receiver;fixed. Native190905 does not retain two same-spell copies on a recipient,so the passing preservation control uses real foreign190904. Assertions from those invalid fixture assumptions are retained with passing controls,not reported as production failures. The old broad model was stale after the unrelated Skyhold credit helper;guarded default-only compatibility restored. No unexplained crash or runtime error hidden."
+  },
+  "canonical": {
+    "bnetserver.exe": "14a08cf746676158b5e1241667b53acdd5546bb36409c943e05ae5319a5b8780",
+    "bnetserver.map": "8c0ac4c985d04ab63a62858485513ce6b7002c21df0e20a5f54a7c4ecc73e722",
+    "worldserver.exe": "3f6c907b04b3de6e8c1e3f332533ef7e39a3a400d2298baa90f5a5b58a93f377",
+    "worldserver.map": "398be0dfc32c69ed7056de29feff1ae61b6bcf9a2161c34f2abcc435e10151fe"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\stormheim-departure-2026-11-13",
+    "archive_manifest_sha256": "c1bd477ff972649985f4224d97f4b7b92c75fdeaf00e5081091e4e34353ace7c",
+    "archived_files": 258,
+    "reclaimed_bytes": 397659645,
+    "retained_rollbacks": [
+      "release-before-stormheim-departure-2026-11-13",
+      "release-before-pet-logout-2026-11-13",
+      "release-before-pet-arrival-start-2026-11-13",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "protected_hashes_verified": 43,
+    "bnet_text_unchanged": true,
+    "removed_files": 31,
+    "note": "Resolved diagnostics hash-archived;31 redundant task/stage/native/symbol/config files and the superseded pre-Crumble rollback pair removed. Keep3 recent ordinary rollback sets plus exact historical cdca106 pair,original offline research and all unrelated OPEN/LINK2/Slaghammer evidence. No mixed log truncated."
+  },
+  "remaining": [
+    "Actual7.3.5 client ceremony departure/re-entry,root presentation,voice and full39597 traversal remain pending. Native endpoints use controlled accepted quest/scoped actor state;the full readiness/expiry path is separately exercised by the extracted production-source model.",
+    "Legitimate pet-battle wins finalized while the Player is temporarily outside world still need durable,exactly-once XP/achievement/capture/trainer delivery. QuestObjectiveSatisfy has no quest filter;delayed broad replay could credit a later acceptance. MapManager::Update is empty and Map::UpdateLoop runs independently,so it is not a lifetime/thread barrier for raw Player lookup. No reward or progression policy changed here.",
+    "Shared ObjectAccessor::FindPlayer(guid,false) still ignores its bool. Its sole explicit false consumer found in src was removed from Stormheim;no global lookup/lifetime contract was changed. Do not use it to implement offline rewards without a separate safe design.",
+    "Lady/Sharasdal authentic living finale,LINK2/Slaghammer evidence,Haunt/unbound183/Apocalypse/clones/Crumble full policy and all36 whole artifact chains retain their existing OPEN/client limits."
+  ],
+  "commit_status": "Implementation/tests/audit ready for focused commit and origin/main push."
+}
