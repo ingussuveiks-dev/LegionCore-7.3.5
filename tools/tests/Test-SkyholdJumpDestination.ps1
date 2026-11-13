@@ -15,9 +15,9 @@ $source=Get-Content "$repo/src/server/game/Entities/Object/Position.h" -Raw
 $source=Get-Content "$repo/src/server/game/Movement/MotionMaster.h" -Raw
 [IO.File]::WriteAllText("$out/MoveJumpPosition.inc",(Block $source '        void MoveJump(Position const& pos,'))
 $source=Get-Content "$repo/src/server/game/Movement/MotionMaster.cpp" -Raw
-[IO.File]::WriteAllText("$out/MoveJump.inc",(Block $source 'void MotionMaster::MoveJump(float x,'))
-$currentMove=Block $source 'void MotionMaster::MoveJump(float x,'
-$oldMove=Block ((git -C $repo show 'aecc4d2a0:src/server/game/Movement/MotionMaster.cpp') -join "`n") 'void MotionMaster::MoveJump(float x,'
+[IO.File]::WriteAllText("$out/MoveJump.inc",(Block $source 'void MotionMaster::MoveJump(float x, float y, float z, float o,'))
+$currentMove=Block $source 'void MotionMaster::MoveJump(float x, float y, float z, float o,'
+$oldMove=Block ((git -C $repo show 'aecc4d2a0:src/server/game/Movement/MotionMaster.cpp') -join "`n") 'void MotionMaster::MoveJump(float x, float y, float z, float o,'
 $source=Get-Content "$repo/src/server/game/Movement/MovementGenerators/PointMovementGenerator.cpp" -Raw
 [IO.File]::WriteAllText("$out/Arrival.inc",(Block $source 'bool EffectMovementGenerator::Update(')+"`n"+(Block $source 'void EffectMovementGenerator::Finalize(')+"`n"+(Block $source 'void EffectMovementGenerator::MovementInform('))
 $currentArrival=Get-Content "$out/Arrival.inc" -Raw

@@ -182,7 +182,7 @@ int main(int argc,char** argv) {
     assert(argc==2);std::ifstream input(argv[1]);SpellTriggerDelay delay;
     assert(input>>delay.spell_trigger>>delay.target>>delay.caster>>delay.effectMask>>delay.aura>>delay.targetaura);
     spellManager.delays={delay};
-    for(uint32 map:{1539u,1466u,1428u,1220u,1479u})for(float height:{-50.0f,0.0f,35.8446f,100.18f,745.833f}) {
+    for(uint32 map:{1539u,1511u,1495u,1466u,1428u,1220u,1479u})for(float height:{-50.0f,0.0f,35.8446f,100.18f,745.833f}) {
         Player player;player.map=map;player.pose.m_positionZ=height;
         Spell spell(player);spell.EffectJumpDest(0);
         assert(player.jumps==1&&player.casts==0&&player.fallZ==height+20&&player.knockback==0&&player.splineTimer==0);
@@ -210,7 +210,7 @@ int main(int argc,char** argv) {
     Creature creature;Spell nonplayer(creature);nonplayer.EffectJumpDest(0);assert(creature.jumps==1&&!creature.casts);
     creature.movement.Complete();assert(creature.casts==1&&creature.castSpell==216016);
     Player failure;failure.failCast=true;Spell failed(failure);failed.EffectJumpDest(0);failure.movement.Complete();assert(failure.casts==1);
-    for(uint32 map:{0u,1539u,1466u,1428u,1220u,1479u})for(uint32 variant=0;variant<5;++variant){
+    for(uint32 map:{0u,1539u,1511u,1495u,1466u,1428u,1220u,1479u})for(uint32 variant=0;variant<5;++variant){
         Player player;player.map=map;Spell spell(player);
         if(variant==0)player.launchResult=0;
         spell.EffectJumpDest(0);
@@ -242,8 +242,8 @@ int main(int argc,char** argv) {
 #ifdef BASELINE
     std::cout<<"PASS: pinned native baseline computes Skyhold Z+20 for speeds/fall state but launches the original floor destination\n";
 #elif defined(ARRIVAL_BASELINE)
-    std::cout<<"EXPECTED COUNTERFACTUAL: pinned aecc4d2a0 MoveJump/Finalize sends216016 even after zero launch, replacement, death or map change on six maps. This is failing old behavior, not a successful ordinary return.\n";
+    std::cout<<"EXPECTED COUNTERFACTUAL: pinned aecc4d2a0 MoveJump/Finalize sends216016 even after zero launch, replacement, death or map change on eight maps. This is failing old behavior, not a successful ordinary return.\n";
 #else
-    std::cout<<"PASS: actual jump/speed/Position/MotionMaster/delay216016 and Update/Finalize handlers: native Z+20, actual arrival only, zero launch/interruption/death/map-change refusal on six maps including map0, repeat completion and foreign/NPC preservation. Spline/cast services controlled, not client ascent/teleport proof\n";
+    std::cout<<"PASS: actual jump/speed/Position/MotionMaster/delay216016 and Update/Finalize handlers: native Z+20, actual arrival only, zero launch/interruption/death/map-change refusal on eight maps including map0, repeat completion and foreign/NPC preservation. Spline/cast services controlled, not client ascent/teleport proof\n";
 #endif
 }
