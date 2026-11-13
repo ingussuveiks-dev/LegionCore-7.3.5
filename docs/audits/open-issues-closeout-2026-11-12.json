@@ -1,19 +1,19 @@
 {
   "latest_five_ten_2026_11_13": {
-    "status": "IN_PROGRESS_1_OF_5_BATCHES_DEPLOYED_CLIENT_CHECKS_SEPARATE",
+    "status": "IN_PROGRESS_11_OF_50_BONFIRE_CLIENT_CONFIRMED",
     "audit": "docs\\audits\\five-ten-2026-11-13.json",
     "authorized_total": 50,
-    "completed_source_repairs": 10,
-    "latest_batch": 1,
-    "fix_commit": "5677b67839c5e4a8deb355e659dbe7c7698d90c0",
+    "completed_source_repairs": 11,
+    "latest_batch": 2,
+    "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
     "canonical_world_sha256": "ebdc7df1e036f1e5e5144899cade195de515af4d520693d4b2b3e1a5d94cf1dc",
     "remaining": [
-      "Authorized total50:batch1 is10;four groups/40 repairs remain IN_PROGRESS and must not be counted as completed tests or fabricated fixes.",
+      "Authorized total50:batch1 is10 and batch2 has1 focused bonfire repair;39 remain. Do not count diagnostics/test corrections as additional repairs.",
       "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
       "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
       "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits."
     ],
-    "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;client confirmation pending,not counted yet"
+    "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted"
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
@@ -1210,10 +1210,11 @@
     "final_test_tool_commit": "19e3bb344"
   },
   "latest_warswords_bonfire_client_2026_11_13": {
-    "status": "NATIVE_LOS_POLICY_REPAIRED_DEPLOYED_ACTUAL_CLIENT_RETEST_PENDING",
+    "status": "CLIENT_CONFIRMED_BONFIRE_TRANSITION_AND_ENEMY_APPEARANCE_FULL_CHAIN_PENDING",
     "audit": "docs/audits/warswords-bonfire-client-2026-11-13.json",
     "canonical_world_sha256": "ebdc7df1e036f1e5e5144899cade195de515af4d520693d4b2b3e1a5d94cf1dc",
-    "checks": "48 controlled ASAN/28 real native cases including4 actual blocked-LOS model cases;independent b172 counterfactual;canonical PE/Scepter/owned startup and diagnostics pass. Actual client confirmation still pending.",
-    "preserve": "LINK2/Slaghammer,original offline research and mixed DBErrors unchanged;all36 full chains remain separate."
+    "checks": "User confirms Stage2 transition and enemy appearance;actual198513 completed OpenLock admits eligible1 withLOS0. No new canonical/client crash,DBErrors or unexplained server diagnostics. Retained48 ASAN/28 native/PE/Scepter/startup checks pass;subsequent combat/full chain separate.",
+    "preserve": "LINK2/Slaghammer,original offline research and mixed DBErrors unchanged;all36 full chains remain separate.",
+    "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63"
   }
 }

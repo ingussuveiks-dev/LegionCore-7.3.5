@@ -2,8 +2,8 @@
   "date": "2026-11-13",
   "request": "Labi turpini ar 5×10",
   "authorized_total": 50,
-  "completed_source_repairs": 10,
-  "status": "IN_PROGRESS_1_OF_5_BATCHES_DEPLOYED_CLIENT_CHECKS_SEPARATE",
+  "completed_source_repairs": 11,
+  "status": "IN_PROGRESS_11_OF_50_BONFIRE_CLIENT_CONFIRMED",
   "baseline": "10100c1a87451150fc9118fc5e6e4ab4068f3c20",
   "batches": [
     {
@@ -136,10 +136,25 @@
         "removed_files": 50,
         "reclaimed_bytes": 401990194
       }
+    },
+    {
+      "batch": 2,
+      "implemented": 1,
+      "status": "IN_PROGRESS_1_OF_10",
+      "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
+      "fixes": [
+        {
+          "key": "WarswordsNativeBonfireCompletion",
+          "summary": "Preserve actual native player cast/completed OpenLock admission and honor the authored198513 no-LOS flag. Actual user confirms Stage2 and enemies;normal cast/quest/phase/range/instance/step and exactly-once acknowledgement remain.",
+          "audit": "docs/audits/warswords-bonfire-client-2026-11-13.json"
+        }
+      ],
+      "canonical_world_sha256": "ebdc7df1e036f1e5e5144899cade195de515af4d520693d4b2b3e1a5d94cf1dc",
+      "checks": "48 controlled ASAN/28 real native including4 blocked-LOS model cases;independent pre-policy counterfactual;canonical PE/Scepter/clean owned startup;actual client first-step transition/wave appearance with clean post-test diagnostics. Full chain remains separate."
     }
   ],
   "remaining": [
-    "Authorized total50:batch1 is10;four groups/40 repairs remain IN_PROGRESS and must not be counted as completed tests or fabricated fixes.",
+    "Authorized total50:batch1 is10 and batch2 has1 focused bonfire repair;39 remain. Do not count diagnostics/test corrections as additional repairs.",
     "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
     "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
     "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits."
