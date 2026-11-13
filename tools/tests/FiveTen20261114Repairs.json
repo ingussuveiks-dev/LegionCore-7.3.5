@@ -82,6 +82,15 @@
       "old": "    static bool HandleModifyRunicPowerCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        int32 rune = atoi((char*)args)*10;\n        int32 runem = atoi((char*)args)*10;\n\n        if (rune <= 0 || runem <= 0 || runem < rune)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->PSendSysMessage(LANG_YOU_CHANGE_RUNIC_POWER, handler->GetNameLink(target).c_str(), rune/10, runem/10);\n        if (handler->needReportToTarget(target))\n            (ChatHandler(target)).PSendSysMessage(LANG_YOURS_RUNIC_POWER_CHANGED, handler->GetNameLink().c_str(), rune/10, runem/10);\n\n        target->SetMaxPower(POWER_RUNIC_POWER, runem);\n        target->SetPower(POWER_RUNIC_POWER, rune);\n\n        return true;\n    }",
       "new": "    static bool HandleModifyRunicPowerCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        int32 rune;\n        if (!Trinity::ParseCommandInteger(args, rune) || rune <= 0 || rune > std::numeric_limits<int32>::max() / 10)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        rune *= 10;\n        int32 runem = rune;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        handler->PSendSysMessage(LANG_YOU_CHANGE_RUNIC_POWER, handler->GetNameLink(target).c_str(), rune/10, runem/10);\n        if (handler->needReportToTarget(target))\n            (ChatHandler(target)).PSendSysMessage(LANG_YOURS_RUNIC_POWER_CHANGED, handler->GetNameLink().c_str(), rune/10, runem/10);\n\n        target->SetMaxPower(POWER_RUNIC_POWER, runem);\n        target->SetPower(POWER_RUNIC_POWER, rune);\n\n        return true;\n    }",
       "batch": 1
+    },
+    {
+      "key": "SoulEchoesAnimationIndex",
+      "path": "src/server/scripts/Legion/BlackRookHoldDungeon/boss_the_amalgam_of_souls.cpp",
+      "method": "IsSummonedBy",
+      "kind": "soul",
+      "old": "    void IsSummonedBy(Unit* summoner) override\n    {\n        summoner->CastSpell(me, SPELL_SOUL_ECHOES_CLONE_PLR, true);\n        me->PlayOneShotAnimKit(AnimRand[urand(STALKER_ANIM_1, STALKER_ANIM_3)]);\n        events.RescheduleEvent(EVENT_1, 4000);\n    }",
+      "new": "    void IsSummonedBy(Unit* summoner) override\n    {\n        summoner->CastSpell(me, SPELL_SOUL_ECHOES_CLONE_PLR, true);\n        me->PlayOneShotAnimKit(AnimRand[urand(0, 2)]);\n        events.RescheduleEvent(EVENT_1, 4000);\n    }",
+      "batch": 1
     }
   ],
   "extra_edits": [
@@ -135,6 +144,10 @@
     "src/server/scripts/Commands/cs_wp.cpp": {
       "before_sha256": "459cdc68e675958f2bd6a3bd78dd61042c064439091c21f139a0de245b19b9d8",
       "after_sha256": "ee7567558141c9bf4647537b49ed3fc919a16abbf9247934f9d40b32690ef491"
+    },
+    "src/server/scripts/Legion/BlackRookHoldDungeon/boss_the_amalgam_of_souls.cpp": {
+      "before_sha256": "906e6ba9cfe09090c49b8ac1b76221cf90f13fc27795cd857de4e99a1f53f5f9",
+      "after_sha256": "8c0eac3b9368f869f07a098d949b542729aac6d264dc7e5f5fb9f49874edb3f9"
     }
   }
 }

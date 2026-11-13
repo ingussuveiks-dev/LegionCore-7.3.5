@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_9_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 9,
+  "status": "IN_PROGRESS_10_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 10,
   "batches": [
     {
       "batch": 1,
@@ -54,6 +54,11 @@
           "key": "ModifyRunicPowerCheckedUnits",
           "path": "src/server/scripts/Commands/cs_modify.cpp",
           "summary": "Validate positive native signed32 display units before multiplying by10 and retain normal lower-security admission before runic/max-power writes."
+        },
+        {
+          "key": "SoulEchoesAnimationIndex",
+          "path": "src/server/scripts/Legion/BlackRookHoldDungeon/boss_the_amalgam_of_souls.cpp",
+          "summary": "Native summoner callback for99090 must choose array indices0..2,not AnimKit IDs9038..9176;retain194981 clone and4000ms damage schedule."
         }
       ],
       "checks": {
@@ -84,7 +89,7 @@
     }
   ],
   "remaining": [
-    "41 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
+    "40 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

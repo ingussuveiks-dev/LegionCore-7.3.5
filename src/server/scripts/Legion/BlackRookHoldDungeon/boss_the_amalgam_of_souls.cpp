@@ -280,7 +280,7 @@ struct npc_soul_echoes_stalker : public ScriptedAI
     void IsSummonedBy(Unit* summoner) override
     {
         summoner->CastSpell(me, SPELL_SOUL_ECHOES_CLONE_PLR, true);
-        me->PlayOneShotAnimKit(AnimRand[urand(STALKER_ANIM_1, STALKER_ANIM_3)]);
+        me->PlayOneShotAnimKit(AnimRand[urand(0, 2)]);
         events.RescheduleEvent(EVENT_1, 4000);
     }
 
