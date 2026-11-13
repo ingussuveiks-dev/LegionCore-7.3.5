@@ -1287,7 +1287,13 @@ class spell_bs_dominate_mind : public SpellScriptLoader
                     return;
 
                 if (Creature* balnazzar = GetTarget()->FindNearestCreature(NPC_BALNAZZAR, 30.0f))
-                    balnazzar->AI()->DoAction(true);
+                {
+                    CreatureAI* content = balnazzar->GetDisabledAI() ? static_cast<CreatureAI*>(balnazzar->GetDisabledAI()) : balnazzar->AI();
+                    if (content)
+                        content->DoAction(true);
+                    else
+                        TC_LOG_WARN("scripts", "Ashbringer domination: Balnazzar %u has no current or suspended AI; combat resumption not dispatched", balnazzar->GetGUIDLow());
+                }
             }
 
             void OnUpdate(uint32 diff, AuraEffect* /*aurEff*/)

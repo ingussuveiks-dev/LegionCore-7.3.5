@@ -1,0 +1,8 @@
+{
+  "baseline": "2e6f0d739",
+  "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+  "old": "void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)\n            {\n                if (!GetTarget())\n                    return;\n\n                if (Creature* balnazzar = GetTarget()->FindNearestCreature(NPC_BALNAZZAR, 30.0f))\n                    balnazzar->AI()->DoAction(true);\n            }",
+  "new": "void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)\n            {\n                if (!GetTarget())\n                    return;\n\n                if (Creature* balnazzar = GetTarget()->FindNearestCreature(NPC_BALNAZZAR, 30.0f))\n                {\n                    CreatureAI* content = balnazzar->GetDisabledAI() ? static_cast<CreatureAI*>(balnazzar->GetDisabledAI()) : balnazzar->AI();\n                    if (content)\n                        content->DoAction(true);\n                    else\n                        TC_LOG_WARN(\"scripts\", \"Ashbringer domination: Balnazzar %u has no current or suspended AI; combat resumption not dispatched\", balnazzar->GetGUIDLow());\n                }\n            }",
+  "before_sha256": "2c4eaaddaed53609e0073a91589c0fb04431b1ad7c0ed18b6d1ae25702ec865e",
+  "after_sha256": "322aa029c22c9ca2843e3683d8d216fdf9cd52765424b127dfe3b9cd384b09ae"
+}

@@ -16,6 +16,8 @@ $last=$current.IndexOf('else timer -= diff;',$first)
 if($first -lt 0 -or $last -le $first){throw 'Reported-result branch missing'}
 $tail=$current.Substring($first,$last-$first)
 $restored=$current.Replace('bool willFailureReported = false;','').Replace("Unit* caster = GetCaster();`n                    if (!caster)",'if (!GetCaster())').Replace("Unit* caster = GetCaster();`r`n                    if (!caster)",'if (!GetCaster())').Replace('caster->GetInstanceScript()','GetCaster()->GetInstanceScript()').Replace($tail,"GetCaster()->CastSpell(GetCaster(), 217042, true);`n                            timer = 0;`n                        }`n                        ")
+$resume=Get-Content "$PSScriptRoot/AshbringerResumeRepair.json" -Raw|ConvertFrom-Json
+$restored=$restored.Replace("`r",'').Replace($resume.new,$resume.old)
 if(($restored -replace '\s','') -cne ($old -replace '\s','') -or ($source.Replace($current,$old) -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated domination/sequence behavior changed'}
 if($Baseline){$current=$old}
 $first=$current.IndexOf('bool unbrekable = false;');$last=$current.IndexOf('void Register()', $first)

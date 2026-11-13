@@ -1,12 +1,12 @@
 {
   "latest_five_ten_2026_11_13": {
-    "status": "IN_PROGRESS_15_OF_50_WARRIOR_CLIENT_MONDAY_PENDING",
+    "status": "IN_PROGRESS_16_OF_50_ARTIFACT_CLIENT_PENDING",
     "audit": "docs\\audits\\five-ten-2026-11-13.json",
     "authorized_total": 50,
-    "completed_source_repairs": 15,
+    "completed_source_repairs": 16,
     "latest_batch": 2,
     "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
-    "canonical_world_sha256": "a1b31921bb834ab1dd2831a14d003ef8555aabe0f37304981a78a0c7ee6fce66",
+    "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
     "remaining": [
       "Authorized total50:batch1 is10,batch2 has2;38 remain. Do not count diagnostics/test changes or the unresolved final boss issue.",
       "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
@@ -16,7 +16,8 @@
     ],
     "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted",
     "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN",
-    "final_boss_followup": "Victory confirmed;intro protection and Fury/Protection pickup end receipt repaired/deployed,Monday attackability/visual/manual return pending."
+    "final_boss_followup": "Victory confirmed;intro protection and Fury/Protection pickup end receipt repaired/deployed,Monday attackability/visual/manual return pending.",
+    "ashbringer_followup": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json"
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
@@ -11177,6 +11178,13 @@
     "status": "REPAIRED_BOTH_WARRIOR_PICKUP_SCENES_DEPLOYED_CLIENT_MONDAY_PENDING",
     "audit": "docs/audits/warrior-pickup-scene-expiry-2026-11-13.json",
     "canonical_world_sha256": "a1b31921bb834ab1dd2831a14d003ef8555aabe0f37304981a78a0c7ee6fce66",
-    "cause": "Both authored9s Warrior pickup auras canceled the issued scene before its end acknowledgement. Native finite expiry now reaches ordinary completion once;actual client visuals/manual return Monday pending."
+    "cause": "Both authored9s Warrior pickup auras canceled the issued scene before its end acknowledgement. Native finite expiry now reaches ordinary completion once;actual client visuals/manual return Monday pending.",
+    "fix_commit": "2e6f0d73953202bc7471c6315a242829a9968def"
+  },
+  "latest_ashbringer_original_ai_resume_2026_11_13": {
+    "status": "ASHBRINGER_REMOVE_ORIGINAL_AI_DISPATCH_REPAIRED_DEPLOYED_CLIENT_PENDING",
+    "audit": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json",
+    "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
+    "scope": "Exact216690 removal dispatch prefers native suspended content,then current;missing both diagnosed.16ASAN+native3/old2/canonical checks,not full775."
   }
 }

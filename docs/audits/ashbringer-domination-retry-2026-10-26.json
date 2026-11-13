@@ -36,5 +36,10 @@
     "bnet_sha256": "BFD086C039A0E3AE2852B6B41ECEA89695EAB64970FE0872156F0A81C777AAF8",
     "build": "Canonical world+bnet MSBuild Release exit0; no OutDir/LinkIncremental=false. Actual UTF16 final-link original scripts/game/shared/common world inputs and shared/common bnet inputs checked, plus actual selected installed aura implementation.",
     "runtime": "No user/unknown world/bnet process at build or own startup admission. Own canonical hidden PID27024 reached fresh ready, stdin shutdown0/exit0, new DBErrors0/stderr empty/protected config-certificate-key hashes unchanged; own server exited. User was told their visible server can now start; remaining tests are offline/read-only and no further deployment/runtime startup is permitted over a user/unknown server without asking and confirmation. No user server stopped. Startup is not775/button/loot/equip/client/VFX traversal."
+  },
+  "original_ai_resume_followup_2026_11_13": {
+    "audit": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json",
+    "status": "ASHBRINGER_REMOVE_ORIGINAL_AI_DISPATCH_REPAIRED_DEPLOYED_CLIENT_PENDING",
+    "scope": "Native original suspended/current selection and no-AI diagnostic only;old217042 retry/timers/criteria retained. Full acquisition/775/client limits unchanged."
   }
 }

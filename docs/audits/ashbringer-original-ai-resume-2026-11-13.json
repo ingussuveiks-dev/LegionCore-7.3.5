@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-13",
+  "status": "ASHBRINGER_REMOVE_ORIGINAL_AI_DISPATCH_REPAIRED_DEPLOYED_CLIENT_PENDING",
+  "fix_commit": "Focused implementation commit containing this audit",
+  "scope": "Existing216690 OnRemove only:actual native90981/30yd search and DoAction1;no new source/stage admission,AI regeneration,surrender,loot,button or whole775 implementation.",
+  "cause": "The native aura remove callback assumed the nearest living Balnazzar always has a current AI and called it directly. A native suspended original plus a temporary current AI sends combat resume to the replacement;without a current AI the same expression dereferences null.",
+  "implementation": "Select native GetDisabledAI first,then ordinary current Creature::AI. Dispatch original DoAction1 only for an available pointer. Missing both retains a warning and no fabricated action/progression or actor. Existing target/null/nearest30yd policy,apply/update hooks,4000+8000 timers,217042 retry,stage criteria,HP/credit/loot/faction and all other script bodies remain byte-scope unchanged.",
+  "checks": {
+    "source": "Exact full-file SHA/delta against2e6f0d739. Retained4717a90 domination source certificate normalizes only this declared OnRemove amendment;it continues to exercise current hooks.",
+    "counterfactual": "Two actual registered native216691->216690/remove controls:ordinary current receives1;native suspended original plus replacement sends0 to original/1 to replacement. Full pinned pre-fix spell class,renamed C++ root only to avoid ODR collision;actual ScriptName binding unchanged. Known null dereference is not deliberately crashed.",
+    "asan": "16 complete extracted OnRemove target/boss/current/suspended combinations pass. Original content wins;ordinary current fallback remains;missing target/actor does nothing;missing both warns once and never dispatches. Pinned source counterfactual independently reproduces wrong recipient.",
+    "native": "Final3 actual producer216691/native periodic216690/AuraScript/FindNearestCreature/Unit AI getter/virtual dispatch cases:current original,suspended-only,suspended+replacement all send1 only to original. Real World90981 map1500 spawn/phase list and actual area geometry;cached zone/area and four neutral speed fields initialized as matching Player::Create. Native AI action endpoint observed,not the whole boss fight. Empty private TEMP account and read-only pools prevent persistent character/account writes.",
+    "retained": "Existing24 stage/reported-result ASAN domination cases and actual DB2+Hotfix735/216693/217042/removal metadata pass. Missing native216687 stays visible,not fabricated. Original update timings/three criteria/non-OK retry unchanged.",
+    "linked": "Full retained Warrior/artifact/pet/source checks plus selected original216690 removal registration. Native Unit fields9c8/9c0 select original/current,nonnull only reaches virtual48/action1;missing both reaches diagnostic. Actual Balnazzar factory selects matching DoAction48 slot. No new decoder bounds or binary edits.",
+    "canonical": "Separate final link from original libraries,hash-verified canonical Release. Full canonical PE/Scepter and owned18824 ready/graceful shutdown0/exit0/gone,stderr empty,protected config/certs/DLL hashes unchanged.",
+    "client": "Actual Unbreakable Will/button removal/combat resumption/full775 and player/pet/group/faction/loot/rendering remain client checks. No full quest or all36 certificate."
+  },
+  "fixture_repairs": [
+    "First native prototypes used an unrelated return pose and uninitialized GetCurrentZoneID/GetCurrentAreaID cache;reported DONT_REPORT mapped to actual CheckCast60/area admission. Use original World spawn and geometry-derived cache;do not disable location checks.",
+    "Native fixture incorrectly read creature.PhaseId VAR_STRING as UInt32;strict Field conversion deliberately asserted and the process exited ACCESS_VIOLATION. Original stderr/stack/exit records preserved. Read GetString and parse full native phase list;strict core field diagnostics unchanged.",
+    "The lightweight Player fixture skips Create neutral speed/haste initialization. Its216691 producer was accepted without a usable periodic child;seeding the four exact1.0 defaults makes the real native producer/child work. Earlier incomplete fixture runs are not ordinary passing gameplay or production crash claims."
+  ],
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
+    "bnet_sha256": "72ec84bd69d20d329ff907a034bc1a05bf289f0ca13b104b023fb2222216af83"
+  },
+  "diagnostics": "Final native/model/retained/build/PE/startup intervals have no unexplained warning/error/assertion,appended DBErrors or new/changed crash reports. Earlier accidental test-fixture schema assertion is explicitly paired with corrected native runs and its original bytes are archived;not hidden. Mixed canonical7111-byte DBErrors/Slaghammer/offline research preserved.",
+  "evidence": {
+    "local": ".codex\\ashbringer-resume-20261113",
+    "native_final": "build-extractors\\runtime-test\\ashbringer-resume-native\\20261113-182144-400",
+    "models": "build-extractors\\runtime-test\\ashbringer-resume"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\ashbringer-resume-20261113",
+    "archive_manifest_sha256": "96f9a5eccdd19494cb653209b1224f1f48e4f217408319b65a204bccdf3f8859",
+    "archived_files": 531,
+    "reclaimed_bytes": 2657050092,
+    "protected_hashes_verified": 23,
+    "retained_rollbacks": [
+      "release-before-ashbringer-resume-20261113",
+      "release-before-warswords-scene-expiry-20261113",
+      "release-before-warswords-attackability-20261113",
+      "release-before-five-ten-20261113",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "superseded_rollbacks": [],
+    "deferred": [],
+    "limits": "No active log truncated/rotated. No user process stopped. Original-current-only callback counterfactual and final native/ASAN passes preserved. Test fixture PhaseId GetUInt32-on-VAR_STRING assertion was corrected to native string-list parsing;original stderr/stack stays archived. Native cast rejections resolved by actual spawn pose/cached native zone+area and Player::Create neutral speed fields. Ordinary final checks clean;client remains pending. Original mixedDBErrors/Slaghammer/offline research/canonical/libs/config/DLL/data preserved."
+  },
+  "remaining": [
+    "Missing/dead Balnazzar,unknown AI regeneration and whole encounter recovery remain separate;the callback does not invent a replacement actor or force progression. No actual client failure of this AI handoff was asserted.",
+    "Ashbringer accepted pickup spell/storage ordering,real button/override/producer timing,abandon/re-entry/return and full client775 remain OPEN as in existing audits.",
+    "Warrior intro protection and Fury/Protection pickup animation/manual return await Monday client checks. Authentic living Lady/Sharasdal activation/surrender1906/Grash cleanup,LINK2/Slaghammer,mixedDBErrors and all36 whole chains remain OPEN. No HP threshold or kill timer invented."
+  ]
+}

@@ -19,12 +19,17 @@ struct InstanceScript
     void DoUpdateAchievementCriteria(uint32 type,uint32 value){assert(type==92);credit.push_back(value);}
 };
 struct ActorAI {uint32 actions=0;void DoAction(bool value){assert(value);++actions;}};
+using CreatureAI=ActorAI;
 struct Creature
 {
     uint32 despawns=0;
     ActorAI ai;
+    ActorAI* disabled=nullptr;
+    bool missing=false;
     void DespawnOrUnsummon(){++despawns;}
-    ActorAI* AI(){return &ai;}
+    ActorAI* AI(){return missing?nullptr:&ai;}
+    ActorAI* GetDisabledAI(){return disabled;}
+    uint32 GetGUIDLow(){return 456;}
 };
 struct Unit
 {
@@ -47,6 +52,7 @@ struct Aura
     Unit* GetTarget(){assert(application);return target;}
 #include "Aura.inc"
 };
+#ifndef ASHBRINGER_RESUME_TEST
 int main()
 {
     InstanceScript instance;Unit owner;owner.instance=&instance;Aura aura;aura.caster=&owner;
@@ -89,3 +95,4 @@ int main()
     std::cout<<"PASS24 stage/result cases retain4000+8000ms sequence, original stage3 credits and self217042; non-OK retains aura-owned next-positive-update retry with one added diagnostic, repeated failures/missing caster then accepted result stop correctly. Missing actors/targets, oversized/zero updates, destruction/new aura covered. No GetTarget during update. Controlled services; OK is preparation admission, not actual override735/button/removal/loot/equip/client/VFX or full abandon/group/faction proof\n";
 #endif
 }
+#endif

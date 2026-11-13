@@ -1,7 +1,7 @@
 {
   "date": "2026-11-13",
   "status": "REPAIRED_BOTH_WARRIOR_PICKUP_SCENES_DEPLOYED_CLIENT_MONDAY_PENDING",
-  "fix_commit": "Focused implementation commit containing this audit",
+  "fix_commit": "2e6f0d73953202bc7471c6315a242829a9968def",
   "reported": "User received Fury weapons but pickup animation repeated and could not test return. Also requested Vigfus intro attackability;that separate fix cb9cc208e is already deployed.",
   "cause": "Native205443/1218 and205340/1215 are finite9000ms aura430 scenes. Natural expiry formerly called SendSpellScene(false),canceling/erasing active instance while leaving scene status incomplete. Late complete packets then have no matching receipt;the shared manual return controller correctly refuses to infer completion and restarts a missing scene. Earlier fixtures completed the packet before expiry and missed the actual finite-Aura ordering.",
   "implementation": [

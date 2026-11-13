@@ -2,8 +2,8 @@
   "date": "2026-11-13",
   "request": "Labi turpini ar 5×10",
   "authorized_total": 50,
-  "completed_source_repairs": 15,
-  "status": "IN_PROGRESS_15_OF_50_WARRIOR_CLIENT_MONDAY_PENDING",
+  "completed_source_repairs": 16,
+  "status": "IN_PROGRESS_16_OF_50_ARTIFACT_CLIENT_PENDING",
   "baseline": "10100c1a87451150fc9118fc5e6e4ab4068f3c20",
   "batches": [
     {
@@ -139,8 +139,8 @@
     },
     {
       "batch": 2,
-      "implemented": 5,
-      "status": "IN_PROGRESS_5_OF_10",
+      "implemented": 6,
+      "status": "IN_PROGRESS_6_OF_10",
       "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
       "fixes": [
         {
@@ -169,19 +169,26 @@
         {
           "key": "WarriorFinitePickupSceneEnd",
           "audit": "docs/audits/warrior-pickup-scene-expiry-2026-11-13.json",
-          "summary": "Actual finite9000ms Fury/Protection aura end acknowledges latest issued scene before cancellation.26 ASAN/native10/controller51/data23,retained equip/canonical PE/Scepter/startup pass;client Monday pending. One underlying repair across two exact scenes."
+          "summary": "Actual finite9000ms Fury/Protection aura end acknowledges latest issued scene before cancellation.26 ASAN/native10/controller51/data23,retained equip/canonical PE/Scepter/startup pass;client Monday pending. One underlying repair across two exact scenes.",
+          "fix_commit": "2e6f0d73953202bc7471c6315a242829a9968def"
+        },
+        {
+          "key": "AshbringerOriginalAIResume",
+          "audit": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json",
+          "summary": "Actual216690 removal dispatch retains original native suspended AI instead of temporary replacement;current fallback and missing-AI diagnostic.16 ASAN/native3 vs old2,retained24/update metadata/canonical PE/Scepter/startup pass;full775/client pending."
         }
       ],
-      "canonical_world_sha256": "a1b31921bb834ab1dd2831a14d003ef8555aabe0f37304981a78a0c7ee6fce66",
+      "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
       "checks": "Bonfire normal-cast/LOS and rune8386/99/46970 exactly-once native proofs retained;rune26 full native cases plus two old counterfactuals had zero blocked-LOS placements. Actual bonfire/rune4of4/final Vigfus transitions confirmed separately. Helya deferred normal aura,then intro protection and finite pickup scene repair have separate native/ASAN/canonical checks/audits;new client visuals/return Monday pending."
     }
   ],
   "remaining": [
-    "Authorized50:batch1 has10,batch2 has5;35 remain. Client pending limits retained separately.",
+    "Authorized50:batch1 has10,batch2 has6;34 remain. New source repairs retain separate client/full-chain limits.",
     "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
     "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
     "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
-    "Final Vigfus native acknowledgement repaired/client victory confirmed. Requested intro protection and actual Fury/Protection finite pickup loop root repaired/deployed;Monday client attackability/animation/manual return pending."
+    "Final Vigfus native acknowledgement repaired/client victory confirmed. Requested intro protection and actual Fury/Protection finite pickup loop root repaired/deployed;Monday client attackability/animation/manual return pending.",
+    "Ashbringer original-AI removal handoff repaired/deployed. Pickup storage ordering,real button/producer timing,missing actor/AI regeneration and full775 remain separate OPEN work."
   ],
   "final_boss_followup": "Victory confirmed;new protection and finite scene end receipts repaired/deployed. Monday client retest pending;whole Fury/Protection/all36 remain separate."
 }
