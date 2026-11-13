@@ -2,7 +2,7 @@
   "date": "2026-11-13",
   "request": "Labi turpini",
   "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
-  "fix_commit": null,
+  "fix_commit": "36152d4a1841205526cdbb74e6d01bdb89afc23c",
   "baseline": "29884c644ea338dabcbb2c7b64c80feb3e7a9eb4",
   "title": "Stop the owner-scoped Stormheim blessing before map detachment",
   "cause": "The ceremony relied on a late actor Cleanup using FindPlayer(owner,false). This project ignores the false flag and filters out detached Players;the old OnLogout callback also runs after map removal. The readiness offer/ceremony could outlive departure and root cleanup depended on which actor tick happened before detachment. Simply exposing globally detached/cross-map Players would allow mutation from the wrong map thread.",
@@ -61,5 +61,5 @@
     "Shared ObjectAccessor::FindPlayer(guid,false) still ignores its bool. Its sole explicit false consumer found in src was removed from Stormheim;no global lookup/lifetime contract was changed. Do not use it to implement offline rewards without a separate safe design.",
     "Lady/Sharasdal authentic living finale,LINK2/Slaghammer evidence,Haunt/unbound183/Apocalypse/clones/Crumble full policy and all36 whole artifact chains retain their existing OPEN/client limits."
   ],
-  "commit_status": "Implementation/tests/audit ready for focused commit and origin/main push."
+  "commit_status": "Focused implementation/tests/audit commit pushed to origin/main;this followup records its exact hash. Actual client checks and listed OPEN scopes remain pending."
 }

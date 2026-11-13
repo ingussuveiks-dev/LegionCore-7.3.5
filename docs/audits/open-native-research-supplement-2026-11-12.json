@@ -2,7 +2,7 @@
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
     "audit": "docs\\audits\\stormheim-departure-2026-11-13.json",
-    "fix_commit": null,
+    "fix_commit": "36152d4a1841205526cdbb74e6d01bdb89afc23c",
     "canonical_world_sha256": "3f6c907b04b3de6e8c1e3f332533ef7e39a3a400d2298baa90f5a5b58a93f377",
     "checks": "10 native departure cases + expected-broken complete-script control,whole ceremony model/live data,linked PE/Scepter and owned ready/shutdown0/exit0. Client pending.",
     "cleanup": {

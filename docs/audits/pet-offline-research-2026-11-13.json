@@ -117,7 +117,7 @@
     "stormheim_consumer_followup": {
       "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
       "audit": "docs\\audits\\stormheim-departure-2026-11-13.json",
-      "fix_commit": null,
+      "fix_commit": "36152d4a1841205526cdbb74e6d01bdb89afc23c",
       "note": "Sole explicit FindPlayer(false) source consumer now uses an actual before-detach map hook and map-local cleanup,covered by native tests. Shared API bool is unchanged;offline rewards remain OPEN. Original evidence and known-broken probe hashes verified unchanged."
     }
   }
