@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
 #include <limits>
 #include "ObjectMgr.h"
 #include "Chat.h"
@@ -475,9 +476,9 @@ public:
         if (!*args)
             return false;
 
-        float ASpeed = (float)atof((char*)args);
+        float ASpeed;
 
-        if (ASpeed > 50.0f || ASpeed < 0.1f)
+        if (!Trinity::ParseCommandFloat(args, ASpeed) || ASpeed > 50.0f || ASpeed < 0.1f)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);

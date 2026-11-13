@@ -101,6 +101,16 @@
       "old": "    static bool HandleModifyMoneyCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        int64 addmoney = atoi((char*)args);\n\n        uint64 moneyuser = target->GetMoney();\n\n        if (addmoney < 0)\n        {\n            int64 newmoney = int64(moneyuser) + addmoney;\n\n            TC_LOG_DEBUG(\"misc\", handler->GetTrinityString(LANG_CURRENT_MONEY), moneyuser, addmoney, newmoney);\n            if (newmoney <= 0)\n            {\n                handler->PSendSysMessage(LANG_YOU_TAKE_ALL_MONEY, handler->GetNameLink(target).c_str());\n                if (handler->needReportToTarget(target))\n                    (ChatHandler(target)).PSendSysMessage(LANG_YOURS_ALL_MONEY_GONE, handler->GetNameLink().c_str());\n\n                target->SetMoney(0);\n            }\n            else\n            {\n                if (newmoney > MAX_MONEY_AMOUNT)\n                    newmoney = MAX_MONEY_AMOUNT;\n\n                handler->PSendSysMessage(LANG_YOU_TAKE_MONEY, abs(addmoney), handler->GetNameLink(target).c_str());\n                if (handler->needReportToTarget(target))\n                    (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_TAKEN, handler->GetNameLink().c_str(), abs(addmoney));\n                target->SetMoney(newmoney);\n            }\n        }\n        else\n        {\n            handler->PSendSysMessage(LANG_YOU_GIVE_MONEY, uint32(addmoney), handler->GetNameLink(target).c_str());\n            if (handler->needReportToTarget(target))\n                (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_GIVEN, handler->GetNameLink().c_str(), uint32(addmoney));\n\n            if (addmoney >=MAX_MONEY_AMOUNT)\n                target->SetMoney(MAX_MONEY_AMOUNT);\n            else\n                target->ModifyMoney(int64(addmoney));\n        }\n\n        TC_LOG_DEBUG(\"misc\", handler->GetTrinityString(LANG_NEW_MONEY), moneyuser, uint32(addmoney), target->GetMoney());\n        return true;\n    }",
       "new": "    static bool HandleModifyMoneyCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        int64 addmoney;\n        if (!Trinity::ParseCommandInteger(args, addmoney))\n            return false;\n\n        uint64 moneyuser = target->GetMoney();\n\n        if (addmoney < 0)\n        {\n            // This magnitude also handles INT64_MIN without signed overflow.\n            uint64 taken = uint64(-(addmoney + 1)) + 1;\n            uint64 newmoney = taken >= moneyuser ? 0 : moneyuser - taken;\n\n            TC_LOG_DEBUG(\"misc\", handler->GetTrinityString(LANG_CURRENT_MONEY), moneyuser, addmoney, newmoney);\n            if (newmoney <= 0)\n            {\n                handler->PSendSysMessage(LANG_YOU_TAKE_ALL_MONEY, handler->GetNameLink(target).c_str());\n                if (handler->needReportToTarget(target))\n                    (ChatHandler(target)).PSendSysMessage(LANG_YOURS_ALL_MONEY_GONE, handler->GetNameLink().c_str());\n\n                target->SetMoney(0);\n            }\n            else\n            {\n                if (newmoney > MAX_MONEY_AMOUNT)\n                    newmoney = MAX_MONEY_AMOUNT;\n\n                handler->PSendSysMessage(LANG_YOU_TAKE_MONEY, taken, handler->GetNameLink(target).c_str());\n                if (handler->needReportToTarget(target))\n                    (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_TAKEN, handler->GetNameLink().c_str(), taken);\n                target->SetMoney(newmoney);\n            }\n        }\n        else\n        {\n            if (addmoney >= MAX_MONEY_AMOUNT)\n                target->SetMoney(MAX_MONEY_AMOUNT);\n            else if (!target->ModifyMoney(addmoney))\n                return false;\n\n            handler->PSendSysMessage(LANG_YOU_GIVE_MONEY, uint64(addmoney), handler->GetNameLink(target).c_str());\n            if (handler->needReportToTarget(target))\n                (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_GIVEN, handler->GetNameLink().c_str(), uint64(addmoney));\n        }\n\n        TC_LOG_DEBUG(\"misc\", \"GM money change: before=%u delta=%d after=%u\", moneyuser, addmoney, target->GetMoney());\n        return true;\n    }",
       "batch": 2
+    },
+    {
+      "key": "ModifyASpeedFiniteInput",
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyASpeedCommand",
+      "kind": "float",
+      "case": "ASpeed",
+      "old": "    static bool HandleModifyASpeedCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        float ASpeed = (float)atof((char*)args);\n\n        if (ASpeed > 50.0f || ASpeed < 0.1f)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        std::string targetNameLink = handler->GetNameLink(target);\n\n        if (target->isInFlight())\n        {\n            handler->PSendSysMessage(LANG_CHAR_IN_FLIGHT, targetNameLink.c_str());\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->PSendSysMessage(LANG_YOU_CHANGE_ASPEED, ASpeed, targetNameLink.c_str());\n        if (handler->needReportToTarget(target))\n            (ChatHandler(target)).PSendSysMessage(LANG_YOURS_ASPEED_CHANGED, handler->GetNameLink().c_str(), ASpeed);\n\n        target->SetSpeed(MOVE_WALK,    ASpeed, true);\n        target->SetSpeed(MOVE_RUN,     ASpeed, true);\n        target->SetSpeed(MOVE_SWIM,    ASpeed, true);\n        //target->SetSpeed(MOVE_TURN,    ASpeed, true);\n        target->SetSpeed(MOVE_FLIGHT,     ASpeed, true);\n        return true;\n    }",
+      "new": "    static bool HandleModifyASpeedCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        float ASpeed;\n\n        if (!Trinity::ParseCommandFloat(args, ASpeed) || ASpeed > 50.0f || ASpeed < 0.1f)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        std::string targetNameLink = handler->GetNameLink(target);\n\n        if (target->isInFlight())\n        {\n            handler->PSendSysMessage(LANG_CHAR_IN_FLIGHT, targetNameLink.c_str());\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->PSendSysMessage(LANG_YOU_CHANGE_ASPEED, ASpeed, targetNameLink.c_str());\n        if (handler->needReportToTarget(target))\n            (ChatHandler(target)).PSendSysMessage(LANG_YOURS_ASPEED_CHANGED, handler->GetNameLink().c_str(), ASpeed);\n\n        target->SetSpeed(MOVE_WALK,    ASpeed, true);\n        target->SetSpeed(MOVE_RUN,     ASpeed, true);\n        target->SetSpeed(MOVE_SWIM,    ASpeed, true);\n        //target->SetSpeed(MOVE_TURN,    ASpeed, true);\n        target->SetSpeed(MOVE_FLIGHT,     ASpeed, true);\n        return true;\n    }",
+      "batch": 2
     }
   ],
   "extra_edits": [
@@ -128,6 +138,13 @@
       "path": "src/server/scripts/Commands/cs_modify.cpp",
       "old": "#include \"ScriptMgr.h\"",
       "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"\n#include <limits>"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "old": "#include \"CommandIntegerArgument.h\"",
+      "new": "#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
+      "batch": 2,
+      "owner_key": "ModifyASpeedFiniteInput"
     }
   ],
   "files": {
@@ -145,7 +162,7 @@
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "a2c3dfa2e67bc324b27a3f8e04222c43ceb5bd2ec909dc0f98441fc990669dcd",
-      "after_sha256": "42f5b844333de8d974ed4cef6480df2125a97e049dd25e4de174df4f9f48c46f"
+      "after_sha256": "ab49d78f2d01e6c89414de3c1116eed0886d7a5ce1a8f7634ea7c59f46836573"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "0fa980194c4399bed9bdfd37286968e29234275106b47327120f7142268216f5",
@@ -158,6 +175,13 @@
     "src/server/scripts/Legion/BlackRookHoldDungeon/boss_the_amalgam_of_souls.cpp": {
       "before_sha256": "906e6ba9cfe09090c49b8ac1b76221cf90f13fc27795cd857de4e99a1f53f5f9",
       "after_sha256": "8c0eac3b9368f869f07a098d949b542729aac6d264dc7e5f5fb9f49874edb3f9"
+    },
+    "src/server/game/Chat/CommandFloatArgument.h": {
+      "before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after_sha256": "efd2caa73c8ab638b594be3c492c4ddd898450dc51ada22c8952a7c80dec0535",
+      "added": true,
+      "batch": 2,
+      "owner_key": "ModifyASpeedFiniteInput"
     }
   }
 }
