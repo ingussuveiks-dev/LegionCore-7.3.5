@@ -1396,7 +1396,9 @@ public:
         if (!*args)
             return false;
 
-        float option = (float)(atof((char*)args));
+        float option;
+        if (!Trinity::ParseCommandFloat(args, option))
+            return false;
         if (option < 0.0f)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
@@ -1408,7 +1410,7 @@ public:
             mtype = RANDOM_MOTION_TYPE;
 
         Creature* creature = handler->getSelectedCreature();
-        uint32 guidLow = 0;
+        ObjectGuid::LowType guidLow = 0;
 
         if (creature)
             guidLow = creature->GetDBTableGUIDLow();
