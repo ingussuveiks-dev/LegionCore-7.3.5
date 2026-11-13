@@ -695,8 +695,8 @@ public:
         if (!*args)
             return false;
 
-        float Scale = (float)atof((char*)args);
-        if (Scale > 10.0f || Scale < 0.1f)
+        float Scale;
+        if (!Trinity::ParseCommandFloat(args, Scale) || Scale > 10.0f || Scale < 0.1f)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
