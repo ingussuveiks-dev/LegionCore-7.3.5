@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "Chat.h"
 #include "SpellPackets.h"
+#include <cmath>
+#include <cstdlib>
 
 class cast_commandscript : public CommandScript
 {
@@ -165,7 +167,12 @@ public:
         float dist = 0;
 
         if (distStr)
-            sscanf(distStr, "%f", &dist);
+        {
+            char* end = nullptr;
+            dist = std::strtof(distStr, &end);
+            if (end == distStr || *end || !std::isfinite(dist))
+                return false;
+        }
 
         char* triggeredStr = strtok(NULL, " ");
         if (triggeredStr)
