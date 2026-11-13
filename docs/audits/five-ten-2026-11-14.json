@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_3_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 3,
+  "status": "IN_PROGRESS_4_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 4,
   "batches": [
     {
       "batch": 1,
@@ -24,6 +24,11 @@
           "key": "AccountGmArguments",
           "path": "src/server/scripts/Commands/cs_account.cpp",
           "summary": "Whitespace,unknown account,malformed/overflow GM level or realm must not reach ACL writes. Preserve selected/named account,console,realm-1 and native authority/cross-realm checks."
+        },
+        {
+          "key": "AccountGmRequestedRealm",
+          "path": "src/server/scripts/Commands/cs_account.cpp",
+          "summary": "DELETE_BY_REALM parameter1 must use parsed requested realm,not current realm.Id.Realm;native global-1 semantics and INSERT preserved."
         }
       ],
       "checks": {
@@ -54,7 +59,7 @@
     }
   ],
   "remaining": [
-    "47 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
+    "46 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]
