@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini",
+  "status": "SCOPED_LOGOUT_AND_OWNED_JOURNAL_REPAIRED_DEPLOYED_CLIENT_PENDING",
+  "fix_commit": null,
+  "baseline": "59489d127824dbcdc192feb82526342e2d1012d8",
+  "title": "Finalize pet battles against the departing player before save and persist detached owned pet health",
+  "cause": "Logout can detach a Player before WorldSession::LogoutPlayer saves it. PetBattle::Finish used world-filtered lookup for journal updates and release,so it skipped that Player. The battle could remain in CREATION/RUNNING,or finish without saving health/penalty. A late ordinary ForfeitBattle also fails the existing webbed guard and cannot safely read an uninitialized creation ActivePetID. During matchmaking far-transfer,SaveToDB chooses the pending destination rather than only the relocated current pose.",
+  "implementation": {
+    "bound_logout": "WorldSession invokes PetBattleSystem::OnPlayerLogout after genuine session logout admission and before SetDelete/save. The system removes the own request/queue proposal,validates both team PlayerGuid and OwnerGuid,and binds only that Player and full battle GUID in a synchronous thread-local RAII scope. No pointer is retained in a battle or delayed companion callback.",
+    "running": "Only RUNNING enters Finish. The scoped genuine logout can terminate a trapped battle;ordinary voluntary webbed forfeits still use the native guard. Native GetForfeitHealthPenalityPct remains10 for PvE and0 for PvP. The actual bound Player survives world detachment long enough for journal synchronization. Final-dead/negative health becomes0;living health follows the existing penalty policy exactly once.",
+    "detached_journal": "Finish without an available world Player still normalizes and copies its real OriginalBattlePet and marks needSave. UpdateOriginalInstance accepts a null notification receiver. Online XP/achievement/capture/trainer reward paths continue to require their actual Player;offline reward delivery is a separate remaining scope.",
+    "creation": "Logout and ordinary early forfeit share CancelUnstartedBattle. It releases only actual battle-bound participants/NPCs,leaves WinnerTeamId unset,and gives no combat penalty,XP or reward. Direct Finish rejects creation,including invalid/uninitialized active-pet IDs. A wild actor rebound to another battle is retained.",
+    "reentry": "Internal FINISHING4 rejects repeated completion and is neither updated nor queued for deletion by the manager. FINISHED2 is published after synchronous cleanup. Native callback test recursively calls Finish and runs the actual manager deletion tick while finishing. OnPlayerLogout caches battle type before finalization so subsequent player cleanup does not dereference a completed battle.",
+    "recall": "Matchmaking logout validates the real recall location and prepares it as the current saved pose. If a genuine far-transfer is pending,the same validated location replaces the pending save destination while preserving loading state. No teleport ACK or arrival completion is fabricated. Normal connected opponents keep native release/return behavior."
+  },
+  "sources": "Matching local735 producer/Map/WorldSession/ObjectAccessor/PetBattle/SaveToDB code and26972 data drove the repair. Earlier local TrinityCore/GitHub comparison and pinned incompatible reference architecture remain in pet-offline-research-2026-11-13.json. No modern shared_ptr architecture,new timeout,HP threshold or kill timer imported;no YouTube review claimed.",
+  "checks": {
+    "native44": "34 endpoint cases across both team positions plus10 shared cases:actual connected opponent in both departure orientations and creation/running states;native queue proposal/request cleanup;real bound/rebound wild actor in creation/running states;actual Finish/manager callback reentry. Endpoint cases cover online/detached,webbed,unstarted,repeat,false logout,foreign owner,missing battle,journal-only offline Finish,positive-health sacrifice death,missing journal,ordinary and pending matchmaking recall,null receiver,ordinary early cancel and direct Finish before Begin. Session admission is controlled in this endpoint suite;not a client login.",
+    "native_save24": "Actual WorldSession Update/LogoutPlayer/SaveToDB and readback from schema-only disposable auth/character databases. PvE/duel/matchmaking x online/detached x living/final-dead/webbed/creation. Native primary journal health and offline character state are read after actual deletion. Detached matchmaking cases include real pending far-transfer state and verify saved recall map/X. Temporary schemas/users dropped,no personal rows copied and no live character/account table writes. Full network disconnect/relogin is not exercised.",
+    "controls": "Three complete independently pinned59489d127 PetBattle.cpp controls,called through the new bound logout fixture,fail exact detached/webbed/offline assertions with exit1. These are component counterfactuals,not a complete old WorldSession/system snapshot. A fourth exact source projection omits only pending-destination synchronization;actual scratch logout/save then writes the old destination and fails its saved-recall assertion with exit1. All are paired with passing final native/save runs.",
+    "retained": "76 Crumble lifecycle,102 final-health,112 Pound,120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy,84 ordinary/periodic immunity,114 controlled ASAN arrival and6 actual native arrival cases remain passing. Both existing100-scope native suites and their current linked PE scopes pass;these are retained scopes,not200 new fixes or whole-client chains.",
+    "pe": "Actual bound session hook precedes save;genuine logout flag/full-GUID TLS binding;retained voluntary trap guard;RUNNING-only admission/nondeletable finishing status;actual detached journal copy and null sender;shared early cancellation;validated recall/current and pending save locations. All retained pet proofs,original3-bit round writer and real script callback/vtable proof pass. Only the known journal-copy leaf is independently next-symbol bounded,contiguously decoded and checked for closed control flow/frame-free shape;shared64-byte fallback unchanged.",
+    "canonical": "Final world SHA25670234bcceb680e5f0ee179d03be0c1764072a1f73caa506a7e39a26e57c52149. Owned PID24868 reached fresh ready,graceful shutdown0,exit0,gone,stderr empty. Scepter -VerifyReleaseBinary and canonical logout/arrival PE proofs pass. Bnet .text equals pre-task rollback byte-for-byte;no separate new bnet startup claim.",
+    "reviewed_corrections": "Pre-deployment candidate changed to explicit nondeletable finishing status and shared early cancel. Intermediate C60 canonical smoke(PID8340) was superseded by the final pending-transfer repair before handoff;its evidence is preserved. Fixture compiler enum/rvalue errors,incorrect universal10percent PvP expectation,old wild cleanup fixture lacking matching battleID and missing UTF8 runner were corrected. Two native compilers were mistakenly overlapped through the shared launcher;catalog log shows a truncated command,then both scopes and subsequent final suites were rerun serially. Initial pending counterfactual asserted because target map0 was not registered in the fixture startup map cache;registered actual0/1220 geometry,then the intended saved-location failure and final passing24 were observed. No canonical/new dump file resulted. PE proofs updated for actual register/stack roles,inlined queue/recall,noninlined journal leaf and stronger RUNNING gate. First cleanup stopped before mutations on a nested-empty JSON process list;corrected inventory and cleanup completed.",
+    "diagnostics": "Formal canonical/own pre/post crash and log inventories,actual exits/stdout/stderr and appended DBErrors/server diagnostics reviewed. Final repaired native/runtime runs add no unexplained warning/error/assertion or crash. Full game compiler warning messages are a subset of preceding reviewed builds;Scepter warnings unchanged. Mixed7111-byte DBErrors keeps its original fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 hash;not cleared."
+  },
+  "canonical": {
+    "worldserver.exe": "70234bcceb680e5f0ee179d03be0c1764072a1f73caa506a7e39a26e57c52149",
+    "worldserver.map": "1dc41cbc3cdb93a61ff554174898ab43b69f4988fb6b4cbf619d3d28679c5cc1",
+    "bnetserver.exe": "c4448ded70c18f4a86b31a89f57200a511a1f6503e2a5b897ed4c338180346ae",
+    "bnetserver.map": "82b6e9494204124efc2e3233e4800dffaffe63d5f38d1241e4a0da99a4e98fac"
+  },
+  "deployment": {
+    "source_snapshot": ".codex\\pet-logout-2026-11-13\\source-20261113-084505-015-inputs.json",
+    "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-pet-logout-2026-11-13",
+    "original_final_link_libraries": true,
+    "configuration_certificates_dlls_preserved": true
+  },
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\pet-logout-2026-11-13",
+    "manifest_sha256": "7c13b568162862bfb340c2804e8aa8d7685badc5b94470069eb74e74f2b9f3b3",
+    "archived_files": 2031,
+    "removed_files": 148,
+    "reclaimed_bytes": 1717477512,
+    "retained_rollbacks": [
+      "release-before-pet-logout-2026-11-13",
+      "release-before-pet-arrival-start-2026-11-13",
+      "release-before-pet-crumble-immunity-2026-11-13",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "open_research_preserved": true,
+    "note": "Resolved task/retained regression diagnostics are hash-archived;redundant native/staging executables,symbols,configs and older pre-Crumble rollback files removed. Original older manifest retained. Preserve exact cdca106 recovery pair,all unrelated OPEN research,original Slaghammer/LINK2/Lady,mixed log and personal/security/database backups."
+  },
+  "remaining": [
+    "Actual735 client disconnect/reconnect,webbed presentation,pet UI and matchmaking camera/arrival remain pending. Native scratch readback is not actual client traversal.",
+    "Legitimate wins finalized while a Player is temporarily outside the world still need a complete durable XP/achievement/capture/trainer reward-delivery design;this repair saves the bound journal and handles genuine logout losses. Do not fabricate offline reward/player progression.",
+    "Global FindPlayer(guid,false) still ignores its flag;Stormheim blessing owner cleanup across detachment needs its own native regression. Original mixed offline research/probe/configuration remains outside fixed with verified hashes.",
+    "Haunt,remaining unbound183 passives,Crumble full percentage/unavoidable policy,Apocalypse/clones/generic159 remain OPEN.",
+    "Living Lady activation/surrender/conversation1906/Grash/cleanup,LINK2/Slaghammer,mixedDBErrors,original intermittent handshake cause and all36 complete artifact chains remain OPEN. No client authentication or hidden task-owned server retained."
+  ]
+}

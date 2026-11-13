@@ -50,6 +50,7 @@
 #include "OutdoorPvPMgr.h"
 #include "PacketUtilities.h"
 #include "Player.h"
+#include "PetBattleSystem.h"
 #include "QueryHolder.h"
 #include "RealmList.h"
 #include "ScriptMgr.h"
@@ -517,6 +518,9 @@ void WorldSession::LogoutPlayer(bool Save)
     if (_player)
     {
         Player* player = _player;
+        // Settle owned pet-battle state against this bound Player before save;
+        // ordinary logout may already have detached it from the world.
+        sPetBattleSystem->OnPlayerLogout(player);
         // _player->GetAchievementMgr().ClearMap();
         sLFGListMgr->RemovePlayerDueToLogout(_player->GetGUIDLow());
 

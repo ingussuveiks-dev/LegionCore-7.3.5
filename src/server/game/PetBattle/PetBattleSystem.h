@@ -92,10 +92,13 @@ public:
     void Update(uint32 diff);
 
     void ForfeitBattle(ObjectGuid battleID, ObjectGuid forfeiterGuid, bool ignoreAbandonPenalty);
+    void OnPlayerLogout(Player* player);
+    Player* GetLoggingOutPlayer(ObjectGuid battleID) const;
 
     eBattlePetRequests CanPlayerEnterInPetBattle(Player* player, PetBattleRequest* petBattleRequest);
 
 private:
+    void CancelUnstartedBattle(PetBattle* battle, Player* leavingPlayer);
     std::map<ObjectGuid, PetBattle*> _petBattles;           ///< All running battles
     std::map<ObjectGuid, PetBattleRequest*> _battleRequests;             ///< All pending battles request
     std::map<ObjectGuid, LFBTicket*> _LFBRequests;

@@ -7,6 +7,7 @@
 //////
 
 #include "PetBattle.h"
+#include "PetBattleSystem.h"
 #include <limits>
 #include "PetBattleAbilityEffect.h"
 #include "WildBattlePet.h"
@@ -411,7 +412,7 @@ void BattlePetInstance::UpdateOriginalInstance(Player* player)
     OriginalBattlePet->AccountID = AccountID;
     OriginalBattlePet->needSave = true;
 
-    if (sendUpdate)
+    if (sendUpdate && player)
         player->GetSession()->SendBattlePetUpdates(OriginalBattlePet.get());
 }
 
@@ -1341,22 +1342,38 @@ void PetBattle::ProceedRound()
 
 void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPenalty)
 {
-    if (BattleStatus == PETBATTLE_STATUS_FINISHED || BattleStatus == PETBATTLE_STATUS_PENDING_DELETE)
+    if (BattleStatus != PETBATTLE_STATUS_RUNNING)
         return;
-    if (aborted)
+    Player* const departingPlayer = sPetBattleSystem->GetLoggingOutPlayer(ID);
+    if (aborted && !departingPlayer)
         if (Pets[Teams[!winnerTeamID]->ActivePetID] && Pets[Teams[!winnerTeamID]->ActivePetID]->IsAlive() && Pets[Teams[!winnerTeamID]->ActivePetID]->States[BATTLEPET_STATE_Mechanic_IsWebbed])
             return;
 
     RoundStatus = PETBATTLE_ROUND_FINISHED;
     WinnerTeamId = winnerTeamID;
+    // Claim completion before callbacks or a map change can reenter Finish.
+    BattleStatus = PETBATTLE_STATUS_FINISHING;
 
     for (size_t currentTeamID = 0; currentTeamID < MAX_PETBATTLE_TEAM; ++currentTeamID)
     {
         if (Teams[currentTeamID]->PlayerGuid)
         {
-            auto player = ObjectAccessor::GetObjectInWorld(Teams[currentTeamID]->PlayerGuid, static_cast<Player*>(nullptr));
+            auto player = departingPlayer && departingPlayer->GetGUID() == Teams[currentTeamID]->PlayerGuid ? departingPlayer : ObjectAccessor::GetObjectInWorld(Teams[currentTeamID]->PlayerGuid, static_cast<Player*>(nullptr));
             if (!player)
+            {
+                // The journal instance outlives world detachment. Persist its
+                // final health now; online rewards still require a Player.
+                for (auto const& pet : Teams[currentTeamID]->TeamPets)
+                    if (pet)
+                    {
+                        if (!pet->IsAlive() || pet->Health < 0)
+                            pet->Health = 0;
+                        if (!ignoreAbandonPenalty && aborted && winnerTeamID != currentTeamID)
+                            pet->Health = AddPct(pet->Health, -GetForfeitHealthPenalityPct());
+                        pet->UpdateOriginalInstance(nullptr);
+                    }
                 continue;
+            }
 
             sScriptMgr->OnPetBattleFinish(player);
 
@@ -1485,6 +1502,11 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
         if (Teams[currentTeamID]->PlayerGuid)
         {
             auto player = ObjectAccessor::GetObjectInWorld(Teams[currentTeamID]->PlayerGuid, static_cast<Player*>(nullptr));
+            if (departingPlayer && departingPlayer->GetGUID() == Teams[currentTeamID]->PlayerGuid)
+            {
+                departingPlayer->_petBattleId.Clear();
+                continue;
+            }
             if (!player)
                 continue;
 
@@ -1515,6 +1537,8 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
 
                     auto wildPet = ObjectAccessor::GetObjectInOrOutOfWorld(currentPet->OriginalCreature, static_cast<Creature*>(nullptr));
                     if (!wildPet)
+                        continue;
+                    if (wildPet->_petBattleId != ID)
                         continue;
 
                     wildPet->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_PC);

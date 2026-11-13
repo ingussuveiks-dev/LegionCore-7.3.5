@@ -55,7 +55,8 @@ enum ePetBattleStatus
     PETBATTLE_STATUS_CREATION,
     PETBATTLE_STATUS_RUNNING,
     PETBATTLE_STATUS_FINISHED,
-    PETBATTLE_STATUS_PENDING_DELETE
+    PETBATTLE_STATUS_PENDING_DELETE,
+    PETBATTLE_STATUS_FINISHING // Callback reentry is rejected; not deletable yet.
 };
 
 enum ePetBattleQualities

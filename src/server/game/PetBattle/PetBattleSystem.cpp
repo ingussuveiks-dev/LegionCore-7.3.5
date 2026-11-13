@@ -4,11 +4,22 @@
 #include "Player.h"
 #include "Position.h"
 #include "ObjectAccessor.h"
+#include "WorldSession.h"
+#include "WildBattlePet.h"
+#include "MapManager.h"
 #include <limits>
 
 #define PETBATTLE_DELETE_INTERVAL (1 * 30 * IN_MILLISECONDS)
 #define PETBATTLE_LFB_INTERVAL 500
 #define PETBATTLE_LFB_PROPOSAL_TIMEOUT (1 * MINUTE)
+
+namespace
+{
+    // Synchronous, thread-local ownership: never retain a departing Player in
+    // a battle, delayed callback or another session's logout operation.
+    thread_local Player* loggingOutPlayer = nullptr;
+    thread_local ObjectGuid loggingOutBattle;
+}
 
 struct PetBattleMembersPositions
 {
@@ -615,7 +626,132 @@ void PetBattleSystem::ForfeitBattle(ObjectGuid battleID, ObjectGuid forfeiterGui
     if (forfeiterTeamID == MAX_PETBATTLE_TEAM)
         return;
 
+    if (battle->BattleStatus == PETBATTLE_STATUS_CREATION)
+    {
+        if (Player* player = ObjectAccessor::GetObjectInWorld(forfeiterGuid, static_cast<Player*>(nullptr)))
+            if (battle->Teams[forfeiterTeamID]->PlayerGuid == forfeiterGuid)
+                CancelUnstartedBattle(battle, player);
+        return;
+    }
     battle->Finish(!forfeiterTeamID, true, ignoreAbandonPenalty);
+}
+
+void PetBattleSystem::CancelUnstartedBattle(PetBattle* battle, Player* player)
+{
+    if (battle->BattleStatus != PETBATTLE_STATUS_CREATION)
+        return;
+    ObjectGuid const battleID = battle->ID;
+
+    // No Begin means no active-pet selection, combat, penalty or reward.
+    // In particular ActivePetID need not be initialized yet.
+    battle->BattleStatus = PETBATTLE_STATUS_FINISHING;
+    battle->RoundStatus = PETBATTLE_ROUND_FINISHED;
+    for (auto team : battle->Teams)
+        if (team && team->PlayerGuid)
+        {
+            Player* participant = team->PlayerGuid == player->GetGUID() ? player : ObjectAccessor::GetObjectInWorld(team->PlayerGuid, static_cast<Player*>(nullptr));
+            if (!participant || participant->_petBattleId != battleID)
+                continue;
+            participant->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC);
+            participant->SetControlled(false, UNIT_STATE_ROOT);
+            participant->_petBattleId.Clear();
+            if (participant != player || !player->GetSession()->PlayerLogout())
+                participant->GetSession()->SendPetBattleFinished();
+            if (battle->BattleType == PETBATTLE_TYPE_PVP_MATCHMAKING && participant->m_recallLoc.GetMapId() != MAPID_INVALID && MapManager::IsValidMapCoord(participant->m_recallLoc))
+            {
+                if (participant == player && player->GetSession()->PlayerLogout())
+                    participant->WorldRelocate(participant->m_recallLoc);
+                else
+                    participant->TeleportTo(participant->m_recallLoc);
+            }
+        }
+    if (battle->BattleType == PETBATTLE_TYPE_PVE && battle->PveBattleType == PVE_PETBATTLE_WILD)
+        for (auto pet : battle->Teams[PETBATTLE_PVE_TEAM_ID]->TeamPets)
+            if (pet && pet->OriginalCreature)
+                if (auto creature = ObjectAccessor::GetObjectInOrOutOfWorld(pet->OriginalCreature, static_cast<Creature*>(nullptr)))
+                    if (creature->_petBattleId == battleID)
+                    {
+                        creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_PC);
+                        creature->SetControlled(false, UNIT_STATE_ROOT);
+                        creature->_petBattleId.Clear();
+                        sWildBattlePetMgr->LeaveBattle(creature, false);
+                    }
+    battle->BattleStatus = PETBATTLE_STATUS_FINISHED;
+
+}
+
+Player* PetBattleSystem::GetLoggingOutPlayer(ObjectGuid battleID) const
+{
+    return loggingOutBattle == battleID ? loggingOutPlayer : nullptr;
+}
+
+void PetBattleSystem::OnPlayerLogout(Player* player)
+{
+    if (!player || !player->GetSession() || !player->GetSession()->PlayerLogout())
+        return;
+
+    RemoveRequest(player->GetGUID());
+    // LeaveQueue's ordinary lookup inserts a null entry for an absent ticket.
+    // Do not manufacture one for every character logging out.
+    bool queued = false;
+    {
+        std::lock_guard<std::mutex> lock(_LFBRequestsMutex);
+        auto ticket = _LFBRequests.find(player->GetGUID());
+        if (ticket != _LFBRequests.end())
+        {
+            queued = ticket->second != nullptr;
+            if (!queued)
+                _LFBRequests.erase(ticket);
+        }
+    }
+    if (queued)
+        LeaveQueue(player);
+
+    ObjectGuid const battleID = player->_petBattleId;
+    PetBattle* battle = GetBattle(battleID);
+    if (!battle)
+    {
+        player->_petBattleId.Clear();
+        return;
+    }
+    uint32 teamID = 0;
+    for (; teamID < MAX_PETBATTLE_TEAM; ++teamID)
+        if (battle->Teams[teamID] && battle->Teams[teamID]->PlayerGuid == player->GetGUID() && battle->Teams[teamID]->OwnerGuid == player->GetGUID())
+            break;
+    if (teamID == MAX_PETBATTLE_TEAM)
+    {
+        player->_petBattleId.Clear();
+        return;
+    }
+    auto const battleType = battle->BattleType;
+
+    struct LogoutScope
+    {
+        Player* previousPlayer = loggingOutPlayer;
+        ObjectGuid previousBattle = loggingOutBattle;
+        LogoutScope(Player* player, ObjectGuid battle) { loggingOutPlayer = player; loggingOutBattle = battle; }
+        ~LogoutScope() { loggingOutPlayer = previousPlayer; loggingOutBattle = previousBattle; }
+    } scope(player, battleID);
+
+    if (battle->BattleStatus == PETBATTLE_STATUS_CREATION)
+        CancelUnstartedBattle(battle, player);
+    else if (battle->BattleStatus == PETBATTLE_STATUS_RUNNING)
+        battle->Finish(!teamID, true, false);
+
+    // A prior detached Finish already copied the journal. Never penalize it
+    // again, queue a companion summon, or teleport a deleting Player.
+    if (player->_petBattleId == battleID)
+        player->_petBattleId.Clear();
+    player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC);
+    player->SetControlled(false, UNIT_STATE_ROOT);
+    if (battleType == PETBATTLE_TYPE_PVP_MATCHMAKING && player->m_recallLoc.GetMapId() != MAPID_INVALID && MapManager::IsValidMapCoord(player->m_recallLoc))
+    {
+        player->WorldRelocate(player->m_recallLoc);
+        // SaveToDB uses the pending destination during a far transfer. Keep
+        // the real loading state, but save the same validated return pose.
+        if (player->IsBeingTeleportedFar())
+            player->GetTeleportDest().WorldRelocate(player->m_recallLoc);
+    }
 }
 
 eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, PetBattleRequest* petBattleRequest)
