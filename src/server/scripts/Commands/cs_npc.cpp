@@ -633,7 +633,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 factionId = (uint32) atoi((char*)args);
+        uint16 factionId;
+        if (!Trinity::ParseCommandInteger(args, factionId))
+            return false;
 
         if (!sFactionTemplateStore.LookupEntry(factionId))
         {
