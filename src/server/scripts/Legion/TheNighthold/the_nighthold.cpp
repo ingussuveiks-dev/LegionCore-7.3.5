@@ -780,6 +780,8 @@ public:
 // 254241
 struct go_nighthold_gate_event : public GameObjectAI
 {
+    // The object-owned queue may outlive this AI.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     go_nighthold_gate_event(GameObject* go) : GameObjectAI(go) {}
     
     bool eventDone = false;
@@ -795,12 +797,14 @@ struct go_nighthold_gate_event : public GameObjectAI
         InstanceScript* instance = go->GetInstanceScript();
         if (!instance)
             return;
+
+        eventDone = true;
         
         if (Creature* talysra = go->GetMap()->GetCreature(instance->GetGuidData(NPC_TALYSRA)))
             talysra->AI()->DoAction(ACTION_MOVE_TO_FOURTH);
         
-        go->AddDelayedEvent(1000, [this] () -> void
-        {
+        go->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
+        { if (aiLifetimeGuard.expired()) return;
             std::list<Creature*> adds;
             GetCreatureListWithEntryInGrid(adds, go, 112660, 20.0f);
             uint8 text = 0;
@@ -819,8 +823,8 @@ struct go_nighthold_gate_event : public GameObjectAI
         });
             
 
-        go->AddDelayedEvent(2000, [this] () -> void
-        {
+        go->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
+        { if (aiLifetimeGuard.expired()) return;
             std::list<Creature*> adds;
             
             GetCreatureListWithEntryInGrid(adds, go, 113307, 110.0f);
@@ -835,8 +839,8 @@ struct go_nighthold_gate_event : public GameObjectAI
             }
         });
         
-        go->AddDelayedEvent(8000, [this] () -> void
-        {
+        go->AddDelayedEvent(8000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
+        { if (aiLifetimeGuard.expired()) return;
             if (Creature* add = go->FindNearestCreature(112660, 60.0f, true))
                 add->AI()->ZoneTalk(2);
         });

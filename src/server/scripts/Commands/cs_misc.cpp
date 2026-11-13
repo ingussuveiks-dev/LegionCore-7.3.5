@@ -3874,6 +3874,8 @@ public:
         {
             handler->PSendSysMessage("HandleAreaTriggerCommand AreaTrigger %u Error", AreaTriggerID);
             delete areaTrigger;
+            handler->SetSentErrorMessage(true);
+            return false;
         }
         else
             handler->PSendSysMessage("HandleAreaTriggerCommand AreaTrigger %u Spawn", AreaTriggerID);

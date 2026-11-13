@@ -1,0 +1,147 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini ar 5×10",
+  "authorized_total": 50,
+  "completed_source_repairs": 10,
+  "status": "IN_PROGRESS_1_OF_5_BATCHES_DEPLOYED_CLIENT_CHECKS_SEPARATE",
+  "baseline": "10100c1a87451150fc9118fc5e6e4ab4068f3c20",
+  "batches": [
+    {
+      "batch": 1,
+      "implemented": 10,
+      "status": "COMPLETE_10_SOURCE_REPAIRS_DEPLOYED_AUTOMATED_CLIENT_PENDING",
+      "fix_commit": null,
+      "checks": {
+        "fixed": ".codex\\five-ten-20261113\\fixed-20261113-114850-394\\evidence",
+        "baseline": ".codex\\five-ten-20261113\\baseline-20261113-115510-852\\evidence",
+        "native": ".codex\\five-ten-20261113\\native-20261113-115530-696\\evidence"
+      },
+      "canonical": {
+        "bnetserver.exe": "2e00c923263dac4c1a2055610537beab320b3924f397eadc11431857573bdb66",
+        "bnetserver.map": "8e77032b51bd8213c2574b728c9998d142a2e59f452b8aa385ef77122b1d2920",
+        "worldserver.exe": "def3edf8dee8ca7eafccc3ffdd5b03976e73bb7a55c18ac8a4d82f2f58fb6998",
+        "worldserver.map": "361c45a75e329220b78e193c0354d6eb665b1470b42828c53873b58a0a71f5b1"
+      },
+      "startup": "Owned worldserver PID22844 reached fresh ready,graceful shutdown0,exit0,gone;stderr empty. No user/unknown server stopped. bnet .text unchanged;no separate new bnet launch claimed.",
+      "fixes": [
+        {
+          "key": "FelhoundsCorruptionPlayers",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp",
+          "summary": "Reject nonplayers before corruption mark access;retain native eligible-player cap."
+        },
+        {
+          "key": "FelhoundsMoltenPlayers",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp",
+          "summary": "Reject null/nonplayer candidates before role/mark access;retain healer/DPS selection and cached effects."
+        },
+        {
+          "key": "FelhoundsShadowscarPlayers",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp",
+          "summary": "Reject nonplayers before Shadowtouched access;retain nearest marked-player selection."
+        },
+        {
+          "key": "WarsongPassengerMissingTarget",
+          "path": "src/server/scripts/World/custom_events.cpp",
+          "summary": "Reject either missing caster or explicit passenger target before native seat/entry checks. Native CheckCast invokes scripts before generic target validation."
+        },
+        {
+          "key": "LeechingSwarmMissingCaster",
+          "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_anubarak_trial.cpp",
+          "summary": "A remaining66118 aura cannot dereference a caster removed from the map;retain live-source current-health formula,250 minimum and matching heal."
+        },
+        {
+          "key": "SnowglobeFailedAreaTrigger",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "summary": "Failed area creation formerly deleted a pointer then reused it on maps0/1. Clear it and scale only successful areas,retaining independent map visuals and original diagnostics."
+        },
+        {
+          "key": "AreaTriggerCommandFailure",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "summary": "Report failed area creation as a command failure with its existing visible diagnostic;keep successful creation and missing-player handling."
+        },
+        {
+          "key": "NightholdGateLifetime",
+          "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+          "summary": "Retire all3 object-owned delayed closures when the actual GO AI dies;keep original1000/2000/8000ms payloads."
+        },
+        {
+          "key": "NightholdGateExactlyOnce",
+          "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+          "summary": "Claim the AI-local event before scheduling so repeated state notifications cannot duplicate the authored gate sequence. This is not an instance-persistence/client-fidelity certificate."
+        },
+        {
+          "key": "CrashTestSettingsSnapshot",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "summary": "Snapshot guarded GM settings under a mutex;capture the despawn scalar rather than the ScriptObject. Reject malformed/overflow/negative settings,zero groups and radius below the authored5-yard minimum. Preserve0 count/despawn,exact requested count,groups over255 and widened delayed-spawn arithmetic."
+        }
+      ],
+      "coverage": "10 complete production-source ASAN cases paired with10 expected-broken pinned controls. Three full native Felhounds Spell selectors,actual305223 CheckCast and66118 missing-caster periodic dispatcher,plus actual GO AIM_Destroy/FunctionProcessor lifetime projections with observed payloads. Source-only Snowglobe factory failure/command return/GM configuration cases use controlled endpoints;linked PE verifies the implementation. Canonical Scepter and full retained source/PE chains pass. None of this substitutes for an authenticated client or full raid/quest traversal. Full source GM handler tests also cover stale GM admission,configuration edits after enqueue,ScriptObject retirement,invalid settings,group300/count3 exact scheduling,0-count no-op and delay arithmetic nearUINT32_MAX. Native registration/UI interaction remains client-pending.",
+      "withdrawn": [
+        {
+          "key": "HexlordAddLifetime",
+          "reason": "Registration is commented out and no implementation is linked in canonical Release. Not counted as an active fix;source restored."
+        },
+        {
+          "key": "TempleRitualLifetime",
+          "reason": "Registration is commented out and no implementation is linked in canonical Release. Not counted as an active fix;source restored."
+        },
+        {
+          "key": "NightholdFlameCoreLifetime",
+          "reason": "No active registration and no live DB ScriptName binding;implementation is absent from linked Release. Source restored and candidate excluded."
+        },
+        {
+          "key": "BrokenIslandsGuardLifetime",
+          "reason": "No active registration and no live DB ScriptName binding;implementation is absent from linked Release. Source restored and candidate excluded."
+        }
+      ],
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\five-ten-20261113-batch1-final",
+        "archive_manifest_sha256": "49a039bcbad226cc09bcf44f83f522c839c8699ac1905ef914ce1a34c7f9d5b0",
+        "archived_files": 510,
+        "reclaimed_bytes": 205834734,
+        "retained_rollbacks": [
+          "release-before-five-ten-20261113",
+          "release-before-stormheim-departure-2026-11-13",
+          "release-before-pet-logout-2026-11-13",
+          "release-before-pet-ward-rot-2026-11-12"
+        ],
+        "protected_hashes_verified": 43,
+        "bnet_text_unchanged": true,
+        "mixed_candidate_research_retained_outside_fixed": [
+          ".codex\\five-ten-20261113\\baseline-20261113-102435-041",
+          ".codex\\five-ten-20261113\\baseline-20261113-104516-729",
+          ".codex\\five-ten-20261113\\fixed-20261113-102315-070",
+          ".codex\\five-ten-20261113\\fixed-20261113-102353-130",
+          ".codex\\five-ten-20261113\\fixed-20261113-103753-249",
+          ".codex\\five-ten-20261113\\native-20261113-102716-042",
+          ".codex\\five-ten-20261113\\native-20261113-102807-994",
+          ".codex\\five-ten-20261113\\native-20261113-102912-917",
+          ".codex\\five-ten-20261113\\native-20261113-103125-450",
+          ".codex\\five-ten-20261113\\native-20261113-104310-070",
+          ".codex\\five-ten-20261113\\native-20261113-104322-937"
+        ],
+        "static_analysis_retained_outside_fixed": true
+      },
+      "removed_files": 23,
+      "diagnostics": "No new/changed canonical or test crash reports,no appended DBErrors or unexplained server warnings/errors/assertions in repaired regressions/startup. Expected ASAN controls fail by design and are paired with repaired passes. Original mixedDBErrors remains7111 bytes/fa3db826... unchanged;activeCrashes empty. Source compiler warnings C5055/C4805 and external static-analyzer warnings remain visible and separate from runtime diagnostics.",
+      "test_repairs": "Initial extraction needed real GossipDef/GridNotifiers/Vehicle declarations and correct target selector TARGET_UNIT_SRC_AREA_ENTRY for Shadowscar. Those fixture/inspection errors are retained;final native and PE controls pass. Four unregistered/unlinked candidates were restored and excluded,including their mixed research retained outside fixed. The new linked layout exposed an old PE-reader failure: Apply ends in an external native tail-call before an inline compressed switch. Reader now proves the tail target has independent unwind bounds and validates every compressed-map/RVA target. A deliberately damaged in-memory third RVA is rejected;no PE bytes were changed,no general leaf bound was increased. Complete retained PE scopes pass after the repair.",
+      "static_analysis": {
+        "new": "analysis-20261113-123143-163/npcs_special.log",
+        "result": "Compiler analysis exit0;the original source areaTrigger C6001 is absent. Existing external/header findings are preserved outside fixed,not represented as warning-free analysis."
+      },
+      "previous_archive": {
+        "path": "build-extractors/bin/Release/fixed/five-ten-20261113-batch1",
+        "manifest_sha256": "21e450870e924762014120a4ebc73efb27f9a1b90a3fd8f6064b918e360ec1f9",
+        "scope": "Historical scalar-snapshot version;superseded by expanded full-handler repair,original archive unchanged.",
+        "removed_files": 50,
+        "reclaimed_bytes": 401990194
+      }
+    }
+  ],
+  "remaining": [
+    "Authorized total50:batch1 is10;four groups/40 repairs remain IN_PROGRESS and must not be counted as completed tests or fabricated fixes.",
+    "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
+    "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
+    "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits."
+  ]
+}

@@ -886,6 +886,8 @@ class spell_anubarak_leeching_swarm : public SpellScriptLoader
             void HandleEffectPeriodic(AuraEffect const* aurEff)
             {
                 Unit* caster = GetCaster();
+                if (!caster)
+                    return;
                 if (Unit* target = GetTarget())
                 {
                     float lifeLeeched = target->CountPctFromCurHealth(aurEff->GetAmount());

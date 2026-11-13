@@ -1758,7 +1758,7 @@ class spell_events_warsong_take_passenger_check : public SpellScript
     {
         auto caster = GetCaster();
         auto target = GetExplTargetUnit();
-        if (!caster && !target)
+        if (!caster || !target)
             return SPELL_FAILED_BAD_TARGETS;
 
         if (auto veh = caster->GetVehicleKit())

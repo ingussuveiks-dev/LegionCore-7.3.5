@@ -809,7 +809,7 @@ class spell_felhounds_corruption_filter : public SpellScript
         {
             targets.remove_if([this](WorldObject* object) -> bool
             {
-                if (object == nullptr)
+                if (object == nullptr || !object->IsPlayer())
                     return true;
 
                 if (object->ToPlayer()->HasAura(SPELL_ENFLAME_CORRUPTION_MARK) || object->ToPlayer()->HasAura(SPELL_SIPHONED_MARK))
@@ -853,6 +853,9 @@ class spell_felhounds_molten_touch_filter : public SpellScript
 
             for (auto object : targets)
             {
+                if (!object || !object->IsPlayer())
+                    continue;
+
                 if (object->ToPlayer()->HasAura(SPELL_MOLTEN_TOUCH_MARK))
                     continue;
 
@@ -894,7 +897,7 @@ class spell_felhounds_shadowscar_filter : public SpellScript
     {
         targets.remove_if([this](WorldObject* object) -> bool
         {
-            if (object == nullptr || !object->ToPlayer()->HasAura(SPELL_SHADOWTOUCHED))
+            if (object == nullptr || !object->IsPlayer() || !object->ToPlayer()->HasAura(SPELL_SHADOWTOUCHED))
                 return true;
 
             return false;

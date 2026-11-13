@@ -43,7 +43,10 @@ EndContentData */
 #include "Cell.h"
 #include "CellImpl.h"
 #include "CharmInfo.h"
+#include "Chat.h"
 #include "CombatAI.h"
+#include "CommandIntegerArgument.h"
+#include <mutex>
 #include "CreatureTextMgr.h"
 #include "GameEventMgr.h"
 #include "GridNotifiers.h"
@@ -5862,47 +5865,46 @@ class npc_crash_test : public CreatureScript
 public:
     npc_crash_test() : CreatureScript("npc_crash_test") {}
 
-    bool OnGossipHello(Player* player, Creature* creature)  override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
-        if (!player->isGameMaster())
+        if (!player || !player->isGameMaster())
             return false;
 
+        Settings settings = ReadSettings();
         char printinfo[500];
-        sprintf(printinfo, "Current radius: %u", m_radius);
+        sprintf(printinfo, "Current radius: %u", settings.radius);
         player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 1, "", 0, true);
-        
-        sprintf(printinfo, "Count of npc: %u", m_count);
+        sprintf(printinfo, "Count of npc: %u", settings.count);
         player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 2, "", 0, true);
-        
-        sprintf(printinfo, "Time of despawn (in ms): %u", m_despawn);
+        sprintf(printinfo, "Time of despawn (in ms): %u", settings.despawn);
         player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 3, "", 0, true);
-
-        sprintf(printinfo, "NPC grouped by %u npc", m_grouped);
+        sprintf(printinfo, "NPC grouped by %u npc", settings.grouped);
         player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 4, "", 0, true);
-
         player->ADD_GOSSIP_ITEM(GossipOptionNpc::BattleMaster, "KAVABANGAAAA!!!", GOSSIP_SENDER_MAIN, 1);
         player->SEND_GOSSIP_MENU(16777215, creature->GetGUID());
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)  override
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
+        if (!player || !player->isGameMaster() || sender != GOSSIP_SENDER_MAIN || action != 1)
+            return false;
         player->CLOSE_GOSSIP_MENU();
-
-        uint32 j = 1;
-        while(j < m_count)
+        Settings settings = ReadSettings();
+        uint32 spawned = 0;
+        while (spawned < settings.count)
         {
-            float rad = frand(5.0f, m_radius);
+            float rad = frand(5.0f, settings.radius);
             Position pos(creature->GetPosition());
             creature->MovePosition(pos, rad, static_cast<float>(rand_norm()) * static_cast<float>(2 * M_PI));
-
             creature->GetMap()->LoadGrid(pos.GetPositionX(), pos.GetPositionY());
-            for (uint8 i = 0; i < m_grouped; ++i)
+            for (uint32 i = 0; i < settings.grouped && spawned < settings.count; ++i)
             {
-                creature->AddDelayedEvent(++j * 5, [creature, pos, this, i]() -> void
+                // Keep the authored10ms first spawn and5ms spacing without32-bit wrap.
+                uint64 delay = (uint64(++spawned) + 1) * 5;
+                creature->AddDelayedEvent(delay, [creature, pos, despawn = settings.despawn, i]() -> void
                 {
-
-                    if (Creature* cre = creature->SummonCreature(i % 2 ? 230018 : 230019, pos.GetPositionX() + frand(-2.0f, 2.0f), pos.GetPositionY() + frand(-2.0f, 2.0f), pos.GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, m_despawn))
+                    if (Creature* cre = creature->SummonCreature(i % 2 ? 230018 : 230019, pos.GetPositionX() + frand(-2.0f, 2.0f), pos.GetPositionY() + frand(-2.0f, 2.0f), pos.GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, despawn))
                     {
                         cre->setActive(true);
                         cre->SetControlled(true, UNIT_STATE_ROOT);
@@ -5910,39 +5912,46 @@ public:
                 });
             }
         }
-
         return true;
     }
 
-    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 /*sender*/, uint32 action, const char* code) override
+    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, char const* code) override
     {
-        player->PlayerTalkClass->ClearMenus();
-
-        switch (action)
+        if (!player || !player->isGameMaster() || sender != GOSSIP_SENDER_MAIN)
+            return false;
+        uint32 value;
+        // The existing placement range starts at5;zero-sized groups cannot advance.
+        if (!Trinity::ParseCommandInteger(code, value) || action < 1 || action > 4 || (action == 1 && value < 5) || (action == 4 && !value))
         {
-        case 1:
-            m_radius = atol(code);
-            break;
-        case 2:
-            m_count = atol(code);
-            break;
-        case 3:
-            m_despawn = atol(code);
-            break;
-        case 4:
-            m_grouped = atol(code);
-            break;
-
+            ChatHandler(player->GetSession()).SendSysMessage(LANG_BAD_VALUE);
+            return false;
+        }
+        player->PlayerTalkClass->ClearMenus();
+        {
+            std::lock_guard<std::mutex> lock(settingsMutex);
+            switch (action)
+            {
+                case 1: m_radius = value; break;
+                case 2: m_count = value; break;
+                case 3: m_despawn = value; break;
+                case 4: m_grouped = value; break;
+            }
         }
         return OnGossipHello(player, creature);
     }
 
 private:
+    struct Settings { uint32 radius, count, despawn, grouped; };
+    Settings ReadSettings()
+    {
+        std::lock_guard<std::mutex> lock(settingsMutex);
+        return { m_radius, m_count, m_despawn, m_grouped };
+    }
+    std::mutex settingsMutex;
     uint32 m_radius = 100;
     uint32 m_count = 100;
     uint32 m_despawn = 20000;
     uint32 m_grouped = 2;
-
 };
 
 // 100997
@@ -6614,7 +6623,10 @@ struct npc_snowglobe_stalker : public ScriptedAI
 
         auto areaTrigger = new AreaTrigger;
         if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), 0, me, nullptr, pos, pos, nullptr, ObjectGuid::Empty, 12198))
+        {
             delete areaTrigger;
+            areaTrigger = nullptr;
+        }
 
         switch (me->GetMapId())
         {
@@ -6625,12 +6637,14 @@ struct npc_snowglobe_stalker : public ScriptedAI
         case 0:
             DoCast(246235);
             DoCast(219624);
-            areaTrigger->SetSphereScale(0.8f, 100, false);
+            if (areaTrigger)
+                areaTrigger->SetSphereScale(0.8f, 100, false);
             break;
         case 1:
             DoCast(246235);
             DoCast(246236);
-            areaTrigger->SetSphereScale(0.8f, 100, false);
+            if (areaTrigger)
+                areaTrigger->SetSphereScale(0.8f, 100, false);
             break;
         }
     }

@@ -1,4 +1,19 @@
 {
+  "latest_five_ten_2026_11_13": {
+    "status": "IN_PROGRESS_1_OF_5_BATCHES_DEPLOYED_CLIENT_CHECKS_SEPARATE",
+    "audit": "docs\\audits\\five-ten-2026-11-13.json",
+    "authorized_total": 50,
+    "completed_source_repairs": 10,
+    "latest_batch": 1,
+    "fix_commit": null,
+    "canonical_world_sha256": "b3dc2d725bbe39936515367719a5593461748239b6eb9aa9a407421edf57da1d",
+    "remaining": [
+      "Authorized total50:batch1 is10;four groups/40 repairs remain IN_PROGRESS and must not be counted as completed tests or fabricated fixes.",
+      "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
+      "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
+      "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits."
+    ]
+  },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
     "audit": "docs\\audits\\stormheim-departure-2026-11-13.json",
