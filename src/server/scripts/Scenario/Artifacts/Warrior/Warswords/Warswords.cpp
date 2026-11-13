@@ -126,34 +126,93 @@ public:
 
     struct go_prison_runestoneAI : public GameObjectAI
     {
-        go_prison_runestoneAI(GameObject* go) : GameObjectAI(go)
+        go_prison_runestoneAI(GameObject* go) : GameObjectAI(go) { }
+        bool claimed = false;
+        Player* presenting = nullptr;
+
+        bool IsRunestone() const
         {
-            check = false;
+            return go->GetEntry() == 244940 && go->GetMapId() == 1511 &&
+                go->GetDBTableGUIDLow() >= 134130 && go->GetDBTableGUIDLow() <= 134133;
         }
 
-        bool check;
+        uint64 Counter(Scenario* scenario) const
+        {
+            auto const* records = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto record = records->find(45863);
+            return record == records->end() ? 0 : record->second.Counter;
+        }
+
+        bool Eligible(Player* player, bool completing) const
+        {
+            SpellInfo const* attack = sSpellMgr->GetSpellInfo(8386);
+            if (claimed || !IsRunestone() || !attack || !player || !player->IsInWorld() ||
+                !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+                player->getClass() != CLASS_WARRIOR || !go->IsInWorld() || !go->isSpawned() ||
+                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE | (completing ? 0 : GO_FLAG_IN_USE)) ||
+                !player->GetMap() || player->GetMap() != go->GetMap() ||
+                player->GetInstanceId() != go->GetInstanceId() || !player->InSamePhase(go) ||
+                !player->canSeeOrDetect(go) ||
+                !player->IsWithinDistInMap(go, go->GetInteractionDistance()) ||
+                !go->GetInstanceScript() || player->GetInstanceScript() != go->GetInstanceScript() ||
+                go->GetInstanceScript()->GetData(uint32(go->GetDBTableGUIDLow())) ||
+                player->GetQuestRewardStatus(40043) ||
+                (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 3;
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            if (!IsRunestone())
+                return false;
+            if (presenting && presenting == player)
+                return false;
+            // Direct Use is not completion. Keep the native Attacking cast;
+            // only its completed, lock-validated hit authorizes destruction.
+            if (Eligible(player, false) && !player->IsNonMeleeSpellCast(false))
+                player->CastSpell(go, 8386, false);
+            return true;
+        }
 
         bool GossipHello(Player* player, bool isUse) override
         {
-            if (!isUse)
+            if (!isUse || !Eligible(player, true))
                 return true;
-
-            if (check)
-                return false;
-
-            if (InstanceScript* script = go->GetInstanceScript())
-                if (script->getScenarionStep() == 3)
-                {
-                    check = true;
-                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46970);
-                    std::list<Creature*> adds;
-                    GetCreatureListWithEntryInGrid(adds, player, 98524, 10.0f);
-                    if (!adds.empty())
-                        for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
-                            (*itr)->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 10);
-                    return true;
-                }
-            return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            uint64 before = Counter(scenario);
+            if (before >= 4)
+                return true;
+            claimed = true;
+            InstanceScript* script = go->GetInstanceScript();
+            uint32 receipt = uint32(go->GetDBTableGUIDLow());
+            script->SetData(receipt, 1);
+            if (!script->GetData(receipt))
+            {
+                claimed = false;
+                return true;
+            }
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46970);
+            bool acknowledged = sScenarioMgr->GetScenario(go->GetInstanceId()) == scenario &&
+                ((scenario->GetCurrentStep() == 3 && Counter(scenario) == before + 1) ||
+                 (before == 3 && scenario->GetCurrentStep() == 4));
+            if (!acknowledged)
+            {
+                script->SetData(receipt, 0);
+                claimed = false;
+                return true;
+            }
+            // Preserve the authored goober event, destruction and194802 spirit
+            // effects. This synchronous Use is authorized by native ACK.
+            std::list<Creature*> adds;
+            GetCreatureListWithEntryInGrid(adds, player, 98524, 10.0f);
+            for (Creature* spirit : adds)
+                spirit->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 10);
+            presenting = player;
+            go->Use(player);
+            presenting = nullptr;
+            return true;
         }
 
     };

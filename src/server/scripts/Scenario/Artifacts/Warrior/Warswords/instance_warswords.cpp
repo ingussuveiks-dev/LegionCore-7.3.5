@@ -7,6 +7,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "MapManager.h"
+#include <array>
 #include <memory>
 
 namespace WarswordsArrival
@@ -51,6 +52,7 @@ public:
 
         std::map<uint32, ObjectGuid> objects;
         WarswordsWaves::State waves;
+        std::array<bool, 4> destroyedRunestones{};
         bool myscenario;
         WorldLocation graveyard;
         std::shared_ptr<uint8> sceneLifetime = std::make_shared<uint8>();
@@ -95,6 +97,7 @@ public:
         {
             sceneLifetime = std::make_shared<uint8>();
             waves.Reset();
+            destroyedRunestones.fill(false);
             myscenario = false;
         }
 
@@ -108,8 +111,22 @@ public:
             WarswordsArrivalRecovery::Forget(player);
         }
 
+        uint32 GetData(uint32 type) const override
+        {
+            if (type >= 134130 && type <= 134133)
+                return destroyedRunestones[type - 134130];
+            return 0;
+        }
+
         void SetData(uint32 type,uint32 value) override
         {
+            if (type >= 134130 && type <= 134133)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                if (value <= 1 && scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 3)
+                    destroyedRunestones[type - 134130] = value != 0;
+                return;
+            }
             if (type==WarswordsArrivalRecovery::Ready && value==1)
             {
                 myscenario=true;
@@ -120,6 +137,10 @@ public:
 
         void onScenarionNextStep(uint32 newStep) override
         {
+            if (newStep == 0)
+                if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                    if (scenario->GetScenarioId() == 944)
+                        destroyedRunestones.fill(false); // A new native attempt, not a GO reload.
             for (uint32 entry : {98007u, 98602u})
             {
                 auto actor = objects.find(entry);
@@ -167,6 +188,13 @@ public:
                     }
                 }
             }
+        }
+
+        void OnGameObjectCreate(GameObject* object) override
+        {
+            uint64 guid = object->GetDBTableGUIDLow();
+            if (object->GetEntry() == 244940 && guid >= 134130 && guid <= 134133 && destroyedRunestones[guid - 134130])
+                object->SetGoState(GO_STATE_ACTIVE);
         }
 
         void OnCreatureCreate(Creature* creature) override

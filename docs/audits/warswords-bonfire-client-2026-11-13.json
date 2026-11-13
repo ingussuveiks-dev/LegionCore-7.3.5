@@ -82,5 +82,6 @@
     "deployment": "Promoted to canonical build-extractors/bin/Release after checking no user/unknown server was running. Copied exe/map hashes match;configuration/certificates/DLLs preserved. No user process stopped.",
     "startup": "Owned canonical worldserver PID3552 reached fresh ready,received server shutdown0,exited0 and is gone;stderr empty. Post-test crash/DBErrors/server warning/error/assertion checks passed.",
     "client": "User-confirmed actual Stage2 transition and enemy appearance;matching native OpenLock/eligible1+LOS0 trace and clean post-test diagnostics. No manual progression/item/quest edits."
-  }
+  },
+  "later_client_progression_2026_11_13": "User confirms Stage2 combat advances;subsequent screenshots show Stage4. Stage4 rune destruction/no-credit is separately repaired/native-verified,first1/4 client-confirmed,remaining three pending;see docs/audits/warswords-runestone-client-2026-11-13.json. This does not make the complete Fury chain verified."
 }

@@ -1,19 +1,21 @@
 {
   "latest_five_ten_2026_11_13": {
-    "status": "IN_PROGRESS_11_OF_50_BONFIRE_CLIENT_CONFIRMED",
+    "status": "IN_PROGRESS_12_OF_50_RUNE_CLIENT_CONFIRMED_FINAL_BOSS_OPEN",
     "audit": "docs\\audits\\five-ten-2026-11-13.json",
     "authorized_total": 50,
-    "completed_source_repairs": 11,
+    "completed_source_repairs": 12,
     "latest_batch": 2,
     "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
-    "canonical_world_sha256": "ebdc7df1e036f1e5e5144899cade195de515af4d520693d4b2b3e1a5d94cf1dc",
+    "canonical_world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
     "remaining": [
-      "Authorized total50:batch1 is10 and batch2 has1 focused bonfire repair;39 remain. Do not count diagnostics/test corrections as additional repairs.",
+      "Authorized total50:batch1 is10,batch2 has2;38 remain. Do not count diagnostics/test changes or the unresolved final boss issue.",
       "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
       "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
-      "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits."
+      "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
+      "Final Fury Stage6 Helya195062 cast0/no immediate aura,repeated843 dialogue and unfinishable Vigfus are newly reproduced client issues;investigate the real cast/aura/intro path before changing progression or health."
     ],
-    "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted"
+    "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted",
+    "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN"
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
@@ -1216,5 +1218,18 @@
     "checks": "User confirms Stage2 transition and enemy appearance;actual198513 completed OpenLock admits eligible1 withLOS0. No new canonical/client crash,DBErrors or unexplained server diagnostics. Retained48 ASAN/28 native/PE/Scepter/startup checks pass;subsequent combat/full chain separate.",
     "preserve": "LINK2/Slaghammer,original offline research and mixed DBErrors unchanged;all36 full chains remain separate.",
     "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63"
+  },
+  "latest_warswords_runestone_2026_11_13": {
+    "status": "CLIENT_CONFIRMED_ALL_FOUR_RUNESTONES_AND_NEXT_STEP_FINAL_HELYA_INTRO_OPEN",
+    "audit": "docs/audits/warswords-runestone-client-2026-11-13.json",
+    "canonical_world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
+    "checks": "User confirms all4/4 and next step.48 controlled ASAN/26 real native/2 pinned suffix controls/catalog/linked PE/Scepter/owned startup pass. Later final Helya195062 warning/dialogue loop remains OPEN;no full-chain claim.",
+    "preserve": "LINK2/Slaghammer,mixed DBErrors,original offline research and all whole-chain limits unchanged."
+  },
+  "latest_warswords_final_client_2026_11_13": {
+    "status": "OPEN_195062_AURA_ACK_AND_REPEATING_DIALOGUE",
+    "evidence": ".codex/warswords-vigfus-client-20261113 and .codex/warswords-runestone-final-three-20261113",
+    "report": "Stage6 On The Trail;user cannot finish Vigfus and843/Helya speech repeats.16:12:35 WARN says195062 cast0 but expected aura missing. No invented HP/death timer or forced credit. User server stays running.",
+    "counted_as_repair": false
   }
 }

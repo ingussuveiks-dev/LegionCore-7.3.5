@@ -3693,6 +3693,16 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         gameObjTarget->AI()->GossipHello(player, true))
         return;
 
+    // Prison Runestones also use a goober: SendLoot otherwise destroys the
+    // object without reaching its completed-hit progression callback.
+    if (gameObjTarget && m_spellInfo->Id == 8386 && gameObjTarget->GetMapId() == 1511 &&
+        gameObjTarget->GetEntry() == 244940 && gameObjTarget->GetDBTableGUIDLow() >= 134130 &&
+        gameObjTarget->GetDBTableGUIDLow() <= 134133 &&
+        gameObjTarget->GetGoType() == GAMEOBJECT_TYPE_GOOBER && lockId == 99 &&
+        sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()) == "go_prison_runestone" &&
+        gameObjTarget->AI()->GossipHello(player, true))
+        return;
+
     // Tuure's native goober bypasses SendLoot's GossipHello(true) dispatch.
     // Admit only the completed Opening hit after the ordinary lock check.
     if (gameObjTarget && m_spellInfo->Id == 3365 && gameObjTarget->GetMapId() == 1489 &&

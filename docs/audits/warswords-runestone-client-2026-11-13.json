@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-13",
+  "status": "CLIENT_CONFIRMED_ALL_FOUR_RUNESTONES_AND_NEXT_STEP_FINAL_HELYA_INTRO_OPEN",
+  "fix_commit": "Focused implementation commit containing this audit",
+  "scope": "Fury40043/scenario944/map1511/Stage4 The Stolen Souls:four244940 Prison Runestones,DB134130..134133. One focused repair;full Fury/all36 chains remain separate.",
+  "client_evidence": [
+    "User confirms bonfire->Stage2/enemy appearance and later successful Stage2 combat progression. Later screenshots show Stage4;that does not independently verify every Stage3 actor/kill path.",
+    "Two before/after screenshots and manual reply show actual rune activation/destruction/Captured Spirit appearance while the counter remains0/4. The selected Veteran corpse is not the rune objective;the user confirms clicking the actual object.",
+    "After final Release promotion,user confirms first1/4,then all four count4/4 and the next step starts. A later screenshot reaches Stage6 On The Trail. The final repeated Helya/Vigfus dialogue is a distinct OPEN follow-up;no manual progression/item/quest changes."
+  ],
+  "cause": "EffectOpenLock validates8386/Lock99 then falls through SendLoot. Its goober early return calls GameObject::Use,which runs GossipUse and native destruction/194802 but skips GossipHello(true),where the old AI had the only46970 progression producer. Initial actual native normal casts against the old linked game library reproduce the user failure in both Human/Orc contexts.",
+  "native_data": {
+    "build": 26972,
+    "entry": 244940,
+    "type": 10,
+    "spawns": [
+      134130,
+      134131,
+      134132,
+      134133
+    ],
+    "map": 1511,
+    "phase": "7003",
+    "difficulty_mask": 4096,
+    "initial_state": 1,
+    "lock": 99,
+    "lock_type": 14,
+    "opening_spell": 8386,
+    "opening_effect": 33,
+    "opening_target": 23,
+    "native_cast_ms": 1000,
+    "native_attr2": 0,
+    "goober_spell": 194802,
+    "goober_effects": "77,77;native spirit presentation retained",
+    "goober_event": 46970,
+    "step": 1891,
+    "tree": 45862,
+    "criterion_tree": 45863,
+    "criterion": 29081,
+    "criterion_type": 92,
+    "asset": 46970,
+    "amount": 4
+  },
+  "implementation": [
+    "Exact8386/99/244940/four-spawn/map1511/goober/existing ScriptName dispatch after real CanOpenLock. Other objects,spells,locks and generic SendLoot remain unchanged.",
+    "Direct Use starts normal nontriggered8386 only for an eligible active unrewarded Warrior in the actual scenario/step/map/instance/phase/visibility/range. Existing casts survive;report-use cannot award credit. Native GO cast/lock validation remains authoritative;no additional Unit-only LOS requirement is imposed.",
+    "Claim before native46970 criteria update;require the real45863 increment or fourth-object native next-step acknowledgement. Failed acknowledgement rolls back the claim for retry. No SetCurrentStep,CompleteQuest,item/loot grant or forced teleport.",
+    "Instance-owned four-object receipts survive GO/AI/grid reload. Actual OnGameObjectCreate restores an already destroyed model without re-awarding progress. Instance initialization/new native Stage0 attempt clears receipts;ordinary object reload/re-entry does not. Other SetData keys retain authored arrival behavior.",
+    "After native acknowledgement,authorize one synchronous GameObject::Use for the exact Player,preserving authored goober event/destruction/194802. Retain original nearby98524/player-centered10-yard emote10 cleanup;missing optional spirits do not block credit.",
+    "Ordinary enemy,pets and guardians do not produce this interaction criterion. Native shared scenario credit remains;no invented per-pet/per-group progression loop. Surrounding combat/kill handlers are unchanged."
+  ],
+  "checks": {
+    "controlled_asan": "48 complete production AI/exact post-lock dispatch cases:real source extraction,admission,wrong tuple/lock/report,failed/pending/reentrant casts,ack refusal/retry,final4th-step acknowledgement,missing actors,AI reload/instance receipt and unsupported-instance refusal. Engine services/criteria effects are controlled here;this is not full-core ASAN.",
+    "native": "26 actual native fixtures across Human/Orc,using the complete current production instance class/arrival-wave headers,real Player/Spell/WorldSession/GO/AI/lock/criteria and loaded GO collision models. Normal cast/direct Use/packet Use reach1..4 and native step3->4;report-only,interrupt,wrong spell,inactive/abandoned quest,removed target and wrong step are refused,with legitimate retries. Same-object repeat and real GO/AI removal/recreation preserve exactly-once credit/destroyed appearance;new native attempt clears receipts. Prior scenario progression and event clock are controlled. Actual-model blocked-LOS observations were0;no blocked-geometry coverage is claimed. Earlier arrival remains controlled,so the later scene/voice/camera is not certified.",
+    "counterfactual": "Initial pre-edit native normal8386 against the old game library reproduces destruction/0 credit for both races. Reusable -Baseline independently pins old AI from bd668c53d1d12b14cb1b1d2f2226f6854edcedf9,renames only its C++ class while retaining binding/logic to avoid ODR collision,and executes the original native CanOpenLock->SendLoot suffix with the current actual instance. Its two expected-broken cases are not full ordinary passing casts.",
+    "catalog": "Reusable matching26972 DB2/Hotfix/world reader is read-only and has no character access. Exact Lock99/type14/8386/1000ms/effect33,target23,194802 and four actual spawn rows/tree45863/event46970/amount4 pass. Shared-use readback finds no quest-objective Type2 references to244940,one script binding244940/type10,and criterion29081 belongs only to scenario944/step1891;the shared map973 content is not imported into Fury rules.",
+    "linked_release": "Original game/scripts libraries and actual final-link inputs;no global OutDir. Staged/canonical linked proof checks exact post-lock tuple/Use+Hello factories,normal cast/pending guards,native criterion ACK,owner-only presentation and actual instance getter/setter/reload/reset vtables. Complete retained bonfire/first10/Stormheim/pet linked/source checks pass. Canonical Scepter passes.",
+    "actual_client": "User confirms actual1/4->all4/4->next step. No new canonical/client crashes or appended DBErrors. The later part of the same captured interval contains a new16:12:35 WARN about native Helya195062 aura acknowledgement,and the user then reports repeated final dialogue/unfinishable Vigfus. Preserve that mixed interval outside fixed;do not label the whole client traversal error-free."
+  },
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
+    "bnet_sha256": "a23d815e86d19264bd58a01a42b9a199739e7cd236664fe11372d4592c67daa4",
+    "owned_startup": "Final owned PID32772 fresh ready,server shutdown0,exit0/gone,stderr empty,protected hashes unchanged. Earlier reviewed C9 intermediate startup35296 is preserved separately. No user/unknown server stopped;user31708/35820 and client28752 remain untouched.",
+    "data": "No SQL/world template/phase/creature/character edits and no new ScriptNames. Existing runtime configuration/certificates/DLLs/extracted data preserved."
+  },
+  "diagnostics": "No new/changed canonical or test/client crashes,no appended DBErrors or unexplained runtime server warnings/errors/assertions in reviewed intervals. Mixed DBErrors stays7111 bytes/fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1;no active log rotated/truncated. Slaghammer original and original offline research hashes preserved. The automated/root first-rune intervals were clean. Subsequent Stage6 client traversal newly exposes WARN scripts:Warswords intro waiting for native Helya195062 aura (cast result0);late blessing failed,combat remains closed. This warning and repeated dialogue/unfinishable boss remain OPEN;the mixed client log is not archived/cleared as resolved.",
+  "tool_corrections": "Initial optional empty SELECT was mistakenly treated as a fixture failure;optional missing rows now remain visible without pretending a SQL error occurred. Initial native draft referenced nonexistent Player::UpdateSpells;retained actual m_Events clock replaces it. The real stack-free instance GetData has no unwind entry:the linked proof uses the already bounded native reader with its existing64-byte cap. No bound increased,check disabled or production log suppressed. Original failed setup/inspection evidence remains outside fixed.",
+  "evidence": {
+    "investigation": ".codex/warswords-runestone-client-20261113",
+    "native_fixed": ".codex\\warswords-runestone-native-20261113\\fixed-20261113-160244-587",
+    "native_baseline": ".codex\\warswords-runestone-native-20261113\\baseline-20261113-155934-901",
+    "model_catalog": ".codex\\warswords-runestone-model-20261113\\20261113-160335-562",
+    "release": ".codex/warswords-runestone-build-20261113",
+    "first_client_retest": ".codex/warswords-runestone-retest-20261113",
+    "remaining_three_client": ".codex/warswords-runestone-final-three-20261113"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\warswords-runestones-20261113",
+    "archive_manifest_sha256": "80305a3c37e9b218113ffe8772301eb25b7df2b6774732b8b5e308e2563f55eb",
+    "archived_files": 329,
+    "reclaimed_bytes": 1416672896,
+    "protected_hashes_verified": 43,
+    "retained_rollbacks": [
+      "release-before-warswords-runestone-build-20261113",
+      "release-before-bonfire-interaction-20261113",
+      "release-before-five-ten-20261113",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "deferred": [],
+    "limits": "Resolved automated rune completion/instance-reload evidence only. Actual client retest and original screenshots/failure remain outside fixed. No active log rotated/truncated,no user process stopped;original mixed DBErrors/Slaghammer/offline research protected. Initial fixture compile/optional-query setup and first leaf-reader inspection error remain separately documented outside fixed.",
+    "removed_files": 67
+  },
+  "remaining": [
+    "Rune4/4 and native next-step transition are client-confirmed. New final Helya/Vigfus repeated dialogue/195062 acknowledgement warning is OPEN and under active investigation. Full Fury,actual abandon/retry/re-entry,group/faction and visual/audio traversal remain separate.",
+    "Counted5x10 total is12/50:the runestone is one additional focused repair. The separate final boss issue is not counted.",
+    "Rune hover-name encoding is visibly malformed in supplied screenshots/live template;it was not changed as part of progression repair. Authentic localized name data remains separate.",
+    "The independent .go quest incomplete-POI draft is retained in ignored .codex/go-quest-destination-20261113 and restored out of production before all rune builds;not tested/deployed/counted. Resume that independent repair after this focused client check.",
+    "Keep authentic living Lady/Sharasdal finale,LINK2/Slaghammer,mixed DBErrors,offline pet rewards,original intermittent handshake cause and all36 full chains OPEN."
+  ]
+}
