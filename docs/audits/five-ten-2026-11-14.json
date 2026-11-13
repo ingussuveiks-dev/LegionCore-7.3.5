@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_26_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 26,
+  "status": "IN_PROGRESS_27_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 27,
   "batches": [
     {
       "batch": 1,
@@ -198,6 +198,11 @@
           "key": "ModifyCurrencyCheckedPrecision",
           "path": "src/server/scripts/Commands/cs_modify.cpp",
           "summary": "Validate native currency ID/signed amount and double precision product before native int32 conversion;preserve withdrawals and native precision/cap flags."
+        },
+        {
+          "key": "ModifyArtifactXPCheckedAddition",
+          "path": "src/server/scripts/Commands/cs_modify.cpp",
+          "summary": "Reject negative/malformed/zero XP and checked uint64 addition overflow;require actual artifact and lower-security admission;retain raw XP and item-state update."
         }
       ],
       "checks": {
@@ -227,7 +232,7 @@
     }
   ],
   "remaining": [
-    "24 newly authorized source repairs remain;continue next independent groups.",
+    "23 newly authorized source repairs remain;continue next independent groups.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

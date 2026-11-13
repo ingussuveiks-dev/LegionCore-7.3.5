@@ -1468,19 +1468,26 @@ public:
             return false;
         }
 
+        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
+            return false;
+
         char* samount = strtok((char*)args, " ");
         if (!samount)
             return false;
 
-        uint64 amount = atoll(samount);
-        if (!amount)
+        uint64 amount;
+        if (!Trinity::ParseCommandInteger(samount, amount) || !amount)
             return false;
 
-        if (Item* artifact = target->GetArtifactWeapon())
-        {
-            artifact->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP) + amount);
-            artifact->SetState(ITEM_CHANGED, target);
-        }
+        Item* artifact = target->GetArtifactWeapon();
+        if (!artifact)
+            return false;
+        uint64 const current = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);
+        if (amount > std::numeric_limits<uint64>::max() - current)
+            return false;
+
+        artifact->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, current + amount);
+        artifact->SetState(ITEM_CHANGED, target);
         return true;
     }
 
