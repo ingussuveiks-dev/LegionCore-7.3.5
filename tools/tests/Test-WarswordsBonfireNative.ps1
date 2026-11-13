@@ -28,6 +28,13 @@ if(!$instance){throw 'Actual/pinned shared instance source missing'}
 [IO.File]::WriteAllText("$out/SilverHandInstance.inc",(Block $instance 'class instance_silver_hand : public InstanceMapScript')+';')
 if($Baseline){$pinned=(& git -C $repo show '9c2a31417:src/server/game/Spells/SpellEffects.cpp') -join "`n";if($LASTEXITCODE -or $pinned.Contains('m_spellInfo->Id == 198513')){throw 'Pinned old bonfire dispatch differs'}}
 $fire=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp" -Raw
+if($Baseline){
+ # The pinned old SendLoot path must also use the pre-interaction AI. The new
+ # GossipUse hook starts a real player cast and is not an old-code control.
+ $repair=Get-Content "$repo/tools/tests/WarswordsBonfireInteractionRepair.json" -Raw|ConvertFrom-Json
+ $fire=(& git -C $repo show ($repair.baseline+':src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp')) -join "`n"
+ if($LASTEXITCODE){throw 'Pinned pre-interaction bonfire AI unavailable'}
+}
 [IO.File]::WriteAllText("$out/BonfireNative.inc",(Block $fire 'class go_mystic_bonfire : public GameObjectScript')+';')
 $previous=$env:LEGION_DIALOGUE_CONFIG;$previousCompiler=$env:CL;$previousLink=$env:_LINK_
 $inputs=@("$repo/tools/tests/SlaghammerCompanionNative.cpp","$repo/src/server/game/Conditions/ConditionMgr.cpp","$repo/src/server/game/Conditions/ConditionMgr.h","$repo/src/server/game/Entities/Object/Object.h","$repo/src/server/game/Entities/Object/Object.cpp","$repo/src/server/game/Maps/Map.cpp","$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp","$repo/tools/tests/AltheaIntroNative.cpp","$repo/tools/tests/WarswordsBonfireNative.cpp","$repo/src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp","$repo/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp","$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/instance_kingslayers.cpp","$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/KingslayersGuardProgress.h","$repo/src/server/game/Entities/Player/Player.cpp","$repo/src/server/game/Spells/SpellEffects.cpp","$repo/build-extractors/src/server/game/Release/game.lib","$repo/build-extractors/src/server/scripts/Release/scripts.lib")

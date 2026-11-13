@@ -12,7 +12,9 @@ def sites(body,prefix):
 def vals(body):return {o.imm for x in body for o in x.operands if o.type==CS_OP_IMM}
 opening=ins('?EffectOpenLock@Spell@@')
 lock=sites(opening,'?CanOpenLock@Spell@@')[0]
-start=next(i for i,x in enumerate(opening) if x.mnemonic=='cmp' and any(o.type==CS_OP_IMM and o.imm==198513 for o in x.operands))
+# A scoped observation before CanOpenLock also mentions198513. Select the
+# unique actual dispatch after the lock result, never that diagnostic guard.
+start,=[i for i,x in enumerate(opening) if i>lock and x.mnemonic=='cmp' and any(o.type==CS_OP_IMM and o.imm==198513 for o in x.operands)]
 loot=sites(opening,'?SendLoot@Spell@@')[-1]
 assert lock<start<loot
 block=opening[start:loot]
@@ -26,9 +28,16 @@ for i,x in enumerate(block[:hello[0]]):
   assert block[i+1].mnemonic=='jne' and block[i+1].operands[0].imm==rejected,'Tuple mismatch can dispatch ignition'
 method='?GossipHello@go_mystic_bonfireAI@go_mystic_bonfire@@'
 body=ins(method);credit=sites(body,'?UpdateAchievementCriteria@Player@@')
-assert len(credit)==1 and {1511,245188,40043,944,47272,92}<=vals(body)
+eligible='?Eligible@go_mystic_bonfireAI@go_mystic_bonfire@@'
+admission=body[:credit[0]]
+if any(name.startswith(eligible)for name in n['symbols']):
+ checks=sites(body,eligible)
+ assert len(checks)==1 and checks[0]<credit[0]
+ assert any(x.mnemonic=='mov'and x.op_str=='r8b, 1'for x in body[max(0,checks[0]-4):checks[0]]),'Completion must select the completed-hit admission'
+ admission=ins(eligible)
+assert len(credit)==1 and {1511,245188,40043,944,47272,92}<=vals(body+admission)
 for dependency in ('?CanContact@Player@@','?GetScenario@ScenarioMgr@@','?GetCurrentStep@Scenario@@','?GetQuestRewardStatus@Player@@','?IsWithinLOSInMap@WorldObject@@'):
- assert sites(body,dependency)[0]<credit[0],dependency
+ assert sites(admission,dependency),dependency
 phase=[i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xa0]
 assert len(phase)==1 and phase[0]>credit[0] and body[phase[0]-1].op_str=='edx, 4' and body[phase[0]-2].op_str=='r8b, 1'
 assert sites(body,'?GetGameObjectListWithEntryInGrid@WorldObject@@')[0]>credit[0]

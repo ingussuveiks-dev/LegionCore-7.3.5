@@ -13,6 +13,7 @@
 #include "ScenarioMgr.h"
 #include <algorithm>
 #include <memory>
+#include <typeinfo>
 
 // 245188
 class go_mystic_bonfire : public GameObjectScript
@@ -22,41 +23,84 @@ public:
 
     struct go_mystic_bonfireAI : public GameObjectAI
     {
-        go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) {}
+        go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) { }
         bool igniting = false;
 
-        bool GossipHello(Player* player, bool isUse) override
+        void Observe(Player* player, char const* path, bool completing) const
         {
-            if (!isUse)
-                return true;
-            if (igniting || !player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            if (!IsBonfire())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            bool spatial = player && player->IsInWorld() && go->IsInWorld() && player->GetMap() == go->GetMap();
+            TC_LOG_INFO("scripts", "Warswords bonfire %s: eligible=%u pmap=%u pinst=%u ginst=%u scenario=%u step=%u quest=%u rewarded=%u gm=%u world=%u contact=%u alive=%u phase=%u visible=%u los=%u range=%u state=%u flags=%u ai=%s instance=%s",
+                path, uint32(Eligible(player, completing)), player ? player->GetMapId() : 0, player ? player->GetInstanceId() : 0,
+                go->GetInstanceId(), scenario ? scenario->GetScenarioId() : 0, scenario ? scenario->GetCurrentStep() : uint32(-1),
+                player ? uint32(player->GetQuestStatus(40043)) : 0, player ? uint32(player->GetQuestRewardStatus(40043)) : 0,
+                player ? uint32(player->isGameMaster()) : 0, player ? uint32(player->IsInWorld()) : 0,
+                player ? uint32(player->CanContact()) : 0, player ? uint32(player->IsAlive()) : 0,
+                uint32(spatial && player->InSamePhase(go)), uint32(spatial && player->canSeeOrDetect(go)),
+                uint32(spatial && player->IsWithinLOSInMap(go)), uint32(spatial && player->IsWithinDistInMap(go, go->GetInteractionDistance())),
+                uint32(go->GetGoState()), go->GetUInt32Value(GAMEOBJECT_FIELD_FLAGS), go->AI() ? typeid(*go->AI()).name() : "none",
+                go->GetInstanceScript() ? typeid(*go->GetInstanceScript()).name() : "none");
+        }
+
+        bool IsBonfire() const
+        {
+            return go->GetEntry() == 245188 && go->GetMapId() == 1511 && go->GetDBTableGUIDLow() == 134117;
+        }
+
+        bool Eligible(Player* player, bool completing) const
+        {
+            if (igniting || !IsBonfire() || !player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
                 player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR ||
-                !go->IsInWorld() || !go->isSpawned() || go->GetEntry() != 245188 || go->GetMapId() != 1511 ||
-                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) ||
+                !go->IsInWorld() || !go->isSpawned() ||
+                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE | (completing ? 0 : GO_FLAG_IN_USE)) ||
                 !player->GetMap() || player->GetMap() != go->GetMap() || player->GetInstanceId() != go->GetInstanceId() ||
                 !player->InSamePhase(go) || !player->canSeeOrDetect(go) || !player->IsWithinLOSInMap(go) ||
                 !player->IsWithinDistInMap(go, go->GetInteractionDistance()) ||
                 !go->GetInstanceScript() || player->GetInstanceScript() != go->GetInstanceScript() ||
                 player->GetQuestRewardStatus(40043) ||
                 (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 0;
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            Observe(player, "use", false);
+            if (!IsBonfire())
+                return false;
+            // Consume this goober's generic Use path: it sets IN_USE and casts
+            // from a world trigger, which cannot perform the player's Opening.
+            // Keep an existing cast; the real native hit remains authoritative.
+            if (Eligible(player, false) && !player->IsNonMeleeSpellCast(false))
+                player->CastSpell(go, 198513, false);
+            return true;
+        }
+
+        bool GossipHello(Player* player, bool isUse) override
+        {
+            Observe(player, isUse ? "hit" : "report", isUse);
+            // Report-use is not a completed cast. The true dispatch comes only
+            // after EffectOpenLock validates this exact spell/object/lock tuple.
+            if (!isUse || !Eligible(player, true))
                 return true;
             Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
-            if (!scenario || scenario->GetScenarioId() != 944 || scenario->GetCurrentStep() != 0)
-                return true;
-            // This is reached only from the completed native Lighting Bonfire
-            // hit. Report-use/direct GO Use cannot stand in for that cast.
             igniting = true;
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47272);
             igniting = false;
             if (sScenarioMgr->GetScenario(go->GetInstanceId()) != scenario || scenario->GetCurrentStep() != 1)
                 return true;
+            // Only actual progress acknowledgement lights the object and
+            // removes the authored nearby fog. A failed cast changes neither.
+            go->SetGoState(GO_STATE_ACTIVE);
             std::list<GameObject*> fog;
             go->GetGameObjectListWithEntryInGrid(fog, 244751, 45.0f);
             for (GameObject* object : fog)
                 object->SetPhaseMask(4, true);
             return true;
         }
-
     };
 
     GameObjectAI* GetAI(GameObject* go) const override

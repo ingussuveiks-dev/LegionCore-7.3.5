@@ -152,6 +152,9 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::ItemUse& cast)
 
 void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& packet)
 {
+    if (packet.Guid.GetEntry() == 245188 && _player->GetMapId() == 1511)
+        TC_LOG_INFO("scripts", "Warswords bonfire HandleGameObjectUse packet: mover_self=%u contact=%u spectator=%u instance=%u",
+            uint32(_player->GetUnitBeingMoved() == _player), uint32(_player->CanContact()), uint32(_player->IsSpectator()), _player->GetInstanceId());
     if (_player->GetUnitBeingMoved() != _player || !_player->CanContact() || _player->IsSpectator())
         return;
 
@@ -161,6 +164,9 @@ void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& 
 
 void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjReportUse& packet)
 {
+    if (packet.Guid.GetEntry() == 245188 && _player->GetMapId() == 1511)
+        TC_LOG_INFO("scripts", "Warswords bonfire HandleGameobjectReportUse packet: mover_self=%u contact=%u spectator=%u instance=%u",
+            uint32(_player->GetUnitBeingMoved() == _player), uint32(_player->CanContact()), uint32(_player->IsSpectator()), _player->GetInstanceId());
     auto go = GetPlayer()->GetMap()->GetGameObject(packet.Guid);
     if (!go)
         return;
@@ -362,6 +368,12 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
 
     // client provided targets
     SpellCastTargets targets(mover, cast.Cast);
+    bool const observeBonfire = (_player->GetMapId() == 1511 && (cast.Cast.SpellID == 198513 || cast.Cast.SpellID == 3365)) ||
+        (targets.GetGOTarget() && targets.GetGOTarget()->GetEntry() == 245188 && targets.GetGOTarget()->GetMapId() == 1511);
+    if (observeBonfire)
+        TC_LOG_INFO("scripts", "Warswords bonfire cast request: requested=%u actual=%u go=%u db=%llu mover_player=%u",
+            cast.Cast.SpellID, spellInfo->Id, targets.GetGOTarget() ? targets.GetGOTarget()->GetEntry() : 0,
+            targets.GetGOTarget() ? targets.GetGOTarget()->GetDBTableGUIDLow() : 0, uint32(mover->IsPlayer()));
     // auto-selection buff level base at target level (in spellInfo)
     if (targets.GetUnitTarget())
     {
@@ -409,7 +421,9 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
     auto spell = new Spell(mover, spellInfo, triggerData);
     spell->m_SpellVisual = cast.Cast.SpellXSpellVisualID;
     spell->SetStartCastTime(spell->GetStartCastTime() - 50);
-    spell->prepare(&targets);
+    SpellCastResult const prepareResult = spell->prepare(&targets);
+    if (observeBonfire)
+        TC_LOG_INFO("scripts", "Warswords bonfire cast prepare result=%u", uint32(prepareResult));
     // uint32 _ms = getMSTimeDiff(_s, getMSTime());
     // if (_ms > 50)
         // sLog->outDiff("HandleCastSpellOpcode Diff - %ums Id %u.", _ms, spellInfo->Id);

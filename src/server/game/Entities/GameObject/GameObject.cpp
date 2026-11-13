@@ -24,6 +24,7 @@
 #include "DatabaseEnv.h"
 #include "GameEventMgr.h"
 #include "GameObjectAI.h"
+#include <typeinfo>
 #include "GameObjectModel.h"
 #include "GameObjectPackets.h"
 #include "GameTime.h"
@@ -1626,6 +1627,10 @@ uint32 GameObject::GetVignetteId() const
 
 void GameObject::Use(Unit* user)
 {
+    if (GetEntry() == 245188 && GetMapId() == 1511)
+        TC_LOG_INFO("scripts", "Warswords bonfire native Use: db=%llu state=%u flags=%u script=%s ai=%s",
+            GetDBTableGUIDLow(), uint32(GetGoState()), GetUInt32Value(GAMEOBJECT_FIELD_FLAGS),
+            sObjectMgr->GetScriptName(GetScriptId()).c_str(), AI() ? typeid(*AI()).name() : "none");
     if (IsQuestObjectExpired())
         return;
     if (Player* player = user->ToPlayer())

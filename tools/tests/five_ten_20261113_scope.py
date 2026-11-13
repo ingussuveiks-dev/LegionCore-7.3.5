@@ -1,9 +1,11 @@
 """Only declared repairs count towards the requested five groups of ten."""
 from pathlib import Path
 import functools,json,subprocess
+from bonfire_interaction_scope import normalize as normalize_later,verify as verify_later
 ROOT=Path(__file__).resolve().parents[2]
 PLAN=json.loads((ROOT/'tools/tests/FiveTen20261113Repairs.json').read_text(encoding='utf8'))
 def normalize(path,source):
+ source=normalize_later(path,source)
  for row in reversed(PLAN['changes']):
   if row['path']!=path:continue
   if source.count(row['new'])==1:source=source.replace(row['new'],row['old'],1)
@@ -15,6 +17,7 @@ def normalize(path,source):
  return source
 @functools.lru_cache(None)
 def verify():
+ verify_later()
  assert PLAN['authorized_total']==50 and len(PLAN['changes'])<=50
  assert len({x['key']for x in PLAN['changes']})==len(PLAN['changes'])
  for path in sorted({x['path']for x in PLAN['changes']+PLAN.get('support',[])}):

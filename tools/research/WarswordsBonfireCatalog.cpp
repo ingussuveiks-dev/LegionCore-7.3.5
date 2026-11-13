@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
+#include "SharedDefines.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -20,8 +21,9 @@ int main(int argc,char** argv)
     DB2Storage<LockEntry> locks("Lock.db2",LockLoadInfo::Instance());
     DB2Storage<SpellEntry> spells("Spell.db2",SpellLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2",SpellEffectLoadInfo::Instance());
-    if(!locks.Load(argv[1],0)||!spells.Load(argv[1],0)||!effects.Load(argv[1],0))return 4;
-    locks.LoadFromDB();spells.LoadFromDB();effects.LoadFromDB();
+    DB2Storage<SpellMiscEntry> misc("SpellMisc.db2",SpellMiscLoadInfo::Instance());
+    if(!locks.Load(argv[1],0)||!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0))return 4;
+    locks.LoadFromDB();spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();
     auto lock=locks.LookupEntry(2474);if(!lock)return 5;
     for(uint32 n=0;n<8;++n)
         std::cout<<"LOCK\t2474\t"<<n<<'\t'<<unsigned(lock->Type[n])<<'\t'<<lock->Index[n]<<'\t'<<lock->Skill[n]<<'\t'<<unsigned(lock->Action[n])<<'\n';
@@ -31,6 +33,8 @@ int main(int argc,char** argv)
         std::cout<<"SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';
         for(auto effect:effects)if(effect->SpellID==id)
             std::cout<<"EFFECT\t"<<id<<'\t'<<effect->DifficultyID<<'\t'<<effect->EffectIndex<<'\t'<<effect->Effect<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->ImplicitTarget[0]<<'\t'<<effect->ImplicitTarget[1]<<'\n';
+        for(auto row:misc)if(row->SpellID==id)
+            std::cout<<"LOS_ATTRIBUTE\t"<<id<<'\t'<<unsigned(row->DifficultyID)<<'\t'<<uint32(row->Attributes[2])<<'\t'<<bool(uint32(row->Attributes[2])&SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS)<<'\n';
     }
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2",ScenarioStepLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2",CriteriaTreeLoadInfo::Instance());

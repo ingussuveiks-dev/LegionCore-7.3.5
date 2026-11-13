@@ -66,6 +66,7 @@
 #include "SkillExtraItems.h"
 #include "SocialMgr.h"
 #include "Spell.h"
+#include <typeinfo>
 #include "HealingAmount.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
@@ -3532,6 +3533,15 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
+
+    if ((gameObjTarget && gameObjTarget->GetEntry() == 245188 && gameObjTarget->GetMapId() == 1511) ||
+        (m_spellInfo->Id == 198513 && m_caster->GetMapId() == 1511))
+        TC_LOG_INFO("scripts", "Warswords bonfire open-lock hit: spell=%u caster_player=%u go=%u db=%llu state=%u flags=%u script=%s ai=%s",
+            m_spellInfo->Id, uint32(m_caster->IsPlayer()), gameObjTarget ? gameObjTarget->GetEntry() : 0,
+            gameObjTarget ? gameObjTarget->GetDBTableGUIDLow() : 0, gameObjTarget ? uint32(gameObjTarget->GetGoState()) : 0,
+            gameObjTarget ? gameObjTarget->GetUInt32Value(GAMEOBJECT_FIELD_FLAGS) : 0,
+            gameObjTarget ? sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()).c_str() : "none",
+            gameObjTarget && gameObjTarget->AI() ? typeid(*gameObjTarget->AI()).name() : "none");
 
     if (!m_caster->IsPlayer())
     {
