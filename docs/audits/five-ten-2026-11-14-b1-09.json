@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-14",
+  "request_batch": 1,
+  "repair_index": 9,
+  "key": "ModifyRunicPowerCheckedUnits",
+  "status": "IMPLEMENTED_TESTED_IN_FIRST_TEN_CANONICAL_RELEASE_CLIENT_PENDING",
+  "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
+  "path": "src/server/scripts/Commands/cs_modify.cpp",
+  "summary": "Validate positive native signed32 display units before multiplying by10 and retain normal lower-security admission before runic/max-power writes.",
+  "scope": "One independently reachable command operation or native summon callback repair. Common parser/test infrastructure is not an extra repair. Account invalid arguments and wrong-realm persistence are distinct defects with separate commits.",
+  "regression": "Complete relevant production method/prefix and selected canonical code checked in the166-case first-ten group;see master for exact controlled services and limits. Waypoint is pre-query prefix only;no persistent GM/account/character mutations.",
+  "canonical_world_sha256": "c9b51aed1dba477ef602c8354865181965d8d94d65f6fcfb56bf9bdce35ee71f",
+  "checks_reference": "docs/audits/five-ten-2026-11-14.json",
+  "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch1",
+  "post_test_diagnostics": "Final snapshots have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Source extractor missing Soul enum and PE check expecting inverse branch were diagnosed test-tool errors and paired with passing repaired runs. Original mixed7111-byte DBErrors and protected Slaghammer hash unchanged/untruncated.",
+  "client_limit": "No actual client traversal or all36 whole artifact-chain claim.",
+  "fix_commit": "This focused audit/source/test commit;actual hashes are recorded in local ignored archive after push."
+}

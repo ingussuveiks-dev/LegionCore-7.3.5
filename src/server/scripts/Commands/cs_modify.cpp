@@ -260,15 +260,15 @@ public:
         if (!*args)
             return false;
 
-        int32 rune = atoi((char*)args)*10;
-        int32 runem = atoi((char*)args)*10;
-
-        if (rune <= 0 || runem <= 0 || runem < rune)
+        int32 rune;
+        if (!Trinity::ParseCommandInteger(args, rune) || rune <= 0 || rune > std::numeric_limits<int32>::max() / 10)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
             return false;
         }
+        rune *= 10;
+        int32 runem = rune;
 
         Player* target = handler->getSelectedPlayer();
         if (!target)
@@ -277,6 +277,9 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
+
+        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
+            return false;
 
         handler->PSendSysMessage(LANG_YOU_CHANGE_RUNIC_POWER, handler->GetNameLink(target).c_str(), rune/10, runem/10);
         if (handler->needReportToTarget(target))
