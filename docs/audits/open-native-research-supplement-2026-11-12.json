@@ -1,19 +1,23 @@
 {
+  "latest_pet_arrival_start_2026_11_13": {
+    "status": "SCOPED_ARRIVAL_DELAY_REPAIRED_DEPLOYED_NATIVE_AND_ASAN_PASS_CLIENT_PENDING",
+    "audit": "docs\\audits\\pet-arrival-start-2026-11-13.json",
+    "fix_commit": "88296e5dd1862dbf8ea7a6885f0a9afb1bc6fe4d",
+    "checks": "114 controlled ASAN cases,6 actual native cases,2 expected-broken exact production-class controls,actual x64 callback/vtable and retained PE proofs,Scepter and owned canonical ready/shutdown0/exit0;no gameplay verification.",
+    "canonical_world_sha256": "37b28bb97e2541eb7f5e07fe27bd8178d5a2e06123c2ff1b637c27ab91b3cfd1",
+    "client": "User away;own client9416 quit/exit0,no new diagnostics;independent work continues.",
+    "remaining": [
+      "Actual trainer walk/one-second delay/first-round UI and complete client battles remain pending. Pet/guardian battle credit and all36 artifact chains are not certified by arrival tests.",
+      "Disconnect/forfeit/offline journal persistence,including webbed escape policy and orphaned battle outcome,remains separate OPEN work;OnBeforeLogout here only removes a stale script pending record.",
+      "Haunt,other unbound species183 passives,Crumble full percentage/unavoidable policy,Apocalypse,clones122/123/124 and generic159 remain OPEN.",
+      "Living Lady activation/surrender/conversation1906/Grash/cleanup,LINK2/Slaghammer,mixed DBErrors and original intermittent handshake cause remain OPEN. No invented HP threshold or kill timer."
+    ]
+  },
   "latest_local_client_entry_check_2026_11_13": {
-    "status": "CLIENT_STARTUP_OBSERVED_AT_LOGIN_MANUAL_AUTHENTICATION_REQUIRED_GAMEPLAY_NOT_VERIFIED",
-    "implementation_head": "81275628e584fa1dac384512a7d224b9e4ede7ab",
-    "canonical_world_sha256": "a00f76dc933c0e0c669f27fbad6d6cae5a260fb59ce0b6549a3dc501ec4a1232",
-    "pending_manual_step": "An asynchronous user-availability question is pending. The computer-use skill guidance explicitly says Do not automate user authentication dialogs. Client authentication must be performed manually before any actual gameplay checks. No client gameplay/36-chain/root-cause closure is claimed.",
-    "process_ownership": {
-      "owned_gui_pid": 9416,
-      "last_observed_state": "Running at login;retained for pending user authentication handoff",
-      "client_exit": "Not yet exited,so exit status remains pending",
-      "worldserver_or_bnetserver_running": false,
-      "note": "All task-owned hidden servers from implemented fixes were gracefully stopped. The retained frontend is an interactive client,not a temporary server. Recheck ownership/state before future actions;do not stop a user server."
-    },
-    "remaining": "Manual client login and actual traversal;Crumble complete percentage/unavoidable policy,Haunt/other183/offline lifecycle,authentic living Lady/conversation1906/Grash/LINK2,original intermittent handshake cause and all36 complete chains remain OPEN. Preserve Slaghammer and mixed DBErrors;do not invent missing HP thresholds,timers or actor links.",
-    "source_trace_note": "Current PetBattleAura::Process already supplies its actual TargetPetID directly to periodic effect.Targets;no periodic owner-redirection bug was established or changed in this phase. Haunt remains blocked at230 and its fake-death/157 context/165 return semantics require complete authoritative sequence evidence;no guessed alternate dead-state value or50percent later-era cost added.",
-    "audit": "docs/audits/client-open-check-2026-11-13.json"
+    "status": "CLIENT_STARTUP_OBSERVED_OWNED_CLIENT_CLOSED_USER_AWAY_GAMEPLAY_PENDING",
+    "audit": "docs\\audits\\client-open-check-2026-11-13.json",
+    "pending": "User currently away;manual client checks deferred;independent work continues.",
+    "owned_client": "9416 quit/exit0;no task-owned process left running"
   },
   "latest_native_crumble_ordinary_immunity_repair_2026_11_13": {
     "status": "CRUMBLE_ORDINARY_PERIODIC_HOSTILE_IMMUNITY_FIXED_DEPLOYED_FULL_PERCENTAGE_POLICY_CLIENT_OPEN",

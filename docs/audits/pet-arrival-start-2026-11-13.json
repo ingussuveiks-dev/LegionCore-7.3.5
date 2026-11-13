@@ -2,7 +2,7 @@
   "date": "2026-11-13",
   "request": "Pagaid\u0101m neesmu pie datora turpini",
   "status": "SCOPED_ARRIVAL_DELAY_REPAIRED_DEPLOYED_NATIVE_AND_ASAN_PASS_CLIENT_PENDING",
-  "fix_commit": null,
+  "fix_commit": "88296e5dd1862dbf8ea7a6885f0a9afb1bc6fe4d",
   "baseline": "b3ee2154f1fd98f667b11a87588d532a3b7f75a9",
   "title": "Pet-battle trainer arrival starts once after its existing one-second delay",
   "cause": "PlayerScriptPetBattle scheduled now+1000 but dispatched while deadline>now. An early update began immediately;an update at/after expiry never began and retained the pending record. The unbound per-player timestamp could also apply an old movement completion to a replacement battle or reset a running battle.",
@@ -49,5 +49,6 @@
     "Disconnect/forfeit/offline journal persistence,including webbed escape policy and orphaned battle outcome,remains separate OPEN work;OnBeforeLogout here only removes a stale script pending record.",
     "Haunt,other unbound species183 passives,Crumble full percentage/unavoidable policy,Apocalypse,clones122/123/124 and generic159 remain OPEN.",
     "Living Lady activation/surrender/conversation1906/Grash/cleanup,LINK2/Slaghammer,mixed DBErrors and original intermittent handshake cause remain OPEN. No invented HP threshold or kill timer."
-  ]
+  ],
+  "commit_status": "Focused implementation,regressions and audit committed and pushed to origin/main;metadata follows separately."
 }
