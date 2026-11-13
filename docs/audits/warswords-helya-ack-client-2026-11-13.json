@@ -1,7 +1,7 @@
 {
   "date": "2026-11-13",
-  "status": "NATIVE_CHANNEL_ACK_REPAIRED_DEPLOYED_FINAL_CLIENT_RETEST_PENDING",
-  "fix_commit": "Focused implementation commit containing this audit",
+  "status": "CLIENT_CONFIRMED_VIGFUS_VICTORY_NEXT_STEP_PICKUP_LOOP_OPEN",
+  "fix_commit": "69c391ab41ce7fdb4a13c7b4ab609df57ae9ae5b",
   "scope": "Final98602/1511/944/current5 (client Stage6 On The Trail),Helya99043,conversation843/channel195062/communion205424. Not a full Fury or all36-chain certificate.",
   "actual_failure": [
     "After all four runestones count and the next step starts,the user reaches final Vigfus but cannot finish him;supplied screenshot shows repeated Helya/Vigfus speech.",
@@ -22,7 +22,7 @@
     "retained_death_credit": "Actual extracted final JustDied and native owner resolver pass player/pet/guardian/charmer/unresolved/null and faction-label contexts,scoped205424 cleanup and no nearby/group blanket award. It is not full live combat/group propagation.",
     "linked_release": "Actual new factory/poll/24s closure stores128-bit Player+Helya GUIDs and arms awaiting state before native nontriggered195062. Actual aura alone installs the7s closure;queued current195062 returns without cancellation/scheduling. Native epoch/lifetime/captured identity/843 factory/cleanup checks and complete retained rune/bonfire/first10/Stormheim/pet/other artifact PE chains pass. Updated old intro verifier follows the actual outlined acknowledgement/cancellation helpers while retaining every old semantic guard. No general decoder bound increased.",
     "canonical": "Original final-link libraries;separate stage then hash-verified canonical copy. Full canonical PE/Scepter and owned startup2352 fresh ready/graceful shutdown0/exit0/gone,stderr empty,protected configuration/cert/DLL hashes unchanged.",
-    "actual_client": "New final retest requested after fresh canonical/client crash and log baseline. No post-fix successful final combat/quest traversal claimed yet."
+    "actual_client": "User confirms Vigfus defeated and scenario advances. Subsequently obtained weapons, but pickup animation repeats and return could not be tested. User separately requests actual nonattackable admission during the standing/blessing intro. These two findings remain OPEN; no full Fury certificate."
   },
   "release": {
     "runtime": "build-extractors/bin/Release",
@@ -30,7 +30,7 @@
     "bnet_sha256": "45eaf4acc99967d31ff4c9c372ed42ce772e7387a38cfd8bea1c3c3745d970a2",
     "data": "Existing AI registration only;no new ScriptName,SQL/template/phase/creature/character changes. No user/unknown server stopped;owned2352 exited and user may launch visible servers."
   },
-  "diagnostics": "Repaired automated/native/PE/Scepter/startup intervals append no unexplained warnings/errors/assertions or DBErrors and create no new/changed crash reports. Original actual-client195062 warning/mixed intervals stay visible outside fixed pending client confirmation. Mixed canonicalDBErrors remains7111 bytes/fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1;not truncated. Slaghammer original/offline research hashes preserved.",
+  "diagnostics": "Repaired automated/native/PE/Scepter/startup intervals append no unexplained warnings/errors/assertions or DBErrors and create no new/changed crash reports. Original actual-client195062 warning/mixed intervals stay visible outside fixed pending client confirmation. Mixed canonicalDBErrors remains7111 bytes/fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1;not truncated. Slaghammer original/offline research hashes preserved. Post-victory and pickup intervals: no changed server/client crashes, appended DBErrors or unexplained warnings/errors/assertions. User servers subsequently shut down; no agent stopped them.",
   "tool_notes": "Initial private moved driver still used its old relative diagnostics-wrapper path and did not start the test;corrected. Final native run is sequential with immutable final-link/source hashes. PE adapts real helper-owned7000ms closure and validates the outlined CancelIntro epoch/pending/cleanup path,not a missing check or a larger leaf bound.",
   "evidence": {
     "investigation": ".codex/warswords-helya-followup-20261113",
@@ -59,8 +59,8 @@
     "removed_files": 39
   },
   "remaining": [
-    "Actual final dialogue once-only,combat readiness/Vigfus defeat/0of1 credit and next-stage transition await the user. Final weapon visibility/loot/full bags/equip/return/camera/pets and full Fury/all36 chains remain distinct checks.",
-    "Counted5x10 remains12/50 until the reported final fight is verified;the acknowledgement repair is one focused scope,not extra entries for helper/fixture/PE changes.",
+    "OPEN: repeated pickup animation/return availability, intro attackability presentation. Weapon receipt and final victory are confirmed; equip/return/camera/pet/full Fury/all36 remain separate. User will retest Monday.",
+    "Counted batch progress13/50,37 remain. Helya acknowledgement is one source repair; confirmation/testing are not extra repairs.",
     "Keep authentic living Lady/Sharasdal activation/surrender/conversation1906/Grash cleanup,LINK2/Slaghammer,mixed DBErrors,offline pet rewards and original intermittent handshake cause OPEN. Independent incomplete-POI .go quest draft is ignored/not deployed or counted."
   ]
 }

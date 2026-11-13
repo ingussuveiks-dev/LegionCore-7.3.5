@@ -3,7 +3,7 @@
     "status": "IN_PROGRESS_12_OF_50_RUNE_CLIENT_CONFIRMED_FINAL_BOSS_OPEN",
     "audit": "docs\\audits\\five-ten-2026-11-13.json",
     "authorized_total": 50,
-    "completed_source_repairs": 12,
+    "completed_source_repairs": 13,
     "latest_batch": 2,
     "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
     "canonical_world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
@@ -16,7 +16,7 @@
     ],
     "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted",
     "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN",
-    "final_boss_followup": "docs/audits/warswords-helya-ack-client-2026-11-13.json;deployed/native-verified,actual final combat pending,not counted yet"
+    "final_boss_followup": "Victory confirmed; pickup loop/return and intro attackability OPEN. Monday client retest deferred by user."
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
@@ -1229,10 +1229,11 @@
     "fix_commit": "3b5d8eb97aa75b7b7adaf6773cc08060e32cac54"
   },
   "latest_warswords_final_client_2026_11_13": {
-    "status": "NATIVE_CHANNEL_ACK_REPAIRED_DEPLOYED_FINAL_CLIENT_RETEST_PENDING",
+    "status": "CLIENT_CONFIRMED_VIGFUS_VICTORY_NEXT_STEP_PICKUP_LOOP_OPEN",
     "audit": "docs/audits/warswords-helya-ack-client-2026-11-13.json",
     "canonical_world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
-    "cause": "Normal195062 accepted before native target-aura event;old synchronous check restarted843 and kept combat closed. Actual native pending/aura timing reproduced;fixed model/PE/Scepter/owned startup pass,actual final client retest pending.",
-    "counted_as_repair": false
+    "cause": "Normal channel acknowledgement repaired; actual final victory and next stage confirmed. New pickup animation loop/return and intro attackability requests OPEN.",
+    "counted_as_repair": true,
+    "fix_commit": "69c391ab41ce7fdb4a13c7b4ab609df57ae9ae5b"
   }
 }

@@ -2,8 +2,8 @@
   "date": "2026-11-13",
   "request": "Labi turpini ar 5×10",
   "authorized_total": 50,
-  "completed_source_repairs": 12,
-  "status": "IN_PROGRESS_12_OF_50_RUNE_CLIENT_CONFIRMED_FINAL_BOSS_OPEN",
+  "completed_source_repairs": 13,
+  "status": "IN_PROGRESS_13_OF_50_PICKUP_LOOP_AND_INTRO_ATTACKABILITY_OPEN",
   "baseline": "10100c1a87451150fc9118fc5e6e4ab4068f3c20",
   "batches": [
     {
@@ -139,8 +139,8 @@
     },
     {
       "batch": 2,
-      "implemented": 2,
-      "status": "IN_PROGRESS_2_OF_10",
+      "implemented": 3,
+      "status": "IN_PROGRESS_3_OF_10",
       "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
       "fixes": [
         {
@@ -153,18 +153,24 @@
           "summary": "Completed8386/99 callback produces native46970 progress once per actual rune,retains native destruction/spirit effects and keeps instance-owned reload receipts. User confirms all4/4 and next step;final Helya/Vigfus bug remains separate.",
           "audit": "docs/audits/warswords-runestone-client-2026-11-13.json",
           "fix_commit": "3b5d8eb97aa75b7b7adaf6773cc08060e32cac54"
+        },
+        {
+          "key": "WarswordsHelyaNativeAcknowledgement",
+          "fix_commit": "69c391ab41ce7fdb4a13c7b4ab609df57ae9ae5b",
+          "audit": "docs/audits/warswords-helya-ack-client-2026-11-13.json",
+          "summary": "Normal native195062 acceptance precedes target aura. Wait for exact native hit without restarting843; user confirms final victory and next stage. Pickup loop and intro attackability remain separate findings."
         }
       ],
-      "canonical_world_sha256": "52354b490ab01899eb365c94465fcbac418b18b9e8101bc5ca451c91daf0493e",
+      "canonical_world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
       "checks": "48 controlled ASAN/28 real native including4 blocked-LOS model cases;independent pre-policy counterfactual;canonical PE/Scepter/clean owned startup;actual client first-step transition/wave appearance with clean post-test diagnostics. Full chain remains separate."
     }
   ],
   "remaining": [
-    "Authorized total50:batch1 is10,batch2 has2;38 remain. Do not count diagnostics/test changes or the unresolved final boss issue.",
+    "Authorized50: batch1 has10,batch2 has3;37 remain. Do not count diagnostics or unfinished findings.",
     "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
     "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
     "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
     "Final Fury Stage6 Helya195062 cast0/no immediate aura,repeated843 dialogue and unfinishable Vigfus are newly reproduced client issues;investigate the real cast/aura/intro path before changing progression or health."
   ],
-  "final_boss_followup": "docs/audits/warswords-helya-ack-client-2026-11-13.json;normal-channel acknowledgement repaired/deployed,actual final client retest pending/not counted"
+  "final_boss_followup": "Native acknowledgement client-confirmed; requested intro attackability and actual pickup animation loop remain OPEN."
 }
