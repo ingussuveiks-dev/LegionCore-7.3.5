@@ -271,6 +271,16 @@
       "old": "    static bool HandleModifyMorphCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 display_id = (uint32)atoi((char*)args);\n\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n            target = handler->GetSession()->GetPlayer();\n\n        // check online security\n        else if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n            return false;\n\n        target->SetDisplayId(display_id);\n        target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);\n        // if (Creature* crea = target->ToCreature())\n            // crea->SetOutfit(display_id);\n\n        return true;\n    }",
       "new": "    static bool HandleModifyMorphCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 display_id;\n        if (!Trinity::ParseCommandInteger(args, display_id) || !sCreatureDisplayInfoStore.LookupEntry(display_id))\n            return false;\n\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n            target = handler->GetSession()->GetPlayer();\n\n        // check online security\n        else if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n            return false;\n\n        target->SetDisplayId(display_id);\n        target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);\n        // if (Creature* crea = target->ToCreature())\n            // crea->SetOutfit(display_id);\n\n        return true;\n    }",
       "batch": 3
+    },
+    {
+      "key": "ModifyPhaseCheckedAdmission",
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyPhaseCommand",
+      "kind": "modify",
+      "case": "Phase",
+      "old": "    static bool HandleModifyPhaseCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 phasemask = (uint32)atoi((char*)args);\n\n        Unit* target = handler->getSelectedUnit();    \n        if (target)    \n        {    \n            if (target->GetTypeId() == TYPEID_PLAYER)    \n                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);    \n            else    \n                target->SetPhaseMask(phasemask, true);    \n        }    \n        else    \n            handler->GetSession()->GetPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);\n\n        return true;\n    }",
+      "new": "    static bool HandleModifyPhaseCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 phasemask;\n        if (!Trinity::ParseCommandInteger(args, phasemask))\n            return false;\n\n        Unit* target = handler->getSelectedUnit();    \n        if (target)\n        {\n            if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n                return false;\n            if (target->GetTypeId() == TYPEID_PLAYER)    \n                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);    \n            else    \n                target->SetPhaseMask(phasemask, true);    \n        }    \n        else    \n            handler->GetSession()->GetPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);\n\n        return true;\n    }",
+      "batch": 3
     }
   ],
   "extra_edits": [
@@ -322,7 +332,7 @@
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "a2c3dfa2e67bc324b27a3f8e04222c43ceb5bd2ec909dc0f98441fc990669dcd",
-      "after_sha256": "16dacb9b96351d33308fe00c75797d391488ab9f7da73a9ad2a3deb36f2c15f3"
+      "after_sha256": "69d3208610e9ca45507de92530037411320252aaeaa91f5cf5c61489ca01388e"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "0fa980194c4399bed9bdfd37286968e29234275106b47327120f7142268216f5",

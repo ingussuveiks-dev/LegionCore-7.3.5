@@ -1245,11 +1245,15 @@ public:
         if (!*args)
             return false;
 
-        uint32 phasemask = (uint32)atoi((char*)args);
+        uint32 phasemask;
+        if (!Trinity::ParseCommandInteger(args, phasemask))
+            return false;
 
         Unit* target = handler->getSelectedUnit();    
-        if (target)    
-        {    
+        if (target)
+        {
+            if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))
+                return false;
             if (target->GetTypeId() == TYPEID_PLAYER)    
                 target->ToPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);    
             else    
