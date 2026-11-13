@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "request_batch": 3,
+  "repair_index": 28,
+  "key": "ModifyMorphNativeDisplay",
+  "path": "src/server/scripts/Commands/cs_modify.cpp",
+  "summary": "Require complete native UInt32 display ID and matching CreatureDisplayInfo before morph/mirror cleanup;preserve creature/player/self selection.",
+  "status": "IMPLEMENTED_TESTED_IN_THIRD_TEN_CANONICAL_RELEASE_CLIENT_PENDING",
+  "scope": "One independently callable command or native core API repair;shared parsers/test cases not additional repairs.",
+  "checks_reference": "docs/audits/five-ten-2026-11-14.json",
+  "canonical_world_sha256": "0b86ae0aa7c22e8de79b21d51ce8c41086195601b2e71f857a1046b2f9ddba55",
+  "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch3",
+  "post_test_diagnostics": "Final pre/post snapshots show no new/changed crash,appended DBErrors or unexplained warning/error/assertion. Test exporter initially omitted UnitDefines hexadecimal mirror flag;fixed real enum export. Native PCH unordered_set include fixed;all final checks pass. Original mixed7111-byte DBErrors and Slaghammer hashes unchanged.",
+  "client_limit": "Source/native/PE/startup proof;actual GM interactions and all36 whole artifact chains remain separate client checks.",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed archive after push."
+}

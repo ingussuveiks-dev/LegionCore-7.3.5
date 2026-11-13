@@ -1219,7 +1219,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 display_id = (uint32)atoi((char*)args);
+        uint32 display_id;
+        if (!Trinity::ParseCommandInteger(args, display_id) || !sCreatureDisplayInfoStore.LookupEntry(display_id))
+            return false;
 
         Unit* target = handler->getSelectedUnit();
         if (!target)

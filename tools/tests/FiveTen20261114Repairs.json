@@ -261,6 +261,16 @@
       "old": "    static bool HandleModifyArtifactXPCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->PSendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* samount = strtok((char*)args, \" \");\n        if (!samount)\n            return false;\n\n        uint64 amount = atoll(samount);\n        if (!amount)\n            return false;\n\n        if (Item* artifact = target->GetArtifactWeapon())\n        {\n            artifact->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP) + amount);\n            artifact->SetState(ITEM_CHANGED, target);\n        }\n        return true;\n    }",
       "new": "    static bool HandleModifyArtifactXPCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->PSendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        char* samount = strtok((char*)args, \" \");\n        if (!samount)\n            return false;\n\n        uint64 amount;\n        if (!Trinity::ParseCommandInteger(samount, amount) || !amount)\n            return false;\n\n        Item* artifact = target->GetArtifactWeapon();\n        if (!artifact)\n            return false;\n        uint64 const current = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);\n        if (amount > std::numeric_limits<uint64>::max() - current)\n            return false;\n\n        artifact->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, current + amount);\n        artifact->SetState(ITEM_CHANGED, target);\n        return true;\n    }",
       "batch": 3
+    },
+    {
+      "key": "ModifyMorphNativeDisplay",
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyMorphCommand",
+      "kind": "modify",
+      "case": "Morph",
+      "old": "    static bool HandleModifyMorphCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 display_id = (uint32)atoi((char*)args);\n\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n            target = handler->GetSession()->GetPlayer();\n\n        // check online security\n        else if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n            return false;\n\n        target->SetDisplayId(display_id);\n        target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);\n        // if (Creature* crea = target->ToCreature())\n            // crea->SetOutfit(display_id);\n\n        return true;\n    }",
+      "new": "    static bool HandleModifyMorphCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 display_id;\n        if (!Trinity::ParseCommandInteger(args, display_id) || !sCreatureDisplayInfoStore.LookupEntry(display_id))\n            return false;\n\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n            target = handler->GetSession()->GetPlayer();\n\n        // check online security\n        else if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n            return false;\n\n        target->SetDisplayId(display_id);\n        target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);\n        // if (Creature* crea = target->ToCreature())\n            // crea->SetOutfit(display_id);\n\n        return true;\n    }",
+      "batch": 3
     }
   ],
   "extra_edits": [
@@ -312,7 +322,7 @@
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "a2c3dfa2e67bc324b27a3f8e04222c43ceb5bd2ec909dc0f98441fc990669dcd",
-      "after_sha256": "bd810b44a60145d66daf2b3fd2ed9a15147e00cfe797dd5d5a8bf9081697ef12"
+      "after_sha256": "16dacb9b96351d33308fe00c75797d391488ab9f7da73a9ad2a3deb36f2c15f3"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "0fa980194c4399bed9bdfd37286968e29234275106b47327120f7142268216f5",
