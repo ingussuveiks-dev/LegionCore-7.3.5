@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-13",
+  "status": "ONE_USER_CONFIRMED_LOGIN_WORLD_LOAD_AND_MOVEMENT;FURTHER_TARGETED_CHECK_PENDING",
+  "user_evidence": [
+    "User manually launched the servers/client and reported being in game.",
+    "User answered:the character and surroundings are loaded and movement works."
+  ],
+  "observation_limit": "These are user-confirmed client observations. The agent did not view the game,automate authentication,send in-game commands,move the character or change quest/inventory state.",
+  "diagnostics": {
+    "baseline": ".codex/client-manual-check-20261113-124341/before.json",
+    "client_baseline": ".codex/client-manual-check-20261113-124341/before-client.json",
+    "latest_snapshot": ".codex/client-manual-check-20261113-124341/login-after.json",
+    "result": "No new canonical crash reports,changed client Errors/Crashes files,appended DBErrors or unexplained server warnings/errors/assertions in the captured interval. Both servers and client remain running,user-owned;no shutdown/exit-success claim.",
+    "mixed_db_errors": "Preserved;not cleared or archived as resolved."
+  },
+  "tool_limit": "The computer-use native pipe was unavailable. list_windows failed on the original attempt,retry and fresh JS session. No game UI actions were taken. A separate read-only character-discovery command was rejected before execution;no database discovery or character change occurred. The user was asked for class/location to select a suitable manual check.",
+  "scope": "One successful login/world-load/movement observation does not establish the root cause of the original intermittent handshake issue or verify pet portrait,vehicles,raid mechanics,Sharasdal or any complete artifact chain.",
+  "remaining": "Await current class/location,then choose a focused client-assisted check. The authorized50-fix source work remains10/50;this observation is not counted as a new repair. No user server is to be stopped or logs truncated."
+}
