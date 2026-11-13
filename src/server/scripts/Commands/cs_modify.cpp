@@ -1368,12 +1368,16 @@ public:
             return false;
         }
 
-        uint32 power = (uint32)atoi(power_str);
-
-        if (power >= MAX_POWERS)
+        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
             return false;
 
-        uint32 value = (uint32)atoi(value_str);
+        uint32 power;
+        if (!Trinity::ParseCommandInteger(power_str, power) || power >= MAX_POWERS)
+            return false;
+
+        int32 value;
+        if (!Trinity::ParseCommandInteger(value_str, value))
+            return false;
 
         target->SetPower(Powers(power), value);
 
