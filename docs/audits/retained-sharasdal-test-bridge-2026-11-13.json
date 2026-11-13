@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-13",
+  "status": "RETAINED_TEST_SOURCE_COMPOSITION_REPAIRED_NO_GAMEPLAY_CHANGE",
+  "trigger": "While preparing the requested living-Lady completion,Test-SharasdalAcquisition.ps1 -VerifyReleaseBinary failed before compilation in Get-HealApiScopeSource -> verify_native_heal_scope -> second_ten_ten_20261112_scope:Undeclared amendment Player.cpp.",
+  "cause": "Warrior finite-scene completion commit2e6f0d739 added the independently pinned/certified CompleteActiveSpellScene API. The older second-hundred/healing certificate composition omitted that later amendment;it correctly refused an unrecognized delta. No newly observed server gameplay error was involved.",
+  "repair": [
+    "Expose the existing exact WarswordsSceneExpiryRepair.json inverse as normalize,retaining its whole-file before/after hashes and pinned baseline.",
+    "Compose that inverse before the historical second-hundred/lifecycle view,requiring the independent finite-scene verify first. Do not update old expected sources or hashes to current files and do not omit other certificate checks.",
+    "Retain12 controls over all three affected files:exact restoration,idempotence,unrelated appended content and a damaged declared block. Unexpected changes remain visible to historical whole-file comparisons."
+  ],
+  "checks": [
+    "verify_native_heal_scope.py passes with all13 historical files and independently certified unsigned64 amendment.",
+    "Test-SceneExpiryScopeBridge.py passes12 controls.",
+    "Test-SharasdalAcquisition.ps1 -VerifyReleaseBinary passes76 ASAN whole-controller/registered SpellScript/AuraScript cases plus selected actual canonical PE paths,including prior Lady/Kraliss/heals/Brutes/walls/guard consumers. This is not actual client traversal."
+  ],
+  "compiler_diagnostics": "Existing C4458 hiding warnings refer to controlled fixture player/object/status members,not server diagnostics;no suppressed warning or production code change. Compile/test/PE exited0.",
+  "post_test": "Canonical and own runtime crash/log snapshots captured before/after. No new/changed crashes,appendedDBErrors,or server warnings/errors/assertions. Original failing source-certificate stdout is retained and paired with the successful repaired run.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/scene-expiry-scope-bridge-20261113",
+    "manifest_sha256": "877196c196edf8620d97e80f3e59eb35041d5aaf75f649ca923d726a078413ae",
+    "files": 43,
+    "removed": [
+      {
+        "sha256": "d71bf9f459c8a798cf71d345a66a0785dfcc08de9c05310d41e1e1e7bcbe19a2",
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\sharasdal-acquisition\\test.exe",
+        "bytes": 1569792
+      },
+      {
+        "sha256": "fda6777f8667f5dbea24bd4e62e9970ceb5d35df3f82b78e08569b6e9ef31f95",
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\sharasdal-acquisition\\test.obj",
+        "bytes": 2532449
+      },
+      {
+        "sha256": "a58b4c7ce1feaa8b0f927df50c7fe053d7692c3ffc29d7290e004571a1d3e355",
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\sharasdal-acquisition\\test.pdb",
+        "bytes": 12922880
+      }
+    ],
+    "reclaimed_bytes": 17025121.0,
+    "purpose": "Only resolved test-tool failure and repaired-check evidence;not a fixed archive claim for the still-open Lady encounter."
+  },
+  "preserved": {
+    "world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors_bytes": 7111,
+    "original_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "server_ownership": "No worldserver/bnetserver launched or stopped;no canonical executable/config/data deployment required for a test-tool repair."
+  },
+  "living_lady": "Still OPEN. The latest evidence audit explicitly lacks the authentic activation predicate and lethal caller. User previously required no invented HP threshold/kill timer. A text choice is pending on whether a clearly labeled reconstruction using an actual lethal hit,confirmed native Grash boarding,1906 publication,and real209487 hit is acceptable. No such reconstruction has been applied or represented as original Blizzard logic.",
+  "ledger": "Unchanged16/50 source repairs;all36 whole-chain/client coverage and prior Monday tests remain separate."
+}

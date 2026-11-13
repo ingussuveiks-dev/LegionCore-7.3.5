@@ -3,6 +3,12 @@ from pathlib import Path
 import functools,hashlib,json,subprocess
 ROOT=Path(__file__).resolve().parents[2]
 PLAN=json.loads((ROOT/'tools/tests/WarswordsSceneExpiryRepair.json').read_text())
+def normalize(path,source):
+ for row in reversed(PLAN['changes']):
+  if row['path']!=path:continue
+  if source.count(row['new'])==1:source=source.replace(row['new'],row['old'],1)
+  else:assert row['old'] and source.count(row['old'])==1,('Partial finite-scene amendment',path)
+ return source
 @functools.lru_cache(None)
 def verify():
  for path,hashes in PLAN['files'].items():
