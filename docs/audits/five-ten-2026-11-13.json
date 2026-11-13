@@ -10,7 +10,7 @@
       "batch": 1,
       "implemented": 10,
       "status": "COMPLETE_10_SOURCE_REPAIRS_DEPLOYED_AUTOMATED_CLIENT_PENDING",
-      "fix_commit": null,
+      "fix_commit": "5677b67839c5e4a8deb355e659dbe7c7698d90c0",
       "checks": {
         "fixed": ".codex\\five-ten-20261113\\fixed-20261113-114850-394\\evidence",
         "baseline": ".codex\\five-ten-20261113\\baseline-20261113-115510-852\\evidence",

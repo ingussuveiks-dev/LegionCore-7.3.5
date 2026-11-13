@@ -5,7 +5,7 @@
     "authorized_total": 50,
     "completed_source_repairs": 10,
     "latest_batch": 1,
-    "fix_commit": null,
+    "fix_commit": "5677b67839c5e4a8deb355e659dbe7c7698d90c0",
     "canonical_world_sha256": "b3dc2d725bbe39936515367719a5593461748239b6eb9aa9a407421edf57da1d",
     "remaining": [
       "Authorized total50:batch1 is10;four groups/40 repairs remain IN_PROGRESS and must not be counted as completed tests or fabricated fixes.",
