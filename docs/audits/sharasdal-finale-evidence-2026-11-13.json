@@ -1,0 +1,217 @@
+{
+  "date": "2026-11-13",
+  "status": "RESEARCH_ADVANCED_LIVING_LADY_IMPLEMENTATION_STILL_OPEN",
+  "scope": "Requested search for authentic Sharasdal living Lady activation/surrender/conversation1906/Grash finish/cleanup. Research only;no production script,SQL,character or Release change;no new source repair counted.",
+  "base_commit": "0e3b0b47b0796ce943957e6a948ba573ae1f1449",
+  "prior_audits": [
+    "docs/audits/sharasdal-living-lady-research-2026-10-31.json",
+    "docs/audits/sharasdal-finale-followup-research-2026-10-31.json",
+    "docs/audits/sharasdal-final-boss-pickup-research-2026-10-31.json",
+    "docs/audits/sharasdal-wave-cast-failure-2026-11-13.json"
+  ],
+  "local_native": {
+    "tool": "tools/research/SharasdalFinaleSearchCatalog.cpp",
+    "reproduce": "Under Invoke-WithRuntimeDiagnostics.ps1,set LEGION_DIALOGUE_CONFIG locally to canonical worldserver.conf;run tools/research/Read-LegionLegendaryCatalog.ps1 -SourceFile SharasdalFinaleSearchCatalog.cpp -ProbeName SharasdalFinaleSearchCatalog -OutputFile <ignored evidence>/native.tsv. Keep this unique ProbeName to preserve other research executables.",
+    "data": "Matching26972 Spell/SpellEffect/SpellMisc/SpellDuration/SpellCastTimes plus read-only Hotfix overlay;session transaction_read_only checked;two successful native runs produce identical output.",
+    "selected_spells": 975,
+    "effects_scanned": 269891,
+    "selection": "Seven seeds,all209300..210300 spells,global Grash/Zithreen/Zitrin/ereen names,forward trigger closure and ALL incoming EffectTriggerSpell references to the seven seeds.",
+    "found": [
+      "210045 Azshara’s Power - Abandon effect1/64 triggers210247;effect0 periodic aura triggers210044,whose252 teleport uses1317.",
+      "210252 Astral Portal effect0/64 triggers210247;effect1/252 teleport uses1285;effects2/3 credit101673/105806.",
+      "210247 Despawn All Followers has three dummy effects3,targets22/7;native data identifies the abandonment/return callers,but does not implement actor cleanup.",
+      "209487 Get Stepped On remains dummy3/explicit25,800ms ordinary cast;neither native lethal effect nor50397 credit. Existing original model DRAGON_STOMP181 visual is not a server death callback.",
+      "No incoming native EffectTriggerSpell to209457,209487,209552 or209796. This is limited to native trigger fields,not a proof that arbitrary server code cannot cast them.",
+      "209481 Deathblow is self aura107,not an instakill finisher."
+    ],
+    "world_readback": "Read-only queries for spell_area,spell_script_names,source13/17 conditions,actor SmartAI and action11 selected-spell casts found existing six209457 source13 rows but no missing finale producer/binding in that scope. Quest40341 QuestType2 Flags0. No persistent write.",
+    "world_tool_failure": "Initial research SELECT incorrectly requested quest_template.SpecialFlags and returned1054;original SQL/stdout/stderr/diagnostic bytes retained under failed-world-read. Corrected schema query passes with EOF. Tool query failure is not a server/gameplay error or a gameplay fix."
+  },
+  "source_search": {
+    "local_references": "Local TrinityCore eaa32415b0 scripts and available prior research/history had no matching complete finale. Local DestinyCore2d631f4e79 and LegionPlayerBot32e6abf likewise supplied no missing producer;modern core semantics were not copied.",
+    "github_scope": "Public first100 starred forks of dufernst and Preservation,deduplicated155 repositories/known scenario path;then14 additional repositories from public LegionCore7.3.5 repository search,three known script layouts/default branches. Not a global/private/all-branches/history proof.",
+    "first_pass_requests": 155,
+    "first_pass_successful_files": 154,
+    "additional_repositories": 14,
+    "additional_successful_files": 13,
+    "result": "166 Sharasdal source files in four byte variants(including own repo) plus one unrelated863-byte class-hall script. No complete carry/surrender/1906/Grash producer found. Original upstream Lady death handler grants50397 and1923 directly;that shortcut is not authentic living Lady evidence.",
+    "representatives": [
+      {
+        "url": "https://raw.githubusercontent.com/dufernst/LegionCore-7.3.5/master/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+        "sha256": "1b3eb157974faa143bc6799ce197fafbe1a8a8f5624534181d5946e5dd8a8874"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/main/src/server/scripts/Legion/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+        "sha256": "5812d315ae076f8af68f8167539c0440a26a35d2ca8d4c0af26e21d1fdb3cd40"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/zitengzela/LegionCore-7.3.5V2/V2/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+        "sha256": "8f4c26dcc1b4ac099b5172495dd35fa53f8b8ec6af031c0ee95bd1505b0dac61",
+        "difference": "Compared to upstream:uwow header comment and gossip enum0;no new finale."
+      }
+    ]
+  },
+  "primary_reports": [
+    {
+      "url": "https://www.bluetracker.gg/wow/topic/gb-en/0-bug-throne-of-the-tides-azsharas-power/",
+      "date": "2018-03-18",
+      "claim": "Original player reports Lady stuck1HP,artifact looted but exit bubble absent;Blizzard staff reply2018-03-20 offers class-hall portal workaround. Exact-era failure evidence,not proof of intended HP threshold."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=40341/throne-of-the-tides-azsharas-power",
+      "claim": "gypsycaine reports low-health Lady could not die while Grash was unhealed;healing him allowed finish. thepineapplehead reports near-zeroHP,Grash pickup,rough50%reset,dialogue/death. Individual comment dates/client builds not recovered;current page mixes later comments. These reports corroborate direction,not exact735 HP/timing constants."
+    }
+  ],
+  "videos": [
+    {
+      "url": "https://www.youtube.com/watch?v=yHMQNy5ktDE",
+      "publisher": "ZaFrostPet",
+      "upload_date": "20160827",
+      "duration_seconds": 945,
+      "bytes": 292706489,
+      "sha256": "bc84f328dfa899f7411e8b13ac6093da0feb43c59c5a975f003ba20527f99981",
+      "overview_review": "0..945s,15s intervals,all four overview sheets",
+      "relevant_sequence_review": "705..915s,2s intervals,all seven sheets;838..853s health crop at4fps,all three sheets;full840/850/855s",
+      "limit": "Uploaded before Legion launch;historical2016 reference,not exact26972 behavior proof."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=yJS3gjcpxrI",
+      "publisher": "Phoenix Gaming",
+      "upload_date": "20161224",
+      "duration_seconds": 889,
+      "bytes": 262875360,
+      "sha256": "49da677d10876e7dd2b15c1cd46f4e27b3e2bd04eee07fa73619b52835b62012",
+      "overview_review": "0..889s,20s intervals,all three overview sheets",
+      "relevant_sequence_review": "600..880s,2s intervals,all nine sheets",
+      "limit": "2016 gameplay;client build not recovered."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=AVwn_b6DVtY",
+      "publisher": "Game Guides Channel",
+      "upload_date": "20170108",
+      "duration_seconds": 833,
+      "bytes": 288199247,
+      "sha256": "9c7645b92235b5f66e4a263bb4c697086cdc982e70a49ae8bb8cfad3cfb35894",
+      "overview_review": "0..833s,20s intervals,all three overview sheets",
+      "relevant_sequence_review": "560..830s,2s intervals,all nine sheets",
+      "limit": "2017 gameplay;client build not recovered."
+    }
+  ],
+  "existing_xletalis": {
+    "url": "https://www.youtube.com/watch?v=wmKA8X7QX0U",
+    "upload_date": "20160820",
+    "duration_seconds": 1029,
+    "review_this_search": "700..930s at5s/all three sheets;884..908s at2fps/all three sheets;full885/900/901s. Earlier audit separately covers full video at5s and880..959s at1s.",
+    "finding": "At900..901s XP appears during Lady refusal/Grash rage,with Lady on floor;fine frames show Lady corpse tooltip while Stage5 still0/1. XP alone cannot identify killer;corpse tooltip and independent sampled finales show why visual end cannot be assumed to equal actual death or credit time."
+  },
+  "behavioral_findings": [
+    "In the reviewed successful historical sequences Grash reaches the upper room,joins living Lady combat,then visibly holds her before the original interrogation/refusal/rage/stomp/dead-now sequence. The illusion and the real Lady must stay distinct.",
+    "Varenne health crops show last observed low Lady113.5k of5.05m before reset to2.49m then2.44m during carry/dialogue. This is an observation at4fps,NOT a113.5k,2%,1%,lethal-hit or damage-hook activation predicate. Intermediate packets/hits may be omitted. Combat scaling/UI rounding also matter.",
+    "Original1906 line order and broad held-Lady choreography are corroborated across four sources. Corpse/XP can precede final visual motion and the UI stage change;do not tie lethal progress to a guessed animation-end timer.",
+    "All three new complete-video overviews and their relevant detailed sequences include pickup,outro,exit bubble/use and return. These are sampled historical footage,NOT actual traversal of this server.",
+    "Native abandon/return ->210247 link is new concrete cleanup evidence;which personal actors to remove and exactly when remain server implementation questions."
+  ],
+  "review_limit": "All named extracted sheets were inspected visually. No continuous video playback or audio listening claimed. Sampling can miss transient casts/flags/HP/credit packets;historical2016/2017 captures do not identify exact26972 server internals.",
+  "still_open": [
+    "Authoritative living-Lady activation/surrender predicate,health reset semantics and owner/scaling/one-hit handling.",
+    "Actual producer,acknowledgement and retry of209457 -> confirmed living actor boarding ->209552/conversation1906.",
+    "Actual209487 caller/effect completion ->death and50397 exactly-once credit,including whether observed stage delay is server logic or client delivery/presentation;native cast time/animation duration alone do not supply this.",
+    "Personal follower210247 target scope,abort/reentry/reconnect and cleanup;living upper Grash availability/wound recovery at finale.",
+    "Player/pet/guardian/group/faction variants,failed casts/missing actors and full735 client traversal. No production implementation is certified by this research."
+  ],
+  "decision": "Keep production unchanged until server-side activation/finisher evidence is recovered. Do not implement a guessed HP percentage or kill timer. Do not mark this OPEN issue fixed or count research as a source repair.",
+  "diagnostics": {
+    "checks": [
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/aurleis-overview-evidence/diagnostics-after.json",
+        "sha256": "f26cc3d0a99df3ef4dc0e5fa9671ba2fc2e10c381d6a12f4c27de64a785cbb71"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/box-finale-evidence/diagnostics-after.json",
+        "sha256": "de8c9fc023a434f569d0280da565d7f4acb14138b465d50fad8e805953a16f27"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/cleanup-evidence/diagnostics-after.json",
+        "sha256": "ae7eb70a8e3a2bd844175a411e656485c2898f6028fe561c8707f3cc1f88c82c"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/health-review-evidence/diagnostics-after.json",
+        "sha256": "893ef74a3f083284f02dd78513e87061a0b66127eee14d74ecdff67e22bc60ab"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/independent-video-evidence/diagnostics-after.json",
+        "sha256": "5b5684960c8781ae496ed3f7d801bc4cd698b4f37c34d0184a1679b88ad79e56"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/native-evidence/diagnostics-after.json",
+        "sha256": "3945321ab742976352cbf36477cf7fb79f300e18b6cdaf3db863d1ad897d65e3"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/native-final-evidence/diagnostics-after.json",
+        "sha256": "d6a195640194a8b717737bd3b1c31afbd973fcd743ae6b1cb118b731dfc16eec"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/review-video-evidence/diagnostics-after.json",
+        "sha256": "7266eba01ba663888fc5c5f4bbfd5ef286eec8a1e07fe4fdf9bc2bd35a02dc6b"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/varenne-detail-evidence/diagnostics-after.json",
+        "sha256": "728721d2692e8a449c76280503d1526159dfd69d15df2a38a9fae19c5fac516d"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/video-download-evidence/diagnostics-after.json",
+        "sha256": "e6d9d0a7036e8760a186a8738b5a8b6e64831999466474bcfc813a7a7af9e2a8"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/video-evidence/diagnostics-after.json",
+        "sha256": "7d70787f20ecbc5dcdd269dbfe8f67daef403d37b76802da4183cca300eb8622"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/video-fetch-evidence/diagnostics-after.json",
+        "sha256": "29b959de43258d66b529cc86dee1f9f1137e9d2b6025b585315927db06bdaadb"
+      },
+      {
+        "path": ".codex/sharasdal-finale-search-20261113/world-evidence/diagnostics-after.json",
+        "sha256": "7a2e2dad0555cbfbbc74e8047d2497be58594dcc787f14c9eac2ac5d2de410dc"
+      }
+    ],
+    "result": "All ordinary native/readback/extraction probes completed with no new/changed crash,appendedDBErrors,or server warnings/errors/assertions. Download/extract exit statuses checked;initial SQL1054 retained separately with corrected pass. No server process launched/stopped.",
+    "mixed_DBErrors": {
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "Retained untruncated;unresolved shared101430/103151 LINK2 remains visible."
+    },
+    "closing_review": "Reconciliation completed cleanly;final canonical/Slaghammer/mixedDBErrors hashes,empty activeCrashes,removed probe outputs,JSON and staged path scope checked under .codex/sharasdal-finale-search-20261113/closing-evidence. No server process launched/stopped."
+  },
+  "preservation": {
+    "world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
+    "bnet_sha256": "72ec84bd69d20d329ff907a034bc1a05bf289f0ca13b104b023fb2222216af83",
+    "original_slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "status": "Canonical binaries/configuration/assets and original Slaghammer probe unchanged;no deployment/restart required for research-only files."
+  },
+  "local_evidence": {
+    "root": ".codex/sharasdal-finale-search-20261113",
+    "manifest": ".codex/sharasdal-finale-search-20261113/evidence-manifest.json",
+    "manifest_sha256": "1af71447e84827dc980c71482cc17428a68ed1180a56d72726346699cc9a2457",
+    "retained_bytes": 897780465,
+    "purpose": "Unresolved original activation/health/finisher/audio/packet followup;downloaded public sources,video originals,sampled frames and all diagnostic bytes retained ignored outsidefixed. No unresolved encounter evidence classified as repaired.",
+    "manifest_scope": "Stable research bytes;active reconciliation/closing wrapper outputs excluded to avoid hashing files still being written."
+  },
+  "cleanup": {
+    "reason": "Successful read-only native search complete;regenerable EXE/OBJ removed. Source and unresolved evidence retained.",
+    "reclaimed_bytes": 1117495.0,
+    "removed": [
+      {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SharasdalFinaleSearchCatalog.exe",
+        "bytes": 665088,
+        "sha256": "e3f4b2a426ca3277a88f93108f4a87d1b5e650b353cbef9f0081bdad85a12174"
+      },
+      {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SharasdalFinaleSearchCatalog.obj",
+        "bytes": 452407,
+        "sha256": "7de1d5f6d734d36bee242b0b29251e7e8a919764616df5a950cfee6d916f3dd6"
+      }
+    ]
+  },
+  "ledger": "16/50 source repairs remains unchanged;all36 whole chains and Monday client checks still pending."
+}
