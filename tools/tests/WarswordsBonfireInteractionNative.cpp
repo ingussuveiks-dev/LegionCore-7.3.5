@@ -6,6 +6,10 @@
 #undef main
 #include "GameObjectPackets.h"
 #include "GameObjectModel.h"
+#include <cstddef>
+
+static_assert(offsetof(SpellMiscData, MiscData) + offsetof(SpellMiscData::SpellMisc, Attributes) + 2 * sizeof(uint32) == 0x28,
+    "The selected PE no-LOS bit proof must use the actual native SpellAttr2 offset");
 
 static void AdvanceBonfire(Player& player)
 {
@@ -36,7 +40,7 @@ int main(int argc, char** argv)
 #elif defined(BONFIRE_LOS_BASELINE)
         uint32 const profiles = 14;
 #else
-        uint32 const profiles = 12;
+        uint32 const profiles = 14;
 #endif
         uint32 cases = 0;
         bool modelsLoaded = false;

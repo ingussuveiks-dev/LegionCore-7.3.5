@@ -17,6 +17,7 @@ if($VerifyNativeCatalog){
  try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile WarswordsBonfireCatalog.cpp -ProbeName WarswordsBonfireCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native bonfire data reader failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
  $rows=Get-Content "$out/native.tsv"
  foreach($row in @("LOCK`t2474`t1`t3`t198513`t0`t0","SPELL`t198513`tLighting Bonfire","EFFECT`t198513`t0`t0`t33`t5`t23`t0","STEP`t1888`t45848","CRITERIA`t45849`t29136`t92`t47272`t0")){if($rows -notcontains $row){throw "Matching native bonfire data differs: $row"}}
+ if(!($rows|Where-Object {$_ -match "^LOS_ATTRIBUTE`t198513`t0`t[0-9]+`t1$"}) -or !($rows|Where-Object {$_ -match "^LOS_ATTRIBUTE`t3365`t0`t[0-9]+`t0$"})){throw 'Native Lighting Bonfire LOS exemption or ordinary Opening contrast differs'}
  'PASS actual26972 Lock2474 requires198513; native Opening effect33/target23 and scenario944/1888/tree45849/event47272 retained'
 }
 if($VerifyReleaseBinary){

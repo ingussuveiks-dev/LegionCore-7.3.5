@@ -35,7 +35,12 @@ if any(name.startswith(eligible)for name in n['symbols']):
  assert len(checks)==1 and checks[0]<credit[0]
  assert any(x.mnemonic=='mov'and x.op_str=='r8b, 1'for x in body[max(0,checks[0]-4):checks[0]]),'Completion must select the completed-hit admission'
  admission=ins(eligible)
-assert len(credit)==1 and {1511,245188,40043,944,47272,92}<=vals(body+admission)
+scope_admission=[]
+scope_prefix='?IsBonfire@go_mystic_bonfireAI@go_mystic_bonfire@@'
+if any(name.startswith(scope_prefix)for name in n['symbols']):
+ assert len(sites(admission,scope_prefix))==1,'The extracted scope predicate must actually admit the caller'
+ scope_admission=ins(scope_prefix)
+assert len(credit)==1 and {1511,245188,40043,944,47272,92}<=vals(body+admission+scope_admission)
 for dependency in ('?CanContact@Player@@','?GetScenario@ScenarioMgr@@','?GetCurrentStep@Scenario@@','?GetQuestRewardStatus@Player@@','?IsWithinLOSInMap@WorldObject@@'):
  assert sites(admission,dependency),dependency
 phase=[i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0xa0]

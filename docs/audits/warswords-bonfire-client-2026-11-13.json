@@ -1,8 +1,8 @@
 {
   "date": "2026-11-13",
-  "status": "OPEN_CLIENT_ROOT_CAUSE_CONFIRMED_NATIVE_LOS_POLICY_FIX_PENDING",
+  "status": "NATIVE_LOS_POLICY_REPAIRED_DEPLOYED_ACTUAL_CLIENT_RETEST_PENDING",
   "scope": "Warrior Fury40043/scenario944/map1511/first bonfire245188/spawn134117. Not a complete artifact-chain certificate or an additional completed repair in the requested50.",
-  "implementation_commit": null,
+  "implementation_commit": "b172cc9d84ce8988a4ec7561da3cd2311324eb82 (native Use/completion admission and observations);native LOS policy is in the focused commit containing this audit update",
   "observed_client_sequence": [
     "User screenshot identifies The Hunter of Heroes in Quest Log and Into the Mists as scenario Stage1;they are not two separate quests.",
     "User reports GM mode OFF and initially no ignition action. A scoped runtime READY diagnostic command starts the cast,but completion still leaves0/1.",
@@ -10,7 +10,16 @@
     "The observation build receives requested/actual198513 with the exact real bonfire target;prepare succeeds and the completed OpenLock hit reaches the bound AI. Actual context has scenario944/step0,active unrewarded quest,GMoff,alive/contactable/visible/same-phase/in-range player. LOS alone is0 and the script reports eligible0."
   ],
   "root_cause": "The script imposes a separate unconditional LOS check,while matching26972 Lighting Bonfire198513 explicitly has SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS. The native spell legitimately completes,but the AI discards its progression event. Existing isolated native fixtures had not loaded the gameobject collision-model list and missed the blocked-LOS context.",
-  "native_data": {"spell":198513,"lock":2474,"effect":33,"target":23,"attributes_ex2":272629764,"no_los_bit":4,"no_los_enabled":true,"ordinary_opening3365_no_los_enabled":false},
+  "native_data": {
+    "spell": 198513,
+    "lock": 2474,
+    "effect": 33,
+    "target": 23,
+    "attributes_ex2": 272629764,
+    "no_los_bit": 4,
+    "no_los_enabled": true,
+    "ordinary_opening3365_no_los_enabled": false
+  },
   "deployed_partial_repairs": {
     "functional_world_sha256": "0f98c5084eac9b58575fac0503906d5d19cc87f3002abf630a72c022f21343de",
     "observation_world_sha256": "165b7ed9cc8d44e9f06deaf09f760c119bd87f0af8641e9c24a1cbc7431d58ce",
@@ -19,25 +28,44 @@
     "observation": "Narrow INFO traces retain exact packet/cast/object/AI/admission diagnostics. No logging/checks were disabled,no forced stage/item/quest rewards were added."
   },
   "checks": {
-    "source_asan": "44 complete AI/post-lock controlled-engine contexts pass;this earlier set did not yet model the native no-LOS exemption.",
-    "native_use": "24 actual native cases pass with controlled earlier encounter state/event clock;12 pinned old-use controls include8 explicitly expected-broken cases paired with repaired passes.",
-    "native_los_counterfactual": "The real GO model list is now loaded for additional spatial cases. Model presence and actual LOSfalse are required. Four Human/Orc native player-cast/report/use cases reproduce0 credit with the pre-policy AI despite the actual spell's no-LOS attribute. Explicit expected-broken controls,not passing gameplay.",
+    "source_asan": "48 full production AI/post-lock controlled-engine contexts pass,including native-flag/no-flag/missing-spell and failed-cast LOS cases. Endpoints are controlled;actual engine/model cases are separate.",
+    "native_use": "28 real native Player/Spell/GO/AI/Session/lock/criteria cases pass across Human/Orc,with controlled earlier encounter/event clock. Four cases load the actual GO model list,require the actual model and LOSfalse,and complete normal198513 plus report-use/use dispatch to exactly one criterion and step1. This is not captured client traffic or full scenario traversal.",
+    "native_los_counterfactual": "Independently git-pinned b172cc9d84ce8988a4ec7561da3cd2311324eb82 pre-policy AI:24 ordinary controls pass;four real-model blocked-LOS cases explicitly reproduce0 credit. Paired with all four repaired cases passing. Expected-broken controls are not successful gameplay.",
     "sql": "SELECT+TEMP-only MariaDB reader with persistent-DML refusal:exact full-field state change/idempotence/unrelated-row preservation and9 custom/missing-context refusals unchanged under --force. Persistent READY1/lock/spell/binding readback passes.",
-    "release": "Original libraries and separate final link;actual Use/Hello vtable/native cast/lock/ack and retained cumulative PE/source checks pass. Canonical Scepter passes. Owned observation startup34832 reaches fresh ready,graceful shutdown0,exit0/gone;stdout has no warning/error/assertion and stderr is empty.",
-    "tool_correction": "PE selector now chooses the unique198513 dispatch after CanOpenLock instead of the new diagnostic guard before it;failed inspection evidence is retained. The old native Opening counterfactual now pins the pre-interaction AI as well as the legacy dispatch."
+    "release": "Actual staged and canonical linked PE prove native198513 metadata lookup and SpellMisc Attr2 bit4 branch bypassing only redundant LOS while retaining distance;typed offsetof static_assert independently pins0x28. Actual Use/Hello vtable/native nontriggered cast/post-lock/ack and all retained first10/Stormheim/pet proofs pass. Canonical Scepter and clean owned startup pass. Original library paths/final-link inputs were used.",
+    "tool_correction": "PE selector now chooses the unique198513 dispatch after CanOpenLock instead of the new diagnostic guard before it;failed inspection evidence is retained. The old native Opening counterfactual now pins the pre-interaction AI as well as the legacy dispatch. New compiled helper factoring and saved-bool register are resolved through actual call sites/dataflow. A failed shell-wrapper invocation after a passing test remains outside fixed;the corrected final-model2 wrapper reruns the full48 ASAN/catalogue checks and completes successfully. Controlled no-op logging macro compiler warnings remain visible;production logging was not disabled."
   },
   "diagnostics": "No new canonical/client crash reports,appended DBErrors or unexplained server warnings/errors/assertions in reviewed intervals. Mixed DBErrors remains7111 bytes/fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 and is not cleared. User servers were never stopped by the agent. No manual character/quest/inventory edits.",
   "evidence": {
     "client_open_investigation": ".codex/client-manual-check-20261113-124341",
     "observation_and_followup": ".codex/bonfire-client-followup-20261113",
-    "los_counterfactual": ".codex/bonfire-interaction-20261113/los-baseline-20261113-144110-063",
+    "los_counterfactual": ".codex/bonfire-interaction-20261113/los-baseline-20261113-145436-591",
     "automated_native_path_archive": "build-extractors/bin/Release/fixed/warswords-bonfire-interaction-20261113",
     "archive_manifest_sha256": "2aca549946014e495d9088b2e4b66ef7bdc70aa25409d108e63714e921657250",
-    "archive_scope": "Earlier reviewed native-path regressions only;unresolved client/followup evidence remains outside fixed.37 regenerable files/1141324255 bytes removed after verified deployment,43 protected identities preserved. New observation staging/probes are retained for the concrete outstanding LOS/client check."
+    "archive_scope": "Earlier reviewed native-path regressions only;unresolved client/followup evidence remains outside fixed.37 regenerable files/1141324255 bytes removed after verified deployment,43 protected identities preserved. Observation staging/probes were retained at that earlier checkpoint;redundant copies were subsequently removed by the separate LOS cleanup below.",
+    "los_repaired_native": ".codex/bonfire-interaction-20261113/fixed-20261113-150526-902",
+    "los_build_deployment_checks": ".codex/bonfire-native-los-20261113",
+    "los_actual_client_pending": ".codex/bonfire-los-client-20261113",
+    "los_automated_archive": {
+      "archive": "build-extractors\\bin\\Release\\fixed\\warswords-bonfire-native-los-20261113",
+      "archive_manifest_sha256": "cbcbf1a36da081839fdf4d74d655134e68325e77847ea221cbef69c0f69a4042",
+      "archived_files": 175,
+      "reclaimed_bytes": 710599159,
+      "protected_hashes_verified": 53,
+      "limits": "Resolved automated LOS-policy regression evidence only;actual client retest remains OPEN outside fixed. Mixed logs and all rollback/protected evidence unchanged. No logs truncated or processes stopped. Older rollback copies remain for concrete pre-policy/native-path recovery comparisons.",
+      "removed_files": 36
+    }
   },
   "remaining": [
-    "Honor the exact native spell LOS attribute,retain all other admission/native cast checks,and pair the four real-model counterfactuals with passing repaired cases.",
-    "Build/check/promote only when user servers are absent;run canonical Scepter/startup and retest the actual client first-step transition and wave appearance.",
-    "Requested5x10 remains10/50 completed;this unresolved client issue is not counted. All36 full artifact chains,authentic living Lady finale,LINK2/Slaghammer/mixed DBErrors and original intermittent handshake cause remain separate OPEN scopes."
-  ]
+    "Actual post-policy client first-step transition and wave appearance await the user. Burning model presentation,subsequent combat/pet final blows,retry/re-entry and the complete Fury chain remain distinct checks.",
+    "Requested5x10 remains10/50 counted while the reported actual-client interaction awaits confirmation;the bonfire is one focused repair,not multiple entries for diagnostics/test adjustments.",
+    "All36 full artifact chains,authentic living Lady finale,LINK2/Slaghammer/mixed DBErrors and original intermittent handshake cause remain separate OPEN scopes. No task-owned hidden server is left running."
+  ],
+  "native_los_repair": {
+    "world_sha256": "ebdc7df1e036f1e5e5144899cade195de515af4d520693d4b2b3e1a5d94cf1dc",
+    "behavior": "Read actual198513 SpellInfo;honor its authored SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS for the additional AI check. Missing spell fails closed;spells without the flag still require LOS. Native nontriggered cast/lock,target phase/visibility/range,quest,Warrior,instance,step and exactly-once/acknowledgement checks remain.",
+    "deployment": "Promoted to canonical build-extractors/bin/Release after checking no user/unknown server was running. Copied exe/map hashes match;configuration/certificates/DLLs preserved. No user process stopped.",
+    "startup": "Owned canonical worldserver PID3552 reached fresh ready,received server shutdown0,exited0 and is gone;stderr empty. Post-test crash/DBErrors/server warning/error/assertion checks passed.",
+    "client": "Fresh pre-test canonical/client crash and log baseline saved in .codex/bonfire-los-client-20261113. User was asked to start servers and repeat the actual interaction. No successful post-policy client traversal is claimed yet."
+  }
 }

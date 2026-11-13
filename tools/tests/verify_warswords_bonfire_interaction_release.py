@@ -32,7 +32,17 @@ for point,branch_name in ((admit,'je'),(pending,'jne')):
     branch=use[point+2]
     assert use[point+1].mnemonic=='test'and branch.mnemonic==branch_name
     assert use[cast].address not in reaches(use,branch.operands[0].imm),'Denied/busy use can still cast'
-assert {('movzx','ebx, r8b'),('mov','r8d, ebx'),('xor','r8d, 1'),('or','r8d, 0x10')}<=pairs(eligible),'IN_USE blocks starting another cast;completed native hit still checks NOT_SELECTABLE'
+saved,=[x.op_str.split(', ')[0]for x in eligible[:10]if x.mnemonic=='movzx'and x.op_str.endswith(', r8b')]
+assert {('mov','r8d, '+saved),('xor','r8d, 1'),('or','r8d, 0x10')}<=pairs(eligible),'IN_USE blocks starting another cast;completed native hit still checks NOT_SELECTABLE'
+lookup,=sites(eligible,'?GetSpellInfo@SpellMgr@@')
+assert ('mov','edx, 0x30771')in pairs(eligible[max(0,lookup-4):lookup]),'Admission must read actual198513 metadata'
+misc,=sites(eligible,'?GetMisc@SpellInfo@@');los,=sites(eligible,'?IsWithinLOSInMap@WorldObject@@')
+flag,=[i for i,x in enumerate(eligible)if x.mnemonic=='test'and x.op_str=='byte ptr [rax + 0x28], 4']
+assert lookup<misc<flag<los and eligible[flag+1].mnemonic=='jne'
+exempt=reaches(eligible,eligible[flag+1].operands[0].imm)
+assert eligible[los].address not in exempt,'Authored SpellAttr2/no-LOS must bypass only the redundant LOS check'
+distance,=sites(eligible,'?IsWithinDistInMap@WorldObject@@')
+assert eligible[distance].address in exempt,'Native LOS exemption must retain the interaction distance check'
 for forbidden in ('?UpdateAchievementCriteria@Player@@','?SetGoState@GameObject@@','?AddItem@Player@@','?CompleteQuest@Player@@','?TeleportTo@Player@@'):
     assert not sites(use,forbidden),'Use must not grant completion/presentation: '+forbidden
 credit,=sites(hello,'?UpdateAchievementCriteria@Player@@');light,=sites(hello,'?SetGoState@GameObject@@')

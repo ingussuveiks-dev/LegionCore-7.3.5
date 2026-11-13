@@ -3,6 +3,8 @@
 */
 
 #include "ScriptMgr.h"
+#include "SpellMgr.h"
+#include "SpellInfo.h"
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
@@ -51,12 +53,19 @@ public:
 
         bool Eligible(Player* player, bool completing) const
         {
+            SpellInfo const* ignition = sSpellMgr->GetSpellInfo(198513);
+            if (!ignition)
+                return false;
             if (igniting || !IsBonfire() || !player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
                 player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR ||
                 !go->IsInWorld() || !go->isSpawned() ||
                 go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE | (completing ? 0 : GO_FLAG_IN_USE)) ||
                 !player->GetMap() || player->GetMap() != go->GetMap() || player->GetInstanceId() != go->GetInstanceId() ||
-                !player->InSamePhase(go) || !player->canSeeOrDetect(go) || !player->IsWithinLOSInMap(go) ||
+                !player->InSamePhase(go) || !player->canSeeOrDetect(go) ||
+                // Honor the actual26972 spell's authored LOS policy. Its native
+                // cast/lock validation remains authoritative; a second plain
+                // LOS test rejects legitimate hits beside the bonfire model.
+                (!ignition->HasAttribute(SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && !player->IsWithinLOSInMap(go)) ||
                 !player->IsWithinDistInMap(go, go->GetInteractionDistance()) ||
                 !go->GetInstanceScript() || player->GetInstanceScript() != go->GetInstanceScript() ||
                 player->GetQuestRewardStatus(40043) ||
