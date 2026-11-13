@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "CLIENT_STARTUP_OBSERVED_AT_LOGIN_MANUAL_AUTHENTICATION_REQUIRED_GAMEPLAY_NOT_VERIFIED",
+  "implementation_head": "81275628e584fa1dac384512a7d224b9e4ede7ab",
+  "canonical_world_sha256": "a00f76dc933c0e0c669f27fbad6d6cae5a260fb59ce0b6549a3dc501ec4a1232",
+  "observed": "Used computer-use sky inventory and the previously installed Legion client path. Exactly one task-launched World of Warcraft window was selected from returned windows;actual login rendering visibly reports7.3.5(26972)Release x64. No login field/button was operated and no authentication,account creation,character change,quest traversal or pet battle was performed. Screenshot payload was viewed through the tool only,not saved or copied into the audit.",
+  "pending_manual_step": "An asynchronous user-availability question is pending. The computer-use skill guidance explicitly says Do not automate user authentication dialogs. Client authentication must be performed manually before any actual gameplay checks. No client gameplay/36-chain/root-cause closure is claimed.",
+  "skill": "C:/Users/Admin/.codex/plugins/cache/openai-bundled/computer-use/26.1103.60933/skills/computer-use/SKILL.md",
+  "binding_guidance": "C:/Users/Admin/.codex/plugins/cache/openai-bundled/computer-use/26.1103.60933/docs/guidance.md",
+  "process_ownership": {
+    "owned_gui_pid": 9416,
+    "last_observed_state": "Running at login;retained for pending user authentication handoff",
+    "client_exit": "Not yet exited,so exit status remains pending",
+    "worldserver_or_bnetserver_running": false,
+    "note": "All task-owned hidden servers from implemented fixes were gracefully stopped. The retained frontend is an interactive client,not a temporary server. Recheck ownership/state before future actions;do not stop a user server."
+  },
+  "diagnostics": "Before/after canonical and own crash/log inventories plus full client Errors/Crashes inventories show no new files or appended server diagnostics/DBErrors. GUI stdout/stderr are not exposed by sky;actual window and client error directories were reviewed. Owned GUI native process path/start time independently verified. A supplemental timestamp check first attempted to parse an already typed DateTime;corrected to direct DateTime conversion. No client exit-success claim while it remains open.",
+  "evidence": [
+    {
+      "path": ".codex/client-open-check-2026-11-13/client-before.json",
+      "sha256": "586f88329e2b0241e15129c9e048f654e1e63dd127bcd90a5484cf8c3565e3fb"
+    },
+    {
+      "path": ".codex/client-open-check-2026-11-13/client-after.json",
+      "sha256": "c902cbcea0ea2aa7bd699e7e894fd0e0c7107a095bb743cfc33a4ed391e3ef5a"
+    },
+    {
+      "path": ".codex/client-open-check-2026-11-13/client-owned-process.json",
+      "sha256": "c95a89cc7f05ab89cc14e698188b8b28c255a86e80cc633fa28c4b47767f827e"
+    },
+    {
+      "path": ".codex/client-open-check-2026-11-13/observation-driver.log",
+      "sha256": "3b16709e3144e42efe64cc70f5986d390959c5f0063ce08daf095b1f51a839f3"
+    },
+    {
+      "path": ".codex/client-open-check-2026-11-13/evidence/diagnostics-before.json",
+      "sha256": "e9ad4738f68d893f552ec87a06b18c40052bd3505dd3928c9ecbac1299f0a637"
+    },
+    {
+      "path": ".codex/client-open-check-2026-11-13/evidence/diagnostics-after.json",
+      "sha256": "9b797395ad9eb62809381885fa7395787fbca327156386d70a4bf0f4a9e5eb1a"
+    }
+  ],
+  "remaining": "Manual client login and actual traversal;Crumble complete percentage/unavoidable policy,Haunt/other183/offline lifecycle,authentic living Lady/conversation1906/Grash/LINK2,original intermittent handshake cause and all36 complete chains remain OPEN. Preserve Slaghammer and mixed DBErrors;do not invent missing HP thresholds,timers or actor links.",
+  "source_trace_note": "Current PetBattleAura::Process already supplies its actual TargetPetID directly to periodic effect.Targets;no periodic owner-redirection bug was established or changed in this phase. Haunt remains blocked at230 and its fake-death/157 context/165 return semantics require complete authoritative sequence evidence;no guessed alternate dead-state value or50percent later-era cost added."
+}
