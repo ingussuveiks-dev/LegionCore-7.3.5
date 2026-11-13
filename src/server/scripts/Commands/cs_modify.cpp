@@ -569,9 +569,9 @@ public:
         if (!*args)
             return false;
 
-        float Swim = (float)atof((char*)args);
+        float Swim;
 
-        if (Swim > 50.0f || Swim < 0.1f)
+        if (!Trinity::ParseCommandFloat(args, Swim) || Swim > 50.0f || Swim < 0.1f)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
