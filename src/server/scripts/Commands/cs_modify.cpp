@@ -332,30 +332,32 @@ public:
             return false;
         }
 
-        uint32 factionid = atoi(pfactionid);
+        uint32 factionid;
+        if (!Trinity::ParseCommandInteger(pfactionid, factionid))
+            return false;
         uint32 flag;
 
         char *pflag = strtok(NULL, " ");
         if (!pflag)
             flag = target->GetUInt32Value(UNIT_FIELD_FLAGS);
-        else
-            flag = atoi(pflag);
+        else if (!Trinity::ParseCommandInteger(pflag, flag))
+            return false;
 
         char* pnpcflag = strtok(NULL, " ");
 
         uint32 npcflag;
         if (!pnpcflag)
             npcflag   = target->GetUInt32Value(UNIT_FIELD_NPC_FLAGS);
-        else
-            npcflag = atoi(pnpcflag);
+        else if (!Trinity::ParseCommandInteger(pnpcflag, npcflag))
+            return false;
 
         char* pdyflag = strtok(NULL, " ");
 
         uint32  dyflag;
         if (!pdyflag)
             dyflag   = target->GetUInt32Value(OBJECT_FIELD_DYNAMIC_FLAGS);
-        else
-            dyflag = atoi(pdyflag);
+        else if (!Trinity::ParseCommandInteger(pdyflag, dyflag))
+            return false;
 
         if (!sFactionTemplateStore.LookupEntry(factionid))
         {
