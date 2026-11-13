@@ -23,6 +23,8 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
 #include "ObjectMgr.h"
 #include "Chat.h"
 #include "Transport.h"
@@ -511,7 +513,9 @@ public:
         if (!*args)
             return false;
 
-        uint8 lvl = (uint8) atoi((char*)args);
+        uint8 lvl;
+        if (!Trinity::ParseCommandInteger(args, lvl))
+            return false;
         if (lvl < 1 || lvl > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) + 3)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);

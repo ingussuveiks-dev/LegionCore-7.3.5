@@ -291,6 +291,16 @@
       "old": "    static bool HandleModifyPhaseIDsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        std::set<uint32> phaseIds;\n        Tokenizer phasesToken((char*)args, ' ', 100);\n        for (Tokenizer::const_iterator itr = phasesToken.begin(); itr != phasesToken.end(); ++itr)\n        {\n            if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(*itr, nullptr, 10))))\n                phaseIds.insert(phase->ID);\n        }\n\n        Unit* target = handler->getSelectedUnit();\n        if (target)\n        {\n            if (target->GetTypeId() == TYPEID_PLAYER)\n                target->ToPlayer()->SetPhaseId(phaseIds, true);\n            else\n                return false;\n        }\n        else\n            handler->GetSession()->GetPlayer()->SetPhaseId(phaseIds, true);\n\n        return true;\n    }",
       "new": "    static bool HandleModifyPhaseIDsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        std::set<uint32> phaseIds;\n        Tokenizer phasesToken((char*)args, ' ', 100, false);\n        if (phasesToken.begin() == phasesToken.end())\n            return false;\n        for (Tokenizer::const_iterator itr = phasesToken.begin(); itr != phasesToken.end(); ++itr)\n        {\n            uint32 phaseId;\n            if (!Trinity::ParseCommandInteger(*itr, phaseId))\n                return false;\n            if (!phaseId)\n                continue;\n            PhaseEntry const* phase = sPhaseStore.LookupEntry(phaseId);\n            if (!phase)\n                return false;\n            phaseIds.insert(phase->ID);\n        }\n\n        Unit* target = handler->getSelectedUnit();\n        if (target)\n        {\n            if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), ObjectGuid::Empty))\n                return false;\n            if (target->GetTypeId() == TYPEID_PLAYER)\n                target->ToPlayer()->SetPhaseId(phaseIds, true);\n            else\n                return false;\n        }\n        else\n            handler->GetSession()->GetPlayer()->SetPhaseId(phaseIds, true);\n\n        return true;\n    }",
       "batch": 3
+    },
+    {
+      "key": "NpcLevelCheckedWidth",
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcSetLevelCommand",
+      "case": "NpcLevel",
+      "kind": "npc",
+      "batch": 4,
+      "old": "    static bool HandleNpcSetLevelCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint8 lvl = (uint8) atoi((char*)args);\n        if (lvl < 1 || lvl > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) + 3)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Creature* creature = handler->getSelectedCreature();\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (creature->isPet())\n        {\n            if (((Pet*)creature)->getPetType() == HUNTER_PET)\n            {\n                creature->SetUInt32Value(UNIT_FIELD_PET_NEXT_LEVEL_EXPERIENCE, sObjectMgr->GetXPForLevel(lvl)/4);\n                creature->SetUInt32Value(UNIT_FIELD_PET_EXPERIENCE, 0);\n            }\n            ((Pet*)creature)->GivePetLevel(lvl);\n        }\n        else\n        {\n            creature->SetMaxHealth(100 + 30*lvl);\n            creature->SetHealth(100 + 30*lvl);\n            creature->SetLevel(lvl);\n            creature->SaveToDB();\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcSetLevelCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint8 lvl;\n        if (!Trinity::ParseCommandInteger(args, lvl))\n            return false;\n        if (lvl < 1 || lvl > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) + 3)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Creature* creature = handler->getSelectedCreature();\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (creature->isPet())\n        {\n            if (((Pet*)creature)->getPetType() == HUNTER_PET)\n            {\n                creature->SetUInt32Value(UNIT_FIELD_PET_NEXT_LEVEL_EXPERIENCE, sObjectMgr->GetXPForLevel(lvl)/4);\n                creature->SetUInt32Value(UNIT_FIELD_PET_EXPERIENCE, 0);\n            }\n            ((Pet*)creature)->GivePetLevel(lvl);\n        }\n        else\n        {\n            creature->SetMaxHealth(100 + 30*lvl);\n            creature->SetHealth(100 + 30*lvl);\n            creature->SetLevel(lvl);\n            creature->SaveToDB();\n        }\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -325,6 +335,13 @@
       "new": "#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
       "batch": 2,
       "owner_key": "ModifyASpeedFiniteInput"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "old": "#include \"ScriptMgr.h\"",
+      "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
+      "batch": 4,
+      "owner_key": "NpcLevelCheckedWidth"
     }
   ],
   "files": {
@@ -366,6 +383,10 @@
     "src/server/game/Entities/Player/Player.cpp": {
       "before_sha256": "386dda28f846594569707c9ca120900f0b0576c0420fbf09c862285d775a809c",
       "after_sha256": "b04925dc7dce0a7adc527c6a8ee469590725ff4322a9e16ba19fd5255edcfa45"
+    },
+    "src/server/scripts/Commands/cs_npc.cpp": {
+      "before_sha256": "e8849dbbdd6ac603404f34b5f2207f213b457bba68c2bfd9dd35bb43945e2f14",
+      "after_sha256": "2b599ad83d2dd65c37bf6700b159cecd4f3e61d092b17c69e6cc693cb8d8d32f"
     }
   }
 }

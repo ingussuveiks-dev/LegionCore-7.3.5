@@ -22,7 +22,7 @@
 using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int32_t;using uint64=uint64_t;using int64=int64_t;
 static void Require(bool b,char const* message){if(!b)throw std::runtime_error(message);}
 #include "Constants.inc"
-struct ObjectGuid{uint64 GetGUIDLow(){return 1;}static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
+struct ObjectGuid{using LowType=uint64;uint64 GetGUIDLow(){return 1;}std::string ToString(){return "controlled:1";}static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
 #define TC_LOG_DEBUG(...) ((void)0)
 #include "NativeTokenizer.inc"
 struct Session;struct Player;struct Creature;
@@ -66,7 +66,24 @@ struct MoneyScripts{std::function<void(int64&)>hook;template<class T>void OnPlay
 #include "NativeModifyMoney.inc"
 struct Player:Unit{Player*ToPlayer()override{return this;}};
 struct Session{Player*player=nullptr;uint32 account=1;Player*GetPlayer(){return player;}uint32 GetAccountId(){return account;}};
-struct Creature:Unit{uint32 entry=0,path=77;Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetWaypointPath(){return path;}uint32 faction=1;uint32 getFaction(){return faction;}void setFaction(uint32 value){++writes;faction=value;}ObjectGuid GetGUID(){return {};}};
+struct CreatureTemplate{uint32 faction=1;float scale=1.5f;};
+struct CreatureData{float personalSize=3;};
+struct CreatureAI{uint32 writes=0,key=0,value=0;void SetData(uint32 a,uint32 b){++writes;key=a;value=b;}};
+struct MotionMaster{uint32 initializes=0;void Initialize(){++initializes;}};
+struct Creature:Unit{uint32 entry=0,path=77,faction=1,level=1,saves=0,nativeDisplay=0,outfit=0,moveType=0,deathCalls=0,respawns=0,delay=0;bool pet=false,alive=true,hasAI=true;float radius=0;CreatureTemplate templateData;CreatureAI ai;MotionMaster motion;
+ Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetWaypointPath(){return path;}uint32 getFaction(){return faction;}void setFaction(uint32 value){++writes;faction=value;}ObjectGuid GetGUID(){return {};}
+ bool isPet(){return pet;}void SetLevel(uint8 value){++writes;level=value;}void SaveToDB(){++saves;}CreatureTemplate const*GetCreatureTemplate(){return &templateData;}
+ CreatureAI*AI(){return hasAI?&ai:nullptr;}std::string GetNPCAIName(){return "ControlledAI";}std::string GetScriptName(){return "";}char const*GetName(){return "Controlled";}
+ void SetNativeDisplayId(uint32 value){++writes;nativeDisplay=value;}void SetOutfit(int32 value){++writes;outfit=uint32(value);}
+ uint64 dbGuid=7;uint64 GetDBTableGUIDLow(){return dbGuid;}void SetRespawnRadius(float value){++writes;radius=value;}void SetDefaultMovementType(MovementGeneratorType value){++writes;moveType=value;}
+ MotionMaster*GetMotionMaster(){return &motion;}bool IsAlive(){return alive;}void setDeathState(DeathState state){Require(state==JUST_DIED,"Unexpected death mode");++deathCalls;alive=false;}void Respawn(){++respawns;alive=true;}
+ void SetRespawnDelay(uint32 value){++writes;delay=value;}
+};
+struct Pet:Creature{Pet(){pet=true;}PetType type=HUNTER_PET;PetType getPetType(){return type;}void GivePetLevel(uint8 value){++writes;level=value;}};
+struct WorldConfig{uint32 getIntConfig(WorldIntConfigs key){Require(key==CONFIG_MAX_PLAYER_LEVEL,"Wrong level config");return 120;}}worldConfig;auto sWorld=&worldConfig;
+struct ObjectManager{CreatureTemplate data;CreatureData spawn;uint32 GetXPForLevel(uint32 level){return level*100;}CreatureTemplate const*GetCreatureTemplate(uint32){return &data;}CreatureData&NewOrExistCreatureData(uint64 id){Require(id==7,"Wrong spawn");return spawn;}}objectManager;auto sObjectMgr=&objectManager;
+struct WorldDatabasePreparedStatement{uint32 id=0;std::map<uint32,uint64>values;std::map<uint32,float>floats;void setUInt16(uint32 i,uint16 v){values[i]=v;}void setUInt32(uint32 i,uint32 v){values[i]=v;}void setUInt64(uint32 i,uint64 v){values[i]=v;}void setUInt8(uint32 i,uint8 v){values[i]=v;}void setFloat(uint32 i,float v){Require(std::isfinite(v),"Nonfinite DB write");floats[i]=v;}};
+struct WorldService{WorldDatabasePreparedStatement pending;std::vector<WorldDatabasePreparedStatement>writes;WorldDatabasePreparedStatement*GetPreparedStatement(uint32 id){pending={id,{},{}};return &pending;}void Execute(WorldDatabasePreparedStatement*row){writes.push_back(*row);}}WorldDatabase;
 struct ChatHandler {
  Player*target=nullptr;Unit*unit=nullptr;Creature*creature=nullptr;Session*session=nullptr;bool lower=false,error=false,report=false;uint32 messages=0,databaseReached=0;
  ChatHandler()=default;explicit ChatHandler(Player*){}
@@ -79,7 +96,7 @@ struct ChatHandler {
  uint32 extractSpellIdFromLink(char*args){char*id=strtok(args," ");return id?uint32(strtoul(id,nullptr,10)):0;}
 };
 struct NativeRow{uint32 ID;};using CurrencyTypesEntry=NativeRow;using PhaseEntry=NativeRow;
-struct NativeStore{std::map<uint32,NativeRow>rows;NativeRow const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionTemplateStore{{{1,{1}},{2,{2}}}},sCurrencyTypesStore{{{1,{1}},{2,{2}}}},sCreatureDisplayInfoStore{{{123,{123}}}},sPhaseStore{{{1,{1}},{2,{2}}}};
+struct NativeStore{std::map<uint32,NativeRow>rows;NativeRow const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionTemplateStore{{{1,{1}},{2,{2}}}},sCurrencyTypesStore{{{1,{1}},{2,{2}}}},sCreatureDisplayInfoStore{{{123,{123}}}},sPhaseStore{{{1,{1}},{2,{2}}}},sEmotesStore{{{1,{1}},{2,{2}}}};
 struct PrecisionManager{float GetCurrencyPrecision(uint32 id){return id==2?100.f:1.f;}}sDB2Manager;
 struct CharTitlesEntry{int32 MaskID;};
 struct TitleStore{std::vector<CharTitlesEntry> rows{{0},{0},{2},{63},{64},{130},{-1}};uint32 GetNumRows(){return uint32(rows.size());}CharTitlesEntry const*LookupEntry(uint32 i){return i<rows.size()?&rows[i]:nullptr;}}sCharTitlesStore;
@@ -130,7 +147,15 @@ static void FloatTests(bool(*fn)(ChatHandler*,char const*),std::vector<uint32>co
  if(scale){Unit npc;ChatHandler h;h.unit=&npc;h.lower=true;Require(Command(fn,h,"2.5")&&npc.scale==2.5f&&npc.writes==1,"NPC scale incorrectly inherited Player security");++cases;}
 }
 #endif
+
+static void NpcRejects(bool(*fn)(ChatHandler*,char const*),std::vector<char const*>args){
+ for(auto arg:args){Creature c;ChatHandler h;h.creature=&c;WorldDatabase.writes.clear();objectManager.spawn.personalSize=3;Require(!Command(fn,h,arg)&&!c.writes&&!c.saves&&!c.ai.writes&&WorldDatabase.writes.empty()&&objectManager.spawn.personalSize==3,"Invalid NPC input mutated world/AI/persistence");++cases;}
+ {ChatHandler h;WorldDatabase.writes.clear();Require(!Command(fn,h,"1")&&WorldDatabase.writes.empty(),"Absent NPC accepted");++cases;}
+}
 int main(){try{
+#ifdef NPC_LEVEL_BASELINE
+ Creature original;ChatHandler originalHandler;originalHandler.creature=&original;Require(Command(CaseNpcLevel::Selected::HandleNpcSetLevelCommand,originalHandler,"257")&&original.level==1&&original.saves==1,"Original narrowed level alias not reproduced");std::cout<<"COUNTERFACTUAL original NPC level257 wraps to1 and reaches controlled persistence;no real world DB writes\n";return 0;
+#endif
 #ifdef CORE_MONEY_BASELINE
  Player original;original.money=100;Require(original.ModifyMoney(int64(MAX_MONEY_AMOUNT)+1)&&original.money>MAX_MONEY_AMOUNT,"Original native unsigned cap underflow not reproduced");std::cout<<"COUNTERFACTUAL actual original core money accepts above-cap positive amount;controlled field only\n";return 0;
 #endif
@@ -277,6 +302,49 @@ int main(){try{
 #ifdef REPAIR_PHASEIDS
  for(char const*arg:{""," ","-1","1x","4294967297","1 3","1 -1","1 2x"}){Player p;p.phaseIds={2};ChatHandler h;h.target=&p;Require(!Command(CasePhaseIDs::Selected::HandleModifyPhaseIDsCommand,h,arg)&&!p.writes&&p.phaseIds==std::set<uint32>{2},"Invalid phase list partially applied/cleared");++cases;}
  for(char const*arg:{"0","1","1 2 1"," 0  1 2 "})for(uint32 mode:{0u,1u,2u,3u}){Player p;Creature c;Session session{&p,1};ChatHandler h;h.session=&session;if(mode==1||mode==3)h.target=&p;if(mode==2)h.unit=&c;h.lower=mode==3;bool ok=Command(CasePhaseIDs::Selected::HandleModifyPhaseIDsCommand,h,arg);Require(ok==(mode<2)&&!c.writes&&p.writes==(ok?1u:0u),"Phase IDs target admission changed");if(ok)Require(p.phaseIds==(std::string(arg)=="0"?std::set<uint32>{}:std::string(arg)=="1"?std::set<uint32>{1}:std::set<uint32>{1,2}),"Native phase set/zero reset changed");++cases;}
+#endif
+
+#ifdef REPAIR_NPCLEVEL
+ NpcRejects(CaseNpcLevel::Selected::HandleNpcSetLevelCommand,{""," ","0","-1","1x","256","257","124","4294967297"});
+ for(uint32 level:{1u,120u,123u})for(uint32 mode:{0u,1u,2u}){Creature c;Pet pet;pet.type=mode==1?HUNTER_PET:SUMMON_PET;Creature&target=mode?static_cast<Creature&>(pet):c;ChatHandler h;h.creature=&target;Require(Command(CaseNpcLevel::Selected::HandleNpcSetLevelCommand,h,std::to_string(level).c_str())&&target.level==level&&target.saves==uint32(mode==0),"NPC/Pet native level/save route changed");if(mode==1)Require(pet.flags[UNIT_FIELD_PET_NEXT_LEVEL_EXPERIENCE]==level*25&&pet.flags[UNIT_FIELD_PET_EXPERIENCE]==0,"Hunter pet native experience route lost");++cases;}
+#endif
+#ifdef REPAIR_NPCFACTION
+ NpcRejects(CaseNpcFaction::Selected::HandleNpcSetFactionIdCommand,{""," ","-1","1x","65537","4294967297","3"});
+ {Creature c;c.entry=99;ChatHandler h;h.creature=&c;WorldDatabase.writes.clear();Require(Command(CaseNpcFaction::Selected::HandleNpcSetFactionIdCommand,h,"2")&&c.faction==2&&c.templateData.faction==2&&WorldDatabase.writes.size()==1&&WorldDatabase.writes[0].id==WORLD_UPD_CREATURE_FACTION&&WorldDatabase.writes[0].values.at(0)==2&&WorldDatabase.writes[0].values.at(1)==99,"Faction live/template/prepared DB operand divergence");++cases;}
+#endif
+#ifdef REPAIR_NPCFLAGS
+ NpcRejects(CaseNpcFlags::Selected::HandleNpcSetFlagCommand,{""," ","-1","1x","4294967296"});
+ for(uint32 value:{0u,1u,UINT32_MAX}){Creature c;c.entry=99;ChatHandler h;h.creature=&c;WorldDatabase.writes.clear();Require(Command(CaseNpcFlags::Selected::HandleNpcSetFlagCommand,h,std::to_string(value).c_str())&&c.flags[UNIT_FIELD_NPC_FLAGS]==value&&WorldDatabase.writes.size()==1&&WorldDatabase.writes[0].id==WORLD_UPD_CREATURE_NPCFLAG&&WorldDatabase.writes[0].values.at(0)==value&&WorldDatabase.writes[0].values.at(1)==99,"NPC flags native field/persistence changed");++cases;}
+#endif
+#ifdef REPAIR_NPCDATA
+ NpcRejects(CaseNpcData::Selected::HandleNpcSetDataCommand,{""," ","1","0 1","1 0","-1 1","1 -1","1x 1","1 1x","4294967297 1","1 4294967297"});
+ {Creature c;ChatHandler h;h.creature=&c;c.hasAI=false;Require(!Command(CaseNpcData::Selected::HandleNpcSetDataCommand,h,"1 1")&&!c.ai.writes,"NPC data dereferenced absent AI");++cases;}
+ for(uint32 value:{1u,UINT32_MAX}){Creature c;ChatHandler h;h.creature=&c;std::string arg="1 "+std::to_string(value);Require(Command(CaseNpcData::Selected::HandleNpcSetDataCommand,h,arg.c_str())&&c.ai.writes==1&&c.ai.key==1&&c.ai.value==value,"Native AI SetData operands changed");++cases;}
+#endif
+#ifdef REPAIR_NPCEMOTE
+ NpcRejects(CaseNpcEmote::Selected::HandleNpcPlayEmoteCommand,{""," ","-1","1x","4294967297","3"});
+ for(uint32 value:{0u,1u,2u}){Creature c;ChatHandler h;h.creature=&c;Require(Command(CaseNpcEmote::Selected::HandleNpcPlayEmoteCommand,h,std::to_string(value).c_str())&&c.writes==1&&c.flags[UNIT_FIELD_EMOTE_STATE]==value,"Native emote state/reset changed");++cases;}
+#endif
+#ifdef REPAIR_NPCMODEL
+ NpcRejects(CaseNpcModel::Selected::HandleNpcSetModelCommand,{""," ","0","-1","123x","4294967419","124"});
+ {Creature c;ChatHandler h;h.creature=&c;Require(Command(CaseNpcModel::Selected::HandleNpcSetModelCommand,h,"123")&&c.writes==4&&c.saves==1&&c.display==123&&c.nativeDisplay==123&&c.outfit==123,"Native display/outfit/persistence changed");++cases;}
+ {Pet pet;ChatHandler h;h.creature=&pet;Require(!Command(CaseNpcModel::Selected::HandleNpcSetModelCommand,h,"123")&&!pet.writes&&!pet.saves,"Pet model refusal lost");++cases;}
+#endif
+#ifdef REPAIR_NPCPHASE
+ NpcRejects(CaseNpcPhase::Selected::HandleNpcSetPhaseCommand,{""," ","0","-1","1x","4294967297"});
+ for(uint32 value:{1u,UINT32_MAX})for(bool pet:{false,true}){Creature c;c.pet=pet;ChatHandler h;h.creature=&c;Require(Command(CaseNpcPhase::Selected::HandleNpcSetPhaseCommand,h,std::to_string(value).c_str())&&c.writes==1&&c.phase==value&&c.saves==uint32(!pet),"NPC/pet native phase/save policy changed");++cases;}
+#endif
+#ifdef REPAIR_NPCSPAWNDIST
+ NpcRejects(CaseNpcSpawnDist::Selected::HandleNpcSetSpawnDistCommand,{""," ","-1","1x","nan","inf","1e1000"});
+ for(char const*arg:{"0","1.5","0x1p1"})for(bool alive:{false,true}){Creature c;c.dbGuid=uint64(1)<<40;c.alive=alive;ChatHandler h;h.creature=&c;WorldDatabase.writes.clear();Require(Command(CaseNpcSpawnDist::Selected::HandleNpcSetSpawnDistCommand,h,arg)&&c.radius==std::strtof(arg,nullptr)&&c.motion.initializes==1&&c.deathCalls==uint32(alive)&&c.respawns==uint32(alive)&&WorldDatabase.writes.size()==1&&WorldDatabase.writes[0].floats.at(0)==c.radius&&WorldDatabase.writes[0].values.at(2)==c.dbGuid&&WorldDatabase.writes[0].id==WORLD_UPD_CREATURE_SPAWN_DISTANCE,"Native spawn radius/live-dead reset/DB route changed");Require(c.moveType==uint32(c.radius>0?RANDOM_MOTION_TYPE:IDLE_MOTION_TYPE),"Radius zero movement policy changed");++cases;}
+#endif
+#ifdef REPAIR_NPCSPAWNTIME
+ NpcRejects(CaseNpcSpawnTime::Selected::HandleNpcSetSpawnTimeCommand,{""," ","-1","1x","2147483648","4294967297"});
+ for(int32 value:{0,1,INT32_MAX}){Creature c;c.dbGuid=uint64(1)<<40;ChatHandler h;h.creature=&c;WorldDatabase.writes.clear();Require(Command(CaseNpcSpawnTime::Selected::HandleNpcSetSpawnTimeCommand,h,std::to_string(value).c_str())&&c.writes==1&&c.delay==uint32(value)&&WorldDatabase.writes.size()==1&&WorldDatabase.writes[0].id==WORLD_UPD_CREATURE_SPAWN_TIME_SECS&&WorldDatabase.writes[0].values.at(0)==uint32(value)&&WorldDatabase.writes[0].values.at(1)==c.dbGuid,"Native respawn delay/DB seconds changed");++cases;}
+#endif
+#ifdef REPAIR_NPCSIZE
+ NpcRejects(CaseNpcSize::Selected::HandleNpcSetSizeCommand,{""," ","-1","1x","nan","inf","1e1000"});
+ for(char const*arg:{"0","1.5","0x1p1"})for(bool pet:{false,true}){Creature c;c.pet=pet;ChatHandler h;h.creature=&c;objectManager.spawn.personalSize=3;Require(Command(CaseNpcSize::Selected::HandleNpcSetSizeCommand,h,arg)&&c.writes==1&&c.scale==(std::strtof(arg,nullptr)==0?objectManager.data.scale:std::strtof(arg,nullptr))&&c.saves==uint32(!pet),"Native size/reset/pet save policy changed");Require(objectManager.spawn.personalSize==(pet?3:std::strtof(arg,nullptr)),"NPC size persisted override wrong");++cases;}
 #endif
 #ifdef REPAIR_SOUL
  for(randomChoice=0;randomChoice<3;++randomChoice){EchoUnit source,actor;CaseSoul::Selected callback;callback.me=&actor;

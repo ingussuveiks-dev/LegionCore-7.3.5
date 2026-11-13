@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "request_batch": 4,
+  "repair_index": 31,
+  "key": "NpcLevelCheckedWidth",
+  "path": "src/server/scripts/Commands/cs_npc.cpp",
+  "summary": "Reject narrowed/malformed NPC levels before native normal/hunter/summon-pet updates and persistence.",
+  "status": "IMPLEMENTED_TESTED_IN_FOURTH_TEN_CANONICAL_RELEASE_CLIENT_PENDING",
+  "scope": "One independently callable native NPC command repair;shared parsers/tests not additional repairs.",
+  "checks_reference": "docs/audits/five-ten-2026-11-14.json",
+  "canonical_world_sha256": "bab29dfb15e97dd5d66a3ffb3742c9c984de71d2c4e6f763daf68e6b12f29e42",
+  "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch4",
+  "post_test_diagnostics": "Final snapshots no new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. Native catalog signed FactionTemplate ID max fixture corrected;PE recognizes actual inline UInt16 parser and native prepared setter. Final passing counterparts retained. Mixed7111-byte DBErrors and original Slaghammer hashes unchanged.",
+  "client_limit": "Source/native/PE/startup proof;actual GM/NPC interactions and all36 whole artifact chains remain separate client checks.",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed archive after push."
+}

@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_30_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 30,
+  "status": "IN_PROGRESS_31_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 31,
   "batches": [
     {
       "batch": 1,
@@ -244,10 +244,44 @@
         "retained_rollback": ".codex/release-before-five-ten-20261114-batch3",
         "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report."
       }
+    },
+    {
+      "batch": 4,
+      "repairs": [
+        {
+          "key": "NpcLevelCheckedWidth",
+          "path": "src/server/scripts/Commands/cs_npc.cpp",
+          "summary": "Reject narrowed/malformed NPC levels before native normal/hunter/summon-pet updates and persistence."
+        }
+      ],
+      "checks": {
+        "source_asan": "628 cumulative complete selected source contexts,121 new NPC contexts;retained37 go-quest separate. Actual methods/control-flow with native enums and controlled Creature/Pet/AI/prepared DB/movement services. No real world/character/account writes. Includes high64-bit spawn GUIDs,pet variants,zero resets,dead/alive respawn,malformed/nonfinite/native maximum boundaries.",
+        "counterfactual": "Pinned actual NPC level handler wraps257 to1 and reaches controlled SaveToDB;paired with repaired width/domain cases. Expected-broken control,no real DB mutation.",
+        "native_catalog": "Matching26972 native/Hotfix:312 Emotes,1416 FactionTemplates(max2956,fits actual UInt16 SQL column),66175 CreatureDisplayInfo. Read-only Hotfix;no invented model data.",
+        "release": "Original scripts Release library and original-input staged link. All40 selected registrations/native paths verified staged/canonical,including full64-bit GUID prepared operands and nonfinite-before-persistence CFG;Scepter VerifyReleaseBinary passes.",
+        "startup": "Owned canonical PID33092 fresh ready,shutdown0,exit0,empty stderr,gone. No user server stopped;configuration/certs/DLLs preserved.",
+        "analysis": "Focused cs_npc analysis exit0. Existing header/deprecation/conversion warnings retained/reviewed;two narrowed spawn GUIDs repaired and tested. Separate whole artifact report remains open.",
+        "diagnostics": "Final snapshots no new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. Native catalog signed FactionTemplate ID max fixture corrected;PE recognizes actual inline UInt16 parser and native prepared setter. Final passing counterparts retained. Mixed7111-byte DBErrors and original Slaghammer hashes unchanged."
+      },
+      "canonical": {
+        "bnetserver.exe": "765200a7794a3bb746ad958b88c9c09983841e2f472ee6b3eb5de382080bcbdf",
+        "bnetserver.map": "ee7de3c8a97298b9a562b6ae401e0ba57be46c678b12e8f85b3e52d5c130666b",
+        "worldserver.exe": "bab29dfb15e97dd5d66a3ffb3742c9c984de71d2c4e6f763daf68e6b12f29e42",
+        "worldserver.map": "5ca63b6083e40bad219772dc6547ca8ed417cd38b99418787449f67cec21eb8d"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch4",
+        "manifest_sha256": "5fd34ff475bebf2711c71811370d33590f7f78d839f79f4e0212482c9b305779",
+        "archived_files": 273,
+        "removed_files": 94,
+        "reclaimed_bytes": 257318602.0,
+        "retained_rollback": ".codex/release-before-five-ten-20261114-batch4",
+        "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report. Cumulative B3 whitespace-tail test outputs also archived/removed."
+      }
     }
   ],
   "remaining": [
-    "20 newly authorized source repairs remain;continue next independent groups.",
+    "19 newly authorized source repairs remain;continue next independent groups.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

@@ -25,12 +25,13 @@ def verify():
         if not record.get('added'):assert current==original,('Other gameplay changed',path)
 
 
-def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifact_baseline=False):
+def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifact_baseline=False,npc_level_baseline=False):
     verify();out.mkdir(parents=True,exist_ok=True)
     selected=[];defines=[]
     for row in PLAN['changes']:
         kind=row['kind']
         if money_baseline:continue
+        if npc_level_baseline and row.get('case')!='NpcLevel':continue
         if artifact_baseline and row.get('case')!='ArtifactXP':continue
         if kind=='coremoney':
             if not baseline and not float_baseline:defines.append('REPAIR_COREMONEY')
@@ -41,7 +42,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
         if kind in ('go','account_realm') or baseline and kind!='soul':
             continue
         source=(ROOT/row['path']).read_text(encoding='utf-8-sig')
-        code=row['old'] if float_baseline or artifact_baseline else block(source,'    static bool '+row['method']+'(') if kind!='soul' else row['old' if baseline else 'new']
+        code=row['old'] if float_baseline or artifact_baseline or npc_level_baseline else block(source,'    static bool '+row['method']+'(') if kind!='soul' else row['old' if baseline else 'new']
         name={'waypoint':'Waypoint','account':'Account','cast':'Cast','titles':'Titles','soul':'Soul'}.get(kind)
         if row.get('case'):name=row['case']
         if kind=='power':name={'HandleModifyEnergyCommand':'Energy','HandleModifyRageCommand':'Rage','HandleModifyRunicPowerCommand':'Runic'}[row['method']]
@@ -52,7 +53,8 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
         if kind=='soul':
             body=block(source,'enum Spells')+';'+block(source,'enum eAnim')+';'+re.search(r'uint32 AnimRand\[3\]\s*=\s*\{[^}]*\};',source)[0]+body
         selected.append('namespace Case'+name+' {\n'+body+'\n}')
-        if artifact_baseline:defines.append('ARTIFACT_XP_BASELINE')
+        if npc_level_baseline:defines.append('NPC_LEVEL_BASELINE')
+        elif artifact_baseline:defines.append('ARTIFACT_XP_BASELINE')
         elif float_baseline:defines.append('SPEED_FLOAT_BASELINE')
         else:defines.append('REPAIR_'+name.upper())
         if not float_baseline and kind in ('float','ilvl'):defines.append('REPAIR_FLOAT_ARGUMENT')
@@ -68,7 +70,8 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
     unit=(ROOT/'src/server/game/Entities/Unit/Unit.h').read_text(encoding='utf-8-sig')
     shared=(ROOT/'src/server/game/Miscellaneous/SharedDefines.h').read_text(encoding='utf-8-sig')
     player=(ROOT/'src/server/game/Entities/Player/Player.h').read_text(encoding='utf-8-sig')
-    constants += [block(unit,'enum '+name)+';' for name in ('UnitMoveType','UpdateStatsMask','CombatRating')]
+    constants += [block(unit,'enum '+name)+';' for name in ('UnitMoveType','UpdateStatsMask','CombatRating','DeathState')]
+    constants += [block((ROOT/p).read_text(),'enum '+name)+';' for p,name in [('src/server/game/World/World.h','WorldIntConfigs'),('src/server/game/Entities/Pet/PetDefines.h','PetType'),('src/server/game/Movement/MotionMaster.h','MovementGeneratorType'),('src/server/database/Database/Implementation/WorldDatabase.h','WorldDatabaseStatements')]]
     constants += [block(shared,'enum Powers')+';',block(player,'enum PlayerAvgItemLevelOffsets')+';']
     money=re.search(r'#define MAX_MONEY_AMOUNT\s+\(UI64LIT\((\d+)\)\)',player)
     assert money
@@ -94,4 +97,4 @@ if __name__=='__main__':
     if len(sys.argv)==1:
         verify();print('PASS exact first-ten source scope')
     else:
-        prepare(Path(sys.argv[1]),len(sys.argv)>2 and sys.argv[2]=='baseline',len(sys.argv)>2 and sys.argv[2]=='float-baseline',len(sys.argv)>2 and sys.argv[2]=='money-baseline',len(sys.argv)>2 and sys.argv[2]=='artifact-baseline')
+        prepare(Path(sys.argv[1]),len(sys.argv)>2 and sys.argv[2]=='baseline',len(sys.argv)>2 and sys.argv[2]=='float-baseline',len(sys.argv)>2 and sys.argv[2]=='money-baseline',len(sys.argv)>2 and sys.argv[2]=='artifact-baseline',len(sys.argv)>2 and sys.argv[2]=='npc-level-baseline')
