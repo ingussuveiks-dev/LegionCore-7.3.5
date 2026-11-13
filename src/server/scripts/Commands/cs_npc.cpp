@@ -1188,7 +1188,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 displayId = (uint32) atoi((char*)args);
+        uint32 displayId;
+        if (!Trinity::ParseCommandInteger(args, displayId) || !sCreatureDisplayInfoStore.LookupEntry(displayId))
+            return false;
 
         Creature* creature = handler->getSelectedCreature();
 

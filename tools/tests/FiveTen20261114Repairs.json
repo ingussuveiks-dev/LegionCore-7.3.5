@@ -341,6 +341,16 @@
       "batch": 4,
       "old": "    static bool HandleNpcPlayEmoteCommand(ChatHandler* handler, const char* args)\n    {\n        uint32 emote = atoi((char*)args);\n\n        Creature* target = handler->getSelectedCreature();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        target->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, emote);\n\n        return true;\n    }",
       "new": "    static bool HandleNpcPlayEmoteCommand(ChatHandler* handler, const char* args)\n    {\n        uint32 emote;\n        if (!Trinity::ParseCommandInteger(args, emote) || (emote && !sEmotesStore.LookupEntry(emote)))\n            return false;\n\n        Creature* target = handler->getSelectedCreature();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        target->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, emote);\n\n        return true;\n    }"
+    },
+    {
+      "key": "NpcModelCheckedNative",
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcSetModelCommand",
+      "case": "NpcModel",
+      "kind": "npc",
+      "batch": 4,
+      "old": "    static bool HandleNpcSetModelCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 displayId = (uint32) atoi((char*)args);\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature || creature->isPet())\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->SetDisplayId(displayId);\n        creature->SetNativeDisplayId(displayId);\n        creature->SetOutfit(displayId);\n        creature->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);\n\n        creature->SaveToDB();\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcSetModelCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 displayId;\n        if (!Trinity::ParseCommandInteger(args, displayId) || !sCreatureDisplayInfoStore.LookupEntry(displayId))\n            return false;\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature || creature->isPet())\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        creature->SetDisplayId(displayId);\n        creature->SetNativeDisplayId(displayId);\n        creature->SetOutfit(displayId);\n        creature->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);\n\n        creature->SaveToDB();\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -426,7 +436,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "e8849dbbdd6ac603404f34b5f2207f213b457bba68c2bfd9dd35bb43945e2f14",
-      "after_sha256": "4f253afc18a34ce0615948243ceb2bf286fd9762604f57db3c4482872975c650"
+      "after_sha256": "58335161b0904c9aaf361e13bf2c5dac06ee3d094ef0f6a3b1f037e050518b3e"
     }
   }
 }
