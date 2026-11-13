@@ -1131,12 +1131,17 @@ public:
         if (!*args)
             return false;
 
-        uint8 drunklevel = (uint8)atoi(args);
+        uint32 drunklevel;
+        if (!Trinity::ParseCommandInteger(args, drunklevel))
+            return false;
         if (drunklevel > 100)
             drunklevel = 100;
 
-        if (Player* target = handler->getSelectedPlayer())
-            target->SetDrunkValue(drunklevel);
+        Player* target = handler->getSelectedPlayer();
+        if (!target || handler->HasLowerSecurity(target, ObjectGuid::Empty))
+            return false;
+
+        target->SetDrunkValue(uint8(drunklevel));
 
         return true;
     }
