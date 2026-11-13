@@ -31,10 +31,28 @@ def ins(prefix):
             proved=any(y.mnemonic=='lea'and y.op_str.startswith(base_register+', [rip')and y.address+y.size+y.operands[1].mem.disp==n['base']for y in rows[:i]if len(y.operands)>1 and y.operands[1].type==CS_OP_MEM)
             before=[y for y in rows if y.address<table]
             terminal=next((y for y in reversed(before)if y.mnemonic not in ('nop','int3')),None)
-            closed=terminal is not None and (terminal.mnemonic=='ret'or terminal.mnemonic=='jmp'and terminal.operands[0].type==CS_OP_IMM and terminal.operands[0].imm<table)
+            # An epilogue may tail-call another independently bounded native
+            # function. Such an unconditional jump cannot fall into the table.
+            closed=terminal is not None and (terminal.mnemonic=='ret'or terminal.mnemonic=='jmp'and terminal.operands[0].type==CS_OP_IMM and (terminal.operands[0].imm<table or terminal.operands[0].imm-n['base'] in n['starts']))
             if not proved or not before or not closed or before[-1].address+before[-1].size!=table:continue
             raw=n['offset'](table);targets=[n['base']+struct.unpack_from('<I',n['binary'],raw+4*j)[0]for j in range(2)]
             assert all(address<=t<table and any(y.address==t for y in before)for t in targets),'Recognized switch table has invalid first two code targets'
+            # MSVC's compressed switch maps a checked byte index to the RVA
+            # table. Validate every remapped target, not just its first pair.
+            remaps=[(j,y,o)for j,y in enumerate(rows[:i])for o in y.operands if y.mnemonic=='movzx'and o.type==CS_OP_MEM and o.size==1 and y.reg_name(o.mem.base)==base_register and o.mem.index and table<n['base']+o.mem.disp<end+n['base']]
+            for j,y,o in remaps:
+                remap=n['base']+o.mem.disp
+                bounds=[z for z in rows[max(0,j-4):j]if z.mnemonic=='cmp'and z.operands[-1].type==CS_OP_IMM]
+                assert len(bounds)==1,'Compressed switch requires a unique nearby index bound'
+                bound=bounds[0];branch=rows[rows.index(bound)+1]
+                assert branch.mnemonic=='ja'and branch.operands[0].type==CS_OP_IMM and address<=branch.operands[0].imm<table,'Compressed switch requires an in-code out-of-range branch'
+                count=bound.operands[-1].imm+1
+                assert 0<count<=end+n['base']-remap,'Compressed switch byte map exceeds unwind range'
+                remap_at=n['offset'](remap);indices=n['binary'][remap_at:remap_at+count]
+                assert table+4*(max(indices)+1)==remap,'Compressed switch RVA and byte tables must meet exactly'
+                for entry in range(max(indices)+1):
+                    target=n['base']+struct.unpack_from('<I',n['binary'],raw+4*entry)[0]
+                    assert any(z.address==target for z in before),'Compressed switch target is not an instruction boundary'
             return before
     return rows
 

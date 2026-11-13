@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-13",
+  "scope": "Release inspection tooling;not an additional gameplay fix",
+  "cause": "MSVC emitted PetBattleAura::Apply with an unconditional tail-call to an independently unwind-bounded native function immediately before its inline RVA/compressed-byte switch tables. The reader only recognized returns and internal jumps,so it disassembled switch data as a bogus call outside the PE image.",
+  "repair": "Recognize the independently bounded tail-call terminal. Require contiguous instruction decoding up to the switch,prove image-base addressing and validate the compressed index bound,byte-map extent,meeting RVA/byte tables and every case target at an actual instruction boundary. Keep the general unknown leaf limit64.",
+  "checks": [
+    "Actual canonical worldserver.exe SHA256 def3edf8dee8ca7eafccc3ffdd5b03976e73bb7a55c18ac8a4d82f2f58fb6998:complete retained linked Release verifier returned normally.",
+    "verify_pe_compressed_switch.py:actual tail-call/compressed switch accepted;expected-broken in-memory third RVA pointing into table data rejected. Original executable bytes unchanged.",
+    "Before/after diagnostics:no changed crash reports,appended DBErrors or server warnings/errors/assertions."
+  ],
+  "evidence": "build-extractors/bin/Release/fixed/five-ten-20261113-batch1-final/evidence/compressed-switch-final-evidence",
+  "limits": "This verifies emitted code/data boundaries,not gameplay or actual client traversal. The current50-fix request remains10/50 in progress."
+}
