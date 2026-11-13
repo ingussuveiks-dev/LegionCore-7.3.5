@@ -59,6 +59,44 @@ void InvalidateHelya(Fixture& fixture, uint32 invalid)
 
 int main()
 {
+#ifdef WARSWORDS_ATTACKABILITY_BASELINE
+    {
+        Fixture fixture;
+        assert(!(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE));
+        fixture.Start(); Tick(fixture, 24000);
+        assert(fixture.ai.introPending && !(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE));
+        std::cout << "COUNTERFACTUAL: pinned7026cea74 blocks damage but publishes no NON_ATTACKABLE during the intro/blessing.\n";
+        return 0;
+    }
+#endif
+#ifdef WARSWORDS_ATTACKABILITY_REPAIRED
+    {
+        Fixture fixture;
+        assert(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE);
+        fixture.ai.AttackStart(&fixture.owner); assert(!fixture.ai.attacks);
+        fixture.helya.deferAura = true; fixture.Start(); Tick(fixture, 24000);
+        assert(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE);
+        fixture.actor.aura = true; fixture.actor.auraCaster = fixture.helya.guid;
+        fixture.ai.UpdateIntro(0); Tick(fixture, 6999);
+        assert(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE);
+        Tick(fixture, 1);
+        assert(!(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE) && fixture.ai.attacks == 1);
+        fixture.ai.Reset(); assert(!(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE));
+    }
+    {
+        Fixture fixture; fixture.Start(); fixture.ai.CancelIntro(fixture.ai.introGeneration);
+        assert(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE);
+        fixture.ai.Reset(); assert(fixture.actor.flags & UNIT_FLAG_NON_ATTACKABLE);
+    }
+    for (bool otherEntry : {false, true}) {
+        Fixture fixture;
+        fixture.actor.flags = 0;
+        if (otherEntry) fixture.actor.entry = 98007; else fixture.actor.mapId = 1;
+        fixture.ai.Reset(); assert(!fixture.actor.flags);
+        fixture.ai.introDone = fixture.ai.introPending = true;
+        fixture.ai.CancelIntro(fixture.ai.introGeneration); assert(!fixture.actor.flags);
+    }
+#endif
 #ifdef WARSWORDS_ACK_BASELINE
     {
         Fixture fixture; fixture.helya.deferAura = true; fixture.Start(); Tick(fixture, 24000);

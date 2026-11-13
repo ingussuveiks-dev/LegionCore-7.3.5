@@ -5,6 +5,7 @@
 #include <vector>
 using uint32 = uint32_t;
 enum { CONFIG_THREAT_RADIUS = 0 };
+enum { UNIT_FIELD_FLAGS = 0, UNIT_FLAG_NON_ATTACKABLE = 2 };
 struct Unit;
 using WorldObject = Unit;
 struct Creature;
@@ -60,6 +61,7 @@ struct Creature : Unit
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return mapId; }
     uint32 GetInstanceId() const { return instance; }
+    void RemoveFlag(uint32, uint32) { }
     ObjectGuid GetGUID() const { return guid; }
     Player* FindNearestPlayer(float distance, bool liveOnly) { assert(distance == 100 && liveOnly); return nearby; }
     bool IsNeverVisible(WorldObject const* = nullptr) const override;

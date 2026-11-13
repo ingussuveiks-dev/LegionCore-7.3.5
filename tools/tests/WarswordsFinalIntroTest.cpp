@@ -21,7 +21,7 @@ uint32 warningRequests = 0, recoveryRequests = 0;
 #define TC_LOG_INFO(...) (++recoveryRequests)
 enum { TYPEID_PLAYER = 4, CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
     SPELL_CAST_OK = 0,
-    UNIT_FIELD_FLAGS = 0, UNIT_FLAG_IMMUNE_TO_PC = 1, UNIT_FLAG_IMMUNE_TO_NPC = 2, UNIT_FLAG_NOT_ATTACKABLE_1 = 4, REACT_AGGRESSIVE = 2, UNIT_STATE_SIGHTLESS = 8 };
+    UNIT_FIELD_FLAGS = 0, UNIT_FLAG_IMMUNE_TO_PC = 1, UNIT_FLAG_IMMUNE_TO_NPC = 2, UNIT_FLAG_NOT_ATTACKABLE_1 = 4, UNIT_FLAG_NON_ATTACKABLE = 16, REACT_AGGRESSIVE = 2, UNIT_STATE_SIGHTLESS = 8 };
 struct Map { } instanceMap, otherMap;
 struct Player;
 struct Unit
@@ -141,7 +141,9 @@ struct Creature : Unit
         callbacks.push_back({elapsed + delay, std::move(callback)});
     }
     void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) { ++auraRemovals; bubble = false; } }
-    void RemoveFlag(uint32, uint32) { }
+    uint32 flags = 0;
+    void RemoveFlag(uint32, uint32 bits) { flags &= ~bits; }
+    void SetFlag(uint32, uint32 bits) { flags |= bits; }
     void SetReactState(uint32 state) { assert(state == REACT_AGGRESSIVE); }
     void Advance(uint32 diff)
     {

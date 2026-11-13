@@ -1,0 +1,133 @@
+{
+  "date": "2026-11-13",
+  "status": "REPAIRED_DEPLOYED_AUTOMATED_NATIVE_PASSED_CLIENT_MONDAY_PENDING",
+  "fix_commit": "Focused implementation commit containing this audit",
+  "cause": "Final Vigfus only rejected combat/damage in AI; Reset published attackable flags during the standing/blessing intro.",
+  "implementation": "Exact98602/map1511 Reset and canceled intro publish native NON_ATTACKABLE. IsEncounterReady gates removal immediately before native ScriptedAI engagement; acknowledged normal195062 and existing24s+7s ordering remain. Avoid IMMUNE_TO_NPC during positive Helya assist. Shared reuse and independent Spectre Rush flags remain unchanged; no new HP/death timer/item/credit grants.",
+  "checks": {
+    "controlled": "ASAN complete extracted intro: reset,pre-request,pending native aura,6999ms protection,acknowledged7000ms ready attack,reset after combat,cancellation,retry,unrelated actor/map. Pinned7026 counterfactual proves original absent flag. Retained lifecycle/context/reentrant tests pass.",
+    "native": "Actual protected Vigfus accepts native positive Helya195062,target aura/channel7s expiry/removal. Native hostile target rejection checked;not full Player/pet combat traversal.",
+    "linked": "Complete retained linked scopes plus exact native flag calls/tail dispatch in selected Reset/CancelIntro/AttackStart. Actual original static-library inputs;canonical PE/Scepter/owned ready,graceful exit0,stderr empty.",
+    "client": "Monday pending: cannot attack standing/blessing boss;boss engages,becomes attackable,can die to player/pet/guardian. Prior69c victory confirmed separately.",
+    "retained_combat": "72 actual extracted native selection/moving/stationary/caster-pet/failed attack paths plus80 intro states,180 stage/scaled and640 native scaling/hook/threshold contexts pass. First threshold fixture compile lacked new NON_ATTACKABLE enum; declaration corrected,full rerun passes. No runtime failure or diagnostic suppression."
+  },
+  "release": {
+    "world_sha256": "8e3b05fbba014d251bf6a86749970377ff79b6c9bcdc4fef2d68ccd2789d1c5c",
+    "canonical": "build-extractors/bin/Release"
+  },
+  "diagnostics": "No new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions. Mixed7111-byte DBErrors and original Slaghammer preserved. No user process stopped.",
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\warswords-attackability-20261113",
+    "manifest_sha256": "3c5827c1f44aeaaeea2771070752f16617460984685c44294c4098fdb8d92e59",
+    "removed": [
+      {
+        "path": ".codex\\warswords-attackability-20261113-release\\bnetserver.exe",
+        "bytes": 3594240,
+        "sha256": "cfd22ce1b82bbdafe0b13d25d73aa1a69fc91955373e7900bce086de37431982"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113-release\\bnetserver.map",
+        "bytes": 12575385,
+        "sha256": "eb614a75fff564a163753fcaf4861672da8635ae30326274b82ea9a7dd026a2d"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113-release\\worldserver.exe",
+        "bytes": 42275328,
+        "sha256": "8e3b05fbba014d251bf6a86749970377ff79b6c9bcdc4fef2d68ccd2789d1c5c"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113-release\\worldserver.map",
+        "bytes": 120902815,
+        "sha256": "adac9f9d23949f235884acde348bc29714dffccf11a48aa5adba7cde81f9d311"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\model-fixed\\test.exe",
+        "bytes": 1473024,
+        "sha256": "de966854bc1d27b29f77b21b97c71801e0d62d748fdaa7d497c83a0282272d32"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\model-fixed\\test.obj",
+        "bytes": 2141346,
+        "sha256": "a57f4f623715a2265c951314a5ec5825cc8b7864adb686d464aac977dd770c4f"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\model-fixed\\test.pdb",
+        "bytes": 12808192,
+        "sha256": "7af3c8de117c343e6cfc7afc8608c0539b07df0811d76df9818072d86ff21d32"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\model-baseline\\test.exe",
+        "bytes": 1473536,
+        "sha256": "ad7fb00cf2d49ddc50f445de5cb4675edea0b9548eb949cc14f5fae2297d48a1"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\model-baseline\\test.obj",
+        "bytes": 2142166,
+        "sha256": "8816172a380f0c7425db5a01bd7c1a6dc8aa16a2a797c2c19600a5362934b44a"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\model-baseline\\test.pdb",
+        "bytes": 12808192,
+        "sha256": "5abf0dff14fb7728f20b9d2c389b876252de8a59eeffc8529019de5224578026"
+      },
+      {
+        "path": ".codex\\warswords-attackability-20261113\\native\\worldserver.conf",
+        "bytes": 119432,
+        "sha256": "c07e2b44febe4bc52b373433788f45706cb628bfab63a10d853ff59a4c32ae0e"
+      },
+      {
+        "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\WarswordsHelyaTargetNative.exe",
+        "bytes": 9212928,
+        "sha256": "5d407234f0cbebaca6ae559a8a7713cb77feb805dccef61a0b503d3b04fb4e8a"
+      },
+      {
+        "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\WarswordsHelyaTargetNative.obj",
+        "bytes": 2030407,
+        "sha256": "08e89b373b88511f6e90c35317ecaa9bd57b1808dcfd591eef7dac38b94c8e33"
+      }
+    ],
+    "reclaimed_bytes": 223556991,
+    "limits": "No active log rotated/truncated. User servers absent before deployment; owned canonical startup gracefully stopped. Scene-expiry unfinished research retained outside fixed. Current and earlier recovery baselines retained.",
+    "supplement": {
+      "archive": "build-extractors\\bin\\Release\\fixed\\warswords-attackability-20261113\\supplement",
+      "manifest_sha256": "adfb21ddd97f5268d4fe210f1a21aac5f54b7b3e194a8099604060396fced47b",
+      "removed": [
+        {
+          "path": "build-extractors\\runtime-test\\scepter-login\\test.exe",
+          "bytes": 281600,
+          "sha256": "a12c9168ce9b319c7bc528985d1a5afcff3ed6262b28c460fbce9e51925accff"
+        },
+        {
+          "path": "build-extractors\\runtime-test\\scepter-login\\test.obj",
+          "bytes": 239007,
+          "sha256": "4dae6cfa076981f813bb3c2034d5823d8d484b2b90a0e3a977c618d31032b8c6"
+        },
+        {
+          "path": "build-extractors\\runtime-test\\warswords-final-admission\\test.exe",
+          "bytes": 313856,
+          "sha256": "3b35fcb34f4233ac1119d4c61e7357194723ff2494560445b495bf8760042d43"
+        },
+        {
+          "path": "build-extractors\\runtime-test\\warswords-final-admission\\test.obj",
+          "bytes": 332087,
+          "sha256": "a4f99959ce87d7557137e81f37cdaa28b799aa34e4177df2914ad3ca1ab65493"
+        },
+        {
+          "path": "build-extractors\\runtime-test\\warswords-final-thresholds\\test.exe",
+          "bytes": 348160,
+          "sha256": "858453cd58392878b842109f5c7724c9ffe0320b22e71eff638bbc2699c7155c"
+        },
+        {
+          "path": "build-extractors\\runtime-test\\warswords-final-thresholds\\test.obj",
+          "bytes": 546757,
+          "sha256": "ae7703027fc1e0626bfdb90751f463d763404fece8c91d4ec61a32d0b4b791c6"
+        }
+      ],
+      "reclaimed_bytes": 2061467
+    }
+  },
+  "remaining": [
+    "Actual pickup animation loop and return OPEN in separate native investigation. Native baseline proves finite9000ms205443 expiry erases scene instance before late completion. Not repaired by intro protection.",
+    "Authentic living Lady/Sharasdal activation/surrender/1906/Grash cleanup,LINK2/Slaghammer,mixedDBErrors,all36 whole artifact chains remain OPEN."
+  ]
+}

@@ -1,12 +1,12 @@
 {
   "latest_five_ten_2026_11_13": {
-    "status": "IN_PROGRESS_12_OF_50_RUNE_CLIENT_CONFIRMED_FINAL_BOSS_OPEN",
+    "status": "IN_PROGRESS_14_OF_50_PICKUP_SCENE_LOOP_OPEN",
     "audit": "docs\\audits\\five-ten-2026-11-13.json",
     "authorized_total": 50,
-    "completed_source_repairs": 13,
+    "completed_source_repairs": 14,
     "latest_batch": 2,
     "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
-    "canonical_world_sha256": "fa8fdd2d15fc4d9c0b774f195a9d13db4187b06b915977747e37395a9fe108f8",
+    "canonical_world_sha256": "8e3b05fbba014d251bf6a86749970377ff79b6c9bcdc4fef2d68ccd2789d1c5c",
     "remaining": [
       "Authorized total50:batch1 is10,batch2 has2;38 remain. Do not count diagnostics/test changes or the unresolved final boss issue.",
       "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
@@ -16,7 +16,7 @@
     ],
     "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted",
     "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN",
-    "final_boss_followup": "Victory confirmed; pickup loop/return and intro attackability OPEN. Monday client retest deferred by user."
+    "final_boss_followup": "Vigfus victory confirmed;intro attackability repaired/deployed,Monday retest pending. Actual pickup animation loop/return OPEN."
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",
@@ -1235,5 +1235,10 @@
     "cause": "Normal channel acknowledgement repaired; actual final victory and next stage confirmed. New pickup animation loop/return and intro attackability requests OPEN.",
     "counted_as_repair": true,
     "fix_commit": "69c391ab41ce7fdb4a13c7b4ab609df57ae9ae5b"
+  },
+  "latest_warswords_attackability_2026_11_13": {
+    "status": "REPAIRED_DEPLOYED_AUTOMATED_NATIVE_PASSED_CLIENT_MONDAY_PENDING",
+    "audit": "docs/audits/warswords-attackability-2026-11-13.json",
+    "canonical_world_sha256": "8e3b05fbba014d251bf6a86749970377ff79b6c9bcdc4fef2d68ccd2789d1c5c"
   }
 }

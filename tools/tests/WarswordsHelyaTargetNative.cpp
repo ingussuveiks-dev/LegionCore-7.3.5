@@ -46,6 +46,10 @@ int main(int argc, char** argv)
             helya.SetPhaseId({7003}, true);
             vigfus.SetPhaseId({7003}, true);
             vigfus.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            // Intro protection must reject ordinary hostile admission without
+            // rejecting Helya's positive native channel (NPC immunity would).
+            vigfus.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            Require(!helya.IsValidAttackTarget(&vigfus), "Protected Vigfus accepts hostile admission");
             auto spell = sSpellMgr->GetSpellInfo(195062);
             Require(spell && spell->IsChanneled() && spell->GetDuration() == 7000, "Native channel metadata changed");
             std::cout << "METADATA positive=" << spell->IsPositive() << " effect=" << spell->GetEffect(0, DIFFICULTY_N_SCENARIO)->Effect << '\n';
@@ -64,6 +68,7 @@ int main(int argc, char** argv)
             std::cout << "VIGFUS result=" << uint32(targetResult) << " caster-aura=" << helya.HasAura(195062, helya.GetGUID())
                 << " vigfus-aura=" << vigfus.HasAura(195062, helya.GetGUID()) << " target-link=" << ChannelTargets(helya, vigfus.GetGUID()) << '\n';
             Require(targetResult == SPELL_CAST_OK && !helya.HasAura(195062, helya.GetGUID()) && vigfus.HasAura(195062, helya.GetGUID()) && ChannelTargets(helya, vigfus.GetGUID()), "Native channel did not reach actual Vigfus target");
+            Require(vigfus.HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE), "Positive blessing cleared intro protection");
             Require(!helya.isInCombat() && !vigfus.isInCombat(), "Native cosmetic channel prematurely starts combat");
             Require(helya.GetChannelSpellId() == 195062 && vigfus.GetChannelSpellId() == 0, "Caster/channel ownership reversed");
             TickChannel(helya, vigfus, 7100);

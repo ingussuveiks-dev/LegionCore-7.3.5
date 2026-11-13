@@ -2,6 +2,7 @@
 #include <limits>
 #include <functional>
 #include "Harness.inc"
+enum { UNIT_FLAG_NON_ATTACKABLE = 16 };
 struct FinalBoss : CreatureAI
 {
     Creature* me;

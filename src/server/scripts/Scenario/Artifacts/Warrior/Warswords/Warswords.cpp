@@ -619,6 +619,13 @@ public:
             me->SetReactState(REACT_AGGRESSIVE);
             count_adds = 0;
             RemoveIntroConversation();
+            if (me->GetEntry() == 98602 && me->GetMapId() == 1511)
+            {
+                if (IsEncounterReady())
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                else
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            }
         }
 
         void RemoveIntroConversation()
@@ -667,7 +674,11 @@ public:
         void AttackStart(Unit* target) override
         {
             if (IsEncounterReady())
+            {
+                if (me->GetEntry() == 98602 && me->GetMapId() == 1511)
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 ScriptedAI::AttackStart(target);
+            }
         }
 
         void EnterCombat(Unit* who) override
@@ -808,6 +819,8 @@ public:
             introBlessingPlayer = {};
             introBlessingHelya = {};
             introVisualRetryTimer = 1000;
+            if (me->GetEntry() == 98602 && me->GetMapId() == 1511)
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             RemoveIntroConversation();
         }
 
