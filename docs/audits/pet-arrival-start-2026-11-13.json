@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-13",
+  "request": "Pagaid\u0101m neesmu pie datora turpini",
+  "status": "SCOPED_ARRIVAL_DELAY_REPAIRED_DEPLOYED_NATIVE_AND_ASAN_PASS_CLIENT_PENDING",
+  "fix_commit": null,
+  "baseline": "b3ee2154f1fd98f667b11a87588d532a3b7f75a9",
+  "title": "Pet-battle trainer arrival starts once after its existing one-second delay",
+  "cause": "PlayerScriptPetBattle scheduled now+1000 but dispatched while deadline>now. An early update began immediately;an update at/after expiry never began and retained the pending record. The unbound per-player timestamp could also apply an old movement completion to a replacement battle or reset a running battle.",
+  "repair": "Store actual battle GUID plus arrival start time. Compare uint32 elapsed>=1000 to handle the32-bit clock wrap. Repeated completion of the same pending battle preserves the original start;new actual battle arrivals receive their own timestamp. Consume the pending record under RAII lock,release the lock,then require the same live player battle GUID,CREATION status and both PlayerGuid/OwnerGuid membership before the original root/protection/native Begin. Before-logout discards only the pending arrival record. No quest/progression,damage,SQL or battle-engine change.",
+  "sources": "Matching local producer PetBattleTrainer.cpp creates the battle,sets ownership/rosters and _petBattleId,then MovePointWithRot with PETBATTLE_ENTER_MOVE_SPLINE_ID. The original script authors1000ms. Wild and ordinary PvP already invoke Begin directly and their RUNNING status must not be rescheduled. Existing local unsigned elapsed convention supports the clock calculation. Primary project data/code resolve this defect;no external timing or HP policy imported.",
+  "checks": {
+    "counterfactual": "Exact complete pre-fix script class at b3ee2154f compiled with ASAN;independent early and late cases each produce the specific expected assertion and exit1,paired with the passing repaired matrix. These are expected-broken controls,not successful ordinary runs.",
+    "controlled_asan": "114 cases:19 lifecycle groups across both team positions and three start timestamps,including wrap before/after the deadline. Early0/1/999,exact1000,late5000,repeat,duplicate,other motion,replacement/new arrivals,missing/finished/running battle,foreign/changed owner,dead/deleting/out-of-world player,logout,null,reentrant Begin and two independent players. Exact extracted production class;player/battle/clock endpoints are controlled. No claim of full native-core ASAN.",
+    "native": "Six actual linked26972 cases:both player-team positions,exact/late/wrapped deadlines,actual Player/PetBattleSystem/Begin and packet construction,real root/NPC protection,initialized turn1,and repeated completion without round reset. Only clock controlled. Uses established readonly world/hotfix/character/login pools and empty private TEMP account tables for safe native destructor cleanup;journals remain in memory.",
+    "pe": "Actual unsigned SUB/CMP1000/JB gate cannot reach Begin on early branch;stored full GUID copied before one erase;real mutex unlock before native Begin;live GUID equality and creation/world/delete/death/PlayerGuid/OwnerGuid admission;original protection/root. Actual script vtable slots32/33/44 dispatch repaired callbacks. Full retained pet PE chain including ordinary/periodic Crumble immunity,both historical100 scopes and original3-bit/alignment writer pass. Current pet engine source hashes unchanged. No fresh106 or100 new-fix claim.",
+    "canonical": "Canonical world SHA25637b28bb97e2541eb7f5e07fe27bd8178d5a2e06123c2ff1b637c27ab91b3cfd1. Owned PID7500 fresh ready,graceful shutdown0,exit0,gone;stderr empty. Scepter -VerifyReleaseBinary passes. Bnet .text byte-for-byte equals prior rollback;no separate new bnet startup claim.",
+    "tool_corrections": "First ASAN execution lacked its runtime DLL(exit0xc0000135);the runner now executes in the matching vcvars64 environment. First full-core fixture constructed a registering PlayerScript outside script context and asserted/raised0xc0000005;corrected to normal context setup and heap-owned native registry lifetime. Repaired six cases pass. No dump file or canonical runtime crash was generated. First PE assertion named IsInWorld on WorldObject;map proves native Object base,corrected without weakening the predicate. All failed attempt output retained as reviewed fixture/proof history.",
+    "diagnostics": "Formal pre/post inventories,exit/stdout/stderr and appended logs reviewed for tests/builds/link/promotion/PE/start/cleanup. No new canonical or own crash report,appended DBErrors or unexplained runtime warning/error/assertion in repaired runs. Scripts build clean;Scepter retains its known unchanged shared-header signedness/narrowing warnings. Mixed7111-byte DBErrors retains original hash."
+  },
+  "canonical": {
+    "worldserver.exe": "37b28bb97e2541eb7f5e07fe27bd8178d5a2e06123c2ff1b637c27ab91b3cfd1",
+    "worldserver.map": "0029db9759bea4445d0ed371ef8d190a1a3e826f39d3a56d0c9b9667046973d7",
+    "bnetserver.exe": "4a265fb21b2ec138d9263a474d33f48467a3989050cbec968388fd9e03157cc5",
+    "bnetserver.map": "aec646595cad31bf7f97ecf57f4ef076ed413fea7f723a3eaa840d3d8e694e6a"
+  },
+  "deployment": {
+    "recovery": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-pet-arrival-start-2026-11-13",
+    "source_snapshot": ".codex\\pet-arrival-start-2026-11-13\\source-20261113-040356-192-inputs.json",
+    "original_libraries": true,
+    "configuration_certificates_dlls_preserved": true
+  },
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\pet-arrival-start-2026-11-13",
+    "manifest_sha256": "a23e1c713cc7c4ba621ff4e7e56ca841322d367dab133596b852e40cfe89dd94",
+    "archived_files": 316,
+    "removed_files": 26,
+    "reclaimed_bytes": 433219405,
+    "retained_rollbacks": [
+      "release-before-pet-arrival-start-2026-11-13",
+      "release-before-pet-crumble-immunity-2026-11-13",
+      "release-before-pet-crumble-2026-11-13",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "note": "Only issue-specific reviewed evidence archived;first ASAN launch lacked its runtime DLL,first native fixture lacked required script registration context and asserted,first PE proof named IsInWorld on wrong base class. Repaired fixture/regressions and canonical runtime now pass. Preserve all unrelated OPEN native research,Slaghammer,Lady/LINK2,mixedDBErrors,shared libraries/data and personal/security backups. Original pre-final-health manifest retained;its redundant binaries superseded by three newer recovery sets. No client authentication/gameplay or full36-chain certification."
+  },
+  "client": "User is currently away. Previously task-launched26972 client9416 was gracefully closed through its observed Quit button;exit0 and no new Errors/Crashes. No authentication or gameplay performed. Continue independent server repairs;do not keep hidden task-owned servers running or re-request immediate user availability.",
+  "open": [
+    "Actual trainer walk/one-second delay/first-round UI and complete client battles remain pending. Pet/guardian battle credit and all36 artifact chains are not certified by arrival tests.",
+    "Disconnect/forfeit/offline journal persistence,including webbed escape policy and orphaned battle outcome,remains separate OPEN work;OnBeforeLogout here only removes a stale script pending record.",
+    "Haunt,other unbound species183 passives,Crumble full percentage/unavoidable policy,Apocalypse,clones122/123/124 and generic159 remain OPEN.",
+    "Living Lady activation/surrender/conversation1906/Grash/cleanup,LINK2/Slaghammer,mixed DBErrors and original intermittent handshake cause remain OPEN. No invented HP threshold or kill timer."
+  ]
+}

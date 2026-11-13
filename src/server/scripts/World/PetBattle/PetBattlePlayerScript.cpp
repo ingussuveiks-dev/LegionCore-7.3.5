@@ -18,37 +18,68 @@ public:
 
     void OnMovementInform(Player* player, uint32 mveType, uint32 id) override
     {
-        if (player && mveType == POINT_MOTION_TYPE && id == PETBATTLE_ENTER_MOVE_SPLINE_ID)
+        if (player && mveType == POINT_MOTION_TYPE && id == PETBATTLE_ENTER_MOVE_SPLINE_ID &&
+            IsPendingParticipant(player, sPetBattleSystem->GetBattle(player->_petBattleId)))
         {
-            m_Mutex.lock();
-            m_DelayedPetBattleStart[player->GetGUID()] = getMSTime() + 1000;
-            m_Mutex.unlock();
+            std::lock_guard<std::mutex> lock(m_Mutex);
+            auto pending = m_DelayedPetBattleStart.find(player->GetGUID());
+            // Duplicate movement completion must not postpone this start.
+            if (pending == m_DelayedPetBattleStart.end() || pending->second.BattleID != player->_petBattleId)
+                m_DelayedPetBattleStart[player->GetGUID()] = {player->_petBattleId, getMSTime()};
         }
     }
 
     void OnUpdate(Player* player, uint32 /*diff*/) override
     {
-        m_Mutex.lock();
+        if (!player)
+            return;
 
-        if (m_DelayedPetBattleStart.find(player->GetGUID()) != m_DelayedPetBattleStart.end())
+        ObjectGuid battleID;
         {
-            if (m_DelayedPetBattleStart[player->GetGUID()] > getMSTime())
-            {
-                m_DelayedPetBattleStart.erase(m_DelayedPetBattleStart.find(player->GetGUID()));
-
-                if (PetBattle* battle = sPetBattleSystem->GetBattle(player->_petBattleId))
-                {
-                    player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC
-                    player->SetControlled(true, UNIT_STATE_ROOT);
-                    battle->Begin();
-                }
-            }
+            std::lock_guard<std::mutex> lock(m_Mutex);
+            auto pending = m_DelayedPetBattleStart.find(player->GetGUID());
+            if (pending == m_DelayedPetBattleStart.end() || uint32(getMSTime() - pending->second.StartedAt) < 1000)
+                return;
+            battleID = pending->second.BattleID;
+            m_DelayedPetBattleStart.erase(pending);
         }
 
-        m_Mutex.unlock();
+        // Consume once before callbacks, and never start a replacement battle
+        // from a previous arrival or reset an already running battle.
+        PetBattle* battle = sPetBattleSystem->GetBattle(battleID);
+        if (player->_petBattleId == battleID && IsPendingParticipant(player, battle))
+        {
+            player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC);
+            player->SetControlled(true, UNIT_STATE_ROOT);
+            battle->Begin();
+        }
     }
 
-    std::map<ObjectGuid, uint32> m_DelayedPetBattleStart;
+    void OnBeforeLogout(Player* player) override
+    {
+        if (player)
+        {
+            std::lock_guard<std::mutex> lock(m_Mutex);
+            m_DelayedPetBattleStart.erase(player->GetGUID());
+        }
+    }
+
+    static bool IsPendingParticipant(Player* player, PetBattle* battle)
+    {
+        if (!battle || battle->BattleStatus != PETBATTLE_STATUS_CREATION || !player->IsInWorld() || player->IsDelete() || player->isDead())
+            return false;
+        for (auto team : battle->Teams)
+            if (team && team->PlayerGuid == player->GetGUID() && team->OwnerGuid == player->GetGUID())
+                return true;
+        return false;
+    }
+
+    struct PendingStart
+    {
+        ObjectGuid BattleID;
+        uint32 StartedAt;
+    };
+    std::map<ObjectGuid, PendingStart> m_DelayedPetBattleStart;
     std::mutex m_Mutex;
 };
 
