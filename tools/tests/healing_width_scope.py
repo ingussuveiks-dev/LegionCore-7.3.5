@@ -2,6 +2,7 @@
 from pathlib import Path
 import io,json,subprocess
 from five_ten_20261111_scope import retained_source as before_five_ten
+from sharasdal_living_finale_scope import normalize as before_finale,verify as verify_finale
 REPO=Path(__file__).resolve().parents[2]
 PLAN=json.loads((REPO/'tools/tests/HealingWidthChanges.json').read_text())
 _retained={}
@@ -19,6 +20,7 @@ def pinned_sources(commit,paths):
     return blobs
 def verify():
     if _retained:return
+    verify_finale()
     originals=pinned_sources(PLAN['baseline'],[row['path']for row in PLAN['changes']])
     for row in PLAN['changes']:
         old=originals[row['path']].decode(row['encoding']).replace('\r\n','\n')
@@ -27,7 +29,7 @@ def verify():
             at=edit['line'];before=edit['old'].splitlines(True)
             assert lines[at:at+len(before)]==before,(row['path'],at)
             lines[at:at+len(before)]=edit['new'].splitlines(True)
-        actual=before_five_ten(row['path'],(REPO/row['path']).read_bytes().decode(row['encoding']).replace('\r\n','\n'))
+        actual=before_five_ten(row['path'],before_finale(row['path'],(REPO/row['path']).read_bytes().decode(row['encoding']).replace('\r\n','\n')))
         assert ''.join(lines)==actual,'Undeclared healing-width amendment:'+row['path']
         _retained[row['path']]=old
 def retained_source(path):

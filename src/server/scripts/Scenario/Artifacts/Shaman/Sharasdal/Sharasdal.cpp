@@ -1196,6 +1196,7 @@ public:
 
 
 // 104856
+#include "sharasdal_living_finale.h"
 class npc_lady_zitrin : public CreatureScript
 {
 public:
@@ -1208,7 +1209,7 @@ public:
 
     struct npc_lady_zitrinAI : ScriptedAI
     {
-        npc_lady_zitrinAI(Creature* creature) : ScriptedAI(creature)
+        npc_lady_zitrinAI(Creature* creature) : ScriptedAI(creature), finale(creature)
         {
             intro = IsGauntletIllusion();
             _introDone = false;
@@ -1218,13 +1219,20 @@ public:
         uint32 introtimer;
         EventMap events;
         bool _introDone, intro;
+        SharasdalFinale::Controller finale;
 
         #include "sharasdal_gauntlet_arrival.h"
 
         void Reset() override
         {
+            finale.Cancel();
             events.Reset();
         }
+
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override { finale.Damage(attacker, damage); }
+        void SpellHit(Unit* caster, SpellInfo const* spell) override { finale.Hit(caster, spell); }
+        void SpellHitTarget(Unit* target, SpellInfo const* spell) override { finale.CarryHit(target, spell); }
+        ObjectGuid GetGUID(int32 id = 0) override { return id == 1906 ? finale.Story() : ObjectGuid::Empty; }
 
         void EnterCombat(Unit* who) override
         {
@@ -1248,6 +1256,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (finale.Active()) return;
             Scenario* gauntlet = GauntletWorld();
             if (intro && gauntlet && gauntlet->GetCurrentStep() == 3)
             {
@@ -1354,4 +1363,5 @@ void AddSC_Sharasdal()
     new go_art_sharasdal();
     RegisterSpellScript(spell_sharasdal_acquisition);
     RegisterAuraScript(aura_sharasdal_acquisition);
+    RegisterSpellScript(spell_sharasdal_follower_cleanup);
 };

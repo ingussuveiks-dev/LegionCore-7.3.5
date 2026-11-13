@@ -148,5 +148,6 @@ void CompleteGauntletArrival(uint32 diff)
 
 void UpdateLifecycle(uint32 diff) override
 {
+    finale.Update(diff);
     CompleteGauntletArrival(diff);
 }

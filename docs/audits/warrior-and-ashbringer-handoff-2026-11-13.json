@@ -1,6 +1,6 @@
 {
   "date": "2026-11-13",
-  "status": "THREE_FOCUSED_REPAIRS_DEPLOYED_PUSHED_CLIENT_MONDAY_PENDING",
+  "status": "FOUR_FOCUSED_REPAIRS_DEPLOYED_CLIENT_REVIEW_PENDING",
   "source_repairs": [
     {
       "audit": "docs/audits/warswords-attackability-2026-11-13.json",
@@ -19,12 +19,18 @@
       "commit": "3ec04a779288c48230bea6c68cd37c13d26aa3ad",
       "repair_record": "build-extractors\\bin\\Release\\fixed\\ashbringer-resume-20261113\\repair-record.json",
       "manifest_sha256": "96f9a5eccdd19494cb653209b1224f1f48e4f217408319b65a204bccdf3f8859"
+    },
+    {
+      "audit": "docs/audits/sharasdal-living-finale-reconstruction-2026-11-13.json",
+      "commit": "See focused Git history/local fixed repair-record after commit",
+      "repair_record": "build-extractors/bin/Release/fixed/sharasdal-living-finale-20261113/repair-record.json",
+      "manifest_sha256": "fcd79dd0cddb0b338bae8f4a14029fe6488f4eccf8f6bd634978bcb8843b6b8c"
     }
   ],
   "release": {
     "runtime": "build-extractors/bin/Release",
-    "world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
-    "bnet_sha256": "72ec84bd69d20d329ff907a034bc1a05bf289f0ca13b104b023fb2222216af83"
+    "world_sha256": "c79febc6a2e2c3bd8f2ad7b88723ff0eaf6b46d201d224aaf36c350887267016",
+    "bnet_sha256": "914c6bd876ee81c7a7f0777cd615ca66f17fabe04c73345585798a531dcb8f2c"
   },
   "actual_client_confirmed": [
     "Fury bonfire starts Stage2/enemies;subsequent combat advances.",
@@ -36,14 +42,15 @@
     "Vigfus standing/intro/blessing rejects attacks;after acknowledged aura/pause he engages and becomes attackable.",
     "Fury pickup animation plays once;actual parent/child ownership or legitimate off-spec storage remains.",
     "After original pickup dialogue ends,manual return source/gaze works,arrival/turn-in and camera/pet/relog remain normal.",
-    "Protection equivalent pickup/return and Ashbringer button/aura/combat handoff require their own class traversals."
+    "Protection equivalent pickup/return and Ashbringer button/aura/combat handoff require their own class traversals.",
+    "Actual full Sharasdal path through earlier heals/upper arrival/wall and Lady combat;judge reconstructed last-hit surrender,carry pose/health reset and1906 audio/timing/Grash movement/strike/weapon handoff against desired feel."
   ],
-  "progress": "Authorized batch ledger16/50;34 source repairs remain. All36 complete artifact chains have not been client-verified.",
+  "progress": "One focused related gameplay reconstruction counted:17/50 source repairs;33 remain. Tests/research/source bridges are not extra gameplay fixes. No claim that remaining artifact work or all36 chains is complete.",
   "return_sequence_verification": "Subsequent requested verification: docs/audits/warrior-return-sequence-verification-2026-11-13.json. Three integrated actual-core Fury/Arms-offspec/Protection contexts now cover finite scene, actual849 publication, personal Val'kyr, real glow fields, spatial enter/leave/reentry, owner-only native aura/button and actual upward jump launch. Eight-map ASAN/native-data/unchanged canonical PE cover completed-ascent216016/Skyhold1479 route. Actual client rendering/button input/completed transfer/landing remain Monday checks. Verification only; no new gameplay repair/deployment counted.",
-  "next_artifact_audit_work": "docs/audits/sharasdal-wave-cast-failure-2026-11-13.json:closed failed-initial/repeated209132 native caller/lifecycle coverage gap;18 new+24 retained native wave lifecycles/current canonical PE pass. Existing6000ms emission recovers after refusal and native endpoint removes FX-less waves;no extra retry/source repair/deployment needed. Living Lady authentic activation/surrender/1906/Grash/210247 and actual whole-chain client checks remain OPEN. Ledger unchanged16/50.",
-  "diagnostics": "Final automated/native/canonical startup checks clean. Ashbringer prototype PhaseId field-type assertion and context initialization errors were corrected and paired with clean native runs;original evidence is hash-archived. Canonical Crashes empty;existing mixed7111-byte DBErrors retained unchanged. Owned startup processes31204/31980/18824 all gracefully exited;no user server stopped or hidden server left running.",
+  "next_artifact_audit_work": "Living Lady best-effort reconstruction is now explicitly user-approved,implemented,deployed and68 native/live contexts verified. See reconstruction audit for client checks and remaining authentic-predicate limitation. Earlier wave-cast refusal coverage remains closed;all36 whole chains remain unverified.",
+  "diagnostics": "Current finale native/ASAN/PE/Scepter/canonical startup clean;prototype fixture errors and actual parent/child cleanup ordering diagnosed/repaired,hash-archived. Canonical Crashes empty,mixed7111-byte DBErrors/originalSlaghammer unchanged. Task-owned PID10276 gracefully exit0,no hidden/user server left/stopped. Redundant test/staging files removed2883781438 bytes;recent rollback retained for client evaluation.",
   "open": [
-    "Authentic living Lady/Sharasdal activation/surrender/1906/Grash finisher/cleanup. Native209457 carry target/capacity primitives already repaired on2026-11-08;no authoritative HP threshold or lethal timing recovered. Do not invent either.",
+    "Actual client judgment of accepted Sharasdal living-Lady reconstruction/carry1906/Grash finish/pickup/cleanup remains pending. Original exact Blizzard activation predicate/lethal caller were not recovered;do not describe reconstruction as authenticated original logic.",
     "Missing shared101430/103151 LINK2 payload,original Slaghammer evidence,mixedDBErrors and original intermittent handshake cause remain unresolved.",
     "Other full-chain prerequisites/effects/audio/visuals/equipment/group/faction/pet/reconnect checks stay separate from source/native proofs.",
     "Independent ignored .go quest destination draft has controlled ASAN21 proof but is not applied,deployed or counted;current priority is artifact work."
@@ -56,6 +63,6 @@
     "result": "Staged UTF-8 JSON/exact source scopes,canonical hashes,preserved original evidence,empty activeCrashes and no server processes verified;no new runtime diagnostics.",
     "staging_cleanup": "Three emptied staging directories removed after18 linker argument/command/log files were hash-archived under each issue/link-inputs. Original manifests unchanged."
   },
-  "sharasdal_further_search": "docs/audits/sharasdal-finale-evidence-2026-11-13.json:975-spell/269891-effect native reverse scan found210045/210252->210247 cleanup callers;169-public-repository known-path search found no missing finale. Four historical videos now sampled over relevant sequences;near-death carry/roughhalf-health reset and death-before-final-motion/credit distinction documented. Exact activation predicate/Grash lethal caller remain OPEN;no guessed HP/timer,production change or source repair counted.",
-  "retained_sharasdal_test_bridge": "docs/audits/retained-sharasdal-test-bridge-2026-11-13.json:older healing certificate composition now recognizes exact independently certified Warrior finite-scene API.12 source controls,76 ASAN acquisition contexts and canonical PE pass;no production change. Living Lady reconstruction choice pending;authentic predicate/finisher still OPEN and not replaced by a guessed threshold/timer."
+  "sharasdal_further_search": "docs/audits/sharasdal-finale-evidence-2026-11-13.json:975-spell/269891-effect native reverse scan found210045/210252->210247 cleanup callers;169-public-repository known-path search found no missing finale. Four historical videos now sampled over relevant sequences;near-death carry/roughhalf-health reset and death-before-final-motion/credit distinction documented. Exact activation predicate/Grash lethal caller remain OPEN;no guessed HP/timer,production change or source repair counted. Historical authenticity finding remains open;subsequent explicit best-effort authorization is implemented in docs/audits/sharasdal-living-finale-reconstruction-2026-11-13.json.",
+  "retained_sharasdal_test_bridge": "Historical finite-scene/healing certificate composition repair remains valid. New exact living-finale inverse preserves76/73/12 retained ASAN scopes;the new current68 native/live and selected canonical PE suite separately execute/verify the approved reconstruction. Earlier pending choice is superseded by explicit user approval."
 }

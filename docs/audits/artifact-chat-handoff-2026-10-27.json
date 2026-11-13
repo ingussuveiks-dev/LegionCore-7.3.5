@@ -11187,5 +11187,12 @@
     "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
     "scope": "Exact216690 removal dispatch prefers native suspended content,then current;missing both diagnosed.16ASAN+native3/old2/canonical checks,not full775.",
     "fix_commit": "3ec04a779288c48230bea6c68cd37c13d26aa3ad"
+  },
+  "latest_sharasdal_living_reconstruction_2026_11_13": {
+    "status": "AUTHORIZED_BEST_EFFORT_IMPLEMENTED_DEPLOYED_NATIVE_VERIFIED_CLIENT_PENDING",
+    "audit": "docs/audits/sharasdal-living-finale-reconstruction-2026-11-13.json",
+    "canonical_world_sha256": "c79febc6a2e2c3bd8f2ad7b88723ff0eaf6b46d201d224aaf36c350887267016",
+    "checks": "68 actual native/live contexts,2 expected-broken counterfactuals,retained76/73/12 ASAN,stage/canonical PE,Scepter,updater/idempotence and owned startup pass;no exact-original predicate or all36 client claim.17/50 ledger.",
+    "preserve": "LINK2/Slaghammer,mixed7111-byte DBErrors,original historical research and pending Monday client checks remain visible."
   }
 }

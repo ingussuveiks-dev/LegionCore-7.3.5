@@ -1,5 +1,6 @@
 param([switch]$ScopeOnly,[switch]$PrepareHost,[switch]$Baseline,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$DataDirectory='',[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+. "$PSScriptRoot/SharasdalFinaleScope.ps1"
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 function Pinned([string]$path){$s=(& git -C $repo show "ccc0e2f74:$path") -join "`n";if($LASTEXITCODE){throw "Pinned lower-ascent context missing: $path"};$s}
 function Same([string]$a,[string]$b,[string]$why){if(($a -replace '\s','') -cne ($b -replace '\s','')){throw $why}}
@@ -39,7 +40,7 @@ $instance=Remove-SharasdalGraveyardScope $instance
 $normal=$instance.Replace('        #include "sharasdal_lower_ascent.h"','').Replace('            RearmAscent(player);','').Replace('            UpdateAscent(diff);','')
 foreach($header in @('ObjectAccessor.h','WaypointManager.h','WaypointMovementGenerator.h','MoveSpline.h')){$normal=$normal.Replace("#include `"$header`"",'')}
 Same $normal $oldInstance 'Other instance fields/deaths/credits/re-entry/creation changed'
-foreach($name in @('sharasdal_erunak_entry.h','sharasdal_erunak_upper.h','sharasdal_upper_wall.h','sharasdal_gauntlet_arrival.h')){$relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/'+$name;Same (Get-Content "$repo/$relative" -Raw) (Pinned $relative) "Other retained member policy changed: $name"}
+foreach($name in @('sharasdal_erunak_entry.h','sharasdal_erunak_upper.h','sharasdal_upper_wall.h','sharasdal_gauntlet_arrival.h')){$relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/'+$name;Same (Remove-SharasdalFinaleScope (Get-Content "$repo/$relative" -Raw) $relative) (Pinned $relative) "Other retained member policy changed: $name"}
 if($ScopeOnly){'PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained';return}
 if($Baseline){if($VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'};& "$PSScriptRoot/Test-SharasdalAscentCounterfactual.ps1";if(!$?){throw 'Pinned ascent baseline failed'};return}
 if(!$DataDirectory){$DataDirectory="$repo/build-extractors/runtime-test/sharasdal-lower-ascent-data"}

@@ -1,9 +1,12 @@
 param([switch]$PrepareHost,[switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
 . "$PSScriptRoot/HealApiFixture.ps1"
+. "$PSScriptRoot/SharasdalFinaleScope.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$actorPath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$actor=(Get-Content "$repo/$actorPath" -Raw).Replace("`r",'')
+$scopeActor=$actor
+$actor=Remove-SharasdalFinaleScope $actor
 $scopeActor=$actor
 if($actor.Contains('#include "sharasdal_acquisition.h"')){
  & "$PSScriptRoot/Test-SharasdalAcquisition.ps1" -ScopeOnly
@@ -165,7 +168,7 @@ $hostSource=Adapt $hostSource 'assert(id==1693);' 'assert(id==1693||id==1923);'
 $hostSource+='struct Position{float x,y,z,o;float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}};uint32 urand(uint32 low,uint32){return low;}'
 [IO.File]::WriteAllText("$out/NativeHost.inc",$hostSource)
 if($actor.Contains('#include "sharasdal_gauntlet_arrival.h"')){
- Copy-Item -LiteralPath "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasdal_gauntlet_arrival.h" -Destination $out
+ [IO.File]::WriteAllText("$out/sharasdal_gauntlet_arrival.h",(Remove-SharasdalFinaleScope (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasdal_gauntlet_arrival.h" -Raw) 'src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasdal_gauntlet_arrival.h'))
  $hostSource=Adapt $hostSource 'assert(range==100||range==5);return range==5?interact:near;' 'assert(range==100||range==5||range==40);return range==5?interact:near;'
  [IO.File]::WriteAllText("$out/NativeHost.inc",$hostSource)
 }

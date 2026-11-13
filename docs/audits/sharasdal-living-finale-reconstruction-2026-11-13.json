@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-13",
+  "status": "AUTHORIZED_FUNCTIONAL_RECONSTRUCTION_DEPLOYED_CLIENT_REVIEW_PENDING",
+  "authorization": {
+    "user": "Taisi kā spēj un kad iešu spēlē to posmu sapratīšu vai tā derēs",
+    "meaning": "Explicit approval to implement a clearly identified best-effort reconstruction;supersedes the previous pending design choice. User will judge actual gameplay later.",
+    "not_claimed": "The original Blizzard activation predicate and lethal caller were not recovered. Earlier research remains valid/open as historical authenticity evidence."
+  },
+  "prior_evidence": "docs/audits/sharasdal-finale-evidence-2026-11-13.json:matching native data/local code/Trinity/public repositories and four historical videos reviewed as documented there;no additional video viewing claimed in this implementation step.",
+  "problem": "Real Lady104856/362095 could die immediately through ordinary combat,allowing native50397 and acquisition without the missing living surrender/carry1906/Grash ending. Native210247 had no scoped follower-cleanup implementation.",
+  "sequence": [
+    "Only actual map1600/scenario1066 step4 with acknowledged final-wall47133 and real Lady362095 intercepts an actual lethal hit AFTER target-relative scaling. No percentage threshold. Original tagged eligible Shaman or actual player/pet/guardian/charmer/known upper ally claimant retains its40341 ScriptLifetime.",
+    "Living Lady stops at1HP and becomes passive;additional damage is rejected during the sequence. Native ordinary209457 must hit the exact upper Grash362092 and the queued real VehicleJoinEvent must board Lady. Missing/wounded/stunned/charmed Grash,full seats,wrong nearer copy or refused cast do not advance.",
+    "Only actual living upper Erunak362093 and Adelee362094 permit checked native1906/209552 creation. Conversation captures exact Lady/Grash/Erunak GUIDs and binds the original quest attempt. Native weapon249342/134299 receives only an owned temporary NOT_SELECTABLE flag. Held Lady resets to half native max health as an explicit visual reconstruction inspired by historical footage,not an activation threshold.",
+    "Exact upper allies are temporarily quieted. Original owner publication of native1906 and native rage line2/id4030 at10932ms permits an ordinary209487 cast. Only its actual800ms cast completion/hit from captured unwounded Grash while still carrying Lady can finish. Exactly-once phase is set before releasing the carry/restoring reactions/native Unit::Kill;existing instance/loot/group/victory dispatch remains authoritative. No guessed timer directly kills Lady.",
+    "Native final line4/id4032 at20866ms unlocks the real weapon. Native Conversation expiry/removal and quest-object cancellation retain cleanup. Existing actual loot/equip/scene/1923/return paths are preserved rather than manual item/quest/criterion grants.",
+    "210247 AfterCast admits only actual210045 abandonment aura or terminal native step6 plus legitimately owned128911 and active unrewarded40341. Exact six authored lower/upper followers only;foreign copies,another active Shaman participant and any actual Player passenger are protected. Native210045 calls child210247 before applying its own aura,so the parent AfterCast is also registered and rechecks the actually applied aura.",
+    "Original owner death/map/range/quest replacement/abandonment cancels an active finale and removes its story/carry/owned lock/restores saved reactions. Missing acknowledgement uses bounded1s/30-attempt phase retries with visible warning and living combat retry;no fake completion. Ordinary combat,gauntlet illusion,wall and earlier healing behavior remain."
+  ],
+  "checks": {
+    "native_current": "68 contexts=34 modes x Draenei/Orc. Whole current Lady/Grash and native instance/spell/vehicle/conversation/GO/criteria dispatch;real live cleanup script-name registry readback. Includes actual full Unit::DealDamage UINTMAX player/pet/guardian paths,ordinary final-hit owners/upper3 allies,grouped/ambiguous claimant,repeat hits,strike source/repetition,wounded Grash actual target-relative heal/refused casts,wrong lower Grash,occupied seats,missing speaker/reentry,quest/range changes,unpublished/unelapsed lines,mid-carry abort,final-line pickup unlock,no item grant,actual210045 ordering and scoped cleanup/passenger protection.",
+    "controlled_scope": "Earlier stage/wall and actor positions are controlled;native dialogue publication is invoked and the native playback clock is advanced to actual data offsets. This is a Release native harness with matching original libraries,not full-core ASAN or actual client/audio traversal. Real isolated TEMP tables and test-only cast-refusal registration are documented in source;no persistent character/account writes. Character TEMP setup briefly uses explicit READ WRITE solely to create connection-local shadows before restoring READ ONLY.",
+    "counterfactual": "2 pinned224389a00 Draenei/Orc expected-broken contexts:actual scaled lethal damage immediately killed Lady and reached step5 without living1906/carry/finisher. Explicitly labeled counterfactual,not ordinary repaired success.",
+    "retained_asan": "76 acquisition,73 prior Lady death/progression and12 combat-message ASAN contexts pass. Historical hosts use exact certified inverse of this new delta,with pinned full-file before/after hashes;they do not claim to execute the new finale. The68 native cases execute its full current implementation separately.",
+    "source": "Exact full three-file source delta and independent historical healing certificate pass;retained acquisition ScopeOnly passes. No old expected source hashes were replaced with current content.",
+    "release": "Original scripts.vcxproj Release x64 rebuilt and staged final link uses original scripts/game/shared/common libraries without OutDir substitution. New selected factory/vtable/scaled-lethal/native casts/publication/real-hit-only Kill/weapon unlock/cleanup PE checks pass for stage and canonical;composed retained acquisition/Lady/Kraliss/wall/healing checks also pass.",
+    "sql": {
+      "Bindings": "210045\tspell_sharasdal_follower_cleanup\t1\n210247\tspell_sharasdal_follower_cleanup\t1",
+      "IdempotentRepeats": 2,
+      "MigrationSHA256": "8F89E0A8CD5346F1A10FC859C32DCEBBC448AFE29516BF5ACF976252712EAD0E",
+      "UnrelatedBindingsSHA256": "537AE8D33786415B42567984BD587487451DC014FD0A49FE111E8DFB66959A26",
+      "UpdaterApplied": true
+    },
+    "scepter": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes controlled login cases and actual canonical PE presence.",
+    "startup": "Canonical task-owned worldserver PID10276 reached a fresh ready,gracefully server shutdown0,exit0,stderr empty,process gone. Updater installed both singleton bindings before native live validation. No user/unknown server stopped;no hidden server left running."
+  },
+  "prototype_diagnostics": [
+    "Duplicate UpdateLifecycle compile failure fixed by composing into existing gauntlet header;test prefix gained missing native gossip includes. No production check/log suppression.",
+    "Fixture Grash heal used unscaled amount;corrected to native target-relative max health and original lifecycle notification. Actual wound recovery then passed.",
+    "Fixture GO registration used unsupported derived AddToMap/protected registry;corrected to native GameObject map admission and instance create dispatch.",
+    "Initial54-assertion run emitted81 missing page-text DBErrors because the fixture loaded GO templates before native PageTexts. Not accepted as passing;loader order repaired and68-context/live runs clean.",
+    "Connection-local Character TEMP creation initially failed1792 in READ ONLY. Explicit temporary setup transaction mode repaired;no persistent table/data writes.",
+    "Native parent/child210045 aura ordering was a real production cause found and repaired by parent AfterCast acknowledgement.",
+    "Fixture attempted SetCurrentStep6 although the native setter rejects terminal6;corrected to actual49820 criteria dispatch to reach terminal state.",
+    "Fixture Player displayID0 caused native GetCollisionHeight ASSERT/ACCESS_VIOLATION at VehicleJoinEvent in20261113-211344-386. Captured native exception/stack,no canonical dump. Actual native Draenei/Orc race model initialization repaired;matching68-context/live runs and canonical startup pass.",
+    "First archive script appended into an uninitialized script-scope hashtable,raising duplicate sha256 key before deletion. Corrected to explicit array;first diagnostic snapshot retained,subsequent743-file archive/hash review and cleanup pass."
+  ],
+  "post_test": "Every run/build/PE/native/ASAN/startup recorded before/after crash/log snapshots and stdout/stderr/status. Final runs have no new/changed crashes,appended DBErrors,server warnings/errors/assertions. Prototype failures remain hash-archived with their causes and passing repairs. Compiler fixture warnings are retained;no diagnostics suppressed.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "c79febc6a2e2c3bd8f2ad7b88723ff0eaf6b46d201d224aaf36c350887267016",
+    "bnet_sha256": "914c6bd876ee81c7a7f0777cd615ca66f17fabe04c73345585798a531dcb8f2c",
+    "rollback": ".codex/release-before-sharasdal-living-finale-20261113",
+    "configuration_certs_DLLs": "All deployment protected hashes unchanged. Bnet relinked from unchanged code. SQL was withheld outside live updater until matching EXE promotion."
+  },
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/sharasdal-living-finale-20261113",
+    "manifest_sha256": "fcd79dd0cddb0b338bae8f4a14029fe6488f4eccf8f6bd634978bcb8843b6b8c",
+    "files": 743,
+    "removed_files": 662,
+    "reclaimed_bytes": 2883781438.0,
+    "cleanup": "Removed redundant native timestamp runtimes/private config copies/probe exe,obj,ilk;stage exe/map;regenerable acquisition/Lady/combat/Scepter outputs. Retained reusable test sources/original libraries/canonical config,data,DLLs/needed recent rollback and earlier historical research. No security quarantine bypass.",
+    "closing_review_manifest_sha256": "a5c201c90e332f2d6e83c9b227fbc81231f5f51fef2ea8ffcf4f02d7923d4f1a"
+  },
+  "preserved": {
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "original_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "active_canonical_Crashes": "Empty;means reviewed issues only,not all gameplay verified.",
+    "unresolved": "Shared101430/103151 LINK2 payload,original Slaghammer evidence and original intermittent handshake cause remain open. Mixed log not truncated;historical missing-original-finale research is not archived as a resolved authenticity finding."
+  },
+  "client_pending": [
+    "Actual full Sharasdal path through earlier heals/upper arrival/wall and Lady combat;judge reconstructed last-hit surrender,carry pose/health reset and1906 audio/timing/Grash movement/strike/weapon handoff against desired feel.",
+    "Actual pickup/equip/finite scene/1923/return glow/button/teleport/turn-in,party/faction/pet/camera and abandonment/re-entry/relog. The210045/210247 cleanup consumers are repaired;actual full-chain caller/210252 flow still needs traversal rather than assuming a direct harness cast proves natural invocation. Native publication proves server scheduling,not audible playback or completed animation. No claim of exact Blizzard finisher or all36 verified chains.",
+    "Monday Warrior intro attackability,one pickup scene,glow/manual upward return and Ashbringer native AI handoff remain separate client checks."
+  ],
+  "ledger": "One focused related gameplay reconstruction counted:17/50 source repairs;33 remain. Tests/research/source bridges are not extra gameplay fixes. No claim that remaining artifact work or all36 chains is complete.",
+  "fix_commit": "See focused Git history and local fixed/sharasdal-living-finale-20261113/repair-record.json after commit."
+}
