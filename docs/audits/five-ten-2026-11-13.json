@@ -2,8 +2,8 @@
   "date": "2026-11-13",
   "request": "Labi turpini ar 5×10",
   "authorized_total": 50,
-  "completed_source_repairs": 16,
-  "status": "IN_PROGRESS_16_OF_50_ARTIFACT_CLIENT_PENDING",
+  "completed_source_repairs": 18,
+  "status": "IN_PROGRESS_18_OF_50_ARTIFACT_CLIENT_PENDING",
   "baseline": "10100c1a87451150fc9118fc5e6e4ab4068f3c20",
   "batches": [
     {
@@ -184,12 +184,32 @@
     }
   ],
   "remaining": [
-    "Authorized50:batch1 has10,batch2 has6;34 remain. New source repairs retain separate client/full-chain limits.",
+    "Authorized50:18 completed source repairs;32 remain. This storage lifecycle repair counts once;tests/tooling/cleanup do not add fixes.",
     "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
     "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
-    "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
+    "Offline pet-battle legitimate-win rewards,original authenticity and client review of the reconstructed living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
     "Final Vigfus native acknowledgement repaired/client victory confirmed. Requested intro protection and actual Fury/Protection finite pickup loop root repaired/deployed;Monday client attackability/animation/manual return pending.",
-    "Ashbringer original-AI removal handoff repaired/deployed. Pickup storage ordering,real button/producer timing,missing actor/AI regeneration and full775 remain separate OPEN work."
+    "Ashbringer original-AI removal handoff repaired/deployed. Storage ordering/receipt now repaired;real button/producer timing,missing actor/AI regeneration and full client775 remain OPEN."
   ],
-  "final_boss_followup": "Victory confirmed;new protection and finite scene end receipts repaired/deployed. Monday client retest pending;whole Fury/Protection/all36 remain separate."
+  "final_boss_followup": "Victory confirmed;new protection and finite scene end receipts repaired/deployed. Monday client retest pending;whole Fury/Protection/all36 remain separate.",
+  "subsequent_reconciliation_2026_11_13": {
+    "previous_logged_count": 16,
+    "repairs": [
+      {
+        "key": "SharasdalLivingFinaleReconstruction",
+        "audit": "docs/audits/sharasdal-living-finale-reconstruction-2026-11-13.json",
+        "fix_commit": "000ed877dc2dbb4b5504767ab900a81ab4d8478c",
+        "count": 1
+      },
+      {
+        "key": "AshbringerStorageReceipt",
+        "audit": "docs/audits/ashbringer-storage-receipt-2026-11-13.json",
+        "count": 1
+      }
+    ],
+    "completed_source_repairs": 18,
+    "remaining": 32,
+    "canonical_world_sha256": "944f30252fd0873b3573fe9324411911961e5444f8dd2371356ee54ed701ebcb",
+    "note": "Earlier batch/check records remain historical;these two subsequent focused repairs bring16 to18. Client/full-chain verification remains separate."
+  }
 }

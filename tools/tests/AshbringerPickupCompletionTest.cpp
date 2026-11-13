@@ -52,8 +52,10 @@ struct InstanceScript
 #include "InstanceCredit.inc"
 struct Creature {uint32 despawns=0;void DespawnOrUnsummon(){++despawns;}};
 struct GameObjectAI {void OnStateChanged(LootState,Unit*){}};
+enum { GAMEOBJECT_TYPE_DOOR=0, GAMEOBJECT_TYPE_CHEST=3 };
 struct GameObject
 {
+    uint32 GetGoType()const{return GAMEOBJECT_TYPE_CHEST;}
     Creature* trigger=nullptr;
     uint32 deletes=0;
     LootState m_lootState=GO_READY;

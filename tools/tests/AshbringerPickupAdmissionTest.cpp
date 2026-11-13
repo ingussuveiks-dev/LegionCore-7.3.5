@@ -58,8 +58,10 @@ struct GameObjectAI
     void OnStateChanged(LootState,Unit*){}
 };
 struct Creature {uint32 despawns=0;void DespawnOrUnsummon(){++despawns;}};
+enum { GAMEOBJECT_TYPE_DOOR=0, GAMEOBJECT_TYPE_CHEST=3 };
 struct GameObject
 {
+    uint32 GetGoType()const{return GAMEOBJECT_TYPE_CHEST;}
     bool live=true,spawned=true,blocked=false;
     uint32 entry=247318,mapId=1500,instanceId=7,deletes=0;
     Map* map=nullptr;

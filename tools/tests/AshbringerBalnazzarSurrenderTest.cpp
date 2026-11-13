@@ -50,6 +50,7 @@ struct Creature
     uint64 health=100000,maximum=100000,targetHealth=1000,targetMaximum=1000;
     float multiplier=0.01f;
     bool alive=true;
+    bool IsAlive()const{return alive;}
     uint32 flags=0,stops=0,despawns=0;
     std::vector<uint32> kits;
     CreatureAI* primary=nullptr;

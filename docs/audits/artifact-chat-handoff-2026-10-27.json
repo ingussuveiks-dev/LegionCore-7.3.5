@@ -1,23 +1,32 @@
 {
+  "latest_ashbringer_storage_2026_11_13": {
+    "status": "STORAGE_RECEIPT_REPAIRED_DEPLOYED_NATIVE_VERIFIED_CLIENT_PENDING",
+    "audit": "docs/audits/ashbringer-storage-receipt-2026-11-13.json",
+    "canonical_world_sha256": "944f30252fd0873b3573fe9324411911961e5444f8dd2371356ee54ed701ebcb",
+    "checks": "42 actual native live contexts,2 actual periodic same-item equipment cases,4 expected-broken counterfactuals,retained ASAN,stage/canonical PE,TEMP SQL11 refusals/idempotence/live updater,Scepter and owned startup pass.18/50 source repairs;client/full775/all36 remain pending.",
+    "diagnostics": "No new runtime failures/crashes;original mixed7111-byte DBErrors/Slaghammer/LINK2 preserved.797 evidence files hash-archived;602 own redundant outputs removed,2564791446 bytes. No hidden task-owned server remains.",
+    "next": "Unresolved native artifact findings and actual client checks remain in audit;do not treat accepted scene or equipment endpoint as full playback/whole-chain certification."
+  },
   "latest_five_ten_2026_11_13": {
-    "status": "IN_PROGRESS_16_OF_50_ARTIFACT_CLIENT_PENDING",
+    "status": "IN_PROGRESS_18_OF_50_ARTIFACT_CLIENT_PENDING",
     "audit": "docs\\audits\\five-ten-2026-11-13.json",
     "authorized_total": 50,
-    "completed_source_repairs": 16,
+    "completed_source_repairs": 18,
     "latest_batch": 2,
-    "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
-    "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
+    "canonical_world_sha256": "944f30252fd0873b3573fe9324411911961e5444f8dd2371356ee54ed701ebcb",
     "remaining": [
-      "Authorized total50:batch1 is10,batch2 has2;38 remain. Do not count diagnostics/test changes or the unresolved final boss issue.",
+      "Authorized total50:18 completed source repairs;32 remain. Preserve separate actual client/full-chain checks.",
       "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
       "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
-      "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
-      "Final Fury Stage6 Helya195062 cast0/no immediate aura,repeated843 dialogue and unfinishable Vigfus are newly reproduced client issues;investigate the real cast/aura/intro path before changing progression or health."
+      "Offline pet-battle legitimate-win rewards,original authenticity/client review of the reconstructed Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
+      "Final Vigfus victory is client-confirmed;intro attackability and Fury/Protection pickup scene-end receipts are repaired/deployed. Actual protection,animation/glow/manual return remain client-pending."
     ],
     "bonfire_followup": "docs/audits/warswords-bonfire-client-2026-11-13.json;actual first-step and enemy appearance confirmed,one repair counted",
-    "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;all4/4 and transition confirmed,one repair counted;final boss OPEN",
+    "runestone_followup": "docs/audits/warswords-runestone-client-2026-11-13.json;actual4of4 and transition confirmed;later final-boss victory confirmed separately.",
     "final_boss_followup": "Victory confirmed;intro protection and Fury/Protection pickup end receipt repaired/deployed,Monday attackability/visual/manual return pending.",
-    "ashbringer_followup": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json"
+    "ashbringer_followup": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json and docs/audits/ashbringer-storage-receipt-2026-11-13.json;full775/client remains pending.",
+    "previous_recorded_fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
+    "followup_audit": "docs/audits/ashbringer-storage-receipt-2026-11-13.json"
   },
   "latest_stormheim_departure_repair_2026_11_13": {
     "status": "STORMHEIM_DEPARTURE_REPAIRED_DEPLOYED_CLIENT_PENDING",

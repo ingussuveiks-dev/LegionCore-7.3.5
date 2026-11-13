@@ -83,9 +83,13 @@ gate, = calls(helper, callback)
 assert callback[gate + 1].op_str == 'al, al' and callback[gate + 2].mnemonic == 'je'
 rejected = callback[gate + 2].operands[0].imm
 first = next(index for index, entry in enumerate(callback) if entry.address == rejected)
-assert callback[first].op_str == 'rcx, qword ptr [rsp + 0xd8]' and callback[first + 1].op_str == 'rcx, rsp'
-assert callback[first + 2].mnemonic == 'call'
-assert all(entry.mnemonic in ('mov', 'add', 'pop', 'ret') for entry in callback[first + 3:])
+if any(name.startswith('?Check@spell_bs_ashbringer_storage@@') for name in native['symbols']):
+    from ashbringer_storage_pe import reaches
+    assert not any(reaches(callback, rejected, callback[pos].address) for target in ('?CanStoreItem@Player@@','?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_N') for pos in calls(target, callback)), 'Rejected admission must not reach storage or cast'
+else:
+    assert callback[first].op_str == 'rcx, qword ptr [rsp + 0xd8]' and callback[first + 1].op_str == 'rcx, rsp'
+    assert callback[first + 2].mnemonic == 'call'
+    assert all(entry.mnemonic in ('mov', 'add', 'pop', 'ret') for entry in callback[first + 3:])
 assert gate < calls('?CanStoreItem@Player@@', callback)[0] < calls('?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_N', callback)[0]
 
 tables = []

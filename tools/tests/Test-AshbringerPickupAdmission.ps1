@@ -7,6 +7,8 @@ New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp'
 $source=Get-Content "$repo/$path" -Raw
+. "$PSScriptRoot/AshbringerStorageScope.ps1"
+$source=Remove-AshbringerStorageScope $source
 $pinned=(& git -C $repo show "30be60aa:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned admission baseline unavailable'}
 $source=$source.Replace((Block $source 'class spell_bs_dominate_mind :'),(Block $pinned 'class spell_bs_dominate_mind :'))

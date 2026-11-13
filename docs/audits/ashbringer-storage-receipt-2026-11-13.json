@@ -1,0 +1,80 @@
+{
+  "date": "2026-11-13",
+  "status": "STORAGE_RECEIPT_REPAIRED_DEPLOYED_NATIVE_VERIFIED_CLIENT_PENDING",
+  "baseline": "027217ea1fe2c68a168d88ff9ff8f8bff348336d",
+  "commit_resolution": "Focused implementation/tests/audit commit; resolve through git log for this audit. Actual commit also recorded in the ignored fixed archive after push.",
+  "problem": "Actual GO247318 accepted180850 before its native199827 child stored120978. Generic EffectTriggerSpell queues that child for10ms;root hit effects and manual46130 escaped a failed later storage. Native190777 also emitted46130,duplicating the manual receipt. A real16-sword inventory race reproduced empty inventory with credit and active scene.",
+  "sources": {
+    "order": "Matching local Legion7.3.5 native Spell/SpellEffect/ItemSparse/Map/Criteria/Scenario data,live GO128117/template247318,existing199827 loot and source12 conditions,actual Spell::EffectTriggerSpell/EffectCreateItem2/EffectForceEquipItem and Player inventory/quest-event code resolved the cause. No new external behavior/video claim.",
+    "native": "180850 E0 credit114505,E1 event47621,E2 trigger199827,E3 screen186987,E4 scene192145/1087,E5 trigger190777/event46130,E6 periodic23->181257. Native199827 E0=157/ItemType0 consumes existing spell loot120978. Native181257=249 equips existing120978 and retains event46506/225875->205273.",
+    "unchanged": "Actual Paladin38376/map1500/scenario775/zero-based step3 admission,LOS/range/phase/visibility,loot conditions,class/spec/skill eligibility and native equipment rule remain. No new weapon grant,DB2 edit,combat threshold,timer kill,manual completion or broad spell-core scheduling change."
+  },
+  "repair": [
+    "One paired SpellScript/AuraScript on180850 validates matching native child data. Only actual199827 storage child runs synchronously,retaining native parent cast GUID/original caster/cast item/time/cost provenance. Existing owned inventory copy is a recovery source,not another grant.",
+    "Root hit effects require actual owned stored120978/full item GUID and original38376 ScriptLifetime. Failure removes this casts unapplied Aura shell as well as suppressing effects,leaving GO_READY for a real retry. Repeated callback during active retrieval is rejected before another cast.",
+    "Original screen/scene/event children retain native initial MiscValue/default10ms ordering in the original quest-owned queue. Full player/item/attempt identities,same original1500 instance and actual775 are rechecked.190777 uses real46130 criterion acknowledgement before/after cast;bounded1s/30 attempts only reissue native endpoint,with visible exhaustion diagnostic. GO no longer emits duplicate manual46130.",
+    "Aura uses GetUnitOwner in update,retains original finite native181257 equip behavior and removes only its own self-cast186987/192145 if quest attempt/item/map/instance ceases to match. Normal expiry leaves independent scene handling unchanged.",
+    "Migration adds sole180850->spell_bs_ashbringer_storage binding only after executable promotion. Exact source drift fails explicitly with SIGNAL45000;force-continuation still cannot insert.199827 has no new custom script."
+  ],
+  "checks": {
+    "native_live": "42 contexts=21 modes x Draenei/BloodElf,actual GO SetLootState/native Spell/Item/loot/conditions/Aura/Scenario receipt. Covers real full bags after preflight,initial full bags,refused199827/retry,repeat click,abandon/replaced original attempt,walk-away,bank/destroy pending item,refused190777/192145 and native retry,pet/guardian denial,legitimate native group without another weapon,owned recovery,wrong phase/scenario/quest,bank-only copy and preexisting actual46130. Actual live singleton mapping required;no production registry substitution in -VerifyLiveData.",
+    "equip": "Both mode0 races advance the actual E6 period and delayed native181257;the same full120978 GUID becomes equipped without another grant. Native parent cast/original caster provenance checked on199827/190777/192145.",
+    "counterfactual": "Four pinned027217ea1 expected-broken native contexts=normal storage and real16-item inventory race x2 races. Original failed storage still emitted46130/scene;normal original emitted duplicate46130. These are counterfactual evidence,not ordinary repaired passes.",
+    "scope": "Whole current acquisition class/header executes with matching Release native libraries. Earlier victory/stage/poses and clock are controlled;actual earlier775 encounter/scene playback/network traversal is not exercised. Connection-local full-schema TEMP character/item/respawn shadows exist on synchronous and asynchronous connections;setup briefly READ WRITE then READ ONLY,no persistent character/account data writes. Release native harness is not full-core ASAN.",
+    "retained_asan": "PickupCompletion160 state/stage/owned/actor +12 capacity +24 cast-result variants;PickupAdmission29 invalid/eight valid;DominationRetry24;BalnazzarSurrender48 plus stage/nonlethal cases;FlameTargets and ZerusArrival actual EventMap/arrival paths pass under ASAN. Historical hosts use certified exact inverse of this new full-file delta;new native42 executes current storage logic independently.",
+    "source_and_pe": "Exact normalized LF before/after whole CPP/header certificate and original resume certificate pass. Staged/canonical selected paired loader/vtables/hook references,actual199827/store/quest/item guards,receipt ACK/retry,owner cleanup and callback failure CFG pass. Retained admission/775 boss/Warrior finite scene/original-AI resume and its complete existing linked chain return normally. No old hash replaced by arbitrary current source.",
+    "sql": "TEMP full-schema migration inserts exactly one binding,idempotent twice;11 deliberate source/binding/loot/spawn drift variants explicitly refuse and remain unchanged under --force. Ordinary SQL checks exit0/empty stderr;expected SIGNAL errors separately checked exactly. Live updater SHA1/state and singleton binding verified after actual canonical startup.",
+    "migration_sha256": "3aeffcddf7f183524a3e758e25fe2ebfa0b86996236f3ec69d8998273090c59a",
+    "scepter": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes controlled login regression and canonical selected code.",
+    "build": "Original scripts.vcxproj Release x64 rebuilt;staged final link consumes original script/game/shared/common inputs,no global OutDir override. New selected implementation verified in promoted executable. Configuration/certificates/DLLs preserved.",
+    "startup": "Task-owned canonical worldserver PID15588 fresh ready,server shutdown0,exit0,empty stderr,gone. No user/unknown server stopped,no hidden task-owned server left. Actual updater installed paired binding before live native42."
+  },
+  "resolved_prototype_diagnostics": [
+    "Native fixture conditions loaded before spell loot produced missing-source rows;fixed native loader order.",
+    "CREATE TEMP table t LIKE t produced MariaDB1066;fixed connection-local seed schemas in both connections before read-only execution.",
+    "Fault registration was namespace-qualified incorrectly;fixed namespace-local registration helper. No production loader log suppression.",
+    "Player fixture omitted real creation spec/lootSpec/two-handed-sword skill,so native CanGetItemForLoot legitimately rejected120978;seed actual Retribution70 and skill rather than bypass eligibility.",
+    "Protected original-caster field access did not compile;resolved public original caster identity and verified actual native provenance.",
+    "Failed native store left an allocated but unapplied root aura shell;production AfterHit now removes that casts own shell. Final failed-store/retry native branch passes without aura/scene/progress.",
+    "Retained old test fixtures lacked actual GameObject GetGoType/native door-vs-chest distinction and Creature IsAlive after prior core changes. Added modeled API to those isolated hosts;current production branch retained. Existing conversion/unused-parameter compiler warnings reviewed;no new unexplained server warning.",
+    "Local orchestration switch parsing/dynamic name shadow fixed before successful retained runs. Initial cleanup tried hashing its still-open redirected stdout;exclude current log,preserve failed evidence and rerun. No unresolved crash,server failure or hidden failing ordinary run presented as success."
+  ],
+  "canonical": {
+    "worldserver.exe": "944f30252fd0873b3573fe9324411911961e5444f8dd2371356ee54ed701ebcb",
+    "worldserver.map": "994b1238c4ab03654231f524cdb1d1cead914332e9e1e54901ff9ef6c18280e7",
+    "bnetserver.exe": "54f8e86d0fb4d97ce60b7f160365eb09b4f1c3d2c9bbc3e16ebc4a9062d3000e",
+    "bnetserver.map": "a9c4ae26d88327b441b82c80cb7c778ce268edc3c36a520d52d414eca565e8a8"
+  },
+  "bnet_text_unchanged": true,
+  "post_test_diagnostics": {
+    "result": "Final native/live/ASAN/SQL/PE/Scepter/startup/cleanup snapshots have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Expected failing controls and resolved prototypes remain separately archived.",
+    "canonical_crashes": 0,
+    "mixed_db_errors_bytes": 7111,
+    "mixed_db_errors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_log": "Unchanged and untruncated;unresolved101430/103151 LINK2 plus historically fixed11869 remain mixed.",
+    "original_slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c"
+  },
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/ashbringer-storage-20261113",
+    "manifest_sha256": "b05041bc7e2563210c22dfb40ddc22839ddf85dfa7b5f107a602be38c2361f7e",
+    "archived_files": 797,
+    "removed_files": 602,
+    "reclaimed_bytes": 2564791446,
+    "retained_rollback": ".codex/release-before-ashbringer-storage-20261113",
+    "limits": "Only own native/staging/private config/regenerable outputs removed after hash verification;reusable sources and original final-link libraries/canonical assets remain. Security-quarantined door executable untouched;never rebuilt/restored/executed. Original LINK2/Slaghammer/historical research remains outside fixed."
+  },
+  "remaining": [
+    "Actual client Ashbringer click/scene1087 visuals/audio/equipment UI,screen removal,abandon/relog/re-entry/return and whole775 traversal remain unverified. Native accepted scene request is not proof of playback or completion. New routine does not repair unrelated missing/dead Balnazzar or regenerate unknown AI.",
+    "Native PlayerCondition32543 was absent in matching catalog;no fabricated condition. Native offspec loot-spec/skill filters remain authoritative and were not newly fixed. Tests use legitimate Retribution eligibility;not all class/race/spec combinations or all36 whole chains.",
+    "Warrior intro protection,Fury/Protection pickup animation/glow/manual return and reconstructed living Sharasdal finale await actual client review. Original authenticity predicates remain unproven as recorded in their audits.",
+    "Shared101430/103151 LINK2,protected Slaghammer native evidence and mixed DBErrors remain unresolved and untouched. Wider artifact admission,button producer/timing,whole-chain recovery and remaining ledger work are separate."
+  ],
+  "ledger": {
+    "authorized_total": 50,
+    "previous_source_repairs": 17,
+    "completed_source_repairs": 18,
+    "counted_here": 1,
+    "remaining_source_repairs": 32,
+    "note": "Single underlying storage/receipt lifecycle repair. Tests/fixtures/diagnostic cleanup are not extra gameplay fixes."
+  }
+}

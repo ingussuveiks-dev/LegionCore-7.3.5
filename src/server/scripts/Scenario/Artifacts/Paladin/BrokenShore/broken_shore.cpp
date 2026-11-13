@@ -1158,6 +1158,7 @@ namespace AshbringerAcquisition
     }
 }
 
+#include "ashbringer_storage.h"
 class go_bs_the_ashbringer : public GameObjectScript
 {
     struct AI : GameObjectAI
@@ -1193,6 +1194,8 @@ public:
                 {
                     if (state == GO_JUST_DEACTIVATED || player->HasItemCount(120978))
                     {
+                        if (player->HasAura(SPELL_RETRIEVING_THE_ASHBRINGER))
+                            return;
                         if (!player->HasItemCount(120978))
                         {
                             ItemPosCountVec destination;
@@ -1211,7 +1214,11 @@ public:
                             go->SetLootState(GO_READY);
                             return;
                         }
-                        instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46130); //Step 4
+                        if (!AshbringerStorage::Inventory(player))
+                        {
+                            go->SetLootState(GO_READY);
+                            return;
+                        }
                         if (Creature* trigger = go->FindNearestCreature(103454, 10.0f))
                             trigger->DespawnOrUnsummon();
 
@@ -1371,4 +1378,5 @@ void AddSC_paladin_broken_shore()
     new go_bs_the_ashbringer();
     new spell_fly_to_broken_shore();
     new spell_bs_dominate_mind();
+    RegisterSpellAndAuraScriptPair(spell_bs_ashbringer_storage, aura_bs_ashbringer_storage);
 }
