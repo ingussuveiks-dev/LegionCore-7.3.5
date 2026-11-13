@@ -88,8 +88,10 @@ public:
         if (!*args)
             return false;
 
-        int32 hp = atoi((char*)args);
-        int32 hpm = atoi((char*)args);
+        int32 hp;
+        if (!Trinity::ParseCommandInteger(args, hp))
+            return false;
+        int32 const hpm = hp;
 
         if (hp < 1 || hpm < 1 || hpm < hp)
         {

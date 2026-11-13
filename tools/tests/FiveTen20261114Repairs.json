@@ -211,6 +211,16 @@
       "old": "    static bool HandleModifyDrunkCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint8 drunklevel = (uint8)atoi(args);\n        if (drunklevel > 100)\n            drunklevel = 100;\n\n        if (Player* target = handler->getSelectedPlayer())\n            target->SetDrunkValue(drunklevel);\n\n        return true;\n    }",
       "new": "    static bool HandleModifyDrunkCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 drunklevel;\n        if (!Trinity::ParseCommandInteger(args, drunklevel))\n            return false;\n        if (drunklevel > 100)\n            drunklevel = 100;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target || handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        target->SetDrunkValue(uint8(drunklevel));\n\n        return true;\n    }",
       "batch": 3
+    },
+    {
+      "key": "ModifyHPCheckedValue",
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyHPCommand",
+      "kind": "modify",
+      "case": "HP",
+      "old": "    static bool HandleModifyHPCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        int32 hp = atoi((char*)args);\n        int32 hpm = atoi((char*)args);\n\n        if (hp < 1 || hpm < 1 || hpm < hp)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        handler->PSendSysMessage(LANG_YOU_CHANGE_HP, handler->GetNameLink(target).c_str(), hp, hpm);\n        if (handler->needReportToTarget(target))\n            (ChatHandler(target)).PSendSysMessage(LANG_YOURS_HP_CHANGED, handler->GetNameLink().c_str(), hp, hpm);\n\n        target->SetMaxHealth(hpm);\n        target->SetHealth(hp);\n\n        return true;\n    }",
+      "new": "    static bool HandleModifyHPCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        int32 hp;\n        if (!Trinity::ParseCommandInteger(args, hp))\n            return false;\n        int32 const hpm = hp;\n\n        if (hp < 1 || hpm < 1 || hpm < hp)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        handler->PSendSysMessage(LANG_YOU_CHANGE_HP, handler->GetNameLink(target).c_str(), hp, hpm);\n        if (handler->needReportToTarget(target))\n            (ChatHandler(target)).PSendSysMessage(LANG_YOURS_HP_CHANGED, handler->GetNameLink().c_str(), hp, hpm);\n\n        target->SetMaxHealth(hpm);\n        target->SetHealth(hp);\n\n        return true;\n    }",
+      "batch": 3
     }
   ],
   "extra_edits": [
@@ -262,7 +272,7 @@
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "a2c3dfa2e67bc324b27a3f8e04222c43ceb5bd2ec909dc0f98441fc990669dcd",
-      "after_sha256": "06355f2a17eef74fbab0be6e63ab63c2ce7cc24acdbb2fb5fb3845070f0d665a"
+      "after_sha256": "19735fc700ab110c0c575d6ed02a6b8015173d86d6c597e4e4477e2d66ec30dc"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "0fa980194c4399bed9bdfd37286968e29234275106b47327120f7142268216f5",
