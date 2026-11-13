@@ -1423,11 +1423,17 @@ public:
             return false;
         }
 
+        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
+            return false;
+
         char* scurrencyId = strtok((char*)args, " ");
         if (!scurrencyId)
             return false;
 
-        CurrencyTypesEntry const* currencyType = sCurrencyTypesStore.LookupEntry(atoi(scurrencyId));
+        uint32 currencyId;
+        if (!Trinity::ParseCommandInteger(scurrencyId, currencyId))
+            return false;
+        CurrencyTypesEntry const* currencyType = sCurrencyTypesStore.LookupEntry(currencyId);
         if (!currencyType)
             return false;
 
@@ -1435,11 +1441,16 @@ public:
         if (!samount)
             return false;
 
-        int32 amount = atoi(samount);
-        if (!amount)
+        int32 amount;
+        if (!Trinity::ParseCommandInteger(samount, amount) || !amount)
             return false;
 
-        target->ModifyCurrency(currencyType->ID, amount * sDB2Manager.GetCurrencyPrecision(currencyType->ID), true, true, false, false);
+        double const preciseAmount = double(amount) * sDB2Manager.GetCurrencyPrecision(currencyType->ID);
+        if (!std::isfinite(preciseAmount) || preciseAmount < std::numeric_limits<int32>::min() ||
+            preciseAmount > std::numeric_limits<int32>::max())
+            return false;
+
+        target->ModifyCurrency(currencyType->ID, int32(preciseAmount), true, true, false, false);
 
         return true;
     }
