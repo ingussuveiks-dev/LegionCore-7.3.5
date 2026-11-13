@@ -1165,7 +1165,9 @@ public:
     //play npc emote
     static bool HandleNpcPlayEmoteCommand(ChatHandler* handler, const char* args)
     {
-        uint32 emote = atoi((char*)args);
+        uint32 emote;
+        if (!Trinity::ParseCommandInteger(args, emote) || (emote && !sEmotesStore.LookupEntry(emote)))
+            return false;
 
         Creature* target = handler->getSelectedCreature();
         if (!target)
