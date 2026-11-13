@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_10_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 10,
+  "status": "IN_PROGRESS_11_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 11,
   "batches": [
     {
       "batch": 1,
@@ -86,10 +86,44 @@
         "retained_rollback": ".codex/release-before-five-ten-20261114-batch1",
         "preserved": "Canonical libs/extracted data/config/cert/DLLs,original LINK2/Slaghammer/mixedDBErrors and separate artifact static report. No quarantined executable touched."
       }
+    },
+    {
+      "batch": 2,
+      "repairs": [
+        {
+          "key": "ModifyMoneyNative64",
+          "path": "src/server/scripts/Commands/cs_modify.cpp",
+          "summary": "Strict signed64 money delta,safe INT64_MIN magnitude/full-width messages and actual rejected-ModifyMoney receipt;preserve existing cap policy."
+        }
+      ],
+      "checks": {
+        "source_asan": "357 complete selected production method contexts,including228 new cases;retained37 go-quest cases are separate. Controlled services do not mutate real characters/accounts/world data. Actual Player::ModifyMoney source is extracted,not a mirrored arithmetic model.",
+        "counterfactual": "Pinned original modify speed accepts NaN through comparisons and reaches controlled SetSpeed;expected-broken control paired with repaired finite-input cases.",
+        "native": "Linked native fmt formats positive/negative5000000000 without truncation;native MAX_MONEY_AMOUNT99999999999,MAX_POWERS19,field/movement enums and actual float parser checked. No DB or character writes.",
+        "release": "Original scripts library rebuild/staged link;all20 selected registrations/call paths checked staged and canonical. Finite exponent/tail rejection CFG precedes native setters;money checks actual ModifyMoney receipt before reporting success. Scepter -VerifyReleaseBinary passes.",
+        "analysis": "Focused cs_modify analysis exit0;pre-existing conversion/deprecation warnings reviewed. Separate whole artifact report retained open.",
+        "startup": "Owned canonical PID22848 fresh ready,shutdown0,exit0,empty stderr,gone. No user server stopped;config/certs/DLLs preserved.",
+        "diagnostics": "Final diagnostics no new/changed crashes,appended DBErrors or unexplained warnings/errors/assertions. Fixture field/initializer and missing native PCH include corrected;PE proof updated for inlined parser and actual scale virtual dispatch,each paired with passing final run. Original mixed7111-byte DBErrors and Slaghammer hash unchanged."
+      },
+      "canonical": {
+        "bnetserver.exe": "07ba57205311e565dc3b768caee89411fa8adc3ddd083d1f59ef74507d83084d",
+        "bnetserver.map": "7e468ed696062aad2b818d911f078f94656c385d8915ceb5153edb2075315cd5",
+        "worldserver.exe": "907a60fa91b79424c9ad99f489e7a53c666e3e97d421cf1495b16e10716851c0",
+        "worldserver.map": "326d3c36bca1a8389bc5d096b38ca4f2ba2a2b20dda75ff4db042bec62428c5c"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch2",
+        "manifest_sha256": "e0c9af51c4a8d9f8048489b3317629e918c26cd5927e3b6aaaffc4451c11cdff",
+        "archived_files": 233,
+        "removed_files": 104,
+        "reclaimed_bytes": 226858827.0,
+        "retained_rollback": ".codex/release-before-five-ten-20261114-batch2",
+        "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report."
+      }
     }
   ],
   "remaining": [
-    "40 newly authorized source repairs remain;continue the next independent group without waiting on actual client availability.",
+    "39 newly authorized source repairs remain;continue next independent groups.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

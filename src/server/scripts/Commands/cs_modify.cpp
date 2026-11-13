@@ -994,13 +994,17 @@ public:
         if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
             return false;
 
-        int64 addmoney = atoi((char*)args);
+        int64 addmoney;
+        if (!Trinity::ParseCommandInteger(args, addmoney))
+            return false;
 
         uint64 moneyuser = target->GetMoney();
 
         if (addmoney < 0)
         {
-            int64 newmoney = int64(moneyuser) + addmoney;
+            // This magnitude also handles INT64_MIN without signed overflow.
+            uint64 taken = uint64(-(addmoney + 1)) + 1;
+            uint64 newmoney = taken >= moneyuser ? 0 : moneyuser - taken;
 
             TC_LOG_DEBUG("misc", handler->GetTrinityString(LANG_CURRENT_MONEY), moneyuser, addmoney, newmoney);
             if (newmoney <= 0)
@@ -1016,25 +1020,25 @@ public:
                 if (newmoney > MAX_MONEY_AMOUNT)
                     newmoney = MAX_MONEY_AMOUNT;
 
-                handler->PSendSysMessage(LANG_YOU_TAKE_MONEY, abs(addmoney), handler->GetNameLink(target).c_str());
+                handler->PSendSysMessage(LANG_YOU_TAKE_MONEY, taken, handler->GetNameLink(target).c_str());
                 if (handler->needReportToTarget(target))
-                    (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_TAKEN, handler->GetNameLink().c_str(), abs(addmoney));
+                    (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_TAKEN, handler->GetNameLink().c_str(), taken);
                 target->SetMoney(newmoney);
             }
         }
         else
         {
-            handler->PSendSysMessage(LANG_YOU_GIVE_MONEY, uint32(addmoney), handler->GetNameLink(target).c_str());
-            if (handler->needReportToTarget(target))
-                (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_GIVEN, handler->GetNameLink().c_str(), uint32(addmoney));
-
-            if (addmoney >=MAX_MONEY_AMOUNT)
+            if (addmoney >= MAX_MONEY_AMOUNT)
                 target->SetMoney(MAX_MONEY_AMOUNT);
-            else
-                target->ModifyMoney(int64(addmoney));
+            else if (!target->ModifyMoney(addmoney))
+                return false;
+
+            handler->PSendSysMessage(LANG_YOU_GIVE_MONEY, uint64(addmoney), handler->GetNameLink(target).c_str());
+            if (handler->needReportToTarget(target))
+                (ChatHandler(target)).PSendSysMessage(LANG_YOURS_MONEY_GIVEN, handler->GetNameLink().c_str(), uint64(addmoney));
         }
 
-        TC_LOG_DEBUG("misc", handler->GetTrinityString(LANG_NEW_MONEY), moneyuser, uint32(addmoney), target->GetMoney());
+        TC_LOG_DEBUG("misc", "GM money change: before=%u delta=%d after=%u", moneyuser, addmoney, target->GetMoney());
         return true;
     }
 

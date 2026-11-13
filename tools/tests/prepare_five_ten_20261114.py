@@ -15,28 +15,30 @@ def block(source,start):
 def verify():
     for path,record in PLAN['files'].items():
         current=(ROOT/path).read_text(encoding='utf-8-sig')
-        original=subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path]).decode('utf-8-sig').replace('\r\n','\n')
+        original='' if record.get('added') else subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path]).decode('utf-8-sig').replace('\r\n','\n')
         assert hashlib.sha256(current.encode()).hexdigest()==record['after_sha256'],('Undeclared source change',path)
         assert hashlib.sha256(original.encode()).hexdigest()==record['before_sha256']
         for change in reversed(PLAN['changes']+PLAN['extra_edits']):
             if change['path']==path:
                 assert current.count(change['new'])==1
                 current=current.replace(change['new'],change['old'],1)
-        assert current==original,('Other gameplay changed',path)
+        if not record.get('added'):assert current==original,('Other gameplay changed',path)
 
 
-def prepare(out,baseline=False):
+def prepare(out,baseline=False,float_baseline=False):
     verify();out.mkdir(parents=True,exist_ok=True)
     selected=[];defines=[]
     for row in PLAN['changes']:
         kind=row['kind']
+        if float_baseline and row.get('case')!='Speed':continue
         if kind=='account_realm' and not baseline:
             defines.append('REPAIR_ACCOUNT_REALM')
         if kind in ('go','account_realm') or baseline and kind!='soul':
             continue
         source=(ROOT/row['path']).read_text(encoding='utf-8-sig')
-        code=block(source,'    static bool '+row['method']+'(') if kind!='soul' else row['old' if baseline else 'new']
+        code=row['old'] if float_baseline else block(source,'    static bool '+row['method']+'(') if kind!='soul' else row['old' if baseline else 'new']
         name={'waypoint':'Waypoint','account':'Account','cast':'Cast','titles':'Titles','soul':'Soul'}.get(kind)
+        if row.get('case'):name=row['case']
         if kind=='power':name={'HandleModifyEnergyCommand':'Energy','HandleModifyRageCommand':'Rage','HandleModifyRunicPowerCommand':'Runic'}[row['method']]
         if kind=='waypoint':
             boundary=code.index('            WorldDatabasePreparedStatement* stmt =')
@@ -45,18 +47,31 @@ def prepare(out,baseline=False):
         if kind=='soul':
             body=block(source,'enum Spells')+';'+block(source,'enum eAnim')+';'+re.search(r'uint32 AnimRand\[3\]\s*=\s*\{[^}]*\};',source)[0]+body
         selected.append('namespace Case'+name+' {\n'+body+'\n}')
-        defines.append('REPAIR_'+name.upper())
+        if float_baseline:defines.append('SPEED_FLOAT_BASELINE')
+        else:defines.append('REPAIR_'+name.upper())
+        if not float_baseline and kind in ('float','ilvl'):defines.append('REPAIR_FLOAT_ARGUMENT')
     joined='\n'.join(selected)
     headers='\n'.join((ROOT/p).read_text(encoding='utf-8-sig') for p in (
         'src/server/game/Miscellaneous/Language.h','src/server/game/Miscellaneous/SharedDefines.h',
-        'src/common/Common.h','src/server/game/AI/EventMap.h','src/server/game/Movement/MotionMaster.h'))
+        'src/common/Common.h','src/server/game/AI/EventMap.h','src/server/game/Movement/MotionMaster.h','src/server/game/Entities/Object/ObjectGuid.h','src/server/game/Entities/Item/Item.h'))
     constants=[]
-    for name in sorted(set(re.findall(r'\b(?:LANG_[A-Z_0-9]+|POWER_ENERGY|POWER_RAGE|POWER_RUNIC_POWER|SEC_CONSOLE|VISUAL_WAYPOINT|EVENT_1)\b',joined+(ROOT/'tools/tests/FiveTen20261114Test.cpp').read_text()))):
+    for name in sorted(set(re.findall(r'\b(?:LANG_[A-Z_0-9]+|EQUIP_ERR_TOO_MUCH_GOLD|TYPEID_PLAYER|SEC_CONSOLE|VISUAL_WAYPOINT|EVENT_1)\b',joined+(ROOT/'tools/tests/FiveTen20261114Test.cpp').read_text()))):
         match=re.search(r'\b'+name+r'\s*=\s*(\d+)\b',headers) or re.search(r'#define\s+'+name+r'\s+(\d+)\b',headers)
         assert match,('Missing native constant',name)
         constants.append('constexpr uint32 '+name+'='+match[1]+';')
+    unit=(ROOT/'src/server/game/Entities/Unit/Unit.h').read_text(encoding='utf-8-sig')
+    shared=(ROOT/'src/server/game/Miscellaneous/SharedDefines.h').read_text(encoding='utf-8-sig')
+    player=(ROOT/'src/server/game/Entities/Player/Player.h').read_text(encoding='utf-8-sig')
+    constants += [block(unit,'enum '+name)+';' for name in ('UnitMoveType','UpdateStatsMask','CombatRating')]
+    constants += [block(shared,'enum Powers')+';',block(player,'enum PlayerAvgItemLevelOffsets')+';']
+    money=re.search(r'#define MAX_MONEY_AMOUNT\s+\(UI64LIT\((\d+)\)\)',player)
+    assert money
+    constants.append('constexpr uint64 MAX_MONEY_AMOUNT='+money[1]+'ULL;')
     constants.append((ROOT/'src/server/game/Entities/Object/Updates/UpdateFields.h').read_text(encoding='utf-8-sig'))
     constants.append(block((ROOT/'src/server/database/Database/Implementation/LoginDatabase.h').read_text(encoding='utf-8-sig'),'enum LoginDatabaseStatements')+';')
+    native_money=block((ROOT/'src/server/game/Entities/Player/Player.cpp').read_text(encoding='utf-8-sig'),'bool Player::ModifyMoney(')
+    native_money=native_money.replace('bool Player::ModifyMoney(','bool Unit::ModifyMoney(',1)
+    (out/'NativeModifyMoney.inc').write_text(native_money,encoding='utf-8')
     (out/'Selected.inc').write_text(joined,encoding='utf-8')
     (out/'Constants.inc').write_text('\n'.join(constants),encoding='utf-8')
     (out/'defines.txt').write_text(' '.join('/D'+d for d in defines)+(' /DSOUL_RANGE_BASELINE' if baseline else ''),encoding='utf-8')
@@ -68,4 +83,4 @@ if __name__=='__main__':
     if len(sys.argv)==1:
         verify();print('PASS exact first-ten source scope')
     else:
-        prepare(Path(sys.argv[1]),len(sys.argv)>2 and sys.argv[2]=='baseline')
+        prepare(Path(sys.argv[1]),len(sys.argv)>2 and sys.argv[2]=='baseline',len(sys.argv)>2 and sys.argv[2]=='float-baseline')
