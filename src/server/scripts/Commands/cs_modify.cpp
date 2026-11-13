@@ -1473,8 +1473,11 @@ public:
         if (!samount)
             return false;
 
-        float amount = atof(samount);
-        if (!amount)
+        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
+            return false;
+
+        float amount;
+        if (!Trinity::ParseCommandFloat(samount, amount) || !amount)
             return false;
 
         if (amount < 0.f || amount > 1000.f)
