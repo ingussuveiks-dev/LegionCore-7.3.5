@@ -1,9 +1,9 @@
 {
   "date": "2026-11-13",
-  "request": "Labi turpini ar 5×10",
+  "request": "Labi turpini ar 5Ã—10",
   "authorized_total": 50,
-  "completed_source_repairs": 14,
-  "status": "IN_PROGRESS_14_OF_50_PICKUP_SCENE_LOOP_OPEN",
+  "completed_source_repairs": 15,
+  "status": "IN_PROGRESS_15_OF_50_WARRIOR_CLIENT_MONDAY_PENDING",
   "baseline": "10100c1a87451150fc9118fc5e6e4ab4068f3c20",
   "batches": [
     {
@@ -139,8 +139,8 @@
     },
     {
       "batch": 2,
-      "implemented": 4,
-      "status": "IN_PROGRESS_4_OF_10",
+      "implemented": 5,
+      "status": "IN_PROGRESS_5_OF_10",
       "fix_commit": "90d842168b02cb75a2b440e24421cf3d2f419e63",
       "fixes": [
         {
@@ -163,19 +163,25 @@
         {
           "key": "WarswordsIntroAttackability",
           "audit": "docs/audits/warswords-attackability-2026-11-13.json",
-          "summary": "Publish native NON_ATTACKABLE through standing/blessing;remove at acknowledged ready engagement,retaining native Helya positive channel and original combat. Automated/native/canonical passed;client Monday pending."
+          "summary": "Publish native NON_ATTACKABLE through standing/blessing;remove at acknowledged ready engagement,retaining native Helya positive channel and original combat. Automated/native/canonical passed;client Monday pending.",
+          "fix_commit": "cb9cc208e88c38ca6b2e00380f80df0ca64ce15b"
+        },
+        {
+          "key": "WarriorFinitePickupSceneEnd",
+          "audit": "docs/audits/warrior-pickup-scene-expiry-2026-11-13.json",
+          "summary": "Actual finite9000ms Fury/Protection aura end acknowledges latest issued scene before cancellation.26 ASAN/native10/controller51/data23,retained equip/canonical PE/Scepter/startup pass;client Monday pending. One underlying repair across two exact scenes."
         }
       ],
-      "canonical_world_sha256": "8e3b05fbba014d251bf6a86749970377ff79b6c9bcdc4fef2d68ccd2789d1c5c",
-      "checks": "48 controlled ASAN/28 real native including4 blocked-LOS model cases;independent pre-policy counterfactual;canonical PE/Scepter/clean owned startup;actual client first-step transition/wave appearance with clean post-test diagnostics. Full chain remains separate."
+      "canonical_world_sha256": "a1b31921bb834ab1dd2831a14d003ef8555aabe0f37304981a78a0c7ee6fce66",
+      "checks": "Bonfire normal-cast/LOS and rune8386/99/46970 exactly-once native proofs retained;rune26 full native cases plus two old counterfactuals had zero blocked-LOS placements. Actual bonfire/rune4of4/final Vigfus transitions confirmed separately. Helya deferred normal aura,then intro protection and finite pickup scene repair have separate native/ASAN/canonical checks/audits;new client visuals/return Monday pending."
     }
   ],
   "remaining": [
-    "Authorized50:batch1 has10,batch2 has4;36 remain. Client pending limits retained separately.",
+    "Authorized50:batch1 has10,batch2 has5;35 remain. Client pending limits retained separately.",
     "Actual client boarding/visuals,pets,raid mechanics,Nighthold speech/movement/re-entry and GM command UI remain pending. No hidden task-owned server is left running.",
     "Static command analysis found a separate .go quest path using uninitialized map/coordinates for empty/incomplete POI data. Keep original37-file analysis reports outside fixed for the next repair. Third-party/header and unrelated analyzer findings remain reviewed separately;do not equate compiler exit0 with a clean analysis.",
     "Offline pet-battle legitimate-win rewards,authentic living Lady/Sharasdal finale,LINK2/Slaghammer/mixed DBErrors and all36 whole artifact chains retain their existing OPEN/client limits.",
-    "Final Fury Stage6 Helya195062 cast0/no immediate aura,repeated843 dialogue and unfinishable Vigfus are newly reproduced client issues;investigate the real cast/aura/intro path before changing progression or health."
+    "Final Vigfus native acknowledgement repaired/client victory confirmed. Requested intro protection and actual Fury/Protection finite pickup loop root repaired/deployed;Monday client attackability/animation/manual return pending."
   ],
-  "final_boss_followup": "Victory confirmed;intro protection repaired/deployed,Monday retest pending;pickup loop remains OPEN."
+  "final_boss_followup": "Victory confirmed;new protection and finite scene end receipts repaired/deployed. Monday client retest pending;whole Fury/Protection/all36 remain separate."
 }

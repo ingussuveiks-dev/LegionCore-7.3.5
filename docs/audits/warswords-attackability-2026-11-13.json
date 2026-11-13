@@ -1,7 +1,7 @@
 {
   "date": "2026-11-13",
   "status": "REPAIRED_DEPLOYED_AUTOMATED_NATIVE_PASSED_CLIENT_MONDAY_PENDING",
-  "fix_commit": "Focused implementation commit containing this audit",
+  "fix_commit": "cb9cc208e88c38ca6b2e00380f80df0ca64ce15b",
   "cause": "Final Vigfus only rejected combat/damage in AI; Reset published attackable flags during the standing/blessing intro.",
   "implementation": "Exact98602/map1511 Reset and canceled intro publish native NON_ATTACKABLE. IsEncounterReady gates removal immediately before native ScriptedAI engagement; acknowledged normal195062 and existing24s+7s ordering remain. Avoid IMMUNE_TO_NPC during positive Helya assist. Shared reuse and independent Spectre Rush flags remain unchanged; no new HP/death timer/item/credit grants.",
   "checks": {
@@ -127,7 +127,7 @@
     }
   },
   "remaining": [
-    "Actual pickup animation loop and return OPEN in separate native investigation. Native baseline proves finite9000ms205443 expiry erases scene instance before late completion. Not repaired by intro protection.",
+    "Pickup finite-scene lifecycle root repaired/deployed separately;see docs/audits/warrior-pickup-scene-expiry-2026-11-13.json. Actual animation/manual return Monday pending.",
     "Authentic living Lady/Sharasdal activation/surrender/1906/Grash cleanup,LINK2/Slaghammer,mixedDBErrors,all36 whole artifact chains remain OPEN."
   ]
 }

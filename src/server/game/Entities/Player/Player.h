@@ -3209,6 +3209,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         /*********************************************************/
         void SendSpellScene(uint32 miscValue, SpellInfo const* spellInfo, bool apply, Position* pos);
         void SceneCompleted(uint32 sceneID);
+        void CompleteActiveSpellScene(uint32 miscValue);
         bool HasSceneStatus(uint32 sceneID, SceneEventStatus const& status) const;
         void TrigerScene(uint32 instanceID, std::string const Event);
 

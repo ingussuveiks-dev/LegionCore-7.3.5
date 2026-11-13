@@ -86,7 +86,7 @@ struct SpellInfo {
 #else
 struct SpellInfo {};
 #endif
-struct SpellScene { uint32 PlaybackFlags = 21, SceneScriptPackageID = 1583, MiscValue = 0; };
+struct SpellScene { uint32 PlaybackFlags = 21, SceneScriptPackageID = 1583, MiscValue = 0, CustomDuration = 0; };
 struct SceneTriggerEvent { std::string Event; uint32 trigerSpell = 0, MonsterCredit = 0, MiscValue = 1220; };
 struct Message { uint32 instance; bool cancel; };
 namespace WorldPackets { namespace Scene {
@@ -105,11 +105,23 @@ struct CancelScene {
 };
 } }
 struct Player;
-struct Unit { virtual ~Unit() = default; virtual Player* ToPlayer() { return nullptr; } };
+struct Unit { virtual ~Unit() = default; virtual Player* ToPlayer() { return nullptr; }
+#ifdef WARSWORDS_SCENE_EXPIRY_TEST
+    virtual bool IsPlayer() const { return false; }
+    Position GetPosition() const { return {}; }
+#endif
+};
+struct AuraApplication;
 struct AuraEffect {
     uint32 scene = 1220, spell = 205589;
     uint32 GetMiscValue() const { return scene; }
     uint32 GetId() const { return spell; }
+#ifdef WARSWORDS_SCENE_EXPIRY_TEST
+    SpellInfo const* m_spellInfo = nullptr;
+    struct Base { uint32 duration = 9000; void SetDuration(uint32 value) { duration = value; } } base;
+    Base* GetBase() const { return const_cast<Base*>(&base); }
+    void HandleAuraActivateScene(AuraApplication const*, uint8_t, bool) const;
+#endif
 };
 using AuraEffectList = std::list<AuraEffect*>;
 struct PhaseManager { int updates = 0; void RemoveUpdateFlag(int flag) { assert(flag == 1); ++updates; } };
@@ -227,11 +239,15 @@ struct Player : Unit {
     }
 #endif
     Player* ToPlayer() override { return this; }
+#ifdef WARSWORDS_SCENE_EXPIRY_TEST
+    bool IsPlayer() const override { return true; }
+#endif
     uint32 GetMap(){return map;}
     bool InSamePhase(Player*){return true;}bool IsWithinDistInMap(Player*,float){return true;}
     bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(Player*){return true;}
     void SendSpellScene(uint32, SpellInfo const*, bool, Position*);
     void SceneCompleted(uint32);
+    void CompleteActiveSpellScene(uint32);
     bool HasSceneStatus(uint32, SceneEventStatus const&) const;
     void TrigerScene(uint32, std::string const);
     void SendDirectMessage(Message const* packet) { messages.push_back(*packet); }

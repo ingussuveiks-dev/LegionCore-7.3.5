@@ -1,0 +1,34 @@
+{
+  "baseline": "cb9cc208e",
+  "changes": [
+    {
+      "path": "src/server/game/Entities/Player/Player.h",
+      "old": "        void SceneCompleted(uint32 sceneID);",
+      "new": "        void SceneCompleted(uint32 sceneID);\n        void CompleteActiveSpellScene(uint32 miscValue);"
+    },
+    {
+      "path": "src/server/game/Entities/Player/Player.cpp",
+      "old": "void Player::SceneCompleted(uint32 instance)",
+      "new": "void Player::CompleteActiveSpellScene(uint32 miscValue)\n{\n    uint32 latest = 0;\n    for (auto const& scene : m_sceneInstanceID)\n        if (scene.second == miscValue && scene.first > latest)\n            latest = scene.first;\n    if (latest)\n        SceneCompleted(latest);\n}\n\nvoid Player::SceneCompleted(uint32 instance)"
+    },
+    {
+      "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+      "old": "void AuraEffect::HandleAuraActivateScene(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & AURA_EFFECT_HANDLE_REAL))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n    if (!target || !target->IsPlayer())\n        return;\n\n    Position pos = target->GetPosition();\n\n    target->ToPlayer()->SendSpellScene(GetMiscValue(), m_spellInfo, apply, &pos);\n\n    if (apply)\n    {\n        SpellScene const* spellScene = sSpellMgr->GetSpellScene(GetMiscValue());\n        if (!spellScene)\n            return;\n\n        if (uint32 duration = spellScene->CustomDuration)\n            GetBase()->SetDuration(duration);\n    }\n}",
+      "new": "void AuraEffect::HandleAuraActivateScene(AuraApplication const* aurApp, uint8 mode, bool apply) const\n{\n    if (!(mode & AURA_EFFECT_HANDLE_REAL))\n        return;\n\n    Unit* target = aurApp->GetTarget();\n    if (!target || !target->IsPlayer())\n        return;\n\n    Position pos = target->GetPosition();\n\n    // This authored finite pickup aura ends the scene itself. A subsequent\n    // client completion cannot acknowledge an instance already canceled by\n    // SendSpellScene(false), and recovery would replay the pickup forever.\n    // Early removal retains ordinary cancellation/retry, without completion.\n    if (!apply && aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)\n    {\n        uint32 expectedMap = 0, expectedPackage = 0;\n        if (GetId() == 205443 && GetMiscValue() == 1218)\n        {\n            expectedMap = 1511;\n            expectedPackage = 1580;\n        }\n        else if (GetId() == 205340 && GetMiscValue() == 1215)\n        {\n            expectedMap = 1495;\n            expectedPackage = 1575;\n        }\n        Player* player = target->ToPlayer();\n        SpellScene const* scene = expectedMap ? sSpellMgr->GetSpellScene(GetMiscValue()) : nullptr;\n        if (scene && player->getClass() == CLASS_WARRIOR && player->GetMapId() == expectedMap &&\n            scene->SceneScriptPackageID == expectedPackage && scene->PlaybackFlags == 21 && !scene->CustomDuration)\n            player->CompleteActiveSpellScene(GetMiscValue());\n    }\n\n    target->ToPlayer()->SendSpellScene(GetMiscValue(), m_spellInfo, apply, &pos);\n\n    if (apply)\n    {\n        SpellScene const* spellScene = sSpellMgr->GetSpellScene(GetMiscValue());\n        if (!spellScene)\n            return;\n\n        if (uint32 duration = spellScene->CustomDuration)\n            GetBase()->SetDuration(duration);\n    }\n}"
+    }
+  ],
+  "files": {
+    "src/server/game/Entities/Player/Player.h": {
+      "before_sha256": "b0a0784f4af1682d41aec827aabb2fed146e140c2587624dac412f0768829e43",
+      "after_sha256": "231c8a0bb49ad716bc8d1e36ffb4b536be8e67c677e7bb4ce2c4fc43c86be39b"
+    },
+    "src/server/game/Entities/Player/Player.cpp": {
+      "before_sha256": "b2e5bd6603b35d73ad16d1ec7a91b92ed54f8242c1b2abcd9d73ecf2a1779f17",
+      "after_sha256": "386dda28f846594569707c9ca120900f0b0576c0420fbf09c862285d775a809c"
+    },
+    "src/server/game/Spells/Auras/SpellAuraEffects.cpp": {
+      "before_sha256": "306fda2656a5611c2b8b4b4285dcd53b05614b90fec2f64ce0938a60933b5d11",
+      "after_sha256": "62339bbab387f88464f13bdbb44fb3014a33dee754a5baa2808fcb44a6aa83e5"
+    }
+  }
+}

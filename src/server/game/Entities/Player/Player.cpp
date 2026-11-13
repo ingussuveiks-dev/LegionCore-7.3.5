@@ -37323,6 +37323,16 @@ SCENE_COMPLETE      = 2,
 };
 
 */
+void Player::CompleteActiveSpellScene(uint32 miscValue)
+{
+    uint32 latest = 0;
+    for (auto const& scene : m_sceneInstanceID)
+        if (scene.second == miscValue && scene.first > latest)
+            latest = scene.first;
+    if (latest)
+        SceneCompleted(latest);
+}
+
 void Player::SceneCompleted(uint32 instance)
 {
     auto data = m_sceneInstanceID.find(instance);

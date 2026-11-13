@@ -9009,6 +9009,30 @@ void AuraEffect::HandleAuraActivateScene(AuraApplication const* aurApp, uint8 mo
 
     Position pos = target->GetPosition();
 
+    // This authored finite pickup aura ends the scene itself. A subsequent
+    // client completion cannot acknowledge an instance already canceled by
+    // SendSpellScene(false), and recovery would replay the pickup forever.
+    // Early removal retains ordinary cancellation/retry, without completion.
+    if (!apply && aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+    {
+        uint32 expectedMap = 0, expectedPackage = 0;
+        if (GetId() == 205443 && GetMiscValue() == 1218)
+        {
+            expectedMap = 1511;
+            expectedPackage = 1580;
+        }
+        else if (GetId() == 205340 && GetMiscValue() == 1215)
+        {
+            expectedMap = 1495;
+            expectedPackage = 1575;
+        }
+        Player* player = target->ToPlayer();
+        SpellScene const* scene = expectedMap ? sSpellMgr->GetSpellScene(GetMiscValue()) : nullptr;
+        if (scene && player->getClass() == CLASS_WARRIOR && player->GetMapId() == expectedMap &&
+            scene->SceneScriptPackageID == expectedPackage && scene->PlaybackFlags == 21 && !scene->CustomDuration)
+            player->CompleteActiveSpellScene(GetMiscValue());
+    }
+
     target->ToPlayer()->SendSpellScene(GetMiscValue(), m_spellInfo, apply, &pos);
 
     if (apply)

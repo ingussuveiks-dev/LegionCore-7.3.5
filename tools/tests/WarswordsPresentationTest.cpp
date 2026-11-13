@@ -49,6 +49,7 @@ struct Pickup {
         if (cancel) session.HandleScenePlaybackCanceled(packet); else session.HandleScenePlaybackComplete(packet);
     }
 };
+#ifndef WARSWORDS_SCENE_EXPIRY_TEST
 int main() {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
 #ifdef BASELINE
@@ -136,3 +137,4 @@ int main() {
     std::cout << "PASS: actual scene/packet lifecycle -> scoped1218/1580 callback -> native194201 effect; existing blade/child swap, completed/cancelled/forged/stale/repeated/abandoned context and failed equip; native194201 progression/group effects are source-traced separately, not executed by this host\n";
 #endif
 }
+#endif

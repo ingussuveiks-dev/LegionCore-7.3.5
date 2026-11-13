@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-13",
+  "status": "REPAIRED_BOTH_WARRIOR_PICKUP_SCENES_DEPLOYED_CLIENT_MONDAY_PENDING",
+  "fix_commit": "Focused implementation commit containing this audit",
+  "reported": "User received Fury weapons but pickup animation repeated and could not test return. Also requested Vigfus intro attackability;that separate fix cb9cc208e is already deployed.",
+  "cause": "Native205443/1218 and205340/1215 are finite9000ms aura430 scenes. Natural expiry formerly called SendSpellScene(false),canceling/erasing active instance while leaving scene status incomplete. Late complete packets then have no matching receipt;the shared manual return controller correctly refuses to infer completion and restarts a missing scene. Earlier fixtures completed the packet before expiry and missed the actual finite-Aura ordering.",
+  "implementation": [
+    "Only natural AURA_REMOVE_BY_EXPIRE for exact Fury205443/1218/map1511/package1580 or Protection205340/1215/map1495/package1575,Warrior,original flags21/customDuration0 completes the latest actual matching scene before ordinary cancellation. Early cancel/death/default removal and other scenes retain native behavior. No added/guessed scene timer.",
+    "CompleteActiveSpellScene selects the largest matching issued active instance and dispatches ordinary SceneCompleted. Existing native scene status,script admission,quest/scenario/owned-item/equipment and off-spec storage rules remain authoritative. No new item/progression/teleport/automatic departure or specialization change.",
+    "The original9s aura already canceled the scene at expiry;this repair preserves an authored native end receipt. It does not establish that every client has rendered the full scene by that point;actual visual timing/voice/return remain Monday checks."
+  ],
+  "checks": {
+    "source_scope": "Exact three-file delta and full before/after hashes againstcb9cc208e;no SQL or ScriptName changes.",
+    "counterfactual": "Actual pre-fix native205443 finite Aura proves expiration clears instance before late completion,leaving incomplete status. Independently pinnedcb9 source ASAN reproduces the same complete native lifecycle. Fury-only intermediate native8 confirms Protection still fails before adding its exact bridge;not an ordinary successful whole-quest run.",
+    "asan": "26 full extracted aura/native scene/equip callback cases:natural expiry/early packet/late duplicate/stale issued instances,strict tuples/class/map/metadata,early removal/death/cancel,missing item/bank-only/inactive/rewarded/dead/wrong stage and unrelated scene preservation. Existing pair equipment endpoints controlled.",
+    "native": "Final10 real finite Aura/Player cases:two native scenes x natural expiry,cancel,early packet,wrong class,duplicate issued instance. Exact9000ms metadata and real AuraApplication byte0x10/native enum4 setter/getter layout independently checked/restored. Native Player/Spell/Aura with read-only DB,ephemeral character;no client/controller/whole-quest traversal inferred.",
+    "return_controller": "51 existing ASAN Fury/Protection controller contexts,real publication clock functions,actual equipment ACK/offspec storage/bag/spawn/area/owner-only manual gaze/receipt/logout/retry guards pass.23 actual live predicates/updater readback and TEMP idempotence/custom-branch refusal pass;no live rows changed.",
+    "retained": "Both existing Warswords/Earthwarder presentation/native force-equip/scene lifecycle and guarded TEMP-binding/catalog suites pass after shared fixture update.",
+    "linked": "Full retained linked scopes plus exact natural expiry before cancellation,latest issued scene selection/nonzero conditional native tail dispatch. Actual inlined GetRemoveMode byte matches independent native bitfield proof;existing64-byte leaf reader bounds the new helper. No decoder bound enlarged.",
+    "canonical": "Canonical PE/Scepter and owned PID31980 fresh ready/graceful shutdown0/exit0/gone,empty stderr,protected hashes unchanged.",
+    "client": "Monday2026-11-16 pending:pickup animation once,legitimate weapon/pair storage or equip,manual return source/gaze,transfer/arrival/turn-in,pets/camera/relog. User receipt and final Vigfus victory were confirmed before these changes;no full Fury/Protection/all36 certificate."
+  },
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "a1b31921bb834ab1dd2831a14d003ef8555aabe0f37304981a78a0c7ee6fce66",
+    "bnet_sha256": "70b0acba269ecdb61ca955072ff69348c404b4e93ce04a632057a3ca42a921ac"
+  },
+  "diagnostics": "Final tests/native/PE/startup create no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions. Mixed canonicalDBErrors7111 bytes/fa3db826... remains unchanged. Earlier fixture/inspection failures retained and paired with corrected passes;compiler warnings remain visible.",
+  "evidence": {
+    "local": ".codex\\warswords-scene-expiry-20261113",
+    "native_final": "build-extractors\\runtime-test\\warswords-scene-expiry-native\\20261113-173150-162",
+    "controlled_models": "build-extractors\\runtime-test\\warswords-scene-expiry",
+    "client": ".codex/warswords-artifact-client-20261113"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\warswords-scene-expiry-20261113",
+    "archive_manifest_sha256": "d9220094b42cfabafb0cb27c3f3ab841d92a96e21025b79e2ec1bdaeb805c2e7",
+    "archived_files": 404,
+    "reclaimed_bytes": 1451947214,
+    "protected_hashes_verified": 23,
+    "retained_rollbacks": [
+      "release-before-warswords-scene-expiry-20261113",
+      "release-before-warswords-attackability-20261113",
+      "release-before-five-ten-20261113",
+      "release-before-pet-ward-rot-2026-11-12"
+    ],
+    "superseded_rollbacks": [
+      "release-before-warswords-helya-ack-build-20261113",
+      "release-before-warswords-runestone-build-20261113"
+    ],
+    "deferred": [],
+    "limits": "No active log truncated/rotated. No user process stopped. Native counterfactual,intermediate Fury-only control and final paired fixtures preserved as records. Early protected-member fixture compile and inlined-getter/leaf PE assumptions corrected;ordinary final checks clean. Original client pickup interval stays outside fixed pending Monday. Original mixedDBErrors/Slaghammer/offline research/canonical/libs/config/DLL/data preserved."
+  },
+  "remaining": [
+    "Actual client animation/return/equipment/pet/camera checks remain Monday. No client authentication automated or task-owned server left running.",
+    "Authentic living Lady/Sharasdal activation/surrender/1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors and all36 whole artifact chains remain OPEN;no HP threshold or killing timer invented.",
+    "Other older audit limits require current source/history reconciliation before claiming repairs. Fu Zan intro acknowledgement was already repaired2026-11-01;do not redo it from the stale AGENTS paragraph."
+  ]
+}
