@@ -127,8 +127,10 @@ public:
         if (!*args)
             return false;
 
-        int32 mana = atoi((char*)args);
-        int32 manam = atoi((char*)args);
+        int32 mana;
+        if (!Trinity::ParseCommandInteger(args, mana))
+            return false;
+        int32 const manam = mana;
 
         if (mana <= 0 || manam <= 0 || manam < mana)
         {
