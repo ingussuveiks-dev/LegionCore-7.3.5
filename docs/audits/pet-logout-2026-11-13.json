@@ -2,7 +2,7 @@
   "date": "2026-11-13",
   "request": "Labi turpini",
   "status": "SCOPED_LOGOUT_AND_OWNED_JOURNAL_REPAIRED_DEPLOYED_CLIENT_PENDING",
-  "fix_commit": null,
+  "fix_commit": "0237851a0e83ab3c83a243f0593b7685b74a6667",
   "baseline": "59489d127824dbcdc192feb82526342e2d1012d8",
   "title": "Finalize pet battles against the departing player before save and persist detached owned pet health",
   "cause": "Logout can detach a Player before WorldSession::LogoutPlayer saves it. PetBattle::Finish used world-filtered lookup for journal updates and release,so it skipped that Player. The battle could remain in CREATION/RUNNING,or finish without saving health/penalty. A late ordinary ForfeitBattle also fails the existing webbed guard and cannot safely read an uninitialized creation ActivePetID. During matchmaking far-transfer,SaveToDB chooses the pending destination rather than only the relocated current pose.",
@@ -58,5 +58,6 @@
     "Global FindPlayer(guid,false) still ignores its flag;Stormheim blessing owner cleanup across detachment needs its own native regression. Original mixed offline research/probe/configuration remains outside fixed with verified hashes.",
     "Haunt,remaining unbound183 passives,Crumble full percentage/unavoidable policy,Apocalypse/clones/generic159 remain OPEN.",
     "Living Lady activation/surrender/conversation1906/Grash/cleanup,LINK2/Slaghammer,mixedDBErrors,original intermittent handshake cause and all36 complete artifact chains remain OPEN. No client authentication or hidden task-owned server retained."
-  ]
+  ],
+  "commit_status": "Focused implementation,regressions and audit pushed to origin/main;metadata recorded separately."
 }

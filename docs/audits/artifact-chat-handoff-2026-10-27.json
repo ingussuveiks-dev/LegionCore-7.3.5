@@ -1,10 +1,25 @@
 {
+  "latest_pet_logout_repair_2026_11_13": {
+    "status": "SCOPED_LOGOUT_AND_OWNED_JOURNAL_REPAIRED_DEPLOYED_CLIENT_PENDING",
+    "audit": "docs\\audits\\pet-logout-2026-11-13.json",
+    "fix_commit": "0237851a0e83ab3c83a243f0593b7685b74a6667",
+    "canonical_world_sha256": "70234bcceb680e5f0ee179d03be0c1764072a1f73caa506a7e39a26e57c52149",
+    "checks": "44 native endpoints,24 actual full-session scratch saves including pending matchmaking transfer,3 pinned PetBattle controls plus pending-save projection;retained native/PE,Scepter and owned final ready/shutdown0/exit0. Client traversal pending.",
+    "remaining": [
+      "Actual735 client disconnect/reconnect,webbed presentation,pet UI and matchmaking camera/arrival remain pending. Native scratch readback is not actual client traversal.",
+      "Legitimate wins finalized while a Player is temporarily outside the world still need a complete durable XP/achievement/capture/trainer reward-delivery design;this repair saves the bound journal and handles genuine logout losses. Do not fabricate offline reward/player progression.",
+      "Global FindPlayer(guid,false) still ignores its flag;Stormheim blessing owner cleanup across detachment needs its own native regression. Original mixed offline research/probe/configuration remains outside fixed with verified hashes.",
+      "Haunt,remaining unbound183 passives,Crumble full percentage/unavoidable policy,Apocalypse/clones/generic159 remain OPEN.",
+      "Living Lady activation/surrender/conversation1906/Grash/cleanup,LINK2/Slaghammer,mixedDBErrors,original intermittent handshake cause and all36 complete artifact chains remain OPEN. No client authentication or hidden task-owned server retained."
+    ]
+  },
   "latest_pet_offline_investigation_2026_11_13": {
     "status": "OPEN_NATIVE_OFFLINE_COUNTERFACTUAL_OBSERVED_NO_GAMEPLAY_REPAIR",
     "audit": "docs/audits/pet-offline-research-2026-11-13.json",
     "native_observations": 12,
     "finding": "Ordinary world-session logout first detaches the Player through Map::RemovePlayerFromMap(false),then reaches LogoutPlayer/save. GetObjectInWorld(Player) filters IsInWorld and IsPreDelete. PetBattle::Finish uses it for both journal update and release,so an already detached but still allocated/registered Player is skipped. The new pending-arrival cleanup removes only its timer record;it intentionally does not settle or save the battle.",
-    "next": "Implement and validate a bounded departing-player lifecycle after establishing native forced/voluntary exit semantics;do not add only a late forfeit call. Completed arrival fix88296e5dd remains deployed. User absence does not block independent source/native work."
+    "next": "Implement and validate a bounded departing-player lifecycle after establishing native forced/voluntary exit semantics;do not add only a late forfeit call. Completed arrival fix88296e5dd remains deployed. User absence does not block independent source/native work.",
+    "superseded_logout_journal_scope": "docs\\audits\\pet-logout-2026-11-13.json"
   },
   "latest_pet_arrival_start_2026_11_13": {
     "status": "SCOPED_ARRIVAL_DELAY_REPAIRED_DEPLOYED_NATIVE_AND_ASAN_PASS_CLIENT_PENDING",

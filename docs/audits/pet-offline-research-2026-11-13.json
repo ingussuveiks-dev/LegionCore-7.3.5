@@ -108,5 +108,11 @@
     }
   ],
   "archive_policy": "This unresolved research,including original failed lookup assumption and the corrected native probe/configuration/output,is retained outside fixed with a concrete outstanding purpose:compare the actual repaired logout/save path against known-broken endpoints. No unresolved log cleared or crash hidden. Sensitive private config is ignored and never committed;only its hash is listed.",
-  "next": "Implement and validate a bounded departing-player lifecycle after establishing native forced/voluntary exit semantics;do not add only a late forfeit call. Completed arrival fix88296e5dd remains deployed. User absence does not block independent source/native work."
+  "next": "Implement and validate a bounded departing-player lifecycle after establishing native forced/voluntary exit semantics;do not add only a late forfeit call. Completed arrival fix88296e5dd remains deployed. User absence does not block independent source/native work.",
+  "latest_resolution": {
+    "status": "LOGOUT_AND_JOURNAL_REPAIRED_OTHER_OFFLINE_REWARD_LOOKUP_SCOPES_OPEN",
+    "audit": "docs\\audits\\pet-logout-2026-11-13.json",
+    "note": "Original12 known-broken observations and exact research bytes remain historical,not erased. Actual logout now has a bound before-save lifecycle;original manual OnBeforeLogout-only projection is not the complete new session path. Offline legitimate-win reward delivery and shared FindPlayer flag remain OPEN.",
+    "fix_commit": "0237851a0e83ab3c83a243f0593b7685b74a6667"
+  }
 }
