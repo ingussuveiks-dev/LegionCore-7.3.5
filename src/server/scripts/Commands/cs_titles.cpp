@@ -25,6 +25,7 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ObjectMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 
 class titles_commandscript : public CommandScript
 {
@@ -205,7 +206,8 @@ public:
 
         uint64 titles = 0;
 
-        sscanf((char*)args, UI64FMTD, &titles);
+        if (!Trinity::ParseCommandInteger(args, titles))
+            return false;
 
         Player* target = handler->getSelectedPlayer();
         if (!target)
@@ -223,7 +225,8 @@ public:
 
         for (uint32 i = 1; i < sCharTitlesStore.GetNumRows(); ++i)
             if (CharTitlesEntry const* tEntry = sCharTitlesStore.LookupEntry(i))
-                titles2 &= ~(uint64(1) << tEntry->MaskID);
+                if (tEntry->MaskID >= 0 && tEntry->MaskID < 64)
+                    titles2 &= ~(uint64(1) << tEntry->MaskID);
 
         titles &= ~titles2;                                     // remove not existed titles
 

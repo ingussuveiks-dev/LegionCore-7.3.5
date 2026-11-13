@@ -46,6 +46,15 @@
       "old": "    static bool HandleCastDistCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form\n        uint32 spellId = handler->extractSpellIdFromLink((char*)args);\n        if (!spellId)\n            return false;\n\n        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);\n        if (!spellInfo)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_NOSPELLFOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!SpellMgr::IsSpellValid(spellInfo, handler->GetSession()->GetPlayer()))\n        {\n            handler->PSendSysMessage(LANG_COMMAND_SPELL_BROKEN, spellId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* distStr = strtok(NULL, \" \");\n\n        float dist = 0;\n\n        if (distStr)\n            sscanf(distStr, \"%f\", &dist);\n\n        char* triggeredStr = strtok(NULL, \" \");\n        if (triggeredStr)\n        {\n            int l = strlen(triggeredStr);\n            if (strncmp(triggeredStr, \"triggered\", l) != 0)\n                return false;\n        }\n\n        bool triggered = (triggeredStr != NULL);\n\n        float x, y, z;\n        handler->GetSession()->GetPlayer()->GetClosePoint(x, y, z, dist);\n\n        handler->GetSession()->GetPlayer()->CastSpell(x, y, z, spellId, triggered);\n\n        return true;\n    }",
       "new": "    static bool HandleCastDistCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form\n        uint32 spellId = handler->extractSpellIdFromLink((char*)args);\n        if (!spellId)\n            return false;\n\n        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);\n        if (!spellInfo)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_NOSPELLFOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!SpellMgr::IsSpellValid(spellInfo, handler->GetSession()->GetPlayer()))\n        {\n            handler->PSendSysMessage(LANG_COMMAND_SPELL_BROKEN, spellId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* distStr = strtok(NULL, \" \");\n\n        float dist = 0;\n\n        if (distStr)\n        {\n            char* end = nullptr;\n            dist = std::strtof(distStr, &end);\n            if (end == distStr || *end || !std::isfinite(dist))\n                return false;\n        }\n\n        char* triggeredStr = strtok(NULL, \" \");\n        if (triggeredStr)\n        {\n            int l = strlen(triggeredStr);\n            if (strncmp(triggeredStr, \"triggered\", l) != 0)\n                return false;\n        }\n\n        bool triggered = (triggeredStr != NULL);\n\n        float x, y, z;\n        handler->GetSession()->GetPlayer()->GetClosePoint(x, y, z, dist);\n\n        handler->GetSession()->GetPlayer()->CastSpell(x, y, z, spellId, triggered);\n\n        return true;\n    }",
       "batch": 1
+    },
+    {
+      "key": "TitlesMaskNativeWidth",
+      "path": "src/server/scripts/Commands/cs_titles.cpp",
+      "method": "HandleTitlesSetMaskCommand",
+      "kind": "titles",
+      "old": "    static bool HandleTitlesSetMaskCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint64 titles = 0;\n\n        sscanf((char*)args, UI64FMTD, &titles);\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        uint64 titles2 = titles;\n\n        for (uint32 i = 1; i < sCharTitlesStore.GetNumRows(); ++i)\n            if (CharTitlesEntry const* tEntry = sCharTitlesStore.LookupEntry(i))\n                titles2 &= ~(uint64(1) << tEntry->MaskID);\n\n        titles &= ~titles2;                                     // remove not existed titles\n\n        target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, titles);\n        handler->SendSysMessage(LANG_DONE);\n\n        if (!target->HasTitle(target->GetInt32Value(PLAYER_FIELD_PLAYER_TITLE)))\n        {\n            target->SetUInt32Value(PLAYER_FIELD_PLAYER_TITLE, 0);\n            handler->PSendSysMessage(LANG_CURRENT_TITLE_RESET, handler->GetNameLink(target).c_str());\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleTitlesSetMaskCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint64 titles = 0;\n\n        if (!Trinity::ParseCommandInteger(args, titles))\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        uint64 titles2 = titles;\n\n        for (uint32 i = 1; i < sCharTitlesStore.GetNumRows(); ++i)\n            if (CharTitlesEntry const* tEntry = sCharTitlesStore.LookupEntry(i))\n                if (tEntry->MaskID >= 0 && tEntry->MaskID < 64)\n                    titles2 &= ~(uint64(1) << tEntry->MaskID);\n\n        titles &= ~titles2;                                     // remove not existed titles\n\n        target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, titles);\n        handler->SendSysMessage(LANG_DONE);\n\n        if (!target->HasTitle(target->GetInt32Value(PLAYER_FIELD_PLAYER_TITLE)))\n        {\n            target->SetUInt32Value(PLAYER_FIELD_PLAYER_TITLE, 0);\n            handler->PSendSysMessage(LANG_CURRENT_TITLE_RESET, handler->GetNameLink(target).c_str());\n        }\n\n        return true;\n    }",
+      "batch": 1
     }
   ],
   "extra_edits": [
@@ -63,6 +72,11 @@
       "path": "src/server/scripts/Commands/cs_cast.cpp",
       "old": "#include \"SpellPackets.h\"",
       "new": "#include \"SpellPackets.h\"\n#include <cmath>\n#include <cstdlib>"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_titles.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\""
     }
   ],
   "files": {
@@ -77,6 +91,10 @@
     "src/server/scripts/Commands/cs_go.cpp": {
       "before_sha256": "8c05cfb18957e8d06aee0974412a7cd0cf62ff962dd4372184a127652ab9708f",
       "after_sha256": "e398b25d3880c92bf76ffad858992bf5fb2f50c94f346cd9b4ef3b8b480b3505"
+    },
+    "src/server/scripts/Commands/cs_titles.cpp": {
+      "before_sha256": "0fa980194c4399bed9bdfd37286968e29234275106b47327120f7142268216f5",
+      "after_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb"
     },
     "src/server/scripts/Commands/cs_wp.cpp": {
       "before_sha256": "459cdc68e675958f2bd6a3bd78dd61042c064439091c21f139a0de245b19b9d8",
