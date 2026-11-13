@@ -11185,6 +11185,7 @@
     "status": "ASHBRINGER_REMOVE_ORIGINAL_AI_DISPATCH_REPAIRED_DEPLOYED_CLIENT_PENDING",
     "audit": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json",
     "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
-    "scope": "Exact216690 removal dispatch prefers native suspended content,then current;missing both diagnosed.16ASAN+native3/old2/canonical checks,not full775."
+    "scope": "Exact216690 removal dispatch prefers native suspended content,then current;missing both diagnosed.16ASAN+native3/old2/canonical checks,not full775.",
+    "fix_commit": "3ec04a779288c48230bea6c68cd37c13d26aa3ad"
   }
 }

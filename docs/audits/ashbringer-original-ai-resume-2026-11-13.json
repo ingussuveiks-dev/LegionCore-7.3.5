@@ -1,7 +1,7 @@
 {
   "date": "2026-11-13",
   "status": "ASHBRINGER_REMOVE_ORIGINAL_AI_DISPATCH_REPAIRED_DEPLOYED_CLIENT_PENDING",
-  "fix_commit": "Focused implementation commit containing this audit",
+  "fix_commit": "3ec04a779288c48230bea6c68cd37c13d26aa3ad",
   "scope": "Existing216690 OnRemove only:actual native90981/30yd search and DoAction1;no new source/stage admission,AI regeneration,surrender,loot,button or whole775 implementation.",
   "cause": "The native aura remove callback assumed the nearest living Balnazzar always has a current AI and called it directly. A native suspended original plus a temporary current AI sends combat resume to the replacement;without a current AI the same expression dereferences null.",
   "implementation": "Select native GetDisabledAI first,then ordinary current Creature::AI. Dispatch original DoAction1 only for an available pointer. Missing both retains a warning and no fabricated action/progression or actor. Existing target/null/nearest30yd policy,apply/update hooks,4000+8000 timers,217042 retry,stage criteria,HP/credit/loot/faction and all other script bodies remain byte-scope unchanged.",

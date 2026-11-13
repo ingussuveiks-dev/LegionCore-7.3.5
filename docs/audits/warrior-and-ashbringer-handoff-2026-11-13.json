@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-13",
+  "status": "THREE_FOCUSED_REPAIRS_DEPLOYED_PUSHED_CLIENT_MONDAY_PENDING",
+  "source_repairs": [
+    {
+      "audit": "docs/audits/warswords-attackability-2026-11-13.json",
+      "commit": "cb9cc208e88c38ca6b2e00380f80df0ca64ce15b",
+      "repair_record": "build-extractors\\bin\\Release\\fixed\\warswords-attackability-20261113\\repair-record.json",
+      "manifest_sha256": "3c5827c1f44aeaaeea2771070752f16617460984685c44294c4098fdb8d92e59"
+    },
+    {
+      "audit": "docs/audits/warrior-pickup-scene-expiry-2026-11-13.json",
+      "commit": "2e6f0d73953202bc7471c6315a242829a9968def",
+      "repair_record": "build-extractors\\bin\\Release\\fixed\\warswords-scene-expiry-20261113\\repair-record.json",
+      "manifest_sha256": "d9220094b42cfabafb0cb27c3f3ab841d92a96e21025b79e2ec1bdaeb805c2e7"
+    },
+    {
+      "audit": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json",
+      "commit": "3ec04a779288c48230bea6c68cd37c13d26aa3ad",
+      "repair_record": "build-extractors\\bin\\Release\\fixed\\ashbringer-resume-20261113\\repair-record.json",
+      "manifest_sha256": "96f9a5eccdd19494cb653209b1224f1f48e4f217408319b65a204bccdf3f8859"
+    }
+  ],
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
+    "bnet_sha256": "72ec84bd69d20d329ff907a034bc1a05bf289f0ca13b104b023fb2222216af83"
+  },
+  "actual_client_confirmed": [
+    "Fury bonfire starts Stage2/enemies;subsequent combat advances.",
+    "All four runestones count and scenario advances.",
+    "Final Vigfus defeated and next stage starts.",
+    "Weapons received;before current fixes,pickup animation looped and return was not tested."
+  ],
+  "monday_client_checks": [
+    "Vigfus standing/intro/blessing rejects attacks;after acknowledged aura/pause he engages and becomes attackable.",
+    "Fury pickup animation plays once;actual parent/child ownership or legitimate off-spec storage remains.",
+    "After original pickup dialogue ends,manual return source/gaze works,arrival/turn-in and camera/pet/relog remain normal.",
+    "Protection equivalent pickup/return and Ashbringer button/aura/combat handoff require their own class traversals."
+  ],
+  "progress": "Authorized batch ledger16/50;34 source repairs remain. All36 complete artifact chains have not been client-verified.",
+  "diagnostics": "Final automated/native/canonical startup checks clean. Ashbringer prototype PhaseId field-type assertion and context initialization errors were corrected and paired with clean native runs;original evidence is hash-archived. Canonical Crashes empty;existing mixed7111-byte DBErrors retained unchanged. Owned startup processes31204/31980/18824 all gracefully exited;no user server stopped or hidden server left running.",
+  "open": [
+    "Authentic living Lady/Sharasdal activation/surrender/1906/Grash finisher/cleanup. Native209457 carry target/capacity primitives already repaired on2026-11-08;no authoritative HP threshold or lethal timing recovered. Do not invent either.",
+    "Missing shared101430/103151 LINK2 payload,original Slaghammer evidence,mixedDBErrors and original intermittent handshake cause remain unresolved.",
+    "Other full-chain prerequisites/effects/audio/visuals/equipment/group/faction/pet/reconnect checks stay separate from source/native proofs.",
+    "Independent ignored .go quest destination draft has controlled ASAN21 proof but is not applied,deployed or counted;current priority is artifact work."
+  ],
+  "reconciliation": "Fu Zan original-player native2770 acknowledgement/recovery was already repaired2026-11-01. AGENTS paragraph updated to the existing audit/native code;this documentation correction is not a new gameplay repair.",
+  "retained": "Canonical configuration/certs/DLLs/extracted data,original static libraries,private character backups,Slaghammer original binary,offline research,three recent artifact recovery baselines plus pre-first10 recovery for outstanding client checks and historical pet certificate preserved.",
+  "closing_review": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\ashbringer-resume-20261113\\closing-review",
+    "manifest_sha256": "d80b374094b617334feb2631f0a4736b07e1e801c5e556ae515f77bfb05b3fb2",
+    "result": "Staged UTF-8 JSON/exact source scopes,canonical hashes,preserved original evidence,empty activeCrashes and no server processes verified;no new runtime diagnostics.",
+    "staging_cleanup": "Three emptied staging directories removed after18 linker argument/command/log files were hash-archived under each issue/link-inputs. Original manifests unchanged."
+  }
+}

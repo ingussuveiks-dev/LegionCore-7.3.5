@@ -175,7 +175,8 @@
         {
           "key": "AshbringerOriginalAIResume",
           "audit": "docs/audits/ashbringer-original-ai-resume-2026-11-13.json",
-          "summary": "Actual216690 removal dispatch retains original native suspended AI instead of temporary replacement;current fallback and missing-AI diagnostic.16 ASAN/native3 vs old2,retained24/update metadata/canonical PE/Scepter/startup pass;full775/client pending."
+          "summary": "Actual216690 removal dispatch retains original native suspended AI instead of temporary replacement;current fallback and missing-AI diagnostic.16 ASAN/native3 vs old2,retained24/update metadata/canonical PE/Scepter/startup pass;full775/client pending.",
+          "fix_commit": "3ec04a779288c48230bea6c68cd37c13d26aa3ad"
         }
       ],
       "canonical_world_sha256": "3b5d96f2a3b31e85c076598f9399b413bc2031d3c23c20a8b06de1bfd299417e",
