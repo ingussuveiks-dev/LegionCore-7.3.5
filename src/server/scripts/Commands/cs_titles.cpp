@@ -59,7 +59,9 @@ public:
         if (!id_p)
             return false;
 
-        int32 id = atoi(id_p);
+        int32 id = 0;
+        if (!Trinity::ParseCommandInteger(id_p, id))
+            return false;
         if (id <= 0)
         {
             handler->PSendSysMessage(LANG_INVALID_TITLE_ID, id);
