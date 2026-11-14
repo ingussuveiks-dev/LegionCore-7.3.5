@@ -1948,7 +1948,14 @@ public:
         if (!cval)
             return false;
 
-        int32 Value = (int32)atoi(cval);
+        int32 Value;
+        if (!Trinity::ParseCommandInteger(cval, Value))
+            return false;
+        // The native helper negates negative amounts, and its consumer uses int32.
+        uint32 base = player->GetBaseSpellPowerBonus();
+        if (Value == std::numeric_limits<int32>::min() || base > uint32(std::numeric_limits<int32>::max()) ||
+            (Value > 0 && uint64(base) + uint32(Value) > uint32(std::numeric_limits<int32>::max())))
+            return false;
         player->ApplySpellPowerBonus(Value, true);
         return true;
     }
