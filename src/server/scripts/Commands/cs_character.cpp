@@ -555,7 +555,10 @@ public:
 
         // GCC by some strange reason fail build code without temporary variable
         std::istringstream params(args);
-        params >> searchString >> newCharName >> newAccount;
+        std::string accountText;
+        params >> searchString >> newCharName >> accountText;
+        if (!accountText.empty() && !Trinity::ParseCommandInteger(accountText.c_str(), newAccount))
+            return false;
 
         DeletedInfoList foundList;
         if (!GetDeletedCharacterInfoList(foundList, searchString))

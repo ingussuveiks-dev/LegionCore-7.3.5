@@ -345,6 +345,18 @@
       "observe": "keepDays",
       "test_signature": "    static bool HandleCharacterDeletedOldCommand(ChatHandler* handler, char const* args)",
       "summary": "Validate retention days and compute the native deletion cutoff in64-bit arithmetic; before-epoch horizons make no query instead of wrapping into a recent cutoff. Real characters are not deleted by regressions."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "method": "HandleCharacterDeletedRestoreCommand",
+      "key": "DeletedCharacterRestoreExactAccount",
+      "case": "DeletedCharacterRestoreExactAccount",
+      "kind": "command",
+      "old": "    static bool HandleCharacterDeletedRestoreCommand(ChatHandler* handler, char const* args)\n    {\n        // It is required to submit at least one argument\n        if (!*args)\n            return false;\n\n        std::string searchString;\n        std::string newCharName;\n        uint32 newAccount = 0;\n\n        // GCC by some strange reason fail build code without temporary variable\n        std::istringstream params(args);\n        params >> searchString >> newCharName >> newAccount;\n\n        DeletedInfoList foundList;\n        if (!GetDeletedCharacterInfoList(foundList, searchString))\n            return false;\n\n        if (foundList.empty())\n        {\n            handler->SendSysMessage(LANG_CHARACTER_DELETED_LIST_EMPTY);\n            return false;\n        }\n\n        handler->SendSysMessage(LANG_CHARACTER_DELETED_RESTORE);\n        HandleCharacterDeletedListHelper(foundList, handler);\n\n        if (newCharName.empty())\n        {\n            // Drop not existed account cases\n            for (DeletedInfoList::iterator itr = foundList.begin(); itr != foundList.end(); ++itr)\n                HandleCharacterDeletedRestoreHelper(*itr, handler);\n        }\n        else if (foundList.size() == 1 && normalizePlayerName(newCharName))\n        {\n            DeletedInfo delInfo = foundList.front();\n\n            // update name\n            delInfo.name = newCharName;\n\n            // if new account provided update deleted info\n            if (newAccount && newAccount != delInfo.accountId)\n            {\n                delInfo.accountId = newAccount;\n                AccountMgr::GetName(newAccount, delInfo.accountName);\n            }\n\n            HandleCharacterDeletedRestoreHelper(delInfo, handler);\n        }\n        else\n            handler->SendSysMessage(LANG_CHARACTER_DELETED_ERR_RENAME);\n\n        return true;\n    }",
+      "new": "    static bool HandleCharacterDeletedRestoreCommand(ChatHandler* handler, char const* args)\n    {\n        // It is required to submit at least one argument\n        if (!*args)\n            return false;\n\n        std::string searchString;\n        std::string newCharName;\n        uint32 newAccount = 0;\n\n        // GCC by some strange reason fail build code without temporary variable\n        std::istringstream params(args);\n        std::string accountText;\n        params >> searchString >> newCharName >> accountText;\n        if (!accountText.empty() && !Trinity::ParseCommandInteger(accountText.c_str(), newAccount))\n            return false;\n\n        DeletedInfoList foundList;\n        if (!GetDeletedCharacterInfoList(foundList, searchString))\n            return false;\n\n        if (foundList.empty())\n        {\n            handler->SendSysMessage(LANG_CHARACTER_DELETED_LIST_EMPTY);\n            return false;\n        }\n\n        handler->SendSysMessage(LANG_CHARACTER_DELETED_RESTORE);\n        HandleCharacterDeletedListHelper(foundList, handler);\n\n        if (newCharName.empty())\n        {\n            // Drop not existed account cases\n            for (DeletedInfoList::iterator itr = foundList.begin(); itr != foundList.end(); ++itr)\n                HandleCharacterDeletedRestoreHelper(*itr, handler);\n        }\n        else if (foundList.size() == 1 && normalizePlayerName(newCharName))\n        {\n            DeletedInfo delInfo = foundList.front();\n\n            // update name\n            delInfo.name = newCharName;\n\n            // if new account provided update deleted info\n            if (newAccount && newAccount != delInfo.accountId)\n            {\n                delInfo.accountId = newAccount;\n                AccountMgr::GetName(newAccount, delInfo.accountName);\n            }\n\n            HandleCharacterDeletedRestoreHelper(delInfo, handler);\n        }\n        else\n            handler->SendSysMessage(LANG_CHARACTER_DELETED_ERR_RENAME);\n\n        return true;\n    }",
+      "test_boundary": "        DeletedInfoList foundList;",
+      "observe": "newAccount",
+      "summary": "Validate a supplied replacement account completely before selecting/restoring any deleted character; omitted account/name flow preserved."
     }
   ],
   "extra_edits": [
@@ -382,7 +394,7 @@
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d",
-      "after_sha256": "3d5c722843f179eca240d493a2b474b088bc51fdca2c7b9788b7a1ffef9f15f0"
+      "after_sha256": "95c5f5e6025ff51bc346cb60422ba681d53ee0bf1f7563bade067332bd72a1dd"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
