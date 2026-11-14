@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "request_batch": 5,
+  "repair_index": 42,
+  "key": "GoGraveyardCheckedIdentifier",
+  "path": "src/server/scripts/Commands/cs_go.cpp",
+  "summary": "Validate complete native safe-location identifier before any travel-state mutation and return actual native transfer result.",
+  "status": "IMPLEMENTED_TESTED_IN_FINAL_FIFTY_CANONICAL_RELEASE_CLIENT_PENDING",
+  "scope": "One independently reachable travel command operation;shared parser/test cases not additional repairs.",
+  "checks_reference": "docs/audits/five-ten-2026-11-14.json",
+  "canonical_world_sha256": "68b877ede479dea8a82b9e4764cd36fd01bef26c1960fd7fe415c5a751e2386a",
+  "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch5",
+  "post_test_diagnostics": "No new/changed crash,appended DBErrors or unexplained server warning/error/assertion in final diagnostics. Earlier PE assumptions about found-flag register,outlined UInt64 parser and hoisted ground constant corrected with actual decoded code and passing reruns. Native test initially used an out-of-domain41-bit counter and exited7;actual native40-bit contract traced and final33-bit counter test passes. Mixed7111-byte DBErrors and original Slaghammer hashes unchanged.",
+  "client_limit": "Full source/native coordinate/catalog/selected PE/startup proof. Actual client travel/permissions/UI and all36 whole artifact chains remain separate checks. GmTicket API remains void.",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed archive after push."
+}

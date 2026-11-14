@@ -182,9 +182,8 @@ public:
         if (!gyId)
             return false;
 
-        int32 graveyardId = atoi(gyId);
-
-        if (!graveyardId)
+        uint32 graveyardId;
+        if (!Trinity::ParseCommandInteger(gyId, graveyardId) || !graveyardId)
             return false;
 
         WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId);
@@ -212,8 +211,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        player->TeleportTo(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, player->GetOrientation());
-        return true;
+        return player->TeleportTo(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, player->GetOrientation());
     }
 
     //teleport to grid
