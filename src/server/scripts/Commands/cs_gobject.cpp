@@ -815,7 +815,9 @@ public:
         if (!scale_temp)
             return false;
         
-        float scale = atof(scale_temp);
+        float scale;
+        if (!Trinity::ParseCommandFloat(scale_temp, scale))
+            return false;
 
         if (scale < 0.0f)
         {
