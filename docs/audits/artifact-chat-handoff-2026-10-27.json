@@ -1,21 +1,21 @@
 {
   "latest_next_fifty_2026_11_14": {
     "audit": "docs/audits/next-fifty-2026-11-14.json",
-    "completed_new_source_repairs": 40,
+    "completed_new_source_repairs": 50,
     "authorized": 50,
-    "status": "IN_PROGRESS_40_OF_50_CANONICAL_CLIENT_PENDING",
-    "canonical_world_sha256": "480928ef3308dc637d39f281fdc65e74f7aebbd8ef3613092eb40564ca3195a9",
+    "status": "COMPLETED_50_CANONICAL_CLIENT_PENDING",
+    "canonical_world_sha256": "c6be8e97e2a2ca44f223e4bc544b08098b531a29d10126ac207eee9ae0c42a17",
     "checks": {
-      "source_asan": "446 cumulative complete actual source cases. Actual native fall function/constants and coordinate overloads exported. Controlled native client packet/audio/animation/jump endpoints. Preserve raw UInt32 cinematic/sound/emote IDs,actual signed16 streaming IDs,InventoryResult byte and defined0..15 non-fixed Buy/Sell enum range,optional/zero/error codes/missing actors. No actual client sends or DB/world writes.",
-      "counterfactual": "Original quest-party256 wraps to0 in actual old handler;controlled sender paired with repaired native-byte cases.",
-      "native": "Actual StreamingMovie serializer writes32-bit count+signed16 IDs(total6 bytes for one),including INT16_MIN. Actual Sell/Buy packet serializer preserves representable15. Native InventoryResult underlyinguint8. Actual fall calculation shows1e20 speedZ gives finite apex but amplitude*8 overflows;normal5 finite. Preflight covers these exact native calculations;actual spline timing/launch/camera and client playback remain separate.",
+      "source_asan": "596 final cumulative complete actual new-fifty production handler/helper contexts(150 new field/inventory cases). Native GUID max function,fixed enums,fall/coordinates exported. Controlled raw/dynamic fields and owned inventory with deferred/protected removal;no actual world/account/character writes. Native33/40-bit item IDs,foreign/missing target limits,mode parsing,float rejection,signed addition bounds,native16 field alias,explicit zero/bit32,dynamic offset31 and once-only post-removal hook covered.",
+      "counterfactual": "Original field65536 aliases native uint16 index0 and writes it;original native33-bit inventory identifier aliases7 and changes wrong owned item;original item-expire hook fires while native equip protection keeps item present. Full old method source with controlled endpoints,not actual native process crashes. Paired fixed controls pass.",
+      "native": "Actual Object::SetUInt32Value indexuint16/valueuint32,static item max40 bits and genuine33-bit Item factory counter roundtrip;actual packet serializers/int16 streaming,byte/result widths,fall numerator/time/expansion/double contracts retained. No DB/world mutation.",
       "release": "Original scripts Release library/original-input staged link. All new registered operations and retained previous50 PE proofs pass in canonical;Scepter VerifyReleaseBinary passes. New exact source deltas restore prior50 source certificate.",
-      "startup": "Owned PID21084 ready/shutdown0/exit0,gone,stderr empty;no user server stopped/config changed.",
-      "analysis": "Selected original /analyze debug exits0;existing headers/deprecation/conversion warnings reviewed and retained. Broader source/static research remains available outside fixed,not globally certified.",
-      "diagnostics": "First jump case exposed finite apex but nonfinite native amplitude*8;added actual native numerator gate and rebuilt. First streaming probe expected8 bytes and exited6;traced actual vector<int16> and corrected both production parser/test model,then rebuilt and passed actual6-byte serializer. This is a repaired native width error,not a client playback claim. Owned21084 ready/shutdown0/exit0,gone,stderr empty. Final no new/changed crash,appended DBErrors or unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved."
+      "startup": "Owned PID34100 ready/shutdown0/exit0,gone,stderr empty;no user server stopped/config changed.",
+      "analysis": "Selected final original /analyze cs_debug exits0;native guarded uint32-to-uint16 and header/deprecation warnings retained/reviewed. Research into native int16 rating cache and unfixed AuraState enum32 is OPEN/not changed/not counted;original source evidence remains outside fixed.",
+      "diagnostics": "No passing test uses deliberately undefined signed-overflow casts. Native DestroyItem currently queues deletion and may defer protected removal;capture stable ItemTemplate before call and query actual owned-item absence before OnItemExpire. This is a receipt/order fix,not a claim that the old current core immediately deleted the pointer. Code-level preflight does not certify real item equip callbacks or client UI. Owned34100 ready/shutdown0/exit0,gone,stderr empty. Final pre/post snapshots no new/changed crash,appended DBErrors or unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved;all36 artifact/client and original LINK2/FuZan remain open."
     },
     "preserve": "Previous50 not recounted;original LINK2/Slaghammer/FuZan/mixedDBErrors retained;actual client/all36 pending.",
-    "next": "10 authorized new source repairs remain."
+    "next": "Authorized next5x10 source repair batch complete;client/open evidence remains separate."
   },
   "latest_five_ten_2026_11_14": {
     "status": "COMPLETED_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",

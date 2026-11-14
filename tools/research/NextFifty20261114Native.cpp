@@ -25,9 +25,12 @@ int main(){
  WorldPackets::Item::BuyFailed buy;buy.Reason=BuyResult(15);auto bought=buy.Write();if(bought->read<uint8>(bought->size()-1)!=15)return 8;
  float nativeApex=-Movement::computeFallElevation(1e20f/Movement::gravity,false,-1e20f);if(!std::isfinite(nativeApex)||std::isfinite(nativeApex*8.f))return 9;
  float normalApex=-Movement::computeFallElevation(5.f/Movement::gravity,false,-5.f);if(!std::isfinite(normalApex*8.f))return 10;
+ static_assert(std::is_same<decltype(&Object::SetUInt32Value),void(Object::*)(uint16,uint32)>::value,"Native field index is16 bits");
+ ObjectGuid::LowType const wide=(uint64(1)<<32)+7;auto maxItem=ObjectGuid::GetMaxCounter(HighGuid::Item);
+ if(maxItem!=UINT64_C(0xffffffffff)||ObjectGuid::Create<HighGuid::Item>(wide).GetCounter()!=wide)return 11;
  double d=7;if(Trinity::ParseCommandDouble("nan",d)||d!=7)return 1;
  if(!Trinity::ParseCommandDouble("2147483647.9",d)||std::trunc(d)!=double(std::numeric_limits<int32>::max()))return 2;
  if(!Trinity::ParseCommandDouble("-2147483648.9",d)||std::trunc(d)!=double(std::numeric_limits<int32>::min()))return 3;
  if(Trinity::ParseCommandDouble("1x",d))return 4;
- std::cout<<"PASS native signed visual packet ID fields;actual finite double parser preserves fractional native integer boundaries and rejected receiver;no DB/world/character mutation\n";return 0;
+ std::cout<<"PASS native packet signed16/byte/result widths and serializers,40-bit item counter/16-bit field indices,actual fall numerator/double/time/expansion contracts;no live DB/world/character mutation\n";return 0;
 }

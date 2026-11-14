@@ -490,6 +490,16 @@
       "batch": 5,
       "old": "    static bool HandleDebugSet32BitCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        WorldObject* target = handler->getSelectedObject();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode = (uint32)atoi(x);\n        uint32 val = (uint32)atoi(y);\n        if (val > 32)                                         //uint32 = 32 bits\n            return false;\n\n        uint32 value = val ? 1 << (val - 1) : 0;\n        target->SetUInt32Value(opcode,  value);\n\n        handler->PSendSysMessage(LANG_SET_32BIT_FIELD, opcode, value);\n        return true;\n    }",
       "new": "    static bool HandleDebugSet32BitCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        WorldObject* target = handler->getSelectedObject();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode;\n        uint32 val;\n        if (!Trinity::ParseCommandInteger(x, opcode) || !Trinity::ParseCommandInteger(y, val) ||\n            opcode >= target->GetValuesCount())\n            return false;\n        if (val > 32)                                         //uint32 = 32 bits\n            return false;\n\n        uint32 value = val ? uint32(1) << (val - 1) : 0;\n        target->SetUInt32Value(opcode,  value);\n\n        handler->PSendSysMessage(LANG_SET_32BIT_FIELD, opcode, value);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugKillPointsCommand",
+      "key": "DebugKillPointsChecked",
+      "case": "KillPoints",
+      "kind": "next",
+      "batch": 5,
+      "old": "    static bool HandleDebugKillPointsCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* cpoint = strtok((char*)args, \" \");\n        uint32 point = cpoint ? (int32)atoi(cpoint) : 0;\n\n        if (auto player = handler->GetSession()->GetPlayer())\n            player->m_killPoints = point;\n\n        handler->PSendSysMessage(\"KillPoints point %u\", point);\n        return true;\n    }",
+      "new": "    static bool HandleDebugKillPointsCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* cpoint = strtok((char*)args, \" \");\n        uint32 point;\n        if (!Trinity::ParseCommandInteger(cpoint, point))\n            return false;\n        Player* player = handler->GetSession()->GetPlayer();\n        if (!player)\n            return false;\n        player->m_killPoints = point;\n\n        handler->PSendSysMessage(\"KillPoints point %u\", point);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -614,7 +624,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "6fdf1cac980b0f7ae317c48267aaefceaacdc98363a8ffa4fe79bbf18599fa21",
+      "after_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
       "owner_key": null
     }
   }

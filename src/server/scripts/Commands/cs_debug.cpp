@@ -2389,10 +2389,13 @@ public:
             return false;
 
         char* cpoint = strtok((char*)args, " ");
-        uint32 point = cpoint ? (int32)atoi(cpoint) : 0;
-
-        if (auto player = handler->GetSession()->GetPlayer())
-            player->m_killPoints = point;
+        uint32 point;
+        if (!Trinity::ParseCommandInteger(cpoint, point))
+            return false;
+        Player* player = handler->GetSession()->GetPlayer();
+        if (!player)
+            return false;
+        player->m_killPoints = point;
 
         handler->PSendSysMessage("KillPoints point %u", point);
         return true;
