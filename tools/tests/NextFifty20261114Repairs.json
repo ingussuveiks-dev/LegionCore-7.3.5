@@ -280,6 +280,16 @@
       "batch": 3,
       "old": "    static bool HandleEventStopCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // id or [name] Shift-click form |color|Hgameevent:id|h[name]|h|r\n        char* id =  handler->extractKeyFromLink((char*)args, \"Hgameevent\");\n        if (!id)\n            return false;\n\n        int32 eventId = atoi(id);\n\n        GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();\n\n        if (eventId < 1 || uint32(eventId) >= events.size())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventData const& eventData = events[eventId];\n        if (!eventData.isValid())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventMgr::ActiveEvents const& activeEvents = sGameEventMgr->GetActiveEventList();\n\n        if (activeEvents.find(eventId) == activeEvents.end())\n        {\n            handler->PSendSysMessage(LANG_EVENT_NOT_ACTIVE, eventId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        sGameEventMgr->StopEvent(eventId, true);\n        return true;\n    }",
       "new": "    static bool HandleEventStopCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // id or [name] Shift-click form |color|Hgameevent:id|h[name]|h|r\n        char* id =  handler->extractKeyFromLink((char*)args, \"Hgameevent\");\n        if (!id)\n            return false;\n\n        int32 eventId;\n        if (!Trinity::ParseCommandInteger(id, eventId))\n            return false;\n\n        GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();\n\n        if (eventId < 1 || uint32(eventId) >= events.size())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventData const& eventData = events[eventId];\n        if (!eventData.isValid())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventMgr::ActiveEvents const& activeEvents = sGameEventMgr->GetActiveEventList();\n\n        if (activeEvents.find(eventId) == activeEvents.end())\n        {\n            handler->PSendSysMessage(LANG_EVENT_NOT_ACTIVE, eventId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        sGameEventMgr->StopEvent(eventId, true);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_account.cpp",
+      "method": "HandleAccountAddonCommand",
+      "key": "AccountSelfExpansionChecked",
+      "case": "Expansion",
+      "kind": "next",
+      "batch": 3,
+      "old": "    static bool HandleAccountAddonCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_CMD_SYNTAX);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* exp = strtok((char*)args, \" \");\n\n        uint32 accountId = handler->GetSession()->GetAccountId();\n\n        int expansion = atoi(exp); //get int anyway (0 if error)\n        if (expansion < 0 || uint8(expansion) > CURRENT_EXPANSION)\n        {\n            handler->SendSysMessage(LANG_IMPROPER_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPANSION);\n\n        stmt->setUInt8(0, uint8(expansion));\n        stmt->setUInt32(1, accountId);\n\n        LoginDatabase.Execute(stmt);\n\n        handler->PSendSysMessage(LANG_ACCOUNT_ADDON, expansion);\n        return true;\n    }",
+      "new": "    static bool HandleAccountAddonCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_CMD_SYNTAX);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* exp = strtok((char*)args, \" \");\n\n        uint32 accountId = handler->GetSession()->GetAccountId();\n\n        uint32 expansion;\n        if (!Trinity::ParseCommandInteger(exp, expansion) || expansion > CURRENT_EXPANSION)\n        {\n            handler->SendSysMessage(LANG_IMPROPER_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPANSION);\n\n        stmt->setUInt8(0, uint8(expansion));\n        stmt->setUInt32(1, accountId);\n\n        LoginDatabase.Execute(stmt);\n\n        handler->PSendSysMessage(LANG_ACCOUNT_ADDON, expansion);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -378,6 +388,11 @@
       "before_sha256": "4a73f1907b60e160358c1a46e94e573a9ea3abc3f385a89068b2f9050baf166a",
       "owner_key": null,
       "after_sha256": "5beb589389f923dac2a0b122987dd1c92921f983ff0c3c54eb5aa3dcf9cd6192"
+    },
+    "src/server/scripts/Commands/cs_account.cpp": {
+      "before_sha256": "ffa6f54510b7f0ef9e97041e801d83c7278d0b0efd34540698b6bd565ebe208d",
+      "owner_key": null,
+      "after_sha256": "263454b1ce0fe09958609ec898a620c54594a009f2f6fd2646d6e143a332ba6d"
     }
   }
 }
