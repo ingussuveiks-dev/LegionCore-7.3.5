@@ -3858,7 +3858,9 @@ public:
             return false;
 
         Player* player = handler->GetSession()->GetPlayer();
-        uint32 spellID = atoi((char*)args);
+        uint32 spellID;
+        if (!Trinity::ParseCommandInteger(args, spellID))
+            return false;
 
         std::list<AreaTrigger*> list;
         player->GetAreaObjectList(list, spellID);

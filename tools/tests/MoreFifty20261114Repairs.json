@@ -457,6 +457,18 @@
       "test_boundary": "        Conversation* conversation",
       "observe": "conversationId",
       "summary": "Reject malformed/wrapped conversation IDs before allocating or starting an unrelated conversation."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleCastActionCommand",
+      "case": "AreaCastActionExactId",
+      "key": "AreaCastActionExactId",
+      "kind": "more",
+      "old": "    static bool HandleCastActionCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 spellID = atoi((char*)args);\n\n        std::list<AreaTrigger*> list;\n        player->GetAreaObjectList(list, spellID);\n        if(!list.empty())\n        {\n            for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)\n            {\n                if(AreaTrigger* areaObj = (*itr))\n                    areaObj->CastAction();\n            }\n        }\n\n        handler->PSendSysMessage(\"HandleCastActionCommand spellID %u\", spellID);\n        return true;\n    }",
+      "new": "    static bool HandleCastActionCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 spellID;\n        if (!Trinity::ParseCommandInteger(args, spellID))\n            return false;\n\n        std::list<AreaTrigger*> list;\n        player->GetAreaObjectList(list, spellID);\n        if(!list.empty())\n        {\n            for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)\n            {\n                if(AreaTrigger* areaObj = (*itr))\n                    areaObj->CastAction();\n            }\n        }\n\n        handler->PSendSysMessage(\"HandleCastActionCommand spellID %u\", spellID);\n        return true;\n    }",
+      "test_boundary": "        std::list<AreaTrigger*>",
+      "observe": "spellID",
+      "summary": "Reject malformed/wrapped spell selectors before dispatching actions to matching owned area objects."
     }
   ],
   "extra_edits": [
@@ -500,7 +512,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
-      "after_sha256": "b28c77c34eeb8229173d2fb7ace65e4d95594e17f8a8ee434a585207c2b8866f"
+      "after_sha256": "719eee5978b65537621b1e31909ac67ef7090d79ca63a1bc5766a7463b77346b"
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
