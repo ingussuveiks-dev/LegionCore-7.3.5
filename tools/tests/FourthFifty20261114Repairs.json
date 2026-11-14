@@ -1,0 +1,31 @@
+{
+  "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
+  "changes": [
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "method": "HandleQuestAutocomplete",
+      "case": "QuestAutocompleteExactId",
+      "key": "QuestAutocompleteExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleQuestAutocomplete(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .quest autocomplete #entry\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry = atol(cId);\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        // If player doesn't have the quest\n        if (!quest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        for (const QuestObjective& obj : quest->GetObjectives())\n            sObjectMgr->AddQuestObjectiveBuggedState(obj, player->HasQuestObjectiveComplete(quest, obj));\n\n        handler->PSendSysMessage(600032, entry, player->GetName());\n\n        return true;\n    }",
+      "new": "    static bool HandleQuestAutocomplete(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .quest autocomplete #entry\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry;\n        if (!Trinity::ParseCommandInteger(cId, entry))\n            return false;\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        // If player doesn't have the quest\n        if (!quest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        for (const QuestObjective& obj : quest->GetObjectives())\n            sObjectMgr->AddQuestObjectiveBuggedState(obj, player->HasQuestObjectiveComplete(quest, obj));\n\n        handler->PSendSysMessage(600032, entry, player->GetName());\n\n        return true;\n    }",
+      "test_boundary": "        Quest const* quest",
+      "observe": "entry",
+      "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestAutocomplete catalog/status/effect path;retain selected-player and native quest rules."
+    }
+  ],
+  "extra_edits": [
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "QuestAutocompleteExactId"
+    }
+  ],
+  "files": {
+    "src/server/scripts/Commands/cs_quest.cpp": {
+      "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
+      "after_sha256": "fa7e6fe9e1f5169f9eaf5c621c1401ab8ba1e85b5538c7c820ad9930e1b177e9"
+    }
+  }
+}
