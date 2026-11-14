@@ -23,8 +23,8 @@ def certify(target,plans):
 def certify_third():certify(third,[PLAN])
 def certify_second():certify(second,[PLAN,third.PLAN])
 def certify_first():certify(first,[PLAN,third.PLAN,second.PLAN])
-third.verify=certify_third
-p=runpy.run_path(str(Path(__file__).with_name('verify_more_fifty_20261114_release.py')),init_globals={'retained_second_source_certificate':certify_second,'retained_first_source_certificate':certify_first})
+third.verify=globals().get('retained_third_source_certificate',certify_third)
+p=runpy.run_path(str(Path(__file__).with_name('verify_more_fifty_20261114_release.py')),init_globals={'retained_second_source_certificate':globals().get('retained_second_source_certificate',certify_second),'retained_first_source_certificate':globals().get('retained_first_source_certificate',certify_first)})
 n,ins,sites,refs=p['n'],p['ins'],p['sites'],p['refs']
 for row in PLAN['changes']:
     if row['kind']=='chatspellhelper':

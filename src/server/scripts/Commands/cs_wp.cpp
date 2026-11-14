@@ -604,7 +604,7 @@ public:
         // -> variable lowguid is filled with the GUID of the NPC
         uint32 pathid = 0;
         uint32 point = 0;
-        uint32 wpGuid = 0;
+        ObjectGuid::LowType wpGuid = 0;
         Creature* target = handler->getSelectedCreature();
 
         if (!target || target->GetEntry() != VISUAL_WAYPOINT)
@@ -614,7 +614,9 @@ public:
         }
 
         // The visual waypoint
-        wpGuid = target->GetGUID().GetGUIDLow();
+        wpGuid = target->GetDBTableGUIDLow();
+        if (!wpGuid)
+            return false;
 
         // User did select a visual waypoint?
 
@@ -641,7 +643,7 @@ public:
             stmt->setString(3, maxDiff);
             stmt->setFloat(4, target->GetPositionZ());
             stmt->setString(5, maxDiff);
-            PreparedQueryResult result = WorldDatabase.Query(stmt);
+            result = WorldDatabase.Query(stmt);
 
             if (!result)
             {
@@ -674,7 +676,7 @@ public:
             handler->PSendSysMessage("|cff00ff00DEBUG: wp modify del, PathID: |r|cff00ffff%u|r", pathid);
 
             if (wpGuid != 0)
-                if (Creature* wpCreature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(target->GetMapId(), VISUAL_WAYPOINT, wpGuid)))
+                if (Creature* wpCreature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(target->GetGUID()))
                 {
                     wpCreature->CombatStop();
                     wpCreature->DeleteFromDB();
@@ -712,7 +714,7 @@ public:
                 // Respawn the owner of the waypoints
                 if (wpGuid != 0)
                 {
-                    if (Creature* wpCreature = map->GetCreature(ObjectGuid::Create<HighGuid::Creature>(target->GetMapId(), VISUAL_WAYPOINT, wpGuid)))
+                    if (Creature* wpCreature = map->GetCreature(target->GetGUID()))
                     {
                         wpCreature->CombatStop();
                         wpCreature->DeleteFromDB();
