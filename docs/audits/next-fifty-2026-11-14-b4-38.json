@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "batch": 4,
+  "index": 38,
+  "key": "DebugBuyEnumChecked",
+  "path": "src/server/scripts/Commands/cs_debug.cpp",
+  "summary": "DebugBuyEnumChecked;complete exact source delta in NextFifty20261114Repairs.json.",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "checks_reference": "docs/audits/next-fifty-2026-11-14.json",
+  "scope": "One independently callable command/helper defect;shared parsers/tests not recounted.",
+  "canonical_world_sha256": "480928ef3308dc637d39f281fdc65e74f7aebbd8ef3613092eb40564ca3195a9",
+  "post_test_diagnostics": "First jump case exposed finite apex but nonfinite native amplitude*8;added actual native numerator gate and rebuilt. First streaming probe expected8 bytes and exited6;traced actual vector<int16> and corrected both production parser/test model,then rebuilt and passed actual6-byte serializer. This is a repaired native width error,not a client playback claim. Owned21084 ready/shutdown0/exit0,gone,stderr empty. Final no new/changed crash,appended DBErrors or unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved.",
+  "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch4",
+  "fix_commit": "This focused commit;actual hashes in ignored fixed repair-record.json",
+  "client_limit": "Native/model/PE/startup evidence;actual client/whole36 remain separate."
+}

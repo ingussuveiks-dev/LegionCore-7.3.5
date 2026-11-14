@@ -388,7 +388,11 @@ public:
         if (!*args)
             return false;
 
-        BuyResult msg = BuyResult(atoi(args));
+        // This non-fixed native enum has representable values 0..15.
+        uint32 code;
+        if (!Trinity::ParseCommandInteger(args, code) || code > 15)
+            return false;
+        BuyResult msg = BuyResult(code);
         handler->GetSession()->GetPlayer()->SendBuyError(msg);
         return true;
     }

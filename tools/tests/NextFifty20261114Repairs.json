@@ -370,6 +370,16 @@
       "batch": 4,
       "old": "    static bool HandleDebugSendSellErrorCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        SellResult msg = SellResult(atoi(args));\n        handler->GetSession()->GetPlayer()->SendSellError(msg, 0, ObjectGuid::Empty);\n        return true;\n    }",
       "new": "    static bool HandleDebugSendSellErrorCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // This non-fixed native enum has representable values 0..15.\n        uint32 code;\n        if (!Trinity::ParseCommandInteger(args, code) || code > 15)\n            return false;\n        SellResult msg = SellResult(code);\n        handler->GetSession()->GetPlayer()->SendSellError(msg, 0, ObjectGuid::Empty);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSendBuyErrorCommand",
+      "key": "DebugBuyEnumChecked",
+      "case": "Buy",
+      "kind": "next",
+      "batch": 4,
+      "old": "    static bool HandleDebugSendBuyErrorCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        BuyResult msg = BuyResult(atoi(args));\n        handler->GetSession()->GetPlayer()->SendBuyError(msg);\n        return true;\n    }",
+      "new": "    static bool HandleDebugSendBuyErrorCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // This non-fixed native enum has representable values 0..15.\n        uint32 code;\n        if (!Trinity::ParseCommandInteger(args, code) || code > 15)\n            return false;\n        BuyResult msg = BuyResult(code);\n        handler->GetSession()->GetPlayer()->SendBuyError(msg);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -482,7 +492,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "1bf5a85508044abd506cbc879261935682c6df3c24b46e1370de3cfd241037be",
+      "after_sha256": "113c5583136c03122093022fe209c41f5fcff7b5b80a87dd783b06159f95b963",
       "owner_key": null
     }
   }
