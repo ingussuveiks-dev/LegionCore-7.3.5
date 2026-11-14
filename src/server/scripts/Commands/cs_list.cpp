@@ -360,7 +360,9 @@ public:
         if (!id)
             return false;
 
-        uint32 gameObjectId = atol(id);
+        uint32 gameObjectId;
+        if (!Trinity::ParseCommandInteger(id, gameObjectId))
+            return false;
         if (!gameObjectId)
         {
             handler->PSendSysMessage(LANG_COMMAND_LISTOBJINVALIDID, gameObjectId);
@@ -377,7 +379,9 @@ public:
         }
 
         char* countStr = strtok(NULL, " ");
-        uint32 count = countStr ? atol(countStr) : 10;
+        uint32 count = 10;
+        if (countStr && !Trinity::ParseCommandInteger(countStr, count))
+            return false;
 
         if (count == 0)
             return false;

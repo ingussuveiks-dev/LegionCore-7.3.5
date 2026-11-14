@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_26_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 26,
+  "status": "IN_PROGRESS_27_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 27,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -201,7 +201,7 @@
     },
     {
       "batch": 3,
-      "count": 6,
+      "count": 7,
       "source_case_count": 88,
       "repairs": [
         {
@@ -250,6 +250,14 @@
           "summary": "Validate entry/link and complete unsigned count before listing queries; defaults10/zero rejection unchanged.",
           "path": "src/server/scripts/Commands/cs_list.cpp",
           "method": "HandleListItemCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 27,
+          "key": "ListObjectAtomicRequest",
+          "summary": "Validate entry/link and complete unsigned count before listing queries; defaults10/zero rejection unchanged.",
+          "path": "src/server/scripts/Commands/cs_list.cpp",
+          "method": "HandleListObjectCommand",
           "test_scope": "admission prefix"
         }
       ]
