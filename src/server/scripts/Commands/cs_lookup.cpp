@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "AccountMgr.h"
 #include "GameEventMgr.h"
 #include "GuildMgr.h"
@@ -1183,14 +1184,14 @@ public:
         if (!*args)
             return false;
 
-        ObjectGuid::LowType guildId = atoi(strtok((char*)args, ""));
-        if (!guildId)
+        ObjectGuid::LowType guildId;
+        if (!Trinity::ParseCommandInteger(args, guildId) || !guildId)
             return false;
         
         if (Guild* guild = sGuildMgr->GetGuildById(guildId))
-            handler->PSendSysMessage("Found guild with name: '%s' by id = %d", guild->GetName().c_str(), guildId);
+            handler->PSendSysMessage("Found guild with name: '%s' by id = " UI64FMTD, guild->GetName().c_str(), guildId);
         else
-            handler->PSendSysMessage("Don't found any guild with id %d", guildId);
+            handler->PSendSysMessage("Don't found any guild with id " UI64FMTD, guildId);
 
         return true;
     }

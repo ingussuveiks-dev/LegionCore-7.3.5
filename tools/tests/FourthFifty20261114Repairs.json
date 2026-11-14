@@ -548,6 +548,16 @@
       "test_boundary": "        // msgSubject, msgText",
       "observe": "money",
       "summary": "Use complete64-bit money constrained by the actual player money cap before creating the mail draft;retain native recipient/subject/body/transaction behavior."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lookup.cpp",
+      "method": "HandleLookupGuildCommand",
+      "case": "GuildLookupFullNativeId",
+      "key": "GuildLookupFullNativeId",
+      "kind": "fourth",
+      "old": "    static bool HandleLookupGuildCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        ObjectGuid::LowType guildId = atoi(strtok((char*)args, \"\"));\n        if (!guildId)\n            return false;\n        \n        if (Guild* guild = sGuildMgr->GetGuildById(guildId))\n            handler->PSendSysMessage(\"Found guild with name: '%s' by id = %d\", guild->GetName().c_str(), guildId);\n        else\n            handler->PSendSysMessage(\"Don't found any guild with id %d\", guildId);\n\n        return true;\n    }",
+      "new": "    static bool HandleLookupGuildCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        ObjectGuid::LowType guildId;\n        if (!Trinity::ParseCommandInteger(args, guildId) || !guildId)\n            return false;\n        \n        if (Guild* guild = sGuildMgr->GetGuildById(guildId))\n            handler->PSendSysMessage(\"Found guild with name: '%s' by id = \" UI64FMTD, guild->GetName().c_str(), guildId);\n        else\n            handler->PSendSysMessage(\"Don't found any guild with id \" UI64FMTD, guildId);\n\n        return true;\n    }",
+      "summary": "Parse and print the native64-bit guild ID without signed32 coercion or misleading narrowed diagnostics."
     }
   ],
   "extra_edits": [
@@ -628,6 +638,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include <limits>",
       "owner_key": "ServerPlayerLimitNativeDomain"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lookup.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "GuildLookupFullNativeId"
     }
   ],
   "files": {
@@ -678,6 +694,10 @@
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
       "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
+    },
+    "src/server/scripts/Commands/cs_lookup.cpp": {
+      "before_sha256": "019c2e6c883faeb78f17cdffb0197a030e146ada9c6f92f7314bb2cd33e80442",
+      "after_sha256": "8488c9ec971f9bff4db5634c8097e2f796a0e72c23764eadf6d2e27380c7a303"
     },
     "src/server/scripts/Commands/cs_wp.cpp": {
       "before_sha256": "ee7567558141c9bf4647537b49ed3fc919a16abbf9247934f9d40b32690ef491",
