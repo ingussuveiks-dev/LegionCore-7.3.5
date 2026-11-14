@@ -25,6 +25,9 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "Chat.h"
 #include "SpellPackets.h"
+#include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
+#include <limits>
 #include <cmath>
 #include <cstdlib>
 
@@ -294,9 +297,10 @@ public:
         if (!posX || !posY || !posZ)
             return false;
 
-        float x = float(atof(posX));
-        float y = float(atof(posY));
-        float z = float(atof(posZ));
+        float x, y, z;
+        if (!Trinity::ParseCommandFloat(posX, x) || !Trinity::ParseCommandFloat(posY, y) ||
+            !Trinity::ParseCommandFloat(posZ, z))
+            return false;
 
         char* triggeredStr = strtok(NULL, " ");
         if (triggeredStr)

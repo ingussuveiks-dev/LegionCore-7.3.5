@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "batch": 1,
+  "index": 1,
+  "key": "CastDestinationFinite",
+  "path": "src/server/scripts/Commands/cs_cast.cpp",
+  "summary": "CastDestinationFinite;full exact before/after method in NextFifty20261114Repairs.json.",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "checks_reference": "docs/audits/next-fifty-2026-11-14.json",
+  "scope": "One independent command/helper defect;shared parser/tests not extra repairs.",
+  "canonical_world_sha256": "bd120f9186cdc2fdcf1404b3d70af64c7311f06e8ca67e0d03ae3292fa842ddb",
+  "post_test_diagnostics": "Final snapshots no new/changed crash,appended DBErrors or unexplained errors/assertions. Initial exporter edit ordering/conditional float include and PE inverted parse/inline bound assumptions corrected;final passing counterparts preserved. Mixed7111-byte DBErrors and Slaghammer hash unchanged.",
+  "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch1",
+  "fix_commit": "This focused commit;actual pushed hashes in ignored fixed repair-record.json",
+  "client_limit": "Actual client/whole36 traversal remains separate."
+}

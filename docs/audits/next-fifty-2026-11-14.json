@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-14",
+  "request": "Labi ņem vēl5x10",
+  "baseline": "9eb7aab7ae7c78fe1880c9f04ca131f254389093",
+  "authorized_new_repairs": 50,
+  "completed_source_repairs": 1,
+  "status": "IN_PROGRESS_1_OF_50_CANONICAL_CLIENT_PENDING",
+  "previous_fifty": "docs/audits/five-ten-2026-11-14.json remains completed50;none recounted.",
+  "batches": [
+    {
+      "batch": 1,
+      "repairs": [
+        {
+          "key": "CastDestinationFinite",
+          "path": "src/server/scripts/Commands/cs_cast.cpp",
+          "summary": "CastDestinationFinite;full exact before/after method in NextFifty20261114Repairs.json."
+        }
+      ],
+      "checks": {
+        "source_asan": "112 complete production handler/helper contexts. Controlled spell/visual/honor/reputation/GO endpoints,native enums/coordinate overloads. No live world/account/character mutation. Fractional/truncated int32 boundaries,signed native packet IDs,zero restore,authority/defaults and cursor fallback covered.",
+        "counterfactual": "Original shared GO helper aliases7x to7 and retains stale token cursor;controlled source reproduction paired with repaired cases. No deliberate undefined float conversion.",
+        "native": "Actual signed32 visual packet fields and finite double parser/truncated int32 boundary fractions/unchanged rejected receiver verified;no DB writes.",
+        "pe": "Reverse exact declared new edits to previous50 source certificate,then retained50 selected PE proofs plus actual new10 registrations/native casts/GO-save endpoints and finite/signed rejection CFG. Honor receipt checked before messages. Stage/canonical pass.",
+        "release": "Original scripts library/original-input staged link;Scepter VerifyReleaseBinary passes. Existing ParseCommandFloat body unchanged;double helper appended.",
+        "startup": "Owned canonical PID544 ready/shutdown0/exit0,empty stderr,gone. No user server stopped;config/certs/DLLs preserved.",
+        "analysis": "Original cast/modify/gobject /analyze exits0;existing library/header/deprecation warnings retained/reviewed. Separate original artifact report open.",
+        "diagnostics": "Final snapshots no new/changed crash,appended DBErrors or unexplained errors/assertions. Initial exporter edit ordering/conditional float include and PE inverted parse/inline bound assumptions corrected;final passing counterparts preserved. Mixed7111-byte DBErrors and Slaghammer hash unchanged."
+      },
+      "canonical": {
+        "bnetserver.exe": "7a587dcc710dd5f2cd966d9fbfc94df054ca03b87fda0a51e995c96ff9013626",
+        "bnetserver.map": "f4ca3ccf3316be4bd52ed40013c1d89a4a4a2096901a0cefd64f3390c536e3c1",
+        "worldserver.exe": "bd120f9186cdc2fdcf1404b3d70af64c7311f06e8ca67e0d03ae3292fa842ddb",
+        "worldserver.map": "5a6bf7cab21d2f7281b0b6dcf0030e0d3407a7cdc5b6dd04112e3015499f412c"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch1",
+        "manifest_sha256": "51f304dd923f769b7d5eac16d70a13ab0538263bb2b80dbe0596e706e24c4809",
+        "archived_files": 197,
+        "removed_files": 84,
+        "reclaimed_bytes": 211547689.0,
+        "retained_rollback": ".codex/release-before-next-fifty-20261114-batch1"
+      }
+    }
+  ],
+  "remaining": [
+    "49 authorized new source repairs remain.",
+    "Actual client traversal,all36 complete artifact chains and original LINK2/FuZan/Slaghammer/mixedDBErrors evidence remain open;source/native/PE/startup do not certify client behavior."
+  ]
+}

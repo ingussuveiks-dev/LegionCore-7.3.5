@@ -1,0 +1,30 @@
+{
+  "baseline": "9eb7aab7ae7c78fe1880c9f04ca131f254389093",
+  "changes": [
+    {
+      "path": "src/server/scripts/Commands/cs_cast.cpp",
+      "method": "HandleCastDestCommand",
+      "key": "CastDestinationFinite",
+      "case": "Dest",
+      "kind": "next",
+      "batch": 1,
+      "old": "    static bool HandleCastDestCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* caster = handler->getSelectedUnit();\n        if (!caster)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form\n        uint32 spellId = handler->extractSpellIdFromLink((char*)args);\n        if (!spellId || !sSpellMgr->GetSpellInfo(spellId))\n        {\n            handler->PSendSysMessage(LANG_COMMAND_NOSPELLFOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* posX = strtok(NULL, \" \");\n        char* posY = strtok(NULL, \" \");\n        char* posZ = strtok(NULL, \" \");\n\n        if (!posX || !posY || !posZ)\n            return false;\n\n        float x = float(atof(posX));\n        float y = float(atof(posY));\n        float z = float(atof(posZ));\n\n        char* triggeredStr = strtok(NULL, \" \");\n        if (triggeredStr)\n        {\n            int l = strlen(triggeredStr);\n            if (strncmp(triggeredStr, \"triggered\", l) != 0)\n                return false;\n        }\n\n        bool triggered = (triggeredStr != NULL);\n\n        caster->CastSpell(x, y, z, spellId, triggered);\n\n        return true;\n    }",
+      "new": "    static bool HandleCastDestCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* caster = handler->getSelectedUnit();\n        if (!caster)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form\n        uint32 spellId = handler->extractSpellIdFromLink((char*)args);\n        if (!spellId || !sSpellMgr->GetSpellInfo(spellId))\n        {\n            handler->PSendSysMessage(LANG_COMMAND_NOSPELLFOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* posX = strtok(NULL, \" \");\n        char* posY = strtok(NULL, \" \");\n        char* posZ = strtok(NULL, \" \");\n\n        if (!posX || !posY || !posZ)\n            return false;\n\n        float x, y, z;\n        if (!Trinity::ParseCommandFloat(posX, x) || !Trinity::ParseCommandFloat(posY, y) ||\n            !Trinity::ParseCommandFloat(posZ, z))\n            return false;\n\n        char* triggeredStr = strtok(NULL, \" \");\n        if (triggeredStr)\n        {\n            int l = strlen(triggeredStr);\n            if (strncmp(triggeredStr, \"triggered\", l) != 0)\n                return false;\n        }\n\n        bool triggered = (triggeredStr != NULL);\n\n        caster->CastSpell(x, y, z, spellId, triggered);\n\n        return true;\n    }"
+    }
+  ],
+  "extra_edits": [
+    {
+      "path": "src/server/scripts/Commands/cs_cast.cpp",
+      "old": "#include \"SpellPackets.h\"",
+      "new": "#include \"SpellPackets.h\"\n#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"\n#include <limits>",
+      "owner_key": "CastDestinationFinite"
+    }
+  ],
+  "files": {
+    "src/server/scripts/Commands/cs_cast.cpp": {
+      "before_sha256": "6f8aa787e5e3e6b80370618222492c7cbd33828c57d9d0838604ca0cc849cda4",
+      "after_sha256": "40028d02d0518ccd53f3979f03a0cc39cc18d01f02a8564816b5c92b7275d32c",
+      "owner_key": null
+    }
+  }
+}
