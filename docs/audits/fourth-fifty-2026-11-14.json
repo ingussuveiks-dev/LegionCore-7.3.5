@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_2_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 2,
+  "status": "IN_PROGRESS_3_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 3,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -15,7 +15,7 @@
   "batches": [
     {
       "batch": 1,
-      "count": 2,
+      "count": 3,
       "source_case_count": 142,
       "repairs": [
         {
@@ -32,6 +32,14 @@
           "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestAdd catalog/status/effect path;retain selected-player and native quest rules.",
           "path": "src/server/scripts/Commands/cs_quest.cpp",
           "method": "HandleQuestAdd",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 3,
+          "key": "QuestRemoveExactId",
+          "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestRemove catalog/status/effect path;retain selected-player and native quest rules.",
+          "path": "src/server/scripts/Commands/cs_quest.cpp",
+          "method": "HandleQuestRemove",
           "test_scope": "admission prefix"
         }
       ]

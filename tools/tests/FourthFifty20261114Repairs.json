@@ -24,6 +24,18 @@
       "test_boundary": "        Quest const* quest",
       "observe": "entry",
       "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestAdd catalog/status/effect path;retain selected-player and native quest rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "method": "HandleQuestRemove",
+      "case": "QuestRemoveExactId",
+      "key": "QuestRemoveExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleQuestRemove(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .removequest #entry'\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry = atol(cId);\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        if (!quest)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // remove all quest entries for 'entry' from quest log\n        for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)\n        {\n            uint32 logQuest = player->GetQuestSlotQuestId(slot);\n            if (logQuest == entry)\n            {\n                player->SetQuestSlot(slot, 0);\n\n                // we ignore unequippable quest items in this case, its' still be equipped\n                player->TakeQuestSourceItem(logQuest, false);\n            }\n        }\n\n        player->RemoveActiveQuest(entry);\n        player->RemoveRewardedQuest(entry);\n\n        handler->SendSysMessage(LANG_COMMAND_QUEST_REMOVED);\n        return true;\n    }",
+      "new": "    static bool HandleQuestRemove(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .removequest #entry'\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry;\n        if (!Trinity::ParseCommandInteger(cId, entry))\n            return false;\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        if (!quest)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // remove all quest entries for 'entry' from quest log\n        for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)\n        {\n            uint32 logQuest = player->GetQuestSlotQuestId(slot);\n            if (logQuest == entry)\n            {\n                player->SetQuestSlot(slot, 0);\n\n                // we ignore unequippable quest items in this case, its' still be equipped\n                player->TakeQuestSourceItem(logQuest, false);\n            }\n        }\n\n        player->RemoveActiveQuest(entry);\n        player->RemoveRewardedQuest(entry);\n\n        handler->SendSysMessage(LANG_COMMAND_QUEST_REMOVED);\n        return true;\n    }",
+      "test_boundary": "        Quest const* quest",
+      "observe": "entry",
+      "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestRemove catalog/status/effect path;retain selected-player and native quest rules."
     }
   ],
   "extra_edits": [
@@ -37,7 +49,7 @@
   "files": {
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
-      "after_sha256": "c1a350742aad2a57c980bdd6305a65b8d2aaa0a33593a6ee7b2e241df3f64b88"
+      "after_sha256": "622d595a59739f97323bdaf08fbe79aa3246101f5916065f452639c744bbd492"
     }
   }
 }
