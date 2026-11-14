@@ -1636,13 +1636,11 @@ public:
 
         Player* chr = handler->GetSession()->GetPlayer();
 
-        uint32 id = atoi(charID);
-        if (!id)
+        uint32 id;
+        if (!Trinity::ParseCommandInteger(charID, id) || !id)
             return false;
 
-        chr->SummonCreature(id, *chr, TEMPSUMMON_CORPSE_DESPAWN, 120);
-
-        return true;
+        return chr->SummonCreature(id, *chr, TEMPSUMMON_CORPSE_DESPAWN, 120) != nullptr;
     }
 
     //npc tame handling

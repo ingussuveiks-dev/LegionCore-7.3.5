@@ -202,6 +202,16 @@
       "test_boundary": "        ObjectGuid guid =",
       "observe": "receiver_guid.GetCounter()",
       "summary": "Validate recipient/text and the full40-bit player counter before lookup/authority/whisper dispatch."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcAddTempSpawnCommand",
+      "case": "NpcTemporaryEntryReceipt",
+      "key": "NpcTemporaryEntryReceipt",
+      "kind": "fourth",
+      "old": "    static bool HandleNpcAddTempSpawnCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* charID = strtok((char*)args, \" \");\n        if (!charID)\n            return false;\n\n        Player* chr = handler->GetSession()->GetPlayer();\n\n        uint32 id = atoi(charID);\n        if (!id)\n            return false;\n\n        chr->SummonCreature(id, *chr, TEMPSUMMON_CORPSE_DESPAWN, 120);\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcAddTempSpawnCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* charID = strtok((char*)args, \" \");\n        if (!charID)\n            return false;\n\n        Player* chr = handler->GetSession()->GetPlayer();\n\n        uint32 id;\n        if (!Trinity::ParseCommandInteger(charID, id) || !id)\n            return false;\n\n        return chr->SummonCreature(id, *chr, TEMPSUMMON_CORPSE_DESPAWN, 120) != nullptr;\n    }",
+      "summary": "Reject malformed/overflowing entries and propagate the actual temporary-summon result,retaining the native pose/type/lifetime."
     }
   ],
   "extra_edits": [
@@ -243,7 +253,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",
-      "after_sha256": "532944c094e148fc98400a6bd4a591ee8e7f0e128b9107caeb8ef7abbc2f4087"
+      "after_sha256": "8b20214e914d4b855540b33fba3f4ce5d5f6359b47662d827de67841112abf97"
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
