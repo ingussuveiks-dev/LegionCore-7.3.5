@@ -332,6 +332,19 @@
       "new": "    static bool GetDeletedCharacterInfoList(DeletedInfoList& foundList, std::string searchString)\n    {\n        PreparedQueryResult result;\n        CharacterDatabasePreparedStatement* stmt;\n        if (!searchString.empty())\n        {\n            // search by GUID\n            if (isNumeric(searchString.c_str()))\n            {\n                ObjectGuid::LowType guid;\n                if (!Trinity::ParseCommandInteger(searchString.c_str(), guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Player))\n                    return false;\n                stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_GUID);\n                stmt->setUInt64(0, guid);\n                result = CharacterDatabase.Query(stmt);\n            }\n            // search by name\n            else\n            {\n                if (!normalizePlayerName(searchString))\n                    return false;\n\n                stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_NAME);\n                stmt->setString(0, searchString);\n                result = CharacterDatabase.Query(stmt);\n            }\n        }\n        else\n        {\n            stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO);\n            result = CharacterDatabase.Query(stmt);\n        }\n\n        if (result)\n        {\n            do\n            {\n                Field* fields = result->Fetch();\n\n                DeletedInfo info;\n\n                info.Guid       = ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64());\n                info.name       = fields[1].GetString();\n                info.accountId  = fields[2].GetUInt32();\n\n                // account name will be empty for not existed account\n                AccountMgr::GetName(info.accountId, info.accountName);\n                info.deleteDate = time_t(fields[3].GetUInt32());\n                foundList.push_back(info);\n            }\n            while (result->NextRow());\n        }\n\n        return true;\n    }",
       "summary": "Preserve the native player counter instead of int32 coercion when searching deleted characters; name/empty branches unchanged.",
       "kind_override": "sharedcommandhelper"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "method": "HandleCharacterDeletedOldCommand",
+      "key": "DeletedCharacterRetentionExactDays",
+      "case": "DeletedCharacterRetentionExactDays",
+      "kind": "command",
+      "old": "    static bool HandleCharacterDeletedOldCommand(ChatHandler* /*handler*/, char const* args)\n    {\n        int32 keepDays = sWorld->getIntConfig(CONFIG_CHARDELETE_KEEP_DAYS);\n\n        char* daysStr = strtok((char*)args, \" \");\n        if (daysStr)\n        {\n            if (!isNumeric(daysStr))\n                return false;\n\n            keepDays = atoi(daysStr);\n            if (keepDays < 0)\n                return false;\n        }\n        // config option value 0 -> disabled and can't be used\n        else if (keepDays <= 0)\n            return false;\n\n        Player::DeleteOldCharacters(uint32(keepDays));\n\n        return true;\n    }",
+      "new": "    static bool HandleCharacterDeletedOldCommand(ChatHandler* /*handler*/, char const* args)\n    {\n        int32 keepDays = sWorld->getIntConfig(CONFIG_CHARDELETE_KEEP_DAYS);\n\n        char* daysStr = strtok((char*)args, \" \");\n        if (daysStr)\n        {\n            if (!Trinity::ParseCommandInteger(daysStr, keepDays))\n                return false;\n            if (keepDays < 0)\n                return false;\n        }\n        // config option value 0 -> disabled and can't be used\n        else if (keepDays <= 0)\n            return false;\n\n        Player::DeleteOldCharacters(uint32(keepDays));\n\n        return true;\n    }",
+      "test_boundary": "        Player::DeleteOldCharacters",
+      "observe": "keepDays",
+      "test_signature": "    static bool HandleCharacterDeletedOldCommand(ChatHandler* handler, char const* args)",
+      "summary": "Validate retention days and compute the native deletion cutoff in64-bit arithmetic; before-epoch horizons make no query instead of wrapping into a recent cutoff. Real characters are not deleted by regressions."
     }
   ],
   "extra_edits": [
@@ -346,6 +359,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "CreatureReloadAtomicEntries"
+    },
+    {
+      "path": "src/server/game/Entities/Player/Player.cpp",
+      "old": "void Player::DeleteOldCharacters(uint32 keepDays)\n{\n    TC_LOG_INFO(\"entities.player\", \"Player::DeleteOldChars: Deleting all characters which have been deleted %u days before...\", keepDays);\n\n    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_OLD_CHARS);\n    stmt->setUInt32(0, uint32(GameTime::GetGameTime() - time_t(keepDays * DAY)));\n    PreparedQueryResult result = CharacterDatabase.Query(stmt);\n\n    if (result)\n    {\n         TC_LOG_DEBUG(\"entities.player\", \"Player::DeleteOldChars: Found \" UI64FMTD \" character(s) to delete\", result->GetRowCount());\n         do\n         {\n            Field* fields = result->Fetch();\n            Player::DeleteFromDB(ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64()), fields[1].GetUInt32(), true, true);\n         }\n         while (result->NextRow());\n    }\n}",
+      "new": "void Player::DeleteOldCharacters(uint32 keepDays)\n{\n    TC_LOG_INFO(\"entities.player\", \"Player::DeleteOldChars: Deleting all characters which have been deleted %u days before...\", keepDays);\n\n    time_t now = GameTime::GetGameTime();\n    uint64 retention = uint64(keepDays) * DAY;\n    if (now <= 0 || retention >= uint64(now))\n        return;\n\n    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_OLD_CHARS);\n    stmt->setUInt64(0, uint64(now) - retention);\n    PreparedQueryResult result = CharacterDatabase.Query(stmt);\n\n    if (result)\n    {\n         TC_LOG_DEBUG(\"entities.player\", \"Player::DeleteOldChars: Found \" UI64FMTD \" character(s) to delete\", result->GetRowCount());\n         do\n         {\n            Field* fields = result->Fetch();\n            Player::DeleteFromDB(ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64()), fields[1].GetUInt32(), true, true);\n         }\n         while (result->NextRow());\n    }\n}",
+      "owner_key": "DeletedCharacterRetentionExactDays"
     }
   ],
   "files": {
@@ -363,7 +382,7 @@
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d",
-      "after_sha256": "e0f28dbc7027178f6fb7e1978c020ede38d4521bf7c1d376058051b7c67c33fb"
+      "after_sha256": "3d5c722843f179eca240d493a2b474b088bc51fdca2c7b9788b7a1ffef9f15f0"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
@@ -376,6 +395,10 @@
     "src/server/scripts/Commands/cs_reload.cpp": {
       "before_sha256": "a2a909aa6993cdd9db0e358bed1428df0ee0ac19a2a6c1495c996661d340ea58",
       "after_sha256": "d3bc3f79445a1fa052b7f040289e1e435f66d7315538763a816bdd01d415133e"
+    },
+    "src/server/game/Entities/Player/Player.cpp": {
+      "before_sha256": "b04925dc7dce0a7adc527c6a8ee469590725ff4322a9e16ba19fd5255edcfa45",
+      "after_sha256": "183121cb0298988380bb2a1de53ddab12497144937e291bc0b64cb58b252e6a4"
     },
     "src/server/scripts/Commands/cs_list.cpp": {
       "before_sha256": "05d4db7bade1149e43aab756ff360aff8d95caf03d57409f898a24512cd9ede5",

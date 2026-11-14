@@ -6975,8 +6975,13 @@ void Player::DeleteOldCharacters(uint32 keepDays)
 {
     TC_LOG_INFO("entities.player", "Player::DeleteOldChars: Deleting all characters which have been deleted %u days before...", keepDays);
 
+    time_t now = GameTime::GetGameTime();
+    uint64 retention = uint64(keepDays) * DAY;
+    if (now <= 0 || retention >= uint64(now))
+        return;
+
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_OLD_CHARS);
-    stmt->setUInt32(0, uint32(GameTime::GetGameTime() - time_t(keepDays * DAY)));
+    stmt->setUInt64(0, uint64(now) - retention);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
     if (result)

@@ -652,10 +652,8 @@ public:
         char* daysStr = strtok((char*)args, " ");
         if (daysStr)
         {
-            if (!isNumeric(daysStr))
+            if (!Trinity::ParseCommandInteger(daysStr, keepDays))
                 return false;
-
-            keepDays = atoi(daysStr);
             if (keepDays < 0)
                 return false;
         }
