@@ -82,10 +82,12 @@ public:
         char* miscValueStr2 = strtok(NULL, " ");
         char* miscValueStr3 = strtok(NULL, " ");
 
-        uint32 criteriaType = criteriatr ? atoi(criteriatr) : 0;
-        uint32 miscValue1 = miscValueStr1 ? atoi(miscValueStr1) : 0;
-        uint32 miscValue2 = miscValueStr2 ? atoi(miscValueStr2) : 0;
-        uint32 miscValue3 = miscValueStr3 ? atoi(miscValueStr3) : 0;
+        uint32 criteriaType, miscValue1 = 0, miscValue2 = 0, miscValue3 = 0;
+        if (!Trinity::ParseCommandInteger(criteriatr, criteriaType) || criteriaType >= CRITERIA_TYPE_TOTAL ||
+            (miscValueStr1 && !Trinity::ParseCommandInteger(miscValueStr1, miscValue1)) ||
+            (miscValueStr2 && !Trinity::ParseCommandInteger(miscValueStr2, miscValue2)) ||
+            (miscValueStr3 && !Trinity::ParseCommandInteger(miscValueStr3, miscValue3)))
+            return false;
         TC_LOG_DEBUG("criteria.achievement", "HandleAchievementCriteriaCommand criteriaType %i miscValue1 %i miscValue2 %i, miscValue3 %i", criteriaType, miscValue1, miscValue2, miscValue3);
 
         if(Player* player = handler->GetSession()->GetPlayer())

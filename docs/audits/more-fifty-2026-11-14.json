@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_15_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 15,
+  "status": "IN_PROGRESS_16_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 16,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -102,7 +102,7 @@
     },
     {
       "batch": 2,
-      "count": 5,
+      "count": 6,
       "source_case_count": 95,
       "repairs": [
         {
@@ -143,6 +143,14 @@
           "summary": "Reject malformed/overflowing achievement selectors before account and character deletion statements.",
           "path": "src/server/scripts/Commands/cs_achievement.cpp",
           "method": "HandleAchievementDeleteCommand",
+          "test_scope": "complete production handler"
+        },
+        {
+          "index": 16,
+          "key": "AchievementCriteriaAtomicOperands",
+          "summary": "Validate the native criteria domain and every supplied operand before either monster credit or achievement progression.",
+          "path": "src/server/scripts/Commands/cs_achievement.cpp",
+          "method": "HandleAchievementCriteriaCommand",
           "test_scope": "complete production handler"
         }
       ]
