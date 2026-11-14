@@ -100,6 +100,16 @@
       "batch": 1,
       "old": "    static bool HandleGameObjectSetSizeCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        \n        uint32 guidLow = GetGuidLowFromArgsOrLastTargetedGo(handler, args);\n\n        if (!guidLow)\n            return false;\n\n        GameObject* object = NULL;\n\n        if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))\n            object = handler->GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);\n\n        if (!object)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, guidLow);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        \n        char* scale_temp = strtok(NULL, \" \");\n        if (!scale_temp)\n            return false;\n        \n        float scale = atof(scale_temp);\n\n        if (scale < 0.0f)\n        {\n            handler->PSendSysMessage(\"Size of gameobject cant'be negative\");\n            return false;\n        }\n\n        if (scale == 0.0f)\n        {\n            GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(object->GetEntry());\n            if (!goinfo)\n                return false;\n            \n            object->SetObjectScale(goinfo->size);\n        }\n        else\n            object->SetObjectScale(scale);\n    \n        GameObjectData& data = sObjectMgr->NewGOData(object->GetGUID().GetGUIDLow());\n        data.personalSize = scale;\n        \n        object->DestroyForNearbyPlayers();\n        object->UpdateObjectVisibility();\n        object->SaveToDB();\n        \n        return true;\n    }",
       "new": "    static bool HandleGameObjectSetSizeCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        \n        uint32 guidLow = GetGuidLowFromArgsOrLastTargetedGo(handler, args);\n\n        if (!guidLow)\n            return false;\n\n        GameObject* object = NULL;\n\n        if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))\n            object = handler->GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);\n\n        if (!object)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, guidLow);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        \n        char* scale_temp = strtok(NULL, \" \");\n        if (!scale_temp)\n            return false;\n        \n        float scale;\n        if (!Trinity::ParseCommandFloat(scale_temp, scale))\n            return false;\n\n        if (scale < 0.0f)\n        {\n            handler->PSendSysMessage(\"Size of gameobject cant'be negative\");\n            return false;\n        }\n\n        if (scale == 0.0f)\n        {\n            GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(object->GetEntry());\n            if (!goinfo)\n                return false;\n            \n            object->SetObjectScale(goinfo->size);\n        }\n        else\n            object->SetObjectScale(scale);\n    \n        GameObjectData& data = sObjectMgr->NewGOData(object->GetGUID().GetGUIDLow());\n        data.personalSize = scale;\n        \n        object->DestroyForNearbyPlayers();\n        object->UpdateObjectVisibility();\n        object->SaveToDB();\n        \n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyStandStateCommand",
+      "key": "StandStateNativeEmote",
+      "case": "Stand",
+      "kind": "next",
+      "batch": 2,
+      "old": "    static bool HandleModifyStandStateCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 anim_id = atoi((char*)args);\n        handler->GetSession()->GetPlayer()->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, anim_id);\n\n        return true;\n    }",
+      "new": "    static bool HandleModifyStandStateCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 anim_id;\n        if (!Trinity::ParseCommandInteger(args, anim_id) || (anim_id && !sEmotesStore.LookupEntry(anim_id)))\n            return false;\n        handler->GetSession()->GetPlayer()->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, anim_id);\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -136,7 +146,7 @@
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "8a46d0d9cb1a23623febfeec3b0fa6ccbdebe9dfefc49e718279af5ac13f6485",
-      "after_sha256": "ac2e0ae45782a2c8c673250c87b3829b6a66681a5511a22f4159fea043a00786",
+      "after_sha256": "fa85b196d9ec1d175a761b2817e5901339af2a5400264b2f3c8fc640dee96817",
       "owner_key": null
     },
     "src/server/scripts/Commands/cs_gobject.cpp": {

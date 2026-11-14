@@ -9,6 +9,7 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <functional>
 #include <stdexcept>
@@ -32,7 +33,7 @@ struct Session;struct Player;struct Creature;struct GameObject;
 struct Item{uint64 xp=100;uint32 writes=0,states=0;Player*owner=nullptr;uint64 GetUInt64Value(uint32 field){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field read");return xp;}void SetUInt64Value(uint32 field,uint64 value){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field write");++writes;xp=value;}void SetState(uint32 state,Player*player){Require(state==ITEM_CHANGED,"Wrong item state");++states;owner=player;}};
 struct PhaseManager{uint32 writes=0,mask=0;void SetCustomPhase(uint32 value){++writes;mask=value;}};
 struct Unit {
- Position position;ReputationManager reputation;bool honorAccepted=true;int32 honorAmount=0,lastVisual=0;std::vector<float>basePoints;uint32 lastTarget=7;
+ Position position;ReputationManager reputation;bool honorAccepted=true;int32 honorAmount=0,lastVisual=0;std::vector<float>basePoints;uint32 lastTarget=7,mount=0;bool honorToken=false;uint32 honorGroup=0;
  uint32 writes=0,powerType=0,selectedTitle=2,spells=0,stats=0,ratings=0,nativeMoneyErrors=0;int32 maxPower=0,power=0;
  uint64 titles=5,higherTitles=0x123456789abcdef,money=100;float lastDistance=0,scale=1,average=0;uint64 health=100,maxHealth=100;uint32 display=0,phase=1,drunk=0;std::set<uint32>phaseIds;PhaseManager phaseMgr;Item*artifact=nullptr;bool flying=false,pvp=false;Session*session=nullptr;
  std::map<uint32,float>speeds;std::map<uint16,uint32>flags;std::vector<uint32>casts,animations;
@@ -40,7 +41,8 @@ struct Unit {
  ObjectGuid GetGUID(){return {}; }Position GetPosition(){return position;}uint32 GetMapId(){return 1;}float GetPositionX(){return position.x;}float GetPositionY(){return position.y;}float GetPositionZ(){return position.z;}float GetOrientation(){return position.o;}uint32 GetLastTargetedGO(){return lastTarget;}
  void CastCustomSpell(Unit*target,uint32 id,float*a,float*b,float*c,bool triggered){Require(target==this&&id==123&&triggered,"Custom native target/trigger changed");++spells;basePoints={*a,*b,*c};}
  void PlaySpellVisual(Position,int32 id,float,ObjectGuid,bool){++writes;lastVisual=id;}void PlayOrphanSpellVisual(Position,Position,Position,int32 id,float,ObjectGuid,bool){++writes;lastVisual=id;}
- bool RewardHonor(Unit*target,uint32 group,int32 value,bool token){Require(!target&&!group&&!token,"Honor native arguments changed");honorAmount=value;if(honorAccepted)++writes;return honorAccepted;}uint32 GetCurrency(uint32 type){Require(type==CURRENCY_TYPE_HONOR_POINTS,"Wrong honor currency");return writes;}
+ void Mount(uint32 id){++writes;mount=id;}
+ bool RewardHonor(Unit*target,uint32 group,int32 value,bool token=true){Require(!target&&group<=1,"Honor native arguments changed");honorToken=token;honorGroup=group;honorAmount=value;if(honorAccepted)++writes;return honorAccepted;}uint32 GetCurrency(uint32 type){Require(type==CURRENCY_TYPE_HONOR_POINTS,"Wrong honor currency");return writes;}
  ReputationManager&GetReputationMgr(){return reputation;}
  uint32 GetTypeId(){return ToPlayer()?TYPEID_PLAYER:3;}uint32 GetValuesCount(){return ToPlayer()?PLAYER_FIELD_END:UNIT_END;}
  Session* GetSession(){return session;}bool isInFlight(){return flying;}
@@ -61,7 +63,7 @@ struct Unit {
  void GetClosePoint(float&x,float&y,float&z,float distance){lastDistance=distance;x=distance;y=1;z=2;}
  void CastSpell(float x,float y,float z,uint32 id,bool){Require(std::isfinite(x)&&std::isfinite(y)&&std::isfinite(z)&&id==123,"Invalid cast destination");++spells;}
  void CastSpell(Unit*,uint32 id,bool){casts.push_back(id);}void PlayOneShotAnimKit(uint32 id){animations.push_back(id);}
- void SetSpeed(uint32 mode,float value,bool){++writes;speeds[mode]=value;}
+ void SetSpeed(uint32 mode,float value,bool=false){++writes;speeds[mode]=value;}
  void SetObjectScale(float value){++writes;scale=value;}
  void SetFloatValue(uint32 field,float value){Require(field==PLAYER_FIELD_AVG_ITEM_LEVEL+EquippedAvgItemLevel,"Wrong item-level field");++writes;average=value;}
  bool HasPvpStatsScalingEnabled(){return pvp;}void SendUpdateStat(uint32 mask){Require(mask==USM_ALL,"Wrong stats mask");++stats;}void SendUpdateCR(uint32 mask){Require(mask==CR_PVP_UPDATE_MASK,"Wrong rating mask");++ratings;}
@@ -75,12 +77,13 @@ struct MoneyScripts{std::function<void(int64&)>hook;template<class T>void OnPlay
 #include "NativeModifyMoney.inc"
 struct Player:Unit{Player*ToPlayer()override{return this;}};
 struct Session{Player*player=nullptr;uint32 account=1;Player*GetPlayer(){return player;}uint32 GetAccountId(){return account;}};
-struct CreatureTemplate{uint32 faction=1;float scale=1.5f;};
+struct CreatureTemplate{uint32 faction=1;float scale=1.5f;std::string Name[1]={"Controlled NPC"};};
 struct CreatureData{float personalSize=3;};
 struct CreatureAI{uint32 writes=0,key=0,value=0;void SetData(uint32 a,uint32 b){++writes;key=a;value=b;}};
 struct MotionMaster{uint32 initializes=0;void Initialize(){++initializes;}};
 struct Creature:Unit{uint32 entry=0,path=77,faction=1,level=1,saves=0,nativeDisplay=0,outfit=0,moveType=0,deathCalls=0,respawns=0,delay=0;bool pet=false,alive=true,hasAI=true;float radius=0;CreatureTemplate templateData;CreatureAI ai;MotionMaster motion;
  Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetWaypointPath(){return path;}uint32 getFaction(){return faction;}void setFaction(uint32 value){++writes;faction=value;}ObjectGuid GetGUID(){return {};}
+ uint32 groupCalls=0,lastGroup=0,entryCalls=0;bool groupDelete=false,entryAccepted=true;void SummonCreatureGroup(uint32 id){++groupCalls;lastGroup=id;groupDelete=false;}void SummonCreatureGroupDespawn(uint32 id){++groupCalls;lastGroup=id;groupDelete=true;}bool UpdateEntry(uint32 id){++entryCalls;if(entryAccepted){++writes;entry=id;}return entryAccepted;}
  bool isPet(){return pet;}void SetLevel(uint8 value){++writes;level=value;}void SaveToDB(){++saves;}CreatureTemplate const*GetCreatureTemplate(){return &templateData;}
  CreatureAI*AI(){return hasAI?&ai:nullptr;}std::string GetNPCAIName(){return "ControlledAI";}std::string GetScriptName(){return "";}char const*GetName(){return "Controlled";}
  void SetNativeDisplayId(uint32 value){++writes;nativeDisplay=value;}void SetOutfit(int32 value){++writes;outfit=uint32(value);}
@@ -92,11 +95,14 @@ struct Pet:Creature{Pet(){pet=true;}PetType type=HUNTER_PET;PetType getPetType()
 struct WorldConfig{uint32 getIntConfig(WorldIntConfigs key){Require(key==CONFIG_MAX_PLAYER_LEVEL,"Wrong level config");return 120;}}worldConfig;auto sWorld=&worldConfig;
 struct GameObjectTemplate{std::string name="Controlled GO";float size=1.5f;};
 struct GameObjectData{uint32 id=99;float personalSize=3;};
-struct GameObject:Unit{GameObjectTemplate info;uint32 saves=0,refreshes=0,destroys=0,visibility=0;float rz=0,ry=0,rx=0;ObjectGuid GetGUID(){return {7};}uint32 GetEntry(){return 99;}GameObjectTemplate const*GetGOInfo(){return &info;}void Relocate(float x,float y,float z){++writes;position.x=x;position.y=y;position.z=z;}void Relocate(float x,float y,float z,float o){Relocate(x,y,z);position.o=o;}void RelocateStationaryPosition(float,float,float,float){++writes;}void SetWorldRotationAngles(float z,float y,float x){++writes;rz=z;ry=y;rx=x;}void DestroyForNearbyPlayers(){++destroys;}void UpdateObjectVisibility(){++visibility;}void SaveToDB(){++saves;}void Refresh(){++refreshes;}};
+struct GameObject:Unit{uint32 despawns=0,customCalls=0,customAnim=0,byteOffset=0,byteValue=0;int32 healthDelta=0;Unit*healthActor=nullptr;void SetByteValue(uint32 field,uint8 offset,uint8 value){Require(field==GAMEOBJECT_FIELD_BYTES_1&&offset<4,"Wrong GO byte field");++writes;byteOffset=offset;byteValue=value;}void SendCustomAnim(uint32 id){++customCalls;customAnim=id;}void SendObjectDeSpawnAnim(ObjectGuid){++despawns;}void ModifyHealth(int32 delta,Unit*actor){++writes;healthDelta=delta;healthActor=actor;}GameObjectTemplate info;uint32 saves=0,refreshes=0,destroys=0,visibility=0;float rz=0,ry=0,rx=0;ObjectGuid GetGUID(){return {7};}uint32 GetEntry(){return 99;}GameObjectTemplate const*GetGOInfo(){return &info;}void Relocate(float x,float y,float z){++writes;position.x=x;position.y=y;position.z=z;}void Relocate(float x,float y,float z,float o){Relocate(x,y,z);position.o=o;}void RelocateStationaryPosition(float,float,float,float){++writes;}void SetWorldRotationAngles(float z,float y,float x){++writes;rz=z;ry=y;rx=x;}void DestroyForNearbyPlayers(){++destroys;}void UpdateObjectVisibility(){++visibility;}void SaveToDB(){++saves;}void Refresh(){++refreshes;}};
 struct MapManager{static bool IsValidMapCoord(uint32 id,float x,float y,float z){return id==1&&Trinity::IsValidMapCoord(x,y,z);}};
 struct ObjectManager{CreatureTemplate data;CreatureData spawn;GameObjectTemplate goInfo;GameObjectData goData;uint32 GetXPForLevel(uint32 level){return level*100;}CreatureTemplate const*GetCreatureTemplate(uint32){return &data;}CreatureData&NewOrExistCreatureData(uint64 id){Require(id==7,"Wrong spawn");return spawn;}GameObjectData const*GetGOData(uint32 id){return id==7?&goData:nullptr;}GameObjectTemplate const*GetGameObjectTemplate(uint32 id){return id==99?&goInfo:nullptr;}GameObjectData&NewGOData(uint64 id){Require(id==7,"Wrong GO spawn");return goData;}}objectManager;auto sObjectMgr=&objectManager;
 struct WorldDatabasePreparedStatement{uint32 id=0;std::map<uint32,uint64>values;std::map<uint32,float>floats;void setUInt16(uint32 i,uint16 v){values[i]=v;}void setUInt32(uint32 i,uint32 v){values[i]=v;}void setUInt64(uint32 i,uint64 v){values[i]=v;}void setUInt8(uint32 i,uint8 v){values[i]=v;}void setFloat(uint32 i,float v){Require(std::isfinite(v),"Nonfinite DB write");floats[i]=v;}};
-struct WorldService{WorldDatabasePreparedStatement pending;std::vector<WorldDatabasePreparedStatement>writes;WorldDatabasePreparedStatement*GetPreparedStatement(uint32 id){pending={id,{},{}};return &pending;}void Execute(WorldDatabasePreparedStatement*row){writes.push_back(*row);}}WorldDatabase;
+struct Field{uint64 integer=0;float number=0;uint64 GetUInt64(){return integer;}uint32 GetUInt32(){return uint32(integer);}uint16 GetUInt16(){return uint16(integer);}float GetFloat(){return number;}};
+struct QueryRow{Field fields[6]{{(uint64(1)<<32)+7,0},{99,0},{0,1},{0,2},{0,3},{1,0}};Field*Fetch(){return fields;}bool NextRow(){return false;}};
+using PreparedQueryResult=std::shared_ptr<QueryRow>;
+struct WorldService{WorldDatabasePreparedStatement pending,lastQuery;uint32 queries=0;bool hasRow=false;std::vector<WorldDatabasePreparedStatement>writes;WorldDatabasePreparedStatement*GetPreparedStatement(uint32 id){pending={id,{},{}};return &pending;}void Execute(WorldDatabasePreparedStatement*row){writes.push_back(*row);}PreparedQueryResult Query(WorldDatabasePreparedStatement*row){++queries;lastQuery=*row;return hasRow?std::make_shared<QueryRow>():nullptr;}}WorldDatabase;
 struct ChatHandler {
  GameObject*go=nullptr;GameObject*GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 id,uint32 entry){Require(id==7&&entry==99,"Wrong GO lookup");return go;}
  Player*target=nullptr;Unit*unit=nullptr;Creature*creature=nullptr;Session*session=nullptr;bool lower=false,error=false,report=false;uint32 messages=0,databaseReached=0;
@@ -121,7 +127,7 @@ auto sSpellMgr=&spellMgr;
 struct SpellMgr{static bool IsSpellValid(SpellInfo const*,Player*){return true;}};
 static bool Utf8ToUpperOnlyLatin(std::string&s){if(s=="INVALID_UTF8")return false;for(char&c:s)if(c>='a'&&c<='z')c-=32;return true;}
 struct LoginDatabasePreparedStatement{uint32 id=0;std::map<uint32,int32> fields;void setUInt32(uint32 i,uint32 v){fields[i]=int32(v);}void setUInt8(uint32 i,uint8 v){fields[i]=v;}void setInt32(uint32 i,int32 v){fields[i]=v;}};
-using PreparedQueryResult=bool;
+
 struct LoginService {
  LoginDatabasePreparedStatement pending;bool conflict=false;std::vector<LoginDatabasePreparedStatement>writes;
  LoginDatabasePreparedStatement*GetPreparedStatement(uint32 id){pending={id,{}};return &pending;}
@@ -168,6 +174,9 @@ static void NpcRejects(bool(*fn)(ChatHandler*,char const*),std::vector<char cons
  {ChatHandler h;WorldDatabase.writes.clear();Require(!Command(fn,h,"1")&&WorldDatabase.writes.empty(),"Absent NPC accepted");++cases;}
 }
 int main(){try{
+#ifdef COUNTERFACTUAL_GOSTATE
+ Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoState::Selected::HandleGameObjectSetStateCommand,h,"7 0 256")&&go.writes==1&&go.byteValue==0,"Original byte narrowing not reproduced");std::cout<<"COUNTERFACTUAL original GO state256 narrows to0 and mutates controlled byte field;no real world writes\n";return 0;
+#endif
 #ifdef OLD_GO_GUID_BASELINE
  Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;std::string malformed="7x";Require(CaseGoGuid::Selected::GetGuidLowFromArgsOrLastTargetedGo(&h,malformed.c_str())==7,"Original prefix alias not reproduced");std::string prior="7 stale";strtok(prior.data()," ");std::string empty;Require(CaseGoGuid::Selected::GetGuidLowFromArgsOrLastTargetedGo(&h,empty.c_str())==7&&std::string(strtok(nullptr," "))=="stale","Original cursor reuse not reproduced");std::cout<<"COUNTERFACTUAL original GO helper aliases7x to7 and leaves unrelated token cursor;controlled memory,no world writes\n";return 0;
 #endif
@@ -406,6 +415,79 @@ int main(){try{
 #ifdef REPAIR_GOSIZE
  for(char const*arg:{"7 nan","7 inf","7 -1","7 1x","7"}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;objectManager.goData.personalSize=3;Require(!Command(CaseGoSize::Selected::HandleGameObjectSetSizeCommand,h,arg)&&!go.writes&&!go.saves&&objectManager.goData.personalSize==3,"Invalid GO size persisted");++cases;}
  for(char const*arg:{"7 0","7 2.5","7 0x1p1"}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoSize::Selected::HandleGameObjectSetSizeCommand,h,arg)&&go.saves==1&&go.scale==(std::string(arg)=="7 0"?objectManager.goInfo.size:std::strtof(arg+2,nullptr)),"Native GO size/template-reset changed");++cases;}
+#endif
+
+#ifdef REPAIR_STAND
+ for(char const*arg:{""," ","-1","1x","4294967297","3"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseStand::Selected::HandleModifyStandStateCommand,h,arg)&&!p.writes,"Invalid emote state accepted");++cases;}
+ for(uint32 id:{0u,1u,2u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseStand::Selected::HandleModifyStandStateCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.flags[UNIT_FIELD_EMOTE_STATE]==id,"Native emote reset/set lost");++cases;}
+#endif
+#ifdef REPAIR_MOUNT
+ for(char const*arg:{""," ","0","-1","1x","4294967297","70"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseMount::Selected::HandleModifyMountCommand,h,arg)&&!p.writes,"Invalid mount selector changed player");++cases;}
+ for(uint32 id:{1u,35u,69u}){Player p;p.flags[UNIT_FIELD_FLAGS]=0x400;ChatHandler h;h.target=&p;Require(Command(CaseMount::Selected::HandleModifyMountCommand,h,std::to_string(id).c_str())&&p.mount&&p.speeds[MOVE_RUN]==15&&p.speeds[MOVE_SWIM]==15&&p.flags[UNIT_FIELD_FLAGS]==(0x400|UNIT_FLAG_PVP),"Native mount overwrote unrelated flags/speeds");++cases;}
+#endif
+#ifdef REPAIR_GOPHASE
+ for(char const*arg:{"7","7 0","7 -1","7 1x","7 4294967297"}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(!Command(CaseGoPhase::Selected::HandleGameObjectSetPhaseCommand,h,arg)&&!go.writes&&!go.saves,"Invalid GO phase persisted");++cases;}
+ for(uint32 mask:{1u,UINT32_MAX}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoPhase::Selected::HandleGameObjectSetPhaseCommand,h,("7 "+std::to_string(mask)).c_str())&&go.phase==mask&&go.saves==1,"Native GO mask/save lost");++cases;}
+#endif
+#ifdef REPAIR_GOSTATE
+ for(char const*arg:{"7","7 0","7 0 1x","7 0 -1","7 0 256","7 -3","7 5 1","7 4294967296 1","7 4 4294967296"}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(!Command(CaseGoState::Selected::HandleGameObjectSetStateCommand,h,arg)&&!go.writes&&!go.despawns&&!go.customCalls,"Invalid GO state/width mutated object");++cases;}
+ for(uint32 offset:{0u,1u,3u}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoState::Selected::HandleGameObjectSetStateCommand,h,("7 "+std::to_string(offset)+" 255").c_str())&&go.byteOffset==offset&&go.byteValue==255,"Native GO byte route changed");++cases;}
+ {Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoState::Selected::HandleGameObjectSetStateCommand,h,"7 -1")&&go.despawns==1,"Native despawn animation lost");Require(Command(CaseGoState::Selected::HandleGameObjectSetStateCommand,h,"7 4 4294967295")&&go.customAnim==UINT32_MAX,"Native UInt32 custom animation narrowed");++cases;}
+#endif
+#ifdef REPAIR_GODAMAGE
+ for(char const*arg:{"7 1x","7 2147483648","7 -2147483648","7 -2147483649"}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(!Command(CaseGoDamage::Selected::HandleDamageObjectCommand,h,arg)&&!go.writes,"Unsafe GO damage negation dispatched");++cases;}
+ for(int32 damage:{0,1,-1,INT32_MAX,INT32_MIN+1}){Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoDamage::Selected::HandleDamageObjectCommand,h,("7 "+std::to_string(damage)).c_str())&&go.writes==1&&go.healthDelta==-damage&&go.healthActor==&p,"Native signed GO health/actor route changed");++cases;}
+#endif
+#ifdef REPAIR_GONEAR
+ for(char const*arg:{" ","nan","inf","1x","1e20","-1e20"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;WorldDatabase.queries=0;Require(!Command(CaseGoNear::Selected::HandleGameObjectNearCommand,h,arg)&&!WorldDatabase.queries,"Invalid GO radius reached SQL");++cases;}
+ for(char const*arg:{"","0","-5","1e19"})for(bool rows:{false,true}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;WorldDatabase.queries=0;WorldDatabase.hasRow=rows;Require(Command(CaseGoNear::Selected::HandleGameObjectNearCommand,h,arg)&&WorldDatabase.queries==1&&std::isfinite(WorldDatabase.lastQuery.floats.at(7)),"Native GO finite distance query/list lost");++cases;}
+#endif
+#ifdef REPAIR_NPCNEAR
+ for(char const*arg:{" ","nan","inf","1x","1e20","-1e20"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;WorldDatabase.queries=0;Require(!Command(CaseNpcNear::Selected::HandleNpcNearCommand,h,arg)&&!WorldDatabase.queries,"Invalid NPC radius reached SQL");++cases;}
+ for(char const*arg:{"","0","-5","1e19"})for(bool rows:{false,true}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;WorldDatabase.queries=0;WorldDatabase.hasRow=rows;Require(Command(CaseNpcNear::Selected::HandleNpcNearCommand,h,arg)&&WorldDatabase.queries==1&&std::isfinite(WorldDatabase.lastQuery.floats.at(7)),"Native NPC finite distance query/list lost");++cases;}
+#endif
+#ifdef REPAIR_NPCGROUP
+ for(char const*arg:{""," ","-1","1x","4294967296","1 -1","1 1x","1 4294967296"}){Creature c;ChatHandler h;h.creature=&c;Require(!Command(CaseNpcGroup::Selected::HandleNpcSummonGroupCommand,h,arg)&&!c.groupCalls,"Invalid summon/despawn group dispatched");++cases;}
+ for(uint32 group:{0u,1u,UINT32_MAX})for(uint32 del:{0u,1u,UINT32_MAX}){Creature c;ChatHandler h;h.creature=&c;Require(Command(CaseNpcGroup::Selected::HandleNpcSummonGroupCommand,h,(std::to_string(group)+" "+std::to_string(del)).c_str())&&c.groupCalls==1&&c.lastGroup==group&&c.groupDelete==bool(del),"Native explicit zero/group direction changed");++cases;}
+#endif
+#ifdef REPAIR_NPCENTRY
+ for(char const*arg:{""," ","0","-1","1x","4294967297"}){Creature c;ChatHandler h;h.unit=&c;Require(!Command(CaseNpcEntry::Selected::HandleNpcSetEntryCommand,h,arg)&&!c.entryCalls,"Invalid NPC entry dispatched");++cases;}
+ for(bool accepted:{false,true}){Creature c;c.entryAccepted=accepted;ChatHandler h;h.unit=&c;Require(Command(CaseNpcEntry::Selected::HandleNpcSetEntryCommand,h,"99")==accepted&&c.entryCalls==1&&c.writes==uint32(accepted),"Native entry rejection reported success");++cases;}
+#endif
+#ifdef REPAIR_HONORADD
+ for(char const*arg:{""," ","1x","2147483648","-2147483649"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseHonorAdd::Selected::HandleHonorAddCommand,h,arg)&&!p.writes,"Invalid native honor add dispatched");++cases;}
+ for(int32 amount:{0,1,-1,INT32_MIN,INT32_MAX})for(bool accepted:{false,true}){Player p;p.honorAccepted=accepted;ChatHandler h;h.target=&p;Require(Command(CaseHonorAdd::Selected::HandleHonorAddCommand,h,std::to_string(amount).c_str())==accepted&&p.honorAmount==amount&&p.honorGroup==1&&p.honorToken&&p.writes==uint32(accepted),"Native honor-add signed amount/receipt/token route changed");++cases;}
+#endif
+
+#ifdef REPAIR_DEST
+ {ChatHandler h;Require(!Command(CaseDest::Selected::HandleCastDestCommand,h,"123 1 2 3"),"Missing destination caster accepted");++cases;}
+#endif
+#ifdef REPAIR_CUSTOM
+ {ChatHandler h;Require(!Command(CaseCustom::Selected::HandleCastCustomCommand,h,"123 1"),"Missing custom caster accepted");++cases;}
+#endif
+#ifdef REPAIR_VISUAL
+ {Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseVisual::Selected::HandleCastVisualCommand,h,"1")&&!p.writes,"Missing visual target accepted");++cases;}
+#endif
+#ifdef REPAIR_ORPHAN
+ {Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseOrphan::Selected::HandleCastOrphanVisualCommand,h,"1")&&!p.writes,"Missing orphan target accepted");++cases;}
+#endif
+#ifdef REPAIR_HONOR
+ for(bool target:{false,true}){Player p;ChatHandler h;h.target=target?&p:nullptr;h.lower=true;Require(!Command(CaseHonor::Selected::HandleModifyHonorCommand,h,"1")&&!p.writes,"Honor missing/authority admission lost");++cases;}
+#endif
+#ifdef REPAIR_REP
+ for(bool target:{false,true}){Player p;ChatHandler h;h.target=target?&p:nullptr;h.lower=true;Require(!Command(CaseRep::Selected::HandleModifyRepCommand,h,"1 1")&&!p.reputation.writes,"Reputation missing/authority admission lost");++cases;}
+#endif
+#ifdef REPAIR_MOUNT
+ for(bool target:{false,true}){Player p;ChatHandler h;h.target=target?&p:nullptr;h.lower=true;Require(!Command(CaseMount::Selected::HandleModifyMountCommand,h,"1")&&!p.writes,"Mount missing/authority admission lost");++cases;}
+#endif
+#ifdef REPAIR_HONORADD
+ for(bool target:{false,true}){Player p;ChatHandler h;h.target=target?&p:nullptr;h.lower=true;Require(!Command(CaseHonorAdd::Selected::HandleHonorAddCommand,h,"1")&&!p.writes,"Honor-add missing/authority admission lost");++cases;}
+#endif
+#ifdef REPAIR_NPCENTRY
+ {Player p;ChatHandler h;h.target=&p;Require(!Command(CaseNpcEntry::Selected::HandleNpcSetEntryCommand,h,"99")&&!p.writes,"Player accepted as NPC entry target");++cases;}
+#endif
+#ifdef REPAIR_NPCGROUP
+ {ChatHandler h;Require(!Command(CaseNpcGroup::Selected::HandleNpcSummonGroupCommand,h,"1"),"Missing NPC group target accepted");++cases;}
 #endif
 #ifdef REPAIR_SOUL
  for(randomChoice=0;randomChoice<3;++randomChoice){EchoUnit source,actor;CaseSoul::Selected callback;callback.me=&actor;

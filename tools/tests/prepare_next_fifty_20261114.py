@@ -25,11 +25,12 @@ def verify():
         if not record.get('added'):assert current==original,('Other gameplay changed',path)
 
 
-def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifact_baseline=False,npc_level_baseline=False,old_guid=False):
+def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifact_baseline=False,npc_level_baseline=False,old_guid=False,counter_case=""):
     verify();out.mkdir(parents=True,exist_ok=True)
     selected=[];defines=[]
     for row in PLAN['changes']:
         kind=row['kind']
+        if counter_case and row['case']!=counter_case:continue
         if old_guid and row['case']!='GoGuid':continue
         if kind=='gotravel':continue
         if money_baseline:continue
@@ -44,7 +45,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
         if kind in ('go','account_realm') or baseline and kind!='soul':
             continue
         source=(ROOT/row['path']).read_text(encoding='utf-8-sig')
-        code=row['old'] if float_baseline or artifact_baseline or npc_level_baseline or old_guid else block(source,('    static uint32 'if kind=='guidhelper'else'    static bool ')+row['method']+'(') if kind!='soul' else row['old' if baseline else 'new']
+        code=row['old'] if float_baseline or artifact_baseline or npc_level_baseline or old_guid or counter_case else block(source,('    static uint32 'if kind=='guidhelper'else'    static bool ')+row['method']+'(') if kind!='soul' else row['old' if baseline else 'new']
         name={'waypoint':'Waypoint','account':'Account','cast':'Cast','titles':'Titles','soul':'Soul'}.get(kind)
         if row.get('case'):name=row['case']
         if kind=='power':name={'HandleModifyEnergyCommand':'Energy','HandleModifyRageCommand':'Rage','HandleModifyRunicPowerCommand':'Runic'}[row['method']]
@@ -52,13 +53,14 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
             boundary=code.index('            WorldDatabasePreparedStatement* stmt =')
             code=code[:boundary]+'            ++handler->databaseReached; return true;\n        }\n        return false;\n    }'
         extra=''
-        if row['case']in('Turn','Move','GoSize'):
+        if row['path'].endswith('cs_gobject.cpp') and kind!='guidhelper':
             extra=block(source,'    static uint32 GetGuidLowFromArgsOrLastTargetedGo(')
         body=('struct Selected : EchoBase {' if kind=='soul' else 'struct Selected {')+extra+code+'};'
         if kind=='soul':
             body=block(source,'enum Spells')+';'+block(source,'enum eAnim')+';'+re.search(r'uint32 AnimRand\[3\]\s*=\s*\{[^}]*\};',source)[0]+body
         selected.append('namespace Case'+name+' {\n'+body+'\n}')
-        if old_guid:defines.append('OLD_GO_GUID_BASELINE')
+        if counter_case:defines.append('COUNTERFACTUAL_'+counter_case.upper())
+        elif old_guid:defines.append('OLD_GO_GUID_BASELINE')
         elif npc_level_baseline:defines.append('NPC_LEVEL_BASELINE')
         elif artifact_baseline:defines.append('ARTIFACT_XP_BASELINE')
         elif float_baseline:defines.append('SPEED_FLOAT_BASELINE')
@@ -71,7 +73,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
         'src/server/game/Miscellaneous/Language.h','src/server/game/Miscellaneous/SharedDefines.h',
         'src/common/Common.h','src/server/game/AI/EventMap.h','src/server/game/Movement/MotionMaster.h','src/server/game/Entities/Object/ObjectGuid.h','src/server/game/Entities/Item/Item.h','src/server/game/Entities/Unit/Unit.h','src/server/game/Entities/Unit/UnitDefines.h','src/server/game/DataStores/DBCEnums.h'))
     constants=[]
-    for name in sorted(set(re.findall(r'\b(?:LANG_[A-Z_0-9]+|EQUIP_ERR_TOO_MUCH_GOLD|TYPEID_PLAYER|SEC_CONSOLE|VISUAL_WAYPOINT|EVENT_1|UNIT_FLAG2_MIRROR_IMAGE|ITEM_CHANGED|CURRENCY_TYPE_HONOR_POINTS|LOCALE_enUS)\b',joined+(ROOT/'tools/tests/NextFifty20261114Test.cpp').read_text()))):
+    for name in sorted(set(re.findall(r'\b(?:LANG_[A-Z_0-9]+|EQUIP_ERR_TOO_MUCH_GOLD|TYPEID_PLAYER|TYPEID_UNIT|SEC_CONSOLE|VISUAL_WAYPOINT|EVENT_1|UNIT_FLAG2_MIRROR_IMAGE|ITEM_CHANGED|UNIT_FLAG_PVP|CURRENCY_TYPE_HONOR_POINTS|LOCALE_enUS)\b',joined+(ROOT/'tools/tests/NextFifty20261114Test.cpp').read_text()))):
         match=re.search(r'\b'+name+r'\s*=\s*(0x[0-9a-fA-F]+|\d+)\b',headers) or re.search(r'#define\s+'+name+r'\s+(\d+)\b',headers)
         assert match,('Missing native constant',name)
         constants.append('constexpr uint32 '+name+'='+match[1]+';')
@@ -105,4 +107,4 @@ if __name__=='__main__':
     if len(sys.argv)==1:
         verify();print('PASS exact first-ten source scope')
     else:
-        prepare(Path(sys.argv[1]),len(sys.argv)>2 and sys.argv[2]=='baseline',len(sys.argv)>2 and sys.argv[2]=='float-baseline',len(sys.argv)>2 and sys.argv[2]=='money-baseline',len(sys.argv)>2 and sys.argv[2]=='artifact-baseline',len(sys.argv)>2 and sys.argv[2]=='npc-level-baseline',len(sys.argv)>2 and sys.argv[2]=='old-guid')
+        prepare(Path(sys.argv[1]),len(sys.argv)>2 and sys.argv[2]=='baseline',len(sys.argv)>2 and sys.argv[2]=='float-baseline',len(sys.argv)>2 and sys.argv[2]=='money-baseline',len(sys.argv)>2 and sys.argv[2]=='artifact-baseline',len(sys.argv)>2 and sys.argv[2]=='npc-level-baseline',len(sys.argv)>2 and sys.argv[2]=='old-guid',sys.argv[2][4:]if len(sys.argv)>2 and sys.argv[2].startswith('old:')else'')

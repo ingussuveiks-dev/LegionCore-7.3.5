@@ -3,8 +3,8 @@
   "request": "Labi ņem vēl5x10",
   "baseline": "9eb7aab7ae7c78fe1880c9f04ca131f254389093",
   "authorized_new_repairs": 50,
-  "completed_source_repairs": 10,
-  "status": "IN_PROGRESS_10_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 11,
+  "status": "IN_PROGRESS_11_OF_50_CANONICAL_CLIENT_PENDING",
   "previous_fifty": "docs/audits/five-ten-2026-11-14.json remains completed50;none recounted.",
   "batches": [
     {
@@ -85,10 +85,43 @@
         "reclaimed_bytes": 211547689.0,
         "retained_rollback": ".codex/release-before-next-fifty-20261114-batch1"
       }
+    },
+    {
+      "batch": 2,
+      "repairs": [
+        {
+          "key": "StandStateNativeEmote",
+          "path": "src/server/scripts/Commands/cs_modify.cpp",
+          "summary": "StandStateNativeEmote;complete exact source delta in NextFifty20261114Repairs.json."
+        }
+      ],
+      "checks": {
+        "source_asan": "242 complete production cases,including130 newly added/admission cases since112;controlled native Query endpoints return empty or one wide-GUID row. Native source movement/health/group/entry and honor receipt flows;no real world/character/account writes.",
+        "counterfactual": "Original GO byte state256 narrows to0;actual old method with current checked target helper reproduces field mutation in controlled fixture. Paired with repaired byte/native custom animation tests.",
+        "native": "Actual Object::SetByteValue is(uint16,uint8,uint8);actual signed visual fields/double helper retained;double squared1e20f exceeds float SQL domain. No DB/world mutation.",
+        "release": "Original scripts Release library/original-input staged link. All new registered operations and retained previous50 PE proofs pass in canonical;Scepter VerifyReleaseBinary passes. New exact source deltas restore prior50 source certificate.",
+        "startup": "Owned PID35012 ready/shutdown0/exit0,gone,stderr empty;no user server stopped/config changed.",
+        "analysis": "Selected original compiler /analyze NPC/honor/gobject exits0;existing header/deprecation/conversion warnings reviewed. Native byte conversion warning is bounded by explicit0..255 guard;not a server error.",
+        "diagnostics": "SetSpeed fixture omitted native default force argument;corrected and paired with final242 pass. Finite radius guard retains negative square semantics,zero/default radius and native wide SQL GUID reporting. Mount preserves unrelated flags;INT32_MIN damage rejected before negation. No new/changed crash,appended DBErrors or unexplained server warning/error/assertion;owned35012 ready/shutdown0/exit0,gone,stderr empty. Mixed7111-byte DBErrors and Slaghammer hash unchanged."
+      },
+      "canonical": {
+        "bnetserver.exe": "46e64ff1acbbac63a2ce7a267310d422baee499188eb24781e8ab28cf953b7bd",
+        "bnetserver.map": "3b5bfffd52babb1c8b5262e6392efea89148bce742805bc6b551a5a59719e227",
+        "worldserver.exe": "92ccab057ecc9e89a0a99d637d62a11286ac7f680886095ba0d50a35cb1964df",
+        "worldserver.map": "a733c74f216c7b10ace0cc9d3c1fa0c7a76b6f03716c4de7dae5842037b39db0"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch2",
+        "manifest_sha256": "66cc70aa1452d7233670bb6effa0ce8d1f3192b3849914512a5985a247ad3824",
+        "archived_files": 199,
+        "removed_files": 96,
+        "reclaimed_bytes": 229747566.0,
+        "retained_rollback": ".codex/release-before-next-fifty-20261114-batch2"
+      }
     }
   ],
   "remaining": [
-    "40 authorized new source repairs remain.",
+    "39 authorized new source repairs remain.",
     "Actual client traversal,all36 complete artifact chains and original LINK2/FuZan/Slaghammer/mixedDBErrors evidence remain open;source/native/PE/startup do not certify client behavior."
   ]
 }

@@ -1313,7 +1313,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 anim_id = atoi((char*)args);
+        uint32 anim_id;
+        if (!Trinity::ParseCommandInteger(args, anim_id) || (anim_id && !sEmotesStore.LookupEntry(anim_id)))
+            return false;
         handler->GetSession()->GetPlayer()->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, anim_id);
 
         return true;

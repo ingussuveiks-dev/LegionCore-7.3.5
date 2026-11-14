@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$FloatBaseline,[switch]$MoneyBaseline,[switch]$ArtifactBaseline,[switch]$NpcLevelBaseline,[switch]$OldGuid)
+param([switch]$Baseline,[switch]$FloatBaseline,[switch]$MoneyBaseline,[switch]$ArtifactBaseline,[switch]$NpcLevelBaseline,[switch]$OldGuid,[string]$Counterfactual="")
 if($Baseline -and $FloatBaseline){throw 'Choose one counterfactual'}
 $ErrorActionPreference='Stop';$fiveTenRepo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $fiveTenOut="$fiveTenRepo/build-extractors/runtime-test/next-fifty-20261114/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
@@ -10,6 +10,7 @@ $fiveTenOut="$fiveTenRepo/build-extractors/runtime-test/next-fifty-20261114/$(Ge
  if($ArtifactBaseline){$fiveTenArgs+='artifact-baseline'}
  if($NpcLevelBaseline){$fiveTenArgs+='npc-level-baseline'}
  if($OldGuid){$fiveTenArgs+='old-guid'}
+ if($Counterfactual){$fiveTenArgs+="old:$Counterfactual"}
  & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe @fiveTenArgs
  if($LASTEXITCODE){throw 'Source extraction failed'}
  $fiveTenVs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
