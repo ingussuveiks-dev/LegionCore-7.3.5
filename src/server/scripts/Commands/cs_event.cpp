@@ -182,7 +182,9 @@ public:
         if (!id)
             return false;
 
-        int32 eventId = atoi(id);
+        int32 eventId;
+        if (!Trinity::ParseCommandInteger(id, eventId))
+            return false;
 
         GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();
 
