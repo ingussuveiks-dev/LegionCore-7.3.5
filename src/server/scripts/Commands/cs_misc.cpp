@@ -1461,7 +1461,10 @@ public:
         if (!*args)
             return false;
 
-        AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(atoi((char*)args));
+        uint32 areaId;
+        if (!Trinity::ParseCommandInteger(args, areaId))
+            return false;
+        AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(areaId);
         if (!areaEntry)
             return false;
 
@@ -1483,9 +1486,9 @@ public:
             return false;
         }
 
-        uint32 val = uint32((1 << (area % 32)));
+        uint32 val = uint32(1) << (area % 32);
         uint32 currFields = playerTarget->GetUInt32Value(PLAYER_FIELD_EXPLORED_ZONES + offset);
-        playerTarget->SetUInt32Value(PLAYER_FIELD_EXPLORED_ZONES + offset, uint32((currFields ^ val)));
+        playerTarget->SetUInt32Value(PLAYER_FIELD_EXPLORED_ZONES + offset, uint32((currFields & ~val)));
 
         handler->SendSysMessage(LANG_UNEXPLORE_AREA);
         return true;
