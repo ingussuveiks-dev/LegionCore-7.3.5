@@ -1,22 +1,21 @@
 {
   "latest_next_fifty_2026_11_14": {
     "audit": "docs/audits/next-fifty-2026-11-14.json",
-    "completed_new_source_repairs": 10,
+    "completed_new_source_repairs": 20,
     "authorized": 50,
-    "status": "IN_PROGRESS_10_OF_50_CANONICAL_CLIENT_PENDING",
-    "canonical_world_sha256": "bd120f9186cdc2fdcf1404b3d70af64c7311f06e8ca67e0d03ae3292fa842ddb",
+    "status": "IN_PROGRESS_20_OF_50_CANONICAL_CLIENT_PENDING",
+    "canonical_world_sha256": "92ccab057ecc9e89a0a99d637d62a11286ac7f680886095ba0d50a35cb1964df",
     "checks": {
-      "source_asan": "112 complete production handler/helper contexts. Controlled spell/visual/honor/reputation/GO endpoints,native enums/coordinate overloads. No live world/account/character mutation. Fractional/truncated int32 boundaries,signed native packet IDs,zero restore,authority/defaults and cursor fallback covered.",
-      "counterfactual": "Original shared GO helper aliases7x to7 and retains stale token cursor;controlled source reproduction paired with repaired cases. No deliberate undefined float conversion.",
-      "native": "Actual signed32 visual packet fields and finite double parser/truncated int32 boundary fractions/unchanged rejected receiver verified;no DB writes.",
-      "pe": "Reverse exact declared new edits to previous50 source certificate,then retained50 selected PE proofs plus actual new10 registrations/native casts/GO-save endpoints and finite/signed rejection CFG. Honor receipt checked before messages. Stage/canonical pass.",
-      "release": "Original scripts library/original-input staged link;Scepter VerifyReleaseBinary passes. Existing ParseCommandFloat body unchanged;double helper appended.",
-      "startup": "Owned canonical PID544 ready/shutdown0/exit0,empty stderr,gone. No user server stopped;config/certs/DLLs preserved.",
-      "analysis": "Original cast/modify/gobject /analyze exits0;existing library/header/deprecation warnings retained/reviewed. Separate original artifact report open.",
-      "diagnostics": "Final snapshots no new/changed crash,appended DBErrors or unexplained errors/assertions. Initial exporter edit ordering/conditional float include and PE inverted parse/inline bound assumptions corrected;final passing counterparts preserved. Mixed7111-byte DBErrors and Slaghammer hash unchanged."
+      "source_asan": "242 complete production cases,including130 newly added/admission cases since112;controlled native Query endpoints return empty or one wide-GUID row. Native source movement/health/group/entry and honor receipt flows;no real world/character/account writes.",
+      "counterfactual": "Original GO byte state256 narrows to0;actual old method with current checked target helper reproduces field mutation in controlled fixture. Paired with repaired byte/native custom animation tests.",
+      "native": "Actual Object::SetByteValue is(uint16,uint8,uint8);actual signed visual fields/double helper retained;double squared1e20f exceeds float SQL domain. No DB/world mutation.",
+      "release": "Original scripts Release library/original-input staged link. All new registered operations and retained previous50 PE proofs pass in canonical;Scepter VerifyReleaseBinary passes. New exact source deltas restore prior50 source certificate.",
+      "startup": "Owned PID35012 ready/shutdown0/exit0,gone,stderr empty;no user server stopped/config changed.",
+      "analysis": "Selected original compiler /analyze NPC/honor/gobject exits0;existing header/deprecation/conversion warnings reviewed. Native byte conversion warning is bounded by explicit0..255 guard;not a server error.",
+      "diagnostics": "SetSpeed fixture omitted native default force argument;corrected and paired with final242 pass. Finite radius guard retains negative square semantics,zero/default radius and native wide SQL GUID reporting. Mount preserves unrelated flags;INT32_MIN damage rejected before negation. No new/changed crash,appended DBErrors or unexplained server warning/error/assertion;owned35012 ready/shutdown0/exit0,gone,stderr empty. Mixed7111-byte DBErrors and Slaghammer hash unchanged."
     },
     "preserve": "Previous50 not recounted;original LINK2/Slaghammer/FuZan/mixedDBErrors retained;actual client/all36 pending.",
-    "next": "40 authorized new source repairs remain."
+    "next": "30 authorized new source repairs remain."
   },
   "latest_five_ten_2026_11_14": {
     "status": "COMPLETED_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",

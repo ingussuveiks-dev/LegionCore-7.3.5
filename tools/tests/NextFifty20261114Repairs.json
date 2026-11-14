@@ -190,6 +190,16 @@
       "batch": 2,
       "old": "    static bool HandleNpcSetEntryCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 newEntryNum = atoi(args);\n        if (!newEntryNum)\n            return false;\n\n        Unit* unit = handler->getSelectedUnit();\n        if (!unit || unit->GetTypeId() != TYPEID_UNIT)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        Creature* creature = unit->ToCreature();\n        if (creature->UpdateEntry(newEntryNum))\n            handler->SendSysMessage(LANG_DONE);\n        else\n            handler->SendSysMessage(LANG_ERROR);\n        return true;\n    }",
       "new": "    static bool HandleNpcSetEntryCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 newEntryNum;\n        if (!Trinity::ParseCommandInteger(args, newEntryNum) || !newEntryNum)\n            return false;\n\n        Unit* unit = handler->getSelectedUnit();\n        if (!unit || unit->GetTypeId() != TYPEID_UNIT)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        Creature* creature = unit->ToCreature();\n        bool const updated = creature->UpdateEntry(newEntryNum);\n        if (updated)\n            handler->SendSysMessage(LANG_DONE);\n        else\n            handler->SendSysMessage(LANG_ERROR);\n        return updated;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_honor.cpp",
+      "method": "HandleHonorAddCommand",
+      "key": "HonorAddNativeSignedReceipt",
+      "case": "HonorAdd",
+      "kind": "next",
+      "batch": 2,
+      "old": "    static bool HandleHonorAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        uint32 amount = (uint32)atoi(args);\n        target->RewardHonor(NULL, 1, amount);\n        return true;\n    }",
+      "new": "    static bool HandleHonorAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        int32 amount;\n        if (!Trinity::ParseCommandInteger(args, amount))\n            return false;\n        return target->RewardHonor(NULL, 1, amount);\n    }"
     }
   ],
   "extra_edits": [
@@ -228,6 +238,12 @@
       "old": "#include \"ScriptMgr.h\"",
       "new": "#include \"ScriptMgr.h\"\n#include <limits>",
       "owner_key": "NpcNearFiniteQuery"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_honor.cpp",
+      "old": "#include \"ScriptMgr.h\"",
+      "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "HonorAddNativeSignedReceipt"
     }
   ],
   "files": {
@@ -255,6 +271,11 @@
       "before_sha256": "c78f84d0689ceefa9296a236479b3050bee8e255b4e962d93a28bc0b9e4515e6",
       "owner_key": null,
       "after_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43"
+    },
+    "src/server/scripts/Commands/cs_honor.cpp": {
+      "before_sha256": "e8ce0b5c6835339393797bf223535ee95167b7a7685b5244cd8a95c908f1b9a2",
+      "owner_key": null,
+      "after_sha256": "98d357b53b820f1b12edc2818784519c1806af3bada15dcefdd7fb841a6cd991"
     }
   }
 }

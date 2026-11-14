@@ -23,6 +23,7 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
 #include "Chat.h"
 
 class honor_commandscript : public CommandScript
@@ -68,9 +69,10 @@ public:
         if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
             return false;
 
-        uint32 amount = (uint32)atoi(args);
-        target->RewardHonor(NULL, 1, amount);
-        return true;
+        int32 amount;
+        if (!Trinity::ParseCommandInteger(args, amount))
+            return false;
+        return target->RewardHonor(NULL, 1, amount);
     }
 
     static bool HandleHonorAddKillCommand(ChatHandler* handler, char const* /*args*/)
