@@ -54,9 +54,10 @@ security=sites(account,'?GetSecurity@AccountMgr@@')
 assert len(security)==2 and parsed<min(security),'Realm parse must precede ACL checks'
 assert account[parsed-2].mnemonic=='lea' and account[parsed-2].op_str.startswith('rdx, ')
 parsed_slot=account[parsed-2].op_str.split(', ',1)[1]
-assert any(x.op_str=='r15d, dword ptr '+parsed_slot for x in account[parsed:security[0]]),'Retain the parsed requested realm'
+realm_register,={x.op_str.split(', ',1)[0]for x in account[parsed:security[0]]if x.mnemonic=='mov'and x.op_str.endswith(', dword ptr '+parsed_slot)}
+assert re.fullmatch(r'r(?:[89]|1[0-5])d|e[a-z]{2}',realm_register),'Retain parsed realm in an actual32-bit register'
 setters=sites(account,'?setUInt32@PreparedStatementBase@@')
-assert any([x.op_str for x in account[i-3:i]]==['r8d, r15d','dl, 1','rcx, rbx'] for i in setters),'DELETE parameter1 must use requested realm,not realm.Id.Realm'
+assert any([x.op_str for x in account[i-3:i]]==['r8d, '+realm_register,'dl, 1','rcx, rbx'] for i in setters),'DELETE parameter1 must use requested realm,not realm.Id.Realm'
 first_token=next(i for i,x in enumerate(account)if x.mnemonic=='test' and x.op_str=='rax, rax')
 assert account[first_token+1].mnemonic=='je'
 assert not any(reaches(account,account[first_token+1].operands[0].imm,account[i].address)for i in sites(account,'?GetId@AccountMgr@@')+security),'Absent first token must not reach account assignment/ACL'

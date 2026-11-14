@@ -1,6 +1,7 @@
 #include <unordered_set>
 #include "SpellPackets.h"
 #include "GameObject.h"
+#include "Battlefield.h"
 #include "CommandFloatArgument.h"
 #include <iostream>
 #include <limits>
@@ -10,6 +11,8 @@ int main(){
  static_assert(std::is_same<decltype(WorldPackets::Spells::PlayOrphanSpellVisual{}.SpellVisualID),int32>::value,"Native orphan signed ID");
  static_assert(std::is_same<decltype(&Object::SetByteValue),void(Object::*)(uint16,uint8,uint8)>::value,"Native byte field/offset/value widths");
  double const oversized=double(1e20f)*1e20f;if(oversized<=std::numeric_limits<float>::max())return 5;
+ static_assert(std::is_same<decltype(&Battlefield::SetTimer),void(Battlefield::*)(uint32)>::value,"Native battlefield timer width");
+ static_assert(IN_MILLISECONDS==1000&&CURRENT_EXPANSION==6,"Native time/Legion expansion contract");
  double d=7;if(Trinity::ParseCommandDouble("nan",d)||d!=7)return 1;
  if(!Trinity::ParseCommandDouble("2147483647.9",d)||std::trunc(d)!=double(std::numeric_limits<int32>::max()))return 2;
  if(!Trinity::ParseCommandDouble("-2147483648.9",d)||std::trunc(d)!=double(std::numeric_limits<int32>::min()))return 3;

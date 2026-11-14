@@ -409,8 +409,8 @@ public:
             handler->HasLowerSecurityAccount(NULL, accountId, true))
             return false;
 
-        int expansion = atoi(exp); //get int anyway (0 if error)
-        if (expansion < 0 || uint8(expansion) > CURRENT_EXPANSION)
+        uint32 expansion;
+        if (!Trinity::ParseCommandInteger(exp, expansion) || expansion > CURRENT_EXPANSION)
             return false;
 
         LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPANSION);
