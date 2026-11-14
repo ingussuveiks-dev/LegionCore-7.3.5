@@ -9,16 +9,20 @@ from capstone.x86_const import X86_REG_RIP
 previous = runpy.run_path(str(Path(__file__).with_name('verify_warswords_helya_channel_release.py')))
 native = previous['native']
 instructions = previous['instructions']
+has_native_ack = any(name.startswith('?UpdateBlessing@npc_vigfus_bladewind_lastAI@npc_vigfus_bladewind_last@@') for name in native['symbols'])
 body = instructions('?Reset@npc_vigfus_bladewind_lastAI@npc_vigfus_bladewind_last@@')
 removal = next(index for index, entry in enumerate(body) if entry.mnemonic == 'mov' and entry.op_str == 'edx, 0x32270')
 cleanup = next(index for index, entry in enumerate(body[removal:], start=removal) if entry.mnemonic == 'call')
 assert native['resolve'](body[cleanup].operands[0].imm) == native['symbol']('?RemoveAura@Unit@@QEAAXIVObjectGuid@@'), 'Bubble cleanup does not use native aura removal'
 pending = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rcx + 0xc7], 0')
 clear = next(index for index, entry in enumerate(body) if entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rcx + 0xc6], 0')
-done = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rcx + 0xc6], 0')
+done_operand = 'byte ptr [rbx + 0xc6], 0' if has_native_ack else 'byte ptr [rcx + 0xc6], 0'
+done = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == done_operand)
 assert pending < clear < done < removal, 'Pending Reset no longer clears introDone before deciding addon cleanup'
-assert body[pending + 1].mnemonic == 'je' and body[pending + 1].operands[0].imm == body[done].address, 'Pending and completed introductions share the wrong reset branch'
-for condition in ('byte ptr [rcx + 0xc6], 0', 'eax, 0x1812a', 'dword ptr [rcx + 0xe0], 0x5e7'):
+common_reset = next(index for index, entry in enumerate(body) if entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rcx + 0xc7], 0') if has_native_ack else done
+assert body[pending + 1].mnemonic == 'je' and body[pending + 1].operands[0].imm == body[common_reset].address, 'Pending and completed introductions share the wrong reset branch'
+assert clear < common_reset <= done
+for condition in (done_operand, 'eax, 0x1812a', 'dword ptr [rcx + 0xe0], 0x5e7'):
     position = next(index for index, entry in enumerate(body[:removal]) if entry.mnemonic == 'cmp' and entry.op_str == condition)
     branch = next(entry for entry in body[position + 1:removal] if entry.mnemonic.startswith('j'))
     assert branch.operands[0].type == CS_OP_IMM and branch.operands[0].imm > body[cleanup].address, 'Unfinished/other-entry/map Reset can remove the bubble'
@@ -32,7 +36,11 @@ calls = [(index, native['resolve'](entry.operands[0].imm)) for index, entry in e
 present = next(index for index, target in calls if target == native['symbol']('?HasAura@Unit@@'))
 remove = next(index for index, target in calls if target == native['symbol']('?RemoveAura@Unit@@QEAAXIVObjectGuid@@'))
 assert present < remove and poll[present - 1].op_str == 'edx, 0x32270' and poll[remove - 2].op_str == 'edx, 0x32270', 'Late addon cleanup no longer tests/removes205424'
-for condition, jump in (('byte ptr [rcx + 0xc6], 0', 'je'), ('byte ptr [rcx + 0xc7], 0', 'jne'), ('eax, 0x1812a', 'jne'), ('dword ptr [rcx + 0xe0], 0x5e7', 'jne')):
+pending_operand = 'byte ptr [rsi + 0xc7], 0' if has_native_ack else 'byte ptr [rcx + 0xc7], 0'
+poll_conditions = [('byte ptr [rcx + 0xc6], 0', 'je'), (pending_operand, 'jne'), ('eax, 0x1812a', 'jne'), ('dword ptr [rcx + 0xe0], 0x5e7', 'jne')]
+if has_native_ack:
+    poll_conditions.append(('byte ptr [rsi + 0xc6], 0', 'je'))  # Recheck after the reentrant acknowledgement poll.
+for condition, jump in poll_conditions:
     position = next(index for index, entry in enumerate(poll[:present]) if entry.mnemonic == 'cmp' and entry.op_str == condition)
     branch = poll[position + 1]
     assert branch.mnemonic == jump and branch.operands[0].imm > poll[remove].address, 'Pending/unfinished/other-entry/map poll can strip the starting bubble'

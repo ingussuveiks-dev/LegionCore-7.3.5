@@ -16,7 +16,13 @@ def verify(p):
   return [i for i,op in enumerate(body) if op.mnemonic in ('call','jmp') and op.operands[0].type==CS_OP_IMM and n['resolve'](op.operands[0].imm)==target]
  initial=ins(p['opening']);outer=ins(p['outer']);inner=ins(p['callback'])
  ctor=ins('?GetAI@npc_vigfus_bladewind_last@@');dtor=ins('??_G'+actor)
- assert ('mov','ecx, 0x128') in pairs(ctor)
+ assert ('mov','ecx, 0x150' if p.get('has_acknowledger') else 'ecx, 0x128') in pairs(ctor)
+ # The later native Helya acknowledgement adds a waiting flag and two full
+ # participant GUIDs after the retained weak lifetime block.
+ if p.get('has_acknowledger'):assert ('mov','byte ptr [rsi + 0x128], dil') in pairs(ctor)
+ for member in ((0x129,0x139) if p.get('has_acknowledger') else ()):
+  at,=[i for i,op in enumerate(ctor) if op.mnemonic=='lea' and op.op_str==f'rcx, [rsi + {member:#x}]']
+  assert ctor[at+1].mnemonic=='call' and n['resolve'](ctor[at+1].operands[0].imm)==n['symbol']('??0ObjectGuid@@QEAA@XZ')
  assert {('mov','qword ptr [rsi + 0x118], rcx'),('mov','qword ptr [rsi + 0x120], rax')}<=set(pairs(ctor))
  remove,=sites(dtor,method('RemoveIntroConversation'))
  assert {('mov','qword ptr [rcx + 0x118], 0'),('mov','qword ptr [rcx + 0x120], 0'),('lock xadd','dword ptr [rbx + 8], eax')}<=set(pairs(dtor[:remove]))
@@ -24,6 +30,9 @@ def verify(p):
  address,=map(lambda value:int(value,16),table)
  assert n['resolve'](struct.unpack_from('<Q',n['binary'],n['offset'](address))[0])==n['symbol']('??_G'+actor)
  assert address in {op.address+op.size+arg.mem.disp for op in ctor for arg in op.operands if arg.type==CS_OP_MEM and arg.mem.base==X86_REG_RIP}
+ if p.get('has_acknowledger'):
+  from warswords_ack_lifetime_pe import verify as verify_acknowledged
+  return verify_acknowledged(p)
 
  cast_prefix='?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@IW4TriggerCastFlags@@'
  cast,=sites(outer,cast_prefix);aura,=sites(outer,'?HasAura@Unit@@');timer,=sites(outer,'?AddDelayedEvent@FunctionProcessor@@')
@@ -108,6 +117,6 @@ def verify(p):
   for forbidden in ('?CompleteQuest@Player@@','?KilledMonsterCredit@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
    targets={n['resolve'](address) for name,address in n['symbols'].items() if name.startswith(forbidden)}
    assert not any(op.mnemonic in ('call','jmp') and op.operands[0].type==CS_OP_IMM and n['resolve'](op.operands[0].imm) in targets for op in body)
- print('PASS selected Vigfus constructor128/lifetime118-120 and deleting vtable retire strong ownership before843 cleanup; both weak closures reject expired AI before entry/post-cast/post-aura dereferences. Original full player/Helya GUIDs, normal195062 actual recipient/caster-aura receipt, Unit-owned24+7s timers, failed-cast cancellation/1s retry and final fresh-context-before-pending/AttackStart verified; no synthetic progression. Client/full944 remains separate.')
+ print('PASS selected Vigfus constructor150/full participant GUIDs/lifetime118-120 and deleting vtable retire strong ownership before843 cleanup; both weak closures reject expired AI before entry/post-cast/post-aura dereferences. Original full player/Helya GUIDs, normal195062 actual recipient/caster-aura receipt, Unit-owned24+7s timers, failed-cast cancellation/1s retry and final fresh-context-before-pending/AttackStart verified; no synthetic progression. Client/full944 remains separate.')
  print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'lifetime_guards':4,'native_unit_timers':2}))
  return {'lifetime_verified':True,'body':outer,'sites':sites}

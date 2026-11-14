@@ -31,9 +31,15 @@ else:
     assert {205534,189695,205744,838,5000,2000,1000,0x574152} <= values
     ready=instructions('?SetData'+suffix)
     writes=[x for x in ready if x.mnemonic=='mov' and len(x.operands)==2 and x.operands[0].type==CS_OP_MEM
-            and x.operands[0].size==1 and x.operands[0].mem.disp>=0x200]
-    assert len(writes)==1 and any(x.op_str=='r8d, 1' and x.mnemonic=='cmp' for x in ready)
-    assert any(x.op_str=='edx, 0x574152' and x.mnemonic=='cmp' for x in ready)
+            and x.operands[0].size==1 and x.operands[0].mem.disp>=0x200 and not x.operands[0].mem.index]
+    # Runestone persistence adds a separate indexed byte write; the Ready
+    # latch remains the sole nonindexed write and uses the saved value argument.
+    assert len(writes)==1 and ('mov','esi, r8d') in [(x.mnemonic,x.op_str) for x in ready]
+    marker,=[i for i,x in enumerate(ready) if x.mnemonic=='cmp' and x.op_str=='edx, 0x574152']
+    assert ready[marker+1].mnemonic=='jne'
+    assert [(x.mnemonic,x.op_str) for x in ready[marker+2:marker+3]]==[('cmp','esi, 1')]
+    assert ready[marker+3].mnemonic=='jne' and ready[marker+3].operands[0].imm==ready[marker+1].operands[0].imm
+    assert ready[marker+4] is writes[0] and writes[0].op_str.endswith(', sil')
     latch=writes[0].operands[0].mem.disp
     needs('?SetData'+suffix,'?Start@State@WarswordsWaves@@')
     step=instructions('?onScenarionNextStep'+suffix)

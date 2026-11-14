@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-14",
+  "kind": "TEST_CERTIFICATE_REPAIR_NO_GAMEPLAY_SOURCE_CHANGE",
+  "binary_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+  "diagnostics": "Relevant complete final checks record no new/changed crash or appended DBErrors/server warning/error/assertion; no world/bnet launched. Actual client traversal remains separate.",
+  "status": "PASS_CURRENT_ACK_LIFETIME_ARRIVAL_AND_BUBBLE_SCOPES",
+  "causes": [
+    "Runestone persistence adds an indexed byte write in SetData; old readiness proof assumes its latch is the only byte write and value is still in r8d.",
+    "Actual queued normal195062 acknowledgement adds a waiting flag/two full GUIDs and moves7s scheduling into UpdateBlessing; old lifetime certificate expects immediate outer-callback HasAura and constructor128."
+  ],
+  "repair": "Scope Ready to the sole nonindexed latch and exact Ready/value1 failure branches using the preserved native r8d argument; indexed runestone writes remain separately checked. Select current150-byte factory/full GUID initializers; retain deleting-vtable/lifetime ownership proof. Compose the real pending-channel/aura acknowledgement certificate with four current weak guards,16 CFG refusal edges, original full capture and native Unit24s+acknowledged7s queues. Historical no-ack path remains explicit.",
+  "checks": "Current four weak guards/all16 removed refusal branches rejected;original bytes pass. Arrival/legacy-arrival,channel,lifetime,bubble,real pending-channel acknowledgement,attackability and scene-expiry roots all complete exit0. Current150-byte factory and two native full-GUID initializers;Reset/poll proof follows the new unconditional identity cleanup and post-ack recheck instead of assuming old RCX/direct-branch layout. No immediate-aura requirement restored. Also prove the preserved EBX/BL zero used by the post-cast weak-count/pending comparisons;its deliberately removed initialization is rejected (17 negative controls total). Three affected complete roots rerun after strengthening,exit0.",
+  "client": "Bonfire,all4 runestones,Vigfus victory were previously user-confirmed;latest attackability and pickup animation/glow/manual return remain client pending.",
+  "final_release_evidence": {
+    "corrected_planned_roots": 109,
+    "additional_direct_roots": 7,
+    "unique_complete_exit0_roots": 116,
+    "mode": "Five reviewed disjoint collections,not one116-root run. Each reused passing root has no changed dependency in conservative AST-import/literal-.py closure;binary/map identical. Full interrupted/failing collections explicitly classified.",
+    "aggregate_sha256": "a004302782753d86cac39cd722c6555d506bebbd3a6d610f8d527c13218bd767",
+    "rerunnable_roots": "docs/audits/artifact-open-2026-11-14/ReleaseRoots.json",
+    "limits": "Native endpoint/PE/structural checks do not establish actual client or36 complete chains."
+  },
+  "iterations": "Original lifetime proof stopped at constructor then immediate HasAura. New composition retains all16 live/epoch/pending CFG denials and independently executes existing native195062 acknowledgement proof. Historical command receiver allocation and bubble export/Reset-register/branch assumptions were diagnosed;complete final repaired roots pass. Prototype failures are not client failures or successful baselines."
+}
