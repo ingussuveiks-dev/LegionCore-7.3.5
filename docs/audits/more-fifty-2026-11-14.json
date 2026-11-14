@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_2_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 2,
+  "status": "IN_PROGRESS_3_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 3,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -15,7 +15,7 @@
   "batches": [
     {
       "batch": 1,
-      "count": 2,
+      "count": 3,
       "source_case_count": 215,
       "repairs": [
         {
@@ -32,6 +32,14 @@
           "summary": "Check all three native hit cache sums before mutation;prevent int16 wrapping and partial three-rating changes.",
           "path": "src/server/scripts/Commands/cs_debug.cpp",
           "method": "HandleDebugModifyHitCommand",
+          "test_scope": "complete production handler"
+        },
+        {
+          "index": 3,
+          "key": "MasteryCacheChecked",
+          "summary": "Check the actual int16 mastery cache plus signed delta before the native update.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleDebugModifyMasteryCommand",
           "test_scope": "complete production handler"
         }
       ]

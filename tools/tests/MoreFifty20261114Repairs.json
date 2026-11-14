@@ -20,13 +20,23 @@
       "old": "    static bool HandleDebugModifyHitCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->ApplyRatingMod(CR_HIT_MELEE, Value, true);\n        player->ApplyRatingMod(CR_HIT_RANGED, Value, true);\n        player->ApplyRatingMod(CR_HIT_SPELL, Value, true);\n        return true;\n    }",
       "new": "    static bool HandleDebugModifyHitCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n\n        // Validate every native int16 cache before applying any part of the change.\n        auto canApply = [player, Value](CombatRating rating)\n        {\n            using RatingValue = std::remove_reference_t<decltype(player->m_baseRatingValue[0])>;\n            int64 sum = int64(player->m_baseRatingValue[rating]) + Value;\n            return sum >= std::numeric_limits<RatingValue>::min() && sum <= std::numeric_limits<RatingValue>::max();\n        };\n        if (!canApply(CR_HIT_MELEE) || !canApply(CR_HIT_RANGED) || !canApply(CR_HIT_SPELL))\n            return false;\n        player->ApplyRatingMod(CR_HIT_MELEE, Value, true);\n        player->ApplyRatingMod(CR_HIT_RANGED, Value, true);\n        player->ApplyRatingMod(CR_HIT_SPELL, Value, true);\n        return true;\n    }",
       "summary": "Check all three native hit cache sums before mutation;prevent int16 wrapping and partial three-rating changes."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugModifyMasteryCommand",
+      "case": "MasteryCacheChecked",
+      "key": "MasteryCacheChecked",
+      "kind": "more",
+      "old": "    static bool HandleDebugModifyMasteryCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->ApplyRatingMod(CR_MASTERY, Value, true);\n        return true;\n    }",
+      "new": "    static bool HandleDebugModifyMasteryCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n\n        // Validate every native int16 cache before applying any part of the change.\n        auto canApply = [player, Value](CombatRating rating)\n        {\n            using RatingValue = std::remove_reference_t<decltype(player->m_baseRatingValue[0])>;\n            int64 sum = int64(player->m_baseRatingValue[rating]) + Value;\n            return sum >= std::numeric_limits<RatingValue>::min() && sum <= std::numeric_limits<RatingValue>::max();\n        };\n        if (!canApply(CR_MASTERY))\n            return false;\n        player->ApplyRatingMod(CR_MASTERY, Value, true);\n        return true;\n    }",
+      "summary": "Check the actual int16 mastery cache plus signed delta before the native update."
     }
   ],
   "extra_edits": [],
   "files": {
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "3333b78a2d424cfd638c2784b506cae94ece85b07bb47b0ecd4f459479670334"
+      "after_sha256": "2ab1f5b2f3949b754e129a5965b084910e3589a01af3906ffb8ad20d7c324db7"
     }
   }
 }
