@@ -1137,7 +1137,9 @@ public:
         if (!i)
             return false;
 
-        uint32 vehicle_id = (uint32)atoi(i);
+        uint32 vehicle_id;
+        if (!Trinity::ParseCommandInteger(i, vehicle_id))
+            return false;
         VehicleEntry const * entry = sVehicleStore.LookupEntry(vehicle_id);
         if (!entry)
         {

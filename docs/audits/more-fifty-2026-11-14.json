@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_19_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 19,
+  "status": "IN_PROGRESS_20_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 20,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -102,7 +102,7 @@
     },
     {
       "batch": 2,
-      "count": 9,
+      "count": 10,
       "source_case_count": 95,
       "repairs": [
         {
@@ -175,6 +175,14 @@
           "summary": "Use the native unsigned32 account ID without signed narrowing or suffix coercion;preserve selected-player fallback.",
           "path": "src/server/scripts/Commands/cs_debug.cpp",
           "method": "HandleDebugSession",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 20,
+          "key": "VehicleKitExactId",
+          "summary": "Reject malformed/overflowing vehicle IDs before removing or replacing a live vehicle kit.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleDebugSetVehicleIdCommand",
           "test_scope": "admission prefix"
         }
       ]

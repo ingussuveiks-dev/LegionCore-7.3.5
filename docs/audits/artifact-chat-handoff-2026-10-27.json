@@ -1,9 +1,9 @@
 {
   "latest_more_fifty_2026_11_14": {
     "audit": "docs/audits/more-fifty-2026-11-14.json",
-    "completed_new_source_repairs": 10,
+    "completed_new_source_repairs": 20,
     "authorized": 50,
-    "status": "IN_PROGRESS_10_OF_50_CANONICAL_CLIENT_PENDING",
+    "status": "IN_PROGRESS_20_OF_50_CANONICAL_CLIENT_PENDING",
     "canonical_world_sha256": "9d8e8abbf304400a26bdb7cc121e0592e5085612fda3546d0a2ae27ddaf62fa5",
     "checks": {
       "source_asan": "702 cases: production complete handlers or explicitly declared numeric admission prefixes;real native rating and spellpower implementation exports;controlled side effects,no live DB/character changes.",
@@ -18,7 +18,7 @@
       "diagnostics": "Before/after crashes and log offsets recorded for every test/build/analysis/PE/startup. No new/changed crashes or unexplained appended server warning/error/assertion/DBErrors. Temporary fixture syntax/type bootstrap failures paired with passing final regression;no symptom suppression."
     },
     "preserve": "Previous100 not recounted;original LINK2/Slaghammer/FuZan/mixedDBErrors retained;client/all36 pending.",
-    "next": "40 focused source repair commits remain."
+    "next": "30 focused source repair commits remain."
   },
   "latest_next_fifty_2026_11_14": {
     "audit": "docs/audits/next-fifty-2026-11-14.json",

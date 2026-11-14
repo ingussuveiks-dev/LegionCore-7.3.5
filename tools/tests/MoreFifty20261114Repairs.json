@@ -192,6 +192,18 @@
       "test_boundary": "        if (WorldSessionPtr sess",
       "observe": "accId",
       "summary": "Use the native unsigned32 account ID without signed narrowing or suffix coercion;preserve selected-player fallback."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSetVehicleIdCommand",
+      "case": "VehicleKitExactId",
+      "key": "VehicleKitExactId",
+      "kind": "more",
+      "old": "    static bool HandleDebugSetVehicleIdCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* target = handler->getSelectedUnit();\n        if (!target || target->GetTypeId() != TYPEID_UNIT || !target->IsVehicle())\n            return false;\n\n        if (!args)\n            return false;\n\n        char* i = strtok((char*)args, \" \");\n        if (!i)\n            return false;\n\n        uint32 vehicle_id = (uint32)atoi(i);\n        VehicleEntry const * entry = sVehicleStore.LookupEntry(vehicle_id);\n        if (!entry)\n        {\n            handler->PSendSysMessage(\"No such vehicle id\");\n            return false;\n        }\n\n        if (target->GetVehicleKit())\n            target->RemoveVehicleKit();\n\n        if (!target->CreateVehicleKit(entry->ID, target->GetEntry()))\n        {\n            handler->PSendSysMessage(\"Can't create vehicle kit id %u.\", vehicle_id);\n            return false;\n        }\n\n        if (target->GetVehicleKit())\n            target->GetVehicleKit()->Reset();\n\n        handler->PSendSysMessage(\"Vehicle id set to %u\", vehicle_id);\n        return true;\n    }",
+      "new": "    static bool HandleDebugSetVehicleIdCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* target = handler->getSelectedUnit();\n        if (!target || target->GetTypeId() != TYPEID_UNIT || !target->IsVehicle())\n            return false;\n\n        if (!args)\n            return false;\n\n        char* i = strtok((char*)args, \" \");\n        if (!i)\n            return false;\n\n        uint32 vehicle_id;\n        if (!Trinity::ParseCommandInteger(i, vehicle_id))\n            return false;\n        VehicleEntry const * entry = sVehicleStore.LookupEntry(vehicle_id);\n        if (!entry)\n        {\n            handler->PSendSysMessage(\"No such vehicle id\");\n            return false;\n        }\n\n        if (target->GetVehicleKit())\n            target->RemoveVehicleKit();\n\n        if (!target->CreateVehicleKit(entry->ID, target->GetEntry()))\n        {\n            handler->PSendSysMessage(\"Can't create vehicle kit id %u.\", vehicle_id);\n            return false;\n        }\n\n        if (target->GetVehicleKit())\n            target->GetVehicleKit()->Reset();\n\n        handler->PSendSysMessage(\"Vehicle id set to %u\", vehicle_id);\n        return true;\n    }",
+      "test_boundary": "        VehicleEntry const * entry",
+      "observe": "vehicle_id",
+      "summary": "Reject malformed/overflowing vehicle IDs before removing or replacing a live vehicle kit."
     }
   ],
   "extra_edits": [
@@ -213,7 +225,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "91efb7c50afac97e9bb5b1fb929e894235450f641009b1f373e66d3291d24694"
+      "after_sha256": "b04e0336201d6a6b4ec533f401c18c4c37d61f97eeeca84c550b122d84137035"
     }
   }
 }
