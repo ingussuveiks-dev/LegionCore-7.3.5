@@ -3890,7 +3890,9 @@ public:
             return false;
 
         Player* player = handler->GetSession()->GetPlayer();
-        uint32 AreaTriggerID = atoi((char*)args);
+        uint32 AreaTriggerID;
+        if (!Trinity::ParseCommandInteger(args, AreaTriggerID))
+            return false;
 
         AreaTrigger* areaTrigger = new AreaTrigger;
         if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), AreaTriggerID, (Unit*)player, NULL, (player->GetPosition()), (player->GetPosition()), NULL, ObjectGuid::Empty, 0))

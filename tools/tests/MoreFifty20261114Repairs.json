@@ -469,6 +469,18 @@
       "test_boundary": "        std::list<AreaTrigger*>",
       "observe": "spellID",
       "summary": "Reject malformed/wrapped spell selectors before dispatching actions to matching owned area objects."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleAreaTriggerCommand",
+      "case": "AreaTriggerExactId",
+      "key": "AreaTriggerExactId",
+      "kind": "more",
+      "old": "    static bool HandleAreaTriggerCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 AreaTriggerID = atoi((char*)args);\n\n        AreaTrigger* areaTrigger = new AreaTrigger;\n        if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), AreaTriggerID, (Unit*)player, NULL, (player->GetPosition()), (player->GetPosition()), NULL, ObjectGuid::Empty, 0))\n        {\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Error\", AreaTriggerID);\n            delete areaTrigger;\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        else\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Spawn\", AreaTriggerID);\n\n        return true;\n    }",
+      "new": "    static bool HandleAreaTriggerCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 AreaTriggerID;\n        if (!Trinity::ParseCommandInteger(args, AreaTriggerID))\n            return false;\n\n        AreaTrigger* areaTrigger = new AreaTrigger;\n        if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), AreaTriggerID, (Unit*)player, NULL, (player->GetPosition()), (player->GetPosition()), NULL, ObjectGuid::Empty, 0))\n        {\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Error\", AreaTriggerID);\n            delete areaTrigger;\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        else\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Spawn\", AreaTriggerID);\n\n        return true;\n    }",
+      "test_boundary": "        AreaTrigger* areaTrigger",
+      "observe": "AreaTriggerID",
+      "summary": "Reject malformed/wrapped area-trigger IDs before creating the trigger."
     }
   ],
   "extra_edits": [
@@ -512,7 +524,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
-      "after_sha256": "719eee5978b65537621b1e31909ac67ef7090d79ca63a1bc5766a7463b77346b"
+      "after_sha256": "b50a3e5ed5b6540f1eaf9a507911ee8320f6d7788e241f1349e9398f7ecc6335"
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
