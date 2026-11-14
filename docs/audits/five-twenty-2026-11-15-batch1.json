@@ -1,0 +1,202 @@
+{
+  "date": "2026-11-15",
+  "batch": 1,
+  "status": "COMPLETED20_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 240519,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240519,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 240605,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240605,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 240609,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240609,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 240612,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240612,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 240614,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240614,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 240619,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240619,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 240629,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240629,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 240630,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240630,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 240631,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240631,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 240634,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240634,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 240635,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240635,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 240637,
+      "name": "Glimmering Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240637,
+      "existing_spawns": 1,
+      "existing_loot_rows": 57
+    },
+    {
+      "entry": 240639,
+      "name": "Glimmering Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240639,
+      "existing_spawns": 1,
+      "existing_loot_rows": 56
+    },
+    {
+      "entry": 240642,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240642,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 240643,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240643,
+      "existing_spawns": 1,
+      "existing_loot_rows": 54
+    },
+    {
+      "entry": 240644,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240644,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 240646,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240646,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 240651,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240651,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 240652,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240652,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 240653,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 240653,
+      "existing_spawns": 1,
+      "existing_loot_rows": 2
+    }
+  ],
+  "cause_and_change": "Existing chest type3 sources had Data1=0 despite authored same-entry gameobject_loot_template rows. Native GetLootId returned0, so full Player::SendLoot skipped FillLoot. Link only Data1 to existing entry; no loot tables/drop chances/counts/conditions/rewards/spawns changed.",
+  "migration": "sql/updates/world/2026_11_15_02_legion_chest_loot_batch1.sql",
+  "migration_sha256": "0ddb585611c5afe337d431f7c0fa30d936e976fe94987128f2e01b771f88dedc",
+  "checks": {
+    "native_entries": [
+      240519,
+      240605,
+      240609,
+      240612,
+      240614,
+      240619,
+      240629,
+      240630,
+      240631,
+      240634,
+      240635,
+      240637,
+      240639,
+      240642,
+      240643,
+      240644,
+      240646,
+      240651,
+      240652,
+      240653
+    ],
+    "native_exe_sha256": "ac565c9a2024ce66d0781387a37a38d6bd6f511d5d3aa379f6f1bc77da80c0a8",
+    "native_input_manifest_sha256": "f23a19215bcc66384fc6e6c6cf1a747941472276cdfd5715781276ef11212796",
+    "native_complete_diagnostics_sha256": "ff04731aaf2631b5e097e6167f3bae399bbfd87c0bc12d1aed30902c21356809",
+    "native_runtime_diagnostics_sha256": "842e848b924e6501de5393254e8795cf51943babbac371ccf659e78043d0c6fc",
+    "shadow_diagnostics_sha256": "bf348fff91c29520078ee1fe7df2f9d64006707eba2b4c7555d8fc32156bdee0",
+    "actual100_readback": "All100 actual live Data1 links match; original other captured template fields, spawn counts and loot row counts unchanged. Exact-field migrations preserve remaining schema fields by construction; shadow check compares all non-Data1 columns."
+  },
+  "limits": "Controlled synthetic source placement and player eligibility. Actual initial lock/open/visibility/quest/condition/client traversal and probability distributions are not certified. Native authored loot validation/generation executes; no item storage, authentic login/character save, quest or reward completion claim.",
+  "aggregate_audit": "docs/audits/five-twenty-2026-11-15.json"
+}
