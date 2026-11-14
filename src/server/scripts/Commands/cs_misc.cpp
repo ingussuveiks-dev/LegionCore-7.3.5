@@ -3815,7 +3815,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 scenarioId = atoi((char*)args);
+        uint32 scenarioId;
+        if (!Trinity::ParseCommandInteger(args, scenarioId))
+            return false;
 
         handler->GetSession()->GetPlayer()->SetScenarioId(scenarioId);
 
