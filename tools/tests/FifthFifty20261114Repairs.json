@@ -506,6 +506,18 @@
       "test_boundary": "        handler->PSendSysMessage",
       "observe": "count",
       "summary": "Parse requested native group size1..40 (zero/default1) and saturate remaining slots instead of uint8 underflow when the existing group is larger."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSendLFGListStatusUpdate",
+      "key": "LfgListingNativeStatusWidth",
+      "case": "LfgListingNativeStatusWidth",
+      "kind": "command",
+      "old": "    static bool HandleDebugSendLFGListStatusUpdate(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        auto status = atoi(const_cast<char*>(args));\n        if (!status)\n            return false;\n\n        if (auto player = handler->GetSession()->GetPlayer())\n            if (auto group = player->GetGroup())\n                if (auto entry = sLFGListMgr->GetEntrybyGuidLow(group->GetGUIDLow()))\n                    sLFGListMgr->SendLFGListStatusUpdate(entry, handler->GetSession(), true, LFGListStatus(status));\n\n        return true;\n    }",
+      "new": "    static bool HandleDebugSendLFGListStatusUpdate(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint8 status;\n        if (!Trinity::ParseCommandInteger(args, status))\n            return false;\n        if (!status)\n            return false;\n\n        if (auto player = handler->GetSession()->GetPlayer())\n            if (auto group = player->GetGroup())\n                if (auto entry = sLFGListMgr->GetEntrybyGuidLow(group->GetGUIDLow()))\n                    sLFGListMgr->SendLFGListStatusUpdate(entry, handler->GetSession(), true, LFGListStatus(status));\n\n        return true;\n    }",
+      "test_boundary": "        if (auto player",
+      "observe": "status",
+      "summary": "Validate complete native LFGListStatus byte before dispatch, preserving original zero no-op/failure."
     }
   ],
   "extra_edits": [
@@ -567,7 +579,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2",
-      "after_sha256": "e8137ba872ee3b84d6362d0bd8ec71681f385d5f895f3da4212f05fa77633f5c"
+      "after_sha256": "a9da2bfc45806c89633bf763536aaf74abe7adea8d0a694de8a6cd5002d1ee8c"
     },
     "src/server/game/Entities/Player/Player.cpp": {
       "before_sha256": "b04925dc7dce0a7adc527c6a8ee469590725ff4322a9e16ba19fd5255edcfa45",

@@ -328,7 +328,9 @@ public:
         if (!*args)
             return false;
 
-        auto status = atoi(const_cast<char*>(args));
+        uint8 status;
+        if (!Trinity::ParseCommandInteger(args, status))
+            return false;
         if (!status)
             return false;
 
