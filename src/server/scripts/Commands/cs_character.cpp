@@ -779,8 +779,7 @@ public:
         uint32 accountId = AccountMgr::GetId(accountName);
         if (!accountId)
         {
-            accountId = atoi(accountStr);                             // use original string
-            if (!accountId)
+            if (!Trinity::ParseCommandInteger(accountStr, accountId) || !accountId)
             {
                 handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, accountName.c_str());
                 handler->SetSentErrorMessage(true);
@@ -820,12 +819,11 @@ public:
             guidStr = strtok(NULL, " ");
         }
 
-        uint32 LowGuid = 0;
+        ObjectGuid::LowType LowGuid = 0;
         ObjectGuid guid;
         if (guidStr)
         {
-            LowGuid = strtoull(guidStr, nullptr, 10);
-            if (!LowGuid)
+            if (!Trinity::ParseCommandInteger(guidStr, LowGuid) || !LowGuid || LowGuid > ObjectGuid::GetMaxCounter(HighGuid::Player))
             {
                 handler->PSendSysMessage(LANG_INVALID_CHARACTER_GUID);
                 handler->SetSentErrorMessage(true);
@@ -834,7 +832,7 @@ public:
             guid = ObjectGuid::Create<HighGuid::Player>(LowGuid);
             if (ObjectMgr::GetPlayerAccountIdByGUID(guid))
             {
-                handler->PSendSysMessage(LANG_CHARACTER_GUID_IN_USE, LowGuid);
+                handler->PSendSysMessage("Character GUID " UI64FMTD " is already in use.", LowGuid);
                 handler->SetSentErrorMessage(true);
                 return false;
             }
