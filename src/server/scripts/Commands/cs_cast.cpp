@@ -343,12 +343,21 @@ public:
         float bp0 = 0;
         float bp1 = 0;
         float bp2 = 0;
-        if(bp0Str)
-            bp0 = int32(atof(bp0Str));
-        if(bp1Str)
-            bp1 = int32(atof(bp1Str));
-        if(bp2Str)
-            bp2 = int32(atof(bp2Str));
+        auto parseBasePoint = [](char const* token, float& value)
+        {
+            if (!token)
+                return true;
+            double parsed;
+            if (!Trinity::ParseCommandDouble(token, parsed))
+                return false;
+            parsed = std::trunc(parsed);
+            if (parsed < std::numeric_limits<int32>::min() || parsed > std::numeric_limits<int32>::max())
+                return false;
+            value = float(int32(parsed));
+            return true;
+        };
+        if (!parseBasePoint(bp0Str, bp0) || !parseBasePoint(bp1Str, bp1) || !parseBasePoint(bp2Str, bp2))
+            return false;
 
         caster->CastCustomSpell(caster, spellId, &bp0, &bp1, &bp2, true);
 

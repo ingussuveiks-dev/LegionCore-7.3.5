@@ -24,6 +24,24 @@ inline bool ParseCommandFloat(char const* text, float& value)
     value = parsed;
     return true;
 }
+
+// Preserve double precision until a checked native integer conversion.
+inline bool ParseCommandDouble(char const* text, double& value)
+{
+    if (!text)
+        return false;
+    char* end = nullptr;
+    double parsed = std::strtod(text, &end);
+    if (end == text || !std::isfinite(parsed))
+        return false;
+    auto whitespace = [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\v' || c == '\f'; };
+    while (whitespace(*end))
+        ++end;
+    if (*end)
+        return false;
+    value = parsed;
+    return true;
+}
 }
 
 #endif
