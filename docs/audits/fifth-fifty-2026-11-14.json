@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_37_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 37,
+  "status": "IN_PROGRESS_38_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 38,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -288,7 +288,7 @@
     },
     {
       "batch": 4,
-      "count": 7,
+      "count": 8,
       "source_case_count": 55,
       "repairs": [
         {
@@ -345,6 +345,14 @@
           "summary": "Reject malformed/overflowing numeric player identifiers before lookup instead of aliasing an unrelated player; preserve name/selection paths.",
           "path": "src/server/scripts/Commands/cs_list.cpp",
           "method": "HandleListMailCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 38,
+          "key": "PlayerInfoExactCounter",
+          "summary": "Reject malformed/overflowing numeric player identifiers before lookup instead of aliasing an unrelated player; preserve name/selection paths.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandlePInfoCommand",
           "test_scope": "admission prefix"
         }
       ]
