@@ -23,6 +23,7 @@
 #include "fuzan_wave_entry.h"
 #include "fuzan_brewing.h"
 #include "fuzan_return.h"
+#include "fuzan_yigthregor.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -65,4 +66,6 @@ void AddSC_instance_temple_of_the_jade_serpent()
     new map_fuzan_brewing();
     new player_fuzan_brewing();
     FuZanReturn::Register();
+    RegisterCreatureAI(npc_fuzan_yigthregor);
+    RegisterSpellScript(spell_fuzan_felfire_bomb);
 }

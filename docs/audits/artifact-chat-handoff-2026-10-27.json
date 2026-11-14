@@ -11327,5 +11327,12 @@
     "preserve": "Mixed7111-byte DBErrors, original LINK2/Slaghammer and Yigthregor movement evidence remain unresolved and untouched.",
     "fix_commit": "27d090023d36f54b676a991f3af21208b25b86ab",
     "cleanup_audit": "docs/audits/fuzan-return-reconstruction-archive-2026-11-15.json"
+  },
+  "latest_yigthregor_2026_11_15": {
+    "status": "FUNCTIONAL_STATIONARY_AIR_BOMBARDIER_AND_OWNED_FIELD_CLEANUP_DEPLOYED_NATIVE_PASSED_CLIENT_PENDING",
+    "audit": "docs/audits/fuzan-yigthregor-reconstruction-2026-11-15.json",
+    "canonical_world_sha256": "6ffc5d6d7e7ca2b48ccc917376ea1e20be0c9893205674a5360949c5376524e4",
+    "checks": "10 actual DB-spawn/live/native bombardment/reset/death/foreign caster/late hit contexts,3 shadow cases,stage/canonical PE/Scepter/owned startup pass. Full client pending.",
+    "next": "Proceed with requested5x20 distinct repairs; no recount of preceding fixes."
   }
 }

@@ -185,6 +185,9 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
 #ifdef FUZAN_RETURN_NATIVE
     for(auto name:{"npc_fuzan_return_guide","npc_fuzan_return_vehicle","spell_fuzan_return_boarding","spell_fuzan_return_transfer","spell_fuzan_return_join_refusal"})names.emplace_back(name);
 #endif
+#ifdef FUZAN_YIGTHREGOR_NATIVE
+    for(auto name:{"npc_fuzan_yigthregor","spell_fuzan_felfire_bomb"})names.emplace_back(name);
+#endif
     std::sort(names.begin(),names.end());names.erase(std::unique(names.begin(),names.end()),names.end());
     sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadScenarioData();
     if(withDefense)sObjectMgr->LoadPhaseDefinitions();

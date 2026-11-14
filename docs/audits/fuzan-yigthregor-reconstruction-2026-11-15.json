@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-15",
+  "request": "Pabeidz Yigthregor un turpini5x20",
+  "status": "FUNCTIONAL_STATIONARY_AIR_BOMBARDIER_AND_OWNED_FIELD_CLEANUP_DEPLOYED_NATIVE_PASSED_CLIENT_PENDING",
+  "count": "One focused Yigthregor repair, separate from the requested next100 distinct fixes.",
+  "baseline_commit": "0ad1ff31a149177ef5fac715dc8b785a383e1e58",
+  "causes": [
+    "Spawn14670030 selected waypoint2/path0 without a bound path. Matching template flight2 only enabled flight; no stationary gravity hold.",
+    "Original217787/7604 Felfire Bomb fields are infinite and survived native Korithis->109820 DATA1/1 death. A late child also needed a dead-caster creation guard."
+  ],
+  "repair": [
+    "Exact guarded World spawn14670030 now idle0 with per-spawn Ground0/Flight1 disabled gravity, keeping original211.671Z/phase6906/pose and template movement for other uses. This is a labelled functional stationary-artillery reconstruction; no retail path binding or exact original flight trajectory is claimed.",
+    "Scoped109820/14670030/map1625/scenario1137 SmartAI delegate clears only its own217787 fields/casts on reset/death, then retains native SmartAI dispatch, timed217786 cadence and DATA1/1 death. No HP threshold, forced progression or kill timer.",
+    "Unique217787 effect guard rejects a dead original source; shared/foreign casters keep native behavior. No global spell/area/log suppression."
+  ],
+  "sources": {
+    "local": "Matching26972 DB2/Hotfix/World, original2 SmartAI rows and source pose; native Creature/SmartAI/area/late spell dispatch. Prior local TrinityCore/history and bounded GitHub donor reviews retained.",
+    "video": "Retained original lCSWkZZpwdI. This turn reviewed all5 bat contact sheets/51 frames at2s spanning610..710, including confrontation, fel-fire field combat and field disappearance near boss defeat. Frame sampling, not continuous footage/audio; no exact trajectory proved.",
+    "prior": [
+      "docs/audits/fuzan-yigthregor-missing-path-research-2026-11-01.json",
+      "docs/audits/fuzan-native-movement-candidates-2026-11-14.json"
+    ]
+  },
+  "verification": {
+    "native": "10 final live contexts: human/orc x player,pet,guardian,Monkey King and Summerpetal actual killing inputs; native DB-spawn load with strict WARN logger4, real217786/217787 area creation, stable airborne pose/gravity, actual reset clears/retries, foreign caster field remains, real Korithis death/once victory/manual weapon, repeated cleanup and attempted postdeath child cannot restore fields. Earlier entry/stage2/combat damage controlled; no character save/client traversal.",
+    "data": "3 native MariaDB temporary-shadow install/idempotence/custom movement refusal cases; final native requires actual live spawn, override and creature/spell native-loader bindings. Both original SmartAI rows unchanged.",
+    "release": "Original scripts Release library rebuilt and original final-link inputs staged without OutDir override; canonical exact hashes verified.",
+    "linked": "Stage/canonical new Yigthregor source+cleanup/delegate/hit factories, canonical retained Fu Zan return and weighted/native death factory, Scepter -VerifyReleaseBinary pass. Compiler inlines Source/Clear; certificate verifies exact expanded guards/calls in actual reset/death/load bodies.",
+    "startup": "Owned canonical PID30500 ready/shutdown0/exit0/gone, stderr empty, matching updater applied after EXE promotion. No user/unknown server stopped.",
+    "diagnostics_sha256": {
+      "yigthregor-final-live10": "8aeafe18f864c0656203f37e690eaaff1476920f59c5193b0b2dd83721e598c1",
+      "yigthregor-final-live10/native-diagnostics": "fa0506bbeb8a329780d63d026160d5caebedcd139ab0343aac8859f0d88bde83",
+      "yigthregor-shadow1": "022b7704fc131877be2d39b746cdb0e37636b9e16e041a8b181eec628da953f0",
+      "yigthregor-pe-staged2": "27a978c51b874485f651ddf6ff0dd3e6fcc0d1a6d000a24786bfd3e85cc8d07b",
+      "canonical-checks": "1492ca48ab0491bd224a0194abcbcd638fccfd741cd74d49088e68b7bef24f74",
+      "yigthregor-startup-evidence": "ffcc5abd68a98201f44b1103329d9b266483b5bddcc03e907b62566cd587d272",
+      "yigthregor-deploy-evidence": "905229e073f63d417c88aa7bf534d269325df5713d6160dcd13d7b2426c4d67c"
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "6ffc5d6d7e7ca2b48ccc917376ea1e20be0c9893205674a5360949c5376524e4",
+    "worldserver.map": "d85475f9b9e7a9eda89b1bb8d8c8c84492867b4ad461dcd704c2d176075b1d45",
+    "bnetserver.exe": "e559f961c277cc92a95ccda27b21abb6a1981a00ddc4b0ae3516697032e22962",
+    "bnetserver.map": "61a784874f496e919047a0a6041f0b4fc97294f96166b3aa3a67d55526d82d81"
+  },
+  "resolved_iterations": [
+    "Native1 omitted complete loot/XP fixture initialization; actual helpers/12 loot rows restored, no production checks changed.",
+    "Native2 moved the controlled player away before native Yu lon path/dialogue prerequisites; native sequence now finishes before approach/bombardment assertions.",
+    "Native3 reproduced the real surviving infinite Felfire fields, repaired by scoped cleanup and paired with final live10.",
+    "Initial PE expected standalone Source/Clear symbols, but compiler inlined both. New proof reads the exact expanded source constants/calls and native tail delegation; no source/compiler workaround."
+  ],
+  "preserved": {
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "SlaghammerHandoffNative_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "limits": "Original LINK2/Slaghammer/mixed logs and Defender quarantine untouched. Authored native taxi actor bindings remain unproven; functional hover does not reclassify unknown trajectories as recovered."
+  },
+  "pending": [
+    "Actual client bombardment visuals, stationary wing pose, no floor field after victory, full42765 combat/loot/return and reconnect.",
+    "Exact original Yigthregor flight and original Yu lon arrival remain fidelity research; original101430/103151 LINK2 and shared Monk actor links remain OPEN.",
+    "All36 artifact chains still not certified end-to-end."
+  ],
+  "cleanup": "Temporary final Yigthregor probe retained only for the outstanding combined100-update readback/regression, then task cleanup/fixed archive recorded before handoff. Original November1 single-warning evidence can be archived only after the same source live regression above; mixed canonical log is never cleared."
+}

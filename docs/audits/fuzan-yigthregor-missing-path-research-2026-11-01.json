@@ -42,5 +42,10 @@
     ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/native-diagnostics/diagnostics-after.json": "7D0BBEDBC6DF97763620727FCCDF766A3C42A0860EF08107D7802B56E2E9DACC",
     ".codex/fuzan-corrupted-path-context1-open-2026-11-01/world.tsv": "04C5AFC38CB1F368A42E5F15E61E635988280D4905057196CB289BA49DAF0B31"
   },
-  "next": "Review matching original gameplay/sniff evidence before selecting any movement repair. Independently continue native artifact pickup/scene/equipment/return verification and remaining ALL36 work."
+  "next": "Review matching original gameplay/sniff evidence before selecting any movement repair. Independently continue native artifact pickup/scene/equipment/return verification and remaining ALL36 work.",
+  "followup_2026_11_15": {
+    "status": "FUNCTIONAL_STATIONARY_AIR_BOMBARDIER_AND_OWNED_FIELD_CLEANUP_DEPLOYED_NATIVE_PASSED_CLIENT_PENDING",
+    "audit": "docs/audits/fuzan-yigthregor-reconstruction-2026-11-15.json",
+    "original_warning": "Underlying invalid default repaired by explicit functional airborne idle profile; historical warning no longer current. Authored route still unknown."
+  }
 }
