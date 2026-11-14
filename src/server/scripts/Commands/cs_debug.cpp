@@ -2393,12 +2393,17 @@ public:
         char* clevel = strtok((char*)args, " ");
         char* cilevelMax = strtok(NULL, " ");
         char* cilevelMin = strtok(NULL, " ");
-        uint32 level = clevel ? (int32)atoi(clevel) : 0;
-        uint32 ilevelMax = cilevelMax ? (int32)atoi(cilevelMax) : 0;
-        uint32 ilevelMin = cilevelMin ? (int32)atoi(cilevelMin) : 0;
+        uint8 level;
+        uint16 ilevelMax = 0, ilevelMin = 0;
+        if (!Trinity::ParseCommandInteger(clevel, level) ||
+            (cilevelMax && !Trinity::ParseCommandInteger(cilevelMax, ilevelMax)) ||
+            (cilevelMin && !Trinity::ParseCommandInteger(cilevelMin, ilevelMin)))
+            return false;
 
-        if (auto player = handler->GetSession()->GetPlayer())
-            player->RescaleAllForTimeWalk(level, ilevelMax, ilevelMin);
+        Player* player = handler->GetSession()->GetPlayer();
+        if (!player)
+            return false;
+        player->RescaleAllForTimeWalk(level, ilevelMax, ilevelMin);
 
         handler->PSendSysMessage("SetEffectiveLevel level %u ilevelMax %u ilevelMin %u", level, ilevelMax, ilevelMin);
         return true;

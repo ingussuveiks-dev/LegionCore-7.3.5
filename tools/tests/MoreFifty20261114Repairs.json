@@ -70,13 +70,23 @@
       "old": "    static bool HandleDebugModifyVersalityCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*) args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32) atoi(cval);\n        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_DONE, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_DONE) + Value);\n        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_HEALING_DONE, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_HEALING_DONE) + Value);\n        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_TAKEN, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_TAKEN) + Value);\n        player->UpdateVersality();\n        return true;\n    }",
       "new": "    static bool HandleDebugModifyVersalityCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*) args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n\n        uint32 values[3];\n        CombatRating const ratings[3] = { CR_VERSATILITY_DAMAGE_DONE, CR_VERSATILITY_HEALING_DONE, CR_VERSATILITY_DAMAGE_TAKEN };\n        for (uint8 i = 0; i < 3; ++i)\n        {\n            int64 sum = int64(player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + ratings[i])) + Value;\n            if (sum < 0 || sum > std::numeric_limits<uint32>::max())\n                return false;\n            values[i] = uint32(sum);\n        }\n        for (uint8 i = 0; i < 3; ++i)\n            player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + ratings[i], values[i]);\n        player->UpdateVersality();\n        return true;\n    }",
       "summary": "Check all three unsigned32 versatility sums in int64 before applying any field;prevent underflow,overflow and partial mutation."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSetEffectiveLevel",
+      "case": "EffectiveLevelNativeWidths",
+      "key": "EffectiveLevelNativeWidths",
+      "kind": "more",
+      "old": "    static bool HandleDebugSetEffectiveLevel(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* clevel = strtok((char*)args, \" \");\n        char* cilevelMax = strtok(NULL, \" \");\n        char* cilevelMin = strtok(NULL, \" \");\n        uint32 level = clevel ? (int32)atoi(clevel) : 0;\n        uint32 ilevelMax = cilevelMax ? (int32)atoi(cilevelMax) : 0;\n        uint32 ilevelMin = cilevelMin ? (int32)atoi(cilevelMin) : 0;\n\n        if (auto player = handler->GetSession()->GetPlayer())\n            player->RescaleAllForTimeWalk(level, ilevelMax, ilevelMin);\n\n        handler->PSendSysMessage(\"SetEffectiveLevel level %u ilevelMax %u ilevelMin %u\", level, ilevelMax, ilevelMin);\n        return true;\n    }",
+      "new": "    static bool HandleDebugSetEffectiveLevel(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* clevel = strtok((char*)args, \" \");\n        char* cilevelMax = strtok(NULL, \" \");\n        char* cilevelMin = strtok(NULL, \" \");\n        uint8 level;\n        uint16 ilevelMax = 0, ilevelMin = 0;\n        if (!Trinity::ParseCommandInteger(clevel, level) ||\n            (cilevelMax && !Trinity::ParseCommandInteger(cilevelMax, ilevelMax)) ||\n            (cilevelMin && !Trinity::ParseCommandInteger(cilevelMin, ilevelMin)))\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (!player)\n            return false;\n        player->RescaleAllForTimeWalk(level, ilevelMax, ilevelMin);\n\n        handler->PSendSysMessage(\"SetEffectiveLevel level %u ilevelMax %u ilevelMin %u\", level, ilevelMax, ilevelMin);\n        return true;\n    }",
+      "summary": "Validate the native byte effective level and word item-level limits before rescaling equipment;retain zero/default reset and require an actual player."
     }
   ],
   "extra_edits": [],
   "files": {
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "f43e16b19b430c8536ddccc0afcd2f7846e0730420473aef3fba38415c6884ae"
+      "after_sha256": "f05c2260d346dd2d5bdd11c7bb5a527513f38f6e936f90e85b8a046a63672ca6"
     }
   }
 }
