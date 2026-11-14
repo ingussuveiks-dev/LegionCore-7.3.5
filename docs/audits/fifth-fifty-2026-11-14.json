@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_17_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 17,
+  "status": "IN_PROGRESS_18_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 18,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -114,7 +114,7 @@
     },
     {
       "batch": 2,
-      "count": 7,
+      "count": 8,
       "source_case_count": 160,
       "repairs": [
         {
@@ -171,6 +171,14 @@
           "summary": "Parse the complete item/link key before visual allocation and native Feet model change; preserve zero reset and downstream catalog validation.",
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandleCharDisplayFeetCommand",
+          "test_scope": "complete production function/helper"
+        },
+        {
+          "index": 18,
+          "key": "AppearanceWristsExactItem",
+          "summary": "Parse the complete item/link key before visual allocation and native Wrists model change; preserve zero reset and downstream catalog validation.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandleCharDisplayWristsCommand",
           "test_scope": "complete production function/helper"
         }
       ]
