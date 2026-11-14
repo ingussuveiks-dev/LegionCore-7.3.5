@@ -1762,12 +1762,15 @@ public:
         if (!x || !y)
             return false;
 
-        uint32 opcode = (uint32)atoi(x);
-        uint32 val = (uint32)atoi(y);
+        uint32 opcode;
+        uint32 val;
+        if (!Trinity::ParseCommandInteger(x, opcode) || !Trinity::ParseCommandInteger(y, val) ||
+            opcode >= target->GetValuesCount())
+            return false;
         if (val > 32)                                         //uint32 = 32 bits
             return false;
 
-        uint32 value = val ? 1 << (val - 1) : 0;
+        uint32 value = val ? uint32(1) << (val - 1) : 0;
         target->SetUInt32Value(opcode,  value);
 
         handler->PSendSysMessage(LANG_SET_32BIT_FIELD, opcode, value);

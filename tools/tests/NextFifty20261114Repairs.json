@@ -480,6 +480,16 @@
       "batch": 5,
       "old": "    static bool HandleDebugMod32ValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode = (uint32)atoi(x);\n        int value = atoi(y);\n\n        if (opcode >= handler->GetSession()->GetPlayer()->GetValuesCount())\n        {\n            handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow(), handler->GetSession()->GetPlayer()->GetValuesCount());\n            return false;\n        }\n\n        int currentValue = (int)handler->GetSession()->GetPlayer()->GetUInt32Value(opcode);\n\n        currentValue += value;\n        handler->GetSession()->GetPlayer()->SetUInt32Value(opcode, (uint32)currentValue);\n\n        handler->PSendSysMessage(LANG_CHANGE_32BIT_FIELD, opcode, currentValue);\n\n        return true;\n    }",
       "new": "    static bool HandleDebugMod32ValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode;\n        int32 value;\n        if (!Trinity::ParseCommandInteger(x, opcode) || !Trinity::ParseCommandInteger(y, value))\n            return false;\n\n        if (opcode >= handler->GetSession()->GetPlayer()->GetValuesCount())\n        {\n            handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow(), handler->GetSession()->GetPlayer()->GetValuesCount());\n            return false;\n        }\n\n        uint32 const raw = handler->GetSession()->GetPlayer()->GetUInt32Value(opcode);\n        int64 const signedCurrent = raw <= uint32(std::numeric_limits<int32>::max()) ? int64(raw) : int64(raw) - (int64(1) << 32);\n        int64 const changed = signedCurrent + value;\n        if (changed < std::numeric_limits<int32>::min() || changed > std::numeric_limits<int32>::max())\n            return false;\n        int32 const currentValue = int32(changed);\n        handler->GetSession()->GetPlayer()->SetUInt32Value(opcode, (uint32)currentValue);\n\n        handler->PSendSysMessage(LANG_CHANGE_32BIT_FIELD, opcode, currentValue);\n\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSet32BitCommand",
+      "key": "DebugBitFieldIndexChecked",
+      "case": "SetBit",
+      "kind": "next",
+      "batch": 5,
+      "old": "    static bool HandleDebugSet32BitCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        WorldObject* target = handler->getSelectedObject();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode = (uint32)atoi(x);\n        uint32 val = (uint32)atoi(y);\n        if (val > 32)                                         //uint32 = 32 bits\n            return false;\n\n        uint32 value = val ? 1 << (val - 1) : 0;\n        target->SetUInt32Value(opcode,  value);\n\n        handler->PSendSysMessage(LANG_SET_32BIT_FIELD, opcode, value);\n        return true;\n    }",
+      "new": "    static bool HandleDebugSet32BitCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        WorldObject* target = handler->getSelectedObject();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode;\n        uint32 val;\n        if (!Trinity::ParseCommandInteger(x, opcode) || !Trinity::ParseCommandInteger(y, val) ||\n            opcode >= target->GetValuesCount())\n            return false;\n        if (val > 32)                                         //uint32 = 32 bits\n            return false;\n\n        uint32 value = val ? uint32(1) << (val - 1) : 0;\n        target->SetUInt32Value(opcode,  value);\n\n        handler->PSendSysMessage(LANG_SET_32BIT_FIELD, opcode, value);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -604,7 +614,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "d5060049533d789b2fb4b0740c594ccb18069f804bebb6f1d6b055bdaae92861",
+      "after_sha256": "6fdf1cac980b0f7ae317c48267aaefceaacdc98363a8ffa4fe79bbf18599fa21",
       "owner_key": null
     }
   }
