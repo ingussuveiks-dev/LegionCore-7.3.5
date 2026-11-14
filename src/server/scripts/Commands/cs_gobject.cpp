@@ -575,7 +575,9 @@ public:
         }
 
         char* phase = strtok (NULL, " ");
-        uint32 phaseMask = phase ? atoi(phase) : 0;
+        uint32 phaseMask;
+        if (!Trinity::ParseCommandInteger(phase, phaseMask))
+            return false;
         if (phaseMask == 0)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
