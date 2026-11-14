@@ -240,6 +240,16 @@
       "batch": 3,
       "old": "    static bool HandleBattlefieldSwitch(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        battleid = atoi(battleid_str);\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->EndBattle(false);\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command switch used)\");\n\n        return true;\n    }",
       "new": "    static bool HandleBattlefieldSwitch(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        if (!Trinity::ParseCommandInteger(battleid_str, battleid))\n            return false;\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->EndBattle(false);\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command switch used)\");\n\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_bf.cpp",
+      "method": "HandleBattlefieldTimer",
+      "key": "BattlefieldTimerChecked",
+      "case": "BfTimer",
+      "kind": "next",
+      "batch": 3,
+      "old": "    static bool HandleBattlefieldTimer(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        uint32 time = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n        char* time_str = strtok(NULL, \" \");\n        if (!time_str)\n            return false;\n\n        battleid = atoi(battleid_str);\n\n        time = atoi(time_str);\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->SetTimer(time * IN_MILLISECONDS);\n        bf->SendInitWorldStatesToAll();\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command timer used)\");\n\n        return true;\n    }",
+      "new": "    static bool HandleBattlefieldTimer(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        uint32 time = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n        char* time_str = strtok(NULL, \" \");\n        if (!time_str)\n            return false;\n\n        if (!Trinity::ParseCommandInteger(battleid_str, battleid))\n            return false;\n\n        if (!Trinity::ParseCommandInteger(time_str, time) ||\n            time > std::numeric_limits<uint32>::max() / IN_MILLISECONDS)\n            return false;\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->SetTimer(time * IN_MILLISECONDS);\n        bf->SendInitWorldStatesToAll();\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command timer used)\");\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -326,7 +336,7 @@
     "src/server/scripts/Commands/cs_bf.cpp": {
       "before_sha256": "8de587130bfca92e7664466c8a359417433db49ccb5402b15603ee7c6fe66110",
       "owner_key": null,
-      "after_sha256": "3e18da81ed6f7446dba39afe7f06aad964836d9d0ddb492e2cfa3d331e22cfec"
+      "after_sha256": "ba02d057dfd73aa61bcbb222771173601119337689d295b1c2294afb3dde16fe"
     }
   }
 }

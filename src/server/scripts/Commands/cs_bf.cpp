@@ -159,9 +159,12 @@ public:
         if (!time_str)
             return false;
 
-        battleid = atoi(battleid_str);
+        if (!Trinity::ParseCommandInteger(battleid_str, battleid))
+            return false;
 
-        time = atoi(time_str);
+        if (!Trinity::ParseCommandInteger(time_str, time) ||
+            time > std::numeric_limits<uint32>::max() / IN_MILLISECONDS)
+            return false;
 
         Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);
 
