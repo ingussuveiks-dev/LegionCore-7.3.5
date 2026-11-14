@@ -320,6 +320,16 @@
       "batch": 4,
       "old": "    static bool HandleDebugPlayMovieCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug play movie #movieid\n        // #movieid - ID decimal number from Movie.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 id = atoi((char*)args);\n\n        if (!sMovieStore.LookupEntry(id))\n        {\n            handler->PSendSysMessage(LANG_MOVIE_NOT_EXIST, id);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->GetSession()->GetPlayer()->SendMovieStart(id);\n        return true;\n    }",
       "new": "    static bool HandleDebugPlayMovieCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug play movie #movieid\n        // #movieid - ID decimal number from Movie.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 id;\n        if (!Trinity::ParseCommandInteger(args, id))\n            return false;\n\n        if (!sMovieStore.LookupEntry(id))\n        {\n            handler->PSendSysMessage(LANG_MOVIE_NOT_EXIST, id);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->GetSession()->GetPlayer()->SendMovieStart(id);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugPlaySoundCommand",
+      "key": "DebugSoundChecked",
+      "case": "Sound",
+      "kind": "next",
+      "batch": 4,
+      "old": "    static bool HandleDebugPlaySoundCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug playsound #soundid\n        // #soundid - ID decimal number from SoundEntries.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 soundId = atoi((char*)args);\n        Unit* unit = handler->getSelectedUnit();\n        if (!unit)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->GetSession()->GetPlayer()->GetSelection())\n            unit->PlayDistanceSound(soundId, handler->GetSession()->GetPlayer());\n        else\n            unit->PlayDirectSound(soundId, handler->GetSession()->GetPlayer());\n\n        handler->PSendSysMessage(LANG_YOU_HEAR_SOUND, soundId);\n        return true;\n    }",
+      "new": "    static bool HandleDebugPlaySoundCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug playsound #soundid\n        // #soundid - ID decimal number from SoundEntries.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 soundId;\n        if (!Trinity::ParseCommandInteger(args, soundId))\n            return false;\n        Unit* unit = handler->getSelectedUnit();\n        if (!unit)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->GetSession()->GetPlayer()->GetSelection())\n            unit->PlayDistanceSound(soundId, handler->GetSession()->GetPlayer());\n        else\n            unit->PlayDirectSound(soundId, handler->GetSession()->GetPlayer());\n\n        handler->PSendSysMessage(LANG_YOU_HEAR_SOUND, soundId);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -432,7 +442,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "aa8a217575dcff88f2e080a211ef261812dda41a966278c5f72a44b98f8b7fb8",
+      "after_sha256": "d8988994597e6cf155e85aaf9e9558f0e1b2ec43dbbf8e38931d704938b8a872",
       "owner_key": null
     }
   }

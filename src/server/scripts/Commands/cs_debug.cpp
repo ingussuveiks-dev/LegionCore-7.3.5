@@ -250,7 +250,9 @@ public:
             return false;
         }
 
-        uint32 soundId = atoi((char*)args);
+        uint32 soundId;
+        if (!Trinity::ParseCommandInteger(args, soundId))
+            return false;
         Unit* unit = handler->getSelectedUnit();
         if (!unit)
         {
