@@ -405,18 +405,14 @@ public:
         char* timeStr = strtok((char*) args, " ");
         char* exitCodeStr = strtok(NULL, "");
 
-        int32 time = atoi(timeStr);
-
-        //  Prevent interpret wrong arg value as 0 secs shutdown time
-        if ((time == 0 && (timeStr[0] != '0' || timeStr[1] != '\0')) || time < 0)
+        int32 time;
+        if (!Trinity::ParseCommandInteger(timeStr, time) || time < 0)
             return false;
 
         if (exitCodeStr)
         {
-            int32 exitCode = atoi(exitCodeStr);
-
-            // Handle atoi() errors
-            if (exitCode == 0 && (exitCodeStr[0] != '0' || exitCodeStr[1] != '\0'))
+            int32 exitCode;
+            if (!Trinity::ParseCommandInteger(exitCodeStr, exitCode))
                 return false;
 
             // Exit code should be in range of 0-125, 126-255 is used

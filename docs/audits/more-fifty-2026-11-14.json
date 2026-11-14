@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_31_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 31,
+  "status": "IN_PROGRESS_32_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 32,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -276,7 +276,7 @@
     },
     {
       "batch": 4,
-      "count": 1,
+      "count": 2,
       "source_case_count": 182,
       "repairs": [
         {
@@ -285,6 +285,14 @@
           "summary": "Parse complete nonnegative signed32 time and optional0..125 exit code before HandleServerShutDownCommand schedules its native lifecycle mode;handle whitespace without dereferencing a null token.",
           "path": "src/server/scripts/Commands/cs_server.cpp",
           "method": "HandleServerShutDownCommand",
+          "test_scope": "complete production handler"
+        },
+        {
+          "index": 32,
+          "key": "ServerRestartExactDeadline",
+          "summary": "Parse complete nonnegative signed32 time and optional0..125 exit code before HandleServerRestartCommand schedules its native lifecycle mode;handle whitespace without dereferencing a null token.",
+          "path": "src/server/scripts/Commands/cs_server.cpp",
+          "method": "HandleServerRestartCommand",
           "test_scope": "complete production handler"
         }
       ]
