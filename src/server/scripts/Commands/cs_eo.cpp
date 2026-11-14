@@ -29,6 +29,7 @@ EndScriptData */
 #include "CommandFloatArgument.h"
 #include "EventObjectData.h"
 #include "DatabaseEnv.h"
+#include <limits>
 
 class eo_commandscript : public CommandScript
 {
@@ -138,7 +139,10 @@ public:
 
     static bool HandleEONearCommand(ChatHandler* handler, char const* args)
     {
-        float distance = (!*args) ? 10.0f : (float)(atof(args));
+        float distance = 10.0f;
+        if ((*args && !Trinity::ParseCommandFloat(args, distance)) ||
+            double(distance) * distance > std::numeric_limits<float>::max())
+            return false;
         uint32 count = 0;
 
         Player* player = handler->GetSession()->GetPlayer();

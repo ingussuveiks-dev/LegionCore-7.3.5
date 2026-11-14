@@ -127,6 +127,19 @@
       "old": "    static bool HandleEODeleteCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            char* eoID = strtok((char*)args, \" \");\n            if (!eoID)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            uint32 lowguid = strtoull(eoID, nullptr, 10);\n            if (!lowguid)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            WorldDatabase.PExecute(\"DELETE FROM eventobject WHERE guid = %u\", lowguid);\n        }\n        else\n            handler->SendSysMessage(\"Error, need low guid\");\n\n        return true;\n    }",
       "new": "    static bool HandleEODeleteCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            char* eoID = strtok((char*)args, \" \");\n            if (!eoID)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            ObjectGuid::LowType lowguid;\n            if (!Trinity::ParseCommandInteger(eoID, lowguid) || !lowguid)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            WorldDatabase.PExecute(\"DELETE FROM eventobject WHERE guid = \" UI64FMTD, lowguid);\n        }\n        else\n            handler->SendSysMessage(\"Error, need low guid\");\n\n        return true;\n    }",
       "summary": "Parse and bind the full native64-bit eventobject DB GUID instead of deleting an aliased32-bit row."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_eo.cpp",
+      "method": "HandleEONearCommand",
+      "case": "EventObjectFiniteQueryRadius",
+      "key": "EventObjectFiniteQueryRadius",
+      "kind": "fourth",
+      "old": "    static bool HandleEONearCommand(ChatHandler* handler, char const* args)\n    {\n        float distance = (!*args) ? 10.0f : (float)(atof(args));\n        uint32 count = 0;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_EVENTOBJECT_NEAREST);\n        stmt->setFloat(0, player->GetPositionX());\n        stmt->setFloat(1, player->GetPositionY());\n        stmt->setFloat(2, player->GetPositionZ());\n        stmt->setUInt32(3, player->GetMapId());\n        stmt->setFloat(4, player->GetPositionX());\n        stmt->setFloat(5, player->GetPositionY());\n        stmt->setFloat(6, player->GetPositionZ());\n        stmt->setFloat(7, distance * distance);\n        PreparedQueryResult result = WorldDatabase.Query(stmt);\n\n        if (result)\n        {\n            do\n            {\n                Field* fields = result->Fetch();\n                uint32 guid = fields[0].GetUInt64();\n                uint32 entry = fields[1].GetUInt32();\n                float x = fields[2].GetFloat();\n                float y = fields[3].GetFloat();\n                float z = fields[4].GetFloat();\n                uint16 mapId = fields[5].GetUInt16();\n\n                EventObjectTemplate const* eoInfo = sEventObjectDataStore->GetEventObjectTemplate(entry);\n                if (!eoInfo)\n                    continue;\n\n                handler->PSendSysMessage(LANG_NPC_LIST_CHAT, guid, entry, guid, eoInfo->Name.c_str(), x, y, z, mapId);\n\n                ++count;\n            } while (result->NextRow());\n        }\n\n        handler->PSendSysMessage(LANG_COMMAND_NEAROBJMESSAGE, distance, count);\n        return true;\n    }",
+      "new": "    static bool HandleEONearCommand(ChatHandler* handler, char const* args)\n    {\n        float distance = 10.0f;\n        if ((*args && !Trinity::ParseCommandFloat(args, distance)) ||\n            double(distance) * distance > std::numeric_limits<float>::max())\n            return false;\n        uint32 count = 0;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_EVENTOBJECT_NEAREST);\n        stmt->setFloat(0, player->GetPositionX());\n        stmt->setFloat(1, player->GetPositionY());\n        stmt->setFloat(2, player->GetPositionZ());\n        stmt->setUInt32(3, player->GetMapId());\n        stmt->setFloat(4, player->GetPositionX());\n        stmt->setFloat(5, player->GetPositionY());\n        stmt->setFloat(6, player->GetPositionZ());\n        stmt->setFloat(7, distance * distance);\n        PreparedQueryResult result = WorldDatabase.Query(stmt);\n\n        if (result)\n        {\n            do\n            {\n                Field* fields = result->Fetch();\n                uint32 guid = fields[0].GetUInt64();\n                uint32 entry = fields[1].GetUInt32();\n                float x = fields[2].GetFloat();\n                float y = fields[3].GetFloat();\n                float z = fields[4].GetFloat();\n                uint16 mapId = fields[5].GetUInt16();\n\n                EventObjectTemplate const* eoInfo = sEventObjectDataStore->GetEventObjectTemplate(entry);\n                if (!eoInfo)\n                    continue;\n\n                handler->PSendSysMessage(LANG_NPC_LIST_CHAT, guid, entry, guid, eoInfo->Name.c_str(), x, y, z, mapId);\n\n                ++count;\n            } while (result->NextRow());\n        }\n\n        handler->PSendSysMessage(LANG_COMMAND_NEAROBJMESSAGE, distance, count);\n        return true;\n    }",
+      "test_boundary": "        uint32 count",
+      "observe": "0",
+      "test_capture": "handler->scalar = distance;",
+      "summary": "Reject malformed/nonfinite radii and a squared radius outside the native float SQL parameter;retain default10 and finite signed-radius behavior."
     }
   ],
   "extra_edits": [
@@ -153,6 +166,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
       "owner_key": "EventObjectAtomicTemplateRequest"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_eo.cpp",
+      "old": "#include \"DatabaseEnv.h\"",
+      "new": "#include \"DatabaseEnv.h\"\n#include <limits>",
+      "owner_key": "EventObjectFiniteQueryRadius"
     }
   ],
   "files": {
@@ -166,7 +185,7 @@
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
-      "after_sha256": "99eff87ced209cc555f4227dafb766ba0dc62b053c428853a3f37f4a5cb0ffaa"
+      "after_sha256": "551012440ffc55e74b25e902da6a566b3672f9a20f990dc7d58bf11b31300d6d"
     },
     "src/server/scripts/Commands/cs_guild.cpp": {
       "before_sha256": "168efca091cb840607eec47506ed408eb6ebe9e38a1e62c0966f9bba9023a593",
