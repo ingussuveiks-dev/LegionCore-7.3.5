@@ -200,6 +200,16 @@
       "batch": 2,
       "old": "    static bool HandleHonorAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        uint32 amount = (uint32)atoi(args);\n        target->RewardHonor(NULL, 1, amount);\n        return true;\n    }",
       "new": "    static bool HandleHonorAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        int32 amount;\n        if (!Trinity::ParseCommandInteger(args, amount))\n            return false;\n        return target->RewardHonor(NULL, 1, amount);\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_bf.cpp",
+      "method": "HandleBattlefieldStart",
+      "key": "BattlefieldStartChecked",
+      "case": "BfStart",
+      "kind": "next",
+      "batch": 3,
+      "old": "    static bool HandleBattlefieldStart(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        battleid = atoi(battleid_str);\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n        if (!bf)\n            return false;\n\n        bf->StartBattle();\n\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command start used)\");\n\n        return true;\n    }",
+      "new": "    static bool HandleBattlefieldStart(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        if (!Trinity::ParseCommandInteger(battleid_str, battleid))\n            return false;\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n        if (!bf)\n            return false;\n\n        bf->StartBattle();\n\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command start used)\");\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -244,6 +254,12 @@
       "old": "#include \"ScriptMgr.h\"",
       "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "HonorAddNativeSignedReceipt"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_bf.cpp",
+      "old": "#include \"ScriptMgr.h\"",
+      "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"\n#include <limits>",
+      "owner_key": "BattlefieldStartChecked"
     }
   ],
   "files": {
@@ -276,6 +292,11 @@
       "before_sha256": "e8ce0b5c6835339393797bf223535ee95167b7a7685b5244cd8a95c908f1b9a2",
       "owner_key": null,
       "after_sha256": "98d357b53b820f1b12edc2818784519c1806af3bada15dcefdd7fb841a6cd991"
+    },
+    "src/server/scripts/Commands/cs_bf.cpp": {
+      "before_sha256": "8de587130bfca92e7664466c8a359417433db49ccb5402b15603ee7c6fe66110",
+      "owner_key": null,
+      "after_sha256": "7289b2fa8f9dcdfcc8b98d56bde1311bda9e04a5e69972665c4fa8764fe94685"
     }
   }
 }

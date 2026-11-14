@@ -82,7 +82,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
     player=(ROOT/'src/server/game/Entities/Player/Player.h').read_text(encoding='utf-8-sig')
     constants += [block(unit,'enum '+name)+';' for name in ('UnitMoveType','UpdateStatsMask','CombatRating','DeathState')]
     constants += [block((ROOT/p).read_text(),'enum '+name)+';' for p,name in [('src/server/game/World/World.h','WorldIntConfigs'),('src/server/game/Entities/Pet/PetDefines.h','PetType'),('src/server/game/Movement/MotionMaster.h','MovementGeneratorType'),('src/server/database/Database/Implementation/WorldDatabase.h','WorldDatabaseStatements')]]
-    constants += [block(shared,'enum Powers')+';',block(player,'enum PlayerAvgItemLevelOffsets')+';']
+    constants += [block(shared,'enum Powers')+';',block(shared,'enum Expansions')+';',block(player,'enum PlayerAvgItemLevelOffsets')+';',block((ROOT/'src/common/Common.h').read_text(),'enum TimeConstants')+';','constexpr uint8 CURRENT_EXPANSION=EXPANSION_LEGION;']
     money=re.search(r'#define MAX_MONEY_AMOUNT\s+\(UI64LIT\((\d+)\)\)',player)
     assert money
     constants.append('constexpr uint64 MAX_MONEY_AMOUNT='+money[1]+'ULL;')

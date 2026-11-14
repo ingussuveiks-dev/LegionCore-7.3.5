@@ -3,8 +3,8 @@
   "request": "Labi ņem vēl5x10",
   "baseline": "9eb7aab7ae7c78fe1880c9f04ca131f254389093",
   "authorized_new_repairs": 50,
-  "completed_source_repairs": 20,
-  "status": "IN_PROGRESS_20_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 21,
+  "status": "IN_PROGRESS_21_OF_50_CANONICAL_CLIENT_PENDING",
   "previous_fifty": "docs/audits/five-ten-2026-11-14.json remains completed50;none recounted.",
   "batches": [
     {
@@ -163,10 +163,43 @@
         "reclaimed_bytes": 229747566.0,
         "retained_rollback": ".codex/release-before-next-fifty-20261114-batch2"
       }
+    },
+    {
+      "batch": 3,
+      "repairs": [
+        {
+          "key": "BattlefieldStartChecked",
+          "path": "src/server/scripts/Commands/cs_bf.cpp",
+          "summary": "BattlefieldStartChecked;complete exact source delta in NextFifty20261114Repairs.json."
+        }
+      ],
+      "checks": {
+        "source_asan": "344 cumulative complete actual source cases(102 new battlefield/event/account contexts). Native time/expansion enums exported;controlled battlefield,event/calendar and prepared account services,no live DB/world changes. Valid0 timer/expansion,named/selected/console account/strong authority,active/invalid/repeated events and ms boundary covered.",
+        "counterfactual": "Original4294968sec timer wraps to704ms;original expansion256 passes uint8 gate and writes0. Actual old handler controls paired with fixed cases. No deliberate null-pointer/undefined casts executed.",
+        "native": "Actual Battlefield::SetTimer uses uint32,IN_MILLISECONDS1000,CURRENT_EXPANSION6;actual byte/visual packet widths and double parser retained;no DB calls.",
+        "release": "Original scripts Release library/original-input staged link. All new registered operations and retained previous50 PE proofs pass in canonical;Scepter VerifyReleaseBinary passes. New exact source deltas restore prior50 source certificate.",
+        "startup": "Owned PID10524 ready/shutdown0/exit0,gone,stderr empty;no user server stopped/config changed.",
+        "analysis": "Original /analyze BF/event/account exits0;existing headers/deprecation and guarded uint8/uint16 conversions retained/reviewed;native domain bounds precede narrowing.",
+        "diagnostics": "Retained account realm PE proof initially assumed fixedr15 register;decoded new binary usesr14 for parsed realm. Proof now derives32-bit register from actual parsed stack slot and follows same value into DELETE parameter1,still rejecting current-realm substitution. Owned10524 ready/shutdown0/exit0,gone,stderr empty. No new/changed crash or appended DBErrors/unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved."
+      },
+      "canonical": {
+        "bnetserver.exe": "3e98e1a6af85b79490e11306674d7153042c77ded49df7ae6a6124f5fb5381fc",
+        "bnetserver.map": "c8c04ceed18cd6f97f91c43a45cb45deffa95f920e8a1fdaa989bba59792601d",
+        "worldserver.exe": "77410a96886e36222525d00df1253e0e15d8cbe362dc7db48a9a22d6c4d64a2b",
+        "worldserver.map": "216014082801effbfab7c9d43602351929ff01ea82b5d06652bd15eba4433fd1"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch3",
+        "manifest_sha256": "34553f0f7b43225a3c8927ec3d46f07ec020fe3b4d1a2e62126a139e8c5661a2",
+        "archived_files": 221,
+        "removed_files": 77,
+        "reclaimed_bytes": 229379172.0,
+        "retained_rollback": ".codex/release-before-next-fifty-20261114-batch3"
+      }
     }
   ],
   "remaining": [
-    "30 authorized new source repairs remain.",
+    "29 authorized new source repairs remain.",
     "Actual client traversal,all36 complete artifact chains and original LINK2/FuZan/Slaghammer/mixedDBErrors evidence remain open;source/native/PE/startup do not certify client behavior."
   ]
 }

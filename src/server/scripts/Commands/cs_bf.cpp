@@ -23,6 +23,8 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
+#include <limits>
 #include "Chat.h"
 #include "BattlefieldMgr.h"
 
@@ -55,7 +57,8 @@ public:
         if (!battleid_str)
             return false;
 
-        battleid = atoi(battleid_str);
+        if (!Trinity::ParseCommandInteger(battleid_str, battleid))
+            return false;
 
         Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);
         if (!bf)

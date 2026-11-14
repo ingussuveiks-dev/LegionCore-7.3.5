@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <functional>
+#include <ctime>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -108,6 +109,8 @@ struct ChatHandler {
  Player*target=nullptr;Unit*unit=nullptr;Creature*creature=nullptr;Session*session=nullptr;bool lower=false,error=false,report=false;uint32 messages=0,databaseReached=0;
  ChatHandler()=default;explicit ChatHandler(Player*){}
  Session*GetSession(){return session;}Player*getSelectedPlayer(){return target;}Unit*getSelectedUnit(){return unit?unit:target;}Creature*getSelectedCreature(){return creature;}
+ bool HasLowerSecurityAccount(Player*,uint32,bool strong){Require(strong,"Account addon strong authority gate lost");return lower;}
+ template<class...T>void SendGlobalGMSysMessage(T...){++messages;}char const*GetTrinityString(uint32){return "active";}
  bool HasLowerSecurity(Player*,ObjectGuid){return lower;}bool needReportToTarget(Player*){return report;}
  std::string GetNameLink(Player* =nullptr){return "fixture";}
  template<class...T>void PSendSysMessage(T...){++messages;}template<class...T>void SendSysMessage(T...){++messages;}
@@ -119,6 +122,12 @@ struct NativeRow{uint32 ID;};using CurrencyTypesEntry=NativeRow;using PhaseEntry
 struct NativeStore{std::map<uint32,NativeRow>rows;NativeRow const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionTemplateStore{{{1,{1}},{2,{2}}}},sCurrencyTypesStore{{{1,{1}},{2,{2}}}},sCreatureDisplayInfoStore{{{123,{123}}}},sPhaseStore{{{1,{1}},{2,{2}}}},sEmotesStore{{{1,{1}},{2,{2}}}};
 FactionName factionName;struct FactionStore{std::map<uint32,FactionEntry>rows{{1,{1,0,0,&factionName}},{2,{2,0,2,&factionName}},{3,{3,-1,0,&factionName}}};FactionEntry const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionStore;
 struct PrecisionManager{bool GetFactionParagon(uint32 id){return id==2;}float GetCurrencyPrecision(uint32 id){return id==2?100.f:1.f;}}sDB2Manager;
+struct Battlefield{uint32 writes=0,starts=0,ends=0,toggles=0,timer=0,packets=0;bool enabled=true,winner=false;void StartBattle(){++writes;++starts;}void EndBattle(bool force){++writes;++ends;winner=force;}bool IsEnabled(){return enabled;}void ToggleBattlefield(bool value){++writes;++toggles;enabled=value;}void SetTimer(uint32 value){++writes;timer=value;}void SendInitWorldStatesToAll(){++packets;}};
+struct BattlefieldManager{Battlefield first,second;uint32 lookups=0;Battlefield*GetBattlefieldByBattleId(uint32 id){++lookups;return id==1?&first:id==2?&second:nullptr;}}battlefieldManager;auto sBattlefieldMgr=&battlefieldManager;
+struct GameEventData{bool valid=false;std::string description="Controlled event";time_t start=0,end=100000;uint32 occurence=5,length=1;bool isValid()const{return valid;}};
+struct GameEventMgr{using GameEventDataMap=std::vector<GameEventData>;using ActiveEvents=std::set<uint16>;GameEventDataMap events{{false},{true},{true},{false}};ActiveEvents active{1};uint32 writes=0;GameEventDataMap const&GetEventMap(){return events;}ActiveEvents const&GetActiveEventList(){return active;}uint32 NextCheck(uint16){return 10;}void StartEvent(uint16 id,bool force){Require(force,"Native event force lost");++writes;active.insert(id);}void StopEvent(uint16 id,bool force){Require(force,"Native event force lost");++writes;active.erase(id);}}gameEventManager;auto sGameEventMgr=&gameEventManager;
+namespace GameTime{time_t GetGameTime(){return 100;}}
+static std::string TimeToTimestampStr(time_t){return "controlled time";}static std::string secsToTimeString(uint64){return "controlled duration";}
 struct CharTitlesEntry{int32 MaskID;};
 struct TitleStore{std::vector<CharTitlesEntry> rows{{0},{0},{2},{63},{64},{130},{-1}};uint32 GetNumRows(){return uint32(rows.size());}CharTitlesEntry const*LookupEntry(uint32 i){return i<rows.size()?&rows[i]:nullptr;}}sCharTitlesStore;
 struct SpellInfo{} info;
@@ -136,6 +145,7 @@ struct LoginService {
 }LoginDatabase;
 namespace AccountMgr {
  static uint32 ownerSecurity=6,targetSecurity=0;static bool missing=false;
+ bool GetName(uint32 id,std::string&name){name="ACCOUNT";return id!=0;}
  uint32 GetId(std::string const&name){return missing||name=="MISSING"?0:2;}
  uint32 GetSecurity(uint32 account,int32){return account==1?ownerSecurity:targetSecurity;}
  bool IsConsoleAccount(uint32 value){return value==SEC_CONSOLE;}
@@ -174,6 +184,12 @@ static void NpcRejects(bool(*fn)(ChatHandler*,char const*),std::vector<char cons
  {ChatHandler h;WorldDatabase.writes.clear();Require(!Command(fn,h,"1")&&WorldDatabase.writes.empty(),"Absent NPC accepted");++cases;}
 }
 int main(){try{
+#ifdef COUNTERFACTUAL_BFTIMER
+ battlefieldManager={};ChatHandler h;Require(Command(CaseBfTimer::Selected::HandleBattlefieldTimer,h,"1 4294968")&&battlefieldManager.first.timer==704,"Original timer wrap not reproduced");std::cout<<"COUNTERFACTUAL original4294968 seconds becomes704 milliseconds through uint32 wrap;controlled battlefield only\n";return 0;
+#endif
+#ifdef COUNTERFACTUAL_EXPANSION
+ Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;LoginDatabase.writes.clear();Require(Command(CaseExpansion::Selected::HandleAccountAddonCommand,h,"256")&&LoginDatabase.writes.size()==1&&LoginDatabase.writes[0].fields.at(0)==0,"Original expansion wrap not reproduced");std::cout<<"COUNTERFACTUAL original account expansion256 passes narrowed gate and persists0;controlled prepared DB only\n";return 0;
+#endif
 #ifdef COUNTERFACTUAL_GOSTATE
  Player p;Session ses{&p,1};GameObject go;ChatHandler h;h.session=&ses;h.go=&go;Require(Command(CaseGoState::Selected::HandleGameObjectSetStateCommand,h,"7 0 256")&&go.writes==1&&go.byteValue==0,"Original byte narrowing not reproduced");std::cout<<"COUNTERFACTUAL original GO state256 narrows to0 and mutates controlled byte field;no real world writes\n";return 0;
 #endif
@@ -488,6 +504,48 @@ int main(){try{
 #endif
 #ifdef REPAIR_NPCGROUP
  {ChatHandler h;Require(!Command(CaseNpcGroup::Selected::HandleNpcSummonGroupCommand,h,"1"),"Missing NPC group target accepted");++cases;}
+#endif
+
+#ifdef REPAIR_BFSTART
+ for(char const*arg:{""," ","-1","1x","4294967297","3"}){battlefieldManager={};ChatHandler h;Require(!Command(CaseBfStart::Selected::HandleBattlefieldStart,h,arg)&&!battlefieldManager.first.writes&&!battlefieldManager.second.writes,"Invalid battlefield start dispatched");++cases;}
+ for(uint32 id:{1u,2u}){battlefieldManager={};ChatHandler h;Require(Command(CaseBfStart::Selected::HandleBattlefieldStart,h,std::to_string(id).c_str())&&(id==1?battlefieldManager.first:battlefieldManager.second).starts==1&&h.messages==uint32(id==1),"Native battlefield start/global notification changed");++cases;}
+#endif
+#ifdef REPAIR_BFEND
+ for(char const*arg:{""," ","-1","1x","4294967297","3"}){battlefieldManager={};ChatHandler h;Require(!Command(CaseBfEnd::Selected::HandleBattlefieldEnd,h,arg)&&!battlefieldManager.first.writes,"Invalid battlefield end dispatched");++cases;}
+ {battlefieldManager={};ChatHandler h;Require(Command(CaseBfEnd::Selected::HandleBattlefieldEnd,h,"1")&&battlefieldManager.first.ends==1&&battlefieldManager.first.winner,"Native end-battle force changed");++cases;}
+#endif
+#ifdef REPAIR_BFENABLE
+ for(char const*arg:{""," ","-1","1x","4294967297","3"}){battlefieldManager={};ChatHandler h;Require(!Command(CaseBfEnable::Selected::HandleBattlefieldEnable,h,arg)&&!battlefieldManager.first.writes,"Invalid battlefield enable dispatched");++cases;}
+ for(bool enabled:{false,true}){battlefieldManager={};battlefieldManager.first.enabled=enabled;ChatHandler h;Require(Command(CaseBfEnable::Selected::HandleBattlefieldEnable,h,"1")&&battlefieldManager.first.enabled!=enabled&&battlefieldManager.first.toggles==1,"Native battlefield toggle direction lost");++cases;}
+#endif
+#ifdef REPAIR_BFSWITCH
+ for(char const*arg:{""," ","-1","1x","4294967297","3"}){battlefieldManager={};ChatHandler h;Require(!Command(CaseBfSwitch::Selected::HandleBattlefieldSwitch,h,arg)&&!battlefieldManager.first.writes,"Invalid battlefield switch dispatched");++cases;}
+ {battlefieldManager={};ChatHandler h;Require(Command(CaseBfSwitch::Selected::HandleBattlefieldSwitch,h,"1")&&battlefieldManager.first.ends==1&&!battlefieldManager.first.winner,"Native battlefield switch differs from forced end");++cases;}
+#endif
+#ifdef REPAIR_BFTIMER
+ for(char const*arg:{""," ","1","1x 1","-1 1","4294967297 1","1 nan","1 1x","1 -1","1 4294968","1 4294967295","3 1"}){battlefieldManager={};ChatHandler h;Require(!Command(CaseBfTimer::Selected::HandleBattlefieldTimer,h,arg)&&!battlefieldManager.first.writes&&!battlefieldManager.first.packets,"Invalid/overflow timer reached battlefield");++cases;}
+ for(uint32 seconds:{0u,1u,4294967u}){battlefieldManager={};ChatHandler h;Require(Command(CaseBfTimer::Selected::HandleBattlefieldTimer,h,("1 "+std::to_string(seconds)).c_str())&&battlefieldManager.first.timer==seconds*1000&&battlefieldManager.first.writes==1&&battlefieldManager.first.packets==1,"Native milliseconds/broadcast changed");++cases;}
+#endif
+#ifdef REPAIR_EVENTINFO
+ for(char const*arg:{""," ","-1","1x","4294967297","3","4"}){gameEventManager={};ChatHandler h;Require(!Command(CaseEventInfo::Selected::HandleEventInfoCommand,h,arg)&&!gameEventManager.writes,"Invalid world event diagnostic ID accepted");++cases;}
+ for(bool active:{false,true}){gameEventManager={};if(!active)gameEventManager.active.clear();ChatHandler h;Require(Command(CaseEventInfo::Selected::HandleEventInfoCommand,h,"1")&&h.messages==1&&!gameEventManager.writes,"Native event info/timing became mutation");++cases;}
+#endif
+#ifdef REPAIR_EVENTSTART
+ for(char const*arg:{""," ","-1","1x","4294967297","0","3","4","1"}){gameEventManager={};ChatHandler h;Require(!Command(CaseEventStart::Selected::HandleEventStartCommand,h,arg)&&!gameEventManager.writes,"Invalid/already active event started");++cases;}
+ {gameEventManager={};ChatHandler h;Require(Command(CaseEventStart::Selected::HandleEventStartCommand,h,"2")&&gameEventManager.writes==1&&gameEventManager.active.count(2),"Native forced event start lost");Require(!Command(CaseEventStart::Selected::HandleEventStartCommand,h,"2")&&gameEventManager.writes==1,"Repeated event start mutated twice");++cases;}
+#endif
+#ifdef REPAIR_EVENTSTOP
+ for(char const*arg:{""," ","-1","1x","4294967297","0","3","4","2"}){gameEventManager={};ChatHandler h;Require(!Command(CaseEventStop::Selected::HandleEventStopCommand,h,arg)&&!gameEventManager.writes,"Invalid/inactive event stopped");++cases;}
+ {gameEventManager={};ChatHandler h;Require(Command(CaseEventStop::Selected::HandleEventStopCommand,h,"1")&&gameEventManager.writes==1&&!gameEventManager.active.count(1),"Native forced event stop lost");Require(!Command(CaseEventStop::Selected::HandleEventStopCommand,h,"1")&&gameEventManager.writes==1,"Repeated event stop mutated twice");++cases;}
+#endif
+#ifdef REPAIR_EXPANSION
+ for(char const*arg:{""," ","-1","x","1x","7","256","262","4294967296"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;LoginDatabase.writes.clear();Require(!Command(CaseExpansion::Selected::HandleAccountAddonCommand,h,arg)&&LoginDatabase.writes.empty(),"Invalid/wrapped self expansion persisted");++cases;}
+ for(uint32 expansion:{0u,1u,6u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;LoginDatabase.writes.clear();Require(Command(CaseExpansion::Selected::HandleAccountAddonCommand,h,std::to_string(expansion).c_str())&&LoginDatabase.writes.size()==1&&LoginDatabase.writes[0].id==LOGIN_UPD_EXPANSION&&LoginDatabase.writes[0].fields.at(0)==int32(expansion)&&LoginDatabase.writes[0].fields.at(1)==1,"Native self account/expansion SQL changed");++cases;}
+#endif
+#ifdef REPAIR_SETEXPANSION
+ for(char const*arg:{""," ","ACCOUNT x","ACCOUNT 1x","ACCOUNT -1","ACCOUNT 7","ACCOUNT 256","ACCOUNT 262","ACCOUNT 4294967296"}){ChatHandler h;LoginDatabase.writes.clear();Require(!Command(CaseSetExpansion::Selected::HandleAccountSetAddonCommand,h,arg)&&LoginDatabase.writes.empty(),"Invalid target expansion persisted");++cases;}
+ for(uint32 expansion:{0u,1u,6u})for(bool named:{false,true}){Player p;Session ses{&p,2};p.session=&ses;ChatHandler h;h.target=&p;LoginDatabase.writes.clear();std::string arg=(named?"ACCOUNT ":"")+std::to_string(expansion);Require(Command(CaseSetExpansion::Selected::HandleAccountSetAddonCommand,h,arg.c_str())&&LoginDatabase.writes.size()==1&&LoginDatabase.writes[0].fields.at(0)==int32(expansion)&&LoginDatabase.writes[0].fields.at(1)==2,"Named/selected account expansion SQL changed");++cases;}
+ {Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;h.lower=true;LoginDatabase.writes.clear();Require(!Command(CaseSetExpansion::Selected::HandleAccountSetAddonCommand,h,"ACCOUNT 6")&&LoginDatabase.writes.empty(),"Target expansion strong authority bypass");++cases;}
 #endif
 #ifdef REPAIR_SOUL
  for(randomChoice=0;randomChoice<3;++randomChoice){EchoUnit source,actor;CaseSoul::Selected callback;callback.me=&actor;
