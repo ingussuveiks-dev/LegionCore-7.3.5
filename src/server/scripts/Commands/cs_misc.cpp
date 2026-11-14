@@ -4313,7 +4313,8 @@ public:
         char const* id = strtok(NULL, " ");
         if (!id)
             return false;
-        itemId = uint32(atol(id));
+        if (!Trinity::ParseCommandInteger(id, itemId))
+            return false;
 
         if (!itemId)
             return false;

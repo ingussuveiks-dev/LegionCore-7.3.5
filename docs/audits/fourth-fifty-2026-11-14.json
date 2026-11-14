@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_28_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 28,
+  "status": "IN_PROGRESS_29_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 29,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -189,7 +189,7 @@
     },
     {
       "batch": 3,
-      "count": 8,
+      "count": 9,
       "source_case_count": 117,
       "repairs": [
         {
@@ -254,6 +254,14 @@
           "summary": "Reject malformed/overflowing world-quest IDs before generation;retain native nonzero/catalog behavior.",
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandleWorldQuestAdd",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 29,
+          "key": "TransmogRemovalExactItem",
+          "summary": "Reject malformed/overflowing item IDs before account transmog deletion;preserve offline-only admission and the native item lookup/transaction.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandleDelTransmog",
           "test_scope": "admission prefix"
         }
       ]

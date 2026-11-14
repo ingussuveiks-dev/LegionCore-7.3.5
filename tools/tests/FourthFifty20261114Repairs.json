@@ -321,6 +321,18 @@
       "test_boundary": "        handler->PSendSysMessage(\"Add %u World Quest\"",
       "observe": "QuestId",
       "summary": "Reject malformed/overflowing world-quest IDs before generation;retain native nonzero/catalog behavior."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleDelTransmog",
+      "case": "TransmogRemovalExactItem",
+      "key": "TransmogRemovalExactItem",
+      "kind": "fourth",
+      "old": "    static bool HandleDelTransmog(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n        \n        Player* target;\n        ObjectGuid targetGuid;\n        std::string targetName;\n        if (!handler->extractPlayerTarget((char*)args, &target, &targetGuid, &targetName))\n            return false;\n        \n        if (target)\n        {\n            handler->PSendSysMessage(\"Player is online! Error\");\n            return false;\n        }\n        \n        uint32 account = ObjectMgr::GetPlayerAccountIdByGUID(targetGuid);\n\n        uint32 itemId = 0;\n\n        char const* id = strtok(NULL, \" \");\n        if (!id)\n            return false;\n        itemId = uint32(atol(id));\n\n        if (!itemId)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);\n        if (!itemTemplate)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();\n        for (uint32 transmog : sDB2Manager.GetAllTransmogsByItemId(itemId))\n        {\n            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_TRANSMOG);\n            stmt->setUInt32(0, account);\n            stmt->setUInt32(1, transmog);\n            trans->Append(stmt);\n        }\n        CharacterDatabase.CommitTransaction(trans);\n        handler->PSendSysMessage(\"Deleted successfully!\");\n        return true;\n    }",
+      "new": "    static bool HandleDelTransmog(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n        \n        Player* target;\n        ObjectGuid targetGuid;\n        std::string targetName;\n        if (!handler->extractPlayerTarget((char*)args, &target, &targetGuid, &targetName))\n            return false;\n        \n        if (target)\n        {\n            handler->PSendSysMessage(\"Player is online! Error\");\n            return false;\n        }\n        \n        uint32 account = ObjectMgr::GetPlayerAccountIdByGUID(targetGuid);\n\n        uint32 itemId = 0;\n\n        char const* id = strtok(NULL, \" \");\n        if (!id)\n            return false;\n        if (!Trinity::ParseCommandInteger(id, itemId))\n            return false;\n\n        if (!itemId)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);\n        if (!itemTemplate)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();\n        for (uint32 transmog : sDB2Manager.GetAllTransmogsByItemId(itemId))\n        {\n            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_TRANSMOG);\n            stmt->setUInt32(0, account);\n            stmt->setUInt32(1, transmog);\n            trans->Append(stmt);\n        }\n        CharacterDatabase.CommitTransaction(trans);\n        handler->PSendSysMessage(\"Deleted successfully!\");\n        return true;\n    }",
+      "test_boundary": "        Player* player =",
+      "observe": "itemId",
+      "summary": "Reject malformed/overflowing item IDs before account transmog deletion;preserve offline-only admission and the native item lookup/transaction."
     }
   ],
   "extra_edits": [
@@ -370,7 +382,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "914478201eb1ad3f0b61d989e2c9ea40f193abc1ffb970362e4fff51ede5ce61",
-      "after_sha256": "190f807d9961f68b4ab538144ea5d1cfef2324457dd8bc619facaa85dec234cd"
+      "after_sha256": "57a694ca548f042e84f29babcc5089ce9d0e10f2524aa25ea1ba156976564d06"
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
