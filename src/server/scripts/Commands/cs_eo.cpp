@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ObjectMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
 #include "EventObjectData.h"
 #include "DatabaseEnv.h"
 
@@ -62,10 +64,13 @@ public:
         char* spellStr = strtok(NULL, " ");
         char* worldsafeStr = strtok(NULL, " ");
 
-        uint32 id  = atoi(eoID);
-        float radius  = radiusStr ? atof(radiusStr) : 1.0f;
-        uint32 spell  = spellStr ? atoi(spellStr) : 0;
-        uint32 worldsafe  = worldsafeStr ? atoi(worldsafeStr) : 0;
+        uint32 id, spell = 0, worldsafe = 0;
+        float radius = 1.0f;
+        if (!Trinity::ParseCommandInteger(eoID, id) ||
+            (radiusStr && !Trinity::ParseCommandFloat(radiusStr, radius)) ||
+            (spellStr && !Trinity::ParseCommandInteger(spellStr, spell)) ||
+            (worldsafeStr && !Trinity::ParseCommandInteger(worldsafeStr, worldsafe)))
+            return false;
 
         Player* chr = handler->GetSession()->GetPlayer();
         float x = chr->GetPositionX();

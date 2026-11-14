@@ -104,6 +104,19 @@
       "old": "    static bool HandleGuildRankCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* rankStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &rankStr);\n        if (!rankStr)\n            return false;\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string target_name;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &target_name))\n            return false;\n\n        ObjectGuid::LowType guildId = target ? target->GetGuildId() : Player::GetGuildIdFromDB(targetGuid);\n        if (!guildId)\n            return false;\n\n        Guild* targetGuild = sGuildMgr->GetGuildById(guildId);\n        if (!targetGuild)\n            return false;\n\n        uint8 newRank = uint8(atoi(rankStr));\n        return targetGuild->ChangeMemberRank(targetGuid, newRank);\n    }",
       "new": "    static bool HandleGuildRankCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* rankStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &rankStr);\n        if (!rankStr)\n            return false;\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string target_name;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &target_name))\n            return false;\n\n        ObjectGuid::LowType guildId = target ? target->GetGuildId() : Player::GetGuildIdFromDB(targetGuid);\n        if (!guildId)\n            return false;\n\n        Guild* targetGuild = sGuildMgr->GetGuildById(guildId);\n        if (!targetGuild)\n            return false;\n\n        uint8 newRank;\n        if (!Trinity::ParseCommandInteger(rankStr, newRank))\n            return false;\n        return targetGuild->ChangeMemberRank(targetGuid, newRank);\n    }",
       "summary": "Reject malformed or byte-wrapped guild ranks before the native membership/rank validator."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_eo.cpp",
+      "method": "HandleEOAddCommand",
+      "case": "EventObjectAtomicTemplateRequest",
+      "key": "EventObjectAtomicTemplateRequest",
+      "kind": "fourth",
+      "old": "    static bool HandleEOAddCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* eoID = strtok((char*)args, \" \");\n        if (!eoID)\n            return false;\n\n        char* radiusStr = strtok(NULL, \" \");\n        char* spellStr = strtok(NULL, \" \");\n        char* worldsafeStr = strtok(NULL, \" \");\n\n        uint32 id  = atoi(eoID);\n        float radius  = radiusStr ? atof(radiusStr) : 1.0f;\n        uint32 spell  = spellStr ? atoi(spellStr) : 0;\n        uint32 worldsafe  = worldsafeStr ? atoi(worldsafeStr) : 0;\n\n        Player* chr = handler->GetSession()->GetPlayer();\n        float x = chr->GetPositionX();\n        float y = chr->GetPositionY();\n        float z = chr->GetPositionZ();\n        float o = chr->GetOrientation();\n        Map* map = chr->GetMap();\n\n        if (chr->GetTransport())\n        {\n            handler->SendSysMessage(\"Error, you on transport\");\n            return true;\n        }\n\n        EventObject* eventobject = new EventObject();\n        if (!eventobject->Create(sObjectMgr->GetGenerator<HighGuid::EventObject>()->Generate(), map, chr->GetPhaseMgr().GetPhaseMaskForSpawn(), id, x, y, z, o, radius, spell, worldsafe))\n        {\n            delete eventobject;\n            return false;\n        }\n\n        eventobject->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()), chr->GetPhaseMgr().GetPhaseMaskForSpawn());\n\n        uint32 db_guid = eventobject->GetDBTableGUIDLow();\n\n        delete eventobject;\n        eventobject = new EventObject();\n        if (!eventobject->LoadEventObjectFromDB(db_guid, map))\n        {\n            delete eventobject;\n            return false;\n        }\n\n        sObjectMgr->AddEventObjectToGrid(db_guid, sEventObjectDataStore->GetEventObjectData(db_guid));\n        return true;\n    }",
+      "new": "    static bool HandleEOAddCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* eoID = strtok((char*)args, \" \");\n        if (!eoID)\n            return false;\n\n        char* radiusStr = strtok(NULL, \" \");\n        char* spellStr = strtok(NULL, \" \");\n        char* worldsafeStr = strtok(NULL, \" \");\n\n        uint32 id, spell = 0, worldsafe = 0;\n        float radius = 1.0f;\n        if (!Trinity::ParseCommandInteger(eoID, id) ||\n            (radiusStr && !Trinity::ParseCommandFloat(radiusStr, radius)) ||\n            (spellStr && !Trinity::ParseCommandInteger(spellStr, spell)) ||\n            (worldsafeStr && !Trinity::ParseCommandInteger(worldsafeStr, worldsafe)))\n            return false;\n\n        Player* chr = handler->GetSession()->GetPlayer();\n        float x = chr->GetPositionX();\n        float y = chr->GetPositionY();\n        float z = chr->GetPositionZ();\n        float o = chr->GetOrientation();\n        Map* map = chr->GetMap();\n\n        if (chr->GetTransport())\n        {\n            handler->SendSysMessage(\"Error, you on transport\");\n            return true;\n        }\n\n        EventObject* eventobject = new EventObject();\n        if (!eventobject->Create(sObjectMgr->GetGenerator<HighGuid::EventObject>()->Generate(), map, chr->GetPhaseMgr().GetPhaseMaskForSpawn(), id, x, y, z, o, radius, spell, worldsafe))\n        {\n            delete eventobject;\n            return false;\n        }\n\n        eventobject->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()), chr->GetPhaseMgr().GetPhaseMaskForSpawn());\n\n        uint32 db_guid = eventobject->GetDBTableGUIDLow();\n\n        delete eventobject;\n        eventobject = new EventObject();\n        if (!eventobject->LoadEventObjectFromDB(db_guid, map))\n        {\n            delete eventobject;\n            return false;\n        }\n\n        sObjectMgr->AddEventObjectToGrid(db_guid, sEventObjectDataStore->GetEventObjectData(db_guid));\n        return true;\n    }",
+      "test_boundary": "        Player* chr",
+      "observe": "id",
+      "test_capture": "handler->captured = {id, spell, worldsafe}; handler->scalar = radius;",
+      "summary": "Validate entry,finite radius,optional spell and WorldSafeLoc together before event-template creation;preserve defaults and native cell-visit radius clamping."
     }
   ],
   "extra_edits": [
@@ -124,6 +137,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "GuildRankNativeWidth"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_eo.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
+      "owner_key": "EventObjectAtomicTemplateRequest"
     }
   ],
   "files": {
@@ -134,6 +153,10 @@
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
       "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
+    },
+    "src/server/scripts/Commands/cs_eo.cpp": {
+      "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
+      "after_sha256": "0f5b059a8b5cf694efc5a4e4e1f904fcc817dbb91f59ebc6809338f9cc32baaf"
     },
     "src/server/scripts/Commands/cs_guild.cpp": {
       "before_sha256": "168efca091cb840607eec47506ed408eb6ebe9e38a1e62c0966f9bba9023a593",
