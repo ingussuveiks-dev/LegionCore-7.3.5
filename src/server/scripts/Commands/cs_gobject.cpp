@@ -694,7 +694,9 @@ public:
         if (!type)
             return false;
 
-        int32 objectType = atoi(type);
+        int32 objectType;
+        if (!Trinity::ParseCommandInteger(type, objectType) || objectType < -2 || objectType > 4)
+            return false;
         if (objectType < 0)
         {
             if (objectType == -1)
@@ -708,7 +710,9 @@ public:
         if (!state)
             return false;
 
-        int32 objectState = atoi(state);
+        uint32 objectState;
+        if (!Trinity::ParseCommandInteger(state, objectState) || (objectType < 4 && objectState > 255))
+            return false;
 
         if (objectType < 4)
             object->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, objectType, objectState);
