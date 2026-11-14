@@ -282,8 +282,8 @@ public:
         if (!id)
             return false;
 
-        uint32 guid = strtoull(id, nullptr, 10);
-        if (!guid)
+        ObjectGuid::LowType guid;
+        if (!Trinity::ParseCommandInteger(id, guid) || !guid)
             return false;
 
         float x, y, z, ort;
@@ -322,8 +322,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        player->TeleportTo(mapId, x, y, z, ort);
-        return true;
+        return player->TeleportTo(mapId, x, y, z, ort);
     }
 
     static bool HandleGoTaxinodeCommand(ChatHandler* handler, char const* args)
