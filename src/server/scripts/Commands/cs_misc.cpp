@@ -1535,20 +1535,33 @@ public:
             char const* id = handler->extractKeyFromLink((char*)args, "Hitem");
             if (!id)
                 return false;
-            itemId = uint32(atol(id));
+            if (!Trinity::ParseCommandInteger(id, itemId))
+                return false;
         }
 
         char const* ccount = strtok(NULL, " ");
 
         int32 count = 1;
 
-        if (ccount)
-            count = strtol(ccount, NULL, 10);
+        if (ccount && !Trinity::ParseCommandInteger(ccount, count))
+            return false;
 
         if (count == 0)
             count = 1;
         
         char const* bonus = strtok(NULL, " ");
+        std::vector<uint32> requestedBonuses;
+        if (bonus)
+        {
+            Tokenizer bonusTokens(bonus, ':');
+            for (char const* token : bonusTokens)
+            {
+                uint32 bonusId;
+                if (!Trinity::ParseCommandInteger(token, bonusId))
+                    return false;
+                requestedBonuses.push_back(bonusId);
+            }
+        }
 
         Player* player = handler->GetSession()->GetPlayer();
         Player* playerTarget = handler->getSelectedPlayer();
@@ -1568,8 +1581,9 @@ public:
         // Subtract
         if (count < 0)
         {
-            playerTarget->DestroyItemCount(itemId, -count, true, false);
-            handler->PSendSysMessage(LANG_REMOVEITEM, itemId, -count, handler->GetNameLink(playerTarget).c_str());
+            uint32 amount = uint32(-int64(count));
+            playerTarget->DestroyItemCount(itemId, amount, true, false);
+            handler->PSendSysMessage(LANG_REMOVEITEM, itemId, amount, handler->GetNameLink(playerTarget).c_str());
             return true;
         }
 
@@ -1590,12 +1604,7 @@ public:
         }
 
         std::vector<uint32> bonusListIDs = sObjectMgr->GetItemBonusTree(itemId, player->GetMap()->GetDifficultyLootItemContext(), player->getLevel());
-        if (bonus)
-        {
-            Tokenizer BonusListID(bonus, ':');
-            for (char const* token : BonusListID)
-                bonusListIDs.push_back(atol(token));
-        }
+        bonusListIDs.insert(bonusListIDs.end(), requestedBonuses.begin(), requestedBonuses.end());
 
         Item* item = playerTarget->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId), GuidSet(), bonusListIDs);
         if (count > 0 && item)
