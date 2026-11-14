@@ -575,7 +575,10 @@ public:
             return false;
 
         WorldPackets::Misc::StreamingMovie movie;
-        movie.MovieIDs.push_back((uint32)atoi(w));
+        int16 movieId;
+        if (!Trinity::ParseCommandInteger(w, movieId))
+            return false;
+        movie.MovieIDs.push_back(movieId);
         handler->GetSession()->GetPlayer()->SendDirectMessage(movie.Write());
         return true;
     }

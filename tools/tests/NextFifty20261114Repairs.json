@@ -340,6 +340,16 @@
       "batch": 4,
       "old": "    static bool HandleDebugAnimCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 animId = atoi((char*)args);\n        handler->GetSession()->GetPlayer()->HandleEmoteCommand(animId);\n        return true;\n    }",
       "new": "    static bool HandleDebugAnimCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 animId;\n        if (!Trinity::ParseCommandInteger(args, animId))\n            return false;\n        handler->GetSession()->GetPlayer()->HandleEmoteCommand(animId);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugStreamingMoviesCommand",
+      "key": "DebugStreamingMovieChecked",
+      "case": "Stream",
+      "kind": "next",
+      "batch": 4,
+      "old": "    static bool HandleDebugStreamingMoviesCommand(ChatHandler* handler, char const* args)\n    {\n        char* w = strtok((char*)args, \" \");\n        if (!w)\n            return false;\n\n        WorldPackets::Misc::StreamingMovie movie;\n        movie.MovieIDs.push_back((uint32)atoi(w));\n        handler->GetSession()->GetPlayer()->SendDirectMessage(movie.Write());\n        return true;\n    }",
+      "new": "    static bool HandleDebugStreamingMoviesCommand(ChatHandler* handler, char const* args)\n    {\n        char* w = strtok((char*)args, \" \");\n        if (!w)\n            return false;\n\n        WorldPackets::Misc::StreamingMovie movie;\n        int16 movieId;\n        if (!Trinity::ParseCommandInteger(w, movieId))\n            return false;\n        movie.MovieIDs.push_back(movieId);\n        handler->GetSession()->GetPlayer()->SendDirectMessage(movie.Write());\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -452,7 +462,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "8b649d0199ab31dcc7c2fdda2888bfc13ccf7d927d41bbaee8f31225b16dbb00",
+      "after_sha256": "d9bab72b801c26e0495500ae7e7c81df1c250394d1bd6485ccd4315ef55c2922",
       "owner_key": null
     }
   }
