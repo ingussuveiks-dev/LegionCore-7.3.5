@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include <limits>
 #include "CommandIntegerArgument.h"
 #include "LFGMgr.h"
 #include "Group.h"
@@ -140,17 +141,14 @@ public:
 
     static bool HandleLfgOptionsCommand(ChatHandler* handler, char const* args)
     {
-        int32 options = -1;
+        int64 options = -1;
         if (char* str = strtok((char*)args, " "))
-        {
-            int32 tmp = atoi(str);
-            if (tmp > -1)
-                options = tmp;
-        }
+            if (!Trinity::ParseCommandInteger(str, options) || options < -1 || options > std::numeric_limits<uint32>::max())
+                return false;
 
         if (options != -1)
         {
-            sLFGMgr->SetOptions(options);
+            sLFGMgr->SetOptions(uint32(options));
             handler->PSendSysMessage(LANG_LFG_OPTIONS_CHANGED);
         }
         handler->PSendSysMessage(LANG_LFG_OPTIONS, sLFGMgr->GetOptions());
