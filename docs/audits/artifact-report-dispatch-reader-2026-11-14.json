@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-14",
+  "status": "PASS_REAL_AI_SLOT9_DISPATCH_AND_REFUSAL_CONTROLS",
+  "problem": "Retained marksmanship report-use certificate only searches three instructions after loading vtable slot9. Current compiler schedules false/player/AI argument setup before call r9, moving the unchanged virtual dispatch to the fourth instruction. Several Sharasdal/Sheilun/Tuure dependent roots consequently stop before their own certificates.",
+  "repair": "Trace the actual GameObject::AI accessor return through its vtable slot9 and preserve the loaded function/AI pointer through bounded argument scheduling. Require the real AI this and false report-use flag at the same indirect call. Original selected-vtable/factory/native SmartAI inheritance checks remain intact. No game code or binary changed.",
+  "checks": "Nine actual-PE controls:ordinary scheduled call/restored bytes pass;seven bad slot/target/accessor/this/call/false-flag/vtable-owner mutations rejected. Complete direct report-use/selected vtable/factory proof and all affected actual roots pass. Initial broad failures also included other separately repaired stale proofs and one mistaken nonexistent requested filename;not all failures had this cause.",
+  "diagnostics": "Current broad109 collection and reviewed complete failing output retained;all observed failures so far share this one unconditional dispatch assertion. No failed root is skipped or presented passing. No new runtime crash/DBErrors/server diagnostics.",
+  "limits": "Verifier repair is not artifact quest progression or client verification.",
+  "final_release_evidence": {
+    "corrected_planned_roots": 109,
+    "additional_direct_roots": 7,
+    "unique_complete_exit0_roots": 116,
+    "mode": "Four reviewed disjoint collections,not one116-root run. Each reused passing root has no changed dependency in conservative AST-import/literal-.py closure;binary/map identical. Full interrupted/failing collections remain explicitly classified.",
+    "aggregate_sha256": "75e4c6850f2c1a8a7a54a7e7fd8b976d36ca04c137e1b5acb2aa74e1208bb1c6",
+    "rerunnable_roots": "docs/audits/artifact-open-2026-11-14/ReleaseRoots.json",
+    "limits": "Native endpoint/PE/structural checks do not establish actual client or36 complete chains."
+  }
+}
