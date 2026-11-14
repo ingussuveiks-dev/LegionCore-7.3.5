@@ -43,6 +43,8 @@ EndScriptData */
 #include "PlayerDefines.h"
 #include "ScriptMgr.h"
 #include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
+#include "MovementTypedefs.h"
 #include "Vehicle.h"
 #include <fstream>
 #include "Garrison.h"
@@ -1819,11 +1821,16 @@ public:
         if (!cx || !cy || !cz || !cspeedXY || !cspeedZ)
             return false;
 
-        float x         = (float)atof(cx);
-        float y         = (float)atof(cy);
-        float z         = (float)atof(cz);
-        float speedXY   = (float)atof(cspeedXY);
-        float speedZ    = (float)atof(cspeedZ);
+        float x, y, z, speedXY, speedZ;
+        if (!Trinity::ParseCommandFloat(cx, x) || !Trinity::ParseCommandFloat(cy, y) ||
+            !Trinity::ParseCommandFloat(cz, z) || !Trinity::ParseCommandFloat(cspeedXY, speedXY) ||
+            !Trinity::ParseCommandFloat(cspeedZ, speedZ) || !MapManager::IsValidMapCoord(target->GetMapId(), x, y, z))
+            return false;
+        // Use the actual native parabola, including its terminal-velocity path.
+        float const apex = -Movement::computeFallElevation(speedZ / Movement::gravity, false, -speedZ);
+        // MoveSpline derives JumpGravity from amplitude * 8.f.
+        if (!std::isfinite(apex) || !std::isfinite(apex * 8.0f))
+            return false;
 
         target->ToUnit()->GetMotionMaster()->MoveJump(x, y,z, speedXY, speedZ);
         return true;

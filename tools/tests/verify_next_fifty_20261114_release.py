@@ -47,4 +47,12 @@ if len(PLAN['changes'])>=30:
  timer=ins('?HandleBattlefieldTimer@bf_commandscript@@');values={o.imm for x in timer for o in x.operands if o.type==CS_OP_IMM};assert {4294967,1000}<=values and sites(timer,'?SendInitWorldStatesToAll@Battlefield@@'),'Native timer bound/millisecond conversion/broadcast'
  for method in ('HandleAccountAddonCommand','HandleAccountSetAddonCommand'):
   body=ins('?'+method+'@account_commandscript@@');setter,=sites(body,'?setUInt8@PreparedStatementBase@@');assert any(o.type==CS_OP_IMM and o.imm==6 for x in body[:setter]for o in x.operands),'Legion expansion bound precedes native byte write'
+if len(PLAN['changes'])>=40:
+ for method,endpoint in [('HandleDebugPlayCinematicCommand','?SendCinematicStart@Player@@'),('HandleDebugPlayMovieCommand','?SendMovieStart@Player@@'),('HandleDebugAnimCommand','?HandleEmoteCommand@Unit@@'),('HandleDebugSendQuestPartyMsgCommand','?SendPushToPartyResponse@Player@@')]:
+  body=ins('?'+method+'@debug_commandscript@@');assert sites(body,endpoint),method
+  assert sites(body,'??$ParseCommandInteger@')or any(o.type==CS_OP_IMM and o.imm in(25,429496729)for x in body for o in x.operands),method
+ for method in ('HandleDebugSendBuyErrorCommand','HandleDebugSendSellErrorCommand'):
+  body=ins('?'+method+'@debug_commandscript@@');assert any(o.type==CS_OP_IMM and o.imm==15 for x in body for o in x.operands),'Native result enum representable range'
+ jump=ins('?HandleDebugMoveJump@debug_commandscript@@');fall,=sites(jump,'?computeFallElevation@Movement@@');launch,=sites(jump,'?MoveJump@MotionMaster@@');assert fall<launch
+ assert sum(x.mnemonic=='cmp'and any(o.type==CS_OP_IMM and o.imm==0x7f800000 for o in x.operands)for x in jump)>=5,'Finite input/parabola gates retained'
 print('PASS selected new operations registered operations:finite inputs before cast/GO persistence,native signed visual/honor/reputation parse CFG,rejected honor receipt and checked GO helper;previous50 PE proofs retained under exact declared new source delta. Source/native/client scopes separate;second group checks mount flag preservation,squared-distance bounds,native GO byte/custom widths,damage negation and honor-add receipt when present.')
