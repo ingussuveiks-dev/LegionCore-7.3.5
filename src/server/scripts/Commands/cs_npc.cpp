@@ -1770,7 +1770,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 linkguid = strtoull(args, nullptr, 10);
+        ObjectGuid::LowType linkguid;
+        if (!Trinity::ParseCommandInteger(args, linkguid))
+            return false;
 
         Creature* creature = handler->getSelectedCreature();
 
@@ -1783,19 +1785,19 @@ public:
 
         if (!creature->GetDBTableGUIDLow())
         {
-            handler->PSendSysMessage("Selected creature %u isn't in creature table", creature->GetGUID().GetGUIDLow());
+            handler->PSendSysMessage("Selected creature " UI64FMTD " isn't in creature table", creature->GetGUID().GetGUIDLow());
             handler->SetSentErrorMessage(true);
             return false;
         }
 
         if (!sObjectMgr->SetCreatureLinkedRespawn(creature->GetDBTableGUIDLow(), linkguid))
         {
-            handler->PSendSysMessage("Selected creature can't link with guid '%u'", linkguid);
+            handler->PSendSysMessage("Selected creature can't link with guid '" UI64FMTD "'", linkguid);
             handler->SetSentErrorMessage(true);
             return false;
         }
 
-        handler->PSendSysMessage("LinkGUID '%u' added to creature with DBTableGUID: '%u'", linkguid, creature->GetDBTableGUIDLow());
+        handler->PSendSysMessage("LinkGUID '" UI64FMTD "' added to creature with DBTableGUID: '" UI64FMTD "'", linkguid, creature->GetDBTableGUIDLow());
         return true;
     }
 

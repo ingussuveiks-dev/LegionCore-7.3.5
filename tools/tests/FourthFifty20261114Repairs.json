@@ -224,6 +224,16 @@
       "test_boundary": "        Player* chr",
       "observe": "leaderGUID",
       "summary": "Retain64-bit leader/member DB GUIDs in formation storage and diagnostics;reject malformed input before the existing formation-state check."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcSetLinkCommand",
+      "case": "NpcRespawnLinkFullGuid",
+      "key": "NpcRespawnLinkFullGuid",
+      "kind": "fourth",
+      "old": "    static bool HandleNpcSetLinkCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 linkguid = strtoull(args, nullptr, 10);\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!creature->GetDBTableGUIDLow())\n        {\n            handler->PSendSysMessage(\"Selected creature %u isn't in creature table\", creature->GetGUID().GetGUIDLow());\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!sObjectMgr->SetCreatureLinkedRespawn(creature->GetDBTableGUIDLow(), linkguid))\n        {\n            handler->PSendSysMessage(\"Selected creature can't link with guid '%u'\", linkguid);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->PSendSysMessage(\"LinkGUID '%u' added to creature with DBTableGUID: '%u'\", linkguid, creature->GetDBTableGUIDLow());\n        return true;\n    }",
+      "new": "    static bool HandleNpcSetLinkCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        ObjectGuid::LowType linkguid;\n        if (!Trinity::ParseCommandInteger(args, linkguid))\n            return false;\n\n        Creature* creature = handler->getSelectedCreature();\n\n        if (!creature)\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!creature->GetDBTableGUIDLow())\n        {\n            handler->PSendSysMessage(\"Selected creature \" UI64FMTD \" isn't in creature table\", creature->GetGUID().GetGUIDLow());\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!sObjectMgr->SetCreatureLinkedRespawn(creature->GetDBTableGUIDLow(), linkguid))\n        {\n            handler->PSendSysMessage(\"Selected creature can't link with guid '\" UI64FMTD \"'\", linkguid);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        handler->PSendSysMessage(\"LinkGUID '\" UI64FMTD \"' added to creature with DBTableGUID: '\" UI64FMTD \"'\", linkguid, creature->GetDBTableGUIDLow());\n        return true;\n    }",
+      "summary": "Keep both native64-bit respawn-link keys,including zero unlink;reject malformed input and retain the native result/validation."
     }
   ],
   "extra_edits": [
@@ -265,7 +275,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",
-      "after_sha256": "24a036559c8299997f3b71249a737edfaa94cc5346b28cfd745baedfe325e371"
+      "after_sha256": "16f40f4d387b4ed55cdca9638ee553a516d5fbd94f6affba89e6710fcc2d1d71"
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
