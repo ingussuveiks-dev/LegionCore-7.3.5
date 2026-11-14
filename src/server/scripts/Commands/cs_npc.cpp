@@ -23,6 +23,7 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include <limits>
 #include "CommandIntegerArgument.h"
 #include "CommandFloatArgument.h"
 #include "ObjectMgr.h"
@@ -1991,7 +1992,12 @@ public:
 
     static bool HandleNpcNearCommand(ChatHandler* handler, char const* args)
     {
-        float distance = (!*args) ? 10.0f : (float)(atof(args));
+        float distance = 10.0f;
+        if (*args && !Trinity::ParseCommandFloat(args, distance))
+            return false;
+        double const distanceSquared = double(distance) * distance;
+        if (distanceSquared > std::numeric_limits<float>::max())
+            return false;
         uint32 count = 0;
 
         Player* player = handler->GetSession()->GetPlayer();
@@ -2004,7 +2010,7 @@ public:
         stmt->setFloat(4, player->GetPositionX());
         stmt->setFloat(5, player->GetPositionY());
         stmt->setFloat(6, player->GetPositionZ());
-        stmt->setFloat(7, distance * distance);
+        stmt->setFloat(7, float(distanceSquared));
         PreparedQueryResult result = WorldDatabase.Query(stmt);
 
         if (result)
@@ -2012,7 +2018,7 @@ public:
             do
             {
                 Field* fields = result->Fetch();
-                uint32 guid = fields[0].GetUInt64();
+                ObjectGuid::LowType guid = fields[0].GetUInt64();
                 uint32 entry = fields[1].GetUInt32();
                 float x = fields[2].GetFloat();
                 float y = fields[3].GetFloat();
