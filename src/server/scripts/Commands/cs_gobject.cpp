@@ -23,6 +23,7 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
 #include "GameEventMgr.h"
 #include "ObjectMgr.h"
 #include "PoolMgr.h"
@@ -83,8 +84,11 @@ public:
             if (!cId)
                 return 0;
 
-            return atoi(cId);
+            uint32 guid;
+            return Trinity::ParseCommandInteger(cId, guid) ? guid : 0;
         }
+        // Reset the C token cursor for callers parsing optional arguments.
+        strtok((char*)args, " ");
         if(player->GetLastTargetedGO())
             return player->GetLastTargetedGO();
         return 0;
