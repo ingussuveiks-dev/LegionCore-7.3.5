@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "AchievementMgr.h"
 
 class achievement_commandscript : public CommandScript
@@ -52,14 +53,10 @@ public:
         if (!*args)
             return false;
 
-        uint32 achievementId = atoi((char*)args);
-        if (!achievementId)
-        {
-            if (char* id = handler->extractKeyFromLink((char*)args, "Hachievement"))
-                achievementId = atoi(id);
-            if (!achievementId)
-                return false;
-        }
+        char* id = handler->extractKeyFromLink((char*)args, "Hachievement");
+        uint32 achievementId;
+        if (!Trinity::ParseCommandInteger(id, achievementId) || !achievementId)
+            return false;
 
         Player* target = handler->getSelectedPlayer();
         if (!target)

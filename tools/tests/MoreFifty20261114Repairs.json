@@ -130,13 +130,34 @@
       "old": "    static bool HandleTitlesRemoveCommand(ChatHandler* handler, const char* args)\n    {\n        // number or [name] Shift-click form |color|Htitle:title_id|h[name]|h|r\n        char* id_p = handler->extractKeyFromLink((char*)args, \"Htitle\");\n        if (!id_p)\n            return false;\n\n        int32 id = atoi(id_p);\n        if (id <= 0)\n        {\n            handler->PSendSysMessage(LANG_INVALID_TITLE_ID, id);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        CharTitlesEntry const* titleInfo = sCharTitlesStore.LookupEntry(id);\n        if (!titleInfo)\n        {\n            handler->PSendSysMessage(LANG_INVALID_TITLE_ID, id);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        target->SetTitle(titleInfo, true);\n\n        std::string tNameLink = handler->GetNameLink(target);\n\n        char const* targetName = target->GetName();\n        char titleNameStr[80];\n        snprintf(titleNameStr, 80, titleInfo->Name->Str[sObjectMgr->GetDBCLocaleIndex()], targetName);\n\n        handler->PSendSysMessage(LANG_TITLE_REMOVE_RES, id, titleNameStr, tNameLink.c_str());\n\n        if (!target->HasTitle(target->GetInt32Value(PLAYER_FIELD_PLAYER_TITLE)))\n        {\n            target->SetUInt32Value(PLAYER_FIELD_PLAYER_TITLE, 0);\n            handler->PSendSysMessage(LANG_CURRENT_TITLE_RESET, tNameLink.c_str());\n        }\n\n        return true;\n    }",
       "new": "    static bool HandleTitlesRemoveCommand(ChatHandler* handler, const char* args)\n    {\n        // number or [name] Shift-click form |color|Htitle:title_id|h[name]|h|r\n        char* id_p = handler->extractKeyFromLink((char*)args, \"Htitle\");\n        if (!id_p)\n            return false;\n\n        int32 id = 0;\n        if (!Trinity::ParseCommandInteger(id_p, id))\n            return false;\n        if (id <= 0)\n        {\n            handler->PSendSysMessage(LANG_INVALID_TITLE_ID, id);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        CharTitlesEntry const* titleInfo = sCharTitlesStore.LookupEntry(id);\n        if (!titleInfo)\n        {\n            handler->PSendSysMessage(LANG_INVALID_TITLE_ID, id);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        target->SetTitle(titleInfo, true);\n\n        std::string tNameLink = handler->GetNameLink(target);\n\n        char const* targetName = target->GetName();\n        char titleNameStr[80];\n        snprintf(titleNameStr, 80, titleInfo->Name->Str[sObjectMgr->GetDBCLocaleIndex()], targetName);\n\n        handler->PSendSysMessage(LANG_TITLE_REMOVE_RES, id, titleNameStr, tNameLink.c_str());\n\n        if (!target->HasTitle(target->GetInt32Value(PLAYER_FIELD_PLAYER_TITLE)))\n        {\n            target->SetUInt32Value(PLAYER_FIELD_PLAYER_TITLE, 0);\n            handler->PSendSysMessage(LANG_CURRENT_TITLE_RESET, tNameLink.c_str());\n        }\n\n        return true;\n    }",
       "summary": "Parse a complete positive signed32 title ID after native link extraction;retain selected-player authority,title lookup and title ownership changes."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_achievement.cpp",
+      "method": "HandleAchievementAddCommand",
+      "case": "AchievementAddExactId",
+      "key": "AchievementAddExactId",
+      "kind": "more",
+      "old": "    static bool HandleAchievementAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 achievementId = atoi((char*)args);\n        if (!achievementId)\n        {\n            if (char* id = handler->extractKeyFromLink((char*)args, \"Hachievement\"))\n                achievementId = atoi(id);\n            if (!achievementId)\n                return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (AchievementEntry const* achievementEntry = sAchievementStore.LookupEntry(achievementId))\n            target->CompletedAchievement(achievementEntry);\n\n        return true;\n    }",
+      "new": "    static bool HandleAchievementAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* id = handler->extractKeyFromLink((char*)args, \"Hachievement\");\n        uint32 achievementId;\n        if (!Trinity::ParseCommandInteger(id, achievementId) || !achievementId)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (AchievementEntry const* achievementEntry = sAchievementStore.LookupEntry(achievementId))\n            target->CompletedAchievement(achievementEntry);\n\n        return true;\n    }",
+      "summary": "Reject numeric suffixes and unsigned overflow before achievement lookup/award,retaining numeric and achievement-link extraction."
     }
   ],
-  "extra_edits": [],
+  "extra_edits": [
+    {
+      "path": "src/server/scripts/Commands/cs_achievement.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "AchievementAddExactId"
+    }
+  ],
   "files": {
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb",
       "after_sha256": "09fcd291c5bcc9e2f8f7e1f15833d49b87b02440e9ae5ec481d8a5f21ad7e99d"
+    },
+    "src/server/scripts/Commands/cs_achievement.cpp": {
+      "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
+      "after_sha256": "b3f561a39ded6cd0ee7e7be378167b1b1e9b3568d30fb9ca291e285fd26f1887"
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
