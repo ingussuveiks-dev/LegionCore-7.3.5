@@ -521,8 +521,11 @@ public:
         char const* effectStr = strtok(NULL, " ");
         char const* amountStr = strtok(NULL, " ");
 
-        uint8 effectId = effectStr ? atoi(effectStr) : 0;
-        int32 amount = amountStr ? atoi(amountStr) : 0;
+        uint8 effectId = 0;
+        int32 amount = 0;
+        if ((effectStr && !Trinity::ParseCommandInteger(effectStr, effectId)) || effectId >= MAX_SPELL_EFFECTS ||
+            (amountStr && !Trinity::ParseCommandInteger(amountStr, amount)))
+            return false;
 
         if (AuraEffect* effect = target->GetAuraEffect(spellId, effectId))
             effect->SetAmount(amount);

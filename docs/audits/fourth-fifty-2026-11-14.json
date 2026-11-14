@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_40_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 40,
+  "status": "IN_PROGRESS_41_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 41,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -357,6 +357,21 @@
           "summary": "Validate the native unsigned player-cap/signed security selector before mutation or negation;retain named/abbreviated/reset/display modes.",
           "path": "src/server/scripts/Commands/cs_server.cpp",
           "method": "HandleServerPLimitCommand",
+          "test_scope": "complete production handler/helper"
+        }
+      ]
+    },
+    {
+      "batch": 5,
+      "count": 1,
+      "source_case_count": 156,
+      "repairs": [
+        {
+          "index": 41,
+          "key": "AuraEffectAmountNativeAdmission",
+          "summary": "Reject malformed amounts and out-of-array effect indices before the native32-effect lookup;retain native signed amounts,defaults and missing-aura handling.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandleAuraAmountCommand",
           "test_scope": "complete production handler/helper"
         }
       ]
