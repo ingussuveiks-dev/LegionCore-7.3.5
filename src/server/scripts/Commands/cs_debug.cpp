@@ -1178,25 +1178,31 @@ public:
 
         char* j = strtok(NULL, " ");
 
-        int32 entry = (int32)atoi(i);
-        int8 seatId = j ? (int8)atoi(j) : -1;
+        int64 entry;
+        int8 seatId = -1;
+        if (!Trinity::ParseCommandInteger(i, entry) || entry < -1 || entry > std::numeric_limits<uint32>::max() ||
+            (j && !Trinity::ParseCommandInteger(j, seatId)))
+            return false;
+        Player* player = handler->GetSession() ? handler->GetSession()->GetPlayer() : nullptr;
+        if (!player)
+            return false;
 
         if (entry == -1)
-            target->EnterVehicle(handler->GetSession()->GetPlayer(), seatId);
+            target->EnterVehicle(player, seatId);
         else if (!entry)
-            handler->GetSession()->GetPlayer()->EnterVehicle(target, seatId);
+            player->EnterVehicle(target, seatId);
         else
         {
             Creature* passenger = NULL;
-            Trinity::AllCreaturesOfEntryInRange check(handler->GetSession()->GetPlayer(), entry, 20.0f);
-            Trinity::CreatureSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(handler->GetSession()->GetPlayer(), passenger, check);
-            Trinity::VisitNearbyObject(handler->GetSession()->GetPlayer(), 30.0f, searcher);
+            Trinity::AllCreaturesOfEntryInRange check(player, uint32(entry), 20.0f);
+            Trinity::CreatureSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(player, passenger, check);
+            Trinity::VisitNearbyObject(player, 30.0f, searcher);
             if (!passenger || passenger == target)
                 return false;
             passenger->EnterVehicle(target, seatId);
         }
 
-        handler->PSendSysMessage("Unit %u entered vehicle %d", entry, (int32)seatId);
+        handler->PSendSysMessage("Unit %u entered vehicle %d", uint32(entry), (int32)seatId);
         return true;
     }
 

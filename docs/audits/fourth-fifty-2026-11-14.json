@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_33_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 33,
+  "status": "IN_PROGRESS_34_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 34,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -276,7 +276,7 @@
     },
     {
       "batch": 4,
-      "count": 3,
+      "count": 4,
       "source_case_count": 144,
       "repairs": [
         {
@@ -302,6 +302,14 @@
           "path": "src/server/scripts/Commands/cs_debug.cpp",
           "method": "HandleDebugUpdateCriteriaCommand",
           "test_scope": "complete production handler/helper"
+        },
+        {
+          "index": 34,
+          "key": "VehicleEnterCheckedSelectors",
+          "summary": "Validate the native entry/sentinel domain and signed seat byte before boarding/search;require the real player and retain reverse/self/native entry lookup.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleDebugEnterVehicleCommand",
+          "test_scope": "admission prefix"
         }
       ]
     }
