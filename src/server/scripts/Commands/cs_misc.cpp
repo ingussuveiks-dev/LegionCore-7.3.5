@@ -3832,7 +3832,9 @@ public:
             return false;
 
         Player* player = handler->GetSession()->GetPlayer();
-        uint32 conversationId = atoi((char*)args);
+        uint32 conversationId;
+        if (!Trinity::ParseCommandInteger(args, conversationId))
+            return false;
 
         Conversation* conversation = new Conversation;
         if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), conversationId, player, NULL, *player))

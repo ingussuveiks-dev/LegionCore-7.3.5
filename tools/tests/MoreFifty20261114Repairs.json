@@ -445,6 +445,18 @@
       "test_boundary": "        handler->GetSession()->GetPlayer()->SetScenarioId",
       "observe": "scenarioId",
       "summary": "Reject malformed/wrapped scenario IDs before changing the player scenario selector."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleConversationCommand",
+      "case": "ConversationExactId",
+      "key": "ConversationExactId",
+      "kind": "more",
+      "old": "    static bool HandleConversationCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 conversationId = atoi((char*)args);\n\n        Conversation* conversation = new Conversation;\n        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), conversationId, player, NULL, *player))\n            delete conversation;\n\n        handler->PSendSysMessage(\"HandleConversationCommand conversationId %u\", conversationId);\n\n        return true;\n    }",
+      "new": "    static bool HandleConversationCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 conversationId;\n        if (!Trinity::ParseCommandInteger(args, conversationId))\n            return false;\n\n        Conversation* conversation = new Conversation;\n        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), conversationId, player, NULL, *player))\n            delete conversation;\n\n        handler->PSendSysMessage(\"HandleConversationCommand conversationId %u\", conversationId);\n\n        return true;\n    }",
+      "test_boundary": "        Conversation* conversation",
+      "observe": "conversationId",
+      "summary": "Reject malformed/wrapped conversation IDs before allocating or starting an unrelated conversation."
     }
   ],
   "extra_edits": [
@@ -488,7 +500,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
-      "after_sha256": "7f0a21e1ccfa94f4632ae95025831d74f47d9b1785575692dbf8276b3e7b1597"
+      "after_sha256": "b28c77c34eeb8229173d2fb7ace65e4d95594e17f8a8ee434a585207c2b8866f"
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
