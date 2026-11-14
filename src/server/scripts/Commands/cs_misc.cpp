@@ -1308,7 +1308,9 @@ public:
         if (!px)
             return false;
 
-        uint32 graveyardId = uint32(atoi(px));
+        uint32 graveyardId;
+        if (!Trinity::ParseCommandInteger(px, graveyardId))
+            return false;
 
         uint32 team;
 

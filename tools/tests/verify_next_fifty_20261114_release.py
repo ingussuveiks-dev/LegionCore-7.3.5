@@ -13,7 +13,7 @@ def verify_previous_with_declared_new_delta():
   for change in reversed(PLAN['changes']+PLAN['extra_edits']):
    if change['path']==path:assert value.count(change['new'])==1;value=value.replace(change['new'],change['old'],1)
   assert hashlib.sha256(value.encode()).hexdigest()==record['after_sha256'],('Prior source outside declared new scope',path)
-previous.verify=verify_previous_with_declared_new_delta
+previous.verify=globals().get('previous_source_certificate',verify_previous_with_declared_new_delta)
 p=runpy.run_path(str(Path(__file__).with_name('verify_fifth_five_ten_20261114_release.py')))
 n,ins,sites,refs=p['n'],p['ins'],p['sites'],p['refs']
 for row in PLAN['changes']:
