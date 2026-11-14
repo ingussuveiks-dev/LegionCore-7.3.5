@@ -1160,7 +1160,9 @@ public:
 
         std::string email = strtok((char*)args, " ");
         char* limitStr = strtok(NULL, " ");
-        int32 limit = limitStr ? atoi(limitStr) : -1;
+        int32 limit = -1;
+        if (limitStr && !Trinity::ParseCommandInteger(limitStr, limit))
+            return false;
 
         // the account name and email address are the same since the switch to bnet accounts
         LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_LIST_BY_NAME);

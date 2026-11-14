@@ -308,6 +308,19 @@
       "observe": "0",
       "test_capture": "handler->signedValue = limit;",
       "summary": "Reject malformed signed search limits before account queries; retain default-1 and native limit policy."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lookup.cpp",
+      "method": "HandleLookupPlayerEmailCommand",
+      "key": "PlayerEmailSearchExactLimit",
+      "case": "PlayerEmailSearchExactLimit",
+      "kind": "command",
+      "old": "    static bool HandleLookupPlayerEmailCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        std::string email = strtok((char*)args, \" \");\n        char* limitStr = strtok(NULL, \" \");\n        int32 limit = limitStr ? atoi(limitStr) : -1;\n\n        // the account name and email address are the same since the switch to bnet accounts\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_LIST_BY_NAME);\n        stmt->setString(0, email);\n        PreparedQueryResult result = LoginDatabase.Query(stmt);\n\n        if (!result)\n        {\n            handler->PSendSysMessage(LANG_NO_PLAYERS_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 accountId = handler->GetSession()->GetAccountId();\n        if (WorldSessionPtr sess = sWorld->FindSession(accountId))\n            sess->LookupPlayerSearchCommand(result, limit);\n\n        return true;\n    }",
+      "new": "    static bool HandleLookupPlayerEmailCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        std::string email = strtok((char*)args, \" \");\n        char* limitStr = strtok(NULL, \" \");\n        int32 limit = -1;\n        if (limitStr && !Trinity::ParseCommandInteger(limitStr, limit))\n            return false;\n\n        // the account name and email address are the same since the switch to bnet accounts\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_LIST_BY_NAME);\n        stmt->setString(0, email);\n        PreparedQueryResult result = LoginDatabase.Query(stmt);\n\n        if (!result)\n        {\n            handler->PSendSysMessage(LANG_NO_PLAYERS_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 accountId = handler->GetSession()->GetAccountId();\n        if (WorldSessionPtr sess = sWorld->FindSession(accountId))\n            sess->LookupPlayerSearchCommand(result, limit);\n\n        return true;\n    }",
+      "test_boundary": "        LoginDatabasePreparedStatement* stmt",
+      "observe": "0",
+      "test_capture": "handler->signedValue = limit;",
+      "summary": "Reject malformed signed search limits before account queries; retain default-1 and native limit policy."
     }
   ],
   "extra_edits": [
@@ -335,7 +348,7 @@
     },
     "src/server/scripts/Commands/cs_lookup.cpp": {
       "before_sha256": "8488c9ec971f9bff4db5634c8097e2f796a0e72c23764eadf6d2e27380c7a303",
-      "after_sha256": "61e3a2c3c7880214beb1d7b9fc39dd8ec8ee13e3fb4f5cabf24973abefeb4217"
+      "after_sha256": "ec5200d5e9c78aeeca4c08268338beaf0546934e4959a825205c6570dcf5afdf"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
