@@ -3,8 +3,8 @@
   "request": "Labi ņem vēl5x10",
   "baseline": "9eb7aab7ae7c78fe1880c9f04ca131f254389093",
   "authorized_new_repairs": 50,
-  "completed_source_repairs": 3,
-  "status": "IN_PROGRESS_3_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 4,
+  "status": "IN_PROGRESS_4_OF_50_CANONICAL_CLIENT_PENDING",
   "previous_fifty": "docs/audits/five-ten-2026-11-14.json remains completed50;none recounted.",
   "batches": [
     {
@@ -24,6 +24,11 @@
           "key": "CastVisualCheckedIdentifier",
           "path": "src/server/scripts/Commands/cs_cast.cpp",
           "summary": "CastVisualCheckedIdentifier;full exact before/after method in NextFifty20261114Repairs.json."
+        },
+        {
+          "key": "CastOrphanCheckedIdentifier",
+          "path": "src/server/scripts/Commands/cs_cast.cpp",
+          "summary": "CastOrphanCheckedIdentifier;full exact before/after method in NextFifty20261114Repairs.json."
         }
       ],
       "checks": {
@@ -53,7 +58,7 @@
     }
   ],
   "remaining": [
-    "47 authorized new source repairs remain.",
+    "46 authorized new source repairs remain.",
     "Actual client traversal,all36 complete artifact chains and original LINK2/FuZan/Slaghammer/mixedDBErrors evidence remain open;source/native/PE/startup do not certify client behavior."
   ]
 }

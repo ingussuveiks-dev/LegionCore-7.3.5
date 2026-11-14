@@ -412,7 +412,9 @@ public:
         if (!visual)
             return false;
         
-        int32 visual_id = atoi(visual);
+        int32 visual_id;
+        if (!Trinity::ParseCommandInteger(visual, visual_id))
+            return false;
 
         Player* pl = handler->GetSession()->GetPlayer();
         if (!pl)
