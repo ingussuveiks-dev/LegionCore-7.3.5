@@ -2178,16 +2178,20 @@ public:
             switch (i)
             {
                 case 0:
-                    criteriaType = std::atoi(tokens[i]);
+                    if (!Trinity::ParseCommandInteger(tokens[i], criteriaType) || criteriaType >= CRITERIA_TYPE_TOTAL)
+                        return false;
                     break;
                 case 1:
-                    miscValue1 = std::atoi(tokens[i]);
+                    if (!Trinity::ParseCommandInteger(tokens[i], miscValue1))
+                        return false;
                     break;
                 case 2:
-                    miscValue2 = std::atoi(tokens[i]);
+                    if (!Trinity::ParseCommandInteger(tokens[i], miscValue2))
+                        return false;
                     break;
                 case 3:
-                    miscValue3 = std::atoi(tokens[i]);
+                    if (!Trinity::ParseCommandInteger(tokens[i], miscValue3))
+                        return false;
                     break;
                 case 4:
                     unit = player;
