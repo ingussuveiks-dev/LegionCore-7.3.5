@@ -106,7 +106,9 @@ public:
         if (!cId)
             return false;
 
-        uint32 entry = atol(cId);
+        uint32 entry;
+        if (!Trinity::ParseCommandInteger(cId, entry))
+            return false;
 
         Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);
         if (!quest)

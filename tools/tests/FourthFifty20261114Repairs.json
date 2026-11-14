@@ -12,6 +12,18 @@
       "test_boundary": "        Quest const* quest",
       "observe": "entry",
       "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestAutocomplete catalog/status/effect path;retain selected-player and native quest rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "method": "HandleQuestAdd",
+      "case": "QuestAddExactId",
+      "key": "QuestAddExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleQuestAdd(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .addquest #entry'\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry = atol(cId);\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n        if (!quest)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check item starting quest (it can work incorrectly if added without item in inventory)\n        ItemTemplateContainer const* itc = sObjectMgr->GetItemTemplateStore();\n        ItemTemplateContainer::const_iterator result = std::find_if(itc->begin(), itc->end(), [entry](ItemTemplateContainer::value_type const& value)\n        {\n            return value.second.GetStartQuestID() == entry;\n        });\n\n        if (result != itc->end())\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_STARTFROMITEM, entry, result->second.GetId());\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // ok, normal (creature/GO starting) quest\n        if (player->CanAddQuest(quest, true))\n            player->AddQuestAndCheckCompletion(quest, NULL);\n\n        return true;\n    }",
+      "new": "    static bool HandleQuestAdd(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .addquest #entry'\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry;\n        if (!Trinity::ParseCommandInteger(cId, entry))\n            return false;\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n        if (!quest)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check item starting quest (it can work incorrectly if added without item in inventory)\n        ItemTemplateContainer const* itc = sObjectMgr->GetItemTemplateStore();\n        ItemTemplateContainer::const_iterator result = std::find_if(itc->begin(), itc->end(), [entry](ItemTemplateContainer::value_type const& value)\n        {\n            return value.second.GetStartQuestID() == entry;\n        });\n\n        if (result != itc->end())\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_STARTFROMITEM, entry, result->second.GetId());\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // ok, normal (creature/GO starting) quest\n        if (player->CanAddQuest(quest, true))\n            player->AddQuestAndCheckCompletion(quest, NULL);\n\n        return true;\n    }",
+      "test_boundary": "        Quest const* quest",
+      "observe": "entry",
+      "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestAdd catalog/status/effect path;retain selected-player and native quest rules."
     }
   ],
   "extra_edits": [
@@ -25,7 +37,7 @@
   "files": {
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
-      "after_sha256": "fa7e6fe9e1f5169f9eaf5c621c1401ab8ba1e85b5538c7c820ad9930e1b177e9"
+      "after_sha256": "c1a350742aad2a57c980bdd6305a65b8d2aaa0a33593a6ee7b2e241df3f64b88"
     }
   }
 }
