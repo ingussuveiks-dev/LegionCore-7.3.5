@@ -1809,15 +1809,17 @@ public:
 
         char const* maxPureSkill = strtok(NULL, " ");
 
-        int32 skill = atoi(skillStr);
-        if (skill <= 0)
+        uint16 skill = 0;
+        if (!Trinity::ParseCommandInteger(skillStr, skill) || !skill)
         {
             handler->PSendSysMessage(LANG_INVALID_SKILL_ID, skill);
             handler->SetSentErrorMessage(true);
             return false;
         }
 
-        int32 level = uint32(atol(levelStr));
+        uint16 level;
+        if (!Trinity::ParseCommandInteger(levelStr, level))
+            return false;
 
         Player* target = handler->getSelectedPlayer();
         if (!target)
@@ -1844,7 +1846,9 @@ public:
             return false;
         }
 
-        uint16 max = maxPureSkill ? atol (maxPureSkill) : target->GetPureMaxSkillValue(skill);
+        uint16 max = target->GetPureMaxSkillValue(skill);
+        if (maxPureSkill && !Trinity::ParseCommandInteger(maxPureSkill, max))
+            return false;
 
         if (level <= 0 || level > max || max <= 0)
             return false;
