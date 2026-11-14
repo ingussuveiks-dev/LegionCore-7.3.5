@@ -180,6 +180,18 @@
       "old": "    static bool HandleDebugMoveflagsCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n            target = handler->GetSession()->GetPlayer();\n\n        if (!*args)\n        {\n            //! Display case\n            handler->PSendSysMessage(LANG_MOVEFLAGS_GET, target->GetUnitMovementFlags(), target->GetExtraUnitMovementFlags());\n        }\n        else\n        {\n            char* mask1 = strtok((char*)args, \" \");\n            if (!mask1)\n                return false;\n\n            char* mask2 = strtok(NULL, \" \\n\");\n\n            uint32 moveFlags = (uint32)atoi(mask1);\n            target->SetUnitMovementFlags(moveFlags);\n\n            if (mask2)\n            {\n                uint32 moveFlagsExtra = uint32(atoi(mask2));\n                target->SetExtraUnitMovementFlags(moveFlagsExtra);\n            }\n\n            target->SendMovementFlagUpdate();\n            handler->PSendSysMessage(LANG_MOVEFLAGS_SET, target->GetUnitMovementFlags(), target->GetExtraUnitMovementFlags());\n        }\n\n        return true;\n    }",
       "new": "    static bool HandleDebugMoveflagsCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n            target = handler->GetSession()->GetPlayer();\n\n        if (!*args)\n        {\n            //! Display case\n            handler->PSendSysMessage(LANG_MOVEFLAGS_GET, target->GetUnitMovementFlags(), target->GetExtraUnitMovementFlags());\n        }\n        else\n        {\n            char* mask1 = strtok((char*)args, \" \");\n            if (!mask1)\n                return false;\n\n            char* mask2 = strtok(NULL, \" \\n\");\n\n            uint32 moveFlags, moveFlagsExtra = 0;\n            if (!Trinity::ParseCommandInteger(mask1, moveFlags) ||\n                (mask2 && !Trinity::ParseCommandInteger(mask2, moveFlagsExtra)))\n                return false;\n            target->SetUnitMovementFlags(moveFlags);\n            if (mask2)\n                target->SetExtraUnitMovementFlags(moveFlagsExtra);\n\n            target->SendMovementFlagUpdate();\n            handler->PSendSysMessage(LANG_MOVEFLAGS_SET, target->GetUnitMovementFlags(), target->GetExtraUnitMovementFlags());\n        }\n\n        return true;\n    }",
       "summary": "Parse both movement masks before changing either field or sending an update;retain the no-argument display mode."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSession",
+      "case": "SessionAccountExactWidth",
+      "key": "SessionAccountExactWidth",
+      "kind": "more",
+      "old": "    static bool HandleDebugSession(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        char* caccId = strtok((char*)args, \" \");\n        int32 accId = caccId ? (int32)atoi(caccId) : 0;\n\n        if (!accId && player)\n            accId = player->GetSession()->GetAccountId();\n\n        if (!accId)\n            return false;\n\n        if (WorldSessionPtr sess = sWorld->FindSession(accId))\n            handler->PSendSysMessage(\"Session find for accountID %u in World\", accId);\n\n        sMapMgr->FindSessionInAllMaps(accId, handler);\n        return true;\n    }",
+      "new": "    static bool HandleDebugSession(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        char* caccId = strtok((char*)args, \" \");\n        uint32 accId = 0;\n        if (caccId && !Trinity::ParseCommandInteger(caccId, accId))\n            return false;\n\n        if (!accId && player)\n            accId = player->GetSession()->GetAccountId();\n\n        if (!accId)\n            return false;\n\n        if (WorldSessionPtr sess = sWorld->FindSession(accId))\n            handler->PSendSysMessage(\"Session find for accountID %u in World\", accId);\n\n        sMapMgr->FindSessionInAllMaps(accId, handler);\n        return true;\n    }",
+      "test_boundary": "        if (WorldSessionPtr sess",
+      "observe": "accId",
+      "summary": "Use the native unsigned32 account ID without signed narrowing or suffix coercion;preserve selected-player fallback."
     }
   ],
   "extra_edits": [
@@ -201,7 +213,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "dfb16783c84858616bd03f974e91cc7e3ba737fc0e4aec2c189448320cc729ba"
+      "after_sha256": "91efb7c50afac97e9bb5b1fb929e894235450f641009b1f373e66d3291d24694"
     }
   }
 }

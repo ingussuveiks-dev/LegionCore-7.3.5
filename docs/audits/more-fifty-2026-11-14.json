@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_18_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 18,
+  "status": "IN_PROGRESS_19_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 19,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -102,7 +102,7 @@
     },
     {
       "batch": 2,
-      "count": 8,
+      "count": 9,
       "source_case_count": 95,
       "repairs": [
         {
@@ -168,6 +168,14 @@
           "path": "src/server/scripts/Commands/cs_debug.cpp",
           "method": "HandleDebugMoveflagsCommand",
           "test_scope": "complete production handler"
+        },
+        {
+          "index": 19,
+          "key": "SessionAccountExactWidth",
+          "summary": "Use the native unsigned32 account ID without signed narrowing or suffix coercion;preserve selected-player fallback.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleDebugSession",
+          "test_scope": "admission prefix"
         }
       ]
     }

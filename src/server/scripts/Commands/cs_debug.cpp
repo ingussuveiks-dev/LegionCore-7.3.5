@@ -2201,7 +2201,9 @@ public:
     {
         Player* player = handler->getSelectedPlayer();
         char* caccId = strtok((char*)args, " ");
-        int32 accId = caccId ? (int32)atoi(caccId) : 0;
+        uint32 accId = 0;
+        if (caccId && !Trinity::ParseCommandInteger(caccId, accId))
+            return false;
 
         if (!accId && player)
             accId = player->GetSession()->GetAccountId();
