@@ -1053,7 +1053,12 @@ public:
         if (!bg)
             return false;
 
-        uint8 jointype = MS::Battlegrounds::GetJoinTypeByBracketSlot(atoi((char*)args));
+        uint8 bracketSlot;
+        if (!Trinity::ParseCommandInteger(args, bracketSlot))
+            return false;
+        uint8 jointype = MS::Battlegrounds::GetJoinTypeByBracketSlot(bracketSlot);
+        if (jointype == 0xFF)
+            return false;
         uint16 bgTypeId = bg->GetTypeID();
         uint8 bgQueueTypeId = MS::Battlegrounds::GetBgQueueTypeIdByBgTypeID(bgTypeId, jointype);
         BattlegroundQueue &bgQueue = sBattlegroundMgr->GetBattlegroundQueue(bgQueueTypeId);
