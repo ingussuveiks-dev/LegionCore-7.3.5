@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_6_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 6,
+  "status": "IN_PROGRESS_7_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 7,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -15,7 +15,7 @@
   "batches": [
     {
       "batch": 1,
-      "count": 6,
+      "count": 7,
       "source_case_count": 142,
       "repairs": [
         {
@@ -65,6 +65,14 @@
           "path": "src/server/scripts/Commands/cs_quest.cpp",
           "method": "HandleQuestStatus",
           "test_scope": "admission prefix"
+        },
+        {
+          "index": 7,
+          "key": "CharacterLevelExactValue",
+          "summary": "Parse the complete signed level before online/offline changes;preserve the native110 cap,name-only reset and XP update;classify characters with unsigned input.",
+          "path": "src/server/scripts/Commands/cs_character.cpp",
+          "method": "HandleCharacterLevelCommand",
+          "test_scope": "complete production handler/helper"
         }
       ]
     }

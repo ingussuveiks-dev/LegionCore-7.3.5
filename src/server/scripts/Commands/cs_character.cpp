@@ -25,6 +25,7 @@ EndScriptData */
 #include "AccountMgr.h"
 #include "CharacterData.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "DatabaseEnv.h"
 #include "GlobalFunctional.h"
 #include "ObjectMgr.h"
@@ -339,7 +340,7 @@ public:
             return false;
 
         // exception opt second arg: .character level $name
-        if (isalpha(levelStr[0]))
+        if (isalpha(static_cast<unsigned char>(levelStr[0])))
         {
             nameStr = levelStr;
             levelStr = NULL;                                    // current level will used
@@ -352,7 +353,9 @@ public:
             return false;
 
         int32 oldlevel = target ? target->getLevel() : Player::GetLevelFromDB(targetGuid);
-        int32 newlevel = levelStr ? atoi(levelStr) : oldlevel;
+        int32 newlevel = oldlevel;
+        if (levelStr && !Trinity::ParseCommandInteger(levelStr, newlevel))
+            return false;
 
         if (newlevel < 1)
             return false;                                       // invalid level
@@ -364,7 +367,7 @@ public:
         if (!handler->GetSession() || handler->GetSession()->GetPlayer() != target)      // including player == NULL
         {
             std::string nameLink = handler->playerLink(targetName);
-            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), newlevel);
+            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), uint32(newlevel));
         }
 
         return true;

@@ -72,6 +72,17 @@
       "test_boundary": "        Quest const* quest",
       "observe": "entry",
       "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestStatus catalog/status/effect path;retain selected-player and native quest rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "method": "HandleCharacterLevelCommand",
+      "case": "CharacterLevelExactValue",
+      "key": "CharacterLevelExactValue",
+      "kind": "fourth",
+      "old": "    static bool HandleCharacterLevelCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* levelStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &levelStr);\n        if (!levelStr)\n            return false;\n\n        // exception opt second arg: .character level $name\n        if (isalpha(levelStr[0]))\n        {\n            nameStr = levelStr;\n            levelStr = NULL;                                    // current level will used\n        }\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string targetName;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &targetName))\n            return false;\n\n        int32 oldlevel = target ? target->getLevel() : Player::GetLevelFromDB(targetGuid);\n        int32 newlevel = levelStr ? atoi(levelStr) : oldlevel;\n\n        if (newlevel < 1)\n            return false;                                       // invalid level\n\n        if (newlevel > MAX_LEVEL)                         // hardcoded maximum level\n            newlevel = MAX_LEVEL;\n\n        HandleCharacterLevel(target, targetGuid, oldlevel, newlevel, handler);\n        if (!handler->GetSession() || handler->GetSession()->GetPlayer() != target)      // including player == NULL\n        {\n            std::string nameLink = handler->playerLink(targetName);\n            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), newlevel);\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleCharacterLevelCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* levelStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &levelStr);\n        if (!levelStr)\n            return false;\n\n        // exception opt second arg: .character level $name\n        if (isalpha(static_cast<unsigned char>(levelStr[0])))\n        {\n            nameStr = levelStr;\n            levelStr = NULL;                                    // current level will used\n        }\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string targetName;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &targetName))\n            return false;\n\n        int32 oldlevel = target ? target->getLevel() : Player::GetLevelFromDB(targetGuid);\n        int32 newlevel = oldlevel;\n        if (levelStr && !Trinity::ParseCommandInteger(levelStr, newlevel))\n            return false;\n\n        if (newlevel < 1)\n            return false;                                       // invalid level\n\n        if (newlevel > MAX_LEVEL)                         // hardcoded maximum level\n            newlevel = MAX_LEVEL;\n\n        HandleCharacterLevel(target, targetGuid, oldlevel, newlevel, handler);\n        if (!handler->GetSession() || handler->GetSession()->GetPlayer() != target)      // including player == NULL\n        {\n            std::string nameLink = handler->playerLink(targetName);\n            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), uint32(newlevel));\n        }\n\n        return true;\n    }",
+      "test_helpers": "characterlevel",
+      "summary": "Parse the complete signed level before online/offline changes;preserve the native110 cap,name-only reset and XP update;classify characters with unsigned input."
     }
   ],
   "extra_edits": [
@@ -80,9 +91,19 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "QuestAutocompleteExactId"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "CharacterLevelExactValue"
     }
   ],
   "files": {
+    "src/server/scripts/Commands/cs_character.cpp": {
+      "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
+      "after_sha256": "6fdf3a7ae29855d02c84ba8bd3ee399f3a75b24227868e1c5ccd2427edc11e7c"
+    },
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
       "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
