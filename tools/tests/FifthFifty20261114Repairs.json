@@ -370,6 +370,18 @@
       "observe": "accountId",
       "test_capture": "handler->captured = {guid.GetGUIDLow()};",
       "summary": "Validate fallback account ID and full native40-bit optional character counter before dump import; account names/ownership/name checks retained."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "method": "HandlePDumpWriteCommand",
+      "key": "CharacterDumpExportExactCounter",
+      "case": "CharacterDumpExportExactCounter",
+      "kind": "command",
+      "old": "    static bool HandlePDumpWriteCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* fileStr = strtok((char*)args, \" \");\n        char* playerStr = strtok(NULL, \" \");\n\n        if (!fileStr || !playerStr)\n            return false;\n\n        ObjectGuid guid;\n        // character name can't start from number\n        if (isNumeric(playerStr))\n            guid = ObjectGuid::Create<HighGuid::Player>(strtoull(playerStr, nullptr, 10));\n        else\n        {\n            std::string name = handler->extractPlayerNameFromLink(playerStr);\n            if (name.empty())\n            {\n                handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n\n            guid = ObjectMgr::GetPlayerGUIDByName(name);\n        }\n\n        if (!ObjectMgr::GetPlayerAccountIdByGUID(guid))\n        {\n            handler->PSendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        switch (PlayerDumpWriter().WriteDump(fileStr, guid.GetGUIDLow()))\n        {\n            case DUMP_SUCCESS:\n                handler->PSendSysMessage(LANG_COMMAND_EXPORT_SUCCESS);\n                break;\n            case DUMP_FILE_OPEN_ERROR:\n                handler->PSendSysMessage(LANG_FILE_OPEN_FAIL, fileStr);\n                handler->SetSentErrorMessage(true);\n                return false;\n            case DUMP_CHARACTER_DELETED:\n                handler->PSendSysMessage(LANG_COMMAND_EXPORT_DELETED_CHAR);\n                handler->SetSentErrorMessage(true);\n                return false;\n            default:\n                handler->PSendSysMessage(LANG_COMMAND_EXPORT_FAILED);\n                handler->SetSentErrorMessage(true);\n                return false;\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandlePDumpWriteCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* fileStr = strtok((char*)args, \" \");\n        char* playerStr = strtok(NULL, \" \");\n\n        if (!fileStr || !playerStr)\n            return false;\n\n        ObjectGuid guid;\n        // character name can't start from number\n        if (isNumeric(playerStr))\n        {\n            ObjectGuid::LowType counter;\n            if (!Trinity::ParseCommandInteger(playerStr, counter) || !counter || counter > ObjectGuid::GetMaxCounter(HighGuid::Player))\n                return false;\n            guid = ObjectGuid::Create<HighGuid::Player>(counter);\n        }\n        else\n        {\n            std::string name = handler->extractPlayerNameFromLink(playerStr);\n            if (name.empty())\n            {\n                handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n\n            guid = ObjectMgr::GetPlayerGUIDByName(name);\n        }\n\n        if (!ObjectMgr::GetPlayerAccountIdByGUID(guid))\n        {\n            handler->PSendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        switch (PlayerDumpWriter().WriteDump(fileStr, guid.GetGUIDLow()))\n        {\n            case DUMP_SUCCESS:\n                handler->PSendSysMessage(LANG_COMMAND_EXPORT_SUCCESS);\n                break;\n            case DUMP_FILE_OPEN_ERROR:\n                handler->PSendSysMessage(LANG_FILE_OPEN_FAIL, fileStr);\n                handler->SetSentErrorMessage(true);\n                return false;\n            case DUMP_CHARACTER_DELETED:\n                handler->PSendSysMessage(LANG_COMMAND_EXPORT_DELETED_CHAR);\n                handler->SetSentErrorMessage(true);\n                return false;\n            default:\n                handler->PSendSysMessage(LANG_COMMAND_EXPORT_FAILED);\n                handler->SetSentErrorMessage(true);\n                return false;\n        }\n\n        return true;\n    }",
+      "test_boundary": "        if (!ObjectMgr::GetPlayerAccountIdByGUID",
+      "observe": "guid.GetGUIDLow()",
+      "summary": "Reject overflowing numeric character counters before dump export; native name/account existence validation retained."
     }
   ],
   "extra_edits": [
@@ -407,7 +419,7 @@
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d",
-      "after_sha256": "1782bba19d6b50d91f7309f4e61daa66bb8130f5e3d6d2b01bbab514c0de7c7a"
+      "after_sha256": "a5a5cb7c2d399a6f51d1cc1eeba101be4b28298bc085d18aadc54ca3840f3927"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",

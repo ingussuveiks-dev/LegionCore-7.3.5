@@ -878,7 +878,12 @@ public:
         ObjectGuid guid;
         // character name can't start from number
         if (isNumeric(playerStr))
-            guid = ObjectGuid::Create<HighGuid::Player>(strtoull(playerStr, nullptr, 10));
+        {
+            ObjectGuid::LowType counter;
+            if (!Trinity::ParseCommandInteger(playerStr, counter) || !counter || counter > ObjectGuid::GetMaxCounter(HighGuid::Player))
+                return false;
+            guid = ObjectGuid::Create<HighGuid::Player>(counter);
+        }
         else
         {
             std::string name = handler->extractPlayerNameFromLink(playerStr);
