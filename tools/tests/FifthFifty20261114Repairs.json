@@ -518,6 +518,16 @@
       "test_boundary": "        if (auto player",
       "observe": "status",
       "summary": "Validate complete native LFGListStatus byte before dispatch, preserving original zero no-op/failure."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugGetLootRecipientCommand",
+      "key": "LootRecipientNativeGuidFormatting",
+      "case": "LootRecipientNativeGuidFormatting",
+      "kind": "command",
+      "old": "    static bool HandleDebugGetLootRecipientCommand(ChatHandler* handler, char const* /*args*/)\n    {\n        Creature* target = handler->getSelectedCreature();\n        if (!target)\n            return false;\n\n        handler->PSendSysMessage(\"Loot recipient for creature %s (GUID %u, DB GUID %u) is %s\", target->GetName(), target->GetGUID().GetGUIDLow(), target->GetDBTableGUIDLow(), target->hasLootRecipient() ? (target->GetLootRecipient() ? target->GetLootRecipient()->GetName() : \"offline\") : \"no loot recipient\");\n        return true;\n    }",
+      "new": "    static bool HandleDebugGetLootRecipientCommand(ChatHandler* handler, char const* /*args*/)\n    {\n        Creature* target = handler->getSelectedCreature();\n        if (!target)\n            return false;\n\n        handler->PSendSysMessage(\"Loot recipient for creature %s (GUID \" UI64FMTD \", DB GUID \" UI64FMTD \") is %s\", target->GetName(), target->GetGUID().GetGUIDLow(), target->GetDBTableGUIDLow(), target->hasLootRecipient() ? (target->GetLootRecipient() ? target->GetLootRecipient()->GetName() : \"offline\") : \"no loot recipient\");\n        return true;\n    }",
+      "summary": "Match both native64-bit creature counters in variadic output; retain live/offline/no-recipient distinctions."
     }
   ],
   "extra_edits": [
@@ -579,7 +589,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2",
-      "after_sha256": "a9da2bfc45806c89633bf763536aaf74abe7adea8d0a694de8a6cd5002d1ee8c"
+      "after_sha256": "c0ad7992e53768528db4dc83e305d8d2a2f026d8dc65ed1f0ee40e8245e7448d"
     },
     "src/server/game/Entities/Player/Player.cpp": {
       "before_sha256": "b04925dc7dce0a7adc527c6a8ee469590725ff4322a9e16ba19fd5255edcfa45",
