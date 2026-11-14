@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_40_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 40,
+  "status": "IN_PROGRESS_41_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 41,
   "batches": [
     {
       "batch": 1,
@@ -69,7 +69,8 @@
         "analysis": "Original .go quest C6001,.wp show C6011 and GM-level argument C6387 are absent in focused seven-source reanalysis. Existing deprecation/conversion/shadow warnings retained/reviewed. Separate whole artifact static report has false positives through already-guarding helper functions and unproven/dead-path findings;retained outside fixed,not labeled globally repaired.",
         "release": "Original scripts.vcxproj Release x64 rebuild of6 command files+BlackRook;staged final link uses original game/scripts/shared/common libraries without global OutDir. Canonical source/PE/hash checks plus Test-ScepterLogin -VerifyReleaseBinary pass.",
         "startup": "Owned canonical worldserver PID21252 fresh ready,graceful server shutdown0,exit0,empty stderr,gone. No user/unknown server stopped. bnet .text unchanged;configuration/certificates/DLLs preserved.",
-        "diagnostics": "Final snapshots have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Source extractor missing Soul enum and PE check expecting inverse branch were diagnosed test-tool errors and paired with passing repaired runs. Original mixed7111-byte DBErrors and protected Slaghammer hash unchanged/untruncated."
+        "diagnostics": "Final snapshots have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Source extractor missing Soul enum and PE check expecting inverse branch were diagnosed test-tool errors and paired with passing repaired runs. Original mixed7111-byte DBErrors and protected Slaghammer hash unchanged/untruncated.",
+        "later_native_coordinate_correction": "Initial first-ten Quest fixture bounded Z by XY limits,so its missing-terrain proof was too strong and was not a native terrain proof. Actual native XYZ accepts any finite Z. Replaced fixture with real overloads and added explicit groundHeight finite/>INVALID_HEIGHT gate in Quest/Grid/Zone/XYZ before water0 fallback. Forty revised Quest cases include native high Z and missing-grid water0. This corrects first repair,does not add a51st repair."
       },
       "canonical": {
         "worldserver.exe": "c9b51aed1dba477ef602c8354865181965d8d94d65f6fcfb56bf9bdce35ee71f",
@@ -323,10 +324,48 @@
         "retained_rollback": ".codex/release-before-five-ten-20261114-batch4",
         "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report. Cumulative B3 whitespace-tail test outputs also archived/removed."
       }
+    },
+    {
+      "batch": 5,
+      "repairs": [
+        {
+          "key": "GoCreatureNativeIdentifier",
+          "path": "src/server/scripts/Commands/cs_go.cpp",
+          "summary": "Validate native entry/UInt64 DB spawn key without numeric-prefix/name aliases;keep escaped-name fallback and full DB key for actual native actor lookup;return native teleport result."
+        }
+      ],
+      "checks": {
+        "source_asan": "918 final cumulative cases:628 retained complete methods/callback contexts +250 new complete travel handlers +40 refined complete GoQuest cases. Actual GridDefines coordinate overloads exported into both travel/Quest tests. Native parser/code with controlled terrain/map/stores/prepared SQL/teleport endpoints;no real character/account/world writes. Invalid input/missing terrain/actors/parents/native result,flight/recall,relative overflow,normal/heroic scenario and wide spawn IDs covered.",
+        "counterfactual": "Actual original GO lookup aliases native33-bit DB key4294967303 to7;controlled store/transfer reproduces wrong object. Paired with repaired full-key cases. Prior expected-broken money/artifact/NPC-level/Soul/go-quest controls retained separately.",
+        "native_catalog": "Matching26972 read-only Hotfix:3343 safe locations,883 taxi nodes,3719 area triggers,5857 areas,773 maps,5241 resolved child areas. Actual coordinate overloads accept finite Z20000,limit XY,reject NaN. Native Creature33-bit counter survives64-bit LowType;native GetCounter uses40-bit mask,not an unrestricted64-bit counter.",
+        "release": "Original scripts library rebuilt after final native-ground correction;original-input staged link without OutDir. All50 selected registered operations/native core code and ground-before-recall/taxi CFG verified staged/canonical. Scepter VerifyReleaseBinary passes.",
+        "startup": "Owned canonical PID29904 fresh ready,shutdown0,exit0,empty stderr,gone. No user server stopped;config/certs/DLLs preserved.",
+        "analysis": "Focused cs_go analysis exit0;source C6001 absent. Existing library/header warnings retained/reviewed. Separate whole artifact static report remains open.",
+        "diagnostics": "No new/changed crash,appended DBErrors or unexplained server warning/error/assertion in final diagnostics. Earlier PE assumptions about found-flag register,outlined UInt64 parser and hoisted ground constant corrected with actual decoded code and passing reruns. Native test initially used an out-of-domain41-bit counter and exited7;actual native40-bit contract traced and final33-bit counter test passes. Mixed7111-byte DBErrors and original Slaghammer hashes unchanged.",
+        "verification_refinement": "Initial first-ten Quest fixture bounded Z by XY limits,so its missing-terrain proof was too strong and was not a native terrain proof. Actual native XYZ accepts any finite Z. Replaced fixture with real overloads and added explicit groundHeight finite/>INVALID_HEIGHT gate in Quest/Grid/Zone/XYZ before water0 fallback. Forty revised Quest cases include native high Z and missing-grid water0. This corrects first repair,does not add a51st repair."
+      },
+      "canonical": {
+        "bnetserver.exe": "966a13bb8fafbebe0da6540e719bb0f40f405d8b7c8f6cee48d7d1dca71d8946",
+        "bnetserver.map": "ea1a53ba57895d4d5e0b65f76eec2cf7c29c10cc6cea63954ae3417fe116c8fd",
+        "worldserver.exe": "68b877ede479dea8a82b9e4764cd36fd01bef26c1960fd7fe415c5a751e2386a",
+        "worldserver.map": "c9bb370f9b0243ddf2d84ce0f716db1a440059bab64177801db7e7994887ca7d"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch5",
+        "manifest_sha256": "dde90fa62ff4a272c48e4f4aa1af46bec51186948b34f4263bd953ec3b86f173",
+        "archived_files": 374,
+        "removed_files": 141,
+        "reclaimed_bytes": 824126818.0,
+        "retained_rollback": [
+          ".codex/release-before-five-ten-20261114-batch1",
+          ".codex/release-before-five-ten-20261114-batch5"
+        ],
+        "preserved": "Canonical libraries/assets/config,original LINK2/Slaghammer/mixedDBErrors and separate artifact report. Redundant intermediate rollback2/3/4 removed;original pre-batch and recent immediate rollback retained."
+      }
     }
   ],
   "remaining": [
-    "10 newly authorized source repairs remain;continue next independent groups.",
+    "9 new source repairs remain;continue final group.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

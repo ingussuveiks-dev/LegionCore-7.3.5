@@ -30,6 +30,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
     selected=[];defines=[]
     for row in PLAN['changes']:
         kind=row['kind']
+        if kind=='gotravel':continue
         if money_baseline:continue
         if npc_level_baseline and row.get('case')!='NpcLevel':continue
         if artifact_baseline and row.get('case')!='ArtifactXP':continue

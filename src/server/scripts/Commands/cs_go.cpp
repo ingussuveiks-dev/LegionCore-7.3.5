@@ -30,6 +30,7 @@ EndScriptData */
 #include "DatabaseEnv.h"
 #include "QuestData.h"
 #include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
 
 class go_commandscript : public CommandScript
 {
@@ -98,15 +99,18 @@ public:
             if (!id)
                 return false;
 
-            int32 entry = atoi(id);
-            if (!entry)
+            uint32 entry;
+            if (!Trinity::ParseCommandInteger(id, entry) || !entry)
                 return false;
 
             whereClause << "WHERE id = '" << entry << '\'';
         }
         else
         {
-            int32 guid = atoi(param1);
+            ObjectGuid::LowType guid = 0;
+            if (!Trinity::ParseCommandInteger(param1, guid) &&
+                (*param1 == '+' || *param1 == '-' || (*param1 >= '0' && *param1 <= '9')))
+                return false;
 
             // Number is invalid - maybe the user specified the mob's name
             if (!guid)
@@ -135,7 +139,7 @@ public:
         float z = fields[2].GetFloat();
         float ort = fields[3].GetFloat();
         int mapId = fields[4].GetUInt16();
-        uint32 guid = fields[5].GetUInt64();
+        ObjectGuid::LowType guid = fields[5].GetUInt64();
         uint32 id = fields[6].GetUInt32();
 
         // if creature is in same map with caster go at its current location
@@ -164,8 +168,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        player->TeleportTo(mapId, x, y, z, ort);
-        return true;
+        return player->TeleportTo(mapId, x, y, z, ort);
     }
 
     static bool HandleGoGraveyardCommand(ChatHandler* handler, char const* args)
