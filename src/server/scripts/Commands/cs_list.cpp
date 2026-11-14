@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "SpellAuraEffects.h"
 #include "ObjectMgr.h"
 #include "DatabaseEnv.h"
@@ -62,7 +63,9 @@ public:
         if (!id)
             return false;
 
-        uint32 creatureId = atol(id);
+        uint32 creatureId;
+        if (!Trinity::ParseCommandInteger(id, creatureId))
+            return false;
         if (!creatureId)
         {
             handler->PSendSysMessage(LANG_COMMAND_INVALIDCREATUREID, creatureId);
@@ -79,7 +82,9 @@ public:
         }
 
         char* countStr = strtok(NULL, " ");
-        uint32 count = countStr ? atol(countStr) : 10;
+        uint32 count = 10;
+        if (countStr && !Trinity::ParseCommandInteger(countStr, count))
+            return false;
 
         if (count == 0)
             return false;

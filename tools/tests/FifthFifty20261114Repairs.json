@@ -244,18 +244,30 @@
       "old": "    static bool HandleCharDisplayShirtCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if(!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*)args,\"Hitem\");\n        if(!cId)\n            return false;\n\n        uint32 newItem = (uint32)atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if(!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_BODY))\n        {\n            pl->m_vis->m_visShirt = newItem;\n            return true;\n        }\n        return false;\n    }",
       "new": "    static bool HandleCharDisplayShirtCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if(!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*)args,\"Hitem\");\n        if(!cId)\n            return false;\n\n        uint32 newItem;\n        if (!Trinity::ParseCommandInteger(cId, newItem))\n            return false;\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if(!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_BODY))\n        {\n            pl->m_vis->m_visShirt = newItem;\n            return true;\n        }\n        return false;\n    }",
       "summary": "Parse the complete item/link key before visual allocation and native Shirt model change; preserve zero reset and downstream catalog validation."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_list.cpp",
+      "method": "HandleListCreatureCommand",
+      "key": "ListCreatureAtomicRequest",
+      "case": "ListCreatureAtomicRequest",
+      "kind": "command",
+      "old": "    static bool HandleListCreatureCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // number or [name] Shift-click form |color|Hcreature_entry:creature_id|h[name]|h|r\n        char* id = handler->extractKeyFromLink((char*)args, \"Hcreature_entry\");\n        if (!id)\n            return false;\n\n        uint32 creatureId = atol(id);\n        if (!creatureId)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_INVALIDCREATUREID, creatureId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        CreatureTemplate const* cInfo = sObjectMgr->GetCreatureTemplate(creatureId);\n        if (!cInfo)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_INVALIDCREATUREID, creatureId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* countStr = strtok(NULL, \" \");\n        uint32 count = countStr ? atol(countStr) : 10;\n\n        if (count == 0)\n            return false;\n\n        QueryResult result;\n\n        uint32 creatureCount = 0;\n        result = WorldDatabase.PQuery(\"SELECT COUNT(guid) FROM creature WHERE id='%u'\", creatureId);\n        if (result)\n            creatureCount = (*result)[0].GetUInt64();\n\n        if (handler->GetSession())\n        {\n            Player* player = handler->GetSession()->GetPlayer();\n            result = WorldDatabase.PQuery(\"SELECT guid, position_x, position_y, position_z, map, (POW(position_x - '%f', 2) + POW(position_y - '%f', 2) + POW(position_z - '%f', 2)) AS order_ FROM creature WHERE id = '%u' ORDER BY order_ ASC LIMIT %u\",\n                player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), creatureId, count);\n        }\n        else\n            result = WorldDatabase.PQuery(\"SELECT guid, position_x, position_y, position_z, map FROM creature WHERE id = '%u' LIMIT %u\",\n                creatureId, count);\n\n        if (result)\n        {\n            do\n            {\n                Field* fields   = result->Fetch();\n                uint32 guid     = fields[0].GetUInt64();\n                float x         = fields[1].GetFloat();\n                float y         = fields[2].GetFloat();\n                float z         = fields[3].GetFloat();\n                uint16 mapId    = fields[4].GetUInt16();\n\n                if (handler->GetSession())\n                    handler->PSendSysMessage(LANG_CREATURE_LIST_CHAT, guid, guid, cInfo->Name[0].c_str(), x, y, z, mapId);\n                else\n                    handler->PSendSysMessage(LANG_CREATURE_LIST_CONSOLE, guid, cInfo->Name[0].c_str(), x, y, z, mapId);\n            }\n            while (result->NextRow());\n        }\n\n        handler->PSendSysMessage(LANG_COMMAND_LISTCREATUREMESSAGE, creatureId, creatureCount);\n\n        return true;\n    }",
+      "new": "    static bool HandleListCreatureCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // number or [name] Shift-click form |color|Hcreature_entry:creature_id|h[name]|h|r\n        char* id = handler->extractKeyFromLink((char*)args, \"Hcreature_entry\");\n        if (!id)\n            return false;\n\n        uint32 creatureId;\n        if (!Trinity::ParseCommandInteger(id, creatureId))\n            return false;\n        if (!creatureId)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_INVALIDCREATUREID, creatureId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        CreatureTemplate const* cInfo = sObjectMgr->GetCreatureTemplate(creatureId);\n        if (!cInfo)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_INVALIDCREATUREID, creatureId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* countStr = strtok(NULL, \" \");\n        uint32 count = 10;\n        if (countStr && !Trinity::ParseCommandInteger(countStr, count))\n            return false;\n\n        if (count == 0)\n            return false;\n\n        QueryResult result;\n\n        uint32 creatureCount = 0;\n        result = WorldDatabase.PQuery(\"SELECT COUNT(guid) FROM creature WHERE id='%u'\", creatureId);\n        if (result)\n            creatureCount = (*result)[0].GetUInt64();\n\n        if (handler->GetSession())\n        {\n            Player* player = handler->GetSession()->GetPlayer();\n            result = WorldDatabase.PQuery(\"SELECT guid, position_x, position_y, position_z, map, (POW(position_x - '%f', 2) + POW(position_y - '%f', 2) + POW(position_z - '%f', 2)) AS order_ FROM creature WHERE id = '%u' ORDER BY order_ ASC LIMIT %u\",\n                player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), creatureId, count);\n        }\n        else\n            result = WorldDatabase.PQuery(\"SELECT guid, position_x, position_y, position_z, map FROM creature WHERE id = '%u' LIMIT %u\",\n                creatureId, count);\n\n        if (result)\n        {\n            do\n            {\n                Field* fields   = result->Fetch();\n                uint32 guid     = fields[0].GetUInt64();\n                float x         = fields[1].GetFloat();\n                float y         = fields[2].GetFloat();\n                float z         = fields[3].GetFloat();\n                uint16 mapId    = fields[4].GetUInt16();\n\n                if (handler->GetSession())\n                    handler->PSendSysMessage(LANG_CREATURE_LIST_CHAT, guid, guid, cInfo->Name[0].c_str(), x, y, z, mapId);\n                else\n                    handler->PSendSysMessage(LANG_CREATURE_LIST_CONSOLE, guid, cInfo->Name[0].c_str(), x, y, z, mapId);\n            }\n            while (result->NextRow());\n        }\n\n        handler->PSendSysMessage(LANG_COMMAND_LISTCREATUREMESSAGE, creatureId, creatureCount);\n\n        return true;\n    }",
+      "test_boundary": "        QueryResult result;",
+      "observe": "creatureId",
+      "test_capture": "handler->captured = {count};",
+      "summary": "Validate entry/link and complete unsigned count before listing queries; defaults10/zero rejection unchanged."
     }
   ],
-  "extra_edits": [],
+  "extra_edits": [
+    {
+      "path": "src/server/scripts/Commands/cs_list.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "ListCreatureAtomicRequest"
+    }
+  ],
   "files": {
-    "src/server/scripts/Commands/cs_debug.cpp": {
-      "before_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2",
-      "after_sha256": "f43faba38b77165055df3dddef628a6549d22a1b75203ec6ce6f6c48693537bc"
-    },
-    "src/server/scripts/Commands/cs_misc.cpp": {
-      "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
-      "after_sha256": "4ec0cd3f25a3ec11735acab742bad06f63a6ea95ae91e35a71d58c284e17a04c"
-    },
     "src/server/scripts/Commands/cs_cheat.cpp": {
       "before_sha256": "61bf4ebca26a85279a5b66a1d28bc3d1c25ee237e8aac050d9a1c1619829dbcc",
       "after_sha256": "6ce65bb808c0676be061d1c98d87bc9b38d93cebb61294682a35f81c824811e0"
@@ -263,6 +275,18 @@
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "16f40f4d387b4ed55cdca9638ee553a516d5fbd94f6affba89e6710fcc2d1d71",
       "after_sha256": "44319f20d3780b1576b2afa9d96d32a4a06c308c893b8342033bd3500773cce7"
+    },
+    "src/server/scripts/Commands/cs_misc.cpp": {
+      "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
+      "after_sha256": "4ec0cd3f25a3ec11735acab742bad06f63a6ea95ae91e35a71d58c284e17a04c"
+    },
+    "src/server/scripts/Commands/cs_debug.cpp": {
+      "before_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2",
+      "after_sha256": "f43faba38b77165055df3dddef628a6549d22a1b75203ec6ce6f6c48693537bc"
+    },
+    "src/server/scripts/Commands/cs_list.cpp": {
+      "before_sha256": "05d4db7bade1149e43aab756ff360aff8d95caf03d57409f898a24512cd9ede5",
+      "after_sha256": "4e626fac3a2442fdb79cb11b7ddbd07749082f753a3705029123f74e0357fc59"
     }
   }
 }
