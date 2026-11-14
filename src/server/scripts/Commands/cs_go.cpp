@@ -499,14 +499,11 @@ public:
         if (!zoneX || !zoneY)
             return false;
 
-        float x = (float)atof(zoneX);
-        float y = (float)atof(zoneY);
-
-        // prevent accept wrong numeric args
-        if ((x == 0.0f && *zoneX != '0') || (y == 0.0f && *zoneY != '0'))
+        float x, y;
+        uint32 areaId = player->GetZoneId();
+        if (!Trinity::ParseCommandFloat(zoneX, x) || !Trinity::ParseCommandFloat(zoneY, y) ||
+            (id && !Trinity::ParseCommandInteger(id, areaId)))
             return false;
-
-        uint32 areaId = id ? (uint32)atoi(id) : player->GetZoneId();
 
         AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(areaId);
 
@@ -520,7 +517,11 @@ public:
         // update to parent zone if exist (client map show only zones without parents)
         AreaTableEntry const* zoneEntry = areaEntry->ParentAreaID ? sAreaTableStore.LookupEntry(areaEntry->ParentAreaID) : areaEntry;
 
+        if (!zoneEntry)
+            return false;
         Map const* map = sMapMgr->CreateBaseMap(zoneEntry->ContinentID);
+        if (!map)
+            return false;
 
         if (map->Instanceable())
         {
@@ -538,6 +539,13 @@ public:
             return false;
         }
 
+        float const groundHeight = map->GetHeight(x, y, MAX_HEIGHT);
+        if (!std::isfinite(groundHeight) || groundHeight <= INVALID_HEIGHT)
+            return false;
+        float z = std::max(groundHeight, map->GetWaterLevel(x, y));
+        if (!MapManager::IsValidMapCoord(zoneEntry->ContinentID, x, y, z))
+            return false;
+
         // stop flight if need
         if (player->isInFlight())
         {
@@ -548,10 +556,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
-
-        player->TeleportTo(zoneEntry->ContinentID, x, y, z, player->GetOrientation());
-        return true;
+        return player->TeleportTo(zoneEntry->ContinentID, x, y, z, player->GetOrientation());
     }
 
     //teleport at coordinates, including Z and orientation
