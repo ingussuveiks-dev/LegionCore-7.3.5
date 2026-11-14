@@ -1468,8 +1468,14 @@ public:
         if (!x)
             return false;
 
-        if (Player* target = handler->getSelectedObject()->ToPlayer())
-            target->GetSession()->SendPetBattleRequestFailed(atoul(x));
+        uint8 reason;
+        if (!Trinity::ParseCommandInteger(x, reason))
+            return false;
+        WorldObject* selected = handler->getSelectedObject();
+        Player* target = selected ? selected->ToPlayer() : nullptr;
+        if (!target)
+            return false;
+        target->GetSession()->SendPetBattleRequestFailed(reason);
 
         return true;
     }

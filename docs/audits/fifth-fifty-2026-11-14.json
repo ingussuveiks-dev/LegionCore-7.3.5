@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_5_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 5,
+  "status": "IN_PROGRESS_6_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 6,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -27,7 +27,7 @@
   "batches": [
     {
       "batch": 1,
-      "count": 5,
+      "count": 6,
       "source_case_count": 64,
       "repairs": [
         {
@@ -68,6 +68,14 @@
           "summary": "Reject absent session/player before all-spell cheat status access; retain all native flags.",
           "path": "src/server/scripts/Commands/cs_cheat.cpp",
           "method": "HandleAllSpellCheatCommand",
+          "test_scope": "complete production function/helper"
+        },
+        {
+          "index": 6,
+          "key": "PetBattleFailureSafeSelection",
+          "summary": "Validate native byte reason and selected Player before sending the actual response.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleDebugBattlePetRequestFailedCommand",
           "test_scope": "complete production function/helper"
         }
       ]
