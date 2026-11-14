@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "Guild.h"
 #include "GuildMgr.h"
 
@@ -185,7 +186,9 @@ public:
         if (!targetGuild)
             return false;
 
-        uint8 newRank = uint8(atoi(rankStr));
+        uint8 newRank;
+        if (!Trinity::ParseCommandInteger(rankStr, newRank))
+            return false;
         return targetGuild->ChangeMemberRank(targetGuid, newRank);
     }
 };

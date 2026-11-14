@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_8_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 8,
+  "status": "IN_PROGRESS_9_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 9,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -15,7 +15,7 @@
   "batches": [
     {
       "batch": 1,
-      "count": 8,
+      "count": 9,
       "source_case_count": 142,
       "repairs": [
         {
@@ -80,6 +80,14 @@
           "summary": "Parse a complete signed delta and add in64 bits before the existing1..255 clamp;preserve default+1 and online/offline updates.",
           "path": "src/server/scripts/Commands/cs_character.cpp",
           "method": "HandleLevelUpCommand",
+          "test_scope": "complete production handler/helper"
+        },
+        {
+          "index": 9,
+          "key": "GuildRankNativeWidth",
+          "summary": "Reject malformed or byte-wrapped guild ranks before the native membership/rank validator.",
+          "path": "src/server/scripts/Commands/cs_guild.cpp",
+          "method": "HandleGuildRankCommand",
           "test_scope": "complete production handler/helper"
         }
       ]

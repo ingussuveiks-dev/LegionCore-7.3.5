@@ -94,6 +94,16 @@
       "new": "    static bool HandleLevelUpCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* levelStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &levelStr);\n\n        // exception opt second arg: .character level $name\n        if (levelStr && isalpha(static_cast<unsigned char>(levelStr[0])))\n        {\n            nameStr = levelStr;\n            levelStr = NULL;                                    // current level will used\n        }\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string targetName;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &targetName))\n            return false;\n\n        int32 oldlevel = target ? target->getLevel() : Player::GetLevelFromDB(targetGuid);\n        int32 addlevel = 1;\n        if (levelStr && !Trinity::ParseCommandInteger(levelStr, addlevel))\n            return false;\n        int64 newlevel = int64(oldlevel) + addlevel;\n\n        if (newlevel < 1)\n            newlevel = 1;\n\n        if (newlevel > STRONG_MAX_LEVEL)                         // hardcoded maximum level\n            newlevel = STRONG_MAX_LEVEL;\n\n        HandleCharacterLevel(target, targetGuid, oldlevel, uint32(newlevel), handler);\n\n        if (!handler->GetSession() || handler->GetSession()->GetPlayer() != target)      // including chr == NULL\n        {\n            std::string nameLink = handler->playerLink(targetName);\n            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), uint32(newlevel));\n        }\n\n        return true;\n    }",
       "test_helpers": "characterlevel",
       "summary": "Parse a complete signed delta and add in64 bits before the existing1..255 clamp;preserve default+1 and online/offline updates."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_guild.cpp",
+      "method": "HandleGuildRankCommand",
+      "case": "GuildRankNativeWidth",
+      "key": "GuildRankNativeWidth",
+      "kind": "fourth",
+      "old": "    static bool HandleGuildRankCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* rankStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &rankStr);\n        if (!rankStr)\n            return false;\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string target_name;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &target_name))\n            return false;\n\n        ObjectGuid::LowType guildId = target ? target->GetGuildId() : Player::GetGuildIdFromDB(targetGuid);\n        if (!guildId)\n            return false;\n\n        Guild* targetGuild = sGuildMgr->GetGuildById(guildId);\n        if (!targetGuild)\n            return false;\n\n        uint8 newRank = uint8(atoi(rankStr));\n        return targetGuild->ChangeMemberRank(targetGuid, newRank);\n    }",
+      "new": "    static bool HandleGuildRankCommand(ChatHandler* handler, char const* args)\n    {\n        char* nameStr;\n        char* rankStr;\n        handler->extractOptFirstArg((char*)args, &nameStr, &rankStr);\n        if (!rankStr)\n            return false;\n\n        Player* target;\n        ObjectGuid targetGuid;\n        std::string target_name;\n        if (!handler->extractPlayerTarget(nameStr, &target, &targetGuid, &target_name))\n            return false;\n\n        ObjectGuid::LowType guildId = target ? target->GetGuildId() : Player::GetGuildIdFromDB(targetGuid);\n        if (!guildId)\n            return false;\n\n        Guild* targetGuild = sGuildMgr->GetGuildById(guildId);\n        if (!targetGuild)\n            return false;\n\n        uint8 newRank;\n        if (!Trinity::ParseCommandInteger(rankStr, newRank))\n            return false;\n        return targetGuild->ChangeMemberRank(targetGuid, newRank);\n    }",
+      "summary": "Reject malformed or byte-wrapped guild ranks before the native membership/rank validator."
     }
   ],
   "extra_edits": [
@@ -108,6 +118,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "CharacterLevelExactValue"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_guild.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "GuildRankNativeWidth"
     }
   ],
   "files": {
@@ -118,6 +134,10 @@
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
       "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
+    },
+    "src/server/scripts/Commands/cs_guild.cpp": {
+      "before_sha256": "168efca091cb840607eec47506ed408eb6ebe9e38a1e62c0966f9bba9023a593",
+      "after_sha256": "3211ada11154a07dce20b187a75518fb3eafa042626b67698f676c8f6438dd81"
     }
   }
 }
