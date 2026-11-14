@@ -401,6 +401,16 @@
       "observe": "entry",
       "test_capture": "handler->captured = {entry,id,uint64(i!=nullptr)};",
       "summary": "Validate both native32-bit spawn/vehicle IDs before either default summoning or explicit vehicle creation."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lfg.cpp",
+      "method": "HandleLfgJoinCommand",
+      "case": "LfgJoinAtomicNativeWidths",
+      "key": "LfgJoinAtomicNativeWidths",
+      "kind": "fourth",
+      "old": "    static bool HandleLfgJoinCommand(ChatHandler* handler, char const* args)\n    {\n        if (!sLFGMgr->isOptionEnabled(lfg::LFG_OPTION_ENABLE_DUNGEON_FINDER | lfg::LFG_OPTION_ENABLE_RAID_BROWSER))\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        Tokenizer tokens(args, ' ');\n        if (tokens.size() < 2)\n            return false;\n\n        uint32 roles = 1;\n        lfg::LfgDungeonSet dungeons;\n        for (uint32 i = 0; i < tokens.size(); ++i)\n        {\n            if (i == 0)\n                roles = std::atoi(tokens[i]);\n            else\n                dungeons.insert(std::atoi(tokens[i]));\n        }\n\n        sLFGMgr->JoinLfg(player, uint8(roles), dungeons);\n        return true;\n    }",
+      "new": "    static bool HandleLfgJoinCommand(ChatHandler* handler, char const* args)\n    {\n        if (!sLFGMgr->isOptionEnabled(lfg::LFG_OPTION_ENABLE_DUNGEON_FINDER | lfg::LFG_OPTION_ENABLE_RAID_BROWSER))\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        Tokenizer tokens(args, ' ');\n        if (tokens.size() < 2)\n            return false;\n\n        uint8 roles = 1;\n        lfg::LfgDungeonSet dungeons;\n        for (uint32 i = 0; i < tokens.size(); ++i)\n        {\n            if (i == 0)\n            {\n                if (!Trinity::ParseCommandInteger(tokens[i], roles))\n                    return false;\n            }\n            else\n            {\n                uint32 dungeon;\n                if (!Trinity::ParseCommandInteger(tokens[i], dungeon))\n                    return false;\n                dungeons.insert(dungeon);\n            }\n        }\n\n        sLFGMgr->JoinLfg(player, roles, dungeons);\n        return true;\n    }",
+      "summary": "Validate native byte roles and every32-bit dungeon selector before one queue request;retain native role/catalog/group admission and set deduplication."
     }
   ],
   "extra_edits": [
@@ -451,6 +461,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "ScenarioStepNativeBounds"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lfg.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "LfgJoinAtomicNativeWidths"
     }
   ],
   "files": {
@@ -465,6 +481,10 @@
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
       "after_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d"
+    },
+    "src/server/scripts/Commands/cs_lfg.cpp": {
+      "before_sha256": "4df1c82180d8f76cfb915ac7f885f74ff41a48ed43be6f565d56486acd056354",
+      "after_sha256": "aaaa6fb37d4251cd03d071a798868879ba8289dcd5f9e14e2712a78ce8631221"
     },
     "src/server/scripts/Commands/cs_scenario.cpp": {
       "before_sha256": "bbc091440de8280bb607e0cfdc41b28830ecfc113651fa5c1f9cd4d33c280bfe",

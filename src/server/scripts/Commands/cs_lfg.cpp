@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "LFGMgr.h"
 #include "Group.h"
 
@@ -78,17 +79,25 @@ public:
         if (tokens.size() < 2)
             return false;
 
-        uint32 roles = 1;
+        uint8 roles = 1;
         lfg::LfgDungeonSet dungeons;
         for (uint32 i = 0; i < tokens.size(); ++i)
         {
             if (i == 0)
-                roles = std::atoi(tokens[i]);
+            {
+                if (!Trinity::ParseCommandInteger(tokens[i], roles))
+                    return false;
+            }
             else
-                dungeons.insert(std::atoi(tokens[i]));
+            {
+                uint32 dungeon;
+                if (!Trinity::ParseCommandInteger(tokens[i], dungeon))
+                    return false;
+                dungeons.insert(dungeon);
+            }
         }
 
-        sLFGMgr->JoinLfg(player, uint8(roles), dungeons);
+        sLFGMgr->JoinLfg(player, roles, dungeons);
         return true;
     }
 
