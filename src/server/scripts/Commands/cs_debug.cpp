@@ -1828,14 +1828,13 @@ public:
 
             char* mask2 = strtok(NULL, " \n");
 
-            uint32 moveFlags = (uint32)atoi(mask1);
+            uint32 moveFlags, moveFlagsExtra = 0;
+            if (!Trinity::ParseCommandInteger(mask1, moveFlags) ||
+                (mask2 && !Trinity::ParseCommandInteger(mask2, moveFlagsExtra)))
+                return false;
             target->SetUnitMovementFlags(moveFlags);
-
             if (mask2)
-            {
-                uint32 moveFlagsExtra = uint32(atoi(mask2));
                 target->SetExtraUnitMovementFlags(moveFlagsExtra);
-            }
 
             target->SendMovementFlagUpdate();
             handler->PSendSysMessage(LANG_MOVEFLAGS_SET, target->GetUnitMovementFlags(), target->GetExtraUnitMovementFlags());
