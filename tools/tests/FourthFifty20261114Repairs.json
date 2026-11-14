@@ -421,6 +421,16 @@
       "old": "    static bool HandleLfgOptionsCommand(ChatHandler* handler, char const* args)\n    {\n        int32 options = -1;\n        if (char* str = strtok((char*)args, \" \"))\n        {\n            int32 tmp = atoi(str);\n            if (tmp > -1)\n                options = tmp;\n        }\n\n        if (options != -1)\n        {\n            sLFGMgr->SetOptions(options);\n            handler->PSendSysMessage(LANG_LFG_OPTIONS_CHANGED);\n        }\n        handler->PSendSysMessage(LANG_LFG_OPTIONS, sLFGMgr->GetOptions());\n        return true;\n    }",
       "new": "    static bool HandleLfgOptionsCommand(ChatHandler* handler, char const* args)\n    {\n        int64 options = -1;\n        if (char* str = strtok((char*)args, \" \"))\n            if (!Trinity::ParseCommandInteger(str, options) || options < -1 || options > std::numeric_limits<uint32>::max())\n                return false;\n\n        if (options != -1)\n        {\n            sLFGMgr->SetOptions(uint32(options));\n            handler->PSendSysMessage(LANG_LFG_OPTIONS_CHANGED);\n        }\n        handler->PSendSysMessage(LANG_LFG_OPTIONS, sLFGMgr->GetOptions());\n        return true;\n    }",
       "summary": "Reject malformed/out-of-range masks without disabling options;retain unsigned32 masks and the-1/no-argument display mode."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lfg.cpp",
+      "method": "HandleLfgQueueInfoCommand",
+      "case": "LfgQueueVerbosityExactValue",
+      "key": "LfgQueueVerbosityExactValue",
+      "kind": "fourth",
+      "old": "    static bool HandleLfgQueueInfoCommand(ChatHandler* handler, char const* args)\n    {\n        handler->SendSysMessage(sLFGMgr->DumpQueueInfo(atoi(args) != 0).c_str());\n        return true;\n    }",
+      "new": "    static bool HandleLfgQueueInfoCommand(ChatHandler* handler, char const* args)\n    {\n        int32 verbose = 0;\n        if (*args && !Trinity::ParseCommandInteger(args, verbose))\n            return false;\n        handler->SendSysMessage(sLFGMgr->DumpQueueInfo(verbose != 0).c_str());\n        return true;\n    }",
+      "summary": "Parse a complete signed verbosity value while retaining no-argument display and native nonzero=true behavior."
     }
   ],
   "extra_edits": [
@@ -500,7 +510,7 @@
     },
     "src/server/scripts/Commands/cs_lfg.cpp": {
       "before_sha256": "4df1c82180d8f76cfb915ac7f885f74ff41a48ed43be6f565d56486acd056354",
-      "after_sha256": "7dda518db17bc52f0c8da34116448948556f1f2858e5c9738b245fd8fe752130"
+      "after_sha256": "ed96259681a1a6c45cef858e5daa4d4d31cd05033546e6d0baebc30aff6dea31"
     },
     "src/server/scripts/Commands/cs_scenario.cpp": {
       "before_sha256": "bbc091440de8280bb607e0cfdc41b28830ecfc113651fa5c1f9cd4d33c280bfe",

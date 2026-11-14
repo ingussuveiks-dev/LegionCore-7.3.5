@@ -157,7 +157,10 @@ public:
 
     static bool HandleLfgQueueInfoCommand(ChatHandler* handler, char const* args)
     {
-        handler->SendSysMessage(sLFGMgr->DumpQueueInfo(atoi(args) != 0).c_str());
+        int32 verbose = 0;
+        if (*args && !Trinity::ParseCommandInteger(args, verbose))
+            return false;
+        handler->SendSysMessage(sLFGMgr->DumpQueueInfo(verbose != 0).c_str());
         return true;
     }
 
