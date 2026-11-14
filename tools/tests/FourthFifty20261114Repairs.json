@@ -60,6 +60,18 @@
       "test_boundary": "        Quest const* quest",
       "observe": "entry",
       "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestReward catalog/status/effect path;retain selected-player and native quest rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "method": "HandleQuestStatus",
+      "case": "QuestStatusExactId",
+      "key": "QuestStatusExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleQuestStatus(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry = atol(cId);\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n        if (!quest)\n        {\n            handler->PSendSysMessage(600028, player->GetName(), entry);\n            return false;\n        }\n\n        switch (player->GetQuestStatus(entry))\n        {\n        case QUEST_STATUS_INCOMPLETE:\n            handler->PSendSysMessage(600025, entry, player->GetName());\n            break;\n        case QUEST_STATUS_COMPLETE:\n            handler->PSendSysMessage(600026, entry, player->GetName());\n            break;\n        case QUEST_STATUS_REWARDED:\n            handler->PSendSysMessage(600027, entry, player->GetName());\n            break;\n        case QUEST_STATUS_NONE:\n            handler->PSendSysMessage(600028, player->GetName(), entry);\n            break;\n        }\n        return true;\n    }",
+      "new": "    static bool HandleQuestStatus(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry;\n        if (!Trinity::ParseCommandInteger(cId, entry))\n            return false;\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n        if (!quest)\n        {\n            handler->PSendSysMessage(600028, player->GetName(), entry);\n            return false;\n        }\n\n        switch (player->GetQuestStatus(entry))\n        {\n        case QUEST_STATUS_INCOMPLETE:\n            handler->PSendSysMessage(600025, entry, player->GetName());\n            break;\n        case QUEST_STATUS_COMPLETE:\n            handler->PSendSysMessage(600026, entry, player->GetName());\n            break;\n        case QUEST_STATUS_REWARDED:\n            handler->PSendSysMessage(600027, entry, player->GetName());\n            break;\n        case QUEST_STATUS_NONE:\n            handler->PSendSysMessage(600028, player->GetName(), entry);\n            break;\n        }\n        return true;\n    }",
+      "test_boundary": "        Quest const* quest",
+      "observe": "entry",
+      "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestStatus catalog/status/effect path;retain selected-player and native quest rules."
     }
   ],
   "extra_edits": [
@@ -73,7 +85,7 @@
   "files": {
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
-      "after_sha256": "730e8fa891e95db7304b3e3c1b56e3c609dafbe662112af1929380daf082f77d"
+      "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
     }
   }
 }
