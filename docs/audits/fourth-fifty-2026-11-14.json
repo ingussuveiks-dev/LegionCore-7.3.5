@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_38_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 38,
+  "status": "IN_PROGRESS_39_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 39,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -276,7 +276,7 @@
     },
     {
       "batch": 4,
-      "count": 8,
+      "count": 9,
       "source_case_count": 144,
       "repairs": [
         {
@@ -341,6 +341,14 @@
           "summary": "Parse a complete signed verbosity value while retaining no-argument display and native nonzero=true behavior.",
           "path": "src/server/scripts/Commands/cs_lfg.cpp",
           "method": "HandleLfgQueueInfoCommand",
+          "test_scope": "complete production handler/helper"
+        },
+        {
+          "index": 39,
+          "key": "ExploreSelectedMaskReplacement",
+          "summary": "Apply exploration to the authorized selected player and replace all320 masks so clear actually clears;retain nonzero=true semantics and neighboring fields.",
+          "path": "src/server/scripts/Commands/cs_cheat.cpp",
+          "method": "HandleExploreCheatCommand",
           "test_scope": "complete production handler/helper"
         }
       ]

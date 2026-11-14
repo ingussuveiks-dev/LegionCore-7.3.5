@@ -1,0 +1,18 @@
+{
+  "index": 39,
+  "batch": 4,
+  "key": "ExploreSelectedMaskReplacement",
+  "summary": "Apply exploration to the authorized selected player and replace all320 masks so clear actually clears;retain nonzero=true semantics and neighboring fields.",
+  "path": "src/server/scripts/Commands/cs_cheat.cpp",
+  "method": "HandleExploreCheatCommand",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed handoff.",
+  "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
+  "implementation_reference": "Exact old/new production body/include deltas in tools/tests/FourthFifty20261114Repairs.json",
+  "verification_reference": "docs/audits/fourth-fifty-2026-11-14.json",
+  "verification_scope": "Complete production handler/helper with controlled endpoints",
+  "canonical_world_sha256": "143ad2028090df95b8d2a67c9def38795ffd6186305831506d6044d6d9fe47f4",
+  "post_test_diagnostics": "Before/after crash reports and log offsets recorded for source/native/build/analysis/PE/startup tests. No new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Fixture setup enum/member errors and verifier compiler-shape prototypes paired with passing repaired runs;no logging/check suppression.",
+  "archive": "build-extractors/bin/Release/fixed/fourth-fifty-20261114",
+  "client_scope": "No actual client traversal claimed;whole36 and original OPEN artifact/native evidence remain separate."
+}

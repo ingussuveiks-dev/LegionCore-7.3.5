@@ -431,6 +431,16 @@
       "old": "    static bool HandleLfgQueueInfoCommand(ChatHandler* handler, char const* args)\n    {\n        handler->SendSysMessage(sLFGMgr->DumpQueueInfo(atoi(args) != 0).c_str());\n        return true;\n    }",
       "new": "    static bool HandleLfgQueueInfoCommand(ChatHandler* handler, char const* args)\n    {\n        int32 verbose = 0;\n        if (*args && !Trinity::ParseCommandInteger(args, verbose))\n            return false;\n        handler->SendSysMessage(sLFGMgr->DumpQueueInfo(verbose != 0).c_str());\n        return true;\n    }",
       "summary": "Parse a complete signed verbosity value while retaining no-argument display and native nonzero=true behavior."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_cheat.cpp",
+      "method": "HandleExploreCheatCommand",
+      "case": "ExploreSelectedMaskReplacement",
+      "key": "ExploreSelectedMaskReplacement",
+      "kind": "fourth",
+      "old": "    static bool HandleExploreCheatCommand(ChatHandler* handler, const char *args)\n        {\n            if (!*args)\n                return false;\n\n            int flag = atoi((char*)args);\n\n            Player* chr = handler->getSelectedPlayer();\n            if (chr == NULL)\n            {\n                handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n\n            if (flag != 0)\n            {\n                handler->PSendSysMessage(LANG_YOU_SET_EXPLORE_ALL, handler->GetNameLink(chr).c_str());\n                if (handler->needReportToTarget(chr))\n                    ChatHandler(chr).PSendSysMessage(LANG_YOURS_EXPLORE_SET_ALL, handler->GetNameLink().c_str());\n            }\n            else\n            {\n                handler->PSendSysMessage(LANG_YOU_SET_EXPLORE_NOTHING, handler->GetNameLink(chr).c_str());\n                if (handler->needReportToTarget(chr))\n                    ChatHandler(chr).PSendSysMessage(LANG_YOURS_EXPLORE_SET_NOTHING, handler->GetNameLink().c_str());\n            }\n\n            for (uint16 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)\n            {\n                if (flag != 0)\n                    handler->GetSession()->GetPlayer()->SetFlag(PLAYER_FIELD_EXPLORED_ZONES+i, 0xFFFFFFFF);\n                else\n                    handler->GetSession()->GetPlayer()->SetFlag(PLAYER_FIELD_EXPLORED_ZONES+i, 0);\n            }\n\n            return true;\n        }",
+      "new": "    static bool HandleExploreCheatCommand(ChatHandler* handler, const char *args)\n        {\n            if (!*args)\n                return false;\n\n            int32 flag;\n            if (!Trinity::ParseCommandInteger(args, flag))\n                return false;\n\n            Player* chr = handler->getSelectedPlayer();\n            if (chr == NULL)\n            {\n                handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n\n            if (handler->HasLowerSecurity(chr, ObjectGuid::Empty))\n                return false;\n\n            if (flag != 0)\n            {\n                handler->PSendSysMessage(LANG_YOU_SET_EXPLORE_ALL, handler->GetNameLink(chr).c_str());\n                if (handler->needReportToTarget(chr))\n                    ChatHandler(chr).PSendSysMessage(LANG_YOURS_EXPLORE_SET_ALL, handler->GetNameLink().c_str());\n            }\n            else\n            {\n                handler->PSendSysMessage(LANG_YOU_SET_EXPLORE_NOTHING, handler->GetNameLink(chr).c_str());\n                if (handler->needReportToTarget(chr))\n                    ChatHandler(chr).PSendSysMessage(LANG_YOURS_EXPLORE_SET_NOTHING, handler->GetNameLink().c_str());\n            }\n\n            for (uint16 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)\n                chr->SetUInt32Value(PLAYER_FIELD_EXPLORED_ZONES + i, flag ? std::numeric_limits<uint32>::max() : 0);\n\n            return true;\n        }",
+      "summary": "Apply exploration to the authorized selected player and replace all320 masks so clear actually clears;retain nonzero=true semantics and neighboring fields."
     }
   ],
   "extra_edits": [
@@ -489,13 +499,29 @@
       "owner_key": "LfgJoinAtomicNativeWidths"
     },
     {
+      "path": "src/server/scripts/Commands/cs_cheat.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "ExploreSelectedMaskReplacement"
+    },
+    {
       "path": "src/server/scripts/Commands/cs_lfg.cpp",
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include <limits>",
       "owner_key": "LfgOptionsCheckedNativeMask"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_cheat.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include <limits>",
+      "owner_key": "ExploreSelectedMaskReplacement"
     }
   ],
   "files": {
+    "src/server/scripts/Commands/cs_cheat.cpp": {
+      "before_sha256": "57c5210ae213108108fd2e0ac190eb9fc3788abac60ca3bd4ba6f1ac6480eac0",
+      "after_sha256": "61bf4ebca26a85279a5b66a1d28bc3d1c25ee237e8aac050d9a1c1619829dbcc"
+    },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "b04e0336201d6a6b4ec533f401c18c4c37d61f97eeeca84c550b122d84137035",
       "after_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2"

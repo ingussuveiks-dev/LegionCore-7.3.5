@@ -24,6 +24,8 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include <limits>
+#include "CommandIntegerArgument.h"
 
 class cheat_commandscript : public CommandScript
 {
@@ -248,7 +250,9 @@ class cheat_commandscript : public CommandScript
             if (!*args)
                 return false;
 
-            int flag = atoi((char*)args);
+            int32 flag;
+            if (!Trinity::ParseCommandInteger(args, flag))
+                return false;
 
             Player* chr = handler->getSelectedPlayer();
             if (chr == NULL)
@@ -257,6 +261,9 @@ class cheat_commandscript : public CommandScript
                 handler->SetSentErrorMessage(true);
                 return false;
             }
+
+            if (handler->HasLowerSecurity(chr, ObjectGuid::Empty))
+                return false;
 
             if (flag != 0)
             {
@@ -272,12 +279,7 @@ class cheat_commandscript : public CommandScript
             }
 
             for (uint16 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)
-            {
-                if (flag != 0)
-                    handler->GetSession()->GetPlayer()->SetFlag(PLAYER_FIELD_EXPLORED_ZONES+i, 0xFFFFFFFF);
-                else
-                    handler->GetSession()->GetPlayer()->SetFlag(PLAYER_FIELD_EXPLORED_ZONES+i, 0);
-            }
+                chr->SetUInt32Value(PLAYER_FIELD_EXPLORED_ZONES + i, flag ? std::numeric_limits<uint32>::max() : 0);
 
             return true;
         }
