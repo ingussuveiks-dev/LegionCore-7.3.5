@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_12_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 12,
+  "status": "IN_PROGRESS_13_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 13,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -102,7 +102,7 @@
     },
     {
       "batch": 2,
-      "count": 2,
+      "count": 3,
       "source_case_count": 95,
       "repairs": [
         {
@@ -119,6 +119,14 @@
           "summary": "Parse a complete positive signed32 title ID after native link extraction;retain selected-player authority,title lookup and current-title selection.",
           "path": "src/server/scripts/Commands/cs_titles.cpp",
           "method": "HandleTitlesCurrentCommand",
+          "test_scope": "complete production handler"
+        },
+        {
+          "index": 13,
+          "key": "TitleRemoveExactId",
+          "summary": "Parse a complete positive signed32 title ID after native link extraction;retain selected-player authority,title lookup and title ownership changes.",
+          "path": "src/server/scripts/Commands/cs_titles.cpp",
+          "method": "HandleTitlesRemoveCommand",
           "test_scope": "complete production handler"
         }
       ]
