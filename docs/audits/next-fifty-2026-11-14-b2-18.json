@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "batch": 2,
+  "index": 18,
+  "key": "NpcSummonGroupChecked",
+  "path": "src/server/scripts/Commands/cs_npc.cpp",
+  "summary": "NpcSummonGroupChecked;complete exact source delta in NextFifty20261114Repairs.json.",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "checks_reference": "docs/audits/next-fifty-2026-11-14.json",
+  "scope": "One independently callable command/helper defect;shared parsers/tests not recounted.",
+  "canonical_world_sha256": "92ccab057ecc9e89a0a99d637d62a11286ac7f680886095ba0d50a35cb1964df",
+  "post_test_diagnostics": "SetSpeed fixture omitted native default force argument;corrected and paired with final242 pass. Finite radius guard retains negative square semantics,zero/default radius and native wide SQL GUID reporting. Mount preserves unrelated flags;INT32_MIN damage rejected before negation. No new/changed crash,appended DBErrors or unexplained server warning/error/assertion;owned35012 ready/shutdown0/exit0,gone,stderr empty. Mixed7111-byte DBErrors and Slaghammer hash unchanged.",
+  "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch2",
+  "fix_commit": "This focused commit;actual hashes in ignored fixed repair-record.json",
+  "client_limit": "Native/model/PE/startup evidence;actual client/whole36 remain separate."
+}

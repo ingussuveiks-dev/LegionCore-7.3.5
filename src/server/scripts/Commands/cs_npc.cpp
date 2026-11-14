@@ -2048,8 +2048,10 @@ public:
         char* groupIdtr = strtok((char*)args, " ");
         char* delStr = strtok(NULL, " ");
 
-        uint32 groupId = groupIdtr ? atoi(groupIdtr) : 0;
-        uint32 del = delStr ? atoi(delStr) : 0;
+        uint32 groupId;
+        uint32 del = 0;
+        if (!Trinity::ParseCommandInteger(groupIdtr, groupId) || (delStr && !Trinity::ParseCommandInteger(delStr, del)))
+            return false;
 
         Creature* creature = handler->getSelectedCreature();
 
