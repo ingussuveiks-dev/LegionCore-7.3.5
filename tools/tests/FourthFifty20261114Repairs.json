@@ -345,6 +345,16 @@
       "test_boundary": "        handler->PSendSysMessage(\"SendSpellScene",
       "observe": "SceneId",
       "summary": "Reject malformed/overflowing scene selectors before dispatching an unrelated player scene."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleCombatStopCommand",
+      "case": "CombatStopMissingSelection",
+      "key": "CombatStopMissingSelection",
+      "kind": "fourth",
+      "old": "    static bool HandleCombatStopCommand(ChatHandler* handler, char const* args)\n    {\n        Player* target = nullptr;\n        Creature* creature = handler->getSelectedUnit()->ToCreature();\n\n        if (creature && creature->isInCombat())\n        {\n            creature->AI()->EnterEvadeMode();\n            return true;\n        }\n\n        if (args && strlen(args) > 0)\n        {\n            std::string name(args);\n            target = sObjectAccessor->FindPlayerByName(name);\n            if (!target)\n            {\n                handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        if (!target)\n        {\n            if (!handler->extractPlayerTarget((char*)args, &target))\n                return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        target->CombatStop();\n        target->getHostileRefManager().deleteReferences();\n        return true;\n    }",
+      "new": "    static bool HandleCombatStopCommand(ChatHandler* handler, char const* args)\n    {\n        Player* target = nullptr;\n        Unit* selected = handler->getSelectedUnit();\n        Creature* creature = selected ? selected->ToCreature() : nullptr;\n\n        if (creature && creature->isInCombat())\n        {\n            if (!creature->AI())\n                return false;\n            creature->AI()->EnterEvadeMode();\n            return true;\n        }\n\n        if (args && strlen(args) > 0)\n        {\n            std::string name(args);\n            target = sObjectAccessor->FindPlayerByName(name);\n            if (!target)\n            {\n                handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        if (!target)\n        {\n            if (!handler->extractPlayerTarget((char*)args, &target))\n                return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        target->CombatStop();\n        target->getHostileRefManager().deleteReferences();\n        return true;\n    }",
+      "summary": "Handle a missing selected unit before ToCreature and require an AI before NPC evade;retain named/player authority and hostile-reference cleanup."
     }
   ],
   "extra_edits": [
@@ -394,7 +404,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "914478201eb1ad3f0b61d989e2c9ea40f193abc1ffb970362e4fff51ede5ce61",
-      "after_sha256": "d96563498567892d73943d4404067808ad14023307b9136fe52aaca88eefa23a"
+      "after_sha256": "e6b083e246cf18eb9e9c84353b653cbe0ca494ee333302d63fafe86d11662e05"
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",

@@ -2591,10 +2591,13 @@ public:
     static bool HandleCombatStopCommand(ChatHandler* handler, char const* args)
     {
         Player* target = nullptr;
-        Creature* creature = handler->getSelectedUnit()->ToCreature();
+        Unit* selected = handler->getSelectedUnit();
+        Creature* creature = selected ? selected->ToCreature() : nullptr;
 
         if (creature && creature->isInCombat())
         {
+            if (!creature->AI())
+                return false;
             creature->AI()->EnterEvadeMode();
             return true;
         }
