@@ -1974,7 +1974,9 @@ public:
         if (!cval)
             return false;
 
-        int32 Value = (int32)atoi(cval);
+        int32 Value;
+        if (!Trinity::ParseCommandInteger(cval, Value))
+            return false;
         player->HandleStatModifier(UNIT_MOD_ATTACK_POWER, TOTAL_VALUE, float(Value), true);
         player->HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED, TOTAL_VALUE, float(Value), true);
         return true;

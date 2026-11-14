@@ -40,13 +40,23 @@
       "old": "    static bool HandleDebugModifySpellpowerCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->ApplySpellPowerBonus(Value, true);\n        return true;\n    }",
       "new": "    static bool HandleDebugModifySpellpowerCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n        // The native helper negates negative amounts, and its consumer uses int32.\n        uint32 base = player->GetBaseSpellPowerBonus();\n        if (Value == std::numeric_limits<int32>::min() || base > uint32(std::numeric_limits<int32>::max()) ||\n            (Value > 0 && uint64(base) + uint32(Value) > uint32(std::numeric_limits<int32>::max())))\n            return false;\n        player->ApplySpellPowerBonus(Value, true);\n        return true;\n    }",
       "summary": "Reject malformed/overflowing deltas,INT_MIN negation and sums outside the signed native spellpower consumer;retain native withdrawal clamping."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugModifyAttackpowerCommand",
+      "case": "AttackpowerSignedDelta",
+      "key": "AttackpowerSignedDelta",
+      "kind": "more",
+      "old": "    static bool HandleDebugModifyAttackpowerCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->HandleStatModifier(UNIT_MOD_ATTACK_POWER, TOTAL_VALUE, float(Value), true);\n        player->HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED, TOTAL_VALUE, float(Value), true);\n        return true;\n    }",
+      "new": "    static bool HandleDebugModifyAttackpowerCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n        player->HandleStatModifier(UNIT_MOD_ATTACK_POWER, TOTAL_VALUE, float(Value), true);\n        player->HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED, TOTAL_VALUE, float(Value), true);\n        return true;\n    }",
+      "summary": "Parse a complete signed32 attackpower delta before touching either native attackpower modifier."
     }
   ],
   "extra_edits": [],
   "files": {
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "7dd4c2089494106693e782cacda91997840828682e1bc872c4c74e2476c820ec"
+      "after_sha256": "6bfa5cb26cebf160ef7521958a2866abe2fd1bb750dc2025bff026d4374e5746"
     }
   }
 }
