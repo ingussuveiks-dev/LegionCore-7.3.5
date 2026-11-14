@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-14",
+  "kind": "TEST_CERTIFICATE_REPAIR_NO_GAMEPLAY_SOURCE_CHANGE",
+  "binary_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+  "diagnostics": "Relevant complete final checks record no new/changed crash or appended DBErrors/server warning/error/assertion; no world/bnet launched. Actual client traversal remains separate.",
+  "status": "PASS_RETAINED_CANONICAL_SCOPE",
+  "cause": "Raw historical Map::SummonCreature disassembly includes two native RVA dispatch tables after its return and interprets data as instructions, producing an out-of-image fake branch during the early quest-binding proof.",
+  "repair": "Use the independently bounded checked reader only for this Map method; require matching binary/base, actual6/17 checked native category/type bounds and in-code out-of-range branches, contiguous tables at the closed code end, native unwind limits and every one of23 targets at a real instruction boundary. All original Sheilun guards/before-AddToWorld/boarding/logout/return checks remain.",
+  "checks": "Two real table/all23 target scopes pass; in-memory corrupt third target in either table and truncated bound are rejected. Entire verify_sheilun_acquisition_release completes exit0 in release-dependent. No native full-core ASAN or actual client/flight claim."
+}

@@ -14,7 +14,11 @@ from capstone.x86_const import X86_REG_RIP
 from sharasdal_erunak_entry_pe import sites, values
 
 n = runpy.run_path(str(Path(__file__).with_name('verify_smart_linked_cast_retry_release.py')))
-ins = n['instructions']
+def ins(prefix):
+    if prefix == '?SummonCreature@Map@@':
+        from sheilun_map_summon_pe import instructions
+        return instructions(n)
+    return n['instructions'](prefix)
 checked = []
 
 
