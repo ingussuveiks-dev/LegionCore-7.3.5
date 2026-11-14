@@ -236,7 +236,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 id = atoi(args);
+        uint32 id;
+        if (!Trinity::ParseCommandInteger(args, id))
+            return false;
 
         if (!id)
             return false;

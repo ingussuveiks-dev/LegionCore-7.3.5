@@ -289,6 +289,16 @@
       "test_boundary": "        guidLow = target->GetDBTableGUIDLow();",
       "observe": "pathid",
       "summary": "Parse the complete path ID and retain the native64-bit creature addon GUID before loading the route."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_wp.cpp",
+      "method": "HandleWpReloadCommand",
+      "case": "WaypointReloadExactId",
+      "key": "WaypointReloadExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleWpReloadCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 id = atoi(args);\n\n        if (!id)\n            return false;\n\n        handler->PSendSysMessage(\"%s%s|r|cff00ffff%u|r\", \"|cff00ff00\", \"Loading Path: \", id);\n        sWaypointMgr->ReloadPath(id);\n        return true;\n    }",
+      "new": "    static bool HandleWpReloadCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 id;\n        if (!Trinity::ParseCommandInteger(args, id))\n            return false;\n\n        if (!id)\n            return false;\n\n        handler->PSendSysMessage(\"%s%s|r|cff00ffff%u|r\", \"|cff00ff00\", \"Loading Path: \", id);\n        sWaypointMgr->ReloadPath(id);\n        return true;\n    }",
+      "summary": "Reject malformed/overflowing path IDs before reloading an unrelated route."
     }
   ],
   "extra_edits": [
@@ -362,7 +372,7 @@
     },
     "src/server/scripts/Commands/cs_wp.cpp": {
       "before_sha256": "ee7567558141c9bf4647537b49ed3fc919a16abbf9247934f9d40b32690ef491",
-      "after_sha256": "2c1c31f36f8d334ec4d5b3ef71ffebf72b80a526de5d1e32e9eac9ef031b860e"
+      "after_sha256": "e9d4ce7ed4e56fce0926685efc16beda611edea8a9726f05acf6183c2eacf6f8"
     }
   }
 }
