@@ -23,6 +23,7 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include <limits>
 #include "CommandIntegerArgument.h"
 #include "CommandFloatArgument.h"
 #include "GameEventMgr.h"
@@ -788,7 +789,9 @@ public:
 
         }
         char* damageStr = strtok (NULL, " ");
-        int32 damage = damageStr ? atoi(damageStr) : 0;
+        int32 damage = 0;
+        if ((damageStr && !Trinity::ParseCommandInteger(damageStr, damage)) || damage == std::numeric_limits<int32>::min())
+            return false;
 
         object->ModifyHealth(-damage, pPlayer);
         
