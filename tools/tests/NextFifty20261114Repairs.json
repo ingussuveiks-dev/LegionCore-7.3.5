@@ -300,6 +300,16 @@
       "batch": 3,
       "old": "    static bool HandleAccountSetAddonCommand(ChatHandler* handler, char const* args)\n    {\n        ///- Get the command line arguments\n        char* account = strtok((char*)args, \" \");\n        char* exp = strtok(NULL, \" \");\n\n        if (!account)\n            return false;\n\n        std::string accountName;\n        uint32 accountId;\n\n        if (!exp)\n        {\n            Player* player = handler->getSelectedPlayer();\n            if (!player)\n                return false;\n\n            accountId = player->GetSession()->GetAccountId();\n            AccountMgr::GetName(accountId, accountName);\n            exp = account;\n        }\n        else\n        {\n            ///- Convert Account name to Upper Format\n            accountName = account;\n            if (!Utf8ToUpperOnlyLatin(accountName))\n            {\n                handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, accountName.c_str());\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n\n            accountId = AccountMgr::GetId(accountName);\n            if (!accountId)\n            {\n                handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, accountName.c_str());\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        // Let set addon state only for lesser (strong) security level\n        // or to self account\n        if (handler->GetSession() && handler->GetSession()->GetAccountId() != accountId &&\n            handler->HasLowerSecurityAccount(NULL, accountId, true))\n            return false;\n\n        int expansion = atoi(exp); //get int anyway (0 if error)\n        if (expansion < 0 || uint8(expansion) > CURRENT_EXPANSION)\n            return false;\n\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPANSION);\n\n        stmt->setUInt8(0, expansion);\n        stmt->setUInt32(1, accountId);\n\n        LoginDatabase.Execute(stmt);\n\n        handler->PSendSysMessage(LANG_ACCOUNT_SETADDON, accountName.c_str(), accountId, expansion);\n        return true;\n    }",
       "new": "    static bool HandleAccountSetAddonCommand(ChatHandler* handler, char const* args)\n    {\n        ///- Get the command line arguments\n        char* account = strtok((char*)args, \" \");\n        char* exp = strtok(NULL, \" \");\n\n        if (!account)\n            return false;\n\n        std::string accountName;\n        uint32 accountId;\n\n        if (!exp)\n        {\n            Player* player = handler->getSelectedPlayer();\n            if (!player)\n                return false;\n\n            accountId = player->GetSession()->GetAccountId();\n            AccountMgr::GetName(accountId, accountName);\n            exp = account;\n        }\n        else\n        {\n            ///- Convert Account name to Upper Format\n            accountName = account;\n            if (!Utf8ToUpperOnlyLatin(accountName))\n            {\n                handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, accountName.c_str());\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n\n            accountId = AccountMgr::GetId(accountName);\n            if (!accountId)\n            {\n                handler->PSendSysMessage(LANG_ACCOUNT_NOT_EXIST, accountName.c_str());\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        // Let set addon state only for lesser (strong) security level\n        // or to self account\n        if (handler->GetSession() && handler->GetSession()->GetAccountId() != accountId &&\n            handler->HasLowerSecurityAccount(NULL, accountId, true))\n            return false;\n\n        uint32 expansion;\n        if (!Trinity::ParseCommandInteger(exp, expansion) || expansion > CURRENT_EXPANSION)\n            return false;\n\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPANSION);\n\n        stmt->setUInt8(0, expansion);\n        stmt->setUInt32(1, accountId);\n\n        LoginDatabase.Execute(stmt);\n\n        handler->PSendSysMessage(LANG_ACCOUNT_SETADDON, accountName.c_str(), accountId, expansion);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugPlayCinematicCommand",
+      "key": "DebugCinematicChecked",
+      "case": "Cinematic",
+      "kind": "next",
+      "batch": 4,
+      "old": "    static bool HandleDebugPlayCinematicCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug play cinematic #cinematicid\n        // #cinematicid - ID decimal number from CinemaicSequences.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 id = atoi((char*)args);\n        handler->GetSession()->GetPlayer()->SendCinematicStart(id);\n        return true;\n    }",
+      "new": "    static bool HandleDebugPlayCinematicCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug play cinematic #cinematicid\n        // #cinematicid - ID decimal number from CinemaicSequences.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 id;\n        if (!Trinity::ParseCommandInteger(args, id))\n            return false;\n        handler->GetSession()->GetPlayer()->SendCinematicStart(id);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -356,6 +366,12 @@
       "old": "#include \"ScriptMgr.h\"",
       "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "WorldEventInfoChecked"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "old": "#include \"ScriptMgr.h\"",
+      "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "DebugCinematicChecked"
     }
   ],
   "files": {
@@ -403,6 +419,11 @@
       "before_sha256": "ffa6f54510b7f0ef9e97041e801d83c7278d0b0efd34540698b6bd565ebe208d",
       "owner_key": null,
       "after_sha256": "6db3b5a96bdae9e2ff4041fe5bcf9056543e80ac5e9a7b3cd12a214d80d7dde5"
+    },
+    "src/server/scripts/Commands/cs_debug.cpp": {
+      "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
+      "after_sha256": "7e28cce9f6ec5fe93229fc91071cc22aaa1edea85523dacd575dfaa51e0f2fd5",
+      "owner_key": null
     }
   }
 }

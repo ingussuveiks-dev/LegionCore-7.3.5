@@ -42,6 +42,7 @@ EndScriptData */
 #include "Packets/MiscPackets.h"
 #include "PlayerDefines.h"
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
 #include "Vehicle.h"
 #include <fstream>
 #include "Garrison.h"
@@ -204,7 +205,9 @@ public:
             return false;
         }
 
-        uint32 id = atoi((char*)args);
+        uint32 id;
+        if (!Trinity::ParseCommandInteger(args, id))
+            return false;
         handler->GetSession()->GetPlayer()->SendCinematicStart(id);
         return true;
     }

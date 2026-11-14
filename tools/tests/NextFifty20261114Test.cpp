@@ -19,10 +19,11 @@
 #include <vector>
 #include "../../src/server/game/Chat/CommandIntegerArgument.h"
 #include "../../src/server/game/Chat/CommandFloatArgument.h"
-using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int32_t;using uint64=uint64_t;using int64=int64_t;
+using int16=int16_t;using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int32_t;using uint64=uint64_t;using int64=int64_t;
 static void Require(bool b,char const* message){if(!b)throw std::runtime_error(message);}
 #include "Constants.inc"
 #include "NativeCoordinates.inc"
+#include "NativeFall.inc"
 struct ObjectGuid{using LowType=uint64;uint64 low=1;uint64 GetGUIDLow(){return low;}std::string ToString(){return "controlled:1";}static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
 #define TC_LOG_DEBUG(...) ((void)0)
 #include "NativeTokenizer.inc"
@@ -33,12 +34,22 @@ struct ReputationManager{uint32 writes=0;int32 delta=0;bool paragon=false;void M
 struct Session;struct Player;struct Creature;struct GameObject;
 struct Item{uint64 xp=100;uint32 writes=0,states=0;Player*owner=nullptr;uint64 GetUInt64Value(uint32 field){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field read");return xp;}void SetUInt64Value(uint32 field,uint64 value){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field write");++writes;xp=value;}void SetState(uint32 state,Player*player){Require(state==ITEM_CHANGED,"Wrong item state");++states;owner=player;}};
 struct PhaseManager{uint32 writes=0,mask=0;void SetCustomPhase(uint32 value){++writes;mask=value;}};
+struct WorldPacket{std::vector<int16>ids;};
+namespace WorldPackets{namespace Misc{struct StreamingMovie{std::vector<int16>MovieIDs;WorldPacket packet;WorldPacket const*Write(){packet.ids=MovieIDs;return &packet;}};}}
+struct MotionMaster{uint32 initializes=0,jumps=0;std::vector<float>jumpArgs;void Initialize(){++initializes;}void MoveJump(float x,float y,float z,float xy,float vz){++jumps;jumpArgs={x,y,z,xy,vz};}};
 struct Unit {
+ MotionMaster motion;bool unitEligible=true,selection=false;uint32 lastError=0,errorChannel=0,lastMovie=0,lastCinematic=0,lastEmote=0,lastSound=0,partyCode=0,packetCalls=0;bool distanceSound=false;std::vector<int16>streamIDs;
  Position position;ReputationManager reputation;bool honorAccepted=true;int32 honorAmount=0,lastVisual=0;std::vector<float>basePoints;uint32 lastTarget=7,mount=0;bool honorToken=false;uint32 honorGroup=0;
  uint32 writes=0,powerType=0,selectedTitle=2,spells=0,stats=0,ratings=0,nativeMoneyErrors=0;int32 maxPower=0,power=0;
  uint64 titles=5,higherTitles=0x123456789abcdef,money=100;float lastDistance=0,scale=1,average=0;uint64 health=100,maxHealth=100;uint32 display=0,phase=1,drunk=0;std::set<uint32>phaseIds;PhaseManager phaseMgr;Item*artifact=nullptr;bool flying=false,pvp=false;Session*session=nullptr;
  std::map<uint32,float>speeds;std::map<uint16,uint32>flags;std::vector<uint32>casts,animations;
  virtual ~Unit()=default;virtual Player*ToPlayer(){return nullptr;}virtual Creature*ToCreature(){return nullptr;}
+ Unit*ToUnit(){return unitEligible?this:nullptr;}MotionMaster*GetMotionMaster(){return &motion;}bool GetSelection(){return selection;}
+ void SendCinematicStart(uint32 id){++writes;lastCinematic=id;}void SendMovieStart(uint32 id){++writes;lastMovie=id;}void HandleEmoteCommand(uint32 id){++writes;lastEmote=id;}
+ void PlayDistanceSound(uint32 id,Player*){++writes;lastSound=id;distanceSound=true;}void PlayDirectSound(uint32 id,Player*){++writes;lastSound=id;distanceSound=false;}
+ void SendEquipError(InventoryResult code,Item*,Item*){++writes;lastError=uint32(code);errorChannel=1;}void SendSellError(SellResult code,uint32,ObjectGuid){++writes;lastError=uint32(code);errorChannel=2;}void SendBuyError(BuyResult code){++writes;lastError=uint32(code);errorChannel=3;}
+ void SendPushToPartyResponse(Player*player,uint8 code){Require(player==ToPlayer(),"Party response actor changed");++writes;partyCode=code;}
+ void SendDirectMessage(WorldPacket const*packet){++packetCalls;streamIDs=packet->ids;}
  ObjectGuid GetGUID(){return {}; }Position GetPosition(){return position;}uint32 GetMapId(){return 1;}float GetPositionX(){return position.x;}float GetPositionY(){return position.y;}float GetPositionZ(){return position.z;}float GetOrientation(){return position.o;}uint32 GetLastTargetedGO(){return lastTarget;}
  void CastCustomSpell(Unit*target,uint32 id,float*a,float*b,float*c,bool triggered){Require(target==this&&id==123&&triggered,"Custom native target/trigger changed");++spells;basePoints={*a,*b,*c};}
  void PlaySpellVisual(Position,int32 id,float,ObjectGuid,bool){++writes;lastVisual=id;}void PlayOrphanSpellVisual(Position,Position,Position,int32 id,float,ObjectGuid,bool){++writes;lastVisual=id;}
@@ -76,12 +87,13 @@ struct Unit {
 };
 struct MoneyScripts{std::function<void(int64&)>hook;template<class T>void OnPlayerMoneyChanged(T*,int64&value) {if(hook)hook(value);}} moneyScripts;auto sScriptMgr=&moneyScripts;
 #include "NativeModifyMoney.inc"
+using WorldObject=Unit;
 struct Player:Unit{Player*ToPlayer()override{return this;}};
 struct Session{Player*player=nullptr;uint32 account=1;Player*GetPlayer(){return player;}uint32 GetAccountId(){return account;}};
 struct CreatureTemplate{uint32 faction=1;float scale=1.5f;std::string Name[1]={"Controlled NPC"};};
 struct CreatureData{float personalSize=3;};
 struct CreatureAI{uint32 writes=0,key=0,value=0;void SetData(uint32 a,uint32 b){++writes;key=a;value=b;}};
-struct MotionMaster{uint32 initializes=0;void Initialize(){++initializes;}};
+
 struct Creature:Unit{uint32 entry=0,path=77,faction=1,level=1,saves=0,nativeDisplay=0,outfit=0,moveType=0,deathCalls=0,respawns=0,delay=0;bool pet=false,alive=true,hasAI=true;float radius=0;CreatureTemplate templateData;CreatureAI ai;MotionMaster motion;
  Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetWaypointPath(){return path;}uint32 getFaction(){return faction;}void setFaction(uint32 value){++writes;faction=value;}ObjectGuid GetGUID(){return {};}
  uint32 groupCalls=0,lastGroup=0,entryCalls=0;bool groupDelete=false,entryAccepted=true;void SummonCreatureGroup(uint32 id){++groupCalls;lastGroup=id;groupDelete=false;}void SummonCreatureGroupDespawn(uint32 id){++groupCalls;lastGroup=id;groupDelete=true;}bool UpdateEntry(uint32 id){++entryCalls;if(entryAccepted){++writes;entry=id;}return entryAccepted;}
@@ -108,6 +120,7 @@ struct ChatHandler {
  GameObject*go=nullptr;GameObject*GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 id,uint32 entry){Require(id==7&&entry==99,"Wrong GO lookup");return go;}
  Player*target=nullptr;Unit*unit=nullptr;Creature*creature=nullptr;Session*session=nullptr;bool lower=false,error=false,report=false;uint32 messages=0,databaseReached=0;
  ChatHandler()=default;explicit ChatHandler(Player*){}
+ WorldObject*getSelectedObject(){return unit?unit:target;}
  Session*GetSession(){return session;}Player*getSelectedPlayer(){return target;}Unit*getSelectedUnit(){return unit?unit:target;}Creature*getSelectedCreature(){return creature;}
  bool HasLowerSecurityAccount(Player*,uint32,bool strong){Require(strong,"Account addon strong authority gate lost");return lower;}
  template<class...T>void SendGlobalGMSysMessage(T...){++messages;}char const*GetTrinityString(uint32){return "active";}
@@ -119,7 +132,7 @@ struct ChatHandler {
  uint32 extractSpellIdFromLink(char*args){char*id=strtok(args," ");return id?uint32(strtoul(id,nullptr,10)):0;}
 };
 struct NativeRow{uint32 ID;};using CurrencyTypesEntry=NativeRow;using PhaseEntry=NativeRow;
-struct NativeStore{std::map<uint32,NativeRow>rows;NativeRow const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionTemplateStore{{{1,{1}},{2,{2}}}},sCurrencyTypesStore{{{1,{1}},{2,{2}}}},sCreatureDisplayInfoStore{{{123,{123}}}},sPhaseStore{{{1,{1}},{2,{2}}}},sEmotesStore{{{1,{1}},{2,{2}}}};
+struct NativeStore{std::map<uint32,NativeRow>rows;NativeRow const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionTemplateStore{{{1,{1}},{2,{2}}}},sCurrencyTypesStore{{{1,{1}},{2,{2}}}},sCreatureDisplayInfoStore{{{123,{123}}}},sPhaseStore{{{1,{1}},{2,{2}}}},sEmotesStore{{{1,{1}},{2,{2}}}},sMovieStore{{{1,{1}},{2,{2}}}};
 FactionName factionName;struct FactionStore{std::map<uint32,FactionEntry>rows{{1,{1,0,0,&factionName}},{2,{2,0,2,&factionName}},{3,{3,-1,0,&factionName}}};FactionEntry const*LookupEntry(uint32 id){auto it=rows.find(id);return it==rows.end()?nullptr:&it->second;}}sFactionStore;
 struct PrecisionManager{bool GetFactionParagon(uint32 id){return id==2;}float GetCurrencyPrecision(uint32 id){return id==2?100.f:1.f;}}sDB2Manager;
 struct Battlefield{uint32 writes=0,starts=0,ends=0,toggles=0,timer=0,packets=0;bool enabled=true,winner=false;void StartBattle(){++writes;++starts;}void EndBattle(bool force){++writes;++ends;winner=force;}bool IsEnabled(){return enabled;}void ToggleBattlefield(bool value){++writes;++toggles;enabled=value;}void SetTimer(uint32 value){++writes;timer=value;}void SendInitWorldStatesToAll(){++packets;}};
@@ -184,6 +197,9 @@ static void NpcRejects(bool(*fn)(ChatHandler*,char const*),std::vector<char cons
  {ChatHandler h;WorldDatabase.writes.clear();Require(!Command(fn,h,"1")&&WorldDatabase.writes.empty(),"Absent NPC accepted");++cases;}
 }
 int main(){try{
+#ifdef COUNTERFACTUAL_PARTY
+ Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseParty::Selected::HandleDebugSendQuestPartyMsgCommand,h,"256")&&p.writes==1&&p.partyCode==0,"Original party byte wrap not reproduced");std::cout<<"COUNTERFACTUAL original quest-party code256 is sent as0 through uint8 narrowing;controlled sender only\n";return 0;
+#endif
 #ifdef COUNTERFACTUAL_BFTIMER
  battlefieldManager={};ChatHandler h;Require(Command(CaseBfTimer::Selected::HandleBattlefieldTimer,h,"1 4294968")&&battlefieldManager.first.timer==704,"Original timer wrap not reproduced");std::cout<<"COUNTERFACTUAL original4294968 seconds becomes704 milliseconds through uint32 wrap;controlled battlefield only\n";return 0;
 #endif
@@ -546,6 +562,49 @@ int main(){try{
  for(char const*arg:{""," ","ACCOUNT x","ACCOUNT 1x","ACCOUNT -1","ACCOUNT 7","ACCOUNT 256","ACCOUNT 262","ACCOUNT 4294967296"}){ChatHandler h;LoginDatabase.writes.clear();Require(!Command(CaseSetExpansion::Selected::HandleAccountSetAddonCommand,h,arg)&&LoginDatabase.writes.empty(),"Invalid target expansion persisted");++cases;}
  for(uint32 expansion:{0u,1u,6u})for(bool named:{false,true}){Player p;Session ses{&p,2};p.session=&ses;ChatHandler h;h.target=&p;LoginDatabase.writes.clear();std::string arg=(named?"ACCOUNT ":"")+std::to_string(expansion);Require(Command(CaseSetExpansion::Selected::HandleAccountSetAddonCommand,h,arg.c_str())&&LoginDatabase.writes.size()==1&&LoginDatabase.writes[0].fields.at(0)==int32(expansion)&&LoginDatabase.writes[0].fields.at(1)==2,"Named/selected account expansion SQL changed");++cases;}
  {Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;h.lower=true;LoginDatabase.writes.clear();Require(!Command(CaseSetExpansion::Selected::HandleAccountSetAddonCommand,h,"ACCOUNT 6")&&LoginDatabase.writes.empty(),"Target expansion strong authority bypass");++cases;}
+#endif
+
+#ifdef REPAIR_CINEMATIC
+ for(char const*arg:{""," ","-1","1x","4294967296"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseCinematic::Selected::HandleDebugPlayCinematicCommand,h,arg)&&!p.writes,"Invalid cinematic reference sent");++cases;}
+ for(uint32 id:{0u,1u,UINT32_MAX}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseCinematic::Selected::HandleDebugPlayCinematicCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastCinematic==id,"Native raw cinematic ID changed");++cases;}
+#endif
+#ifdef REPAIR_MOVIE
+ for(char const*arg:{""," ","-1","1x","4294967297","3"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseMovie::Selected::HandleDebugPlayMovieCommand,h,arg)&&!p.writes,"Invalid movie reference reached native playback");++cases;}
+ for(uint32 id:{1u,2u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseMovie::Selected::HandleDebugPlayMovieCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastMovie==id,"Native known movie playback lost");++cases;}
+#endif
+#ifdef REPAIR_SOUND
+ for(char const*arg:{""," ","-1","1x","4294967296"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;h.target=&p;Require(!Command(CaseSound::Selected::HandleDebugPlaySoundCommand,h,arg)&&!p.writes,"Invalid sound reference sent");++cases;}
+ for(bool selected:{false,true})for(uint32 id:{0u,1u,UINT32_MAX}){Player p;p.selection=selected;Session ses{&p,1};ChatHandler h;h.session=&ses;h.target=&p;Require(Command(CaseSound::Selected::HandleDebugPlaySoundCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastSound==id&&p.distanceSound==selected,"Native selected distance/direct sound branch changed");++cases;}
+ {Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseSound::Selected::HandleDebugPlaySoundCommand,h,"1")&&!p.writes,"Missing sound actor accepted");++cases;}
+#endif
+#ifdef REPAIR_ANIM
+ for(char const*arg:{""," ","-1","1x","4294967296"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseAnim::Selected::HandleDebugAnimCommand,h,arg)&&!p.writes,"Invalid emote reference sent");++cases;}
+ for(uint32 id:{0u,1u,UINT32_MAX}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseAnim::Selected::HandleDebugAnimCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastEmote==id,"Native raw emote ID changed");++cases;}
+#endif
+#ifdef REPAIR_STREAM
+ for(char const*arg:{""," ","-32769","1x","32768","65536","4294967296"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseStream::Selected::HandleDebugStreamingMoviesCommand,h,arg)&&!p.packetCalls,"Invalid streaming file ID sent");++cases;}
+ for(int16 id:{int16(-32768),int16(-1),int16(0),int16(1),int16(32767)}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseStream::Selected::HandleDebugStreamingMoviesCommand,h,std::to_string(id).c_str())&&p.packetCalls==1&&p.streamIDs==std::vector<int16>{id},"Native streaming signed16 payload changed");++cases;}
+#endif
+#ifdef REPAIR_EQUIP
+ for(char const*arg:{""," ","-1","1x","256","4294967297"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseEquip::Selected::HandleDebugSendEquipErrorCommand,h,arg)&&!p.writes,"Invalid equipment byte sent");++cases;}
+ for(uint32 id:{0u,1u,127u,255u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseEquip::Selected::HandleDebugSendEquipErrorCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastError==id&&p.errorChannel==1,"Native raw unsigned equipment byte changed");++cases;}
+#endif
+#ifdef REPAIR_SELL
+ for(char const*arg:{""," ","-1","1x","16","4294967297"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseSell::Selected::HandleDebugSendSellErrorCommand,h,arg)&&!p.writes,"Out-of-native-range sell enum converted");++cases;}
+ for(uint32 id:{0u,1u,9u,15u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseSell::Selected::HandleDebugSendSellErrorCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastError==id&&p.errorChannel==2,"Native representable sell code changed");++cases;}
+#endif
+#ifdef REPAIR_BUY
+ for(char const*arg:{""," ","-1","1x","16","4294967297"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseBuy::Selected::HandleDebugSendBuyErrorCommand,h,arg)&&!p.writes,"Out-of-native-range buy enum converted");++cases;}
+ for(uint32 id:{0u,1u,12u,15u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseBuy::Selected::HandleDebugSendBuyErrorCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.lastError==id&&p.errorChannel==3,"Native representable buy code changed");++cases;}
+#endif
+#ifdef REPAIR_PARTY
+ for(char const*arg:{""," ","-1","1x","256","4294967297"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseParty::Selected::HandleDebugSendQuestPartyMsgCommand,h,arg)&&!p.writes,"Invalid quest-party byte sent");++cases;}
+ for(uint32 id:{0u,1u,255u}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseParty::Selected::HandleDebugSendQuestPartyMsgCommand,h,std::to_string(id).c_str())&&p.writes==1&&p.partyCode==id,"Native raw quest-party byte changed");++cases;}
+#endif
+#ifdef REPAIR_JUMP
+ for(char const*arg:{""," ","1 2 3 4","nan 2 3 4 5","1 inf 3 4 5","1 2 3x 4 5","1 2 3 nan 5","1 2 3 4 inf","20000 2 3 4 5","1 2 3 4 1e20"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseJump::Selected::HandleDebugMoveJump,h,arg)&&!p.motion.jumps,"Invalid/nonfinite native parabola dispatched");++cases;}
+ for(char const*arg:{"1 2 3 4 5","1 2 20000 4 5","-1 0 -100 -5 -5"}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseJump::Selected::HandleDebugMoveJump,h,arg)&&p.motion.jumps==1&&p.motion.jumpArgs.size()==5,"Native finite jump request policy changed");++cases;}
+ for(bool actor:{false,true}){Player p;p.unitEligible=false;ChatHandler h;h.target=actor?&p:nullptr;Require(!Command(CaseJump::Selected::HandleDebugMoveJump,h,"1 2 3 4 5")&&!p.motion.jumps,"Missing/non-unit jump actor accepted");++cases;}
 #endif
 #ifdef REPAIR_SOUL
  for(randomChoice=0;randomChoice<3;++randomChoice){EchoUnit source,actor;CaseSoul::Selected callback;callback.me=&actor;

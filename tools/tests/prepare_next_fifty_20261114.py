@@ -73,7 +73,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
         'src/server/game/Miscellaneous/Language.h','src/server/game/Miscellaneous/SharedDefines.h',
         'src/common/Common.h','src/server/game/AI/EventMap.h','src/server/game/Movement/MotionMaster.h','src/server/game/Entities/Object/ObjectGuid.h','src/server/game/Entities/Item/Item.h','src/server/game/Entities/Unit/Unit.h','src/server/game/Entities/Unit/UnitDefines.h','src/server/game/DataStores/DBCEnums.h'))
     constants=[]
-    for name in sorted(set(re.findall(r'\b(?:LANG_[A-Z_0-9]+|EQUIP_ERR_TOO_MUCH_GOLD|TYPEID_PLAYER|TYPEID_UNIT|SEC_CONSOLE|VISUAL_WAYPOINT|EVENT_1|UNIT_FLAG2_MIRROR_IMAGE|ITEM_CHANGED|UNIT_FLAG_PVP|CURRENCY_TYPE_HONOR_POINTS|LOCALE_enUS)\b',joined+(ROOT/'tools/tests/NextFifty20261114Test.cpp').read_text()))):
+    for name in sorted(set(re.findall(r'\b(?:LANG_[A-Z_0-9]+|TYPEID_PLAYER|TYPEID_UNIT|SEC_CONSOLE|VISUAL_WAYPOINT|EVENT_1|UNIT_FLAG2_MIRROR_IMAGE|ITEM_CHANGED|UNIT_FLAG_PVP|CURRENCY_TYPE_HONOR_POINTS|LOCALE_enUS)\b',joined+(ROOT/'tools/tests/NextFifty20261114Test.cpp').read_text()))):
         match=re.search(r'\b'+name+r'\s*=\s*(0x[0-9a-fA-F]+|\d+)\b',headers) or re.search(r'#define\s+'+name+r'\s+(\d+)\b',headers)
         assert match,('Missing native constant',name)
         constants.append('constexpr uint32 '+name+'='+match[1]+';')
@@ -82,6 +82,7 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
     player=(ROOT/'src/server/game/Entities/Player/Player.h').read_text(encoding='utf-8-sig')
     constants += [block(unit,'enum '+name)+';' for name in ('UnitMoveType','UpdateStatsMask','CombatRating','DeathState')]
     constants += [block((ROOT/p).read_text(),'enum '+name)+';' for p,name in [('src/server/game/World/World.h','WorldIntConfigs'),('src/server/game/Entities/Pet/PetDefines.h','PetType'),('src/server/game/Movement/MotionMaster.h','MovementGeneratorType'),('src/server/database/Database/Implementation/WorldDatabase.h','WorldDatabaseStatements')]]
+    constants += [block((ROOT/'src/server/game/Entities/Item/Item.h').read_text(),'enum '+name)+';' for name in ('InventoryResult','BuyResult','SellResult')]
     constants += [block(shared,'enum Powers')+';',block(shared,'enum Expansions')+';',block(player,'enum PlayerAvgItemLevelOffsets')+';',block((ROOT/'src/common/Common.h').read_text(),'enum TimeConstants')+';','constexpr uint8 CURRENT_EXPANSION=EXPANSION_LEGION;']
     money=re.search(r'#define MAX_MONEY_AMOUNT\s+\(UI64LIT\((\d+)\)\)',player)
     assert money
@@ -96,6 +97,9 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
     (out/'NativeModifyMoney.inc').write_text(native_money,encoding='utf-8')
     tokenizer=block((ROOT/'src/common/Utilities/Util.h').read_text(),'class TC_COMMON_API Tokenizer').replace('TC_COMMON_API ','')+';\n'+block((ROOT/'src/common/Utilities/Util.cpp').read_text(),'Tokenizer::Tokenizer(')
     (out/'NativeTokenizer.inc').write_text(tokenizer,encoding='utf-8')
+    movement=(ROOT/'src/server/game/Movement/Spline/MovementUtil.cpp').read_text();typedefs=(ROOT/'src/server/game/Movement/Spline/MovementTypedefs.h').read_text()
+    gravity=re.search(r'float constexpr gravity = [^;]+;',typedefs)[0];constantsFall='\n'.join(re.findall(r'    float constexpr [^;]+;',movement))
+    (out/'NativeFall.inc').write_text('namespace Movement {\n'+gravity+'\n'+constantsFall+'\n'+block(movement,'    float computeFallElevation(')+'\n}\n',encoding='utf-8')
     (out/'Selected.inc').write_text(joined,encoding='utf-8')
     (out/'Constants.inc').write_text('\n'.join(constants),encoding='utf-8')
     (out/'defines.txt').write_text(' '.join('/D'+d for d in defines)+(' /DSOUL_RANGE_BASELINE' if baseline else ''),encoding='utf-8')
