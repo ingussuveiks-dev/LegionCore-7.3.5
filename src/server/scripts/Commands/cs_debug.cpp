@@ -645,7 +645,9 @@ public:
 
     static bool HandleDebugSendQuestPartyMsgCommand(ChatHandler* handler, char const* args)
     {
-        uint8 msg = atol((char*)args);
+        uint8 msg;
+        if (!Trinity::ParseCommandInteger(args, msg))
+            return false;
         handler->GetSession()->GetPlayer()->SendPushToPartyResponse(handler->GetSession()->GetPlayer(), msg);
         return true;
     }

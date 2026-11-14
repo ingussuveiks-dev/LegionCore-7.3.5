@@ -380,6 +380,16 @@
       "batch": 4,
       "old": "    static bool HandleDebugSendBuyErrorCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        BuyResult msg = BuyResult(atoi(args));\n        handler->GetSession()->GetPlayer()->SendBuyError(msg);\n        return true;\n    }",
       "new": "    static bool HandleDebugSendBuyErrorCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // This non-fixed native enum has representable values 0..15.\n        uint32 code;\n        if (!Trinity::ParseCommandInteger(args, code) || code > 15)\n            return false;\n        BuyResult msg = BuyResult(code);\n        handler->GetSession()->GetPlayer()->SendBuyError(msg);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSendQuestPartyMsgCommand",
+      "key": "DebugQuestPartyByteChecked",
+      "case": "Party",
+      "kind": "next",
+      "batch": 4,
+      "old": "    static bool HandleDebugSendQuestPartyMsgCommand(ChatHandler* handler, char const* args)\n    {\n        uint8 msg = atol((char*)args);\n        handler->GetSession()->GetPlayer()->SendPushToPartyResponse(handler->GetSession()->GetPlayer(), msg);\n        return true;\n    }",
+      "new": "    static bool HandleDebugSendQuestPartyMsgCommand(ChatHandler* handler, char const* args)\n    {\n        uint8 msg;\n        if (!Trinity::ParseCommandInteger(args, msg))\n            return false;\n        handler->GetSession()->GetPlayer()->SendPushToPartyResponse(handler->GetSession()->GetPlayer(), msg);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -492,7 +502,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "113c5583136c03122093022fe209c41f5fcff7b5b80a87dd783b06159f95b963",
+      "after_sha256": "6a5239c4782b1799bdd8191da2b26a10b1309fedc29600730d44fbcd425520cd",
       "owner_key": null
     }
   }
