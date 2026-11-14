@@ -181,8 +181,7 @@ public:
 
     static bool HandleSendMailStatus(ChatHandler* handler, char const* args)
     {
-        // USAGE: .debug play cinematic #cinematicid
-        // #cinematicid - ID decimal number from CinemaicSequences.dbc (1st column)
+        // USAGE: .debug send mailresult #type [#result]
         if (!*args)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
@@ -190,8 +189,27 @@ public:
             return false;
         }
 
-        uint32 id = atoi((char*)args);
-        uint32 id2 = atoi((char*)args);
+        char* type = strtok((char*)args, " ");
+        char* result = strtok(nullptr, " ");
+        uint32 id, id2;
+        if (!Trinity::ParseCommandInteger(type, id) || id > MAIL_MADE_PERMANENT)
+            return false;
+        id2 = id; // Retain the original one-operand diagnostic form.
+        if (result && !Trinity::ParseCommandInteger(result, id2))
+            return false;
+        switch (id2)
+        {
+            case MAIL_OK: case MAIL_ERR_EQUIP_ERROR: case MAIL_ERR_CANNOT_SEND_TO_SELF:
+            case MAIL_ERR_NOT_ENOUGH_MONEY: case MAIL_ERR_RECIPIENT_NOT_FOUND:
+            case MAIL_ERR_NOT_YOUR_TEAM: case MAIL_ERR_INTERNAL_ERROR:
+            case MAIL_ERR_DISABLED_FOR_TRIAL_ACC: case MAIL_ERR_RECIPIENT_CAP_REACHED:
+            case MAIL_ERR_CANT_SEND_WRAPPED_COD: case MAIL_ERR_MAIL_AND_CHAT_SUSPENDED:
+            case MAIL_ERR_TOO_MANY_ATTACHMENTS: case MAIL_ERR_MAIL_ATTACHMENT_INVALID:
+            case MAIL_ERR_ITEM_HAS_EXPIRED:
+                break;
+            default:
+                return false;
+        }
 
         handler->GetSession()->GetPlayer()->SendMailResult(0, MailResponseType(id), MailResponseResult(id2));
         return true;

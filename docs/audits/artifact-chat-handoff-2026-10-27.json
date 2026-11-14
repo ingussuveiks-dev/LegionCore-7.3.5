@@ -1,4 +1,25 @@
 {
+  "latest_more_fifty_2026_11_14": {
+    "audit": "docs/audits/more-fifty-2026-11-14.json",
+    "completed_new_source_repairs": 10,
+    "authorized": 50,
+    "status": "IN_PROGRESS_10_OF_50_CANONICAL_CLIENT_PENDING",
+    "canonical_world_sha256": "9d8e8abbf304400a26bdb7cc121e0592e5085612fda3546d0a2ae27ddaf62fa5",
+    "checks": {
+      "source_asan": "702 cases: production complete handlers or explicitly declared numeric admission prefixes;real native rating and spellpower implementation exports;controlled side effects,no live DB/character changes.",
+      "full_handlers": 28,
+      "admission_prefixes": 22,
+      "prefix_limit": "For marked handlers only admission up to the recorded service boundary is executed in ASAN;the complete original native effects beyond that boundary are retained by exact inverse-delta source certificate and compiled/linked in Release. No claim of full live DB/vehicle/quest traversal.",
+      "counterfactual": "Five pinned original variants reproduce mail operand conflation,movement flags mutation,ticket7x alias,shutdown1x acceptance,hide-area toggle without live mutation/undefined overflow.",
+      "native": "Matching core headers establish int16 rating cache,uint8 effective level,uint16 item level/skill/phase,UInt32 ticket and lifecycle arguments;real24-byte mail packet serializer verified.",
+      "release": "Original Release scripts.lib and original final-link inputs;all new50 actual registrations/helpers and selected native branches plus retained100 PE proofs pass on canonical EXE. Scepter -VerifyReleaseBinary passes.",
+      "startup": "Owned worldserver PID1292:fresh ready,shutdown0,exit0,gone,stderr empty;no user server stopped. bnet .text checked in final consistency;no new bnet startup claimed.",
+      "analysis": "All8 actual command TUs analyzed;selected printf sign mismatch repaired and cs_server rechecked. Broader CRT/Boost/fmt header diagnostics and harmless unrelated cs_misc map/stmt shadowing remain visible in local mixed analysis logs;not a claim of globally warning-free source.",
+      "diagnostics": "Before/after crashes and log offsets recorded for every test/build/analysis/PE/startup. No new/changed crashes or unexplained appended server warning/error/assertion/DBErrors. Temporary fixture syntax/type bootstrap failures paired with passing final regression;no symptom suppression."
+    },
+    "preserve": "Previous100 not recounted;original LINK2/Slaghammer/FuZan/mixedDBErrors retained;client/all36 pending.",
+    "next": "40 focused source repair commits remain."
+  },
   "latest_next_fifty_2026_11_14": {
     "audit": "docs/audits/next-fifty-2026-11-14.json",
     "completed_new_source_repairs": 50,

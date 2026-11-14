@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_9_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 9,
+  "status": "IN_PROGRESS_10_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 10,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -15,7 +15,7 @@
   "batches": [
     {
       "batch": 1,
-      "count": 9,
+      "count": 10,
       "source_case_count": 215,
       "repairs": [
         {
@@ -88,6 +88,14 @@
           "summary": "Validate every supplied native16-bit terrain/phase/map/preload ID before sending the phase packet;retain omitted lists and explicit zero.",
           "path": "src/server/scripts/Commands/cs_debug.cpp",
           "method": "HandleDebugSendSetPhaseShiftCommand",
+          "test_scope": "complete production handler"
+        },
+        {
+          "index": 10,
+          "key": "MailResultIndependentOperands",
+          "summary": "Parse type and result separately rather than reusing the first argument;validate native values while retaining the original one-argument form.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleSendMailStatus",
           "test_scope": "complete production handler"
         }
       ]
