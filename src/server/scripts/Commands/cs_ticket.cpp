@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "AccountMgr.h"
 #include "ObjectMgr.h"
 #include "TicketMgr.h"
@@ -74,7 +75,9 @@ public:
             return false;
 
         char* ticketIdStr = strtok((char*)args, " ");
-        uint32 ticketId = atoi(ticketIdStr);
+        uint32 ticketId;
+        if (!Trinity::ParseCommandInteger(ticketIdStr, ticketId))
+            return false;
 
         char* targetStr = strtok(NULL, " ");
         if (!targetStr)
