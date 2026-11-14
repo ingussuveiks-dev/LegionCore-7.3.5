@@ -2283,8 +2283,10 @@ public:
     {
         uint8 count = 1;
 
-        if (atoi((char*)args))
-            count = atoi((char*)args);
+        if (*args && (!Trinity::ParseCommandInteger(args, count) || count > MAX_RAID_SIZE))
+            return false;
+        if (!count)
+            count = 1;
 
         handler->PSendSysMessage("HandleDebugGroupCommand count %u", count);
 
@@ -2297,7 +2299,7 @@ public:
                 group->Create(player);
                 sGroupMgr->AddGroup(group);
             }
-            count -= group->GetMembersCount();
+            count = count > group->GetMembersCount() ? count - group->GetMembersCount() : 0;
 
             player->SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER);
             uint8 subgroup = group->GetMemberGroup(player->GetGUID());
