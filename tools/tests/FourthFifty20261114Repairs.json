@@ -36,6 +36,18 @@
       "test_boundary": "        Quest const* quest",
       "observe": "entry",
       "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestRemove catalog/status/effect path;retain selected-player and native quest rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "method": "HandleQuestComplete",
+      "case": "QuestCompleteExactId",
+      "key": "QuestCompleteExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleQuestComplete(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .quest complete #entry\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry = atol(cId);\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        // If player doesn't have the quest\n        if (!quest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        player->AutoCompleteObjectives(quest, false);\n\n        //if (sWorld->getBoolConfig(CONFIG_QUEST_ENABLE_QUEST_TRACKER)) // check if Quest Tracker is enabled\n        //{\n        //    // prepare Quest Tracker datas\n        //    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_QUEST_TRACK_GM_COMPLETE);\n        //    stmt->setUInt32(0, quest->GetQuestId());\n        //    stmt->setUInt64(1, player->GetGUID().GetGUIDLow());\n\n        //    // add to Quest Tracker\n        //    CharacterDatabase.Execute(stmt);\n        //}\n\n        player->CompleteQuest(entry);\n        return true;\n    }",
+      "new": "    static bool HandleQuestComplete(ChatHandler* handler, const char* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .quest complete #entry\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry;\n        if (!Trinity::ParseCommandInteger(cId, entry))\n            return false;\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        // If player doesn't have the quest\n        if (!quest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        player->AutoCompleteObjectives(quest, false);\n\n        //if (sWorld->getBoolConfig(CONFIG_QUEST_ENABLE_QUEST_TRACKER)) // check if Quest Tracker is enabled\n        //{\n        //    // prepare Quest Tracker datas\n        //    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_QUEST_TRACK_GM_COMPLETE);\n        //    stmt->setUInt32(0, quest->GetQuestId());\n        //    stmt->setUInt64(1, player->GetGUID().GetGUIDLow());\n\n        //    // add to Quest Tracker\n        //    CharacterDatabase.Execute(stmt);\n        //}\n\n        player->CompleteQuest(entry);\n        return true;\n    }",
+      "test_boundary": "        Quest const* quest",
+      "observe": "entry",
+      "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestComplete catalog/status/effect path;retain selected-player and native quest rules."
     }
   ],
   "extra_edits": [
@@ -49,7 +61,7 @@
   "files": {
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
-      "after_sha256": "622d595a59739f97323bdaf08fbe79aa3246101f5916065f452639c744bbd492"
+      "after_sha256": "ae78420f8eb0acdea06ca8dbc94c2061968c1dcf2f2701468010c1d16d31cf00"
     }
   }
 }
