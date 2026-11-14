@@ -564,8 +564,8 @@ public:
             if (!cId)
                 return false;
 
-            uint32 lowguid = strtoull(cId, nullptr, 10);
-            if (!lowguid)
+            ObjectGuid::LowType lowguid;
+            if (!Trinity::ParseCommandInteger(cId, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::Creature))
                 return false;
 
             if (CreatureData const* cr_data = sObjectMgr->GetCreatureData(lowguid))

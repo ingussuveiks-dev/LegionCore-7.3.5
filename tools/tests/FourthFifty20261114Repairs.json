@@ -140,6 +140,18 @@
       "observe": "0",
       "test_capture": "handler->scalar = distance;",
       "summary": "Reject malformed/nonfinite radii and a squared radius outside the native float SQL parameter;retain default10 and finite signed-radius behavior."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcDeleteCommand",
+      "case": "NpcDeleteFullCounter",
+      "key": "NpcDeleteFullCounter",
+      "kind": "fourth",
+      "old": "    static bool HandleNpcDeleteCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            // number or [name] Shift-click form |color|Hcreature:creature_guid|h[name]|h|r\n            char* cId = handler->extractKeyFromLink((char*)args, \"Hcreature\");\n            if (!cId)\n                return false;\n\n            uint32 lowguid = strtoull(cId, nullptr, 10);\n            if (!lowguid)\n                return false;\n\n            if (CreatureData const* cr_data = sObjectMgr->GetCreatureData(lowguid))\n                unit = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(cr_data->mapid, cr_data->id, lowguid));\n        }\n        else\n            unit = handler->getSelectedCreature();\n\n        if (!unit || unit->isPet() || unit->isTotem())\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // Delete the creature\n        unit->CombatStop();\n        unit->DeleteFromDB();\n        unit->AddObjectToRemoveList();\n\n        handler->SendSysMessage(LANG_COMMAND_DELCREATMESSAGE);\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcDeleteCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            // number or [name] Shift-click form |color|Hcreature:creature_guid|h[name]|h|r\n            char* cId = handler->extractKeyFromLink((char*)args, \"Hcreature\");\n            if (!cId)\n                return false;\n\n            ObjectGuid::LowType lowguid;\n            if (!Trinity::ParseCommandInteger(cId, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::Creature))\n                return false;\n\n            if (CreatureData const* cr_data = sObjectMgr->GetCreatureData(lowguid))\n                unit = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(cr_data->mapid, cr_data->id, lowguid));\n        }\n        else\n            unit = handler->getSelectedCreature();\n\n        if (!unit || unit->isPet() || unit->isTotem())\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // Delete the creature\n        unit->CombatStop();\n        unit->DeleteFromDB();\n        unit->AddObjectToRemoveList();\n\n        handler->SendSysMessage(LANG_COMMAND_DELCREATMESSAGE);\n\n        return true;\n    }",
+      "test_boundary": "            if (CreatureData const* cr_data",
+      "observe": "lowguid",
+      "summary": "Parse the full native world counter and reject bits outside40 before forming a creature GUID;retain the untouched selected-creature/pet/totem/delete flow."
     }
   ],
   "extra_edits": [
@@ -179,9 +191,9 @@
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
       "after_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d"
     },
-    "src/server/scripts/Commands/cs_quest.cpp": {
-      "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
-      "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
+    "src/server/scripts/Commands/cs_npc.cpp": {
+      "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",
+      "after_sha256": "be082acb0e45f1c271e07696358f5ac30e15c4fa74acba116ce805c7265c2470"
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
@@ -190,6 +202,10 @@
     "src/server/scripts/Commands/cs_guild.cpp": {
       "before_sha256": "168efca091cb840607eec47506ed408eb6ebe9e38a1e62c0966f9bba9023a593",
       "after_sha256": "3211ada11154a07dce20b187a75518fb3eafa042626b67698f676c8f6438dd81"
+    },
+    "src/server/scripts/Commands/cs_quest.cpp": {
+      "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
+      "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
     }
   }
 }
