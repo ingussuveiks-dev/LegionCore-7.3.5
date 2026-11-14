@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_20_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 20,
+  "status": "IN_PROGRESS_21_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 21,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -184,6 +184,21 @@
           "path": "src/server/scripts/Commands/cs_npc.cpp",
           "method": "HandleNpcSetLinkCommand",
           "test_scope": "complete production handler/helper"
+        }
+      ]
+    },
+    {
+      "batch": 3,
+      "count": 1,
+      "source_case_count": 117,
+      "repairs": [
+        {
+          "index": 21,
+          "key": "GameObjectAddTypedRespawn",
+          "summary": "Parse a complete nonzero entry and the actual signed32 respawn value before creation/persistence;retain native negative/zero behavior.",
+          "path": "src/server/scripts/Commands/cs_gobject.cpp",
+          "method": "HandleGameObjectAddCommand",
+          "test_scope": "admission prefix"
         }
       ]
     }

@@ -168,11 +168,14 @@ public:
         if (!id)
             return false;
 
-        uint32 objectId = atol(id);
-        if (!objectId)
+        uint32 objectId;
+        if (!Trinity::ParseCommandInteger(id, objectId) || !objectId)
             return false;
 
         char* spawntimeSecs = strtok(NULL, " ");
+        int32 respawn = 0;
+        if (spawntimeSecs && !Trinity::ParseCommandInteger(spawntimeSecs, respawn))
+            return false;
 
         const GameObjectTemplate* objectInfo = sObjectMgr->GetGameObjectTemplate(objectId);
 
@@ -210,8 +213,7 @@ public:
 
         if (spawntimeSecs)
         {
-            uint32 value = atoi((char*)spawntimeSecs);
-            object->SetRespawnTime(value);
+            object->SetRespawnTime(respawn);
         }
 
         // fill the gameobject data and save to the db
