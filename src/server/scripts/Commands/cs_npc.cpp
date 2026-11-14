@@ -284,10 +284,18 @@ public:
 
         char* team = strtok(NULL, " ");
         int32 teamval = 0;
-        if (team) { teamval = atoi(team); }
-        if (teamval < 0) { teamval = 0; }
-
-        uint32 id  = atoi(charID);
+        uint32 id;
+        if (!Trinity::ParseCommandInteger(charID, id) || !id ||
+            (team && !Trinity::ParseCommandInteger(team, teamval)))
+            return false;
+        if (teamval < 0)
+            teamval = 0;
+        if (!sObjectMgr->GetCreatureTemplate(id))
+        {
+            handler->PSendSysMessage(LANG_COMMAND_INVALIDCREATUREID, id);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
         Player* chr = handler->GetSession()->GetPlayer();
         float x = chr->GetPositionX();
@@ -308,6 +316,13 @@ public:
             data.orientation = chr->GetTransOffsetO();
 
             Creature* creature = trans->CreateNPCPassenger(guid, &data);
+            if (!creature)
+            {
+                sObjectMgr->DeleteCreatureData(guid);
+                handler->SendSysMessage("NPC passenger creation failed; the new spawn was not saved.");
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
 
             creature->SaveToDB(trans->GetGOInfo()->moTransport.SpawnMap, UI64LIT(1) << map->GetSpawnMode(), chr->GetPhaseMask());
 
@@ -324,7 +339,7 @@ public:
 
         creature->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()), chr->GetPhaseMgr().GetPhaseMaskForSpawn());
 
-        uint32 db_guid = creature->GetDBTableGUIDLow();
+        ObjectGuid::LowType db_guid = creature->GetDBTableGUIDLow();
 
         // To call _LoadGoods(); _LoadQuests(); CreateTrainerSpells();
         // current "creature" variable is deleted and created fresh new, otherwise old values might trigger asserts or cause undefined behavior
