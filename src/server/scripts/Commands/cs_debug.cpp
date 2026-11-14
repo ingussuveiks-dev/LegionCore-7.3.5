@@ -1253,16 +1253,20 @@ public:
         std::vector<uint16> uiWorldMapAreaIDSwaps;
         std::vector<uint16> preloadMapIDs;
 
-        visibleMapIDs.emplace_back(static_cast<uint32>(atoi(t)));
+        uint16 terrain, phase = 0, worldMap = 0, preload = 0;
+        if (!Trinity::ParseCommandInteger(t, terrain) ||
+            (p && !Trinity::ParseCommandInteger(p, phase)) ||
+            (w && !Trinity::ParseCommandInteger(w, worldMap)) ||
+            (s && !Trinity::ParseCommandInteger(s, preload)))
+            return false;
 
+        visibleMapIDs.emplace_back(terrain);
         if (p)
-            phaseIds.emplace_back(static_cast<uint32>(atoi(p)));
-
+            phaseIds.emplace_back(phase);
         if (w)
-            uiWorldMapAreaIDSwaps.emplace_back(static_cast<uint32>(atoi(w)));
-
+            uiWorldMapAreaIDSwaps.emplace_back(worldMap);
         if (s)
-            preloadMapIDs.emplace_back(static_cast<uint32>(atoi(s)));
+            preloadMapIDs.emplace_back(preload);
 
         handler->GetSession()->SendSetPhaseShift(phaseIds, visibleMapIDs, uiWorldMapAreaIDSwaps, preloadMapIDs);
         return true;
