@@ -2009,7 +2009,19 @@ public:
         if (!cval)
             return false;
 
-        int32 Value = (int32)atoi(cval);
+        int32 Value;
+        if (!Trinity::ParseCommandInteger(cval, Value))
+            return false;
+
+        // Validate every native int16 cache before applying any part of the change.
+        auto canApply = [player, Value](CombatRating rating)
+        {
+            using RatingValue = std::remove_reference_t<decltype(player->m_baseRatingValue[0])>;
+            int64 sum = int64(player->m_baseRatingValue[rating]) + Value;
+            return sum >= std::numeric_limits<RatingValue>::min() && sum <= std::numeric_limits<RatingValue>::max();
+        };
+        if (!canApply(CR_HASTE_MELEE) || !canApply(CR_HASTE_RANGED) || !canApply(CR_HASTE_SPELL))
+            return false;
         player->ApplyRatingMod(CR_HASTE_MELEE, Value, true);
         player->ApplyRatingMod(CR_HASTE_RANGED, Value, true);
         player->ApplyRatingMod(CR_HASTE_SPELL, Value, true);

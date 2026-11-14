@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-14",
+  "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
+  "authorization": "New third5x10 requested by user;previous100 are not recounted.",
+  "status": "IN_PROGRESS_1_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 1,
+  "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
+  "plan": "tools/tests/MoreFifty20261114Repairs.json",
+  "canonical": {
+    "bnetserver.exe": "ea7dc0f8a33f678edbd5dbbbec0f3c959946a2d889b7272106a5bb04ce898f8b",
+    "bnetserver.map": "591fc8d6479e0660d6e964212693a51afa614352e778e9dfd866c703ef82c9ec",
+    "worldserver.exe": "9d8e8abbf304400a26bdb7cc121e0592e5085612fda3546d0a2ae27ddaf62fa5",
+    "worldserver.map": "16acc5b509eac500b2bed41ee8909da8880133a3b26b6104002d755adc2066cf"
+  },
+  "batches": [
+    {
+      "batch": 1,
+      "count": 1,
+      "source_case_count": 215,
+      "repairs": [
+        {
+          "index": 1,
+          "key": "HasteCacheChecked",
+          "summary": "Check the final native int16 values of all three haste caches before applying any change;reject overflow atomically.",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "method": "HandleDebugModifyHasteCommand",
+          "test_scope": "complete production handler"
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "source_asan": "702 cases: production complete handlers or explicitly declared numeric admission prefixes;real native rating and spellpower implementation exports;controlled side effects,no live DB/character changes.",
+    "full_handlers": 28,
+    "admission_prefixes": 22,
+    "prefix_limit": "For marked handlers only admission up to the recorded service boundary is executed in ASAN;the complete original native effects beyond that boundary are retained by exact inverse-delta source certificate and compiled/linked in Release. No claim of full live DB/vehicle/quest traversal.",
+    "counterfactual": "Five pinned original variants reproduce mail operand conflation,movement flags mutation,ticket7x alias,shutdown1x acceptance,hide-area toggle without live mutation/undefined overflow.",
+    "native": "Matching core headers establish int16 rating cache,uint8 effective level,uint16 item level/skill/phase,UInt32 ticket and lifecycle arguments;real24-byte mail packet serializer verified.",
+    "release": "Original Release scripts.lib and original final-link inputs;all new50 actual registrations/helpers and selected native branches plus retained100 PE proofs pass on canonical EXE. Scepter -VerifyReleaseBinary passes.",
+    "startup": "Owned worldserver PID1292:fresh ready,shutdown0,exit0,gone,stderr empty;no user server stopped. bnet .text checked in final consistency;no new bnet startup claimed.",
+    "analysis": "All8 actual command TUs analyzed;selected printf sign mismatch repaired and cs_server rechecked. Broader CRT/Boost/fmt header diagnostics and harmless unrelated cs_misc map/stmt shadowing remain visible in local mixed analysis logs;not a claim of globally warning-free source.",
+    "diagnostics": "Before/after crashes and log offsets recorded for every test/build/analysis/PE/startup. No new/changed crashes or unexplained appended server warning/error/assertion/DBErrors. Temporary fixture syntax/type bootstrap failures paired with passing final regression;no symptom suppression."
+  },
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/more-fifty-20261114",
+    "manifest_sha256": "400271979ad4c74e7f91199ccdd9fe906496bd4c37541216dddb6ba9454d871f",
+    "scepter_manifest_sha256": "6dce9118fc8733e8b9efaf11a8955b08371bd81c2c59d506dd8760aa79981311",
+    "archived_files": 617,
+    "removed_files": 546,
+    "reclaimed_bytes": 679261850.0,
+    "retained_rollback": [
+      ".codex/release-before-more-fifty-20261114-batch1",
+      ".codex/release-before-next-fifty-20261114-batch1"
+    ],
+    "mixed_analysis_retained": [
+      ".codex/more-fifty-20261114/analysis-20261114-105548-957",
+      ".codex/more-fifty-20261114/analysis-20261114-105925-118"
+    ]
+  },
+  "remaining": [
+    "Actual client checks and all36 complete artifact chains remain separate/unverified.",
+    "Preserve original OPEN LINK2/Slaghammer101430/103151,Fu Zan Yigthregor path/return flight evidence and mixed DBErrors;no invented native completion claims.",
+    "Native rating cache/general aura-state research retained at .codex/next-fifty-20261114/open-native-research.json. Command admission now guards the cache;ordinary core rating semantics and AuraState32/INT_MIN still require independent research.",
+    "General _ModifyUInt32 helper can negate INT_MIN outside this guarded debug command;no ordinary caller reproduction established. Retain this static finding without claiming global core repair."
+  ],
+  "protected_evidence": {
+    "DBErrors_bytes": 7111,
+    "DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c"
+  },
+  "validation_commit_scope": "Final50 working tree tested together;focused commits record one source repair each. Final head equals the tested full source certificate."
+}
