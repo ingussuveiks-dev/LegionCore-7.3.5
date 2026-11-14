@@ -22,6 +22,7 @@
 #include "fuzan_summerpetal.h"
 #include "fuzan_wave_entry.h"
 #include "fuzan_brewing.h"
+#include "fuzan_return.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -63,4 +64,5 @@ void AddSC_instance_temple_of_the_jade_serpent()
     RegisterAuraScript(aura_fuzan_brewing_controller);
     new map_fuzan_brewing();
     new player_fuzan_brewing();
+    FuZanReturn::Register();
 }

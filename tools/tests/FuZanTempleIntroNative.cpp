@@ -182,6 +182,9 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     if(withTempleRescue)names.emplace_back("npc_fuzan_belphiar");
     if(withTempleRescue){names.emplace_back("npc_fuzan_summerpetal");names.emplace_back("condition_fuzan_summerpetal_continuation");}
     if(withTransition)for(auto name:{"eventobject_fuzan_wave_entry","spell_fuzan_wave_attempt","aura_fuzan_wave_controller","spell_fuzan_wave_conversation","spell_fuzan_wave_retrieval"})names.emplace_back(name);
+#ifdef FUZAN_RETURN_NATIVE
+    for(auto name:{"npc_fuzan_return_guide","npc_fuzan_return_vehicle","spell_fuzan_return_boarding","spell_fuzan_return_transfer","spell_fuzan_return_join_refusal"})names.emplace_back(name);
+#endif
     std::sort(names.begin(),names.end());names.erase(std::unique(names.begin(),names.end()),names.end());
     sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadScenarioData();
     if(withDefense)sObjectMgr->LoadPhaseDefinitions();

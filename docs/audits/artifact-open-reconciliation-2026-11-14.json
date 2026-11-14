@@ -78,7 +78,12 @@
       "issue": "Fu Zan Yigthregor movement and original Yu lon return flight",
       "state": "OPEN_AUTHENTIC_BINDING_MISSING",
       "audit": "docs/audits/fuzan-native-movement-candidates-2026-11-14.json",
-      "current_check": "22 current native pickup/scene/equipment/direct-return cases pass; controlled earlier entry/stage2, no full combat/flight/client claim. Nine native taxi candidates/73 points recovered; none assigned by guesswork."
+      "current_check": "22 current native pickup/scene/equipment/direct-return cases pass; controlled earlier entry/stage2, no full combat/flight/client claim. Nine native taxi candidates/73 points recovered; none assigned by guesswork.",
+      "followup_2026_11_15": {
+        "state": "FUNCTIONAL_DEPARTURE_DEPLOYED_NATIVE30_PASSED_CLIENT_PENDING_AUTHENTIC_ROUTE_STILL_UNKNOWN",
+        "audit": "docs/audits/fuzan-return-reconstruction-2026-11-15.json",
+        "remaining": "User approved labelled reconstruction. Short native boarded departure and safe original ground pad implemented; authentic arrival flight and Yigthregor path still OPEN. Previous22 direct-return claim is historical."
+      }
     },
     {
       "issue": "101430 and103151 LINK2",

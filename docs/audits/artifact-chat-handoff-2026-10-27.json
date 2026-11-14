@@ -1199,7 +1199,7 @@
   },
   "latest_ten_ten_repairs_2026_11_11": {
     "status": "COMPLETE_100_SELECTED_REPAIRS_TECHNICAL_CHECKED_DEPLOYED_CLIENT_AND_LEGACY_PENDING",
-    "request": "Turpini 10×10",
+    "request": "Turpini 10\u00d710",
     "completed": 100,
     "remaining": 0,
     "completed_batches": 10,
@@ -1315,7 +1315,7 @@
   },
   "latest_third_five_ten_repairs_2026_11_11": {
     "status": "TECHNICAL_50_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
-    "request": "Turpini 5×10",
+    "request": "Turpini 5\u00d710",
     "completed": 50,
     "batches": 5,
     "focused_commits": 50,
@@ -11318,5 +11318,12 @@
     "canonical_world_sha256": "c79febc6a2e2c3bd8f2ad7b88723ff0eaf6b46d201d224aaf36c350887267016",
     "checks": "68 actual native/live contexts,2 expected-broken counterfactuals,retained76/73/12 ASAN,stage/canonical PE,Scepter,updater/idempotence and owned startup pass;no exact-original predicate or all36 client claim.17/50 ledger.",
     "preserve": "LINK2/Slaghammer,mixed7111-byte DBErrors,original historical research and pending Monday client checks remain visible."
+  },
+  "latest_fuzan_functional_return_2026_11_15": {
+    "status": "USER_APPROVED_FUNCTIONAL_DEPARTURE_RECONSTRUCTION_DEPLOYED_NATIVE_PASSED_CLIENT_PENDING",
+    "audit": "docs/audits/fuzan-return-reconstruction-2026-11-15.json",
+    "canonical_world_sha256": "d97a26433866b1619ad1727c04f0890a3ea8e0ec3da489085737127248ba408c",
+    "checks": "30 actual native/live cases, static/runtime collision, shadow install/idempotence/custom guard, complete retained Fu Zan PE chain, canonical return/defense/Scepter and owned startup pass. Actual client and authentic arrival remain open.",
+    "preserve": "Mixed7111-byte DBErrors, original LINK2/Slaghammer and Yigthregor movement evidence remain unresolved and untouched."
   }
 }

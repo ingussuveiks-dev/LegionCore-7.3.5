@@ -1,0 +1,148 @@
+{
+  "date": "2026-11-15",
+  "status": "USER_APPROVED_FUNCTIONAL_DEPARTURE_RECONSTRUCTION_DEPLOYED_NATIVE_PASSED_CLIENT_PENDING",
+  "authorization": "User: Der mar\u0137\u0113ta. Functional reconstruction accepted; exact retail spline and unseen arrival not claimed.",
+  "baseline_commit": "a8a508d211f4c12b532b75b1a83a276794289285",
+  "fix_commit": "Recorded by the following archive closeout audit; this implementation commit includes code, migration, regressions and this evidence.",
+  "scope": "Fu Zan42765/scenario1137, final109440 gossip19932 -> native109441/4577/seat16264 -> short departure -> native217820/1324 loading -> original ground return pad on1514.",
+  "behavior": [
+    "Admit only actual offered19932/0, same-map visible alive summoned109440, eligible actual Monk, final1137 context and owned inventory128938. No item or prerequisite grants. Abandonment retains the earned exit.",
+    "Native217818 personal summon/properties492. Explicit46598 boarding has bounded same-actor retry/pending-seat guards. Native E2/90 credit109440 and original event52751 wait for actual accepted passenger0 and the full collision check. Duplicate casts/selections do not replay credit or create another vehicle.",
+    "A native cancellation receipt distinguishes abandonment/reacceptance before boarding; a fresh quest attempt receives no stale credit. An abandoned earned item can still leave. The nonshareable return remains self-credit; earlier actual player/pet/guardian/owned ally victories remain native.",
+    "SetClientControl(vehicle,false) only after accepted seat, follow actual MoveSmoothFlyPath endpoint, restore only this issued mover/viewpoint, finish native exit spline before transfer. Source vehicle cleanup is scheduled on its own map.",
+    "Interrupted source flight exits normally and requests the original source ground pose, retaining a completed-quest return retry without repeated progression. OnBeforeLogout supplies safe1514 save parameters before final serialization; unrelated pending transfers/vehicles/taxi/transport remain untouched."
+  ],
+  "reconstruction_choices": {
+    "departure_points": [
+      [
+        881.767,
+        -2742.08,
+        192.236
+      ],
+      [
+        884,
+        -2736,
+        199
+      ],
+      [
+        891,
+        -2718,
+        205
+      ],
+      [
+        901,
+        -2695,
+        205
+      ]
+    ],
+    "actual_start": "Actual217818 summon position, constrained within10yd of authored109440 pose; first point is not a forced teleport.",
+    "speed": "MOVE_FLIGHT2 multiplier is a functional choice, not recovered retail timing.",
+    "watchdog": "55s bounds cleanup before native60s summon expiry; never forces progression or kills an actor.",
+    "arrival": "217820 native hit is scoped to the owned transfer and relocated to the old SmartAI ground point1514(901.691,3605.27,193.116,6.26855). Original air target805.33,3608.73,227.01 is unchanged in DB; its unrecovered arrival leg is deliberately not reconstructed.",
+    "217819": "Native target105 is NYI in this core. This implementation calls the matching217820 child directly after real dismount, retaining native custom loading1324 and transfer. No generic force-cast change.",
+    "geometry": "Actual Catmullrom interpolation:2250 static terrain/VMAP samples, plus phase-aware runtime height/LOS checks before departure. Declared2yd horizontal/0..4yd vertical probe envelope is not a full oriented dragon/passenger hull or client visual proof.",
+    "rejected_candidates": "Longer source candidate intersected phase/runtime collision near(910.428,-2676.105,208.163), ground214.058. Direct destination descent intersected the hall roof. Chosen short departure stops before that obstruction; neither failed candidate is presented as a passing flight."
+  },
+  "sources": {
+    "local": "Matching26972 DB2/Hotfix/World, existing native return/effect/vehicle catalogs, actual core target/vehicle/teleport/mover/logout paths; compatible local Sheilun implementation used as a lifecycle reference.",
+    "prior_research": [
+      "docs/audits/fuzan-return-flight-research-2026-11-01.json",
+      "docs/audits/fuzan-native-movement-candidates-2026-11-14.json",
+      "docs/audits/fuzan-client-scene-binding-followup-2026-11-14.json"
+    ],
+    "video": "https://www.youtube.com/watch?v=lCSWkZZpwdI; prior complete relevant frame-sampled review shows boarding/short ascent and then an edit to on-foot Isle/turn-in. No continuous loading/arrival/dismount or exact retail trajectory proof."
+  },
+  "verification": {
+    "native": "30 actual native live-data pickup/return cases (human/orc):5 killer variants, scene completion/cancel/expiry, full bags, missing entry control, pre-gossip abandonment/other spec; refused seat and same vehicle retry, actual spline/native exit/control, far transfer/real ACK, artifact GUID; interrupted flight/retry, in-flight abandonment, before-logout parameters, abandon/reaccept before boarding.",
+    "limits": "Earlier entry/stage2 and combat damage inputs controlled. Wave combat AI not driven. Logout invokes actual before-save hook and checks its native destination parameters; no authenticated logout, character save or subsequent login is claimed. Fixture restoration after that assertion is explicitly controlled.",
+    "data": "3 MariaDB temporary-shadow cases: install, idempotent replay, refuse unrelated custom actor binding. Final30 require actual live creature/spell native-loader registrations. Original3 SmartAI rows remain unchanged.",
+    "linked": "New selected return hooks/calls pass on stage and canonical; retained intro/door/Belphiar/Summerpetal/wave/brewing complete PE chain passes; canonical weighted-defense/native death factory and Scepter -VerifyReleaseBinary pass.",
+    "release": "Original scripts/Release/scripts.lib rebuilt, original game/scripts/shared/common final-link inputs used without OutDir override. Canonical world/bnet hashes match staged copies. Bnet is an unchanged-source relink, not a gameplay repair.",
+    "startup": "Owned canonical PID34208 reached fresh ready, applied migration, shutdown0/exit0/gone; stderr empty. No user server stopped or hidden server left running.",
+    "evidence": {
+      "live-native30": {
+        "sha256": "09fb1bdb7162ce12e18d6dfd0679f930ef30deed3ce928eb86f7dd5540bf8f9b",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "live-native30/native-diagnostics": {
+        "sha256": "d5eb009086e5e8ab32fe5f1a871df069b0bca338849798b53b43e2f184a45dc1",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "startup-evidence": {
+        "sha256": "6896d5a2dc58061db30c465206f1e3cfc860edb0ac6f17b0f02dac50163bfe22",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "canonical-checks": {
+        "sha256": "a10780a71f76d2f05441f7ac127aa0bc106166267928b36b7af19f02cc60d504",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "pe-staged2": {
+        "sha256": "0b7bd4ccc9f11f045ad95018c0d998b59991a4e58178ef8581423e4dbb5021a1",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "route-final": {
+        "sha256": "e1ebabe284e696241d6922f9ae20e25b12f009ca8a57d9c1c2f15b1a135282e5",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "shadow2": {
+        "sha256": "682cb0ffa19f47a8f4fb86f32a914cf32343a6d5447366f639271999a6c1877d",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "build-evidence": {
+        "sha256": "763711be65bf85f0d6b367f5f03d7e578e17faebe99b9a8b6d4a11c84edd1742",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "link-evidence": {
+        "sha256": "7cb6047fd0ad0278e76d517ab104f135e521a697285c6c8a27a8f88ab5ab5ea9",
+        "completed": true,
+        "new_diagnostics": 0
+      },
+      "deployment-evidence": {
+        "sha256": "10c708c7b4d672bd5066f224cf2af454cbce200716a427e4237672084f7d54a3",
+        "completed": true,
+        "new_diagnostics": 0
+      }
+    },
+    "native_exe_sha256": "c6a048105a4fa203835c6c492681831d4eb606ca0fab46e061eab371f16580e3",
+    "native_live_data": true,
+    "compiler_note": "Retained Scepter fixture emits existing signedness/narrowing warnings from its declared stand-ins; no new scripts build warnings or appended server warnings/errors/assertions."
+  },
+  "canonical": {
+    "worldserver.exe": "d97a26433866b1619ad1727c04f0890a3ea8e0ec3da489085737127248ba408c",
+    "worldserver.map": "4dc28d3543115576ba17c0aa513e3a226ff4dd1dd6695537dbe53c2b02c063de",
+    "bnetserver.exe": "522b1e93259f8ce830f716b465f7f65c653e1bb90483b83dde13bf91ff3079d7",
+    "bnetserver.map": "ab197e6684e6d04959f3d6d8520d3ecdb56c5bee8a76ed09deea4c830629b11e"
+  },
+  "resolved_iterations": [
+    "Native zero-display fixture reached Unit::GetCollisionHeight assert; fix seeds real race MaleDisplayID/scale before boarding. No production display/assert bypass. Distinct native2 stderr/exit evidence retained and paired with final30.",
+    "Uninitialized ScriptLifetime denied credit; production return now captures native QuestCancellationReceipt and compares the accepted attempt. Final30 includes actual abandon/reaccept before boarding.",
+    "Native in-flight abandonment retains an already awarded in-memory objective; assertion corrected to preserve that legitimate receipt, not erase it or award another.",
+    "Artificial logout hook alone cannot authorize a live worldport ACK from an unremoved fixture player. Test now checks actual before-save destination/control, then explicitly restores its reused fixture and retries a real flight/transfer/ACK. Actual logout/login remains a client check.",
+    "Intermediate header/macro/shared-pointer compile errors, SQL schema/temporary-table ordering and existing capstone module path corrected; final build, shadow, native and PE checks pass. No logging/check suppression.",
+    "Early geometry candidate iterations reused the local geometry output location; final separately retained route-final evidence is authoritative. Distinct native runtime failures3/4 remain retained; no claim that every overwritten early geometry byte was archived."
+  ],
+  "preserved": {
+    "mixed_DBErrors": {
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "truncated": false
+    },
+    "SlaghammerHandoffNative_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "original_research": "Original LINK2/Slaghammer/native movement evidence and Defender quarantine untouched. New reconstruction does not supply missing101430/103151 actions."
+  },
+  "pending": [
+    "Actual client boarding/short flight/camera/pet/ground arrival/turn-in and disconnect/relogin traversal.",
+    "Authentic full return trajectory/arrival leg remains unknown; current departure is labelled functional.",
+    "Yigthregor109820 MovementType2/path0 intent, missing shared Monk links100438/100475, original101430/103151 LINK2 remain OPEN.",
+    "All36 whole artifact chains remain unverified end-to-end."
+  ],
+  "cleanup": "Followup archive audit records verified fixed archive hashes, exact task-only deletions/reclaimed bytes and retained rollback. Mixed canonical log and original unresolved evidence are excluded."
+}
