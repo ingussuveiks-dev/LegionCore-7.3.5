@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-14",
+  "kind": "TEST_CERTIFICATE_REPAIR_NO_GAMEPLAY_SOURCE_CHANGE",
+  "binary_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+  "diagnostics": "Relevant complete final checks record no new/changed crash or appended DBErrors/server warning/error/assertion; no world/bnet launched. Actual client traversal remains separate.",
+  "status": "PASS_RETAINED_CANONICAL_SCOPE",
+  "cause": "WorldLocation now has both coordinate and copy WorldRelocate overloads; a historical broad symbol prefix is ambiguous.",
+  "repair": "Select the exact native QEAAXIMMMM@Z coordinate ABI in the existing call-site and callee proofs. All original finite/map/native cemetery/radian/XYZ/diagnostic/null/instance-vtable/forbidden-progression assertions retained. No arbitrary symbol chosen.",
+  "checks": "verify_tuure_graveyard_release and dependent verify_tuure_legacy_login_release complete exit0 in release-dependent; whole Holy client scenario not certified."
+}

@@ -84,10 +84,10 @@ if hodir is not None:
         ('movss', 'dword ptr [rsp + 0x20], xmm0'), ('movss', 'xmm3, dword ptr [rsi + 0x10]'),
         ('movss', 'xmm2, dword ptr [rsi + 0xc]'), ('mov', 'edx, edi'), ('lea', 'rcx, [r14 + 0x2e0]')]
     assert [(o.mnemonic, o.op_str) for o in body[coord + 3:coord + 13]] == expected_args
-    relocate, = sites('?WorldRelocate@WorldLocation@@')
+    relocate, = sites('?WorldRelocate@WorldLocation@@QEAAXIMMMM@Z')
     assert relocate == coord + 13 and body[relocate + 1].op_str == 'rax, [r14 + 0x2e0]'
     relocation_tail = body[coord + 11].address
-    native_relocate = instructions('?WorldRelocate@WorldLocation@@')
+    native_relocate = instructions('?WorldRelocate@WorldLocation@@QEAAXIMMMM@Z')
     assert [(o.mnemonic, o.op_str) for o in native_relocate[:9]] == [
         ('push', 'rbx'), ('sub', 'rsp, 0x20'), ('movss', 'xmm0, dword ptr [rsp + 0x50]'),
         ('mov', 'rbx, rcx'), ('movss', 'dword ptr [rcx + 8], xmm0'), ('movss', 'xmm0, dword ptr [rsp + 0x58]'),
