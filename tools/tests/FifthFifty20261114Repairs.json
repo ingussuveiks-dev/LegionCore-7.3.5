@@ -382,6 +382,18 @@
       "test_boundary": "        if (!ObjectMgr::GetPlayerAccountIdByGUID",
       "observe": "guid.GetGUIDLow()",
       "summary": "Reject overflowing numeric character counters before dump export; native name/account existence validation retained."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "method": "HandleCharacterGetrenameCommand",
+      "key": "CharacterRenameHistoryFullGuid",
+      "case": "CharacterRenameHistoryFullGuid",
+      "kind": "command",
+      "old": "    static bool HandleCharacterGetrenameCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;       \n\n        std::string character = args;\n\n        if (isNumeric(character.c_str()))\n        {\n            ObjectGuid PlayerGuid = ObjectGuid::Create<HighGuid::Player>(atoi((char*)args));\n\n            if (!PlayerGuid)\n                return false;\n\n            QueryResult result = CharacterDatabase.PQuery(\"SELECT * FROM log_rename WHERE guid = '%u'\", PlayerGuid.GetGUIDLow());\n            if (!result)\n            {\n                handler->PSendSysMessage(\"Aucun rename pour le personnage de guid '%u'\", PlayerGuid.GetGUIDLow());\n                return true;\n            }\n            std::string PlayerNewName;\n            ObjectMgr::GetPlayerNameByGUID(PlayerGuid, PlayerNewName); // nom actuel en cas de rename multiple !\n            handler->PSendSysMessage(\"Le nom actuel du joueur de guid '%u' est : '%s'\", PlayerGuid.GetGUIDLow(), PlayerNewName.c_str());\n            return true;\n        }\n        if (!normalizePlayerName(character))\n            return false;\n\n        QueryResult result = CharacterDatabase.PQuery(\"SELECT guid FROM log_rename WHERE oldName = '%s'\", character.c_str());\n        if (!result)\n        {\n            handler->PSendSysMessage(\"Aucun rename pour le personnage '%s'\", character.c_str());\n            return true;\n        }\n        else\n        {\n            std::string PlayerNewName;\n            ObjectMgr::GetPlayerNameByGUID(ObjectGuid::Create<HighGuid::Player>(result->Fetch()->GetUInt64()), PlayerNewName); // nom actuel en cas de rename multiple !\n            handler->PSendSysMessage(\"Le nom actuel du joueur '%s' est : '%s' (guid : '%u')\", character.c_str(), PlayerNewName.c_str(), result->Fetch()->GetUInt32());\n            return true;\n        }\n        return true;\n    }",
+      "new": "    static bool HandleCharacterGetrenameCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;       \n\n        std::string character = args;\n\n        if (isNumeric(character.c_str()))\n        {\n            ObjectGuid::LowType counter;\n            if (!Trinity::ParseCommandInteger(character.c_str(), counter) || !counter || counter > ObjectGuid::GetMaxCounter(HighGuid::Player))\n                return false;\n            ObjectGuid PlayerGuid = ObjectGuid::Create<HighGuid::Player>(counter);\n\n            if (!PlayerGuid)\n                return false;\n\n            QueryResult result = CharacterDatabase.PQuery(\"SELECT * FROM log_rename WHERE guid = '\" UI64FMTD \"'\", PlayerGuid.GetGUIDLow());\n            if (!result)\n            {\n                handler->PSendSysMessage(\"Aucun rename pour le personnage de guid '\" UI64FMTD \"'\", PlayerGuid.GetGUIDLow());\n                return true;\n            }\n            std::string PlayerNewName;\n            ObjectMgr::GetPlayerNameByGUID(PlayerGuid, PlayerNewName); // nom actuel en cas de rename multiple !\n            handler->PSendSysMessage(\"Le nom actuel du joueur de guid '\" UI64FMTD \"' est : '%s'\", PlayerGuid.GetGUIDLow(), PlayerNewName.c_str());\n            return true;\n        }\n        if (!normalizePlayerName(character))\n            return false;\n\n        QueryResult result = CharacterDatabase.PQuery(\"SELECT guid FROM log_rename WHERE oldName = '%s'\", character.c_str());\n        if (!result)\n        {\n            handler->PSendSysMessage(\"Aucun rename pour le personnage '%s'\", character.c_str());\n            return true;\n        }\n        else\n        {\n            std::string PlayerNewName;\n            ObjectMgr::GetPlayerNameByGUID(ObjectGuid::Create<HighGuid::Player>(result->Fetch()->GetUInt64()), PlayerNewName); // nom actuel en cas de rename multiple !\n            handler->PSendSysMessage(\"Le nom actuel du joueur '%s' est : '%s' (guid : '\" UI64FMTD \"')\", character.c_str(), PlayerNewName.c_str(), result->Fetch()->GetUInt64());\n            return true;\n        }\n        return true;\n    }",
+      "test_boundary": "            QueryResult result",
+      "observe": "PlayerGuid.GetGUIDLow()",
+      "summary": "Read rename history with native player counters and matching64-bit SQL/output formats; name query unchanged."
     }
   ],
   "extra_edits": [
@@ -419,7 +431,7 @@
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d",
-      "after_sha256": "a5a5cb7c2d399a6f51d1cc1eeba101be4b28298bc085d18aadc54ca3840f3927"
+      "after_sha256": "fef837f208f8b5033661ddf0a8663025d82c75a684c607651e7d0beca38eb9ce"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",

@@ -935,20 +935,23 @@ public:
 
         if (isNumeric(character.c_str()))
         {
-            ObjectGuid PlayerGuid = ObjectGuid::Create<HighGuid::Player>(atoi((char*)args));
+            ObjectGuid::LowType counter;
+            if (!Trinity::ParseCommandInteger(character.c_str(), counter) || !counter || counter > ObjectGuid::GetMaxCounter(HighGuid::Player))
+                return false;
+            ObjectGuid PlayerGuid = ObjectGuid::Create<HighGuid::Player>(counter);
 
             if (!PlayerGuid)
                 return false;
 
-            QueryResult result = CharacterDatabase.PQuery("SELECT * FROM log_rename WHERE guid = '%u'", PlayerGuid.GetGUIDLow());
+            QueryResult result = CharacterDatabase.PQuery("SELECT * FROM log_rename WHERE guid = '" UI64FMTD "'", PlayerGuid.GetGUIDLow());
             if (!result)
             {
-                handler->PSendSysMessage("Aucun rename pour le personnage de guid '%u'", PlayerGuid.GetGUIDLow());
+                handler->PSendSysMessage("Aucun rename pour le personnage de guid '" UI64FMTD "'", PlayerGuid.GetGUIDLow());
                 return true;
             }
             std::string PlayerNewName;
             ObjectMgr::GetPlayerNameByGUID(PlayerGuid, PlayerNewName); // nom actuel en cas de rename multiple !
-            handler->PSendSysMessage("Le nom actuel du joueur de guid '%u' est : '%s'", PlayerGuid.GetGUIDLow(), PlayerNewName.c_str());
+            handler->PSendSysMessage("Le nom actuel du joueur de guid '" UI64FMTD "' est : '%s'", PlayerGuid.GetGUIDLow(), PlayerNewName.c_str());
             return true;
         }
         if (!normalizePlayerName(character))
@@ -964,7 +967,7 @@ public:
         {
             std::string PlayerNewName;
             ObjectMgr::GetPlayerNameByGUID(ObjectGuid::Create<HighGuid::Player>(result->Fetch()->GetUInt64()), PlayerNewName); // nom actuel en cas de rename multiple !
-            handler->PSendSysMessage("Le nom actuel du joueur '%s' est : '%s' (guid : '%u')", character.c_str(), PlayerNewName.c_str(), result->Fetch()->GetUInt32());
+            handler->PSendSysMessage("Le nom actuel du joueur '%s' est : '%s' (guid : '" UI64FMTD "')", character.c_str(), PlayerNewName.c_str(), result->Fetch()->GetUInt64());
             return true;
         }
         return true;
