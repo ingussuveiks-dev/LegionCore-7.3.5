@@ -401,6 +401,16 @@
       "observe": "entry",
       "test_signature": "    static bool HandleRemoveDisables(ChatHandler* handler, char const* args)",
       "summary": "Reject malformed/overflowing disable entry IDs before querying or removing an unrelated disable record."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleItemMoveCommand",
+      "case": "ItemMoveExactSlots",
+      "key": "ItemMoveExactSlots",
+      "kind": "more",
+      "old": "    static bool HandleItemMoveCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char const* param1 = strtok((char*)args, \" \");\n        if (!param1)\n            return false;\n\n        char const* param2 = strtok(NULL, \" \");\n        if (!param2)\n            return false;\n\n        uint8 srcSlot = uint8(atoi(param1));\n        uint8 dstSlot = uint8(atoi(param2));\n\n        if (srcSlot == dstSlot)\n            return true;\n\n        if (!handler->GetSession()->GetPlayer()->IsValidPos(INVENTORY_SLOT_BAG_0, srcSlot, true))\n            return false;\n\n        if (!handler->GetSession()->GetPlayer()->IsValidPos(INVENTORY_SLOT_BAG_0, dstSlot, false))\n            return false;\n\n        uint16 src = ((INVENTORY_SLOT_BAG_0 << 8) | srcSlot);\n        uint16 dst = ((INVENTORY_SLOT_BAG_0 << 8) | dstSlot);\n\n        handler->GetSession()->GetPlayer()->SwapItem(src, dst);\n\n        return true;\n    }",
+      "new": "    static bool HandleItemMoveCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char const* param1 = strtok((char*)args, \" \");\n        if (!param1)\n            return false;\n\n        char const* param2 = strtok(NULL, \" \");\n        if (!param2)\n            return false;\n\n        uint8 srcSlot, dstSlot;\n        if (!Trinity::ParseCommandInteger(param1, srcSlot) || !Trinity::ParseCommandInteger(param2, dstSlot))\n            return false;\n\n        if (srcSlot == dstSlot)\n            return true;\n\n        if (!handler->GetSession()->GetPlayer()->IsValidPos(INVENTORY_SLOT_BAG_0, srcSlot, true))\n            return false;\n\n        if (!handler->GetSession()->GetPlayer()->IsValidPos(INVENTORY_SLOT_BAG_0, dstSlot, false))\n            return false;\n\n        uint16 src = ((INVENTORY_SLOT_BAG_0 << 8) | srcSlot);\n        uint16 dst = ((INVENTORY_SLOT_BAG_0 << 8) | dstSlot);\n\n        handler->GetSession()->GetPlayer()->SwapItem(src, dst);\n\n        return true;\n    }",
+      "summary": "Validate both native byte inventory slots before equality/position checks or swapping items;retain native position admission."
     }
   ],
   "extra_edits": [
@@ -433,9 +443,19 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "DisableAddExactIdFlags"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
+      "owner_key": "ItemMoveExactSlots"
     }
   ],
   "files": {
+    "src/server/scripts/Commands/cs_misc.cpp": {
+      "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
+      "after_sha256": "a0d9deb02af3819d040eaf0d146daa0cd885f346b04812767bef58a557691cfe"
+    },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
       "after_sha256": "31c4bfa9e5a5e0067e236b1090f568345e42952c56f9136d932b87404ca5f1c6"

@@ -19,6 +19,8 @@
 #include "BattlegroundMgr.h"
 #include "CharmInfo.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
 #include "DB2Stores.h"
 #include "GlobalFunctional.h"
 #include "GridNotifiers.h"
@@ -1060,8 +1062,9 @@ public:
         if (!param2)
             return false;
 
-        uint8 srcSlot = uint8(atoi(param1));
-        uint8 dstSlot = uint8(atoi(param2));
+        uint8 srcSlot, dstSlot;
+        if (!Trinity::ParseCommandInteger(param1, srcSlot) || !Trinity::ParseCommandInteger(param2, dstSlot))
+            return false;
 
         if (srcSlot == dstSlot)
             return true;
