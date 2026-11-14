@@ -1342,15 +1342,22 @@ public:
         if (!e)
             return false;
 
-        uint32 guid = strtoull(e, nullptr, 10);
+        ObjectGuid::LowType guid;
+        if (!Trinity::ParseCommandInteger(e, guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Item))
+            return false;
 
         Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));
 
         if (!i)
             return false;
 
-        handler->GetSession()->GetPlayer()->DestroyItem(i->GetBagSlot(), i->GetSlot(), true);
-        sScriptMgr->OnItemExpire(handler->GetSession()->GetPlayer(), i->GetTemplate());
+        Player* player = handler->GetSession()->GetPlayer();
+        ObjectGuid const itemGuid = ObjectGuid::Create<HighGuid::Item>(guid);
+        ItemTemplate const* itemTemplate = i->GetTemplate();
+        player->DestroyItem(i->GetBagSlot(), i->GetSlot(), true);
+        if (player->GetItemByGuid(itemGuid))
+            return false; // Native equip protection may defer removal.
+        sScriptMgr->OnItemExpire(player, itemTemplate);
 
         return true;
     }
