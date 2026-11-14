@@ -1769,8 +1769,18 @@ public:
         if (!px || !py)
             return false;
 
-        uint32 type = uint32(atoi(px));                         //0 to 3, 0: fine, 1: rain, 2: snow, 3: sand
-        float grade = float(atof(py));                          //0 to 1, sending -1 is instand good weather
+        uint32 type;
+        float grade;
+        if (!Trinity::ParseCommandInteger(px, type) || !Trinity::ParseCommandFloat(py, grade))
+            return false;
+        switch (type)
+        {
+            case WEATHER_TYPE_FINE: case WEATHER_TYPE_RAIN: case WEATHER_TYPE_SNOW:
+            case WEATHER_TYPE_STORM: case WEATHER_TYPE_THUNDERS: case WEATHER_TYPE_BLACKRAIN:
+                break;
+            default:
+                return false;
+        }
 
         Player* player = handler->GetSession()->GetPlayer();
         Weather* weather = player->GetMap()->GetOrGenerateZoneDefaultWeather(player->GetZoneId());
