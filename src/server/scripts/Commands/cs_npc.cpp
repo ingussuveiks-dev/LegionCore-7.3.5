@@ -357,24 +357,24 @@ public:
             return false;
         }
 
-        int32 item_int = atol(pitem);
-        if (item_int <= 0)
+        uint32 itemId;
+        if (!Trinity::ParseCommandInteger(pitem, itemId) || !itemId)
             return false;
-
-        uint32 itemId = item_int;
 
         char* fmaxcount = strtok(NULL, " ");                    //add maxcount, default: 0
         uint32 maxcount = 0;
-        if (fmaxcount)
-            maxcount = atol(fmaxcount);
+        if (fmaxcount && !Trinity::ParseCommandInteger(fmaxcount, maxcount))
+            return false;
 
         char* fincrtime = strtok(NULL, " ");                    //add incrtime, default: 0
         uint32 incrtime = 0;
-        if (fincrtime)
-            incrtime = atol(fincrtime);
+        if (fincrtime && !Trinity::ParseCommandInteger(fincrtime, incrtime))
+            return false;
 
         char* fextendedcost = strtok(NULL, " ");                //add ExtendedCost, default: 0
-        uint32 extendedcost = fextendedcost ? atol(fextendedcost) : 0;
+        uint32 extendedcost = 0;
+        if (fextendedcost && !Trinity::ParseCommandInteger(fextendedcost, extendedcost))
+            return false;
         Creature* vendor = handler->getSelectedCreature();
         if (!vendor)
         {
@@ -385,8 +385,8 @@ public:
 
         char* fmoney = strtok(NULL, " ");                    //add money, default: 0
         uint64 money = 0;
-        if (fmoney)
-            money = atol(fmoney);
+        if (fmoney && !Trinity::ParseCommandInteger(fmoney, money))
+            return false;
 
         uint32 vendor_entry = vendor ? vendor->GetEntry() : 0;
 
