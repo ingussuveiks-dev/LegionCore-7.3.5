@@ -10,13 +10,23 @@
       "old": "    static bool HandleDebugModifyHasteCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->ApplyRatingMod(CR_HASTE_MELEE, Value, true);\n        player->ApplyRatingMod(CR_HASTE_RANGED, Value, true);\n        player->ApplyRatingMod(CR_HASTE_SPELL, Value, true);\n        return true;\n    }",
       "new": "    static bool HandleDebugModifyHasteCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n\n        // Validate every native int16 cache before applying any part of the change.\n        auto canApply = [player, Value](CombatRating rating)\n        {\n            using RatingValue = std::remove_reference_t<decltype(player->m_baseRatingValue[0])>;\n            int64 sum = int64(player->m_baseRatingValue[rating]) + Value;\n            return sum >= std::numeric_limits<RatingValue>::min() && sum <= std::numeric_limits<RatingValue>::max();\n        };\n        if (!canApply(CR_HASTE_MELEE) || !canApply(CR_HASTE_RANGED) || !canApply(CR_HASTE_SPELL))\n            return false;\n        player->ApplyRatingMod(CR_HASTE_MELEE, Value, true);\n        player->ApplyRatingMod(CR_HASTE_RANGED, Value, true);\n        player->ApplyRatingMod(CR_HASTE_SPELL, Value, true);\n        return true;\n    }",
       "summary": "Check the final native int16 values of all three haste caches before applying any change;reject overflow atomically."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugModifyHitCommand",
+      "case": "HitCacheChecked",
+      "key": "HitCacheChecked",
+      "kind": "more",
+      "old": "    static bool HandleDebugModifyHitCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->ApplyRatingMod(CR_HIT_MELEE, Value, true);\n        player->ApplyRatingMod(CR_HIT_RANGED, Value, true);\n        player->ApplyRatingMod(CR_HIT_SPELL, Value, true);\n        return true;\n    }",
+      "new": "    static bool HandleDebugModifyHitCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n\n        // Validate every native int16 cache before applying any part of the change.\n        auto canApply = [player, Value](CombatRating rating)\n        {\n            using RatingValue = std::remove_reference_t<decltype(player->m_baseRatingValue[0])>;\n            int64 sum = int64(player->m_baseRatingValue[rating]) + Value;\n            return sum >= std::numeric_limits<RatingValue>::min() && sum <= std::numeric_limits<RatingValue>::max();\n        };\n        if (!canApply(CR_HIT_MELEE) || !canApply(CR_HIT_RANGED) || !canApply(CR_HIT_SPELL))\n            return false;\n        player->ApplyRatingMod(CR_HIT_MELEE, Value, true);\n        player->ApplyRatingMod(CR_HIT_RANGED, Value, true);\n        player->ApplyRatingMod(CR_HIT_SPELL, Value, true);\n        return true;\n    }",
+      "summary": "Check all three native hit cache sums before mutation;prevent int16 wrapping and partial three-rating changes."
     }
   ],
   "extra_edits": [],
   "files": {
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "055a8213636f305b15ac9695b118592f0078e6cc5ff1d04fac5477fac0d4150d"
+      "after_sha256": "3333b78a2d424cfd638c2784b506cae94ece85b07bb47b0ecd4f459479670334"
     }
   }
 }
