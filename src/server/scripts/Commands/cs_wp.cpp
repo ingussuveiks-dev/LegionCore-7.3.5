@@ -161,7 +161,7 @@ public:
             path_number = strtok((char*)args, " ");
 
         uint32 pathid = 0;
-        uint32 guidLow = 0;
+        ObjectGuid::LowType guidLow = 0;
         Creature* target = handler->getSelectedCreature();
 
         // Did player provide a path_id?
@@ -182,7 +182,8 @@ public:
             return false;
         }
 
-        pathid = atoi(path_number);
+        if (!Trinity::ParseCommandInteger(path_number, pathid))
+            return false;
 
         if (!pathid)
         {
