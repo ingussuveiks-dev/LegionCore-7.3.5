@@ -704,7 +704,9 @@ public:
         uint32 mapId = player->GetMapId();
 
         float z = 0.0f;
-        float paramZ = (float)atof(goZ);
+        float paramZ;
+        if (!Trinity::ParseCommandFloat(goZ, paramZ))
+            return false;
 
         if (relative)
         {
@@ -733,8 +735,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        player->TeleportTo(mapId, x, y, z, player->GetOrientation());
-        return true;
+        return player->TeleportTo(mapId, x, y, z, player->GetOrientation());
     }
 };
 

@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_49_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 49,
+  "status": "COMPLETED_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 50,
   "batches": [
     {
       "batch": 1,
@@ -372,6 +372,11 @@
           "key": "GoTicketCheckedIdentifier",
           "path": "src/server/scripts/Commands/cs_go.cpp",
           "summary": "Reject malformed/overflow/signed ticket identifier before lookup/travel;retain native handled-missing-ticket semantics and GmTicket void teleport API."
+        },
+        {
+          "key": "GoZCheckedDestination",
+          "path": "src/server/scripts/Commands/cs_go.cpp",
+          "summary": "Validate finite absolute/relative Z before arithmetic and native coordinate gate;preserve legitimate signed offset semantics and return actual transfer result."
         }
       ],
       "checks": {
@@ -405,8 +410,17 @@
     }
   ],
   "remaining": [
-    "1 new source repairs remain;continue final group.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
-  ]
+  ],
+  "completion": {
+    "source_repairs": 50,
+    "groups": 5,
+    "new_count_scope": "49 independently reachable command operations/native summon callback plus native core money API,with common helpers/tests not recounted;see50 per-repair audits. No51st count for first repair terrain refinement.",
+    "final_regression_cases": 918,
+    "total_reclaimed_bytes": 1841621387.0,
+    "user_runtime_state": "No task-owned hidden/background worldserver or bnetserver remains.",
+    "unverified": "Actual GM/NPC/client presentation,dungeon combat and all36 whole artifact chains;original LINK2/Slaghammer/FuZan path/flight and mixed prior DBErrors evidence remain open.",
+    "authorized_scope_finished": "Stop after these50;do not create another group without new request."
+  }
 }
