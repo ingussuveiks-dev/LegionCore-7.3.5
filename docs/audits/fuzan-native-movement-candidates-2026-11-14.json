@@ -1,0 +1,1088 @@
+{
+  "date": "2026-11-14",
+  "status": "OPEN_AUTHORED_ACTOR_BINDING_NOT_RECOVERED",
+  "baseline_commit": "3665047cf563bccf7bcdc476fdd800205bde31f3",
+  "scope": "Matching26972 DB2+Hotfix read-only Temple map1625 taxi paths; no gameplay repair or guessed route.",
+  "method": "Typed DB2 reader loads TaxiNodes/TaxiPath/TaxiPathNode/Spell/SpellEffect/Criteria through native Hotfix overlays. Both pools read-only; canonical configuration used locally without publishing credentials. Enumerates every path with a map1625 point, not just a selected nearby route.",
+  "catalog": {
+    "nodes": 883,
+    "grouped_paths": 4261,
+    "total_points": 73104,
+    "selected_paths": 9,
+    "selected_points": 73,
+    "paths": [
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5699,
+        "point_count": 11,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              784.204895,
+              -2583.53125,
+              201.89856
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              789.149292,
+              -2585.02441,
+              201.959351
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              810.868042,
+              -2593.13379,
+              201.959351
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              824.354187,
+              -2598.625,
+              201.959351
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              836.611145,
+              -2606.00342,
+              201.959351
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              841.888916,
+              -2625.59717,
+              203.805283
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 6,
+            "map": 1625,
+            "xyz": [
+              828.425354,
+              -2647.52783,
+              206.233566
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 7,
+            "map": 1625,
+            "xyz": [
+              774.253479,
+              -2640.40796,
+              206.233566
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 8,
+            "map": 1625,
+            "xyz": [
+              741.078125,
+              -2612.49487,
+              204.867645
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 9,
+            "map": 1625,
+            "xyz": [
+              745.315979,
+              -2580.8855,
+              202.736038
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 10,
+            "map": 1625,
+            "xyz": [
+              768.423645,
+              -2581.14575,
+              202.042603
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5700,
+        "point_count": 12,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              819.753479,
+              -2643.27783,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              812.201416,
+              -2630.10254,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              801.520813,
+              -2617.64941,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              784.767395,
+              -2605.53833,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              767.881958,
+              -2610.42188,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              757.4375,
+              -2622.06079,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 6,
+            "map": 1625,
+            "xyz": [
+              759.192688,
+              -2649.52783,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 7,
+            "map": 1625,
+            "xyz": [
+              769.515625,
+              -2667.43066,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 8,
+            "map": 1625,
+            "xyz": [
+              788.802063,
+              -2675.56958,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 9,
+            "map": 1625,
+            "xyz": [
+              808.18927,
+              -2674.84546,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 10,
+            "map": 1625,
+            "xyz": [
+              819.473938,
+              -2665.67896,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 11,
+            "map": 1625,
+            "xyz": [
+              823.5625,
+              -2654.19971,
+              197.382614
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5701,
+        "point_count": 14,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              838.210083,
+              -2646.79346,
+              197.461807
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              837.34375,
+              -2624.96021,
+              197.461807
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              837.645813,
+              -2611.60083,
+              197.461807
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              832.795166,
+              -2599.41333,
+              198.478577
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              819.423645,
+              -2588.64771,
+              201.691498
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              804.767395,
+              -2577.76392,
+              201.691498
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 6,
+            "map": 1625,
+            "xyz": [
+              794.305542,
+              -2571.95825,
+              200.807999
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 7,
+            "map": 1625,
+            "xyz": [
+              780.302063,
+              -2569.11108,
+              196.91925
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 8,
+            "map": 1625,
+            "xyz": [
+              771.182312,
+              -2581.56958,
+              192.760498
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 9,
+            "map": 1625,
+            "xyz": [
+              774.350708,
+              -2632.99316,
+              192.760498
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 10,
+            "map": 1625,
+            "xyz": [
+              791.076416,
+              -2658.48608,
+              192.760498
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 11,
+            "map": 1625,
+            "xyz": [
+              815.616333,
+              -2668.29346,
+              192.760498
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 12,
+            "map": 1625,
+            "xyz": [
+              829.803833,
+              -2666.27783,
+              194.986191
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 13,
+            "map": 1625,
+            "xyz": [
+              837.0,
+              -2655.28638,
+              197.483673
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5719,
+        "point_count": 6,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              0.0,
+              0.0,
+              -0.00546683231
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              12.7118053,
+              1.04166663,
+              -10.8414202
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              45.0538216,
+              2.02951384,
+              -15.2887354
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              107.673607,
+              0.204861119,
+              -22.1428776
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              224.524307,
+              -6.73611116,
+              -23.3116932
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              376.572906,
+              5.02430582,
+              -19.4312992
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5720,
+        "point_count": 6,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              12.7118053,
+              0.435763896,
+              -10.377429
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              45.0538216,
+              -1.82118058,
+              -10.3447685
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              129.369797,
+              10.7725697,
+              -11.9786348
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              277.99826,
+              -29.28125,
+              -15.8590155
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              567.805542,
+              -2.87847233,
+              -11.9786348
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5721,
+        "point_count": 6,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              12.7118053,
+              2.77256942,
+              -12.7050714
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              45.0538216,
+              -0.873263896,
+              -16.4564247
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              133.046875,
+              -6.55729151,
+              -9.58097172
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              258.069458,
+              13.2881947,
+              -13.7384882
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              454.151031,
+              -24.7795143,
+              -14.1725283
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5727,
+        "point_count": 9,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              901.428833,
+              -2695.0,
+              200.623459
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              903.284729,
+              -2725.86646,
+              206.408325
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 52731,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              911.909729,
+              -2763.57471,
+              211.349777
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              927.463562,
+              -2826.2395,
+              214.660172
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              917.836792,
+              -2868.38013,
+              222.17923
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              835.289917,
+              -2879.26392,
+              222.736603
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 6,
+            "map": 1625,
+            "xyz": [
+              816.454895,
+              -2856.29688,
+              222.736603
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 7,
+            "map": 1625,
+            "xyz": [
+              832.746521,
+              -2838.84204,
+              222.736603
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 8,
+            "map": 1625,
+            "xyz": [
+              857.824646,
+              -2837.44092,
+              222.736603
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5728,
+        "point_count": 6,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              892.263916,
+              -2740.30737,
+              209.023514
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              905.911438,
+              -2743.47388,
+              209.023514
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              922.098938,
+              -2761.90796,
+              211.374115
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 3,
+            "map": 1625,
+            "xyz": [
+              926.079895,
+              -2810.42529,
+              220.890823
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 4,
+            "map": 1625,
+            "xyz": [
+              909.489563,
+              -2833.14062,
+              222.869141
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 5,
+            "map": 1625,
+            "xyz": [
+              883.5,
+              -2837.34888,
+              222.869141
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      },
+      {
+        "definition_present": true,
+        "to": 0,
+        "id": 5729,
+        "point_count": 3,
+        "from": 0,
+        "points": [
+          {
+            "index": 0,
+            "map": 1625,
+            "xyz": [
+              864.855896,
+              -2808.00513,
+              218.015228
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 1,
+            "map": 1625,
+            "xyz": [
+              871.461792,
+              -2777.84033,
+              210.878433
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          },
+          {
+            "index": 2,
+            "map": 1625,
+            "xyz": [
+              881.934021,
+              -2742.33154,
+              199.451324
+            ],
+            "flags": 0,
+            "delay": 0,
+            "arrival_event": 0,
+            "departure_event": 0
+          }
+        ]
+      }
+    ],
+    "spell_reference_rows": [
+      "SPELL_REFERENCE\t201276\tBurning Rush\t179\t5719\t0\t0",
+      "SPELL_REFERENCE\t201256\tCollapsing Shadows\t179\t5721\t0\t0",
+      "SPELL_REFERENCE\t250563\tConversation\t219\t5719\t0\t0",
+      "SPELL_REFERENCE\t250564\tConversation\t219\t5720\t0\t0",
+      "SPELL_REFERENCE\t250565\tConversation\t219\t5721\t0\t0"
+    ],
+    "event52731_criteria": [],
+    "catalog_sha256": "f18fcd7039a04977d600a112102032904d0b4c00aedb6336f53f63f06f94302f",
+    "inputs": {
+      "build-extractors/bin/Release/dbc/enUS/SpellEffect.db2": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+      "build-extractors/bin/Release/dbc/enUS/TaxiNodes.db2": "edc353d2eac653d3902be494ab8ea6fec23513320cf76820c0dccb55415f51ea",
+      "build-extractors/bin/Release/dbc/enUS/TaxiPathNode.db2": "1c03eb540d9472f076cb5043a5dbf84cbf05d46add56725b0d45beed917a0425",
+      "tools/research/FuZanOpenMovementCatalog.cpp": "f17d5793fda545645ddb4d59569bec3695d500b5bce7707f03e361677ae854f3",
+      "build-extractors/bin/Release/dbc/enUS/TaxiPath.db2": "9ff4bb57661020abd6566e2db75e071a124bad4937f49178298c9f5b231d9e3b",
+      "build-extractors/bin/Release/dbc/enUS/Criteria.db2": "8ee5f3d19d249d9a4f6a3b6745a0ab2d1a0a3b31c5b277b4942686c08e9c3750",
+      "build-extractors/bin/Release/dbc/enUS/Spell.db2": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+      "tools/tests/Test-FuZanOpenMovementCatalog.ps1": "3a11f90b9decdeaf9cdeaaf42d6caf334566b8a2dd9b16952d630f5602e2d4b0"
+    }
+  },
+  "interpretation": [
+    "All nine TaxiPath definitions exist but FromTaxiNode/ToTaxiNode are0/0; endpoints alone do not identify a rider or invocation.",
+    "Paths5719/5720/5721 use near-origin coordinates; no actor-relative transform is established.",
+    "5727 has an arrival event52731. Current read-only World query finds no corresponding event_scripts row; numeric5727 in the Neeru Fireblade quest-completion SmartAI action is not a taxi binding.",
+    "Spell effect179 and conversation219 numeric matches are unrelated effects; none recovered as a SEND_TAXI or authored actor binding.",
+    "5727/5728/5729 are geometrically near the final platform. Proximity is insufficient to assign Yigthregor109820, Yu lon109391 or return109441."
+  ],
+  "video": {
+    "url": "https://www.youtube.com/watch?v=lCSWkZZpwdI",
+    "title": "World of Warcraft Legion Quest - The Trial at the Temple",
+    "upload_date_from_download_metadata": "2017-05-24",
+    "duration_seconds": 765,
+    "exact_client_build": "not established; historical evidence is not automatically26972 proof",
+    "review": "Complete-video sampled overview:76 frames every10s0..750. Relevant combat:51 frames every2s610..710. Return:68 frames every0.5s730..763.5. All15 contact sheets inspected. This is frame sampling, not continuous playback or audio review.",
+    "observed": "Player boards Yu lon around748.5..749s, ascends through doorway through754.5s; visible edit at755s to on-foot Wandering Isle; Ponshu turn-in UI by761s. Landing/load/disembark interval not shown. Bat briefly visible overhead around640s; later ground-focused camera cannot establish its patrol loop.",
+    "video_sha256": "a5493a843d390330d28ad9bbe623d417dc699bdbda1570e54d652b847f12d13b",
+    "metadata_sha256": "74f1edae13e7e042624433dfd80fe752bff3b8bc00a8b182e32c18d6bc0e3192",
+    "retained_locally": ".codex/artifact-open-closeout-20261114/fuzan-original.mp4 and frames/",
+    "limit": "No route, duration, HP threshold, exact trigger or cleanup timing invented from footage."
+  },
+  "current_behavior": "109820 spawn14670030 MovementType2 still has no bound waypoint path; original warning evidence remains OPEN. 109440 gossip19932 gives109440/event52751 and direct1514 ground teleport. Native217818 summons109441/properties492, not auto-board;217819->217820 is a distinct native transfer. Native22 pickup checks exercise current direct return, not original flight.",
+  "diagnostics": "Test-FuZanOpenMovementCatalog.ps1 completed native reader with EOF,9 expected continuous paths/73 map1625 points and protected hashes. No new/changed crashes, appended DBErrors or server warnings/errors/assertions. No world/bnet or authenticated client launched. No persistent DB/character/account write.",
+  "next": "Recover authored actor-to-path/boarding/arrival binding before replacing movement. Preserve actual boarding acknowledgement, owner/pet/camera control and failure/abandon/re-entry cleanup. Original unresolved evidence remains outside fixed."
+}

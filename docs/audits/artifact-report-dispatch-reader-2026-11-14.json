@@ -10,8 +10,8 @@
     "corrected_planned_roots": 109,
     "additional_direct_roots": 7,
     "unique_complete_exit0_roots": 116,
-    "mode": "Four reviewed disjoint collections,not one116-root run. Each reused passing root has no changed dependency in conservative AST-import/literal-.py closure;binary/map identical. Full interrupted/failing collections remain explicitly classified.",
-    "aggregate_sha256": "75e4c6850f2c1a8a7a54a7e7fd8b976d36ca04c137e1b5acb2aa74e1208bb1c6",
+    "mode": "Five reviewed disjoint collections,not one116-root run. Each reused passing root has no changed dependency in conservative AST-import/literal-.py closure;binary/map identical. Full interrupted/failing collections explicitly classified.",
+    "aggregate_sha256": "a004302782753d86cac39cd722c6555d506bebbd3a6d610f8d527c13218bd767",
     "rerunnable_roots": "docs/audits/artifact-open-2026-11-14/ReleaseRoots.json",
     "limits": "Native endpoint/PE/structural checks do not establish actual client or36 complete chains."
   }

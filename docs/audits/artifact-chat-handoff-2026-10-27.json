@@ -1,4 +1,21 @@
 {
+  "latest_artifact_open_reconciliation_2026_11_14": {
+    "status": "PARTIAL_TECHNICAL_CLOSEOUT_AUTHENTIC_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
+    "audit": "docs/audits/artifact-open-reconciliation-2026-11-14.json",
+    "scope": "Current68 Sharasdal/22 Fu Zan native endpoints and fresh36/149 structure rechecked. Seven technical certificate problems repaired;109 corrected actual scopes plus7 direct proofs complete across reviewed disjoint collections. No gameplay repair count,whole-chain or client completion claim.",
+    "next": "Actual Warrior ending/return and Sharasdal reconstruction client checks; authentic missing101430/103151 LINK2 and Fu Zan path/return-flight binding remain unresolved. Preserve original evidence and mixed7111-byte DBErrors.",
+    "canonical_world_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+    "cleanup": "76 owned redundant files /763516694 bytes removed;337 reviewed diagnostic members hash-archived plus receipts. Original unresolved research,Slaghammer,mixed DBErrors and canonical configuration/binaries preserved.",
+    "technical_fix_commits": [
+      "6056c8de4bb217af622b2018fa6ba7804d4a383f",
+      "1068eebf1863ebc496b37ef21a063ce83b880d1e",
+      "ad3a8fe14ac78d83bf18a4fbe3c98a0e4dcb5ef2",
+      "e42831799dc2a10b6c5f0fb6665c72f7322cc74f",
+      "f792bc8214d6844d5970f66f0d65e7709f706903",
+      "08b2a3ea897b5a68e201bdb9121bcbcd9ff73ffa",
+      "db0696bcc3291d4ef15cd143c4c7b9a9c87adfe9"
+    ]
+  },
   "latest_fifth_fifty_2026_11_14": {
     "audit": "docs/audits/fifth-fifty-2026-11-14.json",
     "completed_new_source_repairs": 50,

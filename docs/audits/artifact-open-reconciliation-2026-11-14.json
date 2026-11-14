@@ -1,0 +1,161 @@
+{
+  "date": "2026-11-14",
+  "request": "Pabeidz atvertas",
+  "status": "PARTIAL_TECHNICAL_CLOSEOUT_AUTHENTIC_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
+  "baseline_commit": "3665047cf563bccf7bcdc476fdd800205bde31f3",
+  "gameplay_source_repairs_this_turn": 0,
+  "no_recount": "The preceding250 command repairs are already committed; this investigation and certificate repairs are not additional artifact quest fixes.",
+  "fresh_structure": {
+    "selections": 36,
+    "native_race_class_pairs": 149,
+    "automated_loot_link_admission_findings": 0,
+    "scene_only_pickup_reviews": 0,
+    "actor_reviews": [
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "limits": [
+      "Canonical Next/RewardNext links are not the complete execution graph. Native quest-line membership and OR prerequisites are recorded separately.",
+      "Race/class masks are structural admission checks; conditions, phasing, scripted callbacks, combat, abandonment, vehicles and visual playback require executable/client checks.",
+      "Missing object loot links exclude custom C++ handlers and follow native trigger fields with cycle guards. Reachability is a review candidate, not proof that a conditional/periodic effect executes; scene callbacks and transient actors still need review.",
+      "All 36 selections are enumerated; no route is certified end-to-end by this audit."
+    ],
+    "routes_sha256": "caf3296af059f84bd92d86b3402217d43ffc5878ef2ed75ad03dab0f653296a5",
+    "live_export": "Read-only World plus native26972 catalog; no character/account queries.",
+    "all_whole_chains_client_verified": false
+  },
+  "current_open_ledger": [
+    {
+      "issue": "Sharasdal living Lady finale",
+      "state": "IMPLEMENTED_NATIVE_RECHECKED_CLIENT_PENDING",
+      "audit": "docs/audits/sharasdal-living-finale-reconstruction-2026-11-13.json",
+      "current_check": "68 actual native contexts and live210045/210247 bindings pass. Scaled lethal surrender, real Grash boarding1906/native209487 hit/victory once and cleanup executed. Earlier context/playback clock controlled; not full client traversal.",
+      "remaining": "User-authorized best-effort reconstruction is implemented. Exact original Blizzard activation predicate is unknown; actual voice/carry/weapon/glow/manual return/full1066 client check remains."
+    },
+    {
+      "issue": "Warrior Fury/Protection final attackability and pickup animation/return",
+      "state": "IMPLEMENTED_CLIENT_RETEST_PENDING",
+      "audits": [
+        "docs/audits/warswords-attackability-2026-11-13.json",
+        "docs/audits/warrior-pickup-scene-expiry-2026-11-13.json"
+      ],
+      "remaining": "Earlier bonfire,4/4 runestones and Vigfus victory were user-confirmed. Latest intro protection and finite-scene acknowledgement fixes are deployed; actual end animation/glow/button/return await client retest. No current client traversal claimed."
+    },
+    {
+      "issue": "Fu Zan Yigthregor movement and original Yu lon return flight",
+      "state": "OPEN_AUTHENTIC_BINDING_MISSING",
+      "audit": "docs/audits/fuzan-native-movement-candidates-2026-11-14.json",
+      "current_check": "22 current native pickup/scene/equipment/direct-return cases pass; controlled earlier entry/stage2, no full combat/flight/client claim. Nine native taxi candidates/73 points recovered; none assigned by guesswork."
+    },
+    {
+      "issue": "101430 and103151 LINK2",
+      "state": "OPEN_MISSING_ACTION_PAYLOADS",
+      "audit": "docs/audits/shared-link2-followup-2026-11-13.json",
+      "current_check": "Current graph/native dispatch and bounded prior donors revisited. GitHub commit Chronoicle/Chronicles/edcb8ac041e24d878bf4bb732542f6add5cc35bd supplies already-known admission guards, not either missing action. Its implementation is a reference, not original Blizzard evidence.",
+      "remaining": "Need actual id2 payload or a full-sequence defect establishing intended continuation. Both native first actions/other paths retained. No zero-link, no-op, arbitrary despawn or logging suppression."
+    },
+    {
+      "issue": "Shared Monk actor links100438/100475",
+      "state": "OPEN_REVIEW_NOT_NEWLY_PROVEN_ACQUISITION_BLOCK",
+      "remaining": "Fresh structural audit repeats three missing targets.100438 relates to later campaign45440;100475 is shared LiLi. Existing scope/evidence must be traced per route before inventing actions. Zero automated acquisition findings does not resolve these actor reviews."
+    },
+    {
+      "issue": "36 complete artifact chains and invitation/voice/vehicle/camera/pet/re-entry variants",
+      "state": "CLIENT_TRAVERSAL_PENDING",
+      "remaining": "No end-to-end certification from compilation, native endpoint harnesses or structural enumeration. No authenticated client available this turn; manual-login assistance question remains unanswered."
+    }
+  ],
+  "current_native_checks": {
+    "Sharasdal": 68,
+    "FuZan": 22,
+    "diagnostics": "Before/after canonical and own-runtime crash/log snapshots clean for successful final native checks. No new/changed crash or appended DBErrors/server warning/error/assertion."
+  },
+  "certificate_followup": {
+    "corrected_planned_roots": 109,
+    "additional_direct_roots": 7,
+    "unique_complete_exit0_roots": 116,
+    "mode": "Five disjoint internally frozen collections with unchanged dependency reuse;not a single116-root collection or client traversal.",
+    "aggregate_sha256": "a004302782753d86cac39cd722c6555d506bebbd3a6d610f8d527c13218bd767",
+    "rerunnable_roots": "docs/audits/artifact-open-2026-11-14/ReleaseRoots.json",
+    "limits": "Native endpoint/PE/structural checks do not establish actual client or36 complete chains."
+  },
+  "processes": "No worldserver/bnetserver launched or stopped; no client launched. Only task-owned read-only certificate parents and verified Python children interrupted for tool repairs; partial collections retained as interrupted, not passing.",
+  "preserved": {
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "Slaghammer_original_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "world_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+    "notes": "Original LINK2/Slaghammer/FuZan evidence, Defender quarantine and mixed DBErrors retained unchanged; no active log truncated."
+  },
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/artifact-open-recheck-20261114",
+    "removed_files": 75,
+    "removed_bytes": 759931636.0,
+    "archived_diagnostic_members": 41,
+    "manifest_sha256": "e2992fc76e1a64e97751d128f52a0e13dc96997cd4e8ef42f77af3add85d409d",
+    "limits": "Only75 owned redundant native executable/symbol/config/generated outputs removed after successful rechecks.41 reviewed diagnostic members copied and hash-verified. Original unresolved evidence and full video/contact sheets remain outside fixed; no mixed log truncated. No required shared build library removed.",
+    "protected": "Canonical EXE/map/bnet/config and original Slaghammer/mixed DBErrors hashes verified unchanged before/after. No servers running.",
+    "certificate_archive_members": 268,
+    "certificate_manifest_sha256": "bfbc2ce0b2c309f77e4fda48f204712ed4dab9c2eb2e8685b684de7ba303d0ac",
+    "additional_regenerable_source_bundle_removed_bytes": 3585058,
+    "total_removed_files": 76,
+    "total_removed_bytes": 763516694.0,
+    "counterfactual_bundle": "Pinned Git ref,source bundle hash and full expected-failure outputs retained;only redundant regenerable source snapshot removed.",
+    "final_certificate_supplement_members": 28,
+    "total_archived_diagnostic_members": 337,
+    "final_supplement_manifest_sha256": "f4b762c63c735c7a0d906c44c7184bed8b0391db3fd8d58c7cad4ff4f36df7dc"
+  },
+  "completed_technical_repairs": [
+    "Exact chronological source-certificate composition for later250 command deltas,including retained original AreaTrigger error/false receiver proof.",
+    "Checked scheduled compressed-switch decoding with bad-bound/index/target controls.",
+    "Actual AI vtable9 report-use dispatch with full receiver/false argument preservation.",
+    "Bounded native Sheilun Map summon table decoding/all23 real code targets.",
+    "Exact native Tuure WorldRelocate coordinate overload.",
+    "Retained Sharasdal selected lifecycle/controller-before-arrival and current recipient/weak field layout.",
+    "Current Warrior indexed-runestone versus readiness latch,weak lifetime plus real queued channel acknowledgement and Reset/poll bubble cleanup proof."
+  ],
+  "certificate_diagnostics": "Complete initial broad run100/109;8 real stale certificates plus one erroneous nonexistent added Fu Zan filename diagnosed. Repaired dependent/Warrior/bubble runs and additional direct scopes all pass. Raw initial failures preserved and never relabelled as a successful ordinary run. Pinned original3665047cf two-root source-tool counterfactual remains explicitly EXPECTED_BROKEN,paired with repaired checks. No source/binary mutation during any collection. Final17 weak guard/zero refusal controls and three current Warrior roots also pass after strengthening;final aggregate116 has zero changed dependencies in reused passing results.",
+  "further_opens": "This closes the enumerated technical certificate failures. Authentic101430/103151 missing payloads,Fu Zan actor-route/return-flight binding,the three shared actor reviews and client/whole-chain issues remain explicitly OPEN;not transferred to fixed as gameplay repairs. No fresh server startup/deployment claimed because production binary/data are unchanged.",
+  "technical_fix_commits": {
+    "source_composition": "6056c8de4bb217af622b2018fa6ba7804d4a383f",
+    "scheduled_switch": "1068eebf1863ebc496b37ef21a063ce83b880d1e",
+    "report_dispatch": "ad3a8fe14ac78d83bf18a4fbe3c98a0e4dcb5ef2",
+    "sheilun_map_tables": "e42831799dc2a10b6c5f0fb6665c72f7322cc74f",
+    "tuure_overload": "f792bc8214d6844d5970f66f0d65e7709f706903",
+    "sharasdal_lifecycle": "08b2a3ea897b5a68e201bdb9121bcbcd9ff73ffa",
+    "warswords_composition": "db0696bcc3291d4ef15cd143c4c7b9a9c87adfe9"
+  }
+}
