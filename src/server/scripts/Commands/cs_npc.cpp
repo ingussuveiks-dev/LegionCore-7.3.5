@@ -489,8 +489,8 @@ public:
         if (!*args)
             return false;
 
-        uint32 newEntryNum = atoi(args);
-        if (!newEntryNum)
+        uint32 newEntryNum;
+        if (!Trinity::ParseCommandInteger(args, newEntryNum) || !newEntryNum)
             return false;
 
         Unit* unit = handler->getSelectedUnit();
@@ -501,11 +501,12 @@ public:
             return false;
         }
         Creature* creature = unit->ToCreature();
-        if (creature->UpdateEntry(newEntryNum))
+        bool const updated = creature->UpdateEntry(newEntryNum);
+        if (updated)
             handler->SendSysMessage(LANG_DONE);
         else
             handler->SendSysMessage(LANG_ERROR);
-        return true;
+        return updated;
     }
 
     //change level of creature or pet
