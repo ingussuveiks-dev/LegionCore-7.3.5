@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "CommandIntegerArgument.h"
+#include "CommandFloatArgument.h"
 #include "GameEventMgr.h"
 #include "ObjectMgr.h"
 #include "PoolMgr.h"
@@ -457,15 +458,17 @@ public:
 
         if (orientation)
         {
-            oz = float(atof(orientation));
+            if (!Trinity::ParseCommandFloat(orientation, oz))
+                return false;
 
             orientation = strtok(NULL, " ");
             if (orientation)
             {
-                oy = float(atof(orientation));
+                if (!Trinity::ParseCommandFloat(orientation, oy))
+                    return false;
                 orientation = strtok(NULL, " ");
-                if (orientation)
-                    ox = float(atof(orientation));
+                if (orientation && !Trinity::ParseCommandFloat(orientation, ox))
+                    return false;
             }
         }
         else

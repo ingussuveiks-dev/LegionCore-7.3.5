@@ -70,6 +70,16 @@
       "batch": 1,
       "old": "    static uint32 GetGuidLowFromArgsOrLastTargetedGo(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n\n        if (*args)\n        {\n            // number or [name] Shift-click form |color|Hgameobject:go_guid|h[name]|h|r\n            char* cId = handler->extractKeyFromLink((char*)args,\"Hgameobject\");\n            if (!cId)\n                return 0;\n\n            return atoi(cId);\n        }\n        if(player->GetLastTargetedGO())\n            return player->GetLastTargetedGO();\n        return 0;\n    }",
       "new": "    static uint32 GetGuidLowFromArgsOrLastTargetedGo(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n\n        if (*args)\n        {\n            // number or [name] Shift-click form |color|Hgameobject:go_guid|h[name]|h|r\n            char* cId = handler->extractKeyFromLink((char*)args,\"Hgameobject\");\n            if (!cId)\n                return 0;\n\n            uint32 guid;\n            return Trinity::ParseCommandInteger(cId, guid) ? guid : 0;\n        }\n        // Reset the C token cursor for callers parsing optional arguments.\n        strtok((char*)args, \" \");\n        if(player->GetLastTargetedGO())\n            return player->GetLastTargetedGO();\n        return 0;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_gobject.cpp",
+      "method": "HandleGameObjectTurnCommand",
+      "key": "GameObjectRotationFinite",
+      "case": "Turn",
+      "kind": "next",
+      "batch": 1,
+      "old": "    static bool HandleGameObjectTurnCommand(ChatHandler* handler, char const* args)\n    {\n        uint32 guidLow = GetGuidLowFromArgsOrLastTargetedGo(handler, args);\n\n        if (!guidLow)\n            return false;\n\n        GameObject* object = NULL;\n\n        // by DB guid\n        if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))\n            object = handler->GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);\n\n        if (!object)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, guidLow);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* orientation = strtok(NULL, \" \");\n        float oz = 0.f, oy = 0.f, ox = 0.f;\n\n        if (orientation)\n        {\n            oz = float(atof(orientation));\n\n            orientation = strtok(NULL, \" \");\n            if (orientation)\n            {\n                oy = float(atof(orientation));\n                orientation = strtok(NULL, \" \");\n                if (orientation)\n                    ox = float(atof(orientation));\n            }\n        }\n        else\n        {\n            Player* player = handler->GetSession()->GetPlayer();\n            oz = player->GetOrientation();\n        }\n\n        object->Relocate(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ());\n        object->RelocateStationaryPosition(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), object->GetOrientation());\n        object->SetWorldRotationAngles(oz, oy, ox);\n        object->DestroyForNearbyPlayers();\n        object->UpdateObjectVisibility();\n\n        object->SaveToDB();\n        object->Refresh();\n\n        handler->PSendSysMessage(LANG_COMMAND_TURNOBJMESSAGE, object->GetGUID().GetGUIDLow(), object->GetGOInfo()->name.c_str(), object->GetGUID().GetGUIDLow(), object->GetOrientation());\n\n        return true;\n    }",
+      "new": "    static bool HandleGameObjectTurnCommand(ChatHandler* handler, char const* args)\n    {\n        uint32 guidLow = GetGuidLowFromArgsOrLastTargetedGo(handler, args);\n\n        if (!guidLow)\n            return false;\n\n        GameObject* object = NULL;\n\n        // by DB guid\n        if (GameObjectData const* gameObjectData = sObjectMgr->GetGOData(guidLow))\n            object = handler->GetObjectGlobalyWithGuidOrNearWithDbGuid(guidLow, gameObjectData->id);\n\n        if (!object)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_OBJNOTFOUND, guidLow);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* orientation = strtok(NULL, \" \");\n        float oz = 0.f, oy = 0.f, ox = 0.f;\n\n        if (orientation)\n        {\n            if (!Trinity::ParseCommandFloat(orientation, oz))\n                return false;\n\n            orientation = strtok(NULL, \" \");\n            if (orientation)\n            {\n                if (!Trinity::ParseCommandFloat(orientation, oy))\n                    return false;\n                orientation = strtok(NULL, \" \");\n                if (orientation && !Trinity::ParseCommandFloat(orientation, ox))\n                    return false;\n            }\n        }\n        else\n        {\n            Player* player = handler->GetSession()->GetPlayer();\n            oz = player->GetOrientation();\n        }\n\n        object->Relocate(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ());\n        object->RelocateStationaryPosition(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), object->GetOrientation());\n        object->SetWorldRotationAngles(oz, oy, ox);\n        object->DestroyForNearbyPlayers();\n        object->UpdateObjectVisibility();\n\n        object->SaveToDB();\n        object->Refresh();\n\n        handler->PSendSysMessage(LANG_COMMAND_TURNOBJMESSAGE, object->GetGUID().GetGUIDLow(), object->GetGOInfo()->name.c_str(), object->GetGUID().GetGUIDLow(), object->GetOrientation());\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -90,6 +100,12 @@
       "old": "#include \"ScriptMgr.h\"",
       "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "GameObjectTargetCheckedCursor"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_gobject.cpp",
+      "old": "#include \"CommandIntegerArgument.h\"",
+      "new": "#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
+      "owner_key": "GameObjectRotationFinite"
     }
   ],
   "files": {
@@ -105,7 +121,7 @@
     },
     "src/server/scripts/Commands/cs_gobject.cpp": {
       "before_sha256": "fa96de9c241f162cedc36858600c50db509deb02410fd0f624e9ea454e49434f",
-      "after_sha256": "e54d216d4fac5debd1aadf40499522b596d27175536037cf5f982aaa48131dc6",
+      "after_sha256": "0e08f41f6165a14642f1da4feab0eb50930b7287e085a5337010e53a5fd87ca4",
       "owner_key": null
     },
     "src/server/game/Chat/CommandFloatArgument.h": {
