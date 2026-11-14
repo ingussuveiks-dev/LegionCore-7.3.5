@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "ScenarioMgr.h"
 #include "Scenario.h"
 
@@ -114,7 +115,9 @@ public:
     {
         Player* player = handler->GetSession()->GetPlayer();
         char* stepstr = strtok((char*)args, " ");
-        uint8 step = stepstr ? atoi(stepstr) : 0;
+        uint8 step = 0;
+        if (stepstr && !Trinity::ParseCommandInteger(stepstr, step))
+            return false;
 
         Map* map = player->GetMap();
         if (!map)
@@ -134,6 +137,8 @@ public:
             return false;
         }
 
+        if (step >= progress->GetStepCount(true))
+            return false;
         progress->SetCurrentStep(step);
         return true;
     }

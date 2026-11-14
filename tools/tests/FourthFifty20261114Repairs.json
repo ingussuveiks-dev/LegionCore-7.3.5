@@ -355,6 +355,16 @@
       "old": "    static bool HandleCombatStopCommand(ChatHandler* handler, char const* args)\n    {\n        Player* target = nullptr;\n        Creature* creature = handler->getSelectedUnit()->ToCreature();\n\n        if (creature && creature->isInCombat())\n        {\n            creature->AI()->EnterEvadeMode();\n            return true;\n        }\n\n        if (args && strlen(args) > 0)\n        {\n            std::string name(args);\n            target = sObjectAccessor->FindPlayerByName(name);\n            if (!target)\n            {\n                handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        if (!target)\n        {\n            if (!handler->extractPlayerTarget((char*)args, &target))\n                return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        target->CombatStop();\n        target->getHostileRefManager().deleteReferences();\n        return true;\n    }",
       "new": "    static bool HandleCombatStopCommand(ChatHandler* handler, char const* args)\n    {\n        Player* target = nullptr;\n        Unit* selected = handler->getSelectedUnit();\n        Creature* creature = selected ? selected->ToCreature() : nullptr;\n\n        if (creature && creature->isInCombat())\n        {\n            if (!creature->AI())\n                return false;\n            creature->AI()->EnterEvadeMode();\n            return true;\n        }\n\n        if (args && strlen(args) > 0)\n        {\n            std::string name(args);\n            target = sObjectAccessor->FindPlayerByName(name);\n            if (!target)\n            {\n                handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        if (!target)\n        {\n            if (!handler->extractPlayerTarget((char*)args, &target))\n                return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        target->CombatStop();\n        target->getHostileRefManager().deleteReferences();\n        return true;\n    }",
       "summary": "Handle a missing selected unit before ToCreature and require an AI before NPC evade;retain named/player authority and hostile-reference cleanup."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_scenario.cpp",
+      "method": "HandleScenarioStepCommand",
+      "case": "ScenarioStepNativeBounds",
+      "key": "ScenarioStepNativeBounds",
+      "kind": "fourth",
+      "old": "    static bool HandleScenarioStepCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n        char* stepstr = strtok((char*)args, \" \");\n        uint8 step = stepstr ? atoi(stepstr) : 0;\n\n        Map* map = player->GetMap();\n        if (!map)\n            return false;\n\n        InstanceMap* instance = map->ToInstanceMap();\n        if (!instance)\n        {\n            handler->PSendSysMessage(\"Player is not in instance.\");\n            return false;\n        }\n\n        Scenario* progress = sScenarioMgr->GetScenario(instance->GetInstanceId());\n        if (!progress)\n        {\n            handler->PSendSysMessage(\"There is no scenario progress for map %u instanceId %u\", instance->GetInstanceId());\n            return false;\n        }\n\n        progress->SetCurrentStep(step);\n        return true;\n    }",
+      "new": "    static bool HandleScenarioStepCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n        char* stepstr = strtok((char*)args, \" \");\n        uint8 step = 0;\n        if (stepstr && !Trinity::ParseCommandInteger(stepstr, step))\n            return false;\n\n        Map* map = player->GetMap();\n        if (!map)\n            return false;\n\n        InstanceMap* instance = map->ToInstanceMap();\n        if (!instance)\n        {\n            handler->PSendSysMessage(\"Player is not in instance.\");\n            return false;\n        }\n\n        Scenario* progress = sScenarioMgr->GetScenario(instance->GetInstanceId());\n        if (!progress)\n        {\n            handler->PSendSysMessage(\"There is no scenario progress for map %u instanceId %u\", instance->GetInstanceId());\n            return false;\n        }\n\n        if (step >= progress->GetStepCount(true))\n            return false;\n        progress->SetCurrentStep(step);\n        return true;\n    }",
+      "summary": "Parse the native byte step and check the actual live total including bonus steps before transition;keep native SetCurrentStep diagnostics for other callers."
     }
   ],
   "extra_edits": [
@@ -399,6 +409,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include <limits>",
       "owner_key": "WaypointAppendCheckedCounters"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_scenario.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "ScenarioStepNativeBounds"
     }
   ],
   "files": {
@@ -409,6 +425,10 @@
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
       "after_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d"
+    },
+    "src/server/scripts/Commands/cs_scenario.cpp": {
+      "before_sha256": "bbc091440de8280bb607e0cfdc41b28830ecfc113651fa5c1f9cd4d33c280bfe",
+      "after_sha256": "8614a918fa62796801eb7f591781ab9074d076fb0ea3515a08bece11ade96c58"
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",

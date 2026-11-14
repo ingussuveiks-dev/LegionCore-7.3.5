@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_31_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 31,
+  "status": "IN_PROGRESS_32_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 32,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -276,7 +276,7 @@
     },
     {
       "batch": 4,
-      "count": 1,
+      "count": 2,
       "source_case_count": 144,
       "repairs": [
         {
@@ -285,6 +285,14 @@
           "summary": "Handle a missing selected unit before ToCreature and require an AI before NPC evade;retain named/player authority and hostile-reference cleanup.",
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandleCombatStopCommand",
+          "test_scope": "complete production handler/helper"
+        },
+        {
+          "index": 32,
+          "key": "ScenarioStepNativeBounds",
+          "summary": "Parse the native byte step and check the actual live total including bonus steps before transition;keep native SetCurrentStep diagnostics for other callers.",
+          "path": "src/server/scripts/Commands/cs_scenario.cpp",
+          "method": "HandleScenarioStepCommand",
           "test_scope": "complete production handler/helper"
         }
       ]
