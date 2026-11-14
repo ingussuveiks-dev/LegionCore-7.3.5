@@ -1734,10 +1734,8 @@ public:
             return false;
         }
 
-        if (!index)
-            return true;
-
-        updateIndex = atoi(index);
+        if (!Trinity::ParseCommandInteger(index, updateIndex))
+            return false;
         //check updateIndex
         if (unit->GetTypeId() == TYPEID_PLAYER)
         {
@@ -1756,7 +1754,8 @@ public:
             return true;
         }
 
-        value = atoi(val);
+        if (!Trinity::ParseCommandInteger(val, value))
+            return false;
 
         handler->PSendSysMessage(LANG_UPDATE_CHANGE, unit->GetGUID().GetGUIDLow(), updateIndex, value);
 
