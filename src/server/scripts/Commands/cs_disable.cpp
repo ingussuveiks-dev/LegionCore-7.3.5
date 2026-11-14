@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "DisableMgr.h"
 #include "OutdoorPvP.h"
 #include "QuestData.h"
@@ -71,18 +72,20 @@ public:
     static bool HandleAddDisables(ChatHandler* handler, char const* args, uint8 disableType)
     {
         char* entryStr = strtok((char*)args, " ");
-        if (!entryStr || !atoi(entryStr))
+        uint32 entry;
+        if (!Trinity::ParseCommandInteger(entryStr, entry) || !entry)
             return false;
 
         char* flagsStr = strtok(NULL, " ");
-        uint8 flags = flagsStr ? uint8(atoi(flagsStr)) : 0;
+        uint8 flags = 0;
+        if (flagsStr && !Trinity::ParseCommandInteger(flagsStr, flags))
+            return false;
 
         char* commentStr = strtok(NULL, "");
         if (!commentStr)
             return false;
 
         std::string disableComment = commentStr;
-        uint32 entry = uint32(atoi(entryStr));
 
         std::string disableTypeStr = "";
 
