@@ -60,5 +60,11 @@
     "Exact original Yigthregor flight and original Yu lon arrival remain fidelity research; original101430/103151 LINK2 and shared Monk actor links remain OPEN.",
     "All36 artifact chains still not certified end-to-end."
   ],
-  "cleanup": "Temporary final Yigthregor probe retained only for the outstanding combined100-update readback/regression, then task cleanup/fixed archive recorded before handoff. Original November1 single-warning evidence can be archived only after the same source live regression above; mixed canonical log is never cleared."
+  "cleanup": {
+    "audit": "docs/audits/yigthregor-five-twenty-archive-2026-11-15.json",
+    "original_single_warning_archived_and_active_private_log_cleared": true,
+    "combined100_updater_native_rerun": "10 cases PASS; retained executable then removed",
+    "mixed_canonical_log_unchanged": true
+  },
+  "fix_commit": "942dfe497ab0dd7e22fa628d0b51ffa946418375"
 }

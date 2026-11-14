@@ -186,5 +186,17 @@
     "SlaghammerHandoffNative_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
     "original_open": "101430/103151 LINK2, shared Monk links, exact retail flight trajectories and all36 client chains remain distinct; no suppression/truncation/quarantine bypass."
   },
-  "cleanup": "Final task archive audit will record resolved warning/fixture evidence, exact task-only deletions/reclaimed bytes, retained rollback and post-cleanup canonical hashes."
+  "cleanup": {
+    "audit": "docs/audits/yigthregor-five-twenty-archive-2026-11-15.json",
+    "removed_files": 133,
+    "reclaimed_bytes": 7700921971,
+    "archive": "build-extractors/bin/Release/fixed/yigthregor-five-twenties-2026-11-15"
+  },
+  "fix_commits": {
+    "chest_batch3": "084e81756d856ea9f5c2bfcc659d74fe90eea420",
+    "chest_batch5": "f75185242d82758600a9b4da07e959ad2bee8c57",
+    "chest_batch1": "beb78275fbf96473c394b275992597a047901452",
+    "chest_batch2": "de46a8987eacea9058e796cb768ab15dc1ddc232",
+    "chest_batch4": "a86001ae54e2bcc24a2dc9e5b29722267de946f8"
+  }
 }

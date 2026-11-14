@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-15",
+  "status": "YIGTHREGOR_AND_FIVE_TWENTY_DEPLOYED_CHECKED_ARCHIVED_TEMPORARIES_CLEANED_CLIENT_PENDING",
+  "fix_commits": {
+    "yigthregor": "942dfe497ab0dd7e22fa628d0b51ffa946418375",
+    "chest_batch3": "084e81756d856ea9f5c2bfcc659d74fe90eea420",
+    "chest_batch5": "f75185242d82758600a9b4da07e959ad2bee8c57",
+    "chest_batch1": "beb78275fbf96473c394b275992597a047901452",
+    "chest_batch2": "de46a8987eacea9058e796cb768ab15dc1ddc232",
+    "chest_batch4": "a86001ae54e2bcc24a2dc9e5b29722267de946f8"
+  },
+  "implementation_audits": [
+    "docs/audits/fuzan-yigthregor-reconstruction-2026-11-15.json",
+    "docs/audits/five-twenty-2026-11-15.json"
+  ],
+  "archive": "build-extractors/bin/Release/fixed/yigthregor-five-twenties-2026-11-15",
+  "archive_manifest_sha256": "d06e41c7361d53fa4ff525a1b1b5e4a2b37506116cf65e0db5d8d97fe0979225",
+  "archived_records": 1068,
+  "post_cleanup_manifest_sha256": "2569d9b43a3c2c0250c32414b30c8c14f577873717009d67faf87c7c4b405a73",
+  "archive_scope": "Task-owned native/data/PE/build/startup/readback/analysis/failed-iteration diagnostics and original November1 single Yigthregor missing-path warning; copied original bytes and verified every recorded hash before/after removal. Post-cleanup wrapper/deletion evidence copied separately only after its writer finished. Private runtime configs/credentials/executables/symbols and mixed canonical DBErrors excluded.",
+  "resolution": "Original waypoint2/path0 was replaced by an explicit labelled stationary airborne profile; native10 DB spawn/bomb/reset/death/foreign field/late child and combined100 rerun pass. Infinite owned Felfire fields now clear natively at reset/death. No original taxi/retail trajectory is claimed. Five20 distinct authored chest loot links pass native live generation and actual100 readback; no whole-quest/client certification.",
+  "cleanup": {
+    "removed_files": 133,
+    "reclaimed_bytes": 7700921971,
+    "local_exact_manifest": ".codex/yigthregor-five-twenties-20261115/cleanup-manifest.json",
+    "local_manifest_sha256": "2d49cbe5786ed5c236db6eb45e8ae978288c1be14dad620924bb17d91343adef",
+    "paths": "Exact task-root native probes/objects/symbols/maps/import libraries/isolated private configs and staged world/bnet outputs; resolved original November1 Yigthregor probe products/private config; freshly rebuilt Scepter test.exe/.obj. Required shared Release libraries, canonical files, original research/media and all reusable source/tools kept.",
+    "validation": "Absolute targets confined to explicit intended workspaces; parent symlinks/junctions/reparse points rejected; process ownership/absence checked, bytes/hash rechecked immediately before native PowerShell file deletion. No recursive cross-shell deletion. No user/unknown server stopped.",
+    "resolved_private_warning": {
+      "sha256": "5831449D38F22495C3AC6EEF2C6582ACFCE4AE960DA507A0ED3E9CF1C916EC64",
+      "active_after_bytes": 0,
+      "archive": "original-yigthregor-warning/run/logs/DBErrors.log"
+    },
+    "retained": [
+      ".codex/release-before-yigthregor-20261115",
+      ".codex/release-before-fuzan-return-20261115",
+      "recent earlier independent-command recovery copies",
+      "required shared Release libraries/build inputs",
+      "all reusable regression/source tools",
+      "original route research, LINK2/Slaghammer and Defender quarantine"
+    ],
+    "deferred": "No outstanding temporary executable, deployment or archive operation. Retained rollback binaries are recovery components and require coherent matching data/bindings, not an unchecked EXE-only downgrade."
+  },
+  "post_cleanup": {
+    "canonical": {
+      "logs/DBErrors.log": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+      "worldserver.exe": "6FFC5D6D7E7CA2B48CCC917376EA1E20BE0C9893205674A5360949C5376524E4",
+      "bnetserver.exe": "E559F961C277CC92A95CCDA27B21ABB6A1981A00DDC4B0AE3516697032E22962",
+      "bnetserver.map": "61A784874F496E919047A0A6041F0B4FC97294F96166B3AA3A67D55526D82D81",
+      "worldserver.map": "D85475F9B9E7A9EDA89B1BB8D8C8C84492867B4AD461DCD704C2D176075B1D45"
+    },
+    "mixed_canonical_DBErrors_bytes": 7111,
+    "mixed_log_untouched": true,
+    "protected_SlaghammerHandoffNative_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "new_crash_reports": 0,
+    "new_appended_DBErrors": 0,
+    "new_server_warnings_errors_assertions": 0,
+    "owned_hidden_servers_remaining": 0,
+    "diagnostics_sha256": "930b7ebd12f634eebd5a9ce39ea2ad5202f8b00351919ee88b06ee43516bedac"
+  },
+  "limits": [
+    "Actual client Yigthregor pose/bombardment/cleanup, pickup/return/camera/pet/reconnect remain separate. Exact authored flights not recovered.",
+    "100 chest template repairs are not100 artifact chains; actual lock/open/visibility/quest/condition/drop-distribution/client traversal remains pending.",
+    "101430/103151 LINK2, shared Monk actor links and all36 whole-chain client checks remain OPEN. Original unresolved evidence and Defender quarantine preserved."
+  ]
+}

@@ -150,5 +150,11 @@
     "reclaimed_bytes": 3869208275,
     "archive": "build-extractors/bin/Release/fixed/fuzan-return-reconstruction-2026-11-15",
     "canonical_and_original_unresolved_evidence_unchanged": true
+  },
+  "followup_yigthregor_2026_11_15": {
+    "status": "FUNCTIONAL_AIR_HOLD_AND_OWNED_FIELD_CLEANUP_FIXED_DEPLOYED_NATIVE10_PASSED_CLIENT_PENDING",
+    "fix_commit": "942dfe497ab0dd7e22fa628d0b51ffa946418375",
+    "audit": "docs/audits/fuzan-yigthregor-reconstruction-2026-11-15.json",
+    "note": "The earlier pending movement2/path0 defect is repaired; exact authored trajectory remains unproven."
   }
 }
