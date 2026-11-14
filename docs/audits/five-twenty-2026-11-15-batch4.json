@@ -1,0 +1,202 @@
+{
+  "date": "2026-11-15",
+  "batch": 4,
+  "status": "COMPLETED20_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 242669,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 242669,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 242670,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 242670,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 242671,
+      "name": "Glimmering Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 242671,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 242675,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 242675,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 242683,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 242683,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 242686,
+      "name": "Tanithria's Sharpened Spritethorns",
+      "before_loot": 0,
+      "after_loot": 242686,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 242959,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 242959,
+      "existing_spawns": 1,
+      "existing_loot_rows": 54
+    },
+    {
+      "entry": 243321,
+      "name": "Feral Stone",
+      "before_loot": 0,
+      "after_loot": 243321,
+      "existing_spawns": 37,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243562,
+      "name": "Crate of Khadgar's Whiskers",
+      "before_loot": 0,
+      "after_loot": 243562,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243563,
+      "name": "Barrel of Fish Oil",
+      "before_loot": 0,
+      "after_loot": 243563,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243564,
+      "name": "Basket of Dried Herbs",
+      "before_loot": 0,
+      "after_loot": 243564,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243688,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 243688,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 243798,
+      "name": "A Steamy Jewelry Box",
+      "before_loot": 0,
+      "after_loot": 243798,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243952,
+      "name": "Twisted Root",
+      "before_loot": 0,
+      "after_loot": 243952,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243953,
+      "name": "Twisted Root",
+      "before_loot": 0,
+      "after_loot": 243953,
+      "existing_spawns": 14,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243954,
+      "name": "Twisted Root",
+      "before_loot": 0,
+      "after_loot": 243954,
+      "existing_spawns": 4,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243971,
+      "name": "Chains of Resistance",
+      "before_loot": 0,
+      "after_loot": 243971,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243972,
+      "name": "Wheel of Fortitude",
+      "before_loot": 0,
+      "after_loot": 243972,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 243973,
+      "name": "Rod of Bearing",
+      "before_loot": 0,
+      "after_loot": 243973,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244679,
+      "name": "Hearthstone map",
+      "before_loot": 0,
+      "after_loot": 244679,
+      "existing_spawns": 22,
+      "existing_loot_rows": 1
+    }
+  ],
+  "cause_and_change": "Existing chest type3 sources had Data1=0 despite authored same-entry gameobject_loot_template rows. Native GetLootId returned0, so full Player::SendLoot skipped FillLoot. Link only Data1 to existing entry; no loot tables/drop chances/counts/conditions/rewards/spawns changed.",
+  "migration": "sql/updates/world/2026_11_15_05_legion_chest_loot_batch4.sql",
+  "migration_sha256": "e38345ac4881ba05d41ef8a3d1f83b4ae1faf6e6296eb4769be5cb25e4071d0a",
+  "checks": {
+    "native_entries": [
+      242669,
+      242670,
+      242671,
+      242675,
+      242683,
+      242686,
+      242959,
+      243321,
+      243562,
+      243563,
+      243564,
+      243688,
+      243798,
+      243952,
+      243953,
+      243954,
+      243971,
+      243972,
+      243973,
+      244679
+    ],
+    "native_exe_sha256": "5d7d3c76b5851d2bd15ac2b24b8f8cac6429744dcce1daa9517c3097d43885ab",
+    "native_input_manifest_sha256": "5d00ea8c37c16444ff596c056420f4422268fd5ae7f3826a646f299c10281d99",
+    "native_complete_diagnostics_sha256": "0d2cd82ccee6f9b0a3d5da7cf0fb1df5f76bfba86d80cee5cb58ebe60de01d18",
+    "native_runtime_diagnostics_sha256": "21e1b3332325e6c484bb83690b90ec90220d2539fbe07bfd65ff01fe60a9472e",
+    "shadow_diagnostics_sha256": "b92d1664172078d2ff72daf646663600ad3fc653130a303271832abe0d5ef13c",
+    "actual100_readback": "All100 actual live Data1 links match; original other captured template fields, spawn counts and loot row counts unchanged. Exact-field migrations preserve remaining schema fields by construction; shadow check compares all non-Data1 columns."
+  },
+  "limits": "Controlled synthetic source placement and player eligibility. Actual initial lock/open/visibility/quest/condition/client traversal and probability distributions are not certified. Native authored loot validation/generation executes; no item storage, authentic login/character save, quest or reward completion claim.",
+  "aggregate_audit": "docs/audits/five-twenty-2026-11-15.json"
+}
