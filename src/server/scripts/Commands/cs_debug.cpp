@@ -1996,7 +1996,9 @@ public:
         if (!cval)
             return false;
 
-        int32 Value = (int32)atoi(cval);
+        int32 Value;
+        if (!Trinity::ParseCommandInteger(cval, Value))
+            return false;
         player->SetStatFloatValue(PLAYER_FIELD_CRIT_PERCENTAGE, Value);
         player->SetStatFloatValue(PLAYER_FIELD_OFFHAND_CRIT_PERCENTAGE, Value);
         player->SetStatFloatValue(PLAYER_FIELD_RANGED_CRIT_PERCENTAGE, Value);
