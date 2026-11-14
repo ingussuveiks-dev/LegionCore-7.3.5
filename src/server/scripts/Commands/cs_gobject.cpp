@@ -254,8 +254,9 @@ public:
         char* spawntime = strtok(NULL, " ");
         uint32 spawntm = 300;
 
-        if (spawntime)
-            spawntm = atoi((char*)spawntime);
+        if ((spawntime && !Trinity::ParseCommandInteger(spawntime, spawntm)) ||
+            spawntm > uint32(std::numeric_limits<int32>::max()))
+            return false;
 
         float x = player->GetPositionX();
         float y = player->GetPositionY();
@@ -265,11 +266,11 @@ public:
         float rot2 = std::sin(ang/2);
         float rot3 = std::cos(ang/2);
 
-        uint32 objectId = atoi(id);
+        uint32 objectId;
+        if (!Trinity::ParseCommandInteger(id, objectId))
+            return false;
 
-        player->SummonGameObject(objectId, x, y, z, ang, 0, 0, rot2, rot3, spawntm);
-
-        return true;
+        return player->SummonGameObject(objectId, x, y, z, ang, 0, 0, rot2, rot3, spawntm) != nullptr;
     }
 
     static bool HandleGameObjectTargetCommand(ChatHandler* handler, char const* args)

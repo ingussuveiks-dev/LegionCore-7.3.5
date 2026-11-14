@@ -247,6 +247,16 @@
       "observe": "objectId",
       "test_capture": "handler->signedValue = respawn;",
       "summary": "Parse a complete nonzero entry and the actual signed32 respawn value before creation/persistence;retain native negative/zero behavior."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_gobject.cpp",
+      "method": "HandleGameObjectAddTempCommand",
+      "case": "GameObjectTemporaryTimerReceipt",
+      "key": "GameObjectTemporaryTimerReceipt",
+      "kind": "fourth",
+      "old": "    static bool HandleGameObjectAddTempCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* id = strtok((char*)args, \" \");\n        if (!id)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        char* spawntime = strtok(NULL, \" \");\n        uint32 spawntm = 300;\n\n        if (spawntime)\n            spawntm = atoi((char*)spawntime);\n\n        float x = player->GetPositionX();\n        float y = player->GetPositionY();\n        float z = player->GetPositionZ();\n        float ang = player->GetOrientation();\n\n        float rot2 = std::sin(ang/2);\n        float rot3 = std::cos(ang/2);\n\n        uint32 objectId = atoi(id);\n\n        player->SummonGameObject(objectId, x, y, z, ang, 0, 0, rot2, rot3, spawntm);\n\n        return true;\n    }",
+      "new": "    static bool HandleGameObjectAddTempCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* id = strtok((char*)args, \" \");\n        if (!id)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        char* spawntime = strtok(NULL, \" \");\n        uint32 spawntm = 300;\n\n        if ((spawntime && !Trinity::ParseCommandInteger(spawntime, spawntm)) ||\n            spawntm > uint32(std::numeric_limits<int32>::max()))\n            return false;\n\n        float x = player->GetPositionX();\n        float y = player->GetPositionY();\n        float z = player->GetPositionZ();\n        float ang = player->GetOrientation();\n\n        float rot2 = std::sin(ang/2);\n        float rot3 = std::cos(ang/2);\n\n        uint32 objectId;\n        if (!Trinity::ParseCommandInteger(id, objectId))\n            return false;\n\n        return player->SummonGameObject(objectId, x, y, z, ang, 0, 0, rot2, rot3, spawntm) != nullptr;\n    }",
+      "summary": "Validate entry and countdown before summoning;reject unsigned values that narrow in the inner signed32 respawn setter and propagate the summon result."
     }
   ],
   "extra_edits": [
@@ -300,7 +310,7 @@
     },
     "src/server/scripts/Commands/cs_gobject.cpp": {
       "before_sha256": "0ad3a137977c1b1a2dc8af671996f2f4dff14483ae0da9bf478b65c06385837a",
-      "after_sha256": "fd2f45e2667c20318171051a056cf0b7a6ff1721ed419684564b11eb743970f6"
+      "after_sha256": "864e3623505d3061ccf1024120cf48c85468cf22e8236c347b95c333411ebcef"
     },
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
