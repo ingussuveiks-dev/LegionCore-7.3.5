@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-14",
+  "status": "PASS_SOURCE_COMPOSITION_AND_RETAINED_RELEASE_SCOPES",
+  "problem": "Historical Warrior scene-expiry and Nov13 artifact certificates reject later declared command changes in Player.cpp and overlapping command functions, even though the current game code is intentionally repaired.",
+  "cause": "PlayerMoneyBoundary/DeletedCharacterRetentionExactDays change the full Player.cpp hash. Inverting only those two bodies then exposes overlapping AreaTriggerCommandFailure edits. The old artifact source view needs all five chronological Nov14 command groups.",
+  "repair": "Independent actual-current full-file after hashes, pinned Git baseline before hashes and complete exact inversions are checked for every file in all five plans, newest to oldest. Exact added files handled as complete hashed additions. Existing Warrior/Nov13 bridges compose this first; original historical hashes remain unchanged. Partial/foreign source survives normalization or is refused and cannot satisfy original full-file equality.",
+  "checks": {
+    "scope_controls": 160,
+    "scene_bridge_controls": 12,
+    "counterfactual": "Pinned3665047cf tools on unchanged current binary:2/2 selected certificate roots expected-broken, captured complete exit/output. Paired repaired current roots:2/2 complete exit0. This is a tool counterfactual, not a gameplay baseline.",
+    "binary": "No gameplay C++/SQL/configuration/EXE/map changed. Corrected109 scopes plus7 direct proofs all have complete passing evidence on the current canonical binary."
+  },
+  "diagnostics": "Final source/refusal checks and2 repaired root checks have no new/changed crashes or appended DBErrors/server warnings/errors/assertions. Prototype narrow bridge failure investigated and replaced; original incomplete109 collection retained outside fixed and never reported passing.",
+  "evidence": ".codex/artifact-open-closeout-20261114/scope-final2-evidence,scene-final2.log,release-counterfactual,release-targeted",
+  "limits": "Source-certificate compatibility does not verify actual client behavior or resolve missing LINK2/FuZan movement bindings.",
+  "additional_legacy_receiver": "Later AreaTrigger checked-integer parsing changes ChatHandler preservation from RDI to RBX. Its retained visible-error/false-return proof now derives the unique saved native incoming handler before the first call;original creation-failure jump/flag/false checks retained.",
+  "final_release_evidence": {
+    "corrected_planned_roots": 109,
+    "additional_direct_roots": 7,
+    "unique_complete_exit0_roots": 116,
+    "mode": "Four reviewed disjoint collections,not one116-root run. Each reused passing root has no changed dependency in conservative AST-import/literal-.py closure;binary/map identical. Full interrupted/failing collections remain explicitly classified.",
+    "aggregate_sha256": "75e4c6850f2c1a8a7a54a7e7fd8b976d36ca04c137e1b5acb2aa74e1208bb1c6",
+    "rerunnable_roots": "docs/audits/artifact-open-2026-11-14/ReleaseRoots.json",
+    "limits": "Native endpoint/PE/structural checks do not establish actual client or36 complete chains."
+  }
+}
