@@ -743,7 +743,8 @@ public:
         float speed = (float)15;
         uint32 num = 0;
 
-        num = atoi((char*)args);
+        if (!Trinity::ParseCommandInteger(args, num))
+            return false;
         switch (num)
         {
         case 1:
@@ -975,7 +976,7 @@ public:
         if (handler->needReportToTarget(target))
             (ChatHandler(target)).PSendSysMessage(LANG_MOUNT_GIVED, handler->GetNameLink().c_str());
 
-        target->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+        target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
         target->Mount(mId);
         target->SetSpeed(MOVE_RUN, speed);
         target->SetSpeed(MOVE_SWIM, speed);
