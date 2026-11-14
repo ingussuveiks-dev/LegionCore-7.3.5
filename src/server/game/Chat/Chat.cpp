@@ -26,6 +26,7 @@
 #include "AccountMgr.h"
 #include "CellImpl.h"
 #include "Chat.h"
+#include "CommandFloatArgument.h"
 #include "CommandIntegerArgument.h"
 #include "GridNotifiersImpl.h"
 #include "Language.h"
@@ -1408,40 +1409,56 @@ std::string CommandArgs::GetArgString(uint32 index)
 
 void CommandArgs::Initialize(std::initializer_list<CommandArgsType> argsType)
 {
+    _validArgs = false;
+    _args.clear();
     try
     {
         auto argsTypeVector = std::vector<CommandArgsType>(argsType);
         auto arg = strtok(const_cast<char*>(_charArgs), " ");
-        uint8 argsCount = 0;
+        size_t argsCount = 0;
 
         while (arg != nullptr)
         {
-            if (argsCount > argsTypeVector.size())
+            if (argsCount >= argsTypeVector.size())
                 return;
 
             switch (argsTypeVector[argsCount++])
             {
             case ARG_INT:
-                _args.emplace_back(int32(atoi(arg)));
+            {
+                int32 value;
+                if (!Trinity::ParseCommandInteger(arg, value))
+                    return;
+                _args.emplace_back(value);
                 break;
+            }
             case ARG_UINT:
             {
-                auto value = atoi(arg);
-                if (value < 0)
+                uint32 value;
+                if (!Trinity::ParseCommandInteger(arg, value))
                     return;
-
-                _args.emplace_back(uint32(value));
+                _args.emplace_back(value);
                 break;
             }
             case ARG_FLOAT:
-                _args.emplace_back(float(atof(arg)));
+            {
+                float value;
+                if (!Trinity::ParseCommandFloat(arg, value))
+                    return;
+                _args.emplace_back(value);
                 break;
+            }
             case ARG_STRING:
                 _args.emplace_back(std::string(arg));
                 break;
             case ARG_QUOTE_ENCLOSED_STRING:
-                _args.emplace_back(std::string(_handler->extractQuotedArg(arg)));
+            {
+                char const* quoted = _handler->extractQuotedArg(arg);
+                if (!quoted)
+                    return;
+                _args.emplace_back(std::string(quoted));
                 break;
+            }
             default:
                 break;
             }
@@ -1451,7 +1468,7 @@ void CommandArgs::Initialize(std::initializer_list<CommandArgsType> argsType)
         if (argsCount == argsTypeVector.size())
             _validArgs = true;
     }
-    catch (std::exception e)
+    catch (std::exception const& e)
     {
         _validArgs = false;
     }

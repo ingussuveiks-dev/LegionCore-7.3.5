@@ -528,6 +528,16 @@
       "old": "    static bool HandleDebugGetLootRecipientCommand(ChatHandler* handler, char const* /*args*/)\n    {\n        Creature* target = handler->getSelectedCreature();\n        if (!target)\n            return false;\n\n        handler->PSendSysMessage(\"Loot recipient for creature %s (GUID %u, DB GUID %u) is %s\", target->GetName(), target->GetGUID().GetGUIDLow(), target->GetDBTableGUIDLow(), target->hasLootRecipient() ? (target->GetLootRecipient() ? target->GetLootRecipient()->GetName() : \"offline\") : \"no loot recipient\");\n        return true;\n    }",
       "new": "    static bool HandleDebugGetLootRecipientCommand(ChatHandler* handler, char const* /*args*/)\n    {\n        Creature* target = handler->getSelectedCreature();\n        if (!target)\n            return false;\n\n        handler->PSendSysMessage(\"Loot recipient for creature %s (GUID \" UI64FMTD \", DB GUID \" UI64FMTD \") is %s\", target->GetName(), target->GetGUID().GetGUIDLow(), target->GetDBTableGUIDLow(), target->hasLootRecipient() ? (target->GetLootRecipient() ? target->GetLootRecipient()->GetName() : \"offline\") : \"no loot recipient\");\n        return true;\n    }",
       "summary": "Match both native64-bit creature counters in variadic output; retain live/offline/no-recipient distinctions."
+    },
+    {
+      "path": "src/server/game/Chat/Chat.cpp",
+      "method": "Initialize",
+      "key": "TypedCommandArgumentsBoundsAndValues",
+      "case": "TypedCommandArgumentsBoundsAndValues",
+      "kind": "coreargs",
+      "old": "void CommandArgs::Initialize(std::initializer_list<CommandArgsType> argsType)\n{\n    try\n    {\n        auto argsTypeVector = std::vector<CommandArgsType>(argsType);\n        auto arg = strtok(const_cast<char*>(_charArgs), \" \");\n        uint8 argsCount = 0;\n\n        while (arg != nullptr)\n        {\n            if (argsCount > argsTypeVector.size())\n                return;\n\n            switch (argsTypeVector[argsCount++])\n            {\n            case ARG_INT:\n                _args.emplace_back(int32(atoi(arg)));\n                break;\n            case ARG_UINT:\n            {\n                auto value = atoi(arg);\n                if (value < 0)\n                    return;\n\n                _args.emplace_back(uint32(value));\n                break;\n            }\n            case ARG_FLOAT:\n                _args.emplace_back(float(atof(arg)));\n                break;\n            case ARG_STRING:\n                _args.emplace_back(std::string(arg));\n                break;\n            case ARG_QUOTE_ENCLOSED_STRING:\n                _args.emplace_back(std::string(_handler->extractQuotedArg(arg)));\n                break;\n            default:\n                break;\n            }\n            arg = strtok(nullptr, \" \");\n        }\n\n        if (argsCount == argsTypeVector.size())\n            _validArgs = true;\n    }\n    catch (std::exception e)\n    {\n        _validArgs = false;\n    }\n}",
+      "new": "void CommandArgs::Initialize(std::initializer_list<CommandArgsType> argsType)\n{\n    _validArgs = false;\n    _args.clear();\n    try\n    {\n        auto argsTypeVector = std::vector<CommandArgsType>(argsType);\n        auto arg = strtok(const_cast<char*>(_charArgs), \" \");\n        size_t argsCount = 0;\n\n        while (arg != nullptr)\n        {\n            if (argsCount >= argsTypeVector.size())\n                return;\n\n            switch (argsTypeVector[argsCount++])\n            {\n            case ARG_INT:\n            {\n                int32 value;\n                if (!Trinity::ParseCommandInteger(arg, value))\n                    return;\n                _args.emplace_back(value);\n                break;\n            }\n            case ARG_UINT:\n            {\n                uint32 value;\n                if (!Trinity::ParseCommandInteger(arg, value))\n                    return;\n                _args.emplace_back(value);\n                break;\n            }\n            case ARG_FLOAT:\n            {\n                float value;\n                if (!Trinity::ParseCommandFloat(arg, value))\n                    return;\n                _args.emplace_back(value);\n                break;\n            }\n            case ARG_STRING:\n                _args.emplace_back(std::string(arg));\n                break;\n            case ARG_QUOTE_ENCLOSED_STRING:\n            {\n                char const* quoted = _handler->extractQuotedArg(arg);\n                if (!quoted)\n                    return;\n                _args.emplace_back(std::string(quoted));\n                break;\n            }\n            default:\n                break;\n            }\n            arg = strtok(nullptr, \" \");\n        }\n\n        if (argsCount == argsTypeVector.size())\n            _validArgs = true;\n    }\n    catch (std::exception const& e)\n    {\n        _validArgs = false;\n    }\n}",
+      "summary": "Reject excess arguments before indexing the signature; use full native integer/finite-float parsers, guard missing quotes and reset state on reinitialization."
     }
   ],
   "extra_edits": [
@@ -542,6 +552,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "CreatureReloadAtomicEntries"
+    },
+    {
+      "path": "src/server/game/Chat/Chat.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandFloatArgument.h\"",
+      "owner_key": "TypedCommandArgumentsBoundsAndValues"
     },
     {
       "path": "src/server/scripts/Commands/cs_debug.cpp",
@@ -601,7 +617,7 @@
     },
     "src/server/game/Chat/Chat.cpp": {
       "before_sha256": "11633a0960e02ae9daa2d35ccaafc6f48d993b7c1795f3c7d6a2edb54710d8e0",
-      "after_sha256": "a552eab3201f3839418fc1aaa583cde43306ec3df00148304af2b9249e9dc1c4"
+      "after_sha256": "f1241e460b92d54f3630cd6f945cc5b1b927a68e76325e9995b0cccd5c765a13"
     },
     "src/server/scripts/Commands/cs_gobject.cpp": {
       "before_sha256": "3ea45ee9d03201a28f68b27159bcb9993bbff213406f1306d4c0c444419a5a00",
