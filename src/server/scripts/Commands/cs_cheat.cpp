@@ -286,7 +286,7 @@ class cheat_commandscript : public CommandScript
 
         static bool HandleAllSpellCheatCommand(ChatHandler* handler, const char* args)
         {
-            if (!handler->GetSession() && !handler->GetSession()->GetPlayer())
+            if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
                 return false;
 
             std::string argstr = (char*)args;
