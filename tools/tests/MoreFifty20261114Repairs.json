@@ -252,6 +252,18 @@
       "test_boundary": "        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);",
       "observe": "ticketId",
       "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketCompleteCommand service path;retain native ticket state and assignment checks."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_ticket.cpp",
+      "method": "HandleGMTicketDeleteByIdCommand",
+      "case": "TicketDeleteByIdExactId",
+      "key": "TicketDeleteByIdExactId",
+      "kind": "more",
+      "old": "    static bool HandleGMTicketDeleteByIdCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 ticketId = atoi(args);\n        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);\n        if (!ticket)\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);\n            return true;\n        }\n\n        if (!ticket->IsClosed())\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETCLOSEFIRST);\n            return true;\n        }\n\n        std::string msg = ticket->FormatMessageString(*handler, NULL, NULL, NULL, handler->GetSession() ? handler->GetSession()->GetPlayer()->GetName() : \"Console\");\n        handler->SendGlobalGMSysMessage(msg.c_str());\n\n        sTicketMgr->RemoveTicket(ticket->GetId());\n        sTicketMgr->UpdateLastChange();\n\n        if (Player* player = ticket->GetPlayer())\n        {\n            if (player->IsInWorld())\n            {\n                // Force abandon ticket\n                /*WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);\n                WorldPacket data(SMSG_GM_TICKET_UPDATE, 4);\n                data << uint8(GMTICKET_RESPONSE_TICKET_DELETED);\n                player->SendDirectMessage(&data);*/\n            }\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleGMTicketDeleteByIdCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 ticketId;\n        if (!Trinity::ParseCommandInteger(args, ticketId))\n            return false;\n        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);\n        if (!ticket)\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);\n            return true;\n        }\n\n        if (!ticket->IsClosed())\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETCLOSEFIRST);\n            return true;\n        }\n\n        std::string msg = ticket->FormatMessageString(*handler, NULL, NULL, NULL, handler->GetSession() ? handler->GetSession()->GetPlayer()->GetName() : \"Console\");\n        handler->SendGlobalGMSysMessage(msg.c_str());\n\n        sTicketMgr->RemoveTicket(ticket->GetId());\n        sTicketMgr->UpdateLastChange();\n\n        if (Player* player = ticket->GetPlayer())\n        {\n            if (player->IsInWorld())\n            {\n                // Force abandon ticket\n                /*WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);\n                WorldPacket data(SMSG_GM_TICKET_UPDATE, 4);\n                data << uint8(GMTICKET_RESPONSE_TICKET_DELETED);\n                player->SendDirectMessage(&data);*/\n            }\n        }\n\n        return true;\n    }",
+      "test_boundary": "        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);",
+      "observe": "ticketId",
+      "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketDeleteByIdCommand service path;retain native ticket state and assignment checks."
     }
   ],
   "extra_edits": [
@@ -271,7 +283,7 @@
   "files": {
     "src/server/scripts/Commands/cs_ticket.cpp": {
       "before_sha256": "465892b16629963da17a7147766dbd684d975f279dbede959fb10f0d4d77c751",
-      "after_sha256": "6b64e457937c6f40138173022c72145b1abb8aff9a59d6f611bfa84db06da495"
+      "after_sha256": "4af6138d6ea988fce02fbec2ca7b641e9f2d91df0d6276ec6a9a581aa1e9e2f8"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb",

@@ -264,7 +264,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 ticketId = atoi(args);
+        uint32 ticketId;
+        if (!Trinity::ParseCommandInteger(args, ticketId))
+            return false;
         GmTicket* ticket = sTicketMgr->GetTicket(ticketId);
         if (!ticket)
         {
