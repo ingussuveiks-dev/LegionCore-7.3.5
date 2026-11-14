@@ -121,14 +121,14 @@ public:
                 return false;
             }
 
-            uint32 lowguid = strtoull(eoID, nullptr, 10);
-            if (!lowguid)
+            ObjectGuid::LowType lowguid;
+            if (!Trinity::ParseCommandInteger(eoID, lowguid) || !lowguid)
             {
                 handler->SendSysMessage("Error, need low guid");
                 return false;
             }
 
-            WorldDatabase.PExecute("DELETE FROM eventobject WHERE guid = %u", lowguid);
+            WorldDatabase.PExecute("DELETE FROM eventobject WHERE guid = " UI64FMTD, lowguid);
         }
         else
             handler->SendSysMessage("Error, need low guid");

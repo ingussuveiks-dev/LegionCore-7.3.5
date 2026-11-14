@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_10_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 10,
+  "status": "IN_PROGRESS_11_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 11,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -97,6 +97,21 @@
           "path": "src/server/scripts/Commands/cs_eo.cpp",
           "method": "HandleEOAddCommand",
           "test_scope": "admission prefix"
+        }
+      ]
+    },
+    {
+      "batch": 2,
+      "count": 1,
+      "source_case_count": 127,
+      "repairs": [
+        {
+          "index": 11,
+          "key": "EventObjectDeleteFullGuid",
+          "summary": "Parse and bind the full native64-bit eventobject DB GUID instead of deleting an aliased32-bit row.",
+          "path": "src/server/scripts/Commands/cs_eo.cpp",
+          "method": "HandleEODeleteCommand",
+          "test_scope": "complete production handler/helper"
         }
       ]
     }

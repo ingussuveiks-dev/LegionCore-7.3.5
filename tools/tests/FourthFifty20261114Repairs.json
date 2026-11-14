@@ -117,6 +117,16 @@
       "observe": "id",
       "test_capture": "handler->captured = {id, spell, worldsafe}; handler->scalar = radius;",
       "summary": "Validate entry,finite radius,optional spell and WorldSafeLoc together before event-template creation;preserve defaults and native cell-visit radius clamping."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_eo.cpp",
+      "method": "HandleEODeleteCommand",
+      "case": "EventObjectDeleteFullGuid",
+      "key": "EventObjectDeleteFullGuid",
+      "kind": "fourth",
+      "old": "    static bool HandleEODeleteCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            char* eoID = strtok((char*)args, \" \");\n            if (!eoID)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            uint32 lowguid = strtoull(eoID, nullptr, 10);\n            if (!lowguid)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            WorldDatabase.PExecute(\"DELETE FROM eventobject WHERE guid = %u\", lowguid);\n        }\n        else\n            handler->SendSysMessage(\"Error, need low guid\");\n\n        return true;\n    }",
+      "new": "    static bool HandleEODeleteCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            char* eoID = strtok((char*)args, \" \");\n            if (!eoID)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            ObjectGuid::LowType lowguid;\n            if (!Trinity::ParseCommandInteger(eoID, lowguid) || !lowguid)\n            {\n                handler->SendSysMessage(\"Error, need low guid\");\n                return false;\n            }\n\n            WorldDatabase.PExecute(\"DELETE FROM eventobject WHERE guid = \" UI64FMTD, lowguid);\n        }\n        else\n            handler->SendSysMessage(\"Error, need low guid\");\n\n        return true;\n    }",
+      "summary": "Parse and bind the full native64-bit eventobject DB GUID instead of deleting an aliased32-bit row."
     }
   ],
   "extra_edits": [
@@ -156,7 +166,7 @@
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
-      "after_sha256": "0f5b059a8b5cf694efc5a4e4e1f904fcc817dbb91f59ebc6809338f9cc32baaf"
+      "after_sha256": "99eff87ced209cc555f4227dafb766ba0dc62b053c428853a3f37f4a5cb0ffaa"
     },
     "src/server/scripts/Commands/cs_guild.cpp": {
       "before_sha256": "168efca091cb840607eec47506ed408eb6ebe9e38a1e62c0966f9bba9023a593",
