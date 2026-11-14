@@ -2773,8 +2773,8 @@ public:
             char const* itemIdStr = strtok(itemStr, ":");
             char const* itemCountStr = strtok(NULL, " ");
 
-            uint32 itemId = atoi(itemIdStr);
-            if (!itemId)
+            uint32 itemId;
+            if (!Trinity::ParseCommandInteger(itemIdStr, itemId) || !itemId)
                 return false;
 
             ItemTemplate const* item_proto = sObjectMgr->GetItemTemplate(itemId);
@@ -2785,7 +2785,9 @@ public:
                 return false;
             }
 
-            uint32 itemCount = itemCountStr ? atoi(itemCountStr) : 1;
+            uint32 itemCount = 1;
+            if (itemCountStr && !Trinity::ParseCommandInteger(itemCountStr, itemCount))
+                return false;
             if (itemCount < 1 || (item_proto->GetMaxCount() > 0 && itemCount > uint32(item_proto->GetMaxCount())))
             {
                 handler->PSendSysMessage(LANG_COMMAND_INVALID_ITEM_COUNT, itemCount, itemId);
@@ -2793,10 +2795,20 @@ public:
                 return false;
             }
 
-            while (itemCount > item_proto->GetMaxStackSize())
+            uint32 stackSize = item_proto->GetMaxStackSize();
+            if (!stackSize)
+                return false;
+            uint64 attachments = (uint64(itemCount) + stackSize - 1) / stackSize;
+            if (items.size() > MAX_MAIL_ITEMS || attachments > MAX_MAIL_ITEMS - items.size())
             {
-                items.push_back(ItemPair(itemId, item_proto->GetMaxStackSize()));
-                itemCount -= item_proto->GetMaxStackSize();
+                handler->PSendSysMessage(LANG_COMMAND_MAIL_ITEMS_LIMIT, MAX_MAIL_ITEMS);
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
+            while (itemCount > stackSize)
+            {
+                items.push_back(ItemPair(itemId, stackSize));
+                itemCount -= stackSize;
             }
 
             items.push_back(ItemPair(itemId, itemCount));
