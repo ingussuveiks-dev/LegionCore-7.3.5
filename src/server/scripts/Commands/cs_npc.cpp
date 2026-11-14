@@ -612,7 +612,9 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-        uint32 itemId = atol(pitem);
+        uint32 itemId;
+        if (!Trinity::ParseCommandInteger(pitem, itemId))
+            return false;
 
         const uint8 type = 1; // FIXME: make type (1 item, 2 currency) an argument
 

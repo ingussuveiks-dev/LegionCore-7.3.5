@@ -165,6 +165,18 @@
       "observe": "itemId",
       "test_capture": "handler->captured = {itemId,maxcount,incrtime,extendedcost,money};",
       "summary": "Validate the complete item/count/restock/cost/money tuple before persistence;retain native32-bit fields and64-bit money."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcDeleteVendorItemCommand",
+      "case": "VendorDeleteExactItem",
+      "key": "VendorDeleteExactItem",
+      "kind": "fourth",
+      "old": "    static bool HandleNpcDeleteVendorItemCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Creature* vendor = handler->getSelectedCreature();\n        if (!vendor || !vendor->isVendor())\n        {\n            handler->SendSysMessage(LANG_COMMAND_VENDORSELECTION);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* pitem  = handler->extractKeyFromLink((char*)args, \"Hitem\");\n        if (!pitem)\n        {\n            handler->SendSysMessage(LANG_COMMAND_NEEDITEMSEND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        uint32 itemId = atol(pitem);\n\n        const uint8 type = 1; // FIXME: make type (1 item, 2 currency) an argument\n\n        if (!sObjectMgr->RemoveVendorItem(vendor->GetEntry(), itemId, type))\n        {\n            handler->PSendSysMessage(LANG_ITEM_NOT_IN_LIST, itemId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);\n\n        handler->PSendSysMessage(LANG_ITEM_DELETED_FROM_LIST, itemId, itemTemplate->GetName()->Str[handler->GetSessionDbLocaleIndex()]);\n        return true;\n    }",
+      "new": "    static bool HandleNpcDeleteVendorItemCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Creature* vendor = handler->getSelectedCreature();\n        if (!vendor || !vendor->isVendor())\n        {\n            handler->SendSysMessage(LANG_COMMAND_VENDORSELECTION);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* pitem  = handler->extractKeyFromLink((char*)args, \"Hitem\");\n        if (!pitem)\n        {\n            handler->SendSysMessage(LANG_COMMAND_NEEDITEMSEND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n        uint32 itemId;\n        if (!Trinity::ParseCommandInteger(pitem, itemId))\n            return false;\n\n        const uint8 type = 1; // FIXME: make type (1 item, 2 currency) an argument\n\n        if (!sObjectMgr->RemoveVendorItem(vendor->GetEntry(), itemId, type))\n        {\n            handler->PSendSysMessage(LANG_ITEM_NOT_IN_LIST, itemId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);\n\n        handler->PSendSysMessage(LANG_ITEM_DELETED_FROM_LIST, itemId, itemTemplate->GetName()->Str[handler->GetSessionDbLocaleIndex()]);\n        return true;\n    }",
+      "test_boundary": "        const uint8 type",
+      "observe": "itemId",
+      "summary": "Reject malformed/overflowing vendor-item selectors before the existing vendor-state/removal rules."
     }
   ],
   "extra_edits": [
@@ -206,7 +218,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",
-      "after_sha256": "0be177eb0596f13b55e4a1cc54fc1acfba457c51eafd1f42fd032f7b6ea816cd"
+      "after_sha256": "312553ef310450a632070049c553141838e150dc51b75ba9b580e8befbf2e44d"
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
