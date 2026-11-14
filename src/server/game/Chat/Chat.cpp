@@ -1094,11 +1094,15 @@ GameTele const* ChatHandler::extractGameTeleFromLink(char* text)
     if (!cId)
         return nullptr;
 
-    // id case (explicit or from shift link)
-    if (cId[0] >= '0' || cId[0] >= '9')
-        if (uint32 id = atoi(cId))
+    // Entire decimal IDs use the numeric lookup; other text remains a name.
+    if (isNumeric(cId))
+    {
+        uint32 id;
+        if (!Trinity::ParseCommandInteger(cId, id))
+            return nullptr;
+        if (id)
             return sObjectMgr->GetGameTele(id);
-
+    }
     return sObjectMgr->GetGameTele(cId);
 }
 

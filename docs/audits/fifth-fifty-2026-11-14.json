@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_39_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 39,
+  "status": "IN_PROGRESS_40_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 40,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -288,7 +288,7 @@
     },
     {
       "batch": 4,
-      "count": 9,
+      "count": 10,
       "source_case_count": 55,
       "repairs": [
         {
@@ -361,6 +361,14 @@
           "summary": "Validate entire40-bit creature/gameobject link keys before native GUID construction; retain online/offline player names and cursor semantics.",
           "path": "src/server/game/Chat/Chat.cpp",
           "method": "extractGuidFromLink",
+          "test_scope": "complete production function/helper"
+        },
+        {
+          "index": 40,
+          "key": "TeleportLinkExactIdOrName",
+          "summary": "Eliminate numeric-prefix aliasing and incorrect OR digit test; retain complete nonnumeric names, including digit-prefixed names, plus native numeric0 name fallback.",
+          "path": "src/server/game/Chat/Chat.cpp",
+          "method": "extractGameTeleFromLink",
           "test_scope": "complete production function/helper"
         }
       ]
