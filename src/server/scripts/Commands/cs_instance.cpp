@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "Group.h"
 #include "InstanceSaveMgr.h"
 #include "InstanceScript.h"
@@ -116,15 +117,14 @@ public:
         char* map = strtok((char*)args, " ");
         char* pDiff = strtok(NULL, " ");
         int8 diff = -1;
-        if (pDiff)
-            diff = atoi(pDiff);
+        if (!map || (pDiff && (!Trinity::ParseCommandInteger(pDiff, diff) || diff < -1 || diff >= MAX_DIFFICULTY)))
+            return false;
         uint16 counter = 0;
         uint16 MapId = 0;
 
         if (strcmp(map, "all"))
         {
-            MapId = uint16(atoi(map));
-            if (!MapId)
+            if (!Trinity::ParseCommandInteger(map, MapId) || !MapId)
                 return false;
         }
 

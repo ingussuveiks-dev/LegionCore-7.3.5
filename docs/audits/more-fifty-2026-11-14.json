@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_29_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 29,
+  "status": "IN_PROGRESS_30_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 30,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -189,7 +189,7 @@
     },
     {
       "batch": 3,
-      "count": 9,
+      "count": 10,
       "source_case_count": 106,
       "repairs": [
         {
@@ -262,6 +262,14 @@
           "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the shared append/append-line response implementation;count the shared helper once.",
           "path": "src/server/scripts/Commands/cs_ticket.cpp",
           "method": "_HandleGMTicketResponseAppendCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 30,
+          "key": "InstanceUnbindExactSelectors",
+          "summary": "Reject malformed/aliased16-bit maps and invalid/wrapped difficulty selectors before unbinding instances or clearing loot cooldowns.",
+          "path": "src/server/scripts/Commands/cs_instance.cpp",
+          "method": "HandleInstanceUnbindCommand",
           "test_scope": "admission prefix"
         }
       ]

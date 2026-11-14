@@ -313,6 +313,18 @@
       "observe": "ticketId",
       "test_signature": "    static bool _HandleGMTicketResponseAppendCommand(ChatHandler* handler, char const* args)",
       "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the shared append/append-line response implementation;count the shared helper once."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_instance.cpp",
+      "method": "HandleInstanceUnbindCommand",
+      "case": "InstanceUnbindExactSelectors",
+      "key": "InstanceUnbindExactSelectors",
+      "kind": "more",
+      "old": "    static bool HandleInstanceUnbindCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            player = handler->GetSession()->GetPlayer();\n\n        char* map = strtok((char*)args, \" \");\n        char* pDiff = strtok(NULL, \" \");\n        int8 diff = -1;\n        if (pDiff)\n            diff = atoi(pDiff);\n        uint16 counter = 0;\n        uint16 MapId = 0;\n\n        if (strcmp(map, \"all\"))\n        {\n            MapId = uint16(atoi(map));\n            if (!MapId)\n                return false;\n        }\n\n        for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)\n        {\n            Player::BoundInstancesMap &binds = player->GetBoundInstances(Difficulty(i));\n            for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end();)\n            {\n                InstanceSave* save = itr->second.save;\n                if (itr->first != player->GetMapId() && (!MapId || MapId == itr->first) && (diff == -1 || diff == save->GetDifficultyID()))\n                {\n                    std::string timeleft = GetTimeString(save->GetResetTime() - GameTime::GetGameTime());\n                    handler->PSendSysMessage(\"unbinding map: %d inst: %d perm: %s diff: %d canReset: %s TTR: %s\", itr->first, save->GetInstanceId(), itr->second.perm ? \"yes\" : \"no\", save->GetDifficultyID(), save->CanReset() ? \"yes\" : \"no\", timeleft.c_str());\n                    player->UnbindInstance(itr, Difficulty(i));\n                    counter++;\n                }\n                else\n                    ++itr;\n            }\n        }\n        handler->PSendSysMessage(\"instances unbound: %d\", counter);\n\n        player->ResetLootCooldown();\n        handler->PSendSysMessage(\"Reset personal loot cooldown\");\n\n        player->ResetLootCooldown();\n        CharacterDatabase.PExecute(\"DELETE FROM character_loot_cooldown WHERE guid = %u\", uint32(player->GetGUID().GetCounter()));\n        CharacterDatabase.PExecute(\"DELETE FROM character_lfg_cooldown WHERE guid = %u\", uint32(player->GetGUID().GetCounter()));\n        handler->PSendSysMessage(\"Reset personal loot cooldown\");\n\n        return true;\n    }",
+      "new": "    static bool HandleInstanceUnbindCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            player = handler->GetSession()->GetPlayer();\n\n        char* map = strtok((char*)args, \" \");\n        char* pDiff = strtok(NULL, \" \");\n        int8 diff = -1;\n        if (!map || (pDiff && (!Trinity::ParseCommandInteger(pDiff, diff) || diff < -1 || diff >= MAX_DIFFICULTY)))\n            return false;\n        uint16 counter = 0;\n        uint16 MapId = 0;\n\n        if (strcmp(map, \"all\"))\n        {\n            if (!Trinity::ParseCommandInteger(map, MapId) || !MapId)\n                return false;\n        }\n\n        for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)\n        {\n            Player::BoundInstancesMap &binds = player->GetBoundInstances(Difficulty(i));\n            for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end();)\n            {\n                InstanceSave* save = itr->second.save;\n                if (itr->first != player->GetMapId() && (!MapId || MapId == itr->first) && (diff == -1 || diff == save->GetDifficultyID()))\n                {\n                    std::string timeleft = GetTimeString(save->GetResetTime() - GameTime::GetGameTime());\n                    handler->PSendSysMessage(\"unbinding map: %d inst: %d perm: %s diff: %d canReset: %s TTR: %s\", itr->first, save->GetInstanceId(), itr->second.perm ? \"yes\" : \"no\", save->GetDifficultyID(), save->CanReset() ? \"yes\" : \"no\", timeleft.c_str());\n                    player->UnbindInstance(itr, Difficulty(i));\n                    counter++;\n                }\n                else\n                    ++itr;\n            }\n        }\n        handler->PSendSysMessage(\"instances unbound: %d\", counter);\n\n        player->ResetLootCooldown();\n        handler->PSendSysMessage(\"Reset personal loot cooldown\");\n\n        player->ResetLootCooldown();\n        CharacterDatabase.PExecute(\"DELETE FROM character_loot_cooldown WHERE guid = %u\", uint32(player->GetGUID().GetCounter()));\n        CharacterDatabase.PExecute(\"DELETE FROM character_lfg_cooldown WHERE guid = %u\", uint32(player->GetGUID().GetCounter()));\n        handler->PSendSysMessage(\"Reset personal loot cooldown\");\n\n        return true;\n    }",
+      "test_boundary": "        for (uint8 i =",
+      "observe": "MapId",
+      "summary": "Reject malformed/aliased16-bit maps and invalid/wrapped difficulty selectors before unbinding instances or clearing loot cooldowns."
     }
   ],
   "extra_edits": [
@@ -327,9 +339,19 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "TicketAssignToExactId"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_instance.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "InstanceUnbindExactSelectors"
     }
   ],
   "files": {
+    "src/server/scripts/Commands/cs_achievement.cpp": {
+      "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
+      "after_sha256": "31c4bfa9e5a5e0067e236b1090f568345e42952c56f9136d932b87404ca5f1c6"
+    },
     "src/server/scripts/Commands/cs_ticket.cpp": {
       "before_sha256": "465892b16629963da17a7147766dbd684d975f279dbede959fb10f0d4d77c751",
       "after_sha256": "2b0468bcacd58451ce538f83ec8f2ab8b60f6f7ba16ea6c37c1d2b3f171aff2d"
@@ -338,9 +360,9 @@
       "before_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb",
       "after_sha256": "09fcd291c5bcc9e2f8f7e1f15833d49b87b02440e9ae5ec481d8a5f21ad7e99d"
     },
-    "src/server/scripts/Commands/cs_achievement.cpp": {
-      "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
-      "after_sha256": "31c4bfa9e5a5e0067e236b1090f568345e42952c56f9136d932b87404ca5f1c6"
+    "src/server/scripts/Commands/cs_instance.cpp": {
+      "before_sha256": "50f1c951b4e2a61286232af48774057a1d2283c831c97e15a3d83ff89d298a01",
+      "after_sha256": "a50b1ce64ac80757aadb0cf68a41a0ec0344f792739244328a0544ce106e9914"
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
