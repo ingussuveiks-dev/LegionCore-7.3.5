@@ -1,4 +1,10 @@
 {
+  "latest_fuzan_client_scene_binding_2026_11_14": {
+    "status": "CLIENT_SOURCE_GRAPH_TRACED_AUTHENTIC_SERVER_BINDING_OPEN",
+    "audit": "docs/audits/fuzan-client-scene-binding-followup-2026-11-14.json",
+    "checks": "Read-only native5969 client texts/20 globals,222 complete selected payloads,Fu Zan1668/156 all16 linked fragments. No new diagnostics;canonical files and original evidence unchanged. No gameplay repair/client traversal claim.",
+    "next": "Reconstruction-versus-authentic-source preference asked,not answered or assumed;keep original LINK2,Fu Zan missing path/flight and whole36/client evidence OPEN."
+  },
   "latest_artifact_open_reconciliation_2026_11_14": {
     "status": "PARTIAL_TECHNICAL_CLOSEOUT_AUTHENTIC_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
     "audit": "docs/audits/artifact-open-reconciliation-2026-11-14.json",

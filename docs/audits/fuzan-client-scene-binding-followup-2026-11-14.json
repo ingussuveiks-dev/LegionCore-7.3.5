@@ -1,0 +1,180 @@
+{
+  "date": "2026-11-14",
+  "request": "Labi turpini",
+  "status": "OPEN_AUTHORED_FUZAN_FLIGHT_BINDING_NOT_RECOVERED_CLIENT_SOURCE_SCOPE_COMPLETE",
+  "baseline_commit": "11537942da7a233f6cb011028a991b663ec0b25f",
+  "completed_gameplay_repairs": 0,
+  "scope": "New matching client-script investigation for Fu Zan map1625/scenario1137;prior116 PE/90 native checks not rerun or recounted. No game code,SQL,canonical binary or character change.",
+  "native_reader": {
+    "source": "tools/research/FuZanSceneBindingCatalog.cpp",
+    "test": "tools/tests/Test-FuZanSceneBindings.ps1",
+    "counts": {
+      "texts": 5969,
+      "globals": 20,
+      "scripts": 5969,
+      "packages": 1378,
+      "members": 6919
+    },
+    "keyword_matches": 38,
+    "expanded_selected_nodes": 222,
+    "expanded_packages": 26,
+    "fuzan_complete_packages": [
+      156,
+      1668
+    ],
+    "fuzan_complete_fragments": [
+      {
+        "id": 41,
+        "name": "Cinematic Framework ",
+        "bytes": 3899,
+        "first": 0,
+        "next": 10480
+      },
+      {
+        "id": 154,
+        "name": "Cinematic Framework - Spawning",
+        "bytes": 3899,
+        "first": 0,
+        "next": 1651
+      },
+      {
+        "id": 155,
+        "name": "Cinematic Framework - Camera",
+        "bytes": 3883,
+        "first": 0,
+        "next": 10794
+      },
+      {
+        "id": 1651,
+        "name": "[1] Cinematic Framework - Spawning",
+        "bytes": 3898,
+        "first": 154,
+        "next": 1665
+      },
+      {
+        "id": 1665,
+        "name": "[2] Cinematic Framework - Spawning",
+        "bytes": 3900,
+        "first": 154,
+        "next": 11151
+      },
+      {
+        "id": 9338,
+        "name": "Cinematic Framework - Text Display",
+        "bytes": 908,
+        "first": 0,
+        "next": 0
+      },
+      {
+        "id": 9339,
+        "name": "Cinematic Framework - Fake Spellcasting",
+        "bytes": 3754,
+        "first": 0,
+        "next": 0
+      },
+      {
+        "id": 10442,
+        "name": "Cinematic Framework - Companion Behavior",
+        "bytes": 3888,
+        "first": 0,
+        "next": 12155
+      },
+      {
+        "id": 10480,
+        "name": "[1] Cinematic Framework ",
+        "bytes": 3900,
+        "first": 41,
+        "next": 11559
+      },
+      {
+        "id": 10794,
+        "name": "[1] Cinematic Framework - Camera",
+        "bytes": 2299,
+        "first": 155,
+        "next": 0
+      },
+      {
+        "id": 11151,
+        "name": "[3] Cinematic Framework - Spawning",
+        "bytes": 3899,
+        "first": 154,
+        "next": 11375
+      },
+      {
+        "id": 11375,
+        "name": "[4] Cinematic Framework - Spawning",
+        "bytes": 470,
+        "first": 154,
+        "next": 0
+      },
+      {
+        "id": 11559,
+        "name": "[2] Cinematic Framework ",
+        "bytes": 2565,
+        "first": 41,
+        "next": 0
+      },
+      {
+        "id": 12155,
+        "name": "[1] Cinematic Framework - Companion Behavior",
+        "bytes": 1105,
+        "first": 10442,
+        "next": 0
+      },
+      {
+        "id": 14271,
+        "name": "7.0 Artifacts - Monk - Brewmaster Acquisition - Artifact Looted - init - LWB",
+        "bytes": 2054,
+        "first": 0,
+        "next": 0
+      },
+      {
+        "id": 14272,
+        "name": "7.0 Artifacts - Monk - Brewmaster Acquisition - Artifact Looted - Master - LWB",
+        "bytes": 3212,
+        "first": 0,
+        "next": 0
+      }
+    ],
+    "checks": "Native typed DB2 plus actual Hotfix overlays,explicit read-only sessions.5969 text/20 global rows scanned;all222 selected native source byte lengths checked. Package children and Script First/Next continuations followed with cycle guards;all16 Fu Zan/framework fragments present.",
+    "inputs": {
+      "tools/research/FuZanSceneBindingCatalog.cpp": "5ddafae59cae73340e875ca736df960dd0b456d5d436794414c86578ee4ea0d0",
+      "tools/tests/Test-FuZanSceneBindings.ps1": "1058754f5a9f4dd96a39bd227d6c10492ace9ac0fcea4cfc935eba1762ff7b1f",
+      "build-extractors/bin/Release/dbc/enUS/SceneScriptText.db2": "75c0e4c7c5fe7d753e1823a40683d9b7ed1c458952b28b08d103903cb09a19a4",
+      "build-extractors/bin/Release/dbc/enUS/SceneScriptGlobalText.db2": "f5f7d18c8857cdc381dc89e15b1f10325bd30f82994f84a5afce9849f21e609b",
+      "build-extractors/bin/Release/dbc/enUS/SceneScript.db2": "4364252b30e32f53b23e61f0ef649974a97eabc980967ffc75ad63a9e8311bef",
+      "build-extractors/bin/Release/dbc/enUS/SceneScriptPackage.db2": "59ad53f2110d0c15783f00a5516143020500e2ea083b8b62ad8b4038e3e3277c",
+      "build-extractors/bin/Release/dbc/enUS/SceneScriptPackageMember.db2": "18401c336fd3faaf175698df6982f0c3f6db2902db97bfc7e5306b691dacc3e5"
+    },
+    "catalog_sha256": "8c57e8d63afb474fe5406574ae5faeef4d60270c9a401f925b2049c34ee6edbc"
+  },
+  "reviewed_sources": {
+    "fuzan": "Both full actual1668 scripts14271/14272 reviewed. Init uses relative coordinates,a local player clone and MainHand128938 visual plus race-specific splash actors. Master waits for Smooth Phase Complete,plays native camera/visual/text sequence,cleans up and ends scene. No109441/109820/217818/217819/217820 invocation in these two actual scripts.",
+    "framework": "Complete16-fragment closure captured and byte-validated. Relevant full SmoothPhaseSpawnActor,SmoothPhaseSpawnActivePlayerCloneActor,SetCameraFollowPath and CameraDummyFollowPath bodies reviewed. Generic FakeMount helper is a declaration,not a call from Fu Zan init/master. Do not claim a continuous client playback or full review of every unrelated selected scene/helper.",
+    "namespace": "Selected numeric5699..5729 occurrences include older MoP camera and actor scene paths and unrelated visual scripts. Scene LoadPath/camera path usage is not a recovered server NPC-to-TaxiPath binding. The near-origin Temple taxi candidates remain unassigned.",
+    "shared_bunny": "Full direct Arms1571 scripts13944/13945/14759 reviewed:103151 is the local title/display bunny,with Thoradin and camera/text/music. This does not specify the missing server103151 id2 after202014 or101430 id2. No placeholder action/link deletion introduced.",
+    "other_sources": "Current local scripts,matching structs/assets and existing prior donor/Trinity audits rechecked. Current newer Trinity source supplies no matching scenario implementation. Bounded additional web/GitHub-name/path queries returned no accepted source implementation;unrelated numeric results not used as evidence. No new gameplay video watched or external code imported."
+  },
+  "outcome": "The actual pickup client scene does not supply the missing authored server boarding/flight/transfer binding. Preserve native217818 personal109441/Vehicle4577,217819->217820 and original quest/context/seat/camera/pet constraints. None of the nine recovered taxi paths has been assigned by proximity or number collision.",
+  "pending_user_preference": "Asked asynchronously whether a clearly labelled best-effort Fu Zan reconstruction using native vehicle/spells is acceptable or only an authenticated original binding is wanted. No answer or approval inferred from elapsed time;no dependent route/reconstruction implemented. This preference concerns the previously preserved authentic-route requirement,not routine test/commit permission.",
+  "diagnostics": {
+    "native": "All reader iterations and final formal reader/byte/graph validation exit0,EOF complete. Before/after canonical and relevant own-runtime snapshots show no new/changed crashes,appended DBErrors or server warnings/errors/assertions. Compiler stdout inspected;no warning/error.",
+    "processes": "No worldserver/bnetserver/client launched or stopped. Native reader processes exited;no background test server retained.",
+    "unresolved": "Original LINK2/Slaghammer,Fu Zan movement warning evidence,mixed DBErrors and all client/whole36 limits remain OPEN. No unresolved research moved into fixed."
+  },
+  "preserved": {
+    "canonical_world_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "original_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "configuration": "Canonical config hash unchanged;no contents/passwords published. Canonical bnet/map also unchanged."
+  },
+  "cleanup": {
+    "removed_files": 3,
+    "removed_bytes": 1216684.0,
+    "manifest_sha256": "39b74e556aa1aaad0506912bf35a30dfe02aeb70226a6ab683438fe05e14e26d",
+    "scope": "Exact owned FuZanSceneBindingCatalog.exe/.obj and its still-owned generated build-item.cmd only;absolute paths,ancestors,reparse flags and inactive process checked. Source,complete catalogs/diagnostics and unresolved research retained outside fixed. No shared library/runtime/config/rollback removed."
+  },
+  "local_evidence": ".codex/artifact-open-native-followup-20261114;full client source retained locally,not committed as a bulk script dump",
+  "next": "Await reconstruction preference for Fu Zan. Original LINK2 payloads and3 shared Monk actor-link reviews remain separate. Actual Warrior ending/glow/return,Sharasdal reconstruction and36 whole-chain client checks remain pending."
+}
