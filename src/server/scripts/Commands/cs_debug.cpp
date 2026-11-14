@@ -1449,26 +1449,33 @@ public:
 
         ObjectGuid guid = target->GetGUID();
 
-        uint32 field = (uint32)atoi(x);
+        uint32 field;
+        if (!Trinity::ParseCommandInteger(x, field))
+            return false;
         if (field >= target->GetValuesCount())
         {
             handler->PSendSysMessage(LANG_TOO_BIG_INDEX, field, guid.GetGUIDLow(), target->GetValuesCount());
             return false;
         }
 
-        bool isInt32 = true;
-        if (z)
-            isInt32 = atoi(z) != 0;
+        int32 mode = 1;
+        if (z && !Trinity::ParseCommandInteger(z, mode))
+            return false;
+        bool const isInt32 = mode != 0;
 
         if (isInt32)
         {
-            uint32 value = (uint32)atoi(y);
+            uint32 value;
+            if (!Trinity::ParseCommandInteger(y, value))
+                return false;
             target->SetUInt32Value(field, value);
             handler->PSendSysMessage(LANG_SET_UINT_FIELD, guid.GetGUIDLow(), field, value);
         }
         else
         {
-            float value = (float)atof(y);
+            float value;
+            if (!Trinity::ParseCommandFloat(y, value))
+                return false;
             target->SetFloatValue(field, value);
             handler->PSendSysMessage(LANG_SET_FLOAT_FIELD, guid.GetGUIDLow(), field, value);
         }
