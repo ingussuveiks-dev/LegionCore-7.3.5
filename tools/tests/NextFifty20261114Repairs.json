@@ -40,6 +40,16 @@
       "batch": 1,
       "old": "    static bool HandleCastOrphanVisualCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* visual = strtok((char*)args, \" \");\n        \n        if (!visual)\n            return false;\n        \n        int32 visual_id = atoi(visual);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n        if (!pl)\n            return false;\n        \n        pl->PlayOrphanSpellVisual(pl->GetPosition(), {0, 0, 0, 0}, target->GetPosition(), visual_id, 17.0f, target->GetGUID(), false);\n        return true;\n    }",
       "new": "    static bool HandleCastOrphanVisualCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        char* visual = strtok((char*)args, \" \");\n        \n        if (!visual)\n            return false;\n        \n        int32 visual_id;\n        if (!Trinity::ParseCommandInteger(visual, visual_id))\n            return false;\n\n        Player* pl = handler->GetSession()->GetPlayer();\n        if (!pl)\n            return false;\n        \n        pl->PlayOrphanSpellVisual(pl->GetPosition(), {0, 0, 0, 0}, target->GetPosition(), visual_id, 17.0f, target->GetGUID(), false);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_modify.cpp",
+      "method": "HandleModifyHonorCommand",
+      "key": "ModifyHonorCheckedReceipt",
+      "case": "Honor",
+      "kind": "next",
+      "batch": 1,
+      "old": "    static bool HandleModifyHonorCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        int32 amount = (uint32)atoi(args);\n\n        target->RewardHonor(NULL, 0, amount, false);\n\n        handler->PSendSysMessage(LANG_COMMAND_MODIFY_HONOR, handler->GetNameLink(target).c_str(), target->GetCurrency(CURRENCY_TYPE_HONOR_POINTS));\n\n        return true;\n    }",
+      "new": "    static bool HandleModifyHonorCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // check online security\n        if (handler->HasLowerSecurity(target, ObjectGuid::Empty))\n            return false;\n\n        int32 amount;\n        if (!Trinity::ParseCommandInteger(args, amount))\n            return false;\n\n        if (!target->RewardHonor(NULL, 0, amount, false))\n            return false;\n\n        handler->PSendSysMessage(LANG_COMMAND_MODIFY_HONOR, handler->GetNameLink(target).c_str(), target->GetCurrency(CURRENCY_TYPE_HONOR_POINTS));\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -60,6 +70,11 @@
     "src/server/scripts/Commands/cs_cast.cpp": {
       "before_sha256": "6f8aa787e5e3e6b80370618222492c7cbd33828c57d9d0838604ca0cc849cda4",
       "after_sha256": "5ae5575c724f91d8d3a4b8e739ccb7fb75991a2352aa0ba3b09ee095ca46a15b",
+      "owner_key": null
+    },
+    "src/server/scripts/Commands/cs_modify.cpp": {
+      "before_sha256": "8a46d0d9cb1a23623febfeec3b0fa6ccbdebe9dfefc49e718279af5ac13f6485",
+      "after_sha256": "bfb3e1cc2234e3631f698852cf92f17902b9a4dee9069b7950340ac3f33e00d6",
       "owner_key": null
     },
     "src/server/game/Chat/CommandFloatArgument.h": {

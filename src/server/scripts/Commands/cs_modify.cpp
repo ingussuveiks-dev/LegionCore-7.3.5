@@ -1123,9 +1123,12 @@ public:
         if (handler->HasLowerSecurity(target, ObjectGuid::Empty))
             return false;
 
-        int32 amount = (uint32)atoi(args);
+        int32 amount;
+        if (!Trinity::ParseCommandInteger(args, amount))
+            return false;
 
-        target->RewardHonor(NULL, 0, amount, false);
+        if (!target->RewardHonor(NULL, 0, amount, false))
+            return false;
 
         handler->PSendSysMessage(LANG_COMMAND_MODIFY_HONOR, handler->GetNameLink(target).c_str(), target->GetCurrency(CURRENCY_TYPE_HONOR_POINTS));
 
