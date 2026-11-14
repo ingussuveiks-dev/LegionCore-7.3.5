@@ -114,6 +114,16 @@
       "old": "    static bool HandleCharDisplayMainhandCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_MAINHAND))\n        {\n            pl->m_vis->m_visMainhand = newItem;\n            return true;\n        }\n        return false;\n    }",
       "new": "    static bool HandleCharDisplayMainhandCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem;\n        if (!Trinity::ParseCommandInteger(cId, newItem))\n            return false;\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_MAINHAND))\n        {\n            pl->m_vis->m_visMainhand = newItem;\n            return true;\n        }\n        return false;\n    }",
       "summary": "Parse the complete item/link key before visual allocation and native Mainhand model change; preserve zero reset and downstream catalog validation."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleCharDisplayHeadCommand",
+      "key": "AppearanceHeadExactItem",
+      "case": "AppearanceHeadExactItem",
+      "kind": "command",
+      "old": "    static bool HandleCharDisplayHeadCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId); \n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_HEAD))\n        {\n            pl->m_vis->m_visHead = newItem;\n            return true;\n        }\n        return false;\n    }",
+      "new": "    static bool HandleCharDisplayHeadCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem;\n        if (!Trinity::ParseCommandInteger(cId, newItem))\n            return false;\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_HEAD))\n        {\n            pl->m_vis->m_visHead = newItem;\n            return true;\n        }\n        return false;\n    }",
+      "summary": "Parse the complete item/link key before visual allocation and native Head model change; preserve zero reset and downstream catalog validation."
     }
   ],
   "extra_edits": [],
@@ -124,7 +134,7 @@
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
-      "after_sha256": "46be92fae8c15ad4ffc3543e687111a7822160d632f579e295dfffc6823fb9d7"
+      "after_sha256": "6948088949c0938775b7dd609b5b10c39f8b5a08c75bf750450f1e696637782a"
     },
     "src/server/scripts/Commands/cs_cheat.cpp": {
       "before_sha256": "61bf4ebca26a85279a5b66a1d28bc3d1c25ee237e8aac050d9a1c1619829dbcc",

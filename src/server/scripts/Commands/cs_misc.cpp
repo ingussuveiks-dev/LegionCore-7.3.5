@@ -3430,7 +3430,9 @@ public:
         if (!cId)
             return false;
 
-        uint32 newItem = (uint32) atol(cId); 
+        uint32 newItem;
+        if (!Trinity::ParseCommandInteger(cId, newItem))
+            return false;
         Player* pl = handler->GetSession()->GetPlayer();
 
         if (!pl->m_vis)
