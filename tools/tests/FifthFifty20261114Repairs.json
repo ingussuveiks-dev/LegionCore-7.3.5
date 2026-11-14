@@ -418,6 +418,16 @@
       "test_boundary": "        if (ObjectMgr::GetPlayerNameByGUID",
       "observe": "parseGUID.GetGUIDLow()",
       "summary": "Reject malformed/overflowing numeric player identifiers before lookup instead of aliasing an unrelated player; preserve name/selection paths."
+    },
+    {
+      "path": "src/server/game/Chat/Chat.cpp",
+      "method": "extractGuidFromLink",
+      "key": "LinkedWorldObjectExactCounter",
+      "case": "LinkedWorldObjectExactCounter",
+      "kind": "corehelper",
+      "old": "ObjectGuid ChatHandler::extractGuidFromLink(char* text)\n{\n    int type = 0;\n\n    // |color|Hcreature:creature_guid|h[name]|h|r\n    // |color|Hgameobject:go_guid|h[name]|h|r\n    // |color|Hplayer:name|h[name]|h|r\n    char* idS = extractKeyFromLink(text, guidKeys, &type);\n    if (!idS)\n        return ObjectGuid::Empty;\n\n    switch (type)\n    {\n        case SPELL_LINK_PLAYER:\n        {\n            std::string name = idS;\n            if (!normalizePlayerName(name))\n                return ObjectGuid::Empty;\n\n            if (Player* player = sObjectAccessor->FindPlayerByName(name))\n                return player->GetGUID();\n\n            return ObjectMgr::GetPlayerGUIDByName(name);\n        }\n        case SPELL_LINK_CREATURE:\n        {\n            ObjectGuid::LowType lowguid = strtoull(idS, nullptr, 10);\n\n            if (CreatureData const* data = sObjectMgr->GetCreatureData(lowguid))\n                return ObjectGuid::Create<HighGuid::Creature>(data->mapid, data->id, lowguid);\n\n            return ObjectGuid::Empty;\n        }\n        case SPELL_LINK_GAMEOBJECT:\n        {\n            ObjectGuid::LowType lowguid = strtoull(idS, nullptr, 10);\n\n            if (GameObjectData const* data = sObjectMgr->GetGOData(lowguid))\n                return ObjectGuid::Create<HighGuid::GameObject>(data->mapid, data->id, lowguid);\n\n            return ObjectGuid::Empty;\n        }\n        default:\n            break;\n    }\n\n    // unknown type?\n    return ObjectGuid::Empty;\n}",
+      "new": "ObjectGuid ChatHandler::extractGuidFromLink(char* text)\n{\n    int type = 0;\n\n    // |color|Hcreature:creature_guid|h[name]|h|r\n    // |color|Hgameobject:go_guid|h[name]|h|r\n    // |color|Hplayer:name|h[name]|h|r\n    char* idS = extractKeyFromLink(text, guidKeys, &type);\n    if (!idS)\n        return ObjectGuid::Empty;\n\n    switch (type)\n    {\n        case SPELL_LINK_PLAYER:\n        {\n            std::string name = idS;\n            if (!normalizePlayerName(name))\n                return ObjectGuid::Empty;\n\n            if (Player* player = sObjectAccessor->FindPlayerByName(name))\n                return player->GetGUID();\n\n            return ObjectMgr::GetPlayerGUIDByName(name);\n        }\n        case SPELL_LINK_CREATURE:\n        {\n            ObjectGuid::LowType lowguid;\n            if (!Trinity::ParseCommandInteger(idS, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::Creature))\n                return ObjectGuid::Empty;\n\n            if (CreatureData const* data = sObjectMgr->GetCreatureData(lowguid))\n                return ObjectGuid::Create<HighGuid::Creature>(data->mapid, data->id, lowguid);\n\n            return ObjectGuid::Empty;\n        }\n        case SPELL_LINK_GAMEOBJECT:\n        {\n            ObjectGuid::LowType lowguid;\n            if (!Trinity::ParseCommandInteger(idS, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::GameObject))\n                return ObjectGuid::Empty;\n\n            if (GameObjectData const* data = sObjectMgr->GetGOData(lowguid))\n                return ObjectGuid::Create<HighGuid::GameObject>(data->mapid, data->id, lowguid);\n\n            return ObjectGuid::Empty;\n        }\n        default:\n            break;\n    }\n\n    // unknown type?\n    return ObjectGuid::Empty;\n}",
+      "summary": "Validate entire40-bit creature/gameobject link keys before native GUID construction; retain online/offline player names and cursor semantics."
     }
   ],
   "extra_edits": [
@@ -468,6 +478,10 @@
     "src/server/scripts/Commands/cs_reload.cpp": {
       "before_sha256": "a2a909aa6993cdd9db0e358bed1428df0ee0ac19a2a6c1495c996661d340ea58",
       "after_sha256": "d3bc3f79445a1fa052b7f040289e1e435f66d7315538763a816bdd01d415133e"
+    },
+    "src/server/game/Chat/Chat.cpp": {
+      "before_sha256": "11633a0960e02ae9daa2d35ccaafc6f48d993b7c1795f3c7d6a2edb54710d8e0",
+      "after_sha256": "43c50cf6f1a9e679607a2a921968edf48509bacbc348eb64920f23988824385b"
     },
     "src/server/game/Entities/Player/Player.cpp": {
       "before_sha256": "b04925dc7dce0a7adc527c6a8ee469590725ff4322a9e16ba19fd5255edcfa45",

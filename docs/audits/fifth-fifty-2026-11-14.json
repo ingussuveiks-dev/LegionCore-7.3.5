@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_38_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 38,
+  "status": "IN_PROGRESS_39_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 39,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -288,7 +288,7 @@
     },
     {
       "batch": 4,
-      "count": 8,
+      "count": 9,
       "source_case_count": 55,
       "repairs": [
         {
@@ -354,6 +354,14 @@
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandlePInfoCommand",
           "test_scope": "admission prefix"
+        },
+        {
+          "index": 39,
+          "key": "LinkedWorldObjectExactCounter",
+          "summary": "Validate entire40-bit creature/gameobject link keys before native GUID construction; retain online/offline player names and cursor semantics.",
+          "path": "src/server/game/Chat/Chat.cpp",
+          "method": "extractGuidFromLink",
+          "test_scope": "complete production function/helper"
         }
       ]
     }

@@ -1143,7 +1143,9 @@ ObjectGuid ChatHandler::extractGuidFromLink(char* text)
         }
         case SPELL_LINK_CREATURE:
         {
-            ObjectGuid::LowType lowguid = strtoull(idS, nullptr, 10);
+            ObjectGuid::LowType lowguid;
+            if (!Trinity::ParseCommandInteger(idS, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::Creature))
+                return ObjectGuid::Empty;
 
             if (CreatureData const* data = sObjectMgr->GetCreatureData(lowguid))
                 return ObjectGuid::Create<HighGuid::Creature>(data->mapid, data->id, lowguid);
@@ -1152,7 +1154,9 @@ ObjectGuid ChatHandler::extractGuidFromLink(char* text)
         }
         case SPELL_LINK_GAMEOBJECT:
         {
-            ObjectGuid::LowType lowguid = strtoull(idS, nullptr, 10);
+            ObjectGuid::LowType lowguid;
+            if (!Trinity::ParseCommandInteger(idS, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::GameObject))
+                return ObjectGuid::Empty;
 
             if (GameObjectData const* data = sObjectMgr->GetGOData(lowguid))
                 return ObjectGuid::Create<HighGuid::GameObject>(data->mapid, data->id, lowguid);

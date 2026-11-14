@@ -1,0 +1,18 @@
+{
+  "index": 39,
+  "batch": 4,
+  "key": "LinkedWorldObjectExactCounter",
+  "summary": "Validate entire40-bit creature/gameobject link keys before native GUID construction; retain online/offline player names and cursor semantics.",
+  "path": "src/server/game/Chat/Chat.cpp",
+  "method": "extractGuidFromLink",
+  "baseline": "981437bd783d521d197af34168fa452ade90361e",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed final handoff.",
+  "implementation_reference": "Exact old/new functions and owned extra edits in tools/tests/FifthFifty20261114Repairs.json",
+  "verification_reference": "docs/audits/fifth-fifty-2026-11-14.json",
+  "verification_scope": "Complete production function/helper with controlled endpoints",
+  "canonical_world_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+  "post_test_diagnostics": "Before/after crash files and log offsets/timestamps recorded for source/native/build/analysis/PE/startup checks. No new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Fixture setup mistakes and PE compiler/vtable shape prototypes were investigated and paired with passing final checks;no logging/check suppression.",
+  "archive": "build-extractors/bin/Release/fixed/fifth-fifty-20261114",
+  "client_scope": "Actual client/whole36 and original artifact/native open evidence remain separate."
+}
