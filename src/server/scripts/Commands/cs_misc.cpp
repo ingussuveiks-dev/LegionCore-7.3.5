@@ -1423,7 +1423,10 @@ public:
         if (!*args)
             return false;
 
-        AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(atoi((char*)args));
+        uint32 areaId;
+        if (!Trinity::ParseCommandInteger(args, areaId))
+            return false;
+        AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(areaId);
         if (!areaEntry)
             return false;
 
@@ -1435,11 +1438,11 @@ public:
             return false;
         }
 
-        int32 area = areaEntry->ID;
-        int32 offset = area / 32;
-        uint32 val = uint32((1 << (area % 32)));
+        uint32 area = areaEntry->ID;
+        uint32 offset = area / 32;
+        uint32 val = uint32(1) << (area % 32);
 
-        if (area<0 || offset >= PLAYER_EXPLORED_ZONES_SIZE)
+        if (offset >= PLAYER_EXPLORED_ZONES_SIZE)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
