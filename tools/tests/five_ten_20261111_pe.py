@@ -1,10 +1,18 @@
 """Small independent x64 reader for the selected new implementation paths."""
 from pathlib import Path
 import bisect,functools,runpy
-from capstone import Cs,CS_ARCH_X86,CS_MODE_64,CS_OP_IMM,CS_OP_MEM
+from capstone import Cs,CS_ARCH_X86,CS_MODE_64,CS_OP_IMM,CS_OP_MEM,CS_OP_REG
 import struct
 n=runpy.run_path(str(Path(__file__).with_name('verify_scenario_lfg_release.py')))
 decoder=Cs(CS_ARCH_X86,CS_MODE_64);decoder.detail=True
+def register_family(name):
+    # Capstone names the byte-map index as rax and its checked value as eax.
+    for full, aliases in {'rax':('eax','ax','al','ah'),'rbx':('ebx','bx','bl','bh'),
+                          'rcx':('ecx','cx','cl','ch'),'rdx':('edx','dx','dl','dh'),
+                          'rsi':('esi','si','sil'),'rdi':('edi','di','dil'),
+                          'rbp':('ebp','bp','bpl'),'rsp':('esp','sp','spl')}.items():
+        if name == full or name in aliases:return full
+    return name.rstrip('dwb') if name.startswith('r') and name[1:2].isdigit() else name
 @functools.lru_cache(None)
 def ins(prefix):
     address=n['symbol'](prefix);index=bisect.bisect_right(n['starts'],address-n['base'])-1
@@ -42,11 +50,18 @@ def ins(prefix):
             remaps=[(j,y,o)for j,y in enumerate(rows[:i])for o in y.operands if y.mnemonic=='movzx'and o.type==CS_OP_MEM and o.size==1 and y.reg_name(o.mem.base)==base_register and o.mem.index and table<n['base']+o.mem.disp<end+n['base']]
             for j,y,o in remaps:
                 remap=n['base']+o.mem.disp
-                bounds=[z for z in rows[max(0,j-4):j]if z.mnemonic=='cmp'and z.operands[-1].type==CS_OP_IMM]
+                index_register=register_family(y.reg_name(o.mem.index))
+                bounds=[z for z in rows[max(0,j-12):j]if z.mnemonic=='cmp'and z.operands[-1].type==CS_OP_IMM
+                        and z.operands[0].type==CS_OP_REG and register_family(z.reg_name(z.operands[0].reg))==index_register]
                 assert len(bounds)==1,'Compressed switch requires a unique nearby index bound'
                 bound=bounds[0];branch=rows[rows.index(bound)+1]
                 assert branch.mnemonic=='ja'and branch.operands[0].type==CS_OP_IMM and address<=branch.operands[0].imm<table,'Compressed switch requires an in-code out-of-range branch'
                 count=bound.operands[-1].imm+1
+                between=rows[rows.index(bound)+2:j]
+                assert all((z.mnemonic=='cdqe' and index_register=='rax' and 0<count<=0x80000000) or
+                           (z.mnemonic in ('mov','lea','nop') and
+                            all(register_family(z.reg_name(reg))!=index_register for reg in z.regs_access()[1]))
+                           for z in between),'Compressed switch checked index changed before remapping'
                 assert 0<count<=end+n['base']-remap,'Compressed switch byte map exceeds unwind range'
                 remap_at=n['offset'](remap);indices=n['binary'][remap_at:remap_at+count]
                 assert table+4*(max(indices)+1)==remap,'Compressed switch RVA and byte tables must meet exactly'

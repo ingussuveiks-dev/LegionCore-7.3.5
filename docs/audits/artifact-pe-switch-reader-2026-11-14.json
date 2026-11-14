@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-14",
+  "status": "PASS_CHECKED_NATIVE_SWITCH_READER",
+  "problem": "Retained verify_ten_ten_20261111_release fails reading current go_wind_stone OnGossipSelect compressed switch because three scheduled save/base instructions move cmp outside its fixed four-instruction lookback.",
+  "repair": "Select a unique checked index register within12 instructions, require adjacent unsigned out-of-range branch and preserve the checked index through only proven mov/lea/nop scheduling or bounded RAX cdqe. Preserve complete byte-map length, meeting RVA/byte table boundaries, every code target and closed epilogue validation.",
+  "checks": {
+    "actual_scheduled_switch": "Wind Stone selected summon call still present; missing bound, index clobber and target into data are refused by in-memory byte-copy counterfactuals. No executable modified or launched.",
+    "retained_switch": "Existing PetBattle Apply compressed switch/tail-call boundary test and corrupt third RVA refusal pass; native bounded cdqe remains valid.",
+    "certificate": "Previously failing ten-ten root completes exit0. Broad and affected reruns reconciled as116 distinct complete proofs;no runtime/gameplay code changed."
+  },
+  "diagnostics": "Before/after runtime diagnostics clean. First overly strict interval whitelist rejected legitimate bounded cdqe; investigated against actual instructions and paired with final passing retained check. Interrupted partial collection retained as incomplete outside fixed.",
+  "evidence": ".codex/artifact-open-closeout-20261114/switch-final2-evidence,final-verify_pe_scheduled_switch.py.log,final-verify_pe_compressed_switch.py.log,release-targeted",
+  "limits": "Fixes the verifier reader, not game logic; no client-chain certification.",
+  "final_release_evidence": {
+    "corrected_planned_roots": 109,
+    "additional_direct_roots": 7,
+    "unique_complete_exit0_roots": 116,
+    "mode": "Four reviewed disjoint collections,not one116-root run. Each reused passing root has no changed dependency in conservative AST-import/literal-.py closure;binary/map identical. Full interrupted/failing collections remain explicitly classified.",
+    "aggregate_sha256": "75e4c6850f2c1a8a7a54a7e7fd8b976d36ca04c137e1b5acb2aa74e1208bb1c6",
+    "rerunnable_roots": "docs/audits/artifact-open-2026-11-14/ReleaseRoots.json",
+    "limits": "Native endpoint/PE/structural checks do not establish actual client or36 complete chains."
+  }
+}
