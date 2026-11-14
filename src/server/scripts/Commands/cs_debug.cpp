@@ -45,6 +45,7 @@ EndScriptData */
 #include "CommandIntegerArgument.h"
 #include "CommandFloatArgument.h"
 #include "MovementTypedefs.h"
+#include <limits>
 #include "Vehicle.h"
 #include <fstream>
 #include "Garrison.h"
@@ -1669,8 +1670,10 @@ public:
         if (!x || !y)
             return false;
 
-        uint32 opcode = (uint32)atoi(x);
-        int value = atoi(y);
+        uint32 opcode;
+        int32 value;
+        if (!Trinity::ParseCommandInteger(x, opcode) || !Trinity::ParseCommandInteger(y, value))
+            return false;
 
         if (opcode >= handler->GetSession()->GetPlayer()->GetValuesCount())
         {
@@ -1678,9 +1681,12 @@ public:
             return false;
         }
 
-        int currentValue = (int)handler->GetSession()->GetPlayer()->GetUInt32Value(opcode);
-
-        currentValue += value;
+        uint32 const raw = handler->GetSession()->GetPlayer()->GetUInt32Value(opcode);
+        int64 const signedCurrent = raw <= uint32(std::numeric_limits<int32>::max()) ? int64(raw) : int64(raw) - (int64(1) << 32);
+        int64 const changed = signedCurrent + value;
+        if (changed < std::numeric_limits<int32>::min() || changed > std::numeric_limits<int32>::max())
+            return false;
+        int32 const currentValue = int32(changed);
         handler->GetSession()->GetPlayer()->SetUInt32Value(opcode, (uint32)currentValue);
 
         handler->PSendSysMessage(LANG_CHANGE_32BIT_FIELD, opcode, currentValue);

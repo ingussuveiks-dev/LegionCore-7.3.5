@@ -470,6 +470,16 @@
       "batch": 5,
       "old": "    static bool HandleDebugItemExpireCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        if (!e)\n            return false;\n\n        uint32 guid = strtoull(e, nullptr, 10);\n\n        Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));\n\n        if (!i)\n            return false;\n\n        handler->GetSession()->GetPlayer()->DestroyItem(i->GetBagSlot(), i->GetSlot(), true);\n        sScriptMgr->OnItemExpire(handler->GetSession()->GetPlayer(), i->GetTemplate());\n\n        return true;\n    }",
       "new": "    static bool HandleDebugItemExpireCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        if (!e)\n            return false;\n\n        ObjectGuid::LowType guid;\n        if (!Trinity::ParseCommandInteger(e, guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Item))\n            return false;\n\n        Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));\n\n        if (!i)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        ObjectGuid const itemGuid = ObjectGuid::Create<HighGuid::Item>(guid);\n        ItemTemplate const* itemTemplate = i->GetTemplate();\n        player->DestroyItem(i->GetBagSlot(), i->GetSlot(), true);\n        if (player->GetItemByGuid(itemGuid))\n            return false; // Native equip protection may defer removal.\n        sScriptMgr->OnItemExpire(player, itemTemplate);\n\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugMod32ValueCommand",
+      "key": "DebugSignedFieldAdditionChecked",
+      "case": "Mod32",
+      "kind": "next",
+      "batch": 5,
+      "old": "    static bool HandleDebugMod32ValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode = (uint32)atoi(x);\n        int value = atoi(y);\n\n        if (opcode >= handler->GetSession()->GetPlayer()->GetValuesCount())\n        {\n            handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow(), handler->GetSession()->GetPlayer()->GetValuesCount());\n            return false;\n        }\n\n        int currentValue = (int)handler->GetSession()->GetPlayer()->GetUInt32Value(opcode);\n\n        currentValue += value;\n        handler->GetSession()->GetPlayer()->SetUInt32Value(opcode, (uint32)currentValue);\n\n        handler->PSendSysMessage(LANG_CHANGE_32BIT_FIELD, opcode, currentValue);\n\n        return true;\n    }",
+      "new": "    static bool HandleDebugMod32ValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* x = strtok((char*)args, \" \");\n        char* y = strtok(NULL, \" \");\n\n        if (!x || !y)\n            return false;\n\n        uint32 opcode;\n        int32 value;\n        if (!Trinity::ParseCommandInteger(x, opcode) || !Trinity::ParseCommandInteger(y, value))\n            return false;\n\n        if (opcode >= handler->GetSession()->GetPlayer()->GetValuesCount())\n        {\n            handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow(), handler->GetSession()->GetPlayer()->GetValuesCount());\n            return false;\n        }\n\n        uint32 const raw = handler->GetSession()->GetPlayer()->GetUInt32Value(opcode);\n        int64 const signedCurrent = raw <= uint32(std::numeric_limits<int32>::max()) ? int64(raw) : int64(raw) - (int64(1) << 32);\n        int64 const changed = signedCurrent + value;\n        if (changed < std::numeric_limits<int32>::min() || changed > std::numeric_limits<int32>::max())\n            return false;\n        int32 const currentValue = int32(changed);\n        handler->GetSession()->GetPlayer()->SetUInt32Value(opcode, (uint32)currentValue);\n\n        handler->PSendSysMessage(LANG_CHANGE_32BIT_FIELD, opcode, currentValue);\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -538,6 +548,12 @@
       "old": "#include \"CommandIntegerArgument.h\"",
       "new": "#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"\n#include \"MovementTypedefs.h\"",
       "owner_key": "DebugJumpFiniteParabola"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "old": "#include \"MovementTypedefs.h\"",
+      "new": "#include \"MovementTypedefs.h\"\n#include <limits>",
+      "owner_key": "DebugSignedFieldAdditionChecked"
     }
   ],
   "files": {
@@ -588,7 +604,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "6693cc00bbd08ef9735994569012f86bed4f134d64a82d7a65c04efec6b4fcb1",
+      "after_sha256": "d5060049533d789b2fb4b0740c594ccb18069f804bebb6f1d6b055bdaae92861",
       "owner_key": null
     }
   }
