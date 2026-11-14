@@ -413,7 +413,11 @@ public:
         char* guidStr = strtok((char*)args, " ");
         char* waitStr = strtok((char*)NULL, " ");
 
-        uint32 lowGuid = atoi((char*)guidStr);
+        ObjectGuid::LowType lowGuid;
+        int32 wait = 0;
+        if (!Trinity::ParseCommandInteger(guidStr, lowGuid) ||
+            (waitStr && !Trinity::ParseCommandInteger(waitStr, wait)))
+            return false;
 
         Creature* creature = NULL;
 
@@ -438,8 +442,6 @@ public:
             // obtain real GUID for DB operations
             lowGuid = creature->GetDBTableGUIDLow();
         }
-
-        int wait = waitStr ? atoi(waitStr) : 0;
 
         if (wait < 0)
             wait = 0;

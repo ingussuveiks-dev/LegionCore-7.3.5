@@ -177,6 +177,19 @@
       "test_boundary": "        const uint8 type",
       "observe": "itemId",
       "summary": "Reject malformed/overflowing vendor-item selectors before the existing vendor-state/removal rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcAddMoveCommand",
+      "case": "NpcMovementExactGuidRequest",
+      "key": "NpcMovementExactGuidRequest",
+      "kind": "fourth",
+      "old": "    static bool HandleNpcAddMoveCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* guidStr = strtok((char*)args, \" \");\n        char* waitStr = strtok((char*)NULL, \" \");\n\n        uint32 lowGuid = atoi((char*)guidStr);\n\n        Creature* creature = NULL;\n\n        /* FIXME: impossible without entry\n        if (lowguid)\n            creature = ObjectAccessor::GetCreature(*handler->GetSession()->GetPlayer(), MAKE_GUID(lowguid, HighGuid::Creature));\n        */\n\n        // attempt check creature existence by DB data\n        if (!creature)\n        {\n            CreatureData const* data = sObjectMgr->GetCreatureData(lowGuid);\n            if (!data)\n            {\n                handler->PSendSysMessage(LANG_COMMAND_CREATGUIDNOTFOUND, lowGuid);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n        else\n        {\n            // obtain real GUID for DB operations\n            lowGuid = creature->GetDBTableGUIDLow();\n        }\n\n        int wait = waitStr ? atoi(waitStr) : 0;\n\n        if (wait < 0)\n            wait = 0;\n\n        // Update movement type\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_MOVEMENT_TYPE);\n\n        stmt->setUInt8(0, uint8(WAYPOINT_MOTION_TYPE));\n        stmt->setUInt64(1, lowGuid);\n\n        WorldDatabase.Execute(stmt);\n\n        if (creature && creature->GetWaypointPath())\n        {\n            creature->SetDefaultMovementType(WAYPOINT_MOTION_TYPE);\n            creature->GetMotionMaster()->Initialize();\n            if (creature->IsAlive())                            // dead creature will reset movement generator at respawn\n            {\n                creature->setDeathState(JUST_DIED);\n                creature->Respawn(true);\n            }\n            creature->SaveToDB();\n        }\n\n        handler->SendSysMessage(LANG_WAYPOINT_ADDED);\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcAddMoveCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* guidStr = strtok((char*)args, \" \");\n        char* waitStr = strtok((char*)NULL, \" \");\n\n        ObjectGuid::LowType lowGuid;\n        int32 wait = 0;\n        if (!Trinity::ParseCommandInteger(guidStr, lowGuid) ||\n            (waitStr && !Trinity::ParseCommandInteger(waitStr, wait)))\n            return false;\n\n        Creature* creature = NULL;\n\n        /* FIXME: impossible without entry\n        if (lowguid)\n            creature = ObjectAccessor::GetCreature(*handler->GetSession()->GetPlayer(), MAKE_GUID(lowguid, HighGuid::Creature));\n        */\n\n        // attempt check creature existence by DB data\n        if (!creature)\n        {\n            CreatureData const* data = sObjectMgr->GetCreatureData(lowGuid);\n            if (!data)\n            {\n                handler->PSendSysMessage(LANG_COMMAND_CREATGUIDNOTFOUND, lowGuid);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n        else\n        {\n            // obtain real GUID for DB operations\n            lowGuid = creature->GetDBTableGUIDLow();\n        }\n\n        if (wait < 0)\n            wait = 0;\n\n        // Update movement type\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_CREATURE_MOVEMENT_TYPE);\n\n        stmt->setUInt8(0, uint8(WAYPOINT_MOTION_TYPE));\n        stmt->setUInt64(1, lowGuid);\n\n        WorldDatabase.Execute(stmt);\n\n        if (creature && creature->GetWaypointPath())\n        {\n            creature->SetDefaultMovementType(WAYPOINT_MOTION_TYPE);\n            creature->GetMotionMaster()->Initialize();\n            if (creature->IsAlive())                            // dead creature will reset movement generator at respawn\n            {\n                creature->setDeathState(JUST_DIED);\n                creature->Respawn(true);\n            }\n            creature->SaveToDB();\n        }\n\n        handler->SendSysMessage(LANG_WAYPOINT_ADDED);\n\n        return true;\n    }",
+      "test_boundary": "        Creature* creature = NULL;",
+      "observe": "lowGuid",
+      "test_capture": "handler->signedValue = wait;",
+      "summary": "Retain the native64-bit spawn GUID and validate the optional signed integer before movement-type persistence. This does not implement the existing unused wait timer."
     }
   ],
   "extra_edits": [
@@ -218,7 +231,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",
-      "after_sha256": "312553ef310450a632070049c553141838e150dc51b75ba9b580e8befbf2e44d"
+      "after_sha256": "c9f54a2358ba7987aacdfa90d3b31e5baaf17d96ce79f05d54f5ec20318ea5ae"
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
