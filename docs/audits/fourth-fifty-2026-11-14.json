@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_16_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 16,
+  "status": "IN_PROGRESS_17_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 17,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -102,7 +102,7 @@
     },
     {
       "batch": 2,
-      "count": 6,
+      "count": 7,
       "source_case_count": 127,
       "repairs": [
         {
@@ -151,6 +151,14 @@
           "summary": "Retain the native64-bit spawn GUID and validate the optional signed integer before movement-type persistence. This does not implement the existing unused wait timer.",
           "path": "src/server/scripts/Commands/cs_npc.cpp",
           "method": "HandleNpcAddMoveCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 17,
+          "key": "NpcWhisperFullPlayerCounter",
+          "summary": "Validate recipient/text and the full40-bit player counter before lookup/authority/whisper dispatch.",
+          "path": "src/server/scripts/Commands/cs_npc.cpp",
+          "method": "HandleNpcWhisperCommand",
           "test_scope": "admission prefix"
         }
       ]

@@ -1580,6 +1580,12 @@ public:
         char* receiver_str = strtok((char*)args, " ");
         char* text = strtok(NULL, "");
 
+        ObjectGuid::LowType receiver;
+        if (!text || !Trinity::ParseCommandInteger(receiver_str, receiver) || !receiver ||
+            receiver > ObjectGuid::GetMaxCounter(HighGuid::Player))
+            return false;
+        ObjectGuid receiver_guid = ObjectGuid::Create<HighGuid::Player>(receiver);
+
         ObjectGuid guid = handler->GetSession()->GetPlayer()->GetSelection();
         Creature* creature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(guid);
 
@@ -1588,7 +1594,6 @@ public:
             return false;
         }
 
-        ObjectGuid receiver_guid = ObjectGuid::Create<HighGuid::Player>(atol(receiver_str));
 
         // check online security
         if (handler->HasLowerSecurity(ObjectAccessor::FindPlayer(receiver_guid), ObjectGuid::Empty))

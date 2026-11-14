@@ -190,6 +190,18 @@
       "observe": "lowGuid",
       "test_capture": "handler->signedValue = wait;",
       "summary": "Retain the native64-bit spawn GUID and validate the optional signed integer before movement-type persistence. This does not implement the existing unused wait timer."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcWhisperCommand",
+      "case": "NpcWhisperFullPlayerCounter",
+      "key": "NpcWhisperFullPlayerCounter",
+      "kind": "fourth",
+      "old": "    static bool HandleNpcWhisperCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* receiver_str = strtok((char*)args, \" \");\n        char* text = strtok(NULL, \"\");\n\n        ObjectGuid guid = handler->GetSession()->GetPlayer()->GetSelection();\n        Creature* creature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(guid);\n\n        if (!creature || !receiver_str || !text)\n        {\n            return false;\n        }\n\n        ObjectGuid receiver_guid = ObjectGuid::Create<HighGuid::Player>(atol(receiver_str));\n\n        // check online security\n        if (handler->HasLowerSecurity(ObjectAccessor::FindPlayer(receiver_guid), ObjectGuid::Empty))\n            return false;\n\n        creature->MonsterWhisper(text, receiver_guid);\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcWhisperCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* receiver_str = strtok((char*)args, \" \");\n        char* text = strtok(NULL, \"\");\n\n        ObjectGuid::LowType receiver;\n        if (!text || !Trinity::ParseCommandInteger(receiver_str, receiver) || !receiver ||\n            receiver > ObjectGuid::GetMaxCounter(HighGuid::Player))\n            return false;\n        ObjectGuid receiver_guid = ObjectGuid::Create<HighGuid::Player>(receiver);\n\n        ObjectGuid guid = handler->GetSession()->GetPlayer()->GetSelection();\n        Creature* creature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(guid);\n\n        if (!creature || !receiver_str || !text)\n        {\n            return false;\n        }\n\n\n        // check online security\n        if (handler->HasLowerSecurity(ObjectAccessor::FindPlayer(receiver_guid), ObjectGuid::Empty))\n            return false;\n\n        creature->MonsterWhisper(text, receiver_guid);\n\n        return true;\n    }",
+      "test_boundary": "        ObjectGuid guid =",
+      "observe": "receiver_guid.GetCounter()",
+      "summary": "Validate recipient/text and the full40-bit player counter before lookup/authority/whisper dispatch."
     }
   ],
   "extra_edits": [
@@ -231,7 +243,7 @@
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",
-      "after_sha256": "c9f54a2358ba7987aacdfa90d3b31e5baaf17d96ce79f05d54f5ec20318ea5ae"
+      "after_sha256": "532944c094e148fc98400a6bd4a591ee8e7f0e128b9107caeb8ef7abbc2f4087"
     },
     "src/server/scripts/Commands/cs_eo.cpp": {
       "before_sha256": "55e6c7ef4bd502f41016796f66853721651cd2edb03b4867162d0875f09ae45d",
