@@ -1627,9 +1627,13 @@ public:
         char* mod = strtok(NULL, " ");
         if (!mod)
             return false;
-        uint32 itemId = uint32(atol(id));
+        uint32 itemId;
+        if (!Trinity::ParseCommandInteger(id, itemId))
+            return false;
         int32 count = 1;
-        uint32 modId = uint32(atol(mod));
+        uint32 modId;
+        if (!Trinity::ParseCommandInteger(mod, modId))
+            return false;
 
         Player* player = handler->GetSession()->GetPlayer();
         Player* playerTarget = handler->getSelectedPlayer();

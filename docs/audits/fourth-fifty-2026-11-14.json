@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_42_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 42,
+  "status": "IN_PROGRESS_43_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 43,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -363,7 +363,7 @@
     },
     {
       "batch": 5,
-      "count": 2,
+      "count": 3,
       "source_case_count": 156,
       "repairs": [
         {
@@ -380,6 +380,14 @@
           "summary": "Reject malformed damage/school operands before native combat effects;preserve nonpositive no-op,authority,alive checks and downstream attribution/scaling.",
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandleDamageCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 43,
+          "key": "ItemContextAtomicNativeIds",
+          "summary": "Validate both item and context IDs before inventory/item-bonus operations;retain native item/context lookup and storage behavior.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandleAddItemModCommand",
           "test_scope": "admission prefix"
         }
       ]
