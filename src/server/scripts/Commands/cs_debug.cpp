@@ -26,6 +26,7 @@ EndScriptData */
 #include "Cell.h"
 #include "ChallengeMgr.h"
 #include "Chat.h"
+#include "Packets/SpellPackets.h"
 #include "GridNotifiers.h"
 #include "Group.h"
 #include "GroupMgr.h"
@@ -300,29 +301,24 @@ public:
         if (!result)
             return false;
 
-        uint8 failNum = (uint8)atoi(result);
-        if (failNum == 0 && *result != '0')
+        int32 failNum;
+        if (!Trinity::ParseCommandInteger(result, failNum) || failNum < 0 || failNum > SPELL_FAILED_UNKNOWN)
             return false;
-
-        char* fail1 = strtok(NULL, " ");
-        uint8 failArg1 = fail1 ? (uint8)atoi(fail1) : 0;
-
-        char* fail2 = strtok(NULL, " ");
-        uint8 failArg2 = fail2 ? (uint8)atoi(fail2) : 0;
-
-        WorldPacket data(SMSG_CAST_FAILED, 5);
-        data.WriteBit(!failArg2);
-        data.WriteBit(!failArg1);
-        data << uint32(failNum);                                // problem
-        data << uint32(133);                                    // spellId
-        if (failArg2)
-            data << uint32(failArg2);
-        data << uint8(0);                                       // single cast or multi 2.3 (0/1)
-        if (failArg1)
-            data << uint32(failArg2);
-
-        if (Player* player = handler->GetSession()->GetPlayer())
-            player->SendDirectMessage(&data);
+        char* fail1 = strtok(nullptr, " ");
+        char* fail2 = strtok(nullptr, " ");
+        int32 failArg1 = -1, failArg2 = -1;
+        if ((fail1 && !Trinity::ParseCommandInteger(fail1, failArg1)) ||
+            (fail2 && !Trinity::ParseCommandInteger(fail2, failArg2)))
+            return false;
+        Player* player = handler->GetSession()->GetPlayer();
+        if (!player)
+            return false;
+        WorldPackets::Spells::CastFailed packet(SMSG_CAST_FAILED);
+        packet.SpellID = 133;
+        packet.Reason = failNum;
+        packet.FailedArg1 = failArg1;
+        packet.FailedArg2 = failArg2;
+        player->SendDirectMessage(packet.Write());
 
         return true;
     }
