@@ -361,7 +361,10 @@ public:
         if (!*args)
             return false;
 
-        InventoryResult msg = InventoryResult(atoi(args));
+        uint8 code;
+        if (!Trinity::ParseCommandInteger(args, code))
+            return false;
+        InventoryResult msg = InventoryResult(code);
         handler->GetSession()->GetPlayer()->SendEquipError(msg, NULL, NULL);
         return true;
     }
