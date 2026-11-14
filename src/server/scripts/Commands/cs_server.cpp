@@ -554,12 +554,12 @@ public:
         if (!newTimeStr)
             return false;
 
-        int32 newTime = atoi(newTimeStr);
-        if (newTime < 0)
+        int32 newTime;
+        if (!Trinity::ParseCommandInteger(newTimeStr, newTime) || newTime < 0)
             return false;
 
         sWorldUpdateTime.SetRecordUpdateTimeInterval(newTime);
-        printf("Record diff every %u ms\n", newTime);
+        printf("Record diff every %u ms\n", uint32(newTime));
 
         return true;
     }

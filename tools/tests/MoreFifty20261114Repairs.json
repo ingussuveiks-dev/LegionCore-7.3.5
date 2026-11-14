@@ -365,6 +365,16 @@
       "old": "    static bool HandleServerIdleShutDownCommand(ChatHandler* /*handler*/, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* timeStr = strtok((char*) args, \" \");\n        char* exitCodeStr = strtok(NULL, \"\");\n\n        int32 time = atoi(timeStr);\n\n        // Prevent interpret wrong arg value as 0 secs shutdown time\n        if ((time == 0 && (timeStr[0] != '0' || timeStr[1] != '\\0')) || time < 0)\n            return false;\n\n        if (exitCodeStr)\n        {\n            int32 exitCode = atoi(exitCodeStr);\n\n            // Handle atoi() errors\n            if (exitCode == 0 && (exitCodeStr[0] != '0' || exitCodeStr[1] != '\\0'))\n                return false;\n\n            // Exit code should be in range of 0-125, 126-255 is used\n            // in many shells for their own return codes and code > 255\n            // is not supported in many others\n            if (exitCode < 0 || exitCode > 125)\n                return false;\n\n            sWorld->ShutdownServ(time, SHUTDOWN_MASK_IDLE, exitCode);\n        }\n        else\n            sWorld->ShutdownServ(time, SHUTDOWN_MASK_IDLE, SHUTDOWN_EXIT_CODE);\n            return true;\n    }",
       "new": "    static bool HandleServerIdleShutDownCommand(ChatHandler* /*handler*/, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* timeStr = strtok((char*) args, \" \");\n        char* exitCodeStr = strtok(NULL, \"\");\n\n        int32 time;\n        if (!Trinity::ParseCommandInteger(timeStr, time) || time < 0)\n            return false;\n\n        if (exitCodeStr)\n        {\n            int32 exitCode;\n            if (!Trinity::ParseCommandInteger(exitCodeStr, exitCode))\n                return false;\n\n            // Exit code should be in range of 0-125, 126-255 is used\n            // in many shells for their own return codes and code > 255\n            // is not supported in many others\n            if (exitCode < 0 || exitCode > 125)\n                return false;\n\n            sWorld->ShutdownServ(time, SHUTDOWN_MASK_IDLE, exitCode);\n        }\n        else\n            sWorld->ShutdownServ(time, SHUTDOWN_MASK_IDLE, SHUTDOWN_EXIT_CODE);\n            return true;\n    }",
       "summary": "Parse complete nonnegative signed32 time and optional0..125 exit code before HandleServerIdleShutDownCommand schedules its native lifecycle mode;handle whitespace without dereferencing a null token."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_server.cpp",
+      "method": "HandleServerSetDiffTimeCommand",
+      "case": "ServerDiffIntervalExactValue",
+      "key": "ServerDiffIntervalExactValue",
+      "kind": "more",
+      "old": "    static bool HandleServerSetDiffTimeCommand(ChatHandler* /*handler*/, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* newTimeStr = strtok((char*)args, \" \");\n        if (!newTimeStr)\n            return false;\n\n        int32 newTime = atoi(newTimeStr);\n        if (newTime < 0)\n            return false;\n\n        sWorldUpdateTime.SetRecordUpdateTimeInterval(newTime);\n        printf(\"Record diff every %u ms\\n\", newTime);\n\n        return true;\n    }",
+      "new": "    static bool HandleServerSetDiffTimeCommand(ChatHandler* /*handler*/, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* newTimeStr = strtok((char*)args, \" \");\n        if (!newTimeStr)\n            return false;\n\n        int32 newTime;\n        if (!Trinity::ParseCommandInteger(newTimeStr, newTime) || newTime < 0)\n            return false;\n\n        sWorldUpdateTime.SetRecordUpdateTimeInterval(newTime);\n        printf(\"Record diff every %u ms\\n\", uint32(newTime));\n\n        return true;\n    }",
+      "summary": "Reject malformed/overflowing intervals before updating the clock and use the matching unsigned printf argument after validation."
     }
   ],
   "extra_edits": [
@@ -404,7 +414,7 @@
     },
     "src/server/scripts/Commands/cs_server.cpp": {
       "before_sha256": "5ce98184d03e31b3513008860be841a76299a853ab384d7bf93f0396cc9e55ba",
-      "after_sha256": "dcd6015484e523648d826d6eb09a42bb6a43ee5a387444232339792695cbe9d1"
+      "after_sha256": "b493a877d9bc22986322c83b7d5e6dda6ddb7f279d312e8ed62461535470fdec"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb",

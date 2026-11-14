@@ -1,0 +1,18 @@
+{
+  "index": 35,
+  "batch": 4,
+  "key": "ServerDiffIntervalExactValue",
+  "summary": "Reject malformed/overflowing intervals before updating the clock and use the matching unsigned printf argument after validation.",
+  "path": "src/server/scripts/Commands/cs_server.cpp",
+  "method": "HandleServerSetDiffTimeCommand",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "fix_commit": "This focused commit;actual hashes recorded in ignored fixed handoff.",
+  "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
+  "implementation_reference": "Exact old/new method and native include deltas in tools/tests/MoreFifty20261114Repairs.json",
+  "verification_reference": "docs/audits/more-fifty-2026-11-14.json",
+  "verification_scope": "Complete handler with controlled native endpoints",
+  "canonical_world_sha256": "9d8e8abbf304400a26bdb7cc121e0592e5085612fda3546d0a2ae27ddaf62fa5",
+  "post_test_diagnostics": "Before/after crashes and log offsets recorded for every test/build/analysis/PE/startup. No new/changed crashes or unexplained appended server warning/error/assertion/DBErrors. Temporary fixture syntax/type bootstrap failures paired with passing final regression;no symptom suppression.",
+  "archive": "build-extractors/bin/Release/fixed/more-fifty-20261114",
+  "client_scope": "No actual client traversal claimed;all36 artifact chains and protected native LINK2/Slaghammer scopes remain separate."
+}
