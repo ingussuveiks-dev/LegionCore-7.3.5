@@ -2532,13 +2532,18 @@ public:
         if (!damageStr)
             return false;
 
-        int32 damage_int = atoi((char*)damageStr);
+        int32 damage_int;
+        if (!Trinity::ParseCommandInteger(damageStr, damage_int))
+            return false;
         if (damage_int <= 0)
             return true;
 
         uint32 damage = damage_int;
 
         char* schoolStr = strtok((char*)NULL, " ");
+        uint32 school = SPELL_SCHOOL_NORMAL;
+        if (schoolStr && (!Trinity::ParseCommandInteger(schoolStr, school) || school >= MAX_SPELL_SCHOOL))
+            return false;
 
         // flat melee damage without resistence/etc reduction
         if (!schoolStr)
@@ -2549,9 +2554,6 @@ public:
             return true;
         }
 
-        uint32 school = schoolStr ? atoi((char*)schoolStr) : SPELL_SCHOOL_NORMAL;
-        if (school >= MAX_SPELL_SCHOOL)
-            return false;
 
         SpellSchoolMask schoolmask = SpellSchoolMask(1 << school);
 
