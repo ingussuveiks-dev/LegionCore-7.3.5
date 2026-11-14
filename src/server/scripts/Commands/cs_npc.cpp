@@ -1266,7 +1266,7 @@ public:
         if (!guid_str)
             return false;
 
-        uint32 lowguid = 0;
+        ObjectGuid::LowType lowguid = 0;
         Creature* creature = NULL;
 
         if (dontdel_str)
@@ -1308,7 +1308,8 @@ public:
         }
         else                                                    // case .setmovetype #creature_guid $move_type (with selected creature)
         {
-            lowguid = strtoull(guid_str, nullptr, 10);
+            if (!Trinity::ParseCommandInteger(guid_str, lowguid) || !lowguid)
+                return false;
 
             /* impossible without entry
             if (lowguid)
