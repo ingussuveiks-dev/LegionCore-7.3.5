@@ -4278,7 +4278,8 @@ public:
         char* id = strtok((char*)args, " ");
         if (!id)
             return false;
-        QuestId = uint32(atol(id));
+        if (!Trinity::ParseCommandInteger(id, QuestId))
+            return false;
 
         if (!QuestId)
             return false;

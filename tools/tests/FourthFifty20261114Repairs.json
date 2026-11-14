@@ -309,6 +309,18 @@
       "old": "    static bool HandleScriptWpAddCommand(ChatHandler* handler, const char* args)\n    {\n        // optional\n        char* c_entry = NULL;\n        uint32 entry = 0;\n        uint32 oldMax = 0;\n        uint32 waitTime = 0;\n\n        if (*args)\n        {\n            c_entry = strtok((char*)args, \" \");\n            \n            if (char* arg_waitTime = strtok(NULL, \" \"))\n                waitTime = atoi(arg_waitTime);\n        }\n\n        Creature* target = handler->getSelectedCreature();\n\n        if (!c_entry)\n        {\n            if (target)\n                entry = target->GetEntry();\n            else\n                return false;\n        }\n        else\n            entry = atoi(c_entry);\n\n        if (!entry)\n        {\n            handler->PSendSysMessage(\"Mauvais id\");\n            return true;\n        }\n\n        QueryResult maxPointIdQuery = WorldDatabase.PQuery(\"SELECT MAX(pointId) AS maxPointId FROM script_waypoint WHERE entry = %u;\", entry);\n\n        if (maxPointIdQuery)\n            oldMax = (maxPointIdQuery->Fetch())[0].GetUInt32();\n\n        Player* player = handler->GetSession()->GetPlayer();\n        \n        WorldDatabase.PExecute(\"INSERT INTO script_waypoint VALUES (%u, %u, %f, %f, %f, %u, '');\", entry, oldMax + 1, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), waitTime);\n\n        handler->PSendSysMessage(\"Point %u de l'entry %u ajoute aux coordonnee %f %f %f avec un temps d'attente de %u\",\n                                  entry, oldMax + 1, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), waitTime);\n        return true;\n    }",
       "new": "    static bool HandleScriptWpAddCommand(ChatHandler* handler, const char* args)\n    {\n        // optional\n        char* c_entry = NULL;\n        uint32 entry = 0;\n        uint32 oldMax = 0;\n        uint32 waitTime = 0;\n\n        if (*args)\n        {\n            c_entry = strtok((char*)args, \" \");\n            \n            if (char* arg_waitTime = strtok(NULL, \" \"))\n                if (!Trinity::ParseCommandInteger(arg_waitTime, waitTime))\n                    return false;\n        }\n\n        Creature* target = handler->getSelectedCreature();\n\n        if (!c_entry)\n        {\n            if (target)\n                entry = target->GetEntry();\n            else\n                return false;\n        }\n        else if (!Trinity::ParseCommandInteger(c_entry, entry))\n            return false;\n\n        if (!entry)\n        {\n            handler->PSendSysMessage(\"Mauvais id\");\n            return true;\n        }\n\n        QueryResult maxPointIdQuery = WorldDatabase.PQuery(\"SELECT MAX(pointId) AS maxPointId FROM script_waypoint WHERE entry = %u;\", entry);\n\n        if (!maxPointIdQuery)\n            return false;\n        oldMax = (maxPointIdQuery->Fetch())[0].GetUInt32();\n        if (oldMax == std::numeric_limits<uint32>::max())\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        \n        WorldDatabase.PExecute(\"INSERT INTO script_waypoint VALUES (%u, %u, %f, %f, %f, %u, '');\", entry, oldMax + 1, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), waitTime);\n\n        handler->PSendSysMessage(\"Point %u de l'entry %u ajoute aux coordonnee %f %f %f avec un temps d'attente de %u\",\n                                  entry, oldMax + 1, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), waitTime);\n        return true;\n    }",
       "summary": "Validate entry/wait before querying and reject failed MAX queries or next-point wrap before script-waypoint insertion."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleWorldQuestAdd",
+      "case": "WorldQuestExactGenerationId",
+      "key": "WorldQuestExactGenerationId",
+      "kind": "fourth",
+      "old": "    static bool HandleWorldQuestAdd(ChatHandler* handler, char const* args)\n    {\n        uint32 QuestId = 0;\n\n        char* id = strtok((char*)args, \" \");\n        if (!id)\n            return false;\n        QuestId = uint32(atol(id));\n\n        if (!QuestId)\n            return false;\n        handler->PSendSysMessage(\"Add %u World Quest\", QuestId);\n\n        sQuestDataStore->GenerateNewWorldQuest(QuestId);\n        return true;\n    }",
+      "new": "    static bool HandleWorldQuestAdd(ChatHandler* handler, char const* args)\n    {\n        uint32 QuestId = 0;\n\n        char* id = strtok((char*)args, \" \");\n        if (!id)\n            return false;\n        if (!Trinity::ParseCommandInteger(id, QuestId))\n            return false;\n\n        if (!QuestId)\n            return false;\n        handler->PSendSysMessage(\"Add %u World Quest\", QuestId);\n\n        sQuestDataStore->GenerateNewWorldQuest(QuestId);\n        return true;\n    }",
+      "test_boundary": "        handler->PSendSysMessage(\"Add %u World Quest\"",
+      "observe": "QuestId",
+      "summary": "Reject malformed/overflowing world-quest IDs before generation;retain native nonzero/catalog behavior."
     }
   ],
   "extra_edits": [
@@ -356,6 +368,10 @@
     }
   ],
   "files": {
+    "src/server/scripts/Commands/cs_misc.cpp": {
+      "before_sha256": "914478201eb1ad3f0b61d989e2c9ea40f193abc1ffb970362e4fff51ede5ce61",
+      "after_sha256": "190f807d9961f68b4ab538144ea5d1cfef2324457dd8bc619facaa85dec234cd"
+    },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
       "after_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d"
