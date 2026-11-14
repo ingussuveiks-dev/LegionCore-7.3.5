@@ -672,7 +672,14 @@ public:
         if (!*args)
             return false;
 
-        ObjectGuid parseGUID = ObjectGuid::Create<HighGuid::Player>(atol((char*)args));
+        ObjectGuid parseGUID;
+        if ((*args >= '0' && *args <= '9') || *args == '+' || *args == '-')
+        {
+            ObjectGuid::LowType counter;
+            if (!Trinity::ParseCommandInteger(args, counter) || !counter || counter > ObjectGuid::GetMaxCounter(HighGuid::Player))
+                return false;
+            parseGUID = ObjectGuid::Create<HighGuid::Player>(counter);
+        }
 
         if (ObjectMgr::GetPlayerNameByGUID(parseGUID, targetName))
         {
