@@ -255,10 +255,10 @@ public:
     static bool HandleRemoveDisables(ChatHandler* handler, char const* args, uint8 disableType)
     {
         char* entryStr = strtok((char*)args, " ");
-        if (!entryStr || !atoi(entryStr))
+        uint32 entry;
+        if (!Trinity::ParseCommandInteger(entryStr, entry) || !entry)
             return false;
 
-        uint32 entry = uint32(atoi(entryStr));
 
         std::string disableTypeStr = "";
 
