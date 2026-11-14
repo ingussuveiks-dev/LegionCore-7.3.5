@@ -104,8 +104,11 @@ public:
             // search by GUID
             if (isNumeric(searchString.c_str()))
             {
+                ObjectGuid::LowType guid;
+                if (!Trinity::ParseCommandInteger(searchString.c_str(), guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Player))
+                    return false;
                 stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_GUID);
-                stmt->setUInt64(0, uint64(atoi(searchString.c_str())));
+                stmt->setUInt64(0, guid);
                 result = CharacterDatabase.Query(stmt);
             }
             // search by name

@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_30_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 30,
+  "status": "IN_PROGRESS_31_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 31,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -283,6 +283,21 @@
           "path": "src/server/scripts/Commands/cs_lookup.cpp",
           "method": "HandleLookupPlayerEmailCommand",
           "test_scope": "admission prefix"
+        }
+      ]
+    },
+    {
+      "batch": 4,
+      "count": 1,
+      "source_case_count": 55,
+      "repairs": [
+        {
+          "index": 31,
+          "key": "DeletedCharacterSearchFullGuid",
+          "summary": "Preserve the native player counter instead of int32 coercion when searching deleted characters; name/empty branches unchanged.",
+          "path": "src/server/scripts/Commands/cs_character.cpp",
+          "method": "GetDeletedCharacterInfoList",
+          "test_scope": "complete production function/helper"
         }
       ]
     }

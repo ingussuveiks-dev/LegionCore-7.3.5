@@ -321,6 +321,17 @@
       "observe": "0",
       "test_capture": "handler->signedValue = limit;",
       "summary": "Reject malformed signed search limits before account queries; retain default-1 and native limit policy."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_character.cpp",
+      "method": "GetDeletedCharacterInfoList",
+      "key": "DeletedCharacterSearchFullGuid",
+      "case": "DeletedCharacterSearchFullGuid",
+      "kind": "command",
+      "old": "    static bool GetDeletedCharacterInfoList(DeletedInfoList& foundList, std::string searchString)\n    {\n        PreparedQueryResult result;\n        CharacterDatabasePreparedStatement* stmt;\n        if (!searchString.empty())\n        {\n            // search by GUID\n            if (isNumeric(searchString.c_str()))\n            {\n                stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_GUID);\n                stmt->setUInt64(0, uint64(atoi(searchString.c_str())));\n                result = CharacterDatabase.Query(stmt);\n            }\n            // search by name\n            else\n            {\n                if (!normalizePlayerName(searchString))\n                    return false;\n\n                stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_NAME);\n                stmt->setString(0, searchString);\n                result = CharacterDatabase.Query(stmt);\n            }\n        }\n        else\n        {\n            stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO);\n            result = CharacterDatabase.Query(stmt);\n        }\n\n        if (result)\n        {\n            do\n            {\n                Field* fields = result->Fetch();\n\n                DeletedInfo info;\n\n                info.Guid       = ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64());\n                info.name       = fields[1].GetString();\n                info.accountId  = fields[2].GetUInt32();\n\n                // account name will be empty for not existed account\n                AccountMgr::GetName(info.accountId, info.accountName);\n                info.deleteDate = time_t(fields[3].GetUInt32());\n                foundList.push_back(info);\n            }\n            while (result->NextRow());\n        }\n\n        return true;\n    }",
+      "new": "    static bool GetDeletedCharacterInfoList(DeletedInfoList& foundList, std::string searchString)\n    {\n        PreparedQueryResult result;\n        CharacterDatabasePreparedStatement* stmt;\n        if (!searchString.empty())\n        {\n            // search by GUID\n            if (isNumeric(searchString.c_str()))\n            {\n                ObjectGuid::LowType guid;\n                if (!Trinity::ParseCommandInteger(searchString.c_str(), guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Player))\n                    return false;\n                stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_GUID);\n                stmt->setUInt64(0, guid);\n                result = CharacterDatabase.Query(stmt);\n            }\n            // search by name\n            else\n            {\n                if (!normalizePlayerName(searchString))\n                    return false;\n\n                stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO_BY_NAME);\n                stmt->setString(0, searchString);\n                result = CharacterDatabase.Query(stmt);\n            }\n        }\n        else\n        {\n            stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_DEL_INFO);\n            result = CharacterDatabase.Query(stmt);\n        }\n\n        if (result)\n        {\n            do\n            {\n                Field* fields = result->Fetch();\n\n                DeletedInfo info;\n\n                info.Guid       = ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64());\n                info.name       = fields[1].GetString();\n                info.accountId  = fields[2].GetUInt32();\n\n                // account name will be empty for not existed account\n                AccountMgr::GetName(info.accountId, info.accountName);\n                info.deleteDate = time_t(fields[3].GetUInt32());\n                foundList.push_back(info);\n            }\n            while (result->NextRow());\n        }\n\n        return true;\n    }",
+      "summary": "Preserve the native player counter instead of int32 coercion when searching deleted characters; name/empty branches unchanged.",
+      "kind_override": "sharedcommandhelper"
     }
   ],
   "extra_edits": [
@@ -349,6 +360,10 @@
     "src/server/scripts/Commands/cs_lookup.cpp": {
       "before_sha256": "8488c9ec971f9bff4db5634c8097e2f796a0e72c23764eadf6d2e27380c7a303",
       "after_sha256": "ec5200d5e9c78aeeca4c08268338beaf0546934e4959a825205c6570dcf5afdf"
+    },
+    "src/server/scripts/Commands/cs_character.cpp": {
+      "before_sha256": "ae53a93eaa3c1fcbd5323659d7a0080391f96d38a0d3b0c2a4b991c23e34892d",
+      "after_sha256": "e0f28dbc7027178f6fb7e1978c020ede38d4521bf7c1d376058051b7c67c33fb"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
