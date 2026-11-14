@@ -102,7 +102,8 @@ public:
         if (!battleid_str)
             return false;
 
-        battleid = atoi(battleid_str);
+        if (!Trinity::ParseCommandInteger(battleid_str, battleid))
+            return false;
 
         Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);
 

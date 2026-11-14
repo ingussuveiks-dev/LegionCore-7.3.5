@@ -220,6 +220,16 @@
       "batch": 3,
       "old": "    static bool HandleBattlefieldEnd(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        battleid = atoi(battleid_str);\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->EndBattle(true);\n\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command stop used)\");\n\n        return true;\n    }",
       "new": "    static bool HandleBattlefieldEnd(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        if (!Trinity::ParseCommandInteger(battleid_str, battleid))\n            return false;\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->EndBattle(true);\n\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command stop used)\");\n\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_bf.cpp",
+      "method": "HandleBattlefieldEnable",
+      "key": "BattlefieldEnableChecked",
+      "case": "BfEnable",
+      "kind": "next",
+      "batch": 3,
+      "old": "    static bool HandleBattlefieldEnable(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        battleid = atoi(battleid_str);\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        if (bf->IsEnabled())\n        {\n            bf->ToggleBattlefield(false);\n            if (battleid == 1)\n                handler->SendGlobalGMSysMessage(\"Wintergrasp is disabled\");\n        }\n        else\n        {\n            bf->ToggleBattlefield(true);\n            if (battleid == 1)\n                handler->SendGlobalGMSysMessage(\"Wintergrasp is enabled\");\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleBattlefieldEnable(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n\n        if (!Trinity::ParseCommandInteger(battleid_str, battleid))\n            return false;\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        if (bf->IsEnabled())\n        {\n            bf->ToggleBattlefield(false);\n            if (battleid == 1)\n                handler->SendGlobalGMSysMessage(\"Wintergrasp is disabled\");\n        }\n        else\n        {\n            bf->ToggleBattlefield(true);\n            if (battleid == 1)\n                handler->SendGlobalGMSysMessage(\"Wintergrasp is enabled\");\n        }\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -306,7 +316,7 @@
     "src/server/scripts/Commands/cs_bf.cpp": {
       "before_sha256": "8de587130bfca92e7664466c8a359417433db49ccb5402b15603ee7c6fe66110",
       "owner_key": null,
-      "after_sha256": "67dbd8b49aa0892fa0be7cade85e5e98b629fd5821fb01e2f3ff56905d2b465a"
+      "after_sha256": "cdce2c85aa061306c22babcedc0d33e429239ab37a9a2dcfe19e96195042092d"
     }
   }
 }
