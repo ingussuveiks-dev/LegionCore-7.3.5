@@ -386,7 +386,9 @@ public:
         if (!pl)
             return false;
 
-        int32 visual_id = atoi(visualStr);
+        int32 visual_id;
+        if (!Trinity::ParseCommandInteger(visualStr, visual_id))
+            return false;
         pl->PlaySpellVisual(target->GetPosition(), visual_id, 0.75f, target->GetGUID(), true);
 
         return true;
