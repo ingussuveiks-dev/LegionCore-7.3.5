@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_45_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 45,
+  "status": "IN_PROGRESS_46_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 46,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -363,7 +363,7 @@
     },
     {
       "batch": 5,
-      "count": 5,
+      "count": 6,
       "source_case_count": 156,
       "repairs": [
         {
@@ -404,6 +404,14 @@
           "summary": "Validate item/count/all bonus IDs before mutation and negate removal quantities in64 bits;retain names/links,zero-to-one normalization and native inventory/bonus rules.",
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandleAddItemCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 46,
+          "key": "MythicKeyAtomicNativeFields",
+          "summary": "Validate every supplied map/level/affix field before creating a key;retain the actual32-bit item modifiers and original defaults.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandleAddMythicKeyCommand",
           "test_scope": "admission prefix"
         }
       ]

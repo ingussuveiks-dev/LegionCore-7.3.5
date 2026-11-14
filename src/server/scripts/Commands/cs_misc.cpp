@@ -4192,11 +4192,13 @@ public:
 
         uint32 itemId = 138019;
         int32 count = 1;
-        uint32 mapID = mapStr ? uint32(atol(mapStr)) : 0;
-        uint32 level = levelStr ? uint32(atol(levelStr)) : 2;
-        uint32 affix1 = affix1Str ? uint32(atol(affix1Str)) : 0;
-        uint32 affix2 = affix2Str ? uint32(atol(affix2Str)) : 0;
-        uint32 affix3 = affix3Str ? uint32(atol(affix3Str)) : 0;
+        uint32 mapID = 0, level = 2, affix1 = 0, affix2 = 0, affix3 = 0;
+        if ((mapStr && !Trinity::ParseCommandInteger(mapStr, mapID)) ||
+            (levelStr && !Trinity::ParseCommandInteger(levelStr, level)) ||
+            (affix1Str && !Trinity::ParseCommandInteger(affix1Str, affix1)) ||
+            (affix2Str && !Trinity::ParseCommandInteger(affix2Str, affix2)) ||
+            (affix3Str && !Trinity::ParseCommandInteger(affix3Str, affix3)))
+            return false;
 
         Player* player = handler->GetSession()->GetPlayer();
         Player* playerTarget = handler->getSelectedPlayer();
