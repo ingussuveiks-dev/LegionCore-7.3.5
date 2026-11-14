@@ -223,7 +223,9 @@ public:
             return false;
         }
 
-        uint32 id = atoi((char*)args);
+        uint32 id;
+        if (!Trinity::ParseCommandInteger(args, id))
+            return false;
 
         if (!sMovieStore.LookupEntry(id))
         {
