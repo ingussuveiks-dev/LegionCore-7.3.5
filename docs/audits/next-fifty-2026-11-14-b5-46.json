@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "batch": 5,
+  "index": 46,
+  "key": "DebugItemFieldWriteNativeGuid",
+  "path": "src/server/scripts/Commands/cs_debug.cpp",
+  "summary": "DebugItemFieldWriteNativeGuid;complete exact source delta in NextFifty20261114Repairs.json.",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "checks_reference": "docs/audits/next-fifty-2026-11-14.json",
+  "scope": "One independently callable command/helper defect;shared parsers/tests not recounted.",
+  "canonical_world_sha256": "c6be8e97e2a2ca44f223e4bc544b08098b531a29d10126ac207eee9ae0c42a17",
+  "post_test_diagnostics": "No passing test uses deliberately undefined signed-overflow casts. Native DestroyItem currently queues deletion and may defer protected removal;capture stable ItemTemplate before call and query actual owned-item absence before OnItemExpire. This is a receipt/order fix,not a claim that the old current core immediately deleted the pointer. Code-level preflight does not certify real item equip callbacks or client UI. Owned34100 ready/shutdown0/exit0,gone,stderr empty. Final pre/post snapshots no new/changed crash,appended DBErrors or unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved;all36 artifact/client and original LINK2/FuZan remain open.",
+  "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch5",
+  "fix_commit": "This focused commit;actual hashes in ignored fixed repair-record.json",
+  "client_limit": "Native/model/PE/startup evidence;actual client/whole36 remain separate."
+}

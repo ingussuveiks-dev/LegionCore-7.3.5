@@ -1311,9 +1311,14 @@ public:
         if (!e || !f || !g)
             return false;
 
-        uint32 guid = strtoull(e, nullptr, 10);
-        uint32 index = (uint32)atoi(f);
-        uint32 value = (uint32)atoi(g);
+        ObjectGuid::LowType guid;
+        uint32 index;
+        if (!Trinity::ParseCommandInteger(e, guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Item) ||
+            !Trinity::ParseCommandInteger(f, index))
+            return false;
+        uint32 value;
+        if (!Trinity::ParseCommandInteger(g, value))
+            return false;
 
         Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));
 

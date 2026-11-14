@@ -450,6 +450,16 @@
       "batch": 5,
       "old": "    static bool HandleDebugGetItemValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        char* f = strtok(NULL, \" \");\n\n        if (!e || !f)\n            return false;\n\n        uint32 guid = strtoull(e, nullptr, 10);\n        uint32 index = (uint32)atoi(f);\n\n        Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));\n\n        if (!i)\n            return false;\n\n        if (index >= i->GetValuesCount())\n            return false;\n\n        uint32 value = i->GetUInt32Value(index);\n\n        handler->PSendSysMessage(\"Item \" UI64FMTD \": value at %u is %u\", guid, index, value);\n\n        return true;\n    }",
       "new": "    static bool HandleDebugGetItemValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        char* f = strtok(NULL, \" \");\n\n        if (!e || !f)\n            return false;\n\n        ObjectGuid::LowType guid;\n        uint32 index;\n        if (!Trinity::ParseCommandInteger(e, guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Item) ||\n            !Trinity::ParseCommandInteger(f, index))\n            return false;\n\n        Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));\n\n        if (!i)\n            return false;\n\n        if (index >= i->GetValuesCount())\n            return false;\n\n        uint32 value = i->GetUInt32Value(index);\n\n        handler->PSendSysMessage(\"Item \" UI64FMTD \": value at %u is %u\", guid, index, value);\n\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSetItemValueCommand",
+      "key": "DebugItemFieldWriteNativeGuid",
+      "case": "ItemSet",
+      "kind": "next",
+      "batch": 5,
+      "old": "    static bool HandleDebugSetItemValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        char* f = strtok(NULL, \" \");\n        char* g = strtok(NULL, \" \");\n\n        if (!e || !f || !g)\n            return false;\n\n        uint32 guid = strtoull(e, nullptr, 10);\n        uint32 index = (uint32)atoi(f);\n        uint32 value = (uint32)atoi(g);\n\n        Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));\n\n        if (!i)\n            return false;\n\n        if (index >= i->GetValuesCount())\n            return false;\n\n        i->SetUInt32Value(index, value);\n\n        return true;\n    }",
+      "new": "    static bool HandleDebugSetItemValueCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        char* f = strtok(NULL, \" \");\n        char* g = strtok(NULL, \" \");\n\n        if (!e || !f || !g)\n            return false;\n\n        ObjectGuid::LowType guid;\n        uint32 index;\n        if (!Trinity::ParseCommandInteger(e, guid) || !guid || guid > ObjectGuid::GetMaxCounter(HighGuid::Item) ||\n            !Trinity::ParseCommandInteger(f, index))\n            return false;\n        uint32 value;\n        if (!Trinity::ParseCommandInteger(g, value))\n            return false;\n\n        Item* i = handler->GetSession()->GetPlayer()->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(guid));\n\n        if (!i)\n            return false;\n\n        if (index >= i->GetValuesCount())\n            return false;\n\n        i->SetUInt32Value(index, value);\n\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -568,7 +578,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "4dd6a3331b8786a4d140013be1f2c3f112f0da1e2a545e2d9518beb284eae9ec",
+      "after_sha256": "6028dd6360a26fe2cd391f59be4e5f9f684d1259ca87c6c26499405a5d89e761",
       "owner_key": null
     }
   }
