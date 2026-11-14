@@ -1596,14 +1596,18 @@ public:
 
         ObjectGuid guid = target->GetGUID();
 
-        uint32 opcode = (uint32)atoi(x);
+        uint32 opcode;
+        if (!Trinity::ParseCommandInteger(x, opcode))
+            return false;
         if (opcode >= target->GetDynamicValuesCount())
         {
             handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, guid.GetGUIDLow(), target->GetDynamicValuesCount());
             return false;
         }
 
-        uint32 offs = (uint32)atoi(y);
+        uint32 offs;
+        if (!Trinity::ParseCommandInteger(y, offs))
+            return false;
         if (offs >= 32)
         {
             handler->PSendSysMessage("Dynamic field index must be less than %u.", 32);
