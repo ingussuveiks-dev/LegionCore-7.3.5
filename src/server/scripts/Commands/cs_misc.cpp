@@ -1702,7 +1702,9 @@ public:
         if (!id)
             return false;
 
-        uint32 itemSetId = atol(id);
+        uint32 itemSetId;
+        if (!Trinity::ParseCommandInteger(id, itemSetId))
+            return false;
 
         // prevent generation all items with itemset field value '0'
         if (itemSetId == 0)
@@ -1731,6 +1733,12 @@ public:
                 if (msg == EQUIP_ERR_OK)
                 {
                     Item* item = playerTarget->StoreNewItem(dest, itr->second.GetId(), true);
+                    if (!item)
+                    {
+                        handler->PSendSysMessage(LANG_ITEM_CANNOT_CREATE, itr->second.GetId(), 1);
+                        handler->SetSentErrorMessage(true);
+                        return false;
+                    }
 
                     // remove binding (let GM give it to another player later)
                     if (player == playerTarget)
