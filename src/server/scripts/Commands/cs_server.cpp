@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "Anticheat.h"
 #include "Chat.h"
+#include <limits>
 #include "CommandIntegerArgument.h"
 #include "Config.h"
 #include "DatabaseLoader.h"
@@ -324,7 +325,10 @@ public:
             }
             else
             {
-                int32 value = atoi(paramStr);
+                int64 value;
+                if (!Trinity::ParseCommandInteger(paramStr, value) || value < -int64(SEC_CONSOLE) ||
+                    value > std::numeric_limits<uint32>::max())
+                    return false;
                 if (value < 0)
                     sWorld->SetPlayerSecurityLimit(AccountTypes(-value));
                 else
