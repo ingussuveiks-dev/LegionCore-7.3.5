@@ -26,6 +26,7 @@
 #include "AccountMgr.h"
 #include "CellImpl.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "GridNotifiersImpl.h"
 #include "Language.h"
 #include "Log.h"
@@ -1058,7 +1059,9 @@ uint32 ChatHandler::extractSpellIdFromLink(char* text)
     if (!idS)
         return 0;
 
-    auto id = static_cast<uint32>(atol(idS));
+    uint32 id;
+    if (!Trinity::ParseCommandInteger(idS, id))
+        return 0;
     switch (type)
     {
         case SPELL_LINK_SPELL:
@@ -1066,12 +1069,19 @@ uint32 ChatHandler::extractSpellIdFromLink(char* text)
         case SPELL_LINK_TALENT:
             if (TalentEntry const* talentEntry = sTalentStore.LookupEntry(id))
                 return talentEntry->SpellID;
+            return 0;
         case SPELL_LINK_ENCHANT:
         case SPELL_LINK_TRADE:
             return id;
         case SPELL_LINK_GLYPH:
-            if (GlyphPropertiesEntry const* glyphPropEntry = sGlyphPropertiesStore.LookupEntry(param1_str ? atoul(param1_str) : 0))
+        {
+            uint32 glyph;
+            if (!Trinity::ParseCommandInteger(param1_str, glyph))
+                return 0;
+            if (GlyphPropertiesEntry const* glyphPropEntry = sGlyphPropertiesStore.LookupEntry(glyph))
                 return glyphPropEntry->SpellID;
+            return 0;
+        }
         default:
             return 0;
     }

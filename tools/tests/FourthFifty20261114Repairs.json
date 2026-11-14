@@ -558,6 +558,16 @@
       "old": "    static bool HandleLookupGuildCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        ObjectGuid::LowType guildId = atoi(strtok((char*)args, \"\"));\n        if (!guildId)\n            return false;\n        \n        if (Guild* guild = sGuildMgr->GetGuildById(guildId))\n            handler->PSendSysMessage(\"Found guild with name: '%s' by id = %d\", guild->GetName().c_str(), guildId);\n        else\n            handler->PSendSysMessage(\"Don't found any guild with id %d\", guildId);\n\n        return true;\n    }",
       "new": "    static bool HandleLookupGuildCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        ObjectGuid::LowType guildId;\n        if (!Trinity::ParseCommandInteger(args, guildId) || !guildId)\n            return false;\n        \n        if (Guild* guild = sGuildMgr->GetGuildById(guildId))\n            handler->PSendSysMessage(\"Found guild with name: '%s' by id = \" UI64FMTD, guild->GetName().c_str(), guildId);\n        else\n            handler->PSendSysMessage(\"Don't found any guild with id \" UI64FMTD, guildId);\n\n        return true;\n    }",
       "summary": "Parse and print the native64-bit guild ID without signed32 coercion or misleading narrowed diagnostics."
+    },
+    {
+      "path": "src/server/game/Chat/Chat.cpp",
+      "method": "extractSpellIdFromLink",
+      "case": "SpellLinkNativeNumericPayload",
+      "key": "SpellLinkNativeNumericPayload",
+      "kind": "chatspellhelper",
+      "old": "uint32 ChatHandler::extractSpellIdFromLink(char* text)\n{\n    // number or [name] Shift-click form |color|Henchant:recipe_spell_id|h[prof_name: recipe_name]|h|r\n    // number or [name] Shift-click form |color|Hglyph:glyph_slot_id:glyph_prop_id|h[%s]|h|r\n    // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r\n    // number or [name] Shift-click form |color|Htalent:talent_id, rank|h[name]|h|r\n    // number or [name] Shift-click form |color|Htrade:spell_id, skill_id, max_value, cur_value|h[name]|h|r\n    int type = 0;\n    char* param1_str = nullptr;\n    char* idS = extractKeyFromLink(text, spellKeys, &type, &param1_str);\n    if (!idS)\n        return 0;\n\n    auto id = static_cast<uint32>(atol(idS));\n    switch (type)\n    {\n        case SPELL_LINK_SPELL:\n            return id;\n        case SPELL_LINK_TALENT:\n            if (TalentEntry const* talentEntry = sTalentStore.LookupEntry(id))\n                return talentEntry->SpellID;\n        case SPELL_LINK_ENCHANT:\n        case SPELL_LINK_TRADE:\n            return id;\n        case SPELL_LINK_GLYPH:\n            if (GlyphPropertiesEntry const* glyphPropEntry = sGlyphPropertiesStore.LookupEntry(param1_str ? atoul(param1_str) : 0))\n                return glyphPropEntry->SpellID;\n        default:\n            return 0;\n    }\n}",
+      "new": "uint32 ChatHandler::extractSpellIdFromLink(char* text)\n{\n    // number or [name] Shift-click form |color|Henchant:recipe_spell_id|h[prof_name: recipe_name]|h|r\n    // number or [name] Shift-click form |color|Hglyph:glyph_slot_id:glyph_prop_id|h[%s]|h|r\n    // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r\n    // number or [name] Shift-click form |color|Htalent:talent_id, rank|h[name]|h|r\n    // number or [name] Shift-click form |color|Htrade:spell_id, skill_id, max_value, cur_value|h[name]|h|r\n    int type = 0;\n    char* param1_str = nullptr;\n    char* idS = extractKeyFromLink(text, spellKeys, &type, &param1_str);\n    if (!idS)\n        return 0;\n\n    uint32 id;\n    if (!Trinity::ParseCommandInteger(idS, id))\n        return 0;\n    switch (type)\n    {\n        case SPELL_LINK_SPELL:\n            return id;\n        case SPELL_LINK_TALENT:\n            if (TalentEntry const* talentEntry = sTalentStore.LookupEntry(id))\n                return talentEntry->SpellID;\n            return 0;\n        case SPELL_LINK_ENCHANT:\n        case SPELL_LINK_TRADE:\n            return id;\n        case SPELL_LINK_GLYPH:\n        {\n            uint32 glyph;\n            if (!Trinity::ParseCommandInteger(param1_str, glyph))\n                return 0;\n            if (GlyphPropertiesEntry const* glyphPropEntry = sGlyphPropertiesStore.LookupEntry(glyph))\n                return glyphPropEntry->SpellID;\n            return 0;\n        }\n        default:\n            return 0;\n    }\n}",
+      "summary": "Validate complete native spell/glyph payloads and return0 for missing talents instead of falling through as a spell;retain real spell/talent/glyph/enchant/trade mapping and operand cursor. One shared helper repair,not one per caller."
     }
   ],
   "extra_edits": [
@@ -644,6 +654,12 @@
       "old": "#include \"Chat.h\"",
       "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
       "owner_key": "GuildLookupFullNativeId"
+    },
+    {
+      "path": "src/server/game/Chat/Chat.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "SpellLinkNativeNumericPayload"
     }
   ],
   "files": {
@@ -674,6 +690,10 @@
     "src/server/scripts/Commands/cs_scenario.cpp": {
       "before_sha256": "bbc091440de8280bb607e0cfdc41b28830ecfc113651fa5c1f9cd4d33c280bfe",
       "after_sha256": "8614a918fa62796801eb7f591781ab9074d076fb0ea3515a08bece11ade96c58"
+    },
+    "src/server/game/Chat/Chat.cpp": {
+      "before_sha256": "e916095093fb29012b7b6d86a67902848f3e5b5e1dd7cff30d8940be1bf96f27",
+      "after_sha256": "11633a0960e02ae9daa2d35ccaafc6f48d993b7c1795f3c7d6a2edb54710d8e0"
     },
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "15bb593140db63765e94fc13fdafb8582a44534ceeae1c8fe267702473117b43",

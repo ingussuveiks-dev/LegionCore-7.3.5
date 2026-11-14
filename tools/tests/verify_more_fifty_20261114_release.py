@@ -27,8 +27,8 @@ def certify_first():
         value=undo(undo((ROOT/path).read_text(encoding='utf-8-sig'),path,PLAN),path,second.PLAN)
         assert hashlib.sha256(value.encode()).hexdigest()==record['after_sha256'],('Retained first50 source',path)
 
-second.verify=certify_second
-p=runpy.run_path(str(Path(__file__).with_name('verify_next_fifty_20261114_release.py')),init_globals={'previous_source_certificate':certify_first})
+second.verify=globals().get('retained_second_source_certificate',certify_second)
+p=runpy.run_path(str(Path(__file__).with_name('verify_next_fifty_20261114_release.py')),init_globals={'previous_source_certificate':globals().get('retained_first_source_certificate',certify_first)})
 n,ins,sites,refs=p['n'],p['ins'],p['sites'],p['refs']
 for row in PLAN['changes']:
     source=(ROOT/row['path']).read_text(encoding='utf-8-sig')
