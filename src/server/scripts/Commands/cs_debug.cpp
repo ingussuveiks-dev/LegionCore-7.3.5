@@ -1335,7 +1335,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 animId = atoi((char*)args);
+        uint32 animId;
+        if (!Trinity::ParseCommandInteger(args, animId))
+            return false;
         handler->GetSession()->GetPlayer()->HandleEmoteCommand(animId);
         return true;
     }

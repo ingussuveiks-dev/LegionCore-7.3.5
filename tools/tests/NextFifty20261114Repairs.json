@@ -330,6 +330,16 @@
       "batch": 4,
       "old": "    static bool HandleDebugPlaySoundCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug playsound #soundid\n        // #soundid - ID decimal number from SoundEntries.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 soundId = atoi((char*)args);\n        Unit* unit = handler->getSelectedUnit();\n        if (!unit)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->GetSession()->GetPlayer()->GetSelection())\n            unit->PlayDistanceSound(soundId, handler->GetSession()->GetPlayer());\n        else\n            unit->PlayDirectSound(soundId, handler->GetSession()->GetPlayer());\n\n        handler->PSendSysMessage(LANG_YOU_HEAR_SOUND, soundId);\n        return true;\n    }",
       "new": "    static bool HandleDebugPlaySoundCommand(ChatHandler* handler, char const* args)\n    {\n        // USAGE: .debug playsound #soundid\n        // #soundid - ID decimal number from SoundEntries.dbc (1st column)\n        if (!*args)\n        {\n            handler->SendSysMessage(LANG_BAD_VALUE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 soundId;\n        if (!Trinity::ParseCommandInteger(args, soundId))\n            return false;\n        Unit* unit = handler->getSelectedUnit();\n        if (!unit)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (handler->GetSession()->GetPlayer()->GetSelection())\n            unit->PlayDistanceSound(soundId, handler->GetSession()->GetPlayer());\n        else\n            unit->PlayDirectSound(soundId, handler->GetSession()->GetPlayer());\n\n        handler->PSendSysMessage(LANG_YOU_HEAR_SOUND, soundId);\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugAnimCommand",
+      "key": "DebugEmoteChecked",
+      "case": "Anim",
+      "kind": "next",
+      "batch": 4,
+      "old": "    static bool HandleDebugAnimCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 animId = atoi((char*)args);\n        handler->GetSession()->GetPlayer()->HandleEmoteCommand(animId);\n        return true;\n    }",
+      "new": "    static bool HandleDebugAnimCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 animId;\n        if (!Trinity::ParseCommandInteger(args, animId))\n            return false;\n        handler->GetSession()->GetPlayer()->HandleEmoteCommand(animId);\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -442,7 +452,7 @@
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "098ede3d1f30ff88e0c4404ba528da25f238a999349e4df6a7e7e2e554027865",
-      "after_sha256": "d8988994597e6cf155e85aaf9e9558f0e1b2ec43dbbf8e38931d704938b8a872",
+      "after_sha256": "8b649d0199ab31dcc7c2fdda2888bfc13ccf7d927d41bbaee8f31225b16dbb00",
       "owner_key": null
     }
   }
