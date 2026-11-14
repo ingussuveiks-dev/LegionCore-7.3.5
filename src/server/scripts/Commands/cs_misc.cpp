@@ -488,8 +488,8 @@ public:
         char const* dduration = strtok(NULL, " ");
         int32 duration = 1000;
 
-        if (dduration)
-            duration = strtol(dduration, NULL, 10);
+        if (dduration && !Trinity::ParseCommandInteger(dduration, duration))
+            return false;
 
         if (!duration)
             target->RemoveAurasDueToSpell(spellId);

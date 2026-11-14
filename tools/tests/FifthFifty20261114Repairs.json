@@ -64,6 +64,16 @@
       "old": "    static bool HandleDebugBattlePetRequestFailedCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* x = strtok((char*)args, \" \");\n        if (!x)\n            return false;\n\n        if (Player* target = handler->getSelectedObject()->ToPlayer())\n            target->GetSession()->SendPetBattleRequestFailed(atoul(x));\n\n        return true;\n    }",
       "new": "    static bool HandleDebugBattlePetRequestFailedCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* x = strtok((char*)args, \" \");\n        if (!x)\n            return false;\n\n        uint8 reason;\n        if (!Trinity::ParseCommandInteger(x, reason))\n            return false;\n        WorldObject* selected = handler->getSelectedObject();\n        Player* target = selected ? selected->ToPlayer() : nullptr;\n        if (!target)\n            return false;\n        target->GetSession()->SendPetBattleRequestFailed(reason);\n\n        return true;\n    }",
       "summary": "Validate native byte reason and selected Player before sending the actual response."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleAuraDurationCommand",
+      "key": "AuraDurationExactSignedValue",
+      "case": "AuraDurationExactSignedValue",
+      "kind": "command",
+      "old": "    static bool HandleAuraDurationCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form\n        uint32 spellId = handler->extractSpellIdFromLink((char*)args);\n\n        if (!spellId)\n            return false;\n        \n        char const* dduration = strtok(NULL, \" \");\n        int32 duration = 1000;\n\n        if (dduration)\n            duration = strtol(dduration, NULL, 10);\n\n        if (!duration)\n            target->RemoveAurasDueToSpell(spellId);\n        else\n        {\n            if (Aura* aura = target->GetAura(spellId))\n                aura->SetDuration(duration);\n            else\n                return false;\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleAuraDurationCommand(ChatHandler* handler, char const* args)\n    {\n        Unit* target = handler->getSelectedUnit();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form\n        uint32 spellId = handler->extractSpellIdFromLink((char*)args);\n\n        if (!spellId)\n            return false;\n        \n        char const* dduration = strtok(NULL, \" \");\n        int32 duration = 1000;\n\n        if (dduration && !Trinity::ParseCommandInteger(dduration, duration))\n            return false;\n\n        if (!duration)\n            target->RemoveAurasDueToSpell(spellId);\n        else\n        {\n            if (Aura* aura = target->GetAura(spellId))\n                aura->SetDuration(duration);\n            else\n                return false;\n        }\n\n        return true;\n    }",
+      "summary": "Reject bad signed duration instead of accidentally removing an aura; preserve zero-removal/default1000/native duration semantics."
     }
   ],
   "extra_edits": [],
@@ -71,6 +81,10 @@
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2",
       "after_sha256": "e3fc51b2c52accd22c562ed2277a30693dee0d96d321cd8fdae3b8da52e70473"
+    },
+    "src/server/scripts/Commands/cs_misc.cpp": {
+      "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
+      "after_sha256": "3f0af331bcee395b6d0c064aaa02d3fb116a9d54ddd0de86c18bdeab14643f0a"
     },
     "src/server/scripts/Commands/cs_cheat.cpp": {
       "before_sha256": "61bf4ebca26a85279a5b66a1d28bc3d1c25ee237e8aac050d9a1c1619829dbcc",
