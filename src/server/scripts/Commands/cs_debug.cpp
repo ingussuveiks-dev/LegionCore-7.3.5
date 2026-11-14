@@ -1217,7 +1217,9 @@ public:
         if (!e)
             return false;
 
-        uint32 entry = (uint32)atoi(e);
+        uint32 entry, id = 0;
+        if (!Trinity::ParseCommandInteger(e, entry) || (i && !Trinity::ParseCommandInteger(i, id)))
+            return false;
 
         float x, y, z, o = handler->GetSession()->GetPlayer()->GetOrientation();
         handler->GetSession()->GetPlayer()->GetClosePoint(x, y, z, handler->GetSession()->GetPlayer()->GetObjectSize());
@@ -1225,7 +1227,6 @@ public:
         if (!i)
             return handler->GetSession()->GetPlayer()->SummonCreature(entry, x, y, z, o) != nullptr;
 
-        uint32 id = (uint32)atoi(i);
 
         CreatureTemplate const* ci = sObjectMgr->GetCreatureTemplate(entry);
 

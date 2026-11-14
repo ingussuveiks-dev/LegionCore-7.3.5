@@ -388,6 +388,19 @@
       "observe": "uint64(entry)",
       "test_capture": "handler->signedValue = seatId;",
       "summary": "Validate the native entry/sentinel domain and signed seat byte before boarding/search;require the real player and retain reverse/self/native entry lookup."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugSpawnVehicleCommand",
+      "case": "VehicleSpawnAtomicSelectors",
+      "key": "VehicleSpawnAtomicSelectors",
+      "kind": "fourth",
+      "old": "    static bool HandleDebugSpawnVehicleCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        char* i = strtok(NULL, \" \");\n\n        if (!e)\n            return false;\n\n        uint32 entry = (uint32)atoi(e);\n\n        float x, y, z, o = handler->GetSession()->GetPlayer()->GetOrientation();\n        handler->GetSession()->GetPlayer()->GetClosePoint(x, y, z, handler->GetSession()->GetPlayer()->GetObjectSize());\n\n        if (!i)\n            return handler->GetSession()->GetPlayer()->SummonCreature(entry, x, y, z, o) != nullptr;\n\n        uint32 id = (uint32)atoi(i);\n\n        CreatureTemplate const* ci = sObjectMgr->GetCreatureTemplate(entry);\n\n        if (!ci)\n            return false;\n\n        VehicleEntry const* ve = sVehicleStore.LookupEntry(id);\n\n        if (!ve)\n            return false;\n\n        Creature* v = new Creature;\n\n        Map* map = handler->GetSession()->GetPlayer()->GetMap();\n\n        if (!v->Create(sObjectMgr->GetGenerator<HighGuid::Vehicle>()->Generate(), map, handler->GetSession()->GetPlayer()->GetPhaseMask(), entry, id, handler->GetSession()->GetPlayer()->GetTeam(), x, y, z, o))\n        {\n            delete v;\n            return false;\n        }\n\n        map->AddToMap(v->ToCreature());\n\n        return true;\n    }",
+      "new": "    static bool HandleDebugSpawnVehicleCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* e = strtok((char*)args, \" \");\n        char* i = strtok(NULL, \" \");\n\n        if (!e)\n            return false;\n\n        uint32 entry, id = 0;\n        if (!Trinity::ParseCommandInteger(e, entry) || (i && !Trinity::ParseCommandInteger(i, id)))\n            return false;\n\n        float x, y, z, o = handler->GetSession()->GetPlayer()->GetOrientation();\n        handler->GetSession()->GetPlayer()->GetClosePoint(x, y, z, handler->GetSession()->GetPlayer()->GetObjectSize());\n\n        if (!i)\n            return handler->GetSession()->GetPlayer()->SummonCreature(entry, x, y, z, o) != nullptr;\n\n\n        CreatureTemplate const* ci = sObjectMgr->GetCreatureTemplate(entry);\n\n        if (!ci)\n            return false;\n\n        VehicleEntry const* ve = sVehicleStore.LookupEntry(id);\n\n        if (!ve)\n            return false;\n\n        Creature* v = new Creature;\n\n        Map* map = handler->GetSession()->GetPlayer()->GetMap();\n\n        if (!v->Create(sObjectMgr->GetGenerator<HighGuid::Vehicle>()->Generate(), map, handler->GetSession()->GetPlayer()->GetPhaseMask(), entry, id, handler->GetSession()->GetPlayer()->GetTeam(), x, y, z, o))\n        {\n            delete v;\n            return false;\n        }\n\n        map->AddToMap(v->ToCreature());\n\n        return true;\n    }",
+      "test_boundary": "        float x, y, z, o",
+      "observe": "entry",
+      "test_capture": "handler->captured = {entry,id,uint64(i!=nullptr)};",
+      "summary": "Validate both native32-bit spawn/vehicle IDs before either default summoning or explicit vehicle creation."
     }
   ],
   "extra_edits": [
@@ -443,7 +456,7 @@
   "files": {
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "b04e0336201d6a6b4ec533f401c18c4c37d61f97eeeca84c550b122d84137035",
-      "after_sha256": "074227a59d88c76ce2f8dac68d34ef28d7208c636e87d0728dcd990edaf0a9d0"
+      "after_sha256": "c4b6989d3bbfa5b92e4176525e345ef9ce70a0db9b62e991e5a337704a298fb2"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "914478201eb1ad3f0b61d989e2c9ea40f193abc1ffb970362e4fff51ede5ce61",
