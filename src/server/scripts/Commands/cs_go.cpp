@@ -576,16 +576,17 @@ public:
         if (!goX || !goY)
             return false;
 
-        float x = (float)atof(goX);
-        float y = (float)atof(goY);
-        float z;
-        float ort = port ? (float)atof(port) : player->GetOrientation();
-        uint32 mapId = id ? (uint32)atoi(id) : player->GetMapId();
+        float x, y, z;
+        float ort = player->GetOrientation();
+        uint32 mapId = player->GetMapId();
+        if (!Trinity::ParseCommandFloat(goX, x) || !Trinity::ParseCommandFloat(goY, y) ||
+            (port && !Trinity::ParseCommandFloat(port, ort)) ||
+            (id && !Trinity::ParseCommandInteger(id, mapId)))
+            return false;
 
         if (goZ)
         {
-            z = (float)atof(goZ);
-            if (!MapManager::IsValidMapCoord(mapId, x, y, z))
+            if (!Trinity::ParseCommandFloat(goZ, z) || !MapManager::IsValidMapCoord(mapId, x, y, z, ort))
             {
                 handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, x, y, mapId);
                 handler->SetSentErrorMessage(true);
@@ -601,12 +602,21 @@ public:
                 return false;
             }
             Map const* map = sMapMgr->CreateBaseMap(mapId);
-            z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
+            if (!map)
+                return false;
+            float const groundHeight = map->GetHeight(x, y, MAX_HEIGHT);
+            if (!std::isfinite(groundHeight) || groundHeight <= INVALID_HEIGHT)
+                return false;
+            z = std::max(groundHeight, map->GetWaterLevel(x, y));
+            if (!MapManager::IsValidMapCoord(mapId, x, y, z, ort))
+                return false;
         }
 
         // scenario special handling
         // TODO: remove this
         MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+        if (!mapEntry)
+            return false;
         if (mapEntry->IsScenario())
         {
             if (sDB2Manager.GetMapDifficultyData(mapId, DIFFICULTY_N_SCENARIO))
@@ -625,9 +635,10 @@ public:
         else
             player->SaveRecallPosition();
 
-        if(!player->TeleportTo(mapId, x, y, z, ort))
+        bool const teleported = player->TeleportTo(mapId, x, y, z, ort);
+        if (!teleported)
             handler->PSendSysMessage("Do not ported on mapId %u", mapId);
-        return true;
+        return teleported;
     }
 
     static bool HandleGoTicketCommand(ChatHandler* handler, char const* args)

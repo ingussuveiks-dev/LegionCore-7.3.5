@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_47_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 47,
+  "status": "IN_PROGRESS_48_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 48,
   "batches": [
     {
       "batch": 1,
@@ -362,6 +362,11 @@
           "key": "GoZoneCheckedDestination",
           "path": "src/server/scripts/Commands/cs_go.cpp",
           "summary": "Validate finite zone coordinates/native area atomically,guard actual parent/map/instance and generated ground before travel changes;retain parent conversion and actual transfer result."
+        },
+        {
+          "key": "GoXYZCheckedDestination",
+          "path": "src/server/scripts/Commands/cs_go.cpp",
+          "summary": "Validate complete finite XYZ/orientation/native map before scenario/travel changes;guard generated terrain/missing map and return actual native transfer result. Preserve explicit finite Z domain."
         }
       ],
       "checks": {
@@ -395,7 +400,7 @@
     }
   ],
   "remaining": [
-    "3 new source repairs remain;continue final group.",
+    "2 new source repairs remain;continue final group.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]
