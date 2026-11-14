@@ -154,6 +154,16 @@
       "old": "    static bool HandleCharDisplayWaistCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 5))\n        {\n            pl->m_vis->m_visWaist = newItem;\n            return true;\n        }\n        return false;\n    }",
       "new": "    static bool HandleCharDisplayWaistCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem;\n        if (!Trinity::ParseCommandInteger(cId, newItem))\n            return false;\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 5))\n        {\n            pl->m_vis->m_visWaist = newItem;\n            return true;\n        }\n        return false;\n    }",
       "summary": "Parse the complete item/link key before visual allocation and native Waist model change; preserve zero reset and downstream catalog validation."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleCharDisplayLegsCommand",
+      "key": "AppearanceLegsExactItem",
+      "case": "AppearanceLegsExactItem",
+      "kind": "command",
+      "old": "    static bool HandleCharDisplayLegsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 6))\n        {\n            pl->m_vis->m_visLegs = newItem;\n            return true;\n        }\n        return false;\n    }",
+      "new": "    static bool HandleCharDisplayLegsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem;\n        if (!Trinity::ParseCommandInteger(cId, newItem))\n            return false;\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 6))\n        {\n            pl->m_vis->m_visLegs = newItem;\n            return true;\n        }\n        return false;\n    }",
+      "summary": "Parse the complete item/link key before visual allocation and native Legs model change; preserve zero reset and downstream catalog validation."
     }
   ],
   "extra_edits": [],
@@ -164,7 +174,7 @@
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
-      "after_sha256": "ce1d2e15289b572819d6a86d86f289bb07dbce3574dce778681cdbb4257e8703"
+      "after_sha256": "54c5f5d36d0f28fa25d09daf0bf0b4407693e1795c4d17f195ff38f438362ee9"
     },
     "src/server/scripts/Commands/cs_cheat.cpp": {
       "before_sha256": "61bf4ebca26a85279a5b66a1d28bc3d1c25ee237e8aac050d9a1c1619829dbcc",
