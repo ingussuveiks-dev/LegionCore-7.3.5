@@ -48,6 +48,18 @@
       "test_boundary": "        Quest const* quest",
       "observe": "entry",
       "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestComplete catalog/status/effect path;retain selected-player and native quest rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_quest.cpp",
+      "method": "HandleQuestReward",
+      "case": "QuestRewardExactId",
+      "key": "QuestRewardExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleQuestReward(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .quest reward #entry\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry = atol(cId);\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        // If player doesn't have the quest\n        if (!quest || player->GetQuestStatus(entry) != QUEST_STATUS_COMPLETE)\n        {\n            // check for scenario reward quest in current instance; only allow rewarding one time\n            // this is helpful when leveling and encountering bugged scenarios\n            bool isActiveScenario = false;\n\n            if (quest && player->GetMap() && player->GetMap()->IsDungeon() && player->GetMap()->GetInstanceId())\n            {\n                if (auto scenario = sScenarioMgr->GetScenario(player->GetMap()->GetInstanceId()))\n                {\n                    auto steps = sScenarioMgr->GetScenarioSteps(scenario->GetScenarioId());\n                    for (auto step : *steps)\n                    {\n                        if (step->RewardQuestID == quest->Id)\n                        {\n                            isActiveScenario = !player->HasCompletedQuest(quest->Id);\n                            break;\n                        }\n                    }\n                }\n            }\n\n            if (!isActiveScenario)\n            {\n                handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        player->RewardQuest(quest, 0, player);\n        return true;\n    }",
+      "new": "    static bool HandleQuestReward(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // .quest reward #entry\n        // number or [name] Shift-click form |color|Hquest:quest_id:quest_level:min_level:max_level|h[name]|h|r\n        char* cId = handler->extractKeyFromLink((char*)args, \"Hquest\");\n        if (!cId)\n            return false;\n\n        uint32 entry;\n        if (!Trinity::ParseCommandInteger(cId, entry))\n            return false;\n\n        Quest const* quest = sQuestDataStore->GetQuestTemplate(entry);\n\n        // If player doesn't have the quest\n        if (!quest || player->GetQuestStatus(entry) != QUEST_STATUS_COMPLETE)\n        {\n            // check for scenario reward quest in current instance; only allow rewarding one time\n            // this is helpful when leveling and encountering bugged scenarios\n            bool isActiveScenario = false;\n\n            if (quest && player->GetMap() && player->GetMap()->IsDungeon() && player->GetMap()->GetInstanceId())\n            {\n                if (auto scenario = sScenarioMgr->GetScenario(player->GetMap()->GetInstanceId()))\n                {\n                    auto steps = sScenarioMgr->GetScenarioSteps(scenario->GetScenarioId());\n                    for (auto step : *steps)\n                    {\n                        if (step->RewardQuestID == quest->Id)\n                        {\n                            isActiveScenario = !player->HasCompletedQuest(quest->Id);\n                            break;\n                        }\n                    }\n                }\n            }\n\n            if (!isActiveScenario)\n            {\n                handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);\n                handler->SetSentErrorMessage(true);\n                return false;\n            }\n        }\n\n        player->RewardQuest(quest, 0, player);\n        return true;\n    }",
+      "test_boundary": "        Quest const* quest",
+      "observe": "entry",
+      "summary": "Reject malformed/overflowing quest IDs before the native HandleQuestReward catalog/status/effect path;retain selected-player and native quest rules."
     }
   ],
   "extra_edits": [
@@ -61,7 +73,7 @@
   "files": {
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
-      "after_sha256": "ae78420f8eb0acdea06ca8dbc94c2061968c1dcf2f2701468010c1d16d31cf00"
+      "after_sha256": "730e8fa891e95db7304b3e3c1b56e3c609dafbe662112af1929380daf082f77d"
     }
   }
 }
