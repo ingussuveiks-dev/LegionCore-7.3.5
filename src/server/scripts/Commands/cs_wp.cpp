@@ -1134,7 +1134,8 @@ public:
             c_entry = strtok((char*)args, " ");
             
             if (char* arg_waitTime = strtok(NULL, " "))
-                waitTime = atoi(arg_waitTime);
+                if (!Trinity::ParseCommandInteger(arg_waitTime, waitTime))
+                    return false;
         }
 
         Creature* target = handler->getSelectedCreature();
@@ -1146,8 +1147,8 @@ public:
             else
                 return false;
         }
-        else
-            entry = atoi(c_entry);
+        else if (!Trinity::ParseCommandInteger(c_entry, entry))
+            return false;
 
         if (!entry)
         {
@@ -1157,8 +1158,11 @@ public:
 
         QueryResult maxPointIdQuery = WorldDatabase.PQuery("SELECT MAX(pointId) AS maxPointId FROM script_waypoint WHERE entry = %u;", entry);
 
-        if (maxPointIdQuery)
-            oldMax = (maxPointIdQuery->Fetch())[0].GetUInt32();
+        if (!maxPointIdQuery)
+            return false;
+        oldMax = (maxPointIdQuery->Fetch())[0].GetUInt32();
+        if (oldMax == std::numeric_limits<uint32>::max())
+            return false;
 
         Player* player = handler->GetSession()->GetPlayer();
         
