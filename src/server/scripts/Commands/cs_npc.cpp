@@ -1108,7 +1108,8 @@ public:
             if (!cId)
                 return false;
 
-            lowguid = strtoull(cId, nullptr, 10);
+            if (!Trinity::ParseCommandInteger(cId, lowguid) || !lowguid)
+                return false;
 
             /* FIXME: impossible without entry
             if (lowguid)
