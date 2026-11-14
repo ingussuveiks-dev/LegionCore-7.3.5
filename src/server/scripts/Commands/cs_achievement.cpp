@@ -160,7 +160,9 @@ public:
 
         char* achievtr = strtok((char*)args, " ");
 
-        uint32 achievmentID = achievtr ? atoi(achievtr) : 0;
+        uint32 achievmentID;
+        if (!Trinity::ParseCommandInteger(achievtr, achievmentID))
+            return false;
         TC_LOG_DEBUG("criteria.achievement", "HandleAchievementDeleteCommand achievmentID %i", achievmentID);
         if (!achievmentID)
             return false;

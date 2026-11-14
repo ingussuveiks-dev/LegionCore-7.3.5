@@ -140,6 +140,16 @@
       "old": "    static bool HandleAchievementAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 achievementId = atoi((char*)args);\n        if (!achievementId)\n        {\n            if (char* id = handler->extractKeyFromLink((char*)args, \"Hachievement\"))\n                achievementId = atoi(id);\n            if (!achievementId)\n                return false;\n        }\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (AchievementEntry const* achievementEntry = sAchievementStore.LookupEntry(achievementId))\n            target->CompletedAchievement(achievementEntry);\n\n        return true;\n    }",
       "new": "    static bool HandleAchievementAddCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* id = handler->extractKeyFromLink((char*)args, \"Hachievement\");\n        uint32 achievementId;\n        if (!Trinity::ParseCommandInteger(id, achievementId) || !achievementId)\n            return false;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!target)\n        {\n            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (AchievementEntry const* achievementEntry = sAchievementStore.LookupEntry(achievementId))\n            target->CompletedAchievement(achievementEntry);\n\n        return true;\n    }",
       "summary": "Reject numeric suffixes and unsigned overflow before achievement lookup/award,retaining numeric and achievement-link extraction."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_achievement.cpp",
+      "method": "HandleAchievementDeleteCommand",
+      "case": "AchievementDeleteExactId",
+      "key": "AchievementDeleteExactId",
+      "kind": "more",
+      "old": "    static bool HandleAchievementDeleteCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* achievtr = strtok((char*)args, \" \");\n\n        uint32 achievmentID = achievtr ? atoi(achievtr) : 0;\n        TC_LOG_DEBUG(\"criteria.achievement\", \"HandleAchievementDeleteCommand achievmentID %i\", achievmentID);\n        if (!achievmentID)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            player = handler->GetSession()->GetPlayer();\n\n        if(player)\n        {\n            CharacterDatabase.PExecute(\"DELETE FROM account_achievement WHERE achievement = '%u' AND account = '%u'\", achievmentID, player->GetSession()->GetAccountId());\n            CharacterDatabase.PExecute(\"DELETE FROM character_achievement WHERE achievement = '%u' AND guid = '%u'\", achievmentID, player->GetGUIDLow());\n        }\n\n        return true;\n    }",
+      "new": "    static bool HandleAchievementDeleteCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        char* achievtr = strtok((char*)args, \" \");\n\n        uint32 achievmentID;\n        if (!Trinity::ParseCommandInteger(achievtr, achievmentID))\n            return false;\n        TC_LOG_DEBUG(\"criteria.achievement\", \"HandleAchievementDeleteCommand achievmentID %i\", achievmentID);\n        if (!achievmentID)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            player = handler->GetSession()->GetPlayer();\n\n        if(player)\n        {\n            CharacterDatabase.PExecute(\"DELETE FROM account_achievement WHERE achievement = '%u' AND account = '%u'\", achievmentID, player->GetSession()->GetAccountId());\n            CharacterDatabase.PExecute(\"DELETE FROM character_achievement WHERE achievement = '%u' AND guid = '%u'\", achievmentID, player->GetGUIDLow());\n        }\n\n        return true;\n    }",
+      "summary": "Reject malformed/overflowing achievement selectors before account and character deletion statements."
     }
   ],
   "extra_edits": [
@@ -157,7 +167,7 @@
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
-      "after_sha256": "b3f561a39ded6cd0ee7e7be378167b1b1e9b3568d30fb9ca291e285fd26f1887"
+      "after_sha256": "e3c323b9289bafa1578d15883d9e23d5384094012c1d9b9aa40fbc590f4641e6"
     },
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",

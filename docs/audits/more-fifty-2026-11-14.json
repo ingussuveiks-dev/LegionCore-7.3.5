@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_14_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 14,
+  "status": "IN_PROGRESS_15_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 15,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -102,7 +102,7 @@
     },
     {
       "batch": 2,
-      "count": 4,
+      "count": 5,
       "source_case_count": 95,
       "repairs": [
         {
@@ -135,6 +135,14 @@
           "summary": "Reject numeric suffixes and unsigned overflow before achievement lookup/award,retaining numeric and achievement-link extraction.",
           "path": "src/server/scripts/Commands/cs_achievement.cpp",
           "method": "HandleAchievementAddCommand",
+          "test_scope": "complete production handler"
+        },
+        {
+          "index": 15,
+          "key": "AchievementDeleteExactId",
+          "summary": "Reject malformed/overflowing achievement selectors before account and character deletion statements.",
+          "path": "src/server/scripts/Commands/cs_achievement.cpp",
+          "method": "HandleAchievementDeleteCommand",
           "test_scope": "complete production handler"
         }
       ]
