@@ -815,7 +815,8 @@ public:
             if (target)
                 handler->SendSysMessage(LANG_WAYPOINT_CREATSELECTED);
 
-            pathid = atoi((char*)guid_str);
+            if (!Trinity::ParseCommandInteger(guid_str, pathid))
+                return false;
         }
 
         std::string show = show_str;
@@ -897,7 +898,7 @@ public:
                 do
                 {
                     Field* fields = result2->Fetch();
-                    uint32 wpguid = fields[0].GetUInt64();
+                    ObjectGuid::LowType wpguid = fields[0].GetUInt64();
                     Player* chr = handler->GetSession()->GetPlayer();
 
                     Creature* creature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(chr->GetMapId(), VISUAL_WAYPOINT, wpguid));
@@ -1099,7 +1100,7 @@ public:
             do
             {
                 Field* fields = result->Fetch();
-                uint32 guid = fields[0].GetUInt64();
+                ObjectGuid::LowType guid = fields[0].GetUInt64();
                 Player* chr = handler->GetSession()->GetPlayer();
                 Creature* creature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(chr->GetMapId(), VISUAL_WAYPOINT, guid));
                 if (!creature)
