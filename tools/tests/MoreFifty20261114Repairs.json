@@ -264,6 +264,18 @@
       "test_boundary": "        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);",
       "observe": "ticketId",
       "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketDeleteByIdCommand service path;retain native ticket state and assignment checks."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_ticket.cpp",
+      "method": "HandleGMTicketEscalateCommand",
+      "case": "TicketEscalateExactId",
+      "key": "TicketEscalateExactId",
+      "kind": "more",
+      "old": "    static bool HandleGMTicketEscalateCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 ticketId = atoi(args);\n        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);\n        if (!ticket || ticket->IsClosed() || ticket->IsCompleted() || ticket->GetEscalatedStatus() != TICKET_UNASSIGNED)\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);\n            return true;\n        }\n\n        ticket->SetEscalatedStatus(TICKET_IN_ESCALATION_QUEUE);\n\n        //if (Player* player = ticket->GetPlayer())\n            //if (player->IsInWorld())\n                //sTicketMgr->SendTicket(player->GetSession(), ticket);\n\n        sTicketMgr->UpdateLastChange();\n        return true;\n    }",
+      "new": "    static bool HandleGMTicketEscalateCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 ticketId;\n        if (!Trinity::ParseCommandInteger(args, ticketId))\n            return false;\n        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);\n        if (!ticket || ticket->IsClosed() || ticket->IsCompleted() || ticket->GetEscalatedStatus() != TICKET_UNASSIGNED)\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);\n            return true;\n        }\n\n        ticket->SetEscalatedStatus(TICKET_IN_ESCALATION_QUEUE);\n\n        //if (Player* player = ticket->GetPlayer())\n            //if (player->IsInWorld())\n                //sTicketMgr->SendTicket(player->GetSession(), ticket);\n\n        sTicketMgr->UpdateLastChange();\n        return true;\n    }",
+      "test_boundary": "        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);",
+      "observe": "ticketId",
+      "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketEscalateCommand service path;retain native ticket state and assignment checks."
     }
   ],
   "extra_edits": [
@@ -283,7 +295,7 @@
   "files": {
     "src/server/scripts/Commands/cs_ticket.cpp": {
       "before_sha256": "465892b16629963da17a7147766dbd684d975f279dbede959fb10f0d4d77c751",
-      "after_sha256": "4af6138d6ea988fce02fbec2ca7b641e9f2d91df0d6276ec6a9a581aa1e9e2f8"
+      "after_sha256": "4d259349e7ad9bf530bb5d11020ef7d92ef1542e1fed6c66da1153ff75d5a068"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb",
