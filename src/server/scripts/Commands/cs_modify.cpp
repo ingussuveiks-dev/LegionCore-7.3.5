@@ -1176,15 +1176,16 @@ public:
         if (!factionTxt)
             return false;
 
-        uint32 factionId = atoi(factionTxt);
+        uint32 factionId;
+        if (!Trinity::ParseCommandInteger(factionTxt, factionId))
+            return false;
 
         int32 amount = 0;
         char *rankTxt = strtok(NULL, " ");
         if (!factionTxt || !rankTxt)
             return false;
 
-        amount = atoi(rankTxt);
-        if ((amount == 0) && (rankTxt[0] != '-') && !isdigit(rankTxt[0]))
+        if (!Trinity::ParseCommandInteger(rankTxt, amount))
         {
             handler->PSendSysMessage(LANG_COMMAND_FACTION_INVPARAM, rankTxt);
             handler->SetSentErrorMessage(true);
