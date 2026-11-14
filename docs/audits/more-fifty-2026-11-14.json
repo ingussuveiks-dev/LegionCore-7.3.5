@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_44_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 44,
+  "status": "IN_PROGRESS_45_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 45,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -363,7 +363,7 @@
     },
     {
       "batch": 5,
-      "count": 4,
+      "count": 5,
       "source_case_count": 104,
       "repairs": [
         {
@@ -396,6 +396,14 @@
           "summary": "Reject malformed/wrapped area-trigger IDs before creating the trigger.",
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandleAreaTriggerCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 45,
+          "key": "RewardPackExactId",
+          "summary": "Reject malformed/wrapped reward-pack IDs before native delivery can grant an unintended reward.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandlePvpRewardCommand",
           "test_scope": "admission prefix"
         }
       ]

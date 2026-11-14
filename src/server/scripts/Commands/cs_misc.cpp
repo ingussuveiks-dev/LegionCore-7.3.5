@@ -4127,7 +4127,9 @@ public:
             return false;
 
         Player* player = handler->GetSession()->GetPlayer();
-        uint32 rewardPackID = atoi((char*)args);
+        uint32 rewardPackID;
+        if (!Trinity::ParseCommandInteger(args, rewardPackID))
+            return false;
 
         player->DeliveryRewardPack(rewardPackID);
 

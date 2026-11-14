@@ -481,6 +481,18 @@
       "test_boundary": "        AreaTrigger* areaTrigger",
       "observe": "AreaTriggerID",
       "summary": "Reject malformed/wrapped area-trigger IDs before creating the trigger."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandlePvpRewardCommand",
+      "case": "RewardPackExactId",
+      "key": "RewardPackExactId",
+      "kind": "more",
+      "old": "    static bool HandlePvpRewardCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 rewardPackID = atoi((char*)args);\n\n        player->DeliveryRewardPack(rewardPackID);\n\n        handler->PSendSysMessage(\"HandleAreaTriggerCommand: rewardPackID %u\", rewardPackID);\n\n        return true;\n    }",
+      "new": "    static bool HandlePvpRewardCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 rewardPackID;\n        if (!Trinity::ParseCommandInteger(args, rewardPackID))\n            return false;\n\n        player->DeliveryRewardPack(rewardPackID);\n\n        handler->PSendSysMessage(\"HandleAreaTriggerCommand: rewardPackID %u\", rewardPackID);\n\n        return true;\n    }",
+      "test_boundary": "        player->DeliveryRewardPack",
+      "observe": "rewardPackID",
+      "summary": "Reject malformed/wrapped reward-pack IDs before native delivery can grant an unintended reward."
     }
   ],
   "extra_edits": [
@@ -524,7 +536,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
-      "after_sha256": "b50a3e5ed5b6540f1eaf9a507911ee8320f6d7788e241f1349e9398f7ecc6335"
+      "after_sha256": "caecbf4149d2b1bd2ca8536dc31f3ff818e7cc02a590088fafd98d9464f88d1d"
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",
