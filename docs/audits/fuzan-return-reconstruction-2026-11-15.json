@@ -3,7 +3,7 @@
   "status": "USER_APPROVED_FUNCTIONAL_DEPARTURE_RECONSTRUCTION_DEPLOYED_NATIVE_PASSED_CLIENT_PENDING",
   "authorization": "User: Der mar\u0137\u0113ta. Functional reconstruction accepted; exact retail spline and unseen arrival not claimed.",
   "baseline_commit": "a8a508d211f4c12b532b75b1a83a276794289285",
-  "fix_commit": "Recorded by the following archive closeout audit; this implementation commit includes code, migration, regressions and this evidence.",
+  "fix_commit": "27d090023d36f54b676a991f3af21208b25b86ab",
   "scope": "Fu Zan42765/scenario1137, final109440 gossip19932 -> native109441/4577/seat16264 -> short departure -> native217820/1324 loading -> original ground return pad on1514.",
   "behavior": [
     "Admit only actual offered19932/0, same-map visible alive summoned109440, eligible actual Monk, final1137 context and owned inventory128938. No item or prerequisite grants. Abandonment retains the earned exit.",
@@ -144,5 +144,11 @@
     "Yigthregor109820 MovementType2/path0 intent, missing shared Monk links100438/100475, original101430/103151 LINK2 remain OPEN.",
     "All36 whole artifact chains remain unverified end-to-end."
   ],
-  "cleanup": "Followup archive audit records verified fixed archive hashes, exact task-only deletions/reclaimed bytes and retained rollback. Mixed canonical log and original unresolved evidence are excluded."
+  "cleanup": {
+    "audit": "docs/audits/fuzan-return-reconstruction-archive-2026-11-15.json",
+    "removed_files": 69,
+    "reclaimed_bytes": 3869208275,
+    "archive": "build-extractors/bin/Release/fixed/fuzan-return-reconstruction-2026-11-15",
+    "canonical_and_original_unresolved_evidence_unchanged": true
+  }
 }

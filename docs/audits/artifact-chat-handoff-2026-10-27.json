@@ -11324,6 +11324,8 @@
     "audit": "docs/audits/fuzan-return-reconstruction-2026-11-15.json",
     "canonical_world_sha256": "d97a26433866b1619ad1727c04f0890a3ea8e0ec3da489085737127248ba408c",
     "checks": "30 actual native/live cases, static/runtime collision, shadow install/idempotence/custom guard, complete retained Fu Zan PE chain, canonical return/defense/Scepter and owned startup pass. Actual client and authentic arrival remain open.",
-    "preserve": "Mixed7111-byte DBErrors, original LINK2/Slaghammer and Yigthregor movement evidence remain unresolved and untouched."
+    "preserve": "Mixed7111-byte DBErrors, original LINK2/Slaghammer and Yigthregor movement evidence remain unresolved and untouched.",
+    "fix_commit": "27d090023d36f54b676a991f3af21208b25b86ab",
+    "cleanup_audit": "docs/audits/fuzan-return-reconstruction-archive-2026-11-15.json"
   }
 }

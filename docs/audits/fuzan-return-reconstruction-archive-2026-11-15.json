@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-15",
+  "status": "RECONSTRUCTION_ARCHIVED_AND_TEMPORARY_ARTIFACTS_CLEANED_CLIENT_PENDING",
+  "fix_commit": "27d090023d36f54b676a991f3af21208b25b86ab",
+  "implementation_audit": "docs/audits/fuzan-return-reconstruction-2026-11-15.json",
+  "archive": "build-extractors/bin/Release/fixed/fuzan-return-reconstruction-2026-11-15",
+  "archive_manifest_sha256": "84e98f13f93fc622caecb0f483f16f01c0b484d1439cb1158c1ab6c56a2e1a32",
+  "archive_files": 465,
+  "archive_scope": "Task-owned native/compiler/SQL/geometry/PE/build/startup diagnostics, failed iterations paired with repaired final30 live cases, stdout/stderr and source/control manifests.465 original-byte copies hash-verified twice. No private runtime conf, dump, credentials or real character data committed.",
+  "resolved_failures": "Missing native fixture display, initial credit lease, rejected collision candidates and impossible fixture logout ACK are explicitly classified in implementation audit. Final native30/route/shadow/PE/canonical startup pass; no original LINK2/Yigthregor issue reclassified as fixed.",
+  "cleanup": {
+    "removed_files": 69,
+    "reclaimed_bytes": 3869208275,
+    "local_exact_deletion_manifest": ".codex/fuzan-return-reconstruction-20261114/cleanup-manifest.json",
+    "local_deletion_manifest_sha256": "d5372ee1941979f11b46965d7f49a8075016d82f1f304d1dfd0eb71648fc678e",
+    "paths": "Exact task-root native1..11 and live-native30 probe executables/objects/symbols/maps/private run configs; redundant task release world/bnet/link products; own FuZanReturnFlight.exe/.obj/build-item.cmd; freshly rebuilt Scepter test.exe/.obj. No recursive directory delete.",
+    "validation": "Resolved absolute targets checked inside explicit own workspaces; parent junctions/reparse/symlink targets refused; length/hash rechecked immediately before each Remove-Item. Archive source lengths/timestamps/hashes rechecked against concurrent appends. No server running at cleanup.",
+    "retained": [
+      ".codex/release-before-fuzan-return-20261115",
+      "original shared game/scripts Release libraries and build inputs",
+      "all regression source/tools",
+      "original unresolved research and mixed DBErrors"
+    ],
+    "deferred": "No needed temporary executable or deployment remains. Original unresolved research and Defender quarantine intentionally retained; all36 client checks remain separate."
+  },
+  "post_cleanup": {
+    "diagnostics_sha256": "dc28fff28515844206b8418bade33b8ba6a2b16eee90e14135f121a5c3f27aae",
+    "new_crashes": 0,
+    "new_DBErrors": 0,
+    "new_server_diagnostics": 0,
+    "canonical": {
+      "worldserver.exe": "D97A26433866B1619AD1727C04F0890A3EA8E0EC3DA489085737127248BA408C",
+      "bnetserver.exe": "522B1E93259F8CE830F716B465F7F65C653E1BB90483B83DDE13BF91FF3079D7",
+      "worldserver.map": "4DC28D3543115576BA17C0AA513E3A226FF4DD1DD6695537DBE53C2B02C063DE",
+      "logs/DBErrors.log": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+      "bnetserver.map": "AB197E6684E6D04959F3D6D8520D3ECDB56C5BEE8A76ED09DEEA4C830629B11E"
+    },
+    "mixed_DBErrors_unchanged_bytes": 7111,
+    "protected_slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "owned_processes_remaining": 0
+  },
+  "limits": "Empty canonical Crashes indicates only no unresolved crash report there; mixed original DBErrors remains untouched. Functional short departure/safe ground transfer is implemented; authentic arrival and actual client visual/camera/pet/turn-in/reconnect and full36 chains are not verified."
+}
