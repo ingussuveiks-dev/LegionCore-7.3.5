@@ -4349,7 +4349,8 @@ public:
         char* id = strtok((char*)args, " ");
         if (!id)
             return false;
-        SceneId = uint32(atol(id));
+        if (!Trinity::ParseCommandInteger(id, SceneId))
+            return false;
 
         if (!SceneId)
             return false;

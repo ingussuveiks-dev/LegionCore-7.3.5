@@ -333,6 +333,18 @@
       "test_boundary": "        Player* player =",
       "observe": "itemId",
       "summary": "Reject malformed/overflowing item IDs before account transmog deletion;preserve offline-only admission and the native item lookup/transaction."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleSendSpellScene",
+      "case": "SpellSceneExactId",
+      "key": "SpellSceneExactId",
+      "kind": "fourth",
+      "old": "    static bool HandleSendSpellScene(ChatHandler* handler, char const* args)\n    {\n        uint32 SceneId = 0;\n\n        char* id = strtok((char*)args, \" \");\n        if (!id)\n            return false;\n        SceneId = uint32(atol(id));\n\n        if (!SceneId)\n            return false;\n        handler->PSendSysMessage(\"SendSpellScene %u\", SceneId);\n\n        Player* player = handler->GetSession()->GetPlayer();\n        Position pos = player->GetPosition();\n        player->SendSpellScene(SceneId, nullptr, true, &pos);\n        return true;\n    }",
+      "new": "    static bool HandleSendSpellScene(ChatHandler* handler, char const* args)\n    {\n        uint32 SceneId = 0;\n\n        char* id = strtok((char*)args, \" \");\n        if (!id)\n            return false;\n        if (!Trinity::ParseCommandInteger(id, SceneId))\n            return false;\n\n        if (!SceneId)\n            return false;\n        handler->PSendSysMessage(\"SendSpellScene %u\", SceneId);\n\n        Player* player = handler->GetSession()->GetPlayer();\n        Position pos = player->GetPosition();\n        player->SendSpellScene(SceneId, nullptr, true, &pos);\n        return true;\n    }",
+      "test_boundary": "        handler->PSendSysMessage(\"SendSpellScene",
+      "observe": "SceneId",
+      "summary": "Reject malformed/overflowing scene selectors before dispatching an unrelated player scene."
     }
   ],
   "extra_edits": [
@@ -382,7 +394,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "914478201eb1ad3f0b61d989e2c9ea40f193abc1ffb970362e4fff51ede5ce61",
-      "after_sha256": "57a694ca548f042e84f29babcc5089ce9d0e10f2524aa25ea1ba156976564d06"
+      "after_sha256": "d96563498567892d73943d4404067808ad14023307b9136fe52aaca88eefa23a"
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",
