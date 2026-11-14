@@ -34,13 +34,23 @@
       "test_boundary": "            /* impossible",
       "observe": "lowguid",
       "summary": "Reject malformed/overflowing spawn keys before native lookup and retain selected actor behavior."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_npc.cpp",
+      "method": "HandleNpcActivateCommand",
+      "key": "NpcActivationFullGuid",
+      "case": "NpcActivationFullGuid",
+      "kind": "command",
+      "old": "    static bool HandleNpcActivateCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            // number or [name] Shift-click form |color|Hcreature:creature_guid|h[name]|h|r\n            char* cId = handler->extractKeyFromLink((char*)args, \"Hcreature\");\n            if (!cId)\n                return false;\n\n            uint32 lowguid = strtoull(cId, nullptr, 10);\n            if (!lowguid)\n                return false;\n\n            if (CreatureData const* cr_data = sObjectMgr->GetCreatureData(lowguid))\n                unit = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(cr_data->mapid, cr_data->id, lowguid));\n        }\n        else\n            unit = handler->getSelectedCreature();\n\n        if (!unit || unit->isPet() || unit->isTotem())\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // Activate\n        unit->setActive(!unit->isActiveObject());\n        WorldDatabase.PExecute(\"UPDATE creature SET isActive = %u WHERE guid = %u\", uint8(unit->isActiveObject()), unit->GetGUID().GetGUIDLow());\n\n        if (unit->isActiveObject())\n            handler->PSendSysMessage(\"Creature added to actived creatures !\");\n        else\n            handler->PSendSysMessage(\"Creature removed from actived creatures !\");\n\n        return true;\n    }",
+      "new": "    static bool HandleNpcActivateCommand(ChatHandler* handler, const char* args)\n    {\n        Creature* unit = NULL;\n\n        if (*args)\n        {\n            // number or [name] Shift-click form |color|Hcreature:creature_guid|h[name]|h|r\n            char* cId = handler->extractKeyFromLink((char*)args, \"Hcreature\");\n            if (!cId)\n                return false;\n\n            ObjectGuid::LowType lowguid;\n            if (!Trinity::ParseCommandInteger(cId, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::Creature))\n                return false;\n\n            if (CreatureData const* cr_data = sObjectMgr->GetCreatureData(lowguid))\n                unit = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(cr_data->mapid, cr_data->id, lowguid));\n        }\n        else\n            unit = handler->getSelectedCreature();\n\n        if (!unit || unit->isPet() || unit->isTotem())\n        {\n            handler->SendSysMessage(LANG_SELECT_CREATURE);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // Activate\n        unit->setActive(!unit->isActiveObject());\n        if (ObjectGuid::LowType spawnGuid = unit->GetDBTableGUIDLow())\n            WorldDatabase.PExecute(\"UPDATE creature SET isActive = %u WHERE guid = \" UI64FMTD, uint8(unit->isActiveObject()), spawnGuid);\n\n        if (unit->isActiveObject())\n            handler->PSendSysMessage(\"Creature added to actived creatures !\");\n        else\n            handler->PSendSysMessage(\"Creature removed from actived creatures !\");\n\n        return true;\n    }",
+      "summary": "Validate complete native activation keys; persist the full DB spawn counter rather than a different instance runtime GUID; skip DB writes for unsaved actors while retaining native active toggle."
     }
   ],
   "extra_edits": [],
   "files": {
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "16f40f4d387b4ed55cdca9638ee553a516d5fbd94f6affba89e6710fcc2d1d71",
-      "after_sha256": "4756dbad0e69468e9ec32ab27243883275aa6046c908253d95188c174779b382"
+      "after_sha256": "44319f20d3780b1576b2afa9d96d32a4a06c308c893b8342033bd3500773cce7"
     }
   }
 }

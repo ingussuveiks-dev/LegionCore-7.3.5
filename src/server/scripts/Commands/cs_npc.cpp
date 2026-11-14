@@ -1990,8 +1990,8 @@ public:
             if (!cId)
                 return false;
 
-            uint32 lowguid = strtoull(cId, nullptr, 10);
-            if (!lowguid)
+            ObjectGuid::LowType lowguid;
+            if (!Trinity::ParseCommandInteger(cId, lowguid) || !lowguid || lowguid > ObjectGuid::GetMaxCounter(HighGuid::Creature))
                 return false;
 
             if (CreatureData const* cr_data = sObjectMgr->GetCreatureData(lowguid))
@@ -2009,7 +2009,8 @@ public:
 
         // Activate
         unit->setActive(!unit->isActiveObject());
-        WorldDatabase.PExecute("UPDATE creature SET isActive = %u WHERE guid = %u", uint8(unit->isActiveObject()), unit->GetGUID().GetGUIDLow());
+        if (ObjectGuid::LowType spawnGuid = unit->GetDBTableGUIDLow())
+            WorldDatabase.PExecute("UPDATE creature SET isActive = %u WHERE guid = " UI64FMTD, uint8(unit->isActiveObject()), spawnGuid);
 
         if (unit->isActiveObject())
             handler->PSendSysMessage("Creature added to actived creatures !");
