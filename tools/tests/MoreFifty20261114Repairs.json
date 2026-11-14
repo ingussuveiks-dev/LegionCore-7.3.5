@@ -60,13 +60,23 @@
       "old": "    static bool HandleDebugModifyCritChanceCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32)atoi(cval);\n        player->SetStatFloatValue(PLAYER_FIELD_CRIT_PERCENTAGE, Value);\n        player->SetStatFloatValue(PLAYER_FIELD_OFFHAND_CRIT_PERCENTAGE, Value);\n        player->SetStatFloatValue(PLAYER_FIELD_RANGED_CRIT_PERCENTAGE, Value);\n        player->SetFloatValue(PLAYER_FIELD_SPELL_CRIT_PERCENTAGE, Value);\n\n        return true;\n    }",
       "new": "    static bool HandleDebugModifyCritChanceCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*)args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n        player->SetStatFloatValue(PLAYER_FIELD_CRIT_PERCENTAGE, Value);\n        player->SetStatFloatValue(PLAYER_FIELD_OFFHAND_CRIT_PERCENTAGE, Value);\n        player->SetStatFloatValue(PLAYER_FIELD_RANGED_CRIT_PERCENTAGE, Value);\n        player->SetFloatValue(PLAYER_FIELD_SPELL_CRIT_PERCENTAGE, Value);\n\n        return true;\n    }",
       "summary": "Reject malformed/overflowing input before any of the four critical-chance field writes."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_debug.cpp",
+      "method": "HandleDebugModifyVersalityCommand",
+      "case": "VersatilityAtomicSums",
+      "key": "VersatilityAtomicSums",
+      "kind": "more",
+      "old": "    static bool HandleDebugModifyVersalityCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*) args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value = (int32) atoi(cval);\n        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_DONE, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_DONE) + Value);\n        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_HEALING_DONE, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_HEALING_DONE) + Value);\n        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_TAKEN, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_TAKEN) + Value);\n        player->UpdateVersality();\n        return true;\n    }",
+      "new": "    static bool HandleDebugModifyVersalityCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->getSelectedPlayer();\n        if (!player)\n            return false;\n\n        char* cval = strtok((char*) args, \" \");\n\n        if (!cval)\n            return false;\n\n        int32 Value;\n        if (!Trinity::ParseCommandInteger(cval, Value))\n            return false;\n\n        uint32 values[3];\n        CombatRating const ratings[3] = { CR_VERSATILITY_DAMAGE_DONE, CR_VERSATILITY_HEALING_DONE, CR_VERSATILITY_DAMAGE_TAKEN };\n        for (uint8 i = 0; i < 3; ++i)\n        {\n            int64 sum = int64(player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + ratings[i])) + Value;\n            if (sum < 0 || sum > std::numeric_limits<uint32>::max())\n                return false;\n            values[i] = uint32(sum);\n        }\n        for (uint8 i = 0; i < 3; ++i)\n            player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + ratings[i], values[i]);\n        player->UpdateVersality();\n        return true;\n    }",
+      "summary": "Check all three unsigned32 versatility sums in int64 before applying any field;prevent underflow,overflow and partial mutation."
     }
   ],
   "extra_edits": [],
   "files": {
     "src/server/scripts/Commands/cs_debug.cpp": {
       "before_sha256": "238ee4d29757b02ab48a761da55fdb233e500293a85c27940924fb50a744e12d",
-      "after_sha256": "91f64217e730083be1d993786115e9ddcbb0909344fb87beea672ad15fd4fcbd"
+      "after_sha256": "f43e16b19b430c8536ddccc0afcd2f7846e0730420473aef3fba38415c6884ae"
     }
   }
 }

@@ -2084,10 +2084,21 @@ public:
         if (!cval)
             return false;
 
-        int32 Value = (int32) atoi(cval);
-        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_DONE, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_DONE) + Value);
-        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_HEALING_DONE, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_HEALING_DONE) + Value);
-        player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_TAKEN, player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + CR_VERSATILITY_DAMAGE_TAKEN) + Value);
+        int32 Value;
+        if (!Trinity::ParseCommandInteger(cval, Value))
+            return false;
+
+        uint32 values[3];
+        CombatRating const ratings[3] = { CR_VERSATILITY_DAMAGE_DONE, CR_VERSATILITY_HEALING_DONE, CR_VERSATILITY_DAMAGE_TAKEN };
+        for (uint8 i = 0; i < 3; ++i)
+        {
+            int64 sum = int64(player->GetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + ratings[i])) + Value;
+            if (sum < 0 || sum > std::numeric_limits<uint32>::max())
+                return false;
+            values[i] = uint32(sum);
+        }
+        for (uint8 i = 0; i < 3; ++i)
+            player->SetUInt32Value(PLAYER_FIELD_COMBAT_RATINGS + ratings[i], values[i]);
         player->UpdateVersality();
         return true;
     }
