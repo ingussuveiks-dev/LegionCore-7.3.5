@@ -716,7 +716,7 @@ public:
         handler->extractOptFirstArg((char*)args, &nameStr, &levelStr);
 
         // exception opt second arg: .character level $name
-        if (levelStr && isalpha(levelStr[0]))
+        if (levelStr && isalpha(static_cast<unsigned char>(levelStr[0])))
         {
             nameStr = levelStr;
             levelStr = NULL;                                    // current level will used
@@ -729,8 +729,10 @@ public:
             return false;
 
         int32 oldlevel = target ? target->getLevel() : Player::GetLevelFromDB(targetGuid);
-        int32 addlevel = levelStr ? atoi(levelStr) : 1;
-        int32 newlevel = oldlevel + addlevel;
+        int32 addlevel = 1;
+        if (levelStr && !Trinity::ParseCommandInteger(levelStr, addlevel))
+            return false;
+        int64 newlevel = int64(oldlevel) + addlevel;
 
         if (newlevel < 1)
             newlevel = 1;
@@ -738,12 +740,12 @@ public:
         if (newlevel > STRONG_MAX_LEVEL)                         // hardcoded maximum level
             newlevel = STRONG_MAX_LEVEL;
 
-        HandleCharacterLevel(target, targetGuid, oldlevel, newlevel, handler);
+        HandleCharacterLevel(target, targetGuid, oldlevel, uint32(newlevel), handler);
 
         if (!handler->GetSession() || handler->GetSession()->GetPlayer() != target)      // including chr == NULL
         {
             std::string nameLink = handler->playerLink(targetName);
-            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), newlevel);
+            handler->PSendSysMessage(LANG_YOU_CHANGE_LVL, nameLink.c_str(), uint32(newlevel));
         }
 
         return true;
