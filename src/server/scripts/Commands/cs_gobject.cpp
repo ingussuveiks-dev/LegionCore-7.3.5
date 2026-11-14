@@ -653,13 +653,16 @@ public:
         std::string name;
         uint32 lootId = 0;
 
-        if (!*args)
+        if (*args)
         {
-            if (WorldObject* object = handler->getSelectedObject())
-                entry = object->GetEntry();
-            else
-                entry = atoi((char*)args);
+            char* id = handler->extractKeyFromLink((char*)args, "Hgameobject_entry");
+            if (!Trinity::ParseCommandInteger(id, entry))
+                return false;
         }
+        else if (WorldObject* object = handler->getSelectedObject())
+            entry = object->GetEntry();
+        else
+            return false;
 
         GameObjectTemplate const* gameObjectInfo = sObjectMgr->GetGameObjectTemplate(entry);
 
