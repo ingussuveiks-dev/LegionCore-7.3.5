@@ -486,7 +486,9 @@ public:
             return false;
 
         char* ticketIdStr = strtok((char*)args, " ");
-        uint32 ticketId = atoi(ticketIdStr);
+        uint32 ticketId;
+        if (!Trinity::ParseCommandInteger(ticketIdStr, ticketId))
+            return false;
 
         char* response = strtok(NULL, "\n");
         if (!response)
