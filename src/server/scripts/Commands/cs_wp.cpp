@@ -26,6 +26,8 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "WaypointManager.h"
 #include "Chat.h"
+#include <limits>
+#include "CommandIntegerArgument.h"
 #include "DatabaseEnv.h"
 
 class wp_commandscript : public CommandScript
@@ -99,13 +101,17 @@ public:
 
                 PreparedQueryResult result = WorldDatabase.Query(stmt);
 
-                uint32 maxpathid = result->Fetch()->GetInt32();
+                if (!result)
+                    return false;
+                uint32 maxpathid = result->Fetch()->GetUInt32();
+                if (maxpathid == std::numeric_limits<uint32>::max())
+                    return false;
                 pathid = maxpathid+1;
                 handler->PSendSysMessage("%s%s|r", "|cff00ff00", "New path started.");
             }
         }
-        else
-            pathid = atoi(path_number);
+        else if (!Trinity::ParseCommandInteger(path_number, pathid))
+            return false;
 
         // path_id -> ID of the Path
         // point   -> number of the waypoint (if not 0)
@@ -120,8 +126,11 @@ public:
         stmt->setUInt32(0, pathid);
         PreparedQueryResult result = WorldDatabase.Query(stmt);
 
-        if (result)
-            point = (*result)[0].GetUInt32();
+        if (!result)
+            return false;
+        point = (*result)[0].GetUInt32();
+        if (point == std::numeric_limits<uint32>::max())
+            return false;
 
         Player* player = handler->GetSession()->GetPlayer();
         //Map* map = player->GetMap();

@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "b4d9e2f9027c7b4de92a6e9adec4f5a0c95848b8",
   "authorization": "New fourth5x10 requested by user;previous150 are not recounted.",
-  "status": "IN_PROGRESS_23_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 23,
+  "status": "IN_PROGRESS_24_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 24,
   "scope": "49 independently callable admin/debug operations plus one shared spell-link reader repair;not50 artifact quest chains. Shared reader counted once across its callers.",
   "plan": "tools/tests/FourthFifty20261114Repairs.json",
   "canonical": {
@@ -189,7 +189,7 @@
     },
     {
       "batch": 3,
-      "count": 3,
+      "count": 4,
       "source_case_count": 117,
       "repairs": [
         {
@@ -214,6 +214,14 @@
           "summary": "Honor a supplied numeric/link entry instead of ignoring it;retain no-argument selected-object lookup and reject malformed selectors.",
           "path": "src/server/scripts/Commands/cs_gobject.cpp",
           "method": "HandleGameObjectInfoCommand",
+          "test_scope": "complete production handler/helper"
+        },
+        {
+          "index": 24,
+          "key": "WaypointAppendCheckedCounters",
+          "summary": "Reject malformed path IDs,failed aggregate queries and path/point counter wrap before insertion;preserve selected-path/new-path/first-point behavior.",
+          "path": "src/server/scripts/Commands/cs_wp.cpp",
+          "method": "HandleWpAddCommand",
           "test_scope": "complete production handler/helper"
         }
       ]

@@ -267,6 +267,16 @@
       "old": "    static bool HandleGameObjectInfoCommand(ChatHandler* handler, char const* args)\n    {\n        uint32 entry = 0;\n        uint32 type = 0;\n        uint32 displayId = 0;\n        std::string name;\n        uint32 lootId = 0;\n\n        if (!*args)\n        {\n            if (WorldObject* object = handler->getSelectedObject())\n                entry = object->GetEntry();\n            else\n                entry = atoi((char*)args);\n        }\n\n        GameObjectTemplate const* gameObjectInfo = sObjectMgr->GetGameObjectTemplate(entry);\n\n        if (!gameObjectInfo)\n            return false;\n\n        type = gameObjectInfo->type;\n        displayId = gameObjectInfo->displayId;\n        name = gameObjectInfo->name;\n        lootId = gameObjectInfo->GetLootId();\n\n        handler->PSendSysMessage(LANG_GOINFO_ENTRY, entry);\n        handler->PSendSysMessage(LANG_GOINFO_TYPE, type);\n        handler->PSendSysMessage(LANG_GOINFO_LOOTID, lootId);\n        handler->PSendSysMessage(LANG_GOINFO_DISPLAYID, displayId);\n        handler->PSendSysMessage(LANG_GOINFO_NAME, name.c_str());\n\n        return true;\n    }",
       "new": "    static bool HandleGameObjectInfoCommand(ChatHandler* handler, char const* args)\n    {\n        uint32 entry = 0;\n        uint32 type = 0;\n        uint32 displayId = 0;\n        std::string name;\n        uint32 lootId = 0;\n\n        if (*args)\n        {\n            char* id = handler->extractKeyFromLink((char*)args, \"Hgameobject_entry\");\n            if (!Trinity::ParseCommandInteger(id, entry))\n                return false;\n        }\n        else if (WorldObject* object = handler->getSelectedObject())\n            entry = object->GetEntry();\n        else\n            return false;\n\n        GameObjectTemplate const* gameObjectInfo = sObjectMgr->GetGameObjectTemplate(entry);\n\n        if (!gameObjectInfo)\n            return false;\n\n        type = gameObjectInfo->type;\n        displayId = gameObjectInfo->displayId;\n        name = gameObjectInfo->name;\n        lootId = gameObjectInfo->GetLootId();\n\n        handler->PSendSysMessage(LANG_GOINFO_ENTRY, entry);\n        handler->PSendSysMessage(LANG_GOINFO_TYPE, type);\n        handler->PSendSysMessage(LANG_GOINFO_LOOTID, lootId);\n        handler->PSendSysMessage(LANG_GOINFO_DISPLAYID, displayId);\n        handler->PSendSysMessage(LANG_GOINFO_NAME, name.c_str());\n\n        return true;\n    }",
       "summary": "Honor a supplied numeric/link entry instead of ignoring it;retain no-argument selected-object lookup and reject malformed selectors."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_wp.cpp",
+      "method": "HandleWpAddCommand",
+      "case": "WaypointAppendCheckedCounters",
+      "key": "WaypointAppendCheckedCounters",
+      "kind": "fourth",
+      "old": "    static bool HandleWpAddCommand(ChatHandler* handler, const char* args)\n    {\n        // optional\n        char* path_number = NULL;\n        uint32 pathid = 0;\n\n        if (*args)\n            path_number = strtok((char*)args, \" \");\n\n        uint32 point = 0;\n        Creature* target = handler->getSelectedCreature();\n\n        if (!path_number)\n        {\n            if (target)\n                pathid = target->GetWaypointPath();\n            else\n            {\n                WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_DATA_MAX_ID);\n\n                PreparedQueryResult result = WorldDatabase.Query(stmt);\n\n                uint32 maxpathid = result->Fetch()->GetInt32();\n                pathid = maxpathid+1;\n                handler->PSendSysMessage(\"%s%s|r\", \"|cff00ff00\", \"New path started.\");\n            }\n        }\n        else\n            pathid = atoi(path_number);\n\n        // path_id -> ID of the Path\n        // point   -> number of the waypoint (if not 0)\n\n        if (!pathid)\n        {\n            handler->PSendSysMessage(\"%s%s|r\", \"|cffff33ff\", \"Current creature haven't loaded path.\");\n            return true;\n        }\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_DATA_MAX_POINT);\n        stmt->setUInt32(0, pathid);\n        PreparedQueryResult result = WorldDatabase.Query(stmt);\n\n        if (result)\n            point = (*result)[0].GetUInt32();\n\n        Player* player = handler->GetSession()->GetPlayer();\n        //Map* map = player->GetMap();\n\n        stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_WAYPOINT_DATA);\n\n        stmt->setUInt32(0, pathid);\n        stmt->setUInt32(1, point + 1);\n        stmt->setFloat(2, player->GetPositionX());\n        stmt->setFloat(3, player->GetPositionY());\n        stmt->setFloat(4, player->GetPositionZ());\n\n        WorldDatabase.Execute(stmt);\n\n        handler->PSendSysMessage(\"%s%s%u%s%u%s|r\", \"|cff00ff00\", \"PathID: |r|cff00ffff\", pathid, \"|r|cff00ff00: Waypoint |r|cff00ffff\", point+1, \"|r|cff00ff00 created. \");\n        return true;\n    }",
+      "new": "    static bool HandleWpAddCommand(ChatHandler* handler, const char* args)\n    {\n        // optional\n        char* path_number = NULL;\n        uint32 pathid = 0;\n\n        if (*args)\n            path_number = strtok((char*)args, \" \");\n\n        uint32 point = 0;\n        Creature* target = handler->getSelectedCreature();\n\n        if (!path_number)\n        {\n            if (target)\n                pathid = target->GetWaypointPath();\n            else\n            {\n                WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_DATA_MAX_ID);\n\n                PreparedQueryResult result = WorldDatabase.Query(stmt);\n\n                if (!result)\n                    return false;\n                uint32 maxpathid = result->Fetch()->GetUInt32();\n                if (maxpathid == std::numeric_limits<uint32>::max())\n                    return false;\n                pathid = maxpathid+1;\n                handler->PSendSysMessage(\"%s%s|r\", \"|cff00ff00\", \"New path started.\");\n            }\n        }\n        else if (!Trinity::ParseCommandInteger(path_number, pathid))\n            return false;\n\n        // path_id -> ID of the Path\n        // point   -> number of the waypoint (if not 0)\n\n        if (!pathid)\n        {\n            handler->PSendSysMessage(\"%s%s|r\", \"|cffff33ff\", \"Current creature haven't loaded path.\");\n            return true;\n        }\n\n        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_DATA_MAX_POINT);\n        stmt->setUInt32(0, pathid);\n        PreparedQueryResult result = WorldDatabase.Query(stmt);\n\n        if (!result)\n            return false;\n        point = (*result)[0].GetUInt32();\n        if (point == std::numeric_limits<uint32>::max())\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        //Map* map = player->GetMap();\n\n        stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_WAYPOINT_DATA);\n\n        stmt->setUInt32(0, pathid);\n        stmt->setUInt32(1, point + 1);\n        stmt->setFloat(2, player->GetPositionX());\n        stmt->setFloat(3, player->GetPositionY());\n        stmt->setFloat(4, player->GetPositionZ());\n\n        WorldDatabase.Execute(stmt);\n\n        handler->PSendSysMessage(\"%s%s%u%s%u%s|r\", \"|cff00ff00\", \"PathID: |r|cff00ffff\", pathid, \"|r|cff00ff00: Waypoint |r|cff00ffff\", point+1, \"|r|cff00ff00 created. \");\n        return true;\n    }",
+      "summary": "Reject malformed path IDs,failed aggregate queries and path/point counter wrap before insertion;preserve selected-path/new-path/first-point behavior."
     }
   ],
   "extra_edits": [
@@ -299,6 +309,18 @@
       "old": "#include \"DatabaseEnv.h\"",
       "new": "#include \"DatabaseEnv.h\"\n#include <limits>",
       "owner_key": "EventObjectFiniteQueryRadius"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_wp.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "WaypointAppendCheckedCounters"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_wp.cpp",
+      "old": "#include \"Chat.h\"",
+      "new": "#include \"Chat.h\"\n#include <limits>",
+      "owner_key": "WaypointAppendCheckedCounters"
     }
   ],
   "files": {
@@ -325,6 +347,10 @@
     "src/server/scripts/Commands/cs_quest.cpp": {
       "before_sha256": "f3e79c077ba7198dc0b6e5d50a63cd83118966e3badf960f30fa60273e334867",
       "after_sha256": "684c79562409309cd28883d5160675b6757628310160460244679e1ebcc04ebb"
+    },
+    "src/server/scripts/Commands/cs_wp.cpp": {
+      "before_sha256": "ee7567558141c9bf4647537b49ed3fc919a16abbf9247934f9d40b32690ef491",
+      "after_sha256": "09482f67d818af723ac975829b253efc002ed6955a944b12bc82bbf83f536a2e"
     }
   }
 }
