@@ -536,6 +536,18 @@
       "observe": "items.size()",
       "test_capture": "for(auto const&item:items){handler->captured.push_back(item.first);handler->captured.push_back(item.second);}",
       "summary": "Validate item/count fields and preflight native stack expansion against12 attachments before allocating split items;preserve max-count/order/stack and mail transaction rules."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleSendMoneyCommand",
+      "case": "MailMoneyNativeCap",
+      "key": "MailMoneyNativeCap",
+      "kind": "fourth",
+      "old": "    static bool HandleSendMoneyCommand(ChatHandler* handler, char const* args)\n    {\n        /// format: name \"subject text\" \"mail text\" money\n\n        Player* receiver;\n        ObjectGuid receiverGuid;\n        std::string receiverName;\n        if (!handler->extractPlayerTarget((char*)args, &receiver, &receiverGuid, &receiverName))\n            return false;\n\n        char* tail1 = strtok(NULL, \"\");\n        if (!tail1)\n            return false;\n\n        char* msgSubject = handler->extractQuotedArg(tail1);\n        if (!msgSubject)\n            return false;\n\n        char* tail2 = strtok(NULL, \"\");\n        if (!tail2)\n            return false;\n\n        char* msgText = handler->extractQuotedArg(tail2);\n        if (!msgText)\n            return false;\n\n        char* moneyStr = strtok(NULL, \"\");\n        int32 money = moneyStr ? atoi(moneyStr) : 0;\n        if (money <= 0)\n            return false;\n\n        // msgSubject, msgText isn't NUL after prev. check\n        std::string subject = msgSubject;\n        std::string text    = msgText;\n\n        // from console show not existed sender\n        MailSender sender(MAIL_NORMAL, handler->GetSession() ? handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow() : 0, MAIL_STATIONERY_GM);\n\n        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();\n\n        MailDraft(subject, text)\n            .AddMoney(money)\n            .SendMailTo(trans, MailReceiver(receiver, receiverGuid.GetGUIDLow()), sender);\n\n        CharacterDatabase.CommitTransaction(trans);\n\n        std::string nameLink = handler->playerLink(receiverName);\n        handler->PSendSysMessage(LANG_MAIL_SENT, nameLink.c_str());\n        return true;\n    }",
+      "new": "    static bool HandleSendMoneyCommand(ChatHandler* handler, char const* args)\n    {\n        /// format: name \"subject text\" \"mail text\" money\n\n        Player* receiver;\n        ObjectGuid receiverGuid;\n        std::string receiverName;\n        if (!handler->extractPlayerTarget((char*)args, &receiver, &receiverGuid, &receiverName))\n            return false;\n\n        char* tail1 = strtok(NULL, \"\");\n        if (!tail1)\n            return false;\n\n        char* msgSubject = handler->extractQuotedArg(tail1);\n        if (!msgSubject)\n            return false;\n\n        char* tail2 = strtok(NULL, \"\");\n        if (!tail2)\n            return false;\n\n        char* msgText = handler->extractQuotedArg(tail2);\n        if (!msgText)\n            return false;\n\n        char* moneyStr = strtok(NULL, \"\");\n        uint64 money;\n        if (!Trinity::ParseCommandInteger(moneyStr, money) || !money || money > MAX_MONEY_AMOUNT)\n            return false;\n\n        // msgSubject, msgText isn't NUL after prev. check\n        std::string subject = msgSubject;\n        std::string text    = msgText;\n\n        // from console show not existed sender\n        MailSender sender(MAIL_NORMAL, handler->GetSession() ? handler->GetSession()->GetPlayer()->GetGUID().GetGUIDLow() : 0, MAIL_STATIONERY_GM);\n\n        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();\n\n        MailDraft(subject, text)\n            .AddMoney(money)\n            .SendMailTo(trans, MailReceiver(receiver, receiverGuid.GetGUIDLow()), sender);\n\n        CharacterDatabase.CommitTransaction(trans);\n\n        std::string nameLink = handler->playerLink(receiverName);\n        handler->PSendSysMessage(LANG_MAIL_SENT, nameLink.c_str());\n        return true;\n    }",
+      "test_boundary": "        // msgSubject, msgText",
+      "observe": "money",
+      "summary": "Use complete64-bit money constrained by the actual player money cap before creating the mail draft;retain native recipient/subject/body/transaction behavior."
     }
   ],
   "extra_edits": [
@@ -633,7 +645,7 @@
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "914478201eb1ad3f0b61d989e2c9ea40f193abc1ffb970362e4fff51ede5ce61",
-      "after_sha256": "3a1df198f55b602a31e083838d06e874be639d269fd56bf74ab8d22f71e60582"
+      "after_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9"
     },
     "src/server/scripts/Commands/cs_character.cpp": {
       "before_sha256": "02ef21a8a1a84eaf2902ae99ad20950740993e83d21c4b9af104bab485417164",

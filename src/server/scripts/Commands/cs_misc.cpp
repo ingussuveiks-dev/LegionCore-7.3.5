@@ -2873,8 +2873,8 @@ public:
             return false;
 
         char* moneyStr = strtok(NULL, "");
-        int32 money = moneyStr ? atoi(moneyStr) : 0;
-        if (money <= 0)
+        uint64 money;
+        if (!Trinity::ParseCommandInteger(moneyStr, money) || !money || money > MAX_MONEY_AMOUNT)
             return false;
 
         // msgSubject, msgText isn't NUL after prev. check
