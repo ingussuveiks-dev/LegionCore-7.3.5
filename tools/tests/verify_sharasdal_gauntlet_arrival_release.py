@@ -37,34 +37,39 @@ safe=ins('?MoveInLineOfSight_Safe@CreatureAI@@')
 assert slot==0x278 and slot in fields(safe)
 assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rcx + 0x18], 1' for x in safe)
 assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx + 0x18], 0' for x in safe)
-assert rows[0x110//8]==n['symbol'](method('CompleteGauntletArrival')) # selected lifecycle tail thunk
+assert rows[0x110//8]==n['symbol'](method('UpdateLifecycle'))
+lifecycle=ins(method('UpdateLifecycle'))
+update,=sites(lifecycle,'?Update@Controller@SharasdalFinale@@')
+arrival,=sites(lifecycle,method('CompleteGauntletArrival'))
+assert update<arrival and lifecycle[arrival].mnemonic=='jmp', 'Registered lifecycle must update the living finale before its retained gauntlet tail'
+assert [(x.mnemonic,x.op_str) for x in lifecycle[update+1:update+3]]==[('mov','edx, ebx'),('mov','rcx, rdi')]
 world=ins(method('GauntletWorld'));player=ins(method('GauntletPlayer'));los=ins(method('MoveInLineOfSight'));complete=ins(method('CompleteGauntletArrival'))
 assert {104856,362091,1600,1066}<=values(world)
 needs(world,'?IsInWorld@Object@@','?IsPreDelete@Object@@','?GetScenario@ScenarioMgr@@')
 assert {40341,7,1,3}<=values(player) and 40.0 in floats(player)
 needs(player,'?CanContact@Player@@','?InSamePhase@WorldObject@@','?canSeeOrDetect@WorldObject@@','?IsWithinLOSInMap@WorldObject@@','?IsWithinDistInMap@WorldObject@@','?GetQuestRewardStatus@Player@@','?GetQuestStatus@Player@@')
-assert {3,47131,40341}<=values(los) and {0x62,0x78,0x88,0x8a,0x90}<=fields(los)
+assert {3,47131,40341}<=values(los) and {0xe8,0xf8,0x108,0x10a,0x110}<=fields(los)
 needs(los,method('GauntletWorld'),method('GauntletPlayer'),'?AddQuestDelayedEvent@Player@@','?getQuestStatus@Player@@',method('CompleteGauntletArrival'))
 assert not events(los) and not sites(los,'?DespawnOrUnsummon@Creature@@')
 assert events(complete)==[50314] and {40341,3,4,47131,47378,105298,362092,1000,30}<=values(complete)
-assert {0x62,0x80,0x88,0x89,0x8a,0x8b,0x8c,0x90,0x94}<=fields(complete)
+assert {0xe8,0x100,0x108,0x109,0x10a,0x10b,0x10c,0x110,0x114}<=fields(complete)
 needs(complete,'?GetPlayer@ObjectAccessor@@','?getQuestStatus@Player@@',method('GauntletPlayer'),'?Receipt@SharasdalGrash@@','?FindNearestCreature@WorldObject@@','?InSamePhase@WorldObject@@','?MovePoint@MotionMaster@@','?DespawnOrUnsummon@Creature@@')
 event,=sites(complete,'?UpdateAchievementCriteria@Player@@')
 assert any(i<event for i in sites(complete,'?Receipt@SharasdalGrash@@')) and any(i>event for i in sites(complete,'?Receipt@SharasdalGrash@@'))
 assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx], 1' for x in complete[:event])
 assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx], 0' for x in complete[event:])
-assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rdi + 0x89], 1' for x in complete[event:])
+assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rdi + 0x109], 1' for x in complete[event:])
 assert any(x.mnemonic=='mov' and x.op_str=='word ptr [rdi + 0x60], 1' for x in complete[event:]) # done=true,intro=false only after receipt
 action,=[i for i,x in enumerate(complete) if x.mnemonic=='call' and x.op_str=='qword ptr [rax + 0x48]']
 assert event<action<sites(complete,'?MovePoint@MotionMaster@@')[0]
-assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rdi + 0x88], 0' for x in complete[action-12:action])
+assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rdi + 0x108], 0' for x in complete[action-12:action])
 assert [(x.mnemonic,x.op_str) for x in complete[action-6:action-1]]==[
  ('mov','rcx, qword ptr [rsi + 0x9c8]'),('test','rcx, rcx'),('jne',complete[action-4].op_str),
  ('mov','rcx, qword ptr [rsi + 0x9c0]'),('mov','rax, qword ptr [rcx]')]
 assert complete[action-4].operands[0].imm==complete[action-2].address
 assert complete[action-1].op_str=='edx, 3' # original suspended guide preferred, one actual DoAction3
 assert {10.37,803.32,806.75,200.0}<=floats(complete)
-rearm=ins(method('SetGUID'));assert {40341,105298,362092}<=values(rearm) and {0x62,0x88,0x89,0x8b,0x90}<=fields(rearm)
+rearm=ins(method('SetGUID'));assert {40341,105298,362092}<=values(rearm) and {0xe8,0x108,0x109,0x10b,0x110}<=fields(rearm)
 needs(rearm,'??8ObjectGuid@@','?GetCreature@Map@@')
 assert not events(rearm) and not sites(rearm,'?MovePoint@MotionMaster@@')
 instance='@instance_sharasdal_InstanceMapScript@instance_sharasdal@@'
@@ -75,6 +80,12 @@ assert {0x454,0x9c0,0x9c8,0x80}<=fields(reentry)
 assert len([x for x in reentry if x.mnemonic=='call' and x.op_str=='qword ptr [rax + 0x80]'])==2
 assert any(x.mnemonic=='cmp' and x.op_str=='rbx, rdi' for x in reentry)
 waves=ins(method('UpdateAI'));constructor=ins(factory)
+# The living finale controller occupies68..e7; original gauntlet recipient
+# and weak lease now start e8/f8. Inspect actual operands, never rewrite them.
+assert any(x.mnemonic=='mov' and x.op_str=='ecx, 0x118' for x in constructor)
+for member in (0xe8,):
+ at,=[i for i,x in enumerate(constructor) if x.mnemonic=='lea' and x.op_str==f'rcx, [r14 + {member:#x}]']
+ assert constructor[at+1].mnemonic=='call' and n['resolve'](constructor[at+1].operands[0].imm)==n['symbol']('??0ObjectGuid@@QEAA@XZ')
 needs(waves,method('GauntletWorld'),'?SummonCreature@WorldObject@@')
 assert {3,105251,209132,6000}<=values(waves) and {104856,362091,2000}<=values(constructor)
 assert not events(waves) and not sites(waves,'?DespawnOrUnsummon@Creature@@')

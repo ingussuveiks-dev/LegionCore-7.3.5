@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-14",
+  "kind": "TEST_CERTIFICATE_REPAIR_NO_GAMEPLAY_SOURCE_CHANGE",
+  "binary_sha256": "78674d16f531c00ffe12acdf7ae519ebb582aa18aea6e683bdbb6adc9cac63fd",
+  "diagnostics": "Relevant complete final checks record no new/changed crash or appended DBErrors/server warning/error/assertion; no world/bnet launched. Actual client traversal remains separate.",
+  "status": "PASS_RETAINED_CANONICAL_SCOPE",
+  "cause": "The implemented living finale adds Controller at68..e7. Selected lifecycle is now UpdateLifecycle->Controller.Update->CompleteGauntletArrival, rather than a direct complete-arrival tail alias. Its original recipient/weak lease move to e8/f8; following gauntlet fields shift.",
+  "repair": "Check actual selected lifecycle slot110, ordered controller call and original arrival tail with preserved AI/diff. Check current118-byte allocation and real recipient ObjectGuid constructor; compare raw current e8/f8/108..114 operands. Preserve all original actual receipt/owner/group/guide/retry/criterion-before-latch assertions. No instruction rewriting or gate removal.",
+  "checks": "verify_sharasdal_gauntlet_arrival_release and dependent verify_sharasdal_wave_contact_release complete exit0. Current living68 native contexts/live bindings also pass; original full1066/client/authenticity limits remain."
+}
