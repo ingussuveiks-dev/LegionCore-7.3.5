@@ -1,0 +1,202 @@
+{
+  "date": "2026-11-15",
+  "batch": 5,
+  "status": "COMPLETED20_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 244779,
+      "name": "Ancient Vrykul Rune Tablet",
+      "before_loot": 0,
+      "after_loot": 244779,
+      "existing_spawns": 23,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244828,
+      "name": "The Fjarnskaggl Fjormula",
+      "before_loot": 0,
+      "after_loot": 244828,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244829,
+      "name": "The Tangled Beard",
+      "before_loot": 0,
+      "after_loot": 244829,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244830,
+      "name": "Herblore of the Ancients",
+      "before_loot": 0,
+      "after_loot": 244830,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244841,
+      "name": "Eagle Egg",
+      "before_loot": 0,
+      "after_loot": 244841,
+      "existing_spawns": 14,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244853,
+      "name": "Tharillon's Stash",
+      "before_loot": 0,
+      "after_loot": 244853,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 244887,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244887,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 244899,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244899,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 244901,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244901,
+      "existing_spawns": 1,
+      "existing_loot_rows": 52
+    },
+    {
+      "entry": 244902,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244902,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 244903,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244903,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 244904,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244904,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 244909,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244909,
+      "existing_spawns": 1,
+      "existing_loot_rows": 48
+    },
+    {
+      "entry": 244912,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244912,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 244913,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244913,
+      "existing_spawns": 1,
+      "existing_loot_rows": 53
+    },
+    {
+      "entry": 244928,
+      "name": "Glimmering Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 244928,
+      "existing_spawns": 1,
+      "existing_loot_rows": 56
+    },
+    {
+      "entry": 245126,
+      "name": "Crystallized Ancient Mana",
+      "before_loot": 0,
+      "after_loot": 245126,
+      "existing_spawns": 9,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 245171,
+      "name": "Agnes' Skinning Knife",
+      "before_loot": 0,
+      "after_loot": 245171,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 245198,
+      "name": "Black Rook Armor",
+      "before_loot": 0,
+      "after_loot": 245198,
+      "existing_spawns": 9,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 245199,
+      "name": "Drogbar Stash",
+      "before_loot": 0,
+      "after_loot": 245199,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    }
+  ],
+  "cause_and_change": "Existing chest type3 sources had Data1=0 despite authored same-entry gameobject_loot_template rows. Native GetLootId returned0, so full Player::SendLoot skipped FillLoot. Link only Data1 to existing entry; no loot tables/drop chances/counts/conditions/rewards/spawns changed.",
+  "migration": "sql/updates/world/2026_11_15_06_legion_chest_loot_batch5.sql",
+  "migration_sha256": "21acfc5d18599507aa398859469d9a545d3255085b26bcb1fab4bf810cdf824f",
+  "checks": {
+    "native_entries": [
+      244779,
+      244828,
+      244829,
+      244830,
+      244841,
+      244853,
+      244887,
+      244899,
+      244901,
+      244902,
+      244903,
+      244904,
+      244909,
+      244912,
+      244913,
+      244928,
+      245126,
+      245171,
+      245198,
+      245199
+    ],
+    "native_exe_sha256": "21205d0ef0119dfed4010c23d5c4af03e139e051be1697b88978081ba961c6d5",
+    "native_input_manifest_sha256": "b49e9b476304d6cc5fca568110b0eb0019b59bc743feaee4d42ec658e70be96c",
+    "native_complete_diagnostics_sha256": "6bc89355c24a4e50879b0451c65e778841fde5fee9190c2dbb7ce4458edc7b19",
+    "native_runtime_diagnostics_sha256": "1f50cea79725a9f017276aabf0116ca3fbee25556e22605d835f3a7006cae6d2",
+    "shadow_diagnostics_sha256": "5118b72aac22608353a2b3bdabed50ff124aee9f40eb2a6c2a02664aec6827d3",
+    "actual100_readback": "All100 actual live Data1 links match; original other captured template fields, spawn counts and loot row counts unchanged. Exact-field migrations preserve remaining schema fields by construction; shadow check compares all non-Data1 columns."
+  },
+  "limits": "Controlled synthetic source placement and player eligibility. Actual initial lock/open/visibility/quest/condition/client traversal and probability distributions are not certified. Native authored loot validation/generation executes; no item storage, authentic login/character save, quest or reward completion claim.",
+  "aggregate_audit": "docs/audits/five-twenty-2026-11-15.json"
+}

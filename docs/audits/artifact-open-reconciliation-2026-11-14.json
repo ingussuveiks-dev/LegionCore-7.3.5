@@ -83,6 +83,12 @@
         "state": "FUNCTIONAL_DEPARTURE_DEPLOYED_NATIVE30_PASSED_CLIENT_PENDING_AUTHENTIC_ROUTE_STILL_UNKNOWN",
         "audit": "docs/audits/fuzan-return-reconstruction-2026-11-15.json",
         "remaining": "User approved labelled reconstruction. Short native boarded departure and safe original ground pad implemented; authentic arrival flight and Yigthregor path still OPEN. Previous22 direct-return claim is historical."
+      },
+      "yigthregor_followup_2026_11_15": {
+        "state": "FUNCTIONAL_AIR_HOLD_AND_NATIVE_FIELD_CLEANUP_DEPLOYED_LIVE10_PASSED_CLIENT_PENDING",
+        "fix_commit": "942dfe497",
+        "audit": "docs/audits/fuzan-yigthregor-reconstruction-2026-11-15.json",
+        "remaining": "Original retail trajectory not recovered; functional defect and owned infinite-field cleanup fixed. Client fidelity remains separate."
       }
     },
     {
