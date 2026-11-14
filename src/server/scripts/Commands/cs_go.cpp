@@ -336,8 +336,8 @@ public:
         if (!id)
             return false;
 
-        int32 nodeId = atoi(id);
-        if (!nodeId)
+        uint32 nodeId;
+        if (!Trinity::ParseCommandInteger(id, nodeId) || !nodeId)
             return false;
 
         TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(nodeId);
@@ -366,8 +366,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        player->TeleportTo(node->ContinentID, node->Pos.X, node->Pos.Y, node->Pos.Z, player->GetOrientation());
-        return true;
+        return player->TeleportTo(node->ContinentID, node->Pos.X, node->Pos.Y, node->Pos.Z, player->GetOrientation());
     }
 
     static bool HandleGoQuestCommand(ChatHandler* handler, char const* args)
