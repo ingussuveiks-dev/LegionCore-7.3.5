@@ -450,9 +450,8 @@ public:
         if (!id)
             return false;
 
-        int32 areaTriggerId = atoi(id);
-
-        if (!areaTriggerId)
+        uint32 areaTriggerId;
+        if (!Trinity::ParseCommandInteger(id, areaTriggerId) || !areaTriggerId)
             return false;
 
         AreaTriggerEntry const* at = sAreaTriggerStore.LookupEntry(areaTriggerId);
@@ -480,8 +479,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        player->TeleportTo(at->ContinentID, at->Pos.X, at->Pos.Y, at->Pos.Z, player->GetOrientation());
-        return true;
+        return player->TeleportTo(at->ContinentID, at->Pos.X, at->Pos.Y, at->Pos.Z, player->GetOrientation());
     }
 
     //teleport at coordinates
