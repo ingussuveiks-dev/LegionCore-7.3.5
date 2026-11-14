@@ -685,7 +685,9 @@ public:
 
     static bool HandleDebugSendQuestInvalidMsgCommand(ChatHandler* handler, char const* args)
     {
-        uint32 msg = atol((char*)args);
+        uint32 msg;
+        if (!Trinity::ParseCommandInteger(args, msg))
+            return false;
         handler->GetSession()->GetPlayer()->SendCanTakeQuestResponse(msg, NULL);
         return true;
     }
