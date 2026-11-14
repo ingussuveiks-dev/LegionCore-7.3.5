@@ -250,6 +250,16 @@
       "batch": 3,
       "old": "    static bool HandleBattlefieldTimer(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        uint32 time = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n        char* time_str = strtok(NULL, \" \");\n        if (!time_str)\n            return false;\n\n        battleid = atoi(battleid_str);\n\n        time = atoi(time_str);\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->SetTimer(time * IN_MILLISECONDS);\n        bf->SendInitWorldStatesToAll();\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command timer used)\");\n\n        return true;\n    }",
       "new": "    static bool HandleBattlefieldTimer(ChatHandler* handler, const char* args)\n    {\n        uint32 battleid = 0;\n        uint32 time = 0;\n        char* battleid_str = strtok((char*)args, \" \");\n        if (!battleid_str)\n            return false;\n        char* time_str = strtok(NULL, \" \");\n        if (!time_str)\n            return false;\n\n        if (!Trinity::ParseCommandInteger(battleid_str, battleid))\n            return false;\n\n        if (!Trinity::ParseCommandInteger(time_str, time) ||\n            time > std::numeric_limits<uint32>::max() / IN_MILLISECONDS)\n            return false;\n\n        Battlefield* bf = sBattlefieldMgr->GetBattlefieldByBattleId(battleid);\n\n        if (!bf)\n            return false;\n\n        bf->SetTimer(time * IN_MILLISECONDS);\n        bf->SendInitWorldStatesToAll();\n        if (battleid == 1)\n            handler->SendGlobalGMSysMessage(\"Wintergrasp (Command timer used)\");\n\n        return true;\n    }"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_event.cpp",
+      "method": "HandleEventInfoCommand",
+      "key": "WorldEventInfoChecked",
+      "case": "EventInfo",
+      "kind": "next",
+      "batch": 3,
+      "old": "    static bool HandleEventInfoCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // id or [name] Shift-click form |color|Hgameevent:id|h[name]|h|r\n        char* id =  handler->extractKeyFromLink((char*)args, \"Hgameevent\");\n        if (!id)\n            return false;\n\n        uint32 eventId = atoi(id);\n\n        GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();\n\n        if (eventId >= events.size())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventData const& eventData = events[eventId];\n        if (!eventData.isValid())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventMgr::ActiveEvents const& activeEvents = sGameEventMgr->GetActiveEventList();\n        bool active = activeEvents.find(eventId) != activeEvents.end();\n        char const* activeStr = active ? handler->GetTrinityString(LANG_ACTIVE) : \"\";\n\n        std::string startTimeStr = TimeToTimestampStr(eventData.start);\n        std::string endTimeStr = TimeToTimestampStr(eventData.end);\n\n        uint32 delay = sGameEventMgr->NextCheck(eventId);\n        time_t nextTime = GameTime::GetGameTime() + delay;\n        std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(GameTime::GetGameTime() + delay) : \"-\";\n\n        std::string occurenceStr = secsToTimeString(eventData.occurence * MINUTE);\n        std::string lengthStr = secsToTimeString(eventData.length * MINUTE);\n\n        handler->PSendSysMessage(LANG_EVENT_INFO, eventId, eventData.description.c_str(), activeStr,\n            startTimeStr.c_str(), endTimeStr.c_str(), occurenceStr.c_str(), lengthStr.c_str(),\n            nextStr.c_str());\n        return true;\n    }",
+      "new": "    static bool HandleEventInfoCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        // id or [name] Shift-click form |color|Hgameevent:id|h[name]|h|r\n        char* id =  handler->extractKeyFromLink((char*)args, \"Hgameevent\");\n        if (!id)\n            return false;\n\n        uint32 eventId;\n        if (!Trinity::ParseCommandInteger(id, eventId))\n            return false;\n\n        GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();\n\n        if (eventId >= events.size())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventData const& eventData = events[eventId];\n        if (!eventData.isValid())\n        {\n            handler->SendSysMessage(LANG_EVENT_NOT_EXIST);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        GameEventMgr::ActiveEvents const& activeEvents = sGameEventMgr->GetActiveEventList();\n        bool active = activeEvents.find(eventId) != activeEvents.end();\n        char const* activeStr = active ? handler->GetTrinityString(LANG_ACTIVE) : \"\";\n\n        std::string startTimeStr = TimeToTimestampStr(eventData.start);\n        std::string endTimeStr = TimeToTimestampStr(eventData.end);\n\n        uint32 delay = sGameEventMgr->NextCheck(eventId);\n        time_t nextTime = GameTime::GetGameTime() + delay;\n        std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(GameTime::GetGameTime() + delay) : \"-\";\n\n        std::string occurenceStr = secsToTimeString(eventData.occurence * MINUTE);\n        std::string lengthStr = secsToTimeString(eventData.length * MINUTE);\n\n        handler->PSendSysMessage(LANG_EVENT_INFO, eventId, eventData.description.c_str(), activeStr,\n            startTimeStr.c_str(), endTimeStr.c_str(), occurenceStr.c_str(), lengthStr.c_str(),\n            nextStr.c_str());\n        return true;\n    }"
     }
   ],
   "extra_edits": [
@@ -300,6 +310,12 @@
       "old": "#include \"ScriptMgr.h\"",
       "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"\n#include <limits>",
       "owner_key": "BattlefieldStartChecked"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_event.cpp",
+      "old": "#include \"ScriptMgr.h\"",
+      "new": "#include \"ScriptMgr.h\"\n#include \"CommandIntegerArgument.h\"",
+      "owner_key": "WorldEventInfoChecked"
     }
   ],
   "files": {
@@ -337,6 +353,11 @@
       "before_sha256": "8de587130bfca92e7664466c8a359417433db49ccb5402b15603ee7c6fe66110",
       "owner_key": null,
       "after_sha256": "ba02d057dfd73aa61bcbb222771173601119337689d295b1c2294afb3dde16fe"
+    },
+    "src/server/scripts/Commands/cs_event.cpp": {
+      "before_sha256": "4a73f1907b60e160358c1a46e94e573a9ea3abc3f385a89068b2f9050baf166a",
+      "owner_key": null,
+      "after_sha256": "63255e484dd727aa0ded5484db97586e78ccd4d46719fb66901f30267cffe5b7"
     }
   }
 }

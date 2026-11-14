@@ -23,6 +23,7 @@ Category: commandscripts
 EndScriptData */
 
 #include "ScriptMgr.h"
+#include "CommandIntegerArgument.h"
 #include "GameEventMgr.h"
 #include "Chat.h"
 
@@ -87,7 +88,9 @@ public:
         if (!id)
             return false;
 
-        uint32 eventId = atoi(id);
+        uint32 eventId;
+        if (!Trinity::ParseCommandInteger(id, eventId))
+            return false;
 
         GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();
 

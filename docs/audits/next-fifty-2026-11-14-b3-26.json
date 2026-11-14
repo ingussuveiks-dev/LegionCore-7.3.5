@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-14",
+  "batch": 3,
+  "index": 26,
+  "key": "WorldEventInfoChecked",
+  "path": "src/server/scripts/Commands/cs_event.cpp",
+  "summary": "WorldEventInfoChecked;complete exact source delta in NextFifty20261114Repairs.json.",
+  "status": "IMPLEMENTED_TESTED_CANONICAL_CLIENT_PENDING",
+  "checks_reference": "docs/audits/next-fifty-2026-11-14.json",
+  "scope": "One independently callable command/helper defect;shared parsers/tests not recounted.",
+  "canonical_world_sha256": "77410a96886e36222525d00df1253e0e15d8cbe362dc7db48a9a22d6c4d64a2b",
+  "post_test_diagnostics": "Retained account realm PE proof initially assumed fixedr15 register;decoded new binary usesr14 for parsed realm. Proof now derives32-bit register from actual parsed stack slot and follows same value into DELETE parameter1,still rejecting current-realm substitution. Owned10524 ready/shutdown0/exit0,gone,stderr empty. No new/changed crash or appended DBErrors/unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved.",
+  "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch3",
+  "fix_commit": "This focused commit;actual hashes in ignored fixed repair-record.json",
+  "client_limit": "Native/model/PE/startup evidence;actual client/whole36 remain separate."
+}
