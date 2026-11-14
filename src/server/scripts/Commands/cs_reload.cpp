@@ -35,6 +35,7 @@ EndScriptData */
 #include "SkillDiscovery.h"
 #include "SkillExtraItems.h"
 #include "Chat.h"
+#include "CommandIntegerArgument.h"
 #include "WaypointManager.h"
 #include "WardenMgr.h"
 #include "ScriptSystem.h"
@@ -420,9 +421,16 @@ public:
 
         Tokenizer entries(std::string(args), ' ');
 
-        for (Tokenizer::const_iterator itr = entries.begin(); itr != entries.end(); ++itr)
+        std::vector<uint32> entryIds;
+        for (char const* text : entries)
         {
-            uint32 entry = uint32(atoi(*itr));
+            uint32 entry;
+            if (!Trinity::ParseCommandInteger(text, entry) || !entry)
+                return false;
+            entryIds.push_back(entry);
+        }
+        for (uint32 entry : entryIds)
+        {
 
             WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_CREATURE_TEMPLATE);
             stmt->setUInt32(0, entry);
