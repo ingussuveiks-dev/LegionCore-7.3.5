@@ -528,9 +528,10 @@ public:
             if (!toY || !toZ)
                 return false;
 
-            float x = (float)atof(toX);
-            float y = (float)atof(toY);
-            float z = (float)atof(toZ);
+            float x, y, z;
+            if (!Trinity::ParseCommandFloat(toX, x) || !Trinity::ParseCommandFloat(toY, y) ||
+                !Trinity::ParseCommandFloat(toZ, z))
+                return false;
 
             if (!MapManager::IsValidMapCoord(object->GetMapId(), x, y, z))
             {
