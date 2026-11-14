@@ -493,6 +493,16 @@
       "test_boundary": "        player->DeliveryRewardPack",
       "observe": "rewardPackID",
       "summary": "Reject malformed/wrapped reward-pack IDs before native delivery can grant an unintended reward."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandlePlayAllCommand",
+      "case": "GlobalSoundExactId",
+      "key": "GlobalSoundExactId",
+      "kind": "more",
+      "old": "    static bool HandlePlayAllCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 soundId = atoi((char*)args);\n        handler->GetSession()->GetPlayer()->PlayDirectSound(soundId, NULL);\n        handler->PSendSysMessage(LANG_COMMAND_PLAYED_TO_ALL, soundId);\n        return true;\n    }",
+      "new": "    static bool HandlePlayAllCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 soundId;\n        if (!Trinity::ParseCommandInteger(args, soundId))\n            return false;\n        handler->GetSession()->GetPlayer()->PlayDirectSound(soundId, NULL);\n        handler->PSendSysMessage(LANG_COMMAND_PLAYED_TO_ALL, soundId);\n        return true;\n    }",
+      "summary": "Reject malformed/wrapped sound IDs before sending the native sound notification."
     }
   ],
   "extra_edits": [
@@ -536,7 +546,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
-      "after_sha256": "caecbf4149d2b1bd2ca8536dc31f3ff818e7cc02a590088fafd98d9464f88d1d"
+      "after_sha256": "35686398cd1c7cd866ae9bad35852c8f77835c2f0ff6500999249aef1b4795dd"
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",

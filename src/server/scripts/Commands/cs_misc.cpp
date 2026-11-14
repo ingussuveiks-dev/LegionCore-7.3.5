@@ -3235,7 +3235,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 soundId = atoi((char*)args);
+        uint32 soundId;
+        if (!Trinity::ParseCommandInteger(args, soundId))
+            return false;
         handler->GetSession()->GetPlayer()->PlayDirectSound(soundId, NULL);
         handler->PSendSysMessage(LANG_COMMAND_PLAYED_TO_ALL, soundId);
         return true;

@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_45_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 45,
+  "status": "IN_PROGRESS_46_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 46,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -363,7 +363,7 @@
     },
     {
       "batch": 5,
-      "count": 5,
+      "count": 6,
       "source_case_count": 104,
       "repairs": [
         {
@@ -405,6 +405,14 @@
           "path": "src/server/scripts/Commands/cs_misc.cpp",
           "method": "HandlePvpRewardCommand",
           "test_scope": "admission prefix"
+        },
+        {
+          "index": 46,
+          "key": "GlobalSoundExactId",
+          "summary": "Reject malformed/wrapped sound IDs before sending the native sound notification.",
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "method": "HandlePlayAllCommand",
+          "test_scope": "complete production handler"
         }
       ]
     }
