@@ -3797,7 +3797,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 itemId = atol((char*)args);
+        uint32 itemId;
+        if (!Trinity::ParseCommandInteger(args, itemId))
+            return false;
 
         if (itemId == 0)
         {
@@ -3813,6 +3815,12 @@ public:
         ItemSparseEntry const* sparse = sItemSparseStore.LookupEntry(itemId);
         ItemEntry const* db2Data = sItemStore.LookupEntry(itemId);
 
+        if (!db2Data || !sparse)
+        {
+            handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
         ItemSpecStats itemSpecStats(db2Data, sparse);
         handler->PSendSysMessage("ItemSpecStats ItemSpecStatCount %u", itemSpecStats.ItemSpecStatCount);
 
