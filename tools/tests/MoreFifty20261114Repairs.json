@@ -503,6 +503,18 @@
       "old": "    static bool HandlePlayAllCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 soundId = atoi((char*)args);\n        handler->GetSession()->GetPlayer()->PlayDirectSound(soundId, NULL);\n        handler->PSendSysMessage(LANG_COMMAND_PLAYED_TO_ALL, soundId);\n        return true;\n    }",
       "new": "    static bool HandlePlayAllCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 soundId;\n        if (!Trinity::ParseCommandInteger(args, soundId))\n            return false;\n        handler->GetSession()->GetPlayer()->PlayDirectSound(soundId, NULL);\n        handler->PSendSysMessage(LANG_COMMAND_PLAYED_TO_ALL, soundId);\n        return true;\n    }",
       "summary": "Reject malformed/wrapped sound IDs before sending the native sound notification."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_misc.cpp",
+      "method": "HandleTransferAbortReasonCommand",
+      "case": "TransferReasonNativeDomain",
+      "key": "TransferReasonNativeDomain",
+      "kind": "more",
+      "old": "    static bool HandleTransferAbortReasonCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint8 reasonId = atoi((char*)args);\n\n        handler->GetSession()->GetPlayer()->SendTransferAborted(0, TransferAbortReason(reasonId));\n        return true;\n    }",
+      "new": "    static bool HandleTransferAbortReasonCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint8 reasonId;\n        if (!Trinity::ParseCommandInteger(args, reasonId) || reasonId > TRANSFER_ABORT_SOLO_PLAYER_SWITCH_DIFFICULTY)\n            return false;\n\n        handler->GetSession()->GetPlayer()->SendTransferAborted(0, TransferAbortReason(reasonId));\n        return true;\n    }",
+      "test_boundary": "        handler->GetSession()->GetPlayer()->SendTransferAborted",
+      "observe": "reasonId",
+      "summary": "Reject malformed/narrowed transfer-abort reasons outside the matching native domain before the diagnostic packet."
     }
   ],
   "extra_edits": [
@@ -546,7 +558,7 @@
   "files": {
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "d8b652c70661d7aeb3568e3d19997f534e70823f65a0f1c627df5450ad265caf",
-      "after_sha256": "35686398cd1c7cd866ae9bad35852c8f77835c2f0ff6500999249aef1b4795dd"
+      "after_sha256": "6f73650496a83f0a79b852d2457c5743845eea994e587eb032f56280f5045d35"
     },
     "src/server/scripts/Commands/cs_achievement.cpp": {
       "before_sha256": "6df449284cb0ca419df70c9101796be1c5334b9b92bfe995a8207a0a11f6d610",

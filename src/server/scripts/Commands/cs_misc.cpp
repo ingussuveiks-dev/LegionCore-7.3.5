@@ -3806,7 +3806,9 @@ public:
         if (!*args)
             return false;
 
-        uint8 reasonId = atoi((char*)args);
+        uint8 reasonId;
+        if (!Trinity::ParseCommandInteger(args, reasonId) || reasonId > TRANSFER_ABORT_SOLO_PLAYER_SWITCH_DIFFICULTY)
+            return false;
 
         handler->GetSession()->GetPlayer()->SendTransferAborted(0, TransferAbortReason(reasonId));
         return true;
