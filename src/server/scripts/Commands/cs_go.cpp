@@ -650,8 +650,8 @@ public:
         if (!id)
             return false;
 
-        uint32 ticketId = atoi(id);
-        if (!ticketId)
+        uint32 ticketId;
+        if (!Trinity::ParseCommandInteger(id, ticketId) || !ticketId)
             return false;
 
         GmTicket* ticket = sTicketMgr->GetTicket(ticketId);
