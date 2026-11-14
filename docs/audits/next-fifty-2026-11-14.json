@@ -3,8 +3,8 @@
   "request": "Labi ņem vēl5x10",
   "baseline": "9eb7aab7ae7c78fe1880c9f04ca131f254389093",
   "authorized_new_repairs": 50,
-  "completed_source_repairs": 40,
-  "status": "IN_PROGRESS_40_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 41,
+  "status": "IN_PROGRESS_41_OF_50_CANONICAL_CLIENT_PENDING",
   "previous_fifty": "docs/audits/five-ten-2026-11-14.json remains completed50;none recounted.",
   "batches": [
     {
@@ -319,10 +319,77 @@
         "reclaimed_bytes": 259339840.0,
         "retained_rollback": ".codex/release-before-next-fifty-20261114-batch4"
       }
+    },
+    {
+      "batch": 5,
+      "repairs": [
+        {
+          "key": "DebugFieldReadChecked",
+          "path": "src/server/scripts/Commands/cs_debug.cpp",
+          "summary": "DebugFieldReadChecked;complete exact source delta in NextFifty20261114Repairs.json."
+        }
+      ],
+      "checks": {
+        "source_asan": "596 final cumulative complete actual new-fifty production handler/helper contexts(150 new field/inventory cases). Native GUID max function,fixed enums,fall/coordinates exported. Controlled raw/dynamic fields and owned inventory with deferred/protected removal;no actual world/account/character writes. Native33/40-bit item IDs,foreign/missing target limits,mode parsing,float rejection,signed addition bounds,native16 field alias,explicit zero/bit32,dynamic offset31 and once-only post-removal hook covered.",
+        "counterfactual": "Original field65536 aliases native uint16 index0 and writes it;original native33-bit inventory identifier aliases7 and changes wrong owned item;original item-expire hook fires while native equip protection keeps item present. Full old method source with controlled endpoints,not actual native process crashes. Paired fixed controls pass.",
+        "native": "Actual Object::SetUInt32Value indexuint16/valueuint32,static item max40 bits and genuine33-bit Item factory counter roundtrip;actual packet serializers/int16 streaming,byte/result widths,fall numerator/time/expansion/double contracts retained. No DB/world mutation.",
+        "release": "Original scripts Release library/original-input staged link. All new registered operations and retained previous50 PE proofs pass in canonical;Scepter VerifyReleaseBinary passes. New exact source deltas restore prior50 source certificate.",
+        "startup": "Owned PID34100 ready/shutdown0/exit0,gone,stderr empty;no user server stopped/config changed.",
+        "analysis": "Selected final original /analyze cs_debug exits0;native guarded uint32-to-uint16 and header/deprecation warnings retained/reviewed. Research into native int16 rating cache and unfixed AuraState enum32 is OPEN/not changed/not counted;original source evidence remains outside fixed.",
+        "diagnostics": "No passing test uses deliberately undefined signed-overflow casts. Native DestroyItem currently queues deletion and may defer protected removal;capture stable ItemTemplate before call and query actual owned-item absence before OnItemExpire. This is a receipt/order fix,not a claim that the old current core immediately deleted the pointer. Code-level preflight does not certify real item equip callbacks or client UI. Owned34100 ready/shutdown0/exit0,gone,stderr empty. Final pre/post snapshots no new/changed crash,appended DBErrors or unexplained errors/assertions. Mixed7111-byte DBErrors and Slaghammer hash preserved;all36 artifact/client and original LINK2/FuZan remain open."
+      },
+      "canonical": {
+        "bnetserver.exe": "61d5b8440f6433f3b90adfbda2841869da0ec6094badcd1883dd128336d4205a",
+        "bnetserver.map": "c91a99cb1ddd5662f960c5256a17388aabb4946cf802b039f9b130a545bb101b",
+        "worldserver.exe": "c6be8e97e2a2ca44f223e4bc544b08098b531a29d10126ac207eee9ae0c42a17",
+        "worldserver.map": "4cf31217e93147ed01cc21d402dbcece21ddd5d2e4847113d5bf6ba190e93b74"
+      },
+      "cleanup": {
+        "archive": "build-extractors/bin/Release/fixed/next-fifty-20261114-batch5",
+        "manifest_sha256": "55f15154d5ff1ca5af3d1a9c98c90d01fd9319073bb725a87f57b9e447a7b08b",
+        "archived_files": 299,
+        "removed_files": 154,
+        "reclaimed_bytes": 1174432464.0,
+        "retained_rollback": [
+          ".codex/release-before-next-fifty-20261114-batch1",
+          ".codex/release-before-next-fifty-20261114-batch5"
+        ]
+      }
     }
   ],
   "remaining": [
-    "10 authorized new source repairs remain.",
-    "Actual client traversal,all36 complete artifact chains and original LINK2/FuZan/Slaghammer/mixedDBErrors evidence remain open;source/native/PE/startup do not certify client behavior."
-  ]
+    "9 authorized new source repairs remain.",
+    "Actual client traversal,all36 complete artifact chains and original LINK2/FuZan/Slaghammer/mixedDBErrors evidence remain open;source/native/PE/startup do not certify client behavior.",
+    "New uncounted source research: int16 native rating cache vs int32 ApplyRatingMod and AuraState enum32/reset path require independent native investigation;no fixes claimed."
+  ],
+  "completion": {
+    "new_source_repairs": 50,
+    "groups": 5,
+    "final_source_cases": 596,
+    "previous_fifty_recounted": false,
+    "reclaimed_bytes": 2104446731,
+    "retained_rollback": [
+      ".codex/release-before-next-fifty-20261114-batch1",
+      ".codex/release-before-next-fifty-20261114-batch5"
+    ],
+    "ownership": "All five task-owned canonical startup processes ready/shutdown0/exit0 and gone;no user server stopped.",
+    "client_scope": "Actual GM/client UI/audio/movie/movement/equip and all36 complete artifact quests remain separate;no whole-chain verification claim.",
+    "stop": "Authorized next5x10 source repair batch finished;stop after final verification/push."
+  },
+  "open_native_research": {
+    "status": "OPEN_RESEARCH_NOT_COUNTED_AS_REPAIRS",
+    "findings": [
+      {
+        "path": "src/server/game/Entities/Unit/Unit.h",
+        "symbol": "m_baseRatingValue",
+        "observation": "Native rating cache is int16 and ApplyRatingMod accepts int32;counter-width policy/shared callers need separate investigation before widening or clamping. No rating commands changed/count awarded."
+      },
+      {
+        "path": "src/server/scripts/Commands/cs_debug.cpp",
+        "symbol": "HandleDebugSetAuraStateCommand",
+        "observation": "Unfixed native AuraStateType enum highest23 while reset loops32 and signed abs input unchecked;native bit/enum lifecycle requires separate complete repair. This handler was not changed or counted."
+      }
+    ],
+    "preserve": "Original artifact LINK2/FuZan/Slaghammer and mixed DBErrors remain open separately."
+  }
 }

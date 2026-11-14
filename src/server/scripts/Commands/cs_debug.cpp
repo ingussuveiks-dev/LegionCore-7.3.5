@@ -1540,16 +1540,19 @@ public:
 
         ObjectGuid guid = target->GetGUID();
 
-        uint32 opcode = (uint32)atoi(x);
+        uint32 opcode;
+        if (!Trinity::ParseCommandInteger(x, opcode))
+            return false;
         if (opcode >= target->GetValuesCount())
         {
             handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, guid.GetGUIDLow(), target->GetValuesCount());
             return false;
         }
 
-        bool isInt32 = true;
-        if (z)
-            isInt32 = atoi(z) != 0;
+        int32 mode = 1;
+        if (z && !Trinity::ParseCommandInteger(z, mode))
+            return false;
+        bool const isInt32 = mode != 0;
 
         if (isInt32)
         {

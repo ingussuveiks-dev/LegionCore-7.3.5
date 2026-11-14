@@ -100,6 +100,8 @@ def prepare(out,baseline=False,float_baseline=False,money_baseline=False,artifac
     movement=(ROOT/'src/server/game/Movement/Spline/MovementUtil.cpp').read_text();typedefs=(ROOT/'src/server/game/Movement/Spline/MovementTypedefs.h').read_text()
     gravity=re.search(r'float constexpr gravity = [^;]+;',typedefs)[0];constantsFall='\n'.join(re.findall(r'    float constexpr [^;]+;',movement))
     (out/'NativeFall.inc').write_text('namespace Movement {\n'+gravity+'\n'+constantsFall+'\n'+block(movement,'    float computeFallElevation(')+'\n}\n',encoding='utf-8')
+    guid=block((ROOT/'src/server/game/Entities/Object/ObjectGuid.cpp').read_text(),'ObjectGuid::LowType ObjectGuid::GetMaxCounter(HighGuid)')
+    (out/'NativeGuidLimit.inc').write_text('#define UI64LIT(N) UINT64_C(N)\n'+guid+'\n#undef UI64LIT\n',encoding='utf-8')
     (out/'Selected.inc').write_text(joined,encoding='utf-8')
     (out/'Constants.inc').write_text('\n'.join(constants),encoding='utf-8')
     (out/'defines.txt').write_text(' '.join('/D'+d for d in defines)+(' /DSOUL_RANGE_BASELINE' if baseline else ''),encoding='utf-8')

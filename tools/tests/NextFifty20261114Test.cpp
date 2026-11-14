@@ -13,6 +13,8 @@
 #include <set>
 #include <functional>
 #include <ctime>
+#include <inttypes.h>
+#define UI64FMTD "%" PRIu64
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -24,7 +26,10 @@ static void Require(bool b,char const* message){if(!b)throw std::runtime_error(m
 #include "Constants.inc"
 #include "NativeCoordinates.inc"
 #include "NativeFall.inc"
-struct ObjectGuid{using LowType=uint64;uint64 low=1;uint64 GetGUIDLow(){return low;}std::string ToString(){return "controlled:1";}static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
+enum class HighGuid{Item,Player,Creature};
+struct ObjectGuid{using LowType=uint64;uint64 low=1;HighGuid kind=HighGuid::Creature;uint64 GetGUIDLow(){return low;}uint64 GetCounter()const{return low;}static LowType GetMaxCounter(HighGuid);template<HighGuid Kind>static ObjectGuid Create(LowType counter){return {counter&GetMaxCounter(Kind),Kind};}std::string ToString(){return "controlled:1";}static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
+#include "NativeGuidLimit.inc"
+
 #define TC_LOG_DEBUG(...) ((void)0)
 #include "NativeTokenizer.inc"
 struct Position{float x=1,y=2,z=3,o=.5f;};
@@ -32,12 +37,14 @@ struct FactionName{char const*Str[1]={"Controlled faction"};};
 struct FactionEntry{uint32 ID=1;int32 ReputationIndex=0;uint32 ParagonFactionID=0;FactionName*Name=nullptr;};
 struct ReputationManager{uint32 writes=0;int32 delta=0;bool paragon=false;void ModifyReputation(FactionEntry const*,int32 value){++writes;delta=value;}void ModifyParagonReputation(FactionEntry const*,int32 value){++writes;delta=value;paragon=true;}int32 GetReputation(FactionEntry const*){return delta;}};
 struct Session;struct Player;struct Creature;struct GameObject;
-struct Item{uint64 xp=100;uint32 writes=0,states=0;Player*owner=nullptr;uint64 GetUInt64Value(uint32 field){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field read");return xp;}void SetUInt64Value(uint32 field,uint64 value){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field write");++writes;xp=value;}void SetState(uint32 state,Player*player){Require(state==ITEM_CHANGED,"Wrong item state");++states;owner=player;}};
+struct ItemTemplate{uint32 entry=7;};
+struct Item{uint64 xp=100;uint32 writes=0,states=0,reads=0;Player*owner=nullptr;std::map<uint16,uint32>fields;ItemTemplate proto;uint8 bag=0,slot=1;bool protectedRemove=false,removed=false;uint64 GetUInt64Value(uint32 field){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field read");return xp;}void SetUInt64Value(uint32 field,uint64 value){Require(field==ITEM_FIELD_ARTIFACT_XP,"Wrong artifact field write");++writes;xp=value;}void SetState(uint32 state,Player*player){Require(state==ITEM_CHANGED,"Wrong item state");++states;owner=player;}uint16 GetValuesCount(){return ITEM_END;}uint32 GetUInt32Value(uint16 field){Require(field<ITEM_END,"Bad item read index");++reads;return fields[field];}void SetUInt32Value(uint16 field,uint32 value){Require(field<ITEM_END,"Bad item write index");++writes;fields[field]=value;}uint8 GetBagSlot(){return bag;}uint8 GetSlot(){return slot;}ItemTemplate const*GetTemplate(){return &proto;}};
 struct PhaseManager{uint32 writes=0,mask=0;void SetCustomPhase(uint32 value){++writes;mask=value;}};
 struct WorldPacket{std::vector<int16>ids;};
 namespace WorldPackets{namespace Misc{struct StreamingMovie{std::vector<int16>MovieIDs;WorldPacket packet;WorldPacket const*Write(){packet.ids=MovieIDs;return &packet;}};}}
 struct MotionMaster{uint32 initializes=0,jumps=0;std::vector<float>jumpArgs;void Initialize(){++initializes;}void MoveJump(float x,float y,float z,float xy,float vz){++jumps;jumpArgs={x,y,z,xy,vz};}};
 struct Unit {
+ uint16 countOverride=0,dynamicCount=3;uint32 fieldReads=0,badFieldWrites=0,dynamicReads=0,dynamicWrites=0,itemQueries=0,destroyCalls=0,m_killPoints=17;uint64 lastItem=0;std::map<uint16,float>floatFields;std::map<uint16,std::vector<uint32>>dynamicFields;std::map<uint64,Item*>ownedItems;
  MotionMaster motion;bool unitEligible=true,selection=false;uint32 lastError=0,errorChannel=0,lastMovie=0,lastCinematic=0,lastEmote=0,lastSound=0,partyCode=0,packetCalls=0;bool distanceSound=false;std::vector<int16>streamIDs;
  Position position;ReputationManager reputation;bool honorAccepted=true;int32 honorAmount=0,lastVisual=0;std::vector<float>basePoints;uint32 lastTarget=7,mount=0;bool honorToken=false;uint32 honorGroup=0;
  uint32 writes=0,powerType=0,selectedTitle=2,spells=0,stats=0,ratings=0,nativeMoneyErrors=0;int32 maxPower=0,power=0;
@@ -56,13 +63,18 @@ struct Unit {
  void Mount(uint32 id){++writes;mount=id;}
  bool RewardHonor(Unit*target,uint32 group,int32 value,bool token=true){Require(!target&&group<=1,"Honor native arguments changed");honorToken=token;honorGroup=group;honorAmount=value;if(honorAccepted)++writes;return honorAccepted;}uint32 GetCurrency(uint32 type){Require(type==CURRENCY_TYPE_HONOR_POINTS,"Wrong honor currency");return writes;}
  ReputationManager&GetReputationMgr(){return reputation;}
- uint32 GetTypeId(){return ToPlayer()?TYPEID_PLAYER:3;}uint32 GetValuesCount(){return ToPlayer()?PLAYER_FIELD_END:UNIT_END;}
+ uint32 GetTypeId(){return ToPlayer()?TYPEID_PLAYER:3;}uint16 GetValuesCount(){return countOverride?countOverride:uint16(ToPlayer()?PLAYER_FIELD_END:UNIT_END);}
  Session* GetSession(){return session;}bool isInFlight(){return flying;}
  void SetMaxPower(uint32 t,int32 v){++writes;powerType=t;maxPower=v;}
  void SetPower(uint32 t,int32 v){++writes;powerType=t;power=v;}
  void SetUInt64Value(uint32 field,uint64 v){Require(field==PLAYER_FIELD_KNOWN_TITLES,"Wrong title field");++writes;titles=v;}
- void SetUInt32Value(uint32 field,uint32 v){++writes;if(field==PLAYER_FIELD_PLAYER_TITLE)selectedTitle=v;else flags[uint16(field)]=v;}
- uint32 GetUInt32Value(uint32 field){return flags[uint16(field)];}
+ void SetUInt32Value(uint16 field,uint32 v){if(field>=GetValuesCount()){++badFieldWrites;return;}++writes;if(field==PLAYER_FIELD_PLAYER_TITLE)selectedTitle=v;else flags[uint16(field)]=v;}
+ uint32 GetUInt32Value(uint16 field){Require(field<GetValuesCount(),"Native field read bound");++fieldReads;return flags[field];}
+ float GetFloatValue(uint16 field){Require(field<GetValuesCount(),"Native float read bound");++fieldReads;return floatFields[field];}
+ uint16 GetDynamicValuesCount(){return dynamicCount;}uint32 GetDynamicValue(uint16 field,uint16 offset){Require(field<dynamicCount,"Native dynamic field bound");++dynamicReads;auto&values=dynamicFields[field];return offset<values.size()?values[offset]:0;}void SetDynamicValue(uint16 field,uint16 offset,uint32 value){Require(field<dynamicCount,"Native dynamic field bound");++dynamicWrites;auto&values=dynamicFields[field];if(values.size()<=offset)values.resize(offset+1);values[offset]=value;}
+ Item*GetItemByGuid(ObjectGuid guid){Require(guid.kind==HighGuid::Item,"Wrong inventory GUID type");++itemQueries;lastItem=guid.GetCounter();auto it=ownedItems.find(lastItem);return it==ownedItems.end()?nullptr:it->second;}
+ void DestroyItem(uint8 bag,uint8 slot,bool update){Require(update,"Native item update flag changed");++destroyCalls;for(auto it=ownedItems.begin();it!=ownedItems.end();++it){auto item=it->second;if(item->bag!=bag||item->slot!=slot)continue;if(item->protectedRemove)return;item->removed=true;item->slot=255;ownedItems.erase(it);return;}}
+
  void SetHealth(uint64 value){++writes;health=value;}void SetMaxHealth(uint64 value){++writes;maxHealth=value;}
  void SetDrunkValue(uint8 value){++writes;drunk=value;}
  void SetDisplayId(uint32 value){++writes;display=value;}
@@ -77,7 +89,7 @@ struct Unit {
  void CastSpell(Unit*,uint32 id,bool){casts.push_back(id);}void PlayOneShotAnimKit(uint32 id){animations.push_back(id);}
  void SetSpeed(uint32 mode,float value,bool=false){++writes;speeds[mode]=value;}
  void SetObjectScale(float value){++writes;scale=value;}
- void SetFloatValue(uint32 field,float value){Require(field==PLAYER_FIELD_AVG_ITEM_LEVEL+EquippedAvgItemLevel,"Wrong item-level field");++writes;average=value;}
+ void SetFloatValue(uint16 field,float value){Require(field<GetValuesCount()&&std::isfinite(value),"Invalid native float field write");++writes;floatFields[field]=value;if(field==PLAYER_FIELD_AVG_ITEM_LEVEL+EquippedAvgItemLevel)average=value;}
  bool HasPvpStatsScalingEnabled(){return pvp;}void SendUpdateStat(uint32 mask){Require(mask==USM_ALL,"Wrong stats mask");++stats;}void SendUpdateCR(uint32 mask){Require(mask==CR_PVP_UPDATE_MASK,"Wrong rating mask");++ratings;}
  bool HasFlag(uint16 field,uint32 mask){return (flags[field]&mask)!=0;}void RemoveFlag(uint16 field,uint32 mask){++writes;flags[field]&=~mask;}void SetFlag(uint16 field,uint32 mask){++writes;flags[field]|=mask;}
  uint64 GetMoney(){return money;}void SetMoney(uint64 value){++writes;money=value;}
@@ -85,7 +97,7 @@ struct Unit {
  void SendEquipError(uint32 code){Require(code==EQUIP_ERR_TOO_MUCH_GOLD,"Wrong native money error");++nativeMoneyErrors;}
 
 };
-struct MoneyScripts{std::function<void(int64&)>hook;template<class T>void OnPlayerMoneyChanged(T*,int64&value) {if(hook)hook(value);}} moneyScripts;auto sScriptMgr=&moneyScripts;
+struct MoneyScripts{uint32 expired=0;Player*expirePlayer=nullptr;ItemTemplate const*expireTemplate=nullptr;void OnItemExpire(Player*player,ItemTemplate const*info){++expired;expirePlayer=player;expireTemplate=info;}std::function<void(int64&)>hook;template<class T>void OnPlayerMoneyChanged(T*,int64&value) {if(hook)hook(value);}} moneyScripts;auto sScriptMgr=&moneyScripts;
 #include "NativeModifyMoney.inc"
 using WorldObject=Unit;
 struct Player:Unit{Player*ToPlayer()override{return this;}};
@@ -197,6 +209,15 @@ static void NpcRejects(bool(*fn)(ChatHandler*,char const*),std::vector<char cons
  {ChatHandler h;WorldDatabase.writes.clear();Require(!Command(fn,h,"1")&&WorldDatabase.writes.empty(),"Absent NPC accepted");++cases;}
 }
 int main(){try{
+#ifdef COUNTERFACTUAL_SETBIT
+ Player p;ChatHandler h;h.target=&p;Require(Command(CaseSetBit::Selected::HandleDebugSet32BitCommand,h,"65536 1")&&p.writes==1&&p.flags[0]==1&&!p.badFieldWrites,"Original native16 field alias not reproduced");std::cout<<"COUNTERFACTUAL original field65536 narrows to native index0 and overwrites it;controlled setter,no actual server mutation\n";return 0;
+#endif
+#ifdef COUNTERFACTUAL_ITEMEXPIRE
+ Player p;Item item;item.protectedRemove=true;p.ownedItems[7]=&item;Session ses{&p,1};ChatHandler h;h.session=&ses;moneyScripts.expired=0;Require(Command(CaseItemExpire::Selected::HandleDebugItemExpireCommand,h,"7")&&!item.removed&&moneyScripts.expired==1,"Original protected-item premature expiration hook not reproduced");std::cout<<"COUNTERFACTUAL original expiry hook fires despite protected removal leaving item owned;controlled native-behavior endpoint\n";return 0;
+#endif
+#ifdef COUNTERFACTUAL_ITEMSET
+ Player p;Item small,wide;uint64 guid=(uint64(1)<<32)+7;p.ownedItems[7]=&small;p.ownedItems[guid]=&wide;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseItemSet::Selected::HandleDebugSetItemValueCommand,h,"4294967303 1 123")&&small.writes==1&&!wide.writes&&small.fields[1]==123,"Original item32 alias not reproduced");std::cout<<"COUNTERFACTUAL original native33-bit inventory GUID aliases low7 and changes wrong owned item;controlled inventory only\n";return 0;
+#endif
 #ifdef COUNTERFACTUAL_PARTY
  Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseParty::Selected::HandleDebugSendQuestPartyMsgCommand,h,"256")&&p.writes==1&&p.partyCode==0,"Original party byte wrap not reproduced");std::cout<<"COUNTERFACTUAL original quest-party code256 is sent as0 through uint8 narrowing;controlled sender only\n";return 0;
 #endif
@@ -606,6 +627,51 @@ int main(){try{
  for(char const*arg:{"1 2 3 4 5","1 2 20000 4 5","-1 0 -100 -5 -5"}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseJump::Selected::HandleDebugMoveJump,h,arg)&&p.motion.jumps==1&&p.motion.jumpArgs.size()==5,"Native finite jump request policy changed");++cases;}
  for(bool actor:{false,true}){Player p;p.unitEligible=false;ChatHandler h;h.target=actor?&p:nullptr;Require(!Command(CaseJump::Selected::HandleDebugMoveJump,h,"1 2 3 4 5")&&!p.motion.jumps,"Missing/non-unit jump actor accepted");++cases;}
 #endif
+
+#ifdef REPAIR_FIELDGET
+ for(char const*arg:{""," ","-1","1x","65536","4 x","4 2147483648"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseFieldGet::Selected::HandleDebugGetValueCommand,h,arg)&&!p.fieldReads&&!p.writes,"Invalid field/mode reached native getter");++cases;}
+ for(char const*mode:{""," 1"," -1"," 0"}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseFieldGet::Selected::HandleDebugGetValueCommand,h,("4"+std::string(mode)).c_str())&&p.fieldReads==1&&!p.writes,"Native integer/float read mode changed");++cases;}
+#endif
+#ifdef REPAIR_FIELDSET
+ for(char const*arg:{""," ","4","-1 1","4x 1","65536 1","4 1x","4 -1","4 4294967296","4 1 x","4 nan 0","4 inf 0","4 1x 0"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseFieldSet::Selected::HandleDebugSetValueCommand,h,arg)&&!p.writes&&!p.badFieldWrites,"Invalid raw field/value/mode reached setter");++cases;}
+ for(uint32 value:{0u,1u,UINT32_MAX}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseFieldSet::Selected::HandleDebugSetValueCommand,h,("4 "+std::to_string(value)).c_str())&&p.writes==1&&p.flags[4]==value,"Native unsigned raw field value changed");++cases;}
+ for(char const*value:{"0","-1.5","0x1p1"}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseFieldSet::Selected::HandleDebugSetValueCommand,h,("4 "+std::string(value)+" 0").c_str())&&p.writes==1&&p.floatFields[4]==std::strtof(value,nullptr),"Native finite raw float mode changed");++cases;}
+ {ChatHandler h;Require(!Command(CaseFieldSet::Selected::HandleDebugSetValueCommand,h,"4 1"),"Missing field target accepted");++cases;}
+#endif
+#ifdef REPAIR_DYNAMICGET
+ for(char const*arg:{""," ","1","-1 0","1x 0","3 0","0 -1","0 1x","0 32","4294967296 0","0 4294967296"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseDynamicGet::Selected::HandleDebugGetDynamicValueCommand,h,arg)&&!p.dynamicReads&&!p.dynamicWrites,"Invalid dynamic selector reached reader");++cases;}
+ for(uint32 field:{0u,2u})for(uint32 offset:{0u,31u}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseDynamicGet::Selected::HandleDebugGetDynamicValueCommand,h,(std::to_string(field)+" "+std::to_string(offset)).c_str())&&p.dynamicReads==1&&!p.dynamicWrites,"Native zero/missing dynamic offset read changed");++cases;}
+#endif
+#ifdef REPAIR_DYNAMICSET
+ for(char const*arg:{""," ","1 0","-1 0 1","1x 0 1","3 0 1","0 -1 1","0 1x 1","0 32 1","0 0 1x","0 0 -1","0 0 4294967296"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseDynamicSet::Selected::HandleDebugSetDynamicValueCommand,h,arg)&&!p.dynamicWrites,"Invalid dynamic selector/value reached writer");++cases;}
+ for(uint32 field:{0u,2u})for(uint32 offset:{0u,31u})for(uint32 value:{0u,UINT32_MAX}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseDynamicSet::Selected::HandleDebugSetDynamicValueCommand,h,(std::to_string(field)+" "+std::to_string(offset)+" "+std::to_string(value)).c_str())&&p.dynamicWrites==1&&p.dynamicFields[field].size()==offset+1&&p.dynamicFields[field][offset]==value,"Native bounded dynamic resize/value changed");++cases;}
+#endif
+#ifdef REPAIR_ITEMGET
+ for(char const*arg:{""," ","7","-1 1","7x 1","0 1","1099511627783 1","18446744073709551616 1","7 1x","7 65536","8 1"}){Player p;Item item;p.ownedItems[7]=&item;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseItemGet::Selected::HandleDebugGetItemValueCommand,h,arg)&&!item.reads&&!item.writes,"Invalid/wrapped item read reached field");++cases;}
+ for(uint64 guid:{uint64(7),(uint64(1)<<32)+7,ObjectGuid::GetMaxCounter(HighGuid::Item)}){Player p;Item item;p.ownedItems[guid]=&item;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseItemGet::Selected::HandleDebugGetItemValueCommand,h,(std::to_string(guid)+" 1").c_str())&&item.reads==1&&p.lastItem==guid&&!item.writes,"Native40-bit owned item read lost width");++cases;}
+#endif
+#ifdef REPAIR_ITEMSET
+ for(char const*arg:{""," ","7 1","-1 1 1","7x 1 1","0 1 1","1099511627783 1 1","18446744073709551616 1 1","7 1x 1","7 65536 1","7 1 -1","7 1 1x","7 1 4294967296","8 1 1"}){Player p;Item item;p.ownedItems[7]=&item;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseItemSet::Selected::HandleDebugSetItemValueCommand,h,arg)&&!item.writes,"Invalid/wrapped item write mutated field");++cases;}
+ for(uint64 guid:{uint64(7),(uint64(1)<<32)+7,ObjectGuid::GetMaxCounter(HighGuid::Item)})for(uint32 value:{0u,UINT32_MAX}){Player p;Item small,wide;p.ownedItems[7]=&small;p.ownedItems[guid]=&wide;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseItemSet::Selected::HandleDebugSetItemValueCommand,h,(std::to_string(guid)+" 1 "+std::to_string(value)).c_str())&&wide.writes==1&&wide.fields[1]==value&&!small.writes&&p.lastItem==guid,"Native40-bit item write aliases small GUID");++cases;}
+#endif
+#ifdef REPAIR_ITEMEXPIRE
+ for(char const*arg:{""," ","-1","7x","0","1099511627783","18446744073709551616","8"}){Player p;Item item;p.ownedItems[7]=&item;Session ses{&p,1};ChatHandler h;h.session=&ses;moneyScripts.expired=0;Require(!Command(CaseItemExpire::Selected::HandleDebugItemExpireCommand,h,arg)&&!p.destroyCalls&&!moneyScripts.expired&&!item.removed,"Invalid/wrapped item expired");++cases;}
+ for(bool protectedRemove:{false,true}){Player p;Item small,wide;uint64 guid=(uint64(1)<<32)+7;wide.slot=2;wide.proto.entry=9;wide.protectedRemove=protectedRemove;p.ownedItems[7]=&small;p.ownedItems[guid]=&wide;Session ses{&p,1};ChatHandler h;h.session=&ses;moneyScripts.expired=0;Require(Command(CaseItemExpire::Selected::HandleDebugItemExpireCommand,h,std::to_string(guid).c_str())==!protectedRemove&&p.destroyCalls==1&&wide.removed==!protectedRemove&&!small.removed&&moneyScripts.expired==uint32(!protectedRemove),"Native protected deletion/expire receipt lost");if(!protectedRemove){Require(moneyScripts.expirePlayer==&p&&moneyScripts.expireTemplate==&wide.proto,"Expire hook actor/template changed");Require(!Command(CaseItemExpire::Selected::HandleDebugItemExpireCommand,h,std::to_string(guid).c_str())&&moneyScripts.expired==1,"Repeated expire notified twice");}++cases;}
+#endif
+#ifdef REPAIR_MOD32
+ for(char const*arg:{""," ","4","-1 1","4x 1","65536 1","4 1x","4 2147483648","4 -2147483649"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseMod32::Selected::HandleDebugMod32ValueCommand,h,arg)&&!p.writes&&!p.fieldReads,"Invalid signed raw addition reached field");++cases;}
+ for(auto const&row:std::vector<std::tuple<uint32,int32,uint32,bool>>{{0,0,0,true},{0,-1,UINT32_MAX,true},{UINT32_MAX,1,0,true},{uint32(INT32_MAX),1,uint32(INT32_MAX),false},{uint32(1)<<31,-1,uint32(1)<<31,false},{uint32(1)<<31,1,(uint32(1)<<31)+1,true},{0,INT32_MIN,uint32(1)<<31,true}}){Player p;p.flags[4]=std::get<0>(row);Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseMod32::Selected::HandleDebugMod32ValueCommand,h,("4 "+std::to_string(std::get<1>(row))).c_str())==std::get<3>(row)&&p.flags[4]==std::get<2>(row)&&p.writes==uint32(std::get<3>(row)),"Native signed field addition boundary/bit semantics changed");++cases;}
+#endif
+#ifdef REPAIR_SETBIT
+ for(char const*arg:{""," ","4","-1 1","4x 1","65536 1","4 -1","4 1x","4 33","4294967300 1"}){Player p;ChatHandler h;h.target=&p;Require(!Command(CaseSetBit::Selected::HandleDebugSet32BitCommand,h,arg)&&!p.writes&&!p.badFieldWrites,"Invalid field index or bit reached native narrow setter");++cases;}
+ for(uint32 bit:{0u,1u,31u,32u}){Player p;ChatHandler h;h.target=&p;Require(Command(CaseSetBit::Selected::HandleDebugSet32BitCommand,h,("4 "+std::to_string(bit)).c_str())&&p.writes==1&&p.flags[4]==(bit?(uint32(1)<<(bit-1)):0),"Native bit32/explicit zero reset changed");++cases;}
+ {Player p;ChatHandler h;h.target=&p;Require(!Command(CaseSetBit::Selected::HandleDebugSet32BitCommand,h,(std::to_string(p.GetValuesCount())+" 1").c_str())&&!p.badFieldWrites&&!p.writes,"Past-end field reached native diagnostic setter");++cases;}
+#endif
+#ifdef REPAIR_KILLPOINTS
+ for(char const*arg:{""," ","-1","1x","4294967296"}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(!Command(CaseKillPoints::Selected::HandleDebugKillPointsCommand,h,arg)&&p.m_killPoints==17,"Invalid kill points replaced value");++cases;}
+ for(uint32 value:{0u,1u,UINT32_MAX}){Player p;Session ses{&p,1};ChatHandler h;h.session=&ses;Require(Command(CaseKillPoints::Selected::HandleDebugKillPointsCommand,h,std::to_string(value).c_str())&&p.m_killPoints==value,"Native UInt32 kill-point field narrowed");++cases;}
+ {Session ses;ChatHandler h;h.session=&ses;Require(!Command(CaseKillPoints::Selected::HandleDebugKillPointsCommand,h,"1")&&!h.messages,"Missing kill-point actor reported success");++cases;}
+#endif
 #ifdef REPAIR_SOUL
  for(randomChoice=0;randomChoice<3;++randomChoice){EchoUnit source,actor;CaseSoul::Selected callback;callback.me=&actor;
 #ifdef SOUL_RANGE_BASELINE
@@ -618,7 +684,7 @@ int main(){try{
 #ifdef SOUL_RANGE_BASELINE
  std::cout<<"COUNTERFACTUAL original summon callback requests9038..9176 for three-element array;range intercepted before undefined memory access;not repaired success\n";
 #else
- std::cout<<"PASS "<<cases<<" selected production command/callback cases;native constants,controlled external services,no real account/character mutation. WP test ends before its first DB query;not whole waypoint editing/client traversal\n";
+ std::cout<<"PASS "<<cases<<" complete selected new-fifty production handler/helper contexts;native enums/coordinate/fall/counter sources,controlled endpoints,no live world/account/character mutation;not actual client traversal\n";
 #endif
  return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
