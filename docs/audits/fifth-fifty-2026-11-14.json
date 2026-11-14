@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "branch": "main",
   "baseline": "981437bd783d521d197af34168fa452ade90361e",
-  "status": "IN_PROGRESS_40_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 40,
+  "status": "IN_PROGRESS_41_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 41,
   "authorized": 50,
   "scope": "Fifth5x10:46 command entry paths,one shared deleted-character lookup and three shared Chat/CommandArgs functions;retention includes its actual core consumer. Previous200 not recounted;not50 client-verified artifact quests.",
   "canonical": {
@@ -369,6 +369,21 @@
           "summary": "Eliminate numeric-prefix aliasing and incorrect OR digit test; retain complete nonnumeric names, including digit-prefixed names, plus native numeric0 name fallback.",
           "path": "src/server/game/Chat/Chat.cpp",
           "method": "extractGameTeleFromLink",
+          "test_scope": "complete production function/helper"
+        }
+      ]
+    },
+    {
+      "batch": 5,
+      "count": 1,
+      "source_case_count": 73,
+      "repairs": [
+        {
+          "index": 41,
+          "key": "WaypointEventTypedMutation",
+          "summary": "Validate all operation IDs/payloads before DB effects; handle missing del ID/failed MAX query/ordinal exhaustion; use finite float and actual signed dataint without SQL coercion.",
+          "path": "src/server/scripts/Commands/cs_wp.cpp",
+          "method": "HandleWpEventCommand",
           "test_scope": "complete production function/helper"
         }
       ]

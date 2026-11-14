@@ -26,6 +26,7 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "WaypointManager.h"
 #include "Chat.h"
+#include "CommandFloatArgument.h"
 #include <limits>
 #include "CommandIntegerArgument.h"
 #include "DatabaseEnv.h"
@@ -298,6 +299,8 @@ public:
             return false;
 
         char* show_str = strtok((char*)args, " ");
+        if (!show_str)
+            return false;
         std::string show = show_str;
 
         // Check
@@ -306,11 +309,13 @@ public:
 
         char* arg_id = strtok(NULL, " ");
         uint32 id = 0;
+        if (arg_id && !Trinity::ParseCommandInteger(arg_id, id))
+            return false;
+        if (!arg_id && show == "del")
+            return false;
 
         if (show == "add")
         {
-            if (arg_id)
-                id = atoi(arg_id);
 
             if (id)
             {
@@ -337,7 +342,11 @@ public:
 
                 PreparedQueryResult result = WorldDatabase.Query(stmt);
 
+                if (!result)
+                    return false;
                 id = result->Fetch()->GetUInt32();
+                if (id == std::numeric_limits<uint32>::max())
+                    return false;
 
                 stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_WAYPOINT_SCRIPT);
 
@@ -359,7 +368,6 @@ public:
                 return true;
             }
 
-            id = atoi(arg_id);
 
             uint32 a2, a3, a4, a5, a6;
             float a8, a9, a10, a11;
@@ -398,7 +406,6 @@ public:
 
         if (show == "del")
         {
-            id = atoi(arg_id);
 
             WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_SCRIPT_ID_BY_GUID);
 
@@ -430,7 +437,6 @@ public:
                 return true;
             }
 
-            id = atoi(arg_id);
 
             if (!id)
             {
@@ -468,7 +474,9 @@ public:
 
             if (arg_str_2 == "setid")
             {
-                uint32 newid = atoi(arg_3);
+                uint32 newid;
+                if (!Trinity::ParseCommandInteger(arg_3, newid))
+                    return false;
                 handler->PSendSysMessage("%s%s|r|cff00ffff%u|r|cff00ff00%s|r|cff00ffff%u|r", "|cff00ff00", "Wp Event: Wypoint scipt guid: ", newid, " id changed: ", id);
 
                 WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_SCRIPT_ID);
@@ -480,6 +488,21 @@ public:
 
                 return true;
             }
+            float coordinate = 0.0f;
+            uint32 unsignedValue = 0;
+            int32 signedValue = 0;
+            if (arg_str_2 == "posx" || arg_str_2 == "posy" || arg_str_2 == "posz" || arg_str_2 == "orientation")
+            {
+                if (!Trinity::ParseCommandFloat(arg_3, coordinate))
+                    return false;
+            }
+            else if (arg_str_2 == "dataint")
+            {
+                if (!Trinity::ParseCommandInteger(arg_3, signedValue))
+                    return false;
+            }
+            else if (!Trinity::ParseCommandInteger(arg_3, unsignedValue))
+                return false;
             WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_SCRIPT_ID_BY_GUID);
             stmt->setUInt32(0, id);
             PreparedQueryResult result = WorldDatabase.Query(stmt);
@@ -494,7 +517,7 @@ public:
             {
                 WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_SCRIPT_X);
 
-                stmt->setFloat(0, float(atof(arg_3)));
+                stmt->setFloat(0, coordinate);
                 stmt->setUInt32(1, id);
 
                 WorldDatabase.Execute(stmt);
@@ -506,7 +529,7 @@ public:
             {
                 WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_SCRIPT_Y);
 
-                stmt->setFloat(0, float(atof(arg_3)));
+                stmt->setFloat(0, coordinate);
                 stmt->setUInt32(1, id);
 
                 WorldDatabase.Execute(stmt);
@@ -518,7 +541,7 @@ public:
             {
                 WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_SCRIPT_Z);
 
-                stmt->setFloat(0, float(atof(arg_3)));
+                stmt->setFloat(0, coordinate);
                 stmt->setUInt32(1, id);
 
                 WorldDatabase.Execute(stmt);
@@ -530,7 +553,7 @@ public:
             {
                 WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_SCRIPT_O);
 
-                stmt->setFloat(0, float(atof(arg_3)));
+                stmt->setFloat(0, coordinate);
                 stmt->setUInt32(1, id);
 
                 WorldDatabase.Execute(stmt);
@@ -540,14 +563,12 @@ public:
             }
             if (arg_str_2 == "dataint")
             {
-                WorldDatabase.PExecute("UPDATE waypoint_scripts SET %s='%u' WHERE guid='%u'", arg_2, atoi(arg_3), id); // Query can't be a prepared statement
+                WorldDatabase.PExecute("UPDATE waypoint_scripts SET %s='%i' WHERE guid='%u'", arg_2, signedValue, id); // Query can't be a prepared statement
 
                 handler->PSendSysMessage("|cff00ff00Waypoint script: |r|cff00ffff%u|r|cff00ff00 dataint updated.|r", id);
                 return true;
             }
-            std::string arg_str_3 = arg_3;
-            WorldDatabase.EscapeString(arg_str_3);
-            WorldDatabase.PExecute("UPDATE waypoint_scripts SET %s='%s' WHERE guid='%u'", arg_2, arg_str_3.c_str(), id); // Query can't be a prepared statement
+            WorldDatabase.PExecute("UPDATE waypoint_scripts SET %s='%u' WHERE guid='%u'", arg_2, unsignedValue, id); // Query can't be a prepared statement
             handler->PSendSysMessage("%s%s|r|cff00ffff%u:|r|cff00ff00 %s %s|r", "|cff00ff00", "Waypoint script:", id, arg_2, "updated.");
         }
         return true;
