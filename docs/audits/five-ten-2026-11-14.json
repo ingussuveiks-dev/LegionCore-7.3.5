@@ -4,8 +4,8 @@
   "authorized_new_repairs": 50,
   "baseline": "bd1ec571c561cc6e32ac8c45991c409e16d279d9",
   "previous_work": "docs/audits/five-ten-2026-11-13.json retains its historical18/50;this request starts the next five groups of10,without recounting old repairs.",
-  "status": "IN_PROGRESS_42_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
-  "completed_source_repairs": 42,
+  "status": "IN_PROGRESS_43_OF_50_SOURCE_REPAIRS_DEPLOYED_CLIENT_PENDING",
+  "completed_source_repairs": 43,
   "batches": [
     {
       "batch": 1,
@@ -337,6 +337,11 @@
           "key": "GoGraveyardCheckedIdentifier",
           "path": "src/server/scripts/Commands/cs_go.cpp",
           "summary": "Validate complete native safe-location identifier before any travel-state mutation and return actual native transfer result."
+        },
+        {
+          "key": "GoGridCheckedDestination",
+          "path": "src/server/scripts/Commands/cs_go.cpp",
+          "summary": "Validate finite grid coordinates/native map;require real valid ground before water fallback and taxi/recall changes;return actual transfer result. Also refine first GoQuest ground predicate using actual native coordinate contract,not an extra counted repair."
         }
       ],
       "checks": {
@@ -370,7 +375,7 @@
     }
   ],
   "remaining": [
-    "8 new source repairs remain;continue final group.",
+    "7 new source repairs remain;continue final group.",
     "Actual GM interactions/permissions/UI,dungeon clone/animation/combat and all36 full artifact chains remain client-pending. Models/catalog/PE/startup do not certify those.",
     "Original FuZan return flight/Yigthregor path,LINK2/Slaghammer,mixedDBErrors and other genuinely unresolved artifact/native findings remain open;do not fabricate missing payload/paths or count test cases as fixes."
   ]

@@ -14,5 +14,10 @@
   "archive": "build-extractors/bin/Release/fixed/five-ten-20261114-batch1",
   "post_test_diagnostics": "Final snapshots have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Source extractor missing Soul enum and PE check expecting inverse branch were diagnosed test-tool errors and paired with passing repaired runs. Original mixed7111-byte DBErrors and protected Slaghammer hash unchanged/untruncated.",
   "client_limit": "No actual client traversal or all36 whole artifact-chain claim.",
-  "fix_commit": "This focused audit/source/test commit;actual hashes are recorded in local ignored archive after push."
+  "fix_commit": "This focused audit/source/test commit;actual hashes are recorded in local ignored archive after push.",
+  "verification_refinement_2026_11_14": {
+    "details": "Initial first-ten Quest fixture bounded Z by XY limits,so its missing-terrain proof was too strong and was not a native terrain proof. Actual native XYZ accepts any finite Z. Replaced fixture with real overloads and added explicit groundHeight finite/>INVALID_HEIGHT gate in Quest/Grid/Zone/XYZ before water0 fallback. Forty revised Quest cases include native high Z and missing-grid water0. This corrects first repair,does not add a51st repair.",
+    "corrective_audit": "docs/audits/five-ten-2026-11-14-b5-43.json",
+    "canonical_world_sha256": "68b877ede479dea8a82b9e4764cd36fd01bef26c1960fd7fe415c5a751e2386a"
+  }
 }

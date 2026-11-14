@@ -35,7 +35,7 @@ for klass,methods in commands.items():
 go=ins('?HandleGoQuestCommand@go_commandscript@@')
 for prefix in ('?GetQuestPOIVector@QuestDataStoreMgr@@','?CreateBaseMap@MapManager@@','?GetHeight@Map@@','?GetWaterLevel@Map@@','?CleanupAfterTaxiFlight@Player@@','?SaveRecallPosition@Player@@'):
     assert sites(go,prefix),prefix
-pose,=[i for i,x in enumerate(go)if x.op_str=='r15b, r15b' and x.mnemonic=='test']
+pose,=[i for i,x in enumerate(go)if re.fullmatch(r'(r(?:[89]|1[0-5])b), \1',x.op_str) and x.mnemonic=='test']
 assert go[pose+1].mnemonic=='je'
 teleport,=sites(go,'?TeleportTo@Player@@')
 assert not reaches(go,go[pose+1].operands[0].imm,go[teleport].address),'No coherent POI must reject before teleport'

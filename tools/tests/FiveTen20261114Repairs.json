@@ -411,6 +411,16 @@
       "old": "    static bool HandleGoGraveyardCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n\n        if (!*args)\n            return false;\n\n        char* gyId = strtok((char*)args, \" \");\n        if (!gyId)\n            return false;\n\n        int32 graveyardId = atoi(gyId);\n\n        if (!graveyardId)\n            return false;\n\n        WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId);\n        if (!gy)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_GRAVEYARDNOEXIST, graveyardId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!MapManager::IsValidMapCoord(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z))\n        {\n            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, gy->Loc.X, gy->Loc.Y, gy->MapID);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // stop flight if need\n        if (player->isInFlight())\n        {\n            player->GetMotionMaster()->MovementExpired();\n            player->CleanupAfterTaxiFlight();\n        }\n        // save only in non-flight case\n        else\n            player->SaveRecallPosition();\n\n        player->TeleportTo(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, player->GetOrientation());\n        return true;\n    }",
       "new": "    static bool HandleGoGraveyardCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n\n        if (!*args)\n            return false;\n\n        char* gyId = strtok((char*)args, \" \");\n        if (!gyId)\n            return false;\n\n        uint32 graveyardId;\n        if (!Trinity::ParseCommandInteger(gyId, graveyardId) || !graveyardId)\n            return false;\n\n        WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId);\n        if (!gy)\n        {\n            handler->PSendSysMessage(LANG_COMMAND_GRAVEYARDNOEXIST, graveyardId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!MapManager::IsValidMapCoord(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z))\n        {\n            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, gy->Loc.X, gy->Loc.Y, gy->MapID);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // stop flight if need\n        if (player->isInFlight())\n        {\n            player->GetMotionMaster()->MovementExpired();\n            player->CleanupAfterTaxiFlight();\n        }\n        // save only in non-flight case\n        else\n            player->SaveRecallPosition();\n\n        return player->TeleportTo(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, player->GetOrientation());\n    }",
       "batch": 5
+    },
+    {
+      "key": "GoGridCheckedDestination",
+      "path": "src/server/scripts/Commands/cs_go.cpp",
+      "method": "HandleGoGridCommand",
+      "case": "GoGrid",
+      "kind": "gotravel",
+      "old": "    static bool HandleGoGridCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        char* gridX = strtok((char*)args, \" \");\n        char* gridY = strtok(NULL, \" \");\n        char* id = strtok(NULL, \" \");\n\n        if (!gridX || !gridY)\n            return false;\n\n        uint32 mapId = id ? (uint32)atoi(id) : player->GetMapId();\n\n        // center of grid\n        float x = ((float)atof(gridX) - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;\n        float y = ((float)atof(gridY) - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;\n\n        if (!MapManager::IsValidMapCoord(mapId, x, y))\n        {\n            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, x, y, mapId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        // stop flight if need\n        if (player->isInFlight())\n        {\n            player->GetMotionMaster()->MovementExpired();\n            player->CleanupAfterTaxiFlight();\n        }\n        // save only in non-flight case\n        else\n            player->SaveRecallPosition();\n\n        Map const* map = sMapMgr->CreateBaseMap(mapId);\n        float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));\n\n        player->TeleportTo(mapId, x, y, z, player->GetOrientation());\n        return true;\n    }",
+      "new": "    static bool HandleGoGridCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n\n        char* gridX = strtok((char*)args, \" \");\n        char* gridY = strtok(NULL, \" \");\n        char* id = strtok(NULL, \" \");\n\n        if (!gridX || !gridY)\n            return false;\n\n        uint32 mapId = player->GetMapId();\n        float parsedX, parsedY;\n        if ((id && !Trinity::ParseCommandInteger(id, mapId)) ||\n            !Trinity::ParseCommandFloat(gridX, parsedX) || !Trinity::ParseCommandFloat(gridY, parsedY))\n            return false;\n\n        // center of grid\n        float x = (parsedX - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;\n        float y = (parsedY - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;\n\n        if (!MapManager::IsValidMapCoord(mapId, x, y))\n        {\n            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, x, y, mapId);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Map const* map = sMapMgr->CreateBaseMap(mapId);\n        if (!map)\n            return false;\n        float const groundHeight = map->GetHeight(x, y, MAX_HEIGHT);\n        if (!std::isfinite(groundHeight) || groundHeight <= INVALID_HEIGHT)\n            return false;\n        float z = std::max(groundHeight, map->GetWaterLevel(x, y));\n        if (!MapManager::IsValidMapCoord(mapId, x, y, z))\n            return false;\n\n        // stop flight if need\n        if (player->isInFlight())\n        {\n            player->GetMotionMaster()->MovementExpired();\n            player->CleanupAfterTaxiFlight();\n        }\n        // save only in non-flight case\n        else\n            player->SaveRecallPosition();\n\n        return player->TeleportTo(mapId, x, y, z, player->GetOrientation());\n    }",
+      "batch": 5
     }
   ],
   "extra_edits": [
@@ -459,6 +469,14 @@
       "new": "#include \"CommandIntegerArgument.h\"\n#include \"CommandFloatArgument.h\"",
       "batch": 5,
       "owner_key": "GoCreatureNativeIdentifier"
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_go.cpp",
+      "old": "                float height = std::max(map->GetHeight(point.X, point.Y, MAX_HEIGHT), map->GetWaterLevel(point.X, point.Y));",
+      "new": "                float const groundHeight = map->GetHeight(point.X, point.Y, MAX_HEIGHT);\n                if (!std::isfinite(groundHeight) || groundHeight <= INVALID_HEIGHT)\n                    continue;\n                float height = std::max(groundHeight, map->GetWaterLevel(point.X, point.Y));",
+      "batch": 5,
+      "owner_key": "GoGridCheckedDestination",
+      "scope": "Correct existing first repair native terrain proof;not an additional counted repair."
     }
   ],
   "files": {
@@ -472,7 +490,7 @@
     },
     "src/server/scripts/Commands/cs_go.cpp": {
       "before_sha256": "8c05cfb18957e8d06aee0974412a7cd0cf62ff962dd4372184a127652ab9708f",
-      "after_sha256": "15399428447d536d2cad5c4b4dd7709766bcf279164309515515a3e591ccca2e"
+      "after_sha256": "c7bda6196b023033ec49f886c868f7720d3c03ba382ec9e6602ecdf9ee4c061f"
     },
     "src/server/scripts/Commands/cs_modify.cpp": {
       "before_sha256": "a2c3dfa2e67bc324b27a3f8e04222c43ceb5bd2ec909dc0f98441fc990669dcd",

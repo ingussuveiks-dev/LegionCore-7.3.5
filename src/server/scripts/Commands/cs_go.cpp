@@ -229,11 +229,15 @@ public:
         if (!gridX || !gridY)
             return false;
 
-        uint32 mapId = id ? (uint32)atoi(id) : player->GetMapId();
+        uint32 mapId = player->GetMapId();
+        float parsedX, parsedY;
+        if ((id && !Trinity::ParseCommandInteger(id, mapId)) ||
+            !Trinity::ParseCommandFloat(gridX, parsedX) || !Trinity::ParseCommandFloat(gridY, parsedY))
+            return false;
 
         // center of grid
-        float x = ((float)atof(gridX) - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;
-        float y = ((float)atof(gridY) - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;
+        float x = (parsedX - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;
+        float y = (parsedY - CENTER_GRID_ID + 0.5f) * SIZE_OF_GRIDS;
 
         if (!MapManager::IsValidMapCoord(mapId, x, y))
         {
@@ -241,6 +245,16 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
+
+        Map const* map = sMapMgr->CreateBaseMap(mapId);
+        if (!map)
+            return false;
+        float const groundHeight = map->GetHeight(x, y, MAX_HEIGHT);
+        if (!std::isfinite(groundHeight) || groundHeight <= INVALID_HEIGHT)
+            return false;
+        float z = std::max(groundHeight, map->GetWaterLevel(x, y));
+        if (!MapManager::IsValidMapCoord(mapId, x, y, z))
+            return false;
 
         // stop flight if need
         if (player->isInFlight())
@@ -252,11 +266,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        Map const* map = sMapMgr->CreateBaseMap(mapId);
-        float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
-
-        player->TeleportTo(mapId, x, y, z, player->GetOrientation());
-        return true;
+        return player->TeleportTo(mapId, x, y, z, player->GetOrientation());
     }
 
     //teleport to gameobject
@@ -393,7 +403,10 @@ public:
                 Map const* map = sMapMgr->CreateBaseMap(data.MapID);
                 if (!map)
                     continue;
-                float height = std::max(map->GetHeight(point.X, point.Y, MAX_HEIGHT), map->GetWaterLevel(point.X, point.Y));
+                float const groundHeight = map->GetHeight(point.X, point.Y, MAX_HEIGHT);
+                if (!std::isfinite(groundHeight) || groundHeight <= INVALID_HEIGHT)
+                    continue;
+                float height = std::max(groundHeight, map->GetWaterLevel(point.X, point.Y));
                 if (!MapManager::IsValidMapCoord(data.MapID, point.X, point.Y, height))
                     continue;
                 // Retain the last authored usable POI as one coherent pose.

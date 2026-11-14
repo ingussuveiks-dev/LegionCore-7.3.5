@@ -12,6 +12,8 @@ $goQuestOut="$goQuestRepo/build-extractors/runtime-test/go-quest-destination/$(G
   $goQuestSelected=$goQuestPlan.old
  }
  [IO.File]::WriteAllText("$goQuestOut/GoQuestCommand.inc",$goQuestSelected)
+ & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$goQuestRepo/tools/tests/prepare_go_travel_20261114.py" $goQuestOut coordinates-only
+ if($LASTEXITCODE){throw 'Native coordinate export failed'}
  $goQuestVs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $goQuestDefinition=if($Baseline){'/DGO_QUEST_BASELINE'}else{''}
  [IO.File]::WriteAllText("$goQuestOut/run.cmd","@echo off`ncall `"$goQuestVs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $goQuestDefinition /I`"$goQuestOut`" `"$goQuestRepo/tools/tests/GoQuestDestinationTest.cpp`" /Fe`"$goQuestOut/test.exe`" /Fo`"$goQuestOut/test.obj`" /Fd`"$goQuestOut/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$goQuestOut/test.exe`"`nexit /b %errorlevel%`n")
