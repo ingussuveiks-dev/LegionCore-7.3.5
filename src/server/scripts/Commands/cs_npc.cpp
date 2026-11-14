@@ -1716,7 +1716,9 @@ public:
         if (!*args)
             return false;
 
-        uint32 leaderGUID = strtoull(args, nullptr, 10);
+        ObjectGuid::LowType leaderGUID;
+        if (!Trinity::ParseCommandInteger(args, leaderGUID))
+            return false;
         Creature* creature = handler->getSelectedCreature();
 
         if (!creature || !creature->GetDBTableGUIDLow())
@@ -1726,10 +1728,10 @@ public:
             return false;
         }
 
-        uint32 lowguid = creature->GetDBTableGUIDLow();
+        ObjectGuid::LowType lowguid = creature->GetDBTableGUIDLow();
         if (creature->GetFormation())
         {
-            handler->PSendSysMessage("Selected creature is already member of group %u", creature->GetFormation()->GetId());
+            handler->PSendSysMessage("Selected creature is already member of group " UI64FMTD, creature->GetFormation()->GetId());
             return false;
         }
 
@@ -1758,7 +1760,7 @@ public:
 
         WorldDatabase.Execute(stmt);
 
-        handler->PSendSysMessage("Creature %u added to formation with leader %u", lowguid, leaderGUID);
+        handler->PSendSysMessage("Creature " UI64FMTD " added to formation with leader " UI64FMTD, lowguid, leaderGUID);
 
         return true;
     }
