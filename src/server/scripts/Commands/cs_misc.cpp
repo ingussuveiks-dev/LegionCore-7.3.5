@@ -550,10 +550,10 @@ public:
             return false;
         
         char const* ccharges = strtok(NULL, " ");
-        int32 charges = 1;
+        uint8 charges = 1;
 
-        if (ccharges)
-            charges = strtol(ccharges, NULL, 10);
+        if (ccharges && !Trinity::ParseCommandInteger(ccharges, charges))
+            return false;
 
         if (!charges)
             target->RemoveAurasDueToSpell(spellId);
