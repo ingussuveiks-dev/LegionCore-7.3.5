@@ -139,7 +139,9 @@ public:
         if (!id)
             return false;
 
-        uint32 itemId = atol(id);
+        uint32 itemId;
+        if (!Trinity::ParseCommandInteger(id, itemId))
+            return false;
         if (!itemId)
         {
             handler->PSendSysMessage(LANG_COMMAND_ITEMIDINVALID, itemId);
@@ -156,7 +158,9 @@ public:
         }
 
         char* countStr = strtok(NULL, " ");
-        uint32 count = countStr ? atol(countStr) : 10;
+        uint32 count = 10;
+        if (countStr && !Trinity::ParseCommandInteger(countStr, count))
+            return false;
 
         if (count == 0)
             return false;
