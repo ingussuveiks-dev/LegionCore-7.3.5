@@ -288,6 +288,18 @@
       "test_boundary": "        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);",
       "observe": "ticketId",
       "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketUnAssignCommand service path;retain native ticket state and assignment checks."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_ticket.cpp",
+      "method": "HandleGMTicketGetByIdCommand",
+      "case": "TicketGetByIdExactId",
+      "key": "TicketGetByIdExactId",
+      "kind": "more",
+      "old": "    static bool HandleGMTicketGetByIdCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 ticketId = atoi(args);\n        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);\n        if (!ticket || ticket->IsClosed() || ticket->IsCompleted())\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);\n            return true;\n        }\n\n        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);\n        ticket->SetViewed();\n        ticket->SaveToDB(trans);\n\n        handler->SendSysMessage(ticket->FormatMessageString(*handler, true).c_str());\n        return true;\n    }",
+      "new": "    static bool HandleGMTicketGetByIdCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        uint32 ticketId;\n        if (!Trinity::ParseCommandInteger(args, ticketId))\n            return false;\n        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);\n        if (!ticket || ticket->IsClosed() || ticket->IsCompleted())\n        {\n            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);\n            return true;\n        }\n\n        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);\n        ticket->SetViewed();\n        ticket->SaveToDB(trans);\n\n        handler->SendSysMessage(ticket->FormatMessageString(*handler, true).c_str());\n        return true;\n    }",
+      "test_boundary": "        GmTicket* ticket = sTicketMgr->GetTicket(ticketId);",
+      "observe": "ticketId",
+      "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketGetByIdCommand service path;retain native ticket state and assignment checks."
     }
   ],
   "extra_edits": [
@@ -307,7 +319,7 @@
   "files": {
     "src/server/scripts/Commands/cs_ticket.cpp": {
       "before_sha256": "465892b16629963da17a7147766dbd684d975f279dbede959fb10f0d4d77c751",
-      "after_sha256": "1b6c28aa56e04d50613218c73208ff5909aa157f24268027091b49d187550d97"
+      "after_sha256": "8dfe758dd0fb8b9ec2aaa088feaa8a5787a83a5d01802f1d89c797e8b6e97a33"
     },
     "src/server/scripts/Commands/cs_titles.cpp": {
       "before_sha256": "5e0ca019767f7fd3efaf38cb80ef57b4c6ff409a4ec45db101631995c338a8eb",

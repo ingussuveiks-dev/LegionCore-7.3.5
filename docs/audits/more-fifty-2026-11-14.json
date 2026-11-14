@@ -2,8 +2,8 @@
   "date": "2026-11-14",
   "baseline": "242a18c28b3ab6f84954cdfd84ef6b985d2319bd",
   "authorization": "New third5x10 requested by user;previous100 are not recounted.",
-  "status": "IN_PROGRESS_27_OF_50_CANONICAL_CLIENT_PENDING",
-  "completed_source_repairs": 27,
+  "status": "IN_PROGRESS_28_OF_50_CANONICAL_CLIENT_PENDING",
+  "completed_source_repairs": 28,
   "scope": "50 independently callable administrative/debug operations or shared implementations;not50 artifact quest chains. Shared ticket response/disable helpers counted once each.",
   "plan": "tools/tests/MoreFifty20261114Repairs.json",
   "canonical": {
@@ -189,7 +189,7 @@
     },
     {
       "batch": 3,
-      "count": 7,
+      "count": 8,
       "source_case_count": 106,
       "repairs": [
         {
@@ -246,6 +246,14 @@
           "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketUnAssignCommand service path;retain native ticket state and assignment checks.",
           "path": "src/server/scripts/Commands/cs_ticket.cpp",
           "method": "HandleGMTicketUnAssignCommand",
+          "test_scope": "admission prefix"
+        },
+        {
+          "index": 28,
+          "key": "TicketGetByIdExactId",
+          "summary": "Reject malformed/wrapped unsigned32 ticket selectors before the independently callable HandleGMTicketGetByIdCommand service path;retain native ticket state and assignment checks.",
+          "path": "src/server/scripts/Commands/cs_ticket.cpp",
+          "method": "HandleGMTicketGetByIdCommand",
           "test_scope": "admission prefix"
         }
       ]
