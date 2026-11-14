@@ -1130,7 +1130,9 @@ public:
         {
             ip = strtok((char*)args, " ");
             limitStr = strtok(NULL, " ");
-            limit = limitStr ? atoi(limitStr) : -1;
+            limit = -1;
+            if (limitStr && !Trinity::ParseCommandInteger(limitStr, limit))
+                return false;
         }
 
         LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_BY_IP);

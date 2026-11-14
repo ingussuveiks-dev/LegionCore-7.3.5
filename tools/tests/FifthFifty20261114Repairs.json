@@ -295,6 +295,19 @@
       "test_boundary": "            WorldDatabasePreparedStatement* stmt",
       "observe": "entry",
       "summary": "Validate every template key before any DB reload, preventing partial mutation on a later invalid token."
+    },
+    {
+      "path": "src/server/scripts/Commands/cs_lookup.cpp",
+      "method": "HandleLookupPlayerIpCommand",
+      "key": "PlayerIpSearchExactLimit",
+      "case": "PlayerIpSearchExactLimit",
+      "kind": "command",
+      "old": "    static bool HandleLookupPlayerIpCommand(ChatHandler* handler, char const* args)\n    {\n        std::string ip;\n        int32 limit;\n        char* limitStr;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!*args)\n        {\n            // NULL only if used from console\n            if (!target || target == handler->GetSession()->GetPlayer())\n                return false;\n\n            ip = target->GetSession()->GetRemoteAddress();\n            limit = -1;\n        }\n        else\n        {\n            ip = strtok((char*)args, \" \");\n            limitStr = strtok(NULL, \" \");\n            limit = limitStr ? atoi(limitStr) : -1;\n        }\n\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_BY_IP);\n        stmt->setString(0, ip);\n        PreparedQueryResult result = LoginDatabase.Query(stmt);\n\n        if (!result)\n        {\n            handler->PSendSysMessage(LANG_NO_PLAYERS_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 accountId = handler->GetSession()->GetAccountId();\n        if (WorldSessionPtr sess = sWorld->FindSession(accountId))\n            sess->LookupPlayerSearchCommand(result, limit);\n\n        return true;\n    }",
+      "new": "    static bool HandleLookupPlayerIpCommand(ChatHandler* handler, char const* args)\n    {\n        std::string ip;\n        int32 limit;\n        char* limitStr;\n\n        Player* target = handler->getSelectedPlayer();\n        if (!*args)\n        {\n            // NULL only if used from console\n            if (!target || target == handler->GetSession()->GetPlayer())\n                return false;\n\n            ip = target->GetSession()->GetRemoteAddress();\n            limit = -1;\n        }\n        else\n        {\n            ip = strtok((char*)args, \" \");\n            limitStr = strtok(NULL, \" \");\n            limit = -1;\n            if (limitStr && !Trinity::ParseCommandInteger(limitStr, limit))\n                return false;\n        }\n\n        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_BY_IP);\n        stmt->setString(0, ip);\n        PreparedQueryResult result = LoginDatabase.Query(stmt);\n\n        if (!result)\n        {\n            handler->PSendSysMessage(LANG_NO_PLAYERS_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        uint32 accountId = handler->GetSession()->GetAccountId();\n        if (WorldSessionPtr sess = sWorld->FindSession(accountId))\n            sess->LookupPlayerSearchCommand(result, limit);\n\n        return true;\n    }",
+      "test_boundary": "        LoginDatabasePreparedStatement* stmt",
+      "observe": "0",
+      "test_capture": "handler->signedValue = limit;",
+      "summary": "Reject malformed signed search limits before account queries; retain default-1 and native limit policy."
     }
   ],
   "extra_edits": [
@@ -319,6 +332,10 @@
     "src/server/scripts/Commands/cs_npc.cpp": {
       "before_sha256": "16f40f4d387b4ed55cdca9638ee553a516d5fbd94f6affba89e6710fcc2d1d71",
       "after_sha256": "44319f20d3780b1576b2afa9d96d32a4a06c308c893b8342033bd3500773cce7"
+    },
+    "src/server/scripts/Commands/cs_lookup.cpp": {
+      "before_sha256": "8488c9ec971f9bff4db5634c8097e2f796a0e72c23764eadf6d2e27380c7a303",
+      "after_sha256": "61e3a2c3c7880214beb1d7b9fc39dd8ec8ee13e3fb4f5cabf24973abefeb4217"
     },
     "src/server/scripts/Commands/cs_misc.cpp": {
       "before_sha256": "b421ab7f6e9ef7c9b70c9cedcf02b54c598cea8fd287b984b094a53814ab3bc9",
