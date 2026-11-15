@@ -1,0 +1,144 @@
+{
+  "date": "2026-11-15",
+  "batch": 10,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch10.sql",
+  "migration_sha256": "6007228484bdb226afb993a31748500f9108735f797190bdc88defd17522d8c0",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 238836,
+      "old_hex": "C390C5BEC390C2BFC391C692C391C281C390C2BAC390C2BDC390C2B0C391C28F20C391E282ACC390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC390C2B920C390C2BAC391C692C390C2B7C390C2BDC390C2B8",
+      "new_hex": "D09ED0BFD183D181D0BAD0BDD0B0D18F20D180D0B5D188D0B5D182D0BAD0B020D0A7D0B5D180D0BDD0BED0B920D0BAD183D0B7D0BDD0B8",
+      "restored_name": "Опускная решетка Черной кузни",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 238837,
+      "old_hex": "4761746520C390E28093C390C2B5C390C2BBC390C2B5C390C2B7C390C2BDC390C2BEC390C2B3C390C2BE20C391E280A0C390C2B5C391E280A6C390C2B0",
+      "new_hex": "4761746520D096D0B5D0BBD0B5D0B7D0BDD0BED0B3D0BE20D186D0B5D185D0B0",
+      "restored_name": "Gate Железного цеха",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 238838,
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2BBC390C2B5C390C2BDC390C2BDC391E280B9C390C2B920C391CB86C390C2BBC390C2B0C390C2BA",
+      "new_hex": "D097D0B0D0BAD0B0D0BBD0B5D0BDD0BDD18BD0B920D188D0BBD0B0D0BA",
+      "restored_name": "Закаленный шлак",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 238839,
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2BBC390C2B5C390C2BDC390C2BDC391E280B9C390C2B920C391CB86C390C2BBC390C2B0C390C2BA",
+      "new_hex": "D097D0B0D0BAD0B0D0BBD0B5D0BDD0BDD18BD0B920D188D0BBD0B0D0BA",
+      "restored_name": "Закаленный шлак",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 240351,
+      "old_hex": "C390C2A4C390C2BEC390C2BBC390C2B8C390C2B0C390C2BDC391E2809A20C390C2B4C391E282ACC390C2B5C390C2B2C390C2BDC390C2B8C391E280A620C390C2BAC390C2BEC391E282ACC390C2BEC390C2BBC390C2B5C390C2B9",
+      "new_hex": "D0A4D0BED0BBD0B8D0B0D0BDD18220D0B4D180D0B5D0B2D0BDD0B8D18520D0BAD0BED180D0BED0BBD0B5D0B9",
+      "restored_name": "Фолиант древних королей",
+      "static_spawns": 1,
+      "maps": "0",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 241428,
+      "old_hex": "C390E2809DC390C2B5C391E2809AC390C2BEC390C2BDC390C2B0C391E2809AC390C2BEC391E282AC",
+      "new_hex": "D094D0B5D182D0BED0BDD0B0D182D0BED180",
+      "restored_name": "Детонатор",
+      "static_spawns": 1,
+      "maps": "1116",
+      "usage_tags": [
+        "static",
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 245005,
+      "old_hex": "C390C2A4C390C2BEC390C2BBC390C2B8C390C2B0C390C2BDC391E2809A20C390C2BEC391E282ACC391C692C390C2B4C390C2B8C390C2B920C390C2BFC390C2BEC390C2B3C390C2B8C390C2B1C390C2B5C390C2BBC390C2B8",
+      "new_hex": "D0A4D0BED0BBD0B8D0B0D0BDD18220D0BED180D183D0B4D0B8D0B920D0BFD0BED0B3D0B8D0B1D0B5D0BBD0B8",
+      "restored_name": "Фолиант орудий погибели",
+      "static_spawns": 1,
+      "maps": "1107",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 246405,
+      "old_hex": "22C390C5A1C391E282ACC390C2BEC390C2B2C390C2B0C390C2B2C390C2B0C391C28F20C390C2B7C390C2B0C390C2B2C390C2B5C391C281C390C2B0",
+      "new_hex": "22D09AD180D0BED0B2D0B0D0B2D0B0D18F20D0B7D0B0D0B2D0B5D181D0B0",
+      "restored_name": "\"Кровавая завеса",
+      "static_spawns": 4,
+      "maps": "0",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 246411,
+      "old_hex": "C390C5B8C391C692C391CB86C390C2BAC390C2B0",
+      "new_hex": "D09FD183D188D0BAD0B0",
+      "restored_name": "Пушка",
+      "static_spawns": 4,
+      "maps": "0",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 246413,
+      "old_hex": "C390E28093C391C692C391E282ACC390C2B0C390C2B2C390C2BBC391C592",
+      "new_hex": "D096D183D180D0B0D0B2D0BBD18C",
+      "restored_name": "Журавль",
+      "static_spawns": 1,
+      "maps": "0",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
