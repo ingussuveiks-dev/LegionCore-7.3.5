@@ -5,6 +5,9 @@ from bonfire_interaction_scope import normalize as normalize_later,verify as ver
 ROOT=Path(__file__).resolve().parents[2]
 PLAN=json.loads((ROOT/'tools/tests/FiveTen20261113Repairs.json').read_text(encoding='utf8'))
 def normalize(path,source):
+ from verify_pending_ai_scope import normalize as normalize_pending,verify as verify_pending
+ verify_pending()
+ source=normalize_pending(path,source)
  from artifact_later_command_scope import normalize as normalize_commands
  source=normalize_commands(path,source)
  source=normalize_later(path,source)

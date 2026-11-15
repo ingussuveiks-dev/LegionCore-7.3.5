@@ -86,7 +86,8 @@ public:
                 me->SetVisible(false);
                 intro = true;
                 kingDiedCount = 0;
-                AddDelayedEvent(500, [=] () -> void { SummonOdynKings(); });
+                AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void {
+                    if (aiLifetimeGuard.expired()) return; SummonOdynKings(); });
             }
         }
 

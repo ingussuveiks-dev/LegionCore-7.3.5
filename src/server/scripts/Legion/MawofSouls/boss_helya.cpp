@@ -354,7 +354,8 @@ struct boss_helya : public BossAI
             eventDelay = true;
             me->RemoveStandStateFlags(UNIT_STAND_STATE_SUBMERGED);
             me->SendPlaySpellVisualKit(VISUAL_KIT_1, 0);
-            AddDelayedEvent(5000, [=]() -> void { eventDelay = false; });
+            AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void {
+                if (aiLifetimeGuard.expired()) return; eventDelay = false; });
             return;
         }
 
@@ -555,14 +556,16 @@ struct boss_helya : public BossAI
             {
                 ++count;
             
-                AddDelayedEvent(50 * count, [this, pos]() -> void
+                AddDelayedEvent(50 * count, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (me)
                         me->SendSpellCreateVisual(sSpellMgr->GetSpellInfo(SPELL_BRACKWATER_BARRAGE_DMG), &pos, nullptr, 1, !BWrand ? VISUAL_BW_MIS_LEFT : VISUAL_BW_MIS_RIGHT);
                 });
             
-                AddDelayedEvent(50 * count + 1200, [this, pos]() -> void
+                AddDelayedEvent(50 * count + 1200, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (me)
                         me->CastSpell(pos, SPELL_BRACKWATER_BARRAGE_DMG, true);
                 });

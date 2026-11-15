@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-15",
+  "baseline": "cf1182f05",
+  "request": "Turpini30×10",
+  "requested_gameplay_total": 300,
+  "status": "FOCUSED_REPAIR_DEPLOYED_TESTED_CLIENT_PENDING_NOT_300_COMPLETE",
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "CEE238C62FB79EBB1166BCF2453F00B5907394217DF458F4F4780FF61AB70F38",
+    "owned_pid": 11120,
+    "result": "Canonical ready after migration90 and staged exact final-link inputs; graceful shutdown0/exit0/stderr0/gone. No user/unknown process stopped."
+  },
+  "diagnostics": "No new canonical/own crash, appended DBErrors or unexplained runtime warning/error/assertion. Counterfactual ASAN failures and fixture/debug iterations are classified separately; see closeout.",
+  "preserved": "Original protected Slaghammer EXE/cache B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C and mixed7111-byte DBErrors FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged. Never executed/overwritten/deleted/cleared/archived as fixed.",
+  "cleanup": "See next-eight-closeout-2026-11-15.json after focused source commits and verified cleanup.",
+  "count": 2,
+  "new_callback_sites": 4,
+  "cause": "CreatureAI::AddDelayedEvent delegates to a Unit-owned FunctionProcessor. The Creature can outlive the source AI; default/explicit-this closures dereference the retired AI before the old if(me) can help.",
+  "repair": "Capture the existing per-AI weak lifetime anchor and test expiry before any original member/payload access. Skovald constructor500ms summons; Helya5000ms intro delay flag plus two per-position50*count and50*count+1200 visual/damage callbacks. Reuse existing anchors; add no new actors/timers/HP thresholds/credit.",
+  "plan": "tools/tests/PendingAILifetime20261115.json",
+  "actual_bindings": [
+    {
+      "entry": 95675,
+      "script": "boss_god_king_skovald"
+    },
+    {
+      "entry": 96759,
+      "script": "boss_helya"
+    }
+  ],
+  "source": "Complete affected files reverse exactly to cf1182f05 by undoing only the four capture/first-statement additions. Original payload bytes, prerequisites, actor/position targets, delays, reset/cleanup, previous guards and pet/group progression handling remain unchanged.",
+  "asan": "Four selected old admissions reproduce heap-use-after-free under the pinned counterfactual; repaired admission projections pass live/retired/cancelled/same-address replacement. These project actual capture/weak guard onto a controlled payload; they do not execute full encounter bodies.",
+  "native": {
+    "run": "build-extractors/runtime-test/pending-ai-native/20261115-213644-463",
+    "actual": "Actual Creature::AIM_Initialize destruction and actual Unit queue; four selected guard projections at controlled123ms clock, live/retired/cancelled/temporarily inactive/corpse witnesses. No Player/session or Character DB writes. Full original encounter payload not run.",
+    "release": "Staged Release and canonical copy contain exactly four guarded production closures in the affected methods. Matching x64 PE/unwind/map timestamp, incremental-thunk and outlined-lambda resolution; weak expiry dominates captured AI dereference/payload calls. Actual original CMake final-link scripts/game/shared/common libraries used."
+  },
+  "inactive": "Initial source census also found Abyssal77905, flame core111581 and Broken Islands guards, but their factories are unregistered/not linked. All three trial source changes were reverted; they are not gameplay fixes. Original custom Hexlord/temple ritual classes are also unregistered and untouched.",
+  "build": "Complete original scripts library compiled, staged original final link, matching binary promoted. Existing BrokenIslands C4805 is unchanged tri-state int8(-1/0/1) vs bool after explicit -1 skip; both sources at cf1182f05 and deployed unchanged behavior reviewed, not suppressed. No unexplained new warning.",
+  "limits": "No client encounter traversal, spell visuals/timing/raid progression, pet/group combat/re-entry or complete artifacts newly certified."
+}
