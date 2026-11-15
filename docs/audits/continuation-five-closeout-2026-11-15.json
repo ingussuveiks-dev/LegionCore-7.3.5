@@ -1,0 +1,95 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini30x10 un ja nav pabeigts tas11/300 tad pabeidz",
+  "baseline": "aba0c7235",
+  "status": "PREVIOUS11_RECHECKED_FIVE_MORE_REPAIRS_VERIFIED_DEPLOYED_CLEANUP_COMPLETE_REQUEST300_PARTIAL",
+  "source_commits": [
+    "cc4eb0ea7f52008c917e4a8b5a665f1752abd9a9",
+    "6a94dbb7eb1b05f861c7c7c442e1fb6b7ce4a20a"
+  ],
+  "counting": {
+    "requested": 300,
+    "previous_completed": 11,
+    "new_this_continuation": 5,
+    "cumulative": 16,
+    "remaining_unallocated_quota": 284,
+    "note": "284 is unfulfilled requested count, not284 established bugs. Four independently affected core owners/helpers and one death-credit defect; no recount of earlier11, model/native case counts, retries, research or compiler/fixture/bootstrap/SQL-schema repairs."
+  },
+  "ledger": [
+    {
+      "commit": "cc4eb0ea7f52008c917e4a8b5a665f1752abd9a9",
+      "repairs": [
+        "ScriptedAI::SummonCreatureDelay captures actor, not replaceable AI",
+        "SmartScript react-state restore captures actor, not embedded script",
+        "CritterAI2000ms movement captures actor, not replaceable AI",
+        "BossAI rejected-combat200ms request captures original map-owned InstanceScript, not AI"
+      ]
+    },
+    {
+      "commit": "6a94dbb7eb1b05f861c7c7c442e1fb6b7ce4a20a",
+      "repairs": [
+        "KillRewarder confirms ordinary native monster/alias credit after50ms even when corpse was removed; optional live reward mark remains guarded"
+      ]
+    }
+  ],
+  "audits": [
+    "docs/audits/core-delayed-owners-2026-11-15.json",
+    "docs/audits/delayed-kill-credit-2026-11-15.json"
+  ],
+  "previous11": {
+    "result": "No unfinished implementation discovered among earlier11. Six authored loot links,2 active Skovald/Helya AI lifetime scopes,actor-owned despawn helper and2 FunctionProcessor defects remain present. They are not recounted.",
+    "checks": "Current final PE checks actual2/4 Skovald/Helya guards,despawn capture/100ms/respawn and queue generation/reentrant/producer-lock branches. Final native18 helper/cancellation cases and native6 actual Player::SendLoot/source/quest-gates plus full-schema TEMP repair/replay/control/five refusal/live/updater data checks pass. Whole combat/client quests still separate."
+  },
+  "validation": {
+    "asan": "Four actual old helper/action capture ASAN heap-use-after-free counterfactuals paired with repaired live/retired/cancelled runs,original timers/payload arguments/movement gates. Actual complete FunctionProcessor engine. Death-credit old logical counterfactual plus full helper/native alias dispatcher under ASAN:corpse loss,present,cancel,50ms,once-only,group/dead/corpse,missing-template controls. Actor/catalog/instance endpoints remain controlled,not full native-core ASAN.",
+    "native": "Final12 real core helper/SmartScript/MotionMaster/summon/Boss callback integrations with actual AI destruction and Unit queues; actual InstanceMap and empty-player-list repop. Native death helper+real Player/quest14 objective251611:original corpse-removed0/present1;repaired removed1/present1/cancel0/complete0,49ms0,once-only. Direct and actual owned-creature player resolution,normal creator field, no fake Pet dynamic type. Readonly World/Hotfix/Login and nonpersistent actors, no Character writes; full native Unit::Kill/group/pet combat and graveyard character relocation not executed.",
+    "binary": "Original game.lib rebuilt at CMake original path, original final-link inputs; final native source/link input hashes and actual deployed PE/map verified, including conditional-tail core endpoints and credit dispatch before optional corpse lookup.",
+    "shared": "43 Smart linked-cast retry/gate cases,11-context read-only data/refusals and final actual corpse/cleanup PE remain correct. Final canonical Scepter login source/admission/binary recovery pass. Final native18 prior queue cases and native6 data cases pass against final original libraries."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "BF90EFFB0F226EF45872C14A9F6342C1F19BF8C538C5659EB6097CE44110CDE4",
+    "bnet_sha256": "027B3755E6FCB4069FDCA7755C33A1804E4B0347E36F86170FCC09B28F9C9BCB",
+    "final_owned_world_pid": 33596,
+    "final_owned_bnet_pid": 32160,
+    "result": "Matching staged EXE/map pairs promoted; final world ready/shutdown0/exit0/stderr0/gone and bnet ready/graceful SIGINT/exit0/stderr0/gone. Earlier owned32516/6056 also exited0/gone. Every new bnet smoke snapshots/hashes previous write-mode log before launch. No user/unknown server stopped, no task hidden server left."
+  },
+  "post_test": "Final tests/startups/post-cleanup: no new canonical/own crash report,appended DBErrors or unexplained server warning/error/assertion. Actual earlier native MMap assertion is not hidden by empty crash directories: its exception/stdout/stderr/status is preserved,resolved by proper pre-thread map registry initialization and paired with passing12 native cases.",
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/continuation-five-2026-11-15",
+    "files": 723,
+    "manifest_sha256": "25EA86800824A31EBD3269EE308041F3965E101E6A22207A737C99D24D87DDF0",
+    "supplement": {
+      "files": 9,
+      "path": "build-extractors/bin/Release/fixed/continuation-five-2026-11-15/post-cleanup-verification",
+      "manifest_sha256": "3961BE046AF7EA72C6D9BAC51F0A0CA0CC172D10CFAE5EB3A3949358A0E5A0F9"
+    },
+    "deleted_artifacts": 118,
+    "reclaimed_bytes": 5169739757,
+    "deletions_sha256": "BA5AA3A89339C4885E48CC3AFA82F71FD64C77814C3373A5D900FFFBF5D11A90",
+    "retained": "Two prior verified own EXE-map sets: C85C before all5 and330AA before kill-credit, pending first client acceptance of respective fixes; no hidden servers",
+    "method": "Exact validated absolute non-reparse files, no recursive shell deletion or running target. Canonical runtime/config/certs/DLL/data/original required build libraries unchanged. Only this unique task root/stage/new native/ASAN roots and newly created runs in shared native/data/retry tools selected by task cutoff. Two recent own rollback EXE-map sets retain concrete client-recovery purpose; older pre-existing task roots/rollbacks not indiscriminately deleted.",
+    "resolved_iterations": [
+      "Exact original[=,this] needsC++20; fixture17 rejection corrected without changing original body. Existing FunctionProcessor Size/SizeQueue W4 size_t->uint32 API conversion warnings reviewed unchanged in both branches,not suppressed.",
+      "Native fixture difficulty spelling and required InstanceMap parent corrected against actual735 enums/header before execution.",
+      "First live summon observed by wrong nearby-grid mechanism; real current/source AI JustSummoned observation now verifies original owner/position/entry and actual summon cleanup.",
+      "Bootstrap originally registered only1220;actual new1630 native instance caused MMap invalid-map ASSERT/c0000005. Added1630 to existing pre-thread VMAP/MMAP registry,kept assertions enabled; final real12 cases exit0/stderr0. Failed native diagnostics archived as resolved fixture cause,not a production server fix.",
+      "Research read-only SQL initially used absent c.name; corrected c.Name1 in separate preserved query/evidence.",
+      "Optional native owner fixture initially populated only SUMMONED_BY; native GetOwnerGUID uses CREATED_BY. Match actual Minion creator field and sufficiently sized synthetic player hash holder; paired native owner lookup and original/repaired credit cases pass. No owner API/type mask changed."
+    ],
+    "counterfactuals": "Expected-broken ASAN/logical/native original-corpse-loss controls clearly labelled and paired; no unexpected assertion called an ordinary success. No unresolved original Slaghammer evidence moved to fixed."
+  },
+  "remaining": {
+    "request": "16/300,remaining284 unallocated.300 completion not claimed.",
+    "original_links": "100438 row9->10,100475 row1->7/row6->8,103151 row1->2 original payloads still unknown/unchanged. Earlier marked Slaghammer/FuZan/Yigthregor reconstructions are not original-fidelity proof or recounted fixes.",
+    "client": "No new authenticated client traversal. Warrior pickup/outro/return,Sharasdal living Lady,LiLi/crane full dialogue/voice/timing/shared-player retry/reentry,pet/group/camera and all36 complete acquisition chains remain pending.",
+    "target105": "Matching735 catalog/modern reference remains research; no unverified modern shared-target selector port.",
+    "research": "Foreign-queue captures reviewed:unused Meatball this and map-owned Antorus instance do not justify blind edits. Additional null-target/raw delayed spell context leads are not yet proven valid-caller defects and not counted."
+  },
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Unchanged7111-byte mixed DBErrors and protected original Slaghammer EXE/cache. No original execution/overwrite/deletion/fixed archive,no log suppression/truncation,Defender/quarantine boundaries retained. Prior bnet history limitation remains in previous closeout; no new loss because current tests snapshot first."
+  }
+}
