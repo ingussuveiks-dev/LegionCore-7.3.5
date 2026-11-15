@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-15",
+  "batch": 8,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch08.sql",
+  "migration_sha256": "4157d9516316c6f7c6449e4204c4e03d933bf838c223943dac70fb0333ae2910",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 236847,
+      "old_hex": "C390C5BEC390C2BFC391C692C391C281C390C2BAC390C2BDC390C2B0C391C28F20C391E282ACC390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC390C2B920C390C2BAC391C692C390C2B7C390C2BDC390C2B8",
+      "new_hex": "D09ED0BFD183D181D0BAD0BDD0B0D18F20D180D0B5D188D0B5D182D0BAD0B020D0A7D0B5D180D0BDD0BED0B920D0BAD183D0B7D0BDD0B8",
+      "restored_name": "Опускная решетка Черной кузни",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 236848,
+      "old_hex": "446F6F7220C390C2B3C391E282ACC391C692C390C2B7C390C2BEC390C2B2C390C2BEC390C2B3C390C2BE20C390C2BBC390C2B8C391E2809EC391E2809AC390C2B0",
+      "new_hex": "446F6F7220D0B3D180D183D0B7D0BED0B2D0BED0B3D0BE20D0BBD0B8D184D182D0B0",
+      "restored_name": "Door грузового лифта",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237109,
+      "old_hex": "C390E28099C391E282ACC390C2B0C391E2809AC390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC391E282ACC391C692C390C2BAC390C2B0",
+      "new_hex": "D092D180D0B0D182D0B020D0A7D0B5D180D0BDD0BED180D183D0BAD0B0",
+      "restored_name": "Врата Чернорука",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237110,
+      "old_hex": "446F6F7220C391C281C390C2BAC390C2BBC390C2B0C390C2B4C390C2B0",
+      "new_hex": "446F6F7220D181D0BAD0BBD0B0D0B4D0B0",
+      "restored_name": "Door склада",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237111,
+      "old_hex": "C390E28093C390C2B0C391E282AC20486F726EC390C2B8C390C2BBC390C2B0",
+      "new_hex": "D096D0B0D18020486F726ED0B8D0BBD0B0",
+      "restored_name": "Жар Hornила",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237112,
+      "old_hex": "C390E28093C390C2B0C391E282AC20486F726EC390C2B8C390C2BBC390C2B0",
+      "new_hex": "D096D0B0D18020486F726ED0B8D0BBD0B0",
+      "restored_name": "Жар Hornила",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237113,
+      "old_hex": "C390E28093C390C2B0C391E282AC20486F726EC390C2B8C390C2BBC390C2B0",
+      "new_hex": "D096D0B0D18020486F726ED0B8D0BBD0B0",
+      "restored_name": "Жар Hornила",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237114,
+      "old_hex": "C390E28093C390C2B0C391E282AC20486F726EC390C2B8C390C2BBC390C2B0",
+      "new_hex": "D096D0B0D18020486F726ED0B8D0BBD0B0",
+      "restored_name": "Жар Hornила",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237224,
+      "old_hex": "C390C2A0C390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C390C2BFC390C2B5C391E280A1C390C2B8",
+      "new_hex": "D0A0D0B5D188D0B5D182D0BAD0B020D0BFD0B5D187D0B8",
+      "restored_name": "Решетка печи",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237302,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C592",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C",
+      "restored_name": "Тигель",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
