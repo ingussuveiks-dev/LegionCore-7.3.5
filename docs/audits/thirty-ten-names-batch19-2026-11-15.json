@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 19,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch19.sql",
+  "migration_sha256": "a83a3e406898ba816cf853c8ea9b5dfd0fc4588650de24e1d57886d06ac827c5",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 213988,
+      "old_hex": "C390C5BEC391E280A6C390C2BEC391E2809AC390C2BDC390C2B8C390C2BA",
+      "new_hex": "D09ED185D0BED182D0BDD0B8D0BA",
+      "restored_name": "Охотник",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 225788,
+      "old_hex": "446F6F7220C390C2B220C390E28098C390C2B5C390C2B7C390C2B4C390C2BDC391C692",
+      "new_hex": "446F6F7220D0B220D091D0B5D0B7D0B4D0BDD183",
+      "restored_name": "Door в Бездну",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 225920,
+      "old_hex": "C390C5BEC390C2B3C391E282ACC391C281C390C2BAC390C2B0C391C28F20426172726963616465",
+      "new_hex": "D09ED0B3D180D181D0BAD0B0D18F20426172726963616465",
+      "restored_name": "Огрская Barricade",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227693,
+      "old_hex": "C390C2A1C391E2809AC390C2BEC390C2BFC390C2BAC390C2B020C390C2BAC390C2BDC390C2B8C390C2B3",
+      "new_hex": "D0A1D182D0BED0BFD0BAD0B020D0BAD0BDD0B8D0B3",
+      "restored_name": "Стопка книг",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227695,
+      "old_hex": "426F7820C391C28120C390C2B8C390C2BDC391C281C391E2809AC391E282ACC391C692C390C2BCC390C2B5C390C2BDC391E2809AC390C2B0C390C2BCC390C2B820C391C5BDC390C2B2C390C2B5C390C2BBC390C2B8C391E282ACC390C2B0",
+      "new_hex": "426F7820D18120D0B8D0BDD181D182D180D183D0BCD0B5D0BDD182D0B0D0BCD0B820D18ED0B2D0B5D0BBD0B8D180D0B0",
+      "restored_name": "Box с инструментами ювелира",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227907,
+      "old_hex": "C390C2A1C391E2809AC390C2BEC390C2B9C390C2BAC390C2B020C390C2B4C390C2BBC391C28F20C390C2B1C390C2BEC391E280A1C390C2B5C390C2BA",
+      "new_hex": "D0A1D182D0BED0B9D0BAD0B020D0B4D0BBD18F20D0B1D0BED187D0B5D0BA",
+      "restored_name": "Стойка для бочек",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227908,
+      "old_hex": "C390C2A8C391E2809AC390C2B0C390C2B1C390C2B5C390C2BBC391C59220C390C2B1C391E282ACC390C2B5C390C2B2C390C2B5C390C2BD",
+      "new_hex": "D0A8D182D0B0D0B1D0B5D0BBD18C20D0B1D180D0B5D0B2D0B5D0BD",
+      "restored_name": "Штабель бревен",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227909,
+      "old_hex": "C390C5A1C391C692C390C2B7C390C2BDC390C2B5C391E280A1C390C2BDC391E280B9C390C2B920486F726E",
+      "new_hex": "D09AD183D0B7D0BDD0B5D187D0BDD18BD0B920486F726E",
+      "restored_name": "Кузнечный Horn",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227915,
+      "old_hex": "C390C5A1C391C692C390C2B7C390C2BDC390C2B5C391E280A1C390C2BDC391E280B9C390C2B920486F726E",
+      "new_hex": "D09AD183D0B7D0BDD0B5D187D0BDD18BD0B920486F726E",
+      "restored_name": "Кузнечный Horn",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 227917,
+      "old_hex": "C390E28093C390C2B5C390C2BBC390C2B5C390C2B7C390C2BDC391E280B9C390C2B920C391C281C390C2BBC390C2B8C391E2809AC390C2BEC390C2BA",
+      "new_hex": "D096D0B5D0BBD0B5D0B7D0BDD18BD0B920D181D0BBD0B8D182D0BED0BA",
+      "restored_name": "Железный слиток",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
