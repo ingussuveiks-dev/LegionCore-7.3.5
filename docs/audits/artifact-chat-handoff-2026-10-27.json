@@ -11545,5 +11545,34 @@
       "protected_original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
       "result": "Unchanged; original EXE/cache not executed/overwritten/deleted, mixed log never truncated and original unresolved evidence not moved to fixed. Defender/quarantine boundaries preserved."
     }
+  },
+  "latest_layered_hundred_2026_11_15": {
+    "audit": "docs/audits/layered-hundred-closeout-2026-11-15.json",
+    "source_commits": [
+      "38e4b689791943c8a6b06a09030ad9967135824d",
+      "c06962b589537f93f789d11ee3082d9028a0f67a"
+    ],
+    "status": "100_DISTINCT_DATA_FIELDS_DEPLOYED_NATIVE_AND_LIVE_PASS_CLEANUP_COMPLETE_CLIENT_PENDING",
+    "delta": "37 exact two-layer UTF8 name recoveries and63 missing authored chest Data1 links,29 with native quest gates.100 distinct entry/fields in ten review cohorts;11 independent SQL migrations. Seven templates have56 static spawns;93 template placements/use not newly proven.",
+    "verification": "Full-row TEMP old/fixed/replay signatures with unrelated control,47 exact drift refusals. All100 actual live full metadata/after-value guards,63 authored source signatures and11 RELEASED normalized updater hashes pass. Actual ObjectMgr template/locale loaders plus matching7.3.5 QueryGameObjectResponse::Write/parsing;37 exact UTF8 names and all locales, other packet bytes unchanged. Actual GO creation/admission/update, source loading and Player::SendLoot before/fixed/live;63 source owners, two race bytes and real20yd denials, inventory/money unchanged.29 actual quest/item/objective/amount gates use native HasQuestForItem/Loot::AllowedForPlayer in NONE/INCOMPLETE/COMPLETE states.",
+    "client_boundary": "Release libraries, not ASAN. Controlled accepted states and map1220 isolate native engines. No authenticated client/character writes, new item/storage/quest credit grant, reachable placements, actual quest acceptance, UI/cache, drops/equipment, group traversal or full acquisition claims.",
+    "runtime": {
+      "directory": "build-extractors/bin/Release",
+      "owned_pid": 3404,
+      "result": "Fresh ready after all11 migrations; graceful shutdown0/exit0/stderr0/gone; no user/unknown process stopped.",
+      "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+      "binary_changed": false
+    },
+    "cleanup": "707 SHA256-verified archives;35 exact redundant artifacts/1416273932bytes removed. One corrected wrapper compiler-input failure classified, no runtime crash/error. Final diagnostics clean.",
+    "remaining": {
+      "original_links": "100438 row9->10,100475 row1->7/row6->8,103151 row1->2 remain unchanged and unknown. Marked prior Slaghammer functionality does not certify original fidelity.",
+      "client": "No new traversal; original scene/dialogue/voice fidelity, LiLi/crane/other actual paths, shared-player retry/reentry and all36 full artifact chains remain pending. Two truncated/layered names remain refused without guessed tails."
+    },
+    "preserved": {
+      "mixed_dberrors_bytes": 7111,
+      "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+      "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+      "result": "Unchanged. Original protected EXE/cache not executed/overwritten/deleted or archived as fixed; mixed log never cleared; Defender/quarantine boundaries unchanged."
+    }
   }
 }

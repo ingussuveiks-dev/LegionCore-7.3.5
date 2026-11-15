@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi ņem 10×10",
+  "status": "100_DISTINCT_DATA_FIELDS_DEPLOYED_NATIVE_AND_LIVE_PASS_CLEANUP_COMPLETE_CLIENT_PENDING",
+  "source_commits": [
+    "38e4b689791943c8a6b06a09030ad9967135824d",
+    "c06962b589537f93f789d11ee3082d9028a0f67a"
+  ],
+  "details": [
+    "docs/audits/layered-names-2026-11-15.json",
+    "docs/audits/quest-chests-2026-11-15.json",
+    "docs/audits/layered-hundred-2026-11-15.json"
+  ],
+  "counting": {
+    "new_distinct_fields": 100,
+    "names": 37,
+    "chest_loot_links": 63,
+    "review_cohorts": 10,
+    "fields_per_cohort": 10,
+    "atomic_sql_files": 11,
+    "note": "Count only exact entry/field changes. Seven templates have56 static spawn instances; remaining93 template placements/dynamic use are not newly proven. No100-quest or100-client-traversal claim."
+  },
+  "native": {
+    "names": "Actual ObjectMgr template/locale loaders plus matching7.3.5 QueryGameObjectResponse::Write/parsing;37 exact UTF8 names and all locales, other packet bytes unchanged.",
+    "loot": "Actual GO creation/admission/update, source loading and Player::SendLoot before/fixed/live;63 source owners, two race bytes and real20yd denials, inventory/money unchanged.29 actual quest/item/objective/amount gates use native HasQuestForItem/Loot::AllowedForPlayer in NONE/INCOMPLETE/COMPLETE states.",
+    "boundary": "Release libraries, not ASAN. Controlled accepted states and map1220 isolate native engines. No authenticated client/character writes, new item/storage/quest credit grant, reachable placements, actual quest acceptance, UI/cache, drops/equipment, group traversal or full acquisition claims."
+  },
+  "data": "Full-row TEMP old/fixed/replay signatures with unrelated control,47 exact drift refusals. All100 actual live full metadata/after-value guards,63 authored source signatures and11 RELEASED normalized updater hashes pass.",
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 3404,
+    "result": "Fresh ready after all11 migrations; graceful shutdown0/exit0/stderr0/gone; no user/unknown process stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "binary_changed": false
+  },
+  "post_test": "Every capture/test/native/startup/final proof had canonical and own before/after diagnostics. No new crash, appended DBErrors or unexplained warning/error/assertion. Final hash/deletion/source/input/exit/stdout/stderr/updater proof and diagnostics pass.",
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/layered-hundred-2026-11-15",
+    "archive_manifest_sha256": "5F2BCD444E6027CC1C45FCF9B7388982804BAE7EE13C1459491F207CD0C75A8E",
+    "archived_files": 707,
+    "deleted_artifacts": 35,
+    "reclaimed_bytes": 1416273932,
+    "resolved_test_fixture_failure": {
+      "20261115-203504-774": "Resolved wrapper compiler-input error: selected retained FollowingGoLootNative.cpp instead of generated LayeredNative.cpp; missing NativeFollowingGoLoot.inc. No executable launched, no runtime error/crash. Correct generated source compiles and paired/live native runs pass."
+    },
+    "result": "Original bytes archived and SHA256 verified; own redundant EXE/OBJ/PDB/MAP/private configuration and pending SQL copies removed only from validated task roots after passing live regression and canonical startup. No own hidden server remains. Source/generated regression inputs, final-link libraries, canonical EXEs/config/certs/DLLs/data retained."
+  },
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Unchanged. Original protected EXE/cache not executed/overwritten/deleted or archived as fixed; mixed log never cleared; Defender/quarantine boundaries unchanged."
+  },
+  "remaining": {
+    "original_links": "100438 row9->10,100475 row1->7/row6->8,103151 row1->2 remain unchanged and unknown. Marked prior Slaghammer functionality does not certify original fidelity.",
+    "client": "No new traversal; original scene/dialogue/voice fidelity, LiLi/crane/other actual paths, shared-player retry/reentry and all36 full artifact chains remain pending. Two truncated/layered names remain refused without guessed tails."
+  }
+}

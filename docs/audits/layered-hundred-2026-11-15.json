@@ -1,0 +1,916 @@
+{
+  "date": "2026-11-15",
+  "request": "10×10",
+  "distinct_fields": 100,
+  "review_cohorts": 10,
+  "cohort_size": 10,
+  "atomic_migrations": 11,
+  "explanation": "Ten review cohorts of ten distinct fields; four name-only and seven loot-only atomic SQL files keep two independent problems separate. One review cohort crosses the37/63 boundary. No controls, locales, repetitions, previously repaired field or whole quest counted.",
+  "ledger": [
+    {
+      "review_batch": 1,
+      "sequence": 1,
+      "entry": 227794,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 2,
+      "entry": 227795,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 3,
+      "entry": 227796,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 4,
+      "entry": 227797,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 5,
+      "entry": 227918,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 6,
+      "entry": 227919,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 7,
+      "entry": 227921,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 8,
+      "entry": 227922,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 9,
+      "entry": 227926,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 1,
+      "sequence": 10,
+      "entry": 227929,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 11,
+      "entry": 228554,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 12,
+      "entry": 228556,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 13,
+      "entry": 228557,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 14,
+      "entry": 228559,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 15,
+      "entry": 228664,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 16,
+      "entry": 228665,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 17,
+      "entry": 228669,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 18,
+      "entry": 228716,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 19,
+      "entry": 228717,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 2,
+      "sequence": 20,
+      "entry": 228721,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 21,
+      "entry": 228724,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 22,
+      "entry": 228725,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 23,
+      "entry": 228726,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 24,
+      "entry": 230286,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 25,
+      "entry": 231693,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 1
+    },
+    {
+      "review_batch": 3,
+      "sequence": 26,
+      "entry": 231697,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 27,
+      "entry": 231700,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 28,
+      "entry": 233725,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 29,
+      "entry": 233726,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 3,
+      "sequence": 30,
+      "entry": 233728,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 31,
+      "entry": 234579,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 32,
+      "entry": 236403,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 33,
+      "entry": 236420,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 34,
+      "entry": 236652,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 35,
+      "entry": 237180,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 36,
+      "entry": 237181,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 37,
+      "entry": 237665,
+      "field": "name",
+      "kind": "names",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 38,
+      "entry": 235888,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 39,
+      "entry": 246579,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 4,
+      "sequence": 40,
+      "entry": 246658,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 41,
+      "entry": 246966,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 42,
+      "entry": 246967,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 43,
+      "entry": 247023,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 44,
+      "entry": 247050,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 45,
+      "entry": 247072,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 46,
+      "entry": 247073,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 47,
+      "entry": 247074,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 1,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 48,
+      "entry": 247851,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 49,
+      "entry": 247875,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 5,
+      "sequence": 50,
+      "entry": 250648,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 51,
+      "entry": 251419,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 52,
+      "entry": 253081,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 53,
+      "entry": 265526,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 54,
+      "entry": 266057,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 55,
+      "entry": 266058,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 56,
+      "entry": 266059,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 57,
+      "entry": 266743,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 2,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 58,
+      "entry": 266746,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 59,
+      "entry": 266754,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 6,
+      "sequence": 60,
+      "entry": 267181,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 7,
+      "sequence": 61,
+      "entry": 267765,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 7,
+      "sequence": 62,
+      "entry": 267952,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 50
+    },
+    {
+      "review_batch": 7,
+      "sequence": 63,
+      "entry": 268474,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 1
+    },
+    {
+      "review_batch": 7,
+      "sequence": 64,
+      "entry": 268475,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 1
+    },
+    {
+      "review_batch": 7,
+      "sequence": 65,
+      "entry": 268476,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 1
+    },
+    {
+      "review_batch": 7,
+      "sequence": 66,
+      "entry": 268477,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 1
+    },
+    {
+      "review_batch": 7,
+      "sequence": 67,
+      "entry": 268479,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 3,
+      "static_spawn_count": 1
+    },
+    {
+      "review_batch": 7,
+      "sequence": 68,
+      "entry": 268723,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 7,
+      "sequence": 69,
+      "entry": 268772,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 7,
+      "sequence": 70,
+      "entry": 269043,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 71,
+      "entry": 269049,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 72,
+      "entry": 269056,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 73,
+      "entry": 269057,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 74,
+      "entry": 269059,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 75,
+      "entry": 269060,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 76,
+      "entry": 269061,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 77,
+      "entry": 269063,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 4,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 78,
+      "entry": 269064,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 79,
+      "entry": 269065,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 8,
+      "sequence": 80,
+      "entry": 269068,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 81,
+      "entry": 269069,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 82,
+      "entry": 269070,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 83,
+      "entry": 269071,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 84,
+      "entry": 269072,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 85,
+      "entry": 269073,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 86,
+      "entry": 269074,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 87,
+      "entry": 269075,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 5,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 88,
+      "entry": 269078,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 89,
+      "entry": 269079,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 9,
+      "sequence": 90,
+      "entry": 269080,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 91,
+      "entry": 269081,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 92,
+      "entry": 269082,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 93,
+      "entry": 269084,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 94,
+      "entry": 269085,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 95,
+      "entry": 269086,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 96,
+      "entry": 269088,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 97,
+      "entry": 269089,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 6,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 98,
+      "entry": 269090,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 7,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 99,
+      "entry": 269091,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 7,
+      "static_spawn_count": 0
+    },
+    {
+      "review_batch": 10,
+      "sequence": 100,
+      "entry": 269092,
+      "field": "Data1",
+      "kind": "loot",
+      "sql_batch": 7,
+      "static_spawn_count": 0
+    }
+  ],
+  "focused_audits": [
+    "docs/audits/layered-names-2026-11-15.json",
+    "docs/audits/quest-chests-2026-11-15.json"
+  ],
+  "client_verified": false
+}
