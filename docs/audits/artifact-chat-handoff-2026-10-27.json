@@ -11524,5 +11524,26 @@
       "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
       "result": "Unchanged; mixed log never cleared and original protected EXE/cache never executed, overwritten, deleted or moved into fixed. Defender/quarantine boundaries untouched."
     }
+  },
+  "latest_lili_phase_2026_11_15": {
+    "audit": "docs/audits/lili-phase-closeout-2026-11-15.json",
+    "fix_commit": "6208d5b252842175819a8bd46f743936aa6ae4cc",
+    "status": "ONE_LILI_FATHER_PHASE_REPAIR_DEPLOYED_VERIFIED_ORIGINAL_LINKS_AND_FULL_DIALOGUE_CLIENT_PENDING",
+    "delta": "Only creature340237.PhaseId6735 ->5910 6735. Existing native GetClosest targets now resolve both ways; all12 authored SmartAI rows/timers/unknown LINK7/8, all phase definitions/conditions, daughter and remote father variants retained. No shared phase bypass or new action payload.",
+    "native_client_boundary": "Actual native spawn parsing/PhaseData accumulation/WorldObject phase rules/nearest selector,52 paired/live profile-repeat groups plus range/mask/dead controls. Full-schema TEMP replay/all-column signatures/seven exact context refusals; actual live guarded context and updater hash verified. Native checks isolate phase/target selection on controlled map1220; no speech/quest callbacks or client travel certified.",
+    "canonical_world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "runtime": "Own PID18464 fresh ready/shutdown0/exit0/stderr0/gone, all final diagnostics clean. No user server stopped.",
+    "cleanup": "201 verified archive hashes;13 exact artifacts/707642374bytes removed.",
+    "remaining": {
+      "original_links": "100475 LINK7/8,100438 LINK10,103151 LINK2 remain unknown original payloads, unchanged/open. Marked prior Slaghammer original fidelity remains unverified.",
+      "lili": "Full actual dialogue playback/voice/timing, runOnce/retry/concurrent-player behavior, walking/fish/crane/native boarding/departure and later kite/arrival need separate evidence. No whole40633 or all36 client-chain completion inferred.",
+      "client": "Availability requested asynchronously; no reply assumed and no new client traversal claimed."
+    },
+    "preserved": {
+      "mixed_dberrors_bytes": 7111,
+      "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+      "protected_original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+      "result": "Unchanged; original EXE/cache not executed/overwritten/deleted, mixed log never truncated and original unresolved evidence not moved to fixed. Defender/quarantine boundaries preserved."
+    }
   }
 }
