@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi turpini — continue unfinished artifact work",
+  "baseline": "3226e65a9",
+  "status": "ONE_INDEPENDENT_LILI_FATHER_PHASE_BLOCKER_REPAIRED_DEPLOYED_NATIVE_LIVE_PASS_ORIGINAL_LINKS_AND_FULL_CLIENT_CHAIN_PENDING",
+  "implementation": "sql/updates/world/2026_11_15_87_lili_father_phase.sql",
+  "plan": "tools/tests/LiliPhase20261115.json",
+  "cause": "Off To Adventure40633 has four authored actor-to-actor target19/30yd DATA callbacks between LiLi100475/372111 and ChonPo100481/340237. LiLi has5910; nearby father has6735. Exact native nearest-creature predicate calls IsWithinDistInMap -> InSamePhase -> InSamePhaseId, so the non-player actors cannot see/select one another despite their7yd separation. Both are visible to a properly phased player; player visibility alone did not prove NPC-to-NPC lookup.",
+  "repair": "Change only father spawn340237.PhaseId from6735 to5910 6735. Retain original base phase and add the existing daughter phase. Preserve all other spawn fields/pose/animation, other father382407/6918, daughter372111/5910, all12 original SmartAI rows/timers/runOnce flags and all22 definitions/48 phase conditions. No global phase bypass, broad template change, teleport, item/progression grant or invented LINK7/8.",
+  "audience": "Class-hall zone7902 definition1 unconditionally adds6735; its source23 condition set is empty. All22 definitions have flags16 and none overwrites/stops accumulation. Thus native ordinary zone profiles retain6735 and already see father. Actual native PhaseData accumulation plus player/NPC InSamePhase checks confirm every22 individual optional-phase profile preserves father/daughter/remote-variant visibility. GM/custom manual phase overrides and complete client rendering are not newly certified.",
+  "guards": "Full original/all-after phase admission plus exact nonphase hashes of3 actor spawn rows; exact full signatures/counts of12 script rows,2 templates,22 definitions and48 conditions. Custom phase, spawn metadata, missing daughter, changed remote father/dialogue/base flags/condition rows refuse atomically. Replay idempotent.",
+  "native": {
+    "matching": "Actual Release ObjectMgr spawn/phase-definition loaders, native PhaseData accumulation/WorldObject phase rules and actual GetClosestCreatureWithEntry used by SmartAI target19. SQL verifies the exact four unchanged callback target rows. No mocked phase predicate.",
+    "cases": "Paired known-old/fixed and separate live:52 profile/repeat groups (22 actual optional-phase profiles per state plus4 repeated bidirectional selector groups per state), source30yd range, phase-mask mismatch, dead actor and remote variant controls. Before repair both authored lookup directions fail; after repair both select the actual nearby actor.",
+    "context": "Actors use actual parsed spawn phase sets/relative source poses, controlled world map1220 to isolate phase selection. Null AI fixtures perform no speech/timer/quest callback dispatch. This verifies the common target engine and the protected four source descriptors, not full dialogue playback, class-hall geometry or actual quest traversal.",
+    "paired_run": "build-extractors/runtime-test/lili-phase-native/20261115-195730-140",
+    "live_run": "build-extractors/runtime-test/lili-phase-native/20261115-200053-126",
+    "release_not_asan": true,
+    "privacy": "Read-only World/Hotfix/Login pools; TEMP World shadow tables only. No Character DB, actual login, character/progression/item/quest manipulation. Socketless native sessions reclaimed at process exit to avoid account UPDATE."
+  },
+  "data": {
+    "tests": "Full-schema TEMP baseline/repair/replay and normalized complete-row signatures across all5 tables, seven exact foreign/context refusals. Actual live full guard equality and RELEASED LF-normalized updater SHA1 verified.",
+    "live_run": "build-extractors/runtime-test/lili-phase-data/20261115-200110-350",
+    "shared_reference_scan": "Only these four original nearby references target100475/100481; no per-spawn340237 SmartAI or source22 conditions on the pair found. Both father variants/poses captured read-only; distant variant unchanged."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 18464,
+    "result": "Fresh ready/update87, graceful shutdown0/exit0/stderr0/gone. No user/unknown process stopped or task-owned hidden server left. No new canonical/own crash files, DBErrors or unexplained server warnings/errors/assertions.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_changed": false,
+    "binary_changed": false
+  },
+  "remaining": "Original missing100475 LINK7/8,100438 LINK10 and103151 LINK2 remain unchanged/open. This separate phase bug was not fixed by those searches. Full dialogue voice/timing, shared NPC runOnce/retry/concurrent players, LiLi walking/fish/crane boarding/departure, existing kite/arrival, all36 full client chains and original fidelity still require their own evidence. No original payload is claimed recovered.",
+  "counting": "One focused phase/data repair; previous batches remain separate.",
+  "preserved": "Original protected Slaghammer executable/cache and mixed7111-byte DBErrors unchanged, never executed/overwritten/truncated/archived as fixed. Original LINK evidence retained.",
+  "cleanup": "Own resolved probe artifacts archived/deleted with hash proof in lili-phase-closeout-2026-11-15 audit; reusable tests/source retained."
+}
