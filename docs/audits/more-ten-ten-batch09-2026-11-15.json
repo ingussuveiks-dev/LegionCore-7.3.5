@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 9,
+  "entries": [
+    {
+      "entry": 251756,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 251757,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 251758,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 251759,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 251953,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 251954,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 252056,
+      "name": "Challenger's Cache"
+    },
+    {
+      "entry": 252160,
+      "name": "Shadow Well"
+    },
+    {
+      "entry": 252162,
+      "name": "Light Well"
+    },
+    {
+      "entry": 252266,
+      "name": "Delayeth's Journal: The Jewels of the Isles"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_67_more_ten_chest_batch9.sql",
+  "sha256": "1f36387b73d0dbab3628a0232b39c13be5490c3594a43d28d266458ce0ac9844",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-9/result.json",
+    "sha256": "cb74a1134227cb0b80bef0837497f390511b1ca7b3a04a90f2f77f635e729956"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
