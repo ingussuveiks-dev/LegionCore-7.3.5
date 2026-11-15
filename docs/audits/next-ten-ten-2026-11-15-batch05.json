@@ -1,0 +1,152 @@
+{
+  "date": "2026-11-15",
+  "batch": 5,
+  "status": "COMPLETED10_NEW_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 268572,
+      "name": "An unusual snake's hiding place.",
+      "before_loot": 0,
+      "after_loot": 268572,
+      "locations": [
+        {
+          "map": 1220,
+          "spawns": 1
+        }
+      ],
+      "existing_loot_rows": 72
+    },
+    {
+      "entry": 268715,
+      "name": "Traitor's Bag",
+      "before_loot": 0,
+      "after_loot": 268715,
+      "locations": [
+        {
+          "map": 1220,
+          "spawns": 17
+        }
+      ],
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268762,
+      "name": "Uncovered dirt",
+      "before_loot": 0,
+      "after_loot": 268762,
+      "locations": [
+        {
+          "map": 1220,
+          "spawns": 12
+        }
+      ],
+      "existing_loot_rows": 7
+    },
+    {
+      "entry": 268765,
+      "name": "Uncovered dirt",
+      "before_loot": 0,
+      "after_loot": 268765,
+      "locations": [
+        {
+          "map": 1220,
+          "spawns": 30
+        }
+      ],
+      "existing_loot_rows": 7
+    },
+    {
+      "entry": 271114,
+      "name": "Eredar Bones",
+      "before_loot": 0,
+      "after_loot": 271114,
+      "locations": [
+        {
+          "map": 1669,
+          "spawns": 21
+        }
+      ],
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 271668,
+      "name": "The secret of perspicacity",
+      "before_loot": 0,
+      "after_loot": 271668,
+      "locations": [
+        {
+          "map": 1669,
+          "spawns": 1
+        }
+      ],
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 271669,
+      "name": "Ð¢Ð°Ð¹Ð½Ð¸Ðº Ð¾ÑÑ‚Ñ€Ð¾Ð³Ð¾ Ñ€Ð°Ð·ÑƒÐ¼Ð°",
+      "before_loot": 0,
+      "after_loot": 271669,
+      "locations": [
+        {
+          "map": 1669,
+          "spawns": 1
+        }
+      ],
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 271670,
+      "name": "The secret of treachery",
+      "before_loot": 0,
+      "after_loot": 271670,
+      "locations": [
+        {
+          "map": 1669,
+          "spawns": 1
+        }
+      ],
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 271689,
+      "name": "Crystal Shard of Fel",
+      "before_loot": 0,
+      "after_loot": 271689,
+      "locations": [
+        {
+          "map": 1669,
+          "spawns": 12
+        }
+      ],
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 271979,
+      "name": "Print Awakening",
+      "before_loot": 0,
+      "after_loot": 271979,
+      "locations": [
+        {
+          "map": 1669,
+          "spawns": 1
+        }
+      ],
+      "existing_loot_rows": 1
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_52_next_ten_chest_batch5.sql",
+  "migration_sha256": "fd1ac32d6f55782c0fd812d959acb50dac510ea8a881383491b7767d0b6c4f17",
+  "cause": "Native GetLootId0 made SendLoot bypass authored FillLoot; only restore existing same-entryData1. Exact other template values/size tolerance1e-6, foreign-link refusal, conditions/drop chances/counts/spawns/locks remain unchanged.",
+  "shadow": "10 installs/replay,91 unrelated entries, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "fe85bbff2738a30276ec5ad9ed3fc76190c097225ffbc93a35e2c3f56f43c24f",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "e163260a4f9cbcc2b6c4f81cfc4f15e70136f9fed1f9aff14b1609fa7b032ec2",
+    "inputs_sha256": "66bb43b448c3f4f59adc49097bde3f4e1757df315d3a1e773ce760b7dc8632da"
+  },
+  "live": "Full100 live readback matches links and all other captured template fields/spawn/loot row counts. Own canonical updater applied10 migrations then ready/shutdown0/exit0/gone.",
+  "diagnostics": "Final selected100 exit0/stderr0/no new crash or appended DBErrors/server warnings/errors/assertions. Initial missing179109 admission and later fixture modifier-tree AV are explicitly separate failed runs, never passing.",
+  "limits": "Actual full Release core; source placement/player admission controlled. No authenticated character save/item storage/client visibility/lock/eligibility/probability or whole-chain certification. Original post-loot fields retained; scripted later post-loot actors/animation and client/party/faction variants remain separate.",
+  "no_recount": "Ten sources disjoint from previous350, four original open sources and other nine cohorts. No failed/deferred case/test repetition or loader repair counted as a chest fix."
+}
