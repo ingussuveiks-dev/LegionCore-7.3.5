@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-15",
+  "batch": 10,
+  "status": "COMPLETED10_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 267655,
+      "name": "Ravaged Supplies",
+      "before_loot": 0,
+      "after_loot": 267655,
+      "existing_spawns": 13,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267729,
+      "name": "Argunit Crystal",
+      "before_loot": 0,
+      "after_loot": 267729,
+      "existing_spawns": 21,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268472,
+      "name": "Covered in a spider web Chest with treasures",
+      "before_loot": 0,
+      "after_loot": 268472,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268510,
+      "name": "Dusty Chest with Treasures",
+      "before_loot": 0,
+      "after_loot": 268510,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268511,
+      "name": "Pompous Chest with Treasures",
+      "before_loot": 0,
+      "after_loot": 268511,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268512,
+      "name": "The wreck of the Chest with the treasure.",
+      "before_loot": 0,
+      "after_loot": 268512,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268513,
+      "name": "Sandbagged Chest with treasures",
+      "before_loot": 0,
+      "after_loot": 268513,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 268532,
+      "name": "An unusual snake's hiding place.",
+      "before_loot": 0,
+      "after_loot": 268532,
+      "existing_spawns": 1,
+      "existing_loot_rows": 56
+    },
+    {
+      "entry": 268533,
+      "name": "An unusual snake's hiding place.",
+      "before_loot": 0,
+      "after_loot": 268533,
+      "existing_spawns": 1,
+      "existing_loot_rows": 57
+    },
+    {
+      "entry": 268534,
+      "name": "An unusual snake's hiding place.",
+      "before_loot": 0,
+      "after_loot": 268534,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_46_legion_chest_links_ten_batch10.sql",
+  "migration_sha256": "26d391560d58b4cf2e0a0d701c5c657db16d654556d54ff675d14c19d60ea3cd",
+  "cause": "Data1=0 made native GetLootId return0 and Player::SendLoot skip FillLoot despite authored same-entry loot; only restoreData1.",
+  "shadow": "10 fixes/idempotent replay,91 unrelated records, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "5ea96344d6520aab3c8c74f00e086d16d3887cde3468f457cc0a62c0ac91479e",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+    "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+    "ASAN": false
+  },
+  "live": "Canonical updater applied10 migrations; readback verifies all100 links/other captured fields/spawn and loot row counts, plus four deferred candidates unmodified.",
+  "diagnostics": "Final selected tests exit0, stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Initial different selection failed on four unresolved spells; preserved separately, not called passing.",
+  "limits": "Controlled synthetic player/source admission. No authenticated save/item storage, actual client visibility/lock/eligibility/drop distribution or full quest traversal claim. Faction/group/quest/respawn and pet progression rules not changed.",
+  "no_recount": "Ten distinct new sources disjoint from previous250/other nine cohorts; four unresolved post-loot candidates and repeated tests not counted."
+}
