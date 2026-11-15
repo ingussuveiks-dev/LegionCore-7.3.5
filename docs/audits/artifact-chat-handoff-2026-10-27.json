@@ -11373,5 +11373,33 @@
     "diagnostics": "Both owned canonical starts and final native/live/shadow regressions clean. No hidden servers. Original mixed logs/cache retained.",
     "cleanup": "70 exact redundant artifacts/3767599254bytes removed; two fixed manifests hash verified.",
     "limits": "Actual Slaghammer combat/camera/voice/path/door/companion and all36 full artifact chains remain pending. Actual object font/cache display not observed; restored names retain original mixed language. Neither native serializer nor startup certifies client visuals. Original Slaghammer payload fidelity and103151 remain OPEN."
+  },
+  "latest_thirty_ten_names_2026_11_15": {
+    "status": "300_NEW_NAME_FIELDS_30_COHORTS_DEPLOYED_PUSHED_CLEANED_CLIENT_PENDING",
+    "handoff": "docs/audits/thirty-ten-names-handoff-2026-11-15.json",
+    "new_name_fields": 300,
+    "groups": 30,
+    "first_fix_commit": "6b96bddbe81f857f5e942e3faa7ddb8e6c8bb8b5",
+    "last_fix_commit": "54eaba1ea9019269a0b960d827dfb67ba13bbb28",
+    "counting": "300 additional distinct gameobject_template.name encoding corrections for one stored-byte defect class. Previous100 names are controls and excluded from the new count. Gameplay mechanics and full quest traversals were not changed/certified.",
+    "source_scope": {
+      "static_spawned": 132,
+      "other_authored_references": 48,
+      "template_query_only": 120,
+      "limit": "The120 query-only definitions have no established in-world usage. References/static records do not certify actual client reachability, summoning, credit or whole-chain behavior. Restored existing authored Cyrillic/mixed English text; no invented translation."
+    },
+    "canonical_world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "diagnostics": "Canonical ready/shutdown and all pending/live native/data/codec regressions clean. No hidden servers; original protected cache/mixed logs retained.",
+    "cleanup": "44 exact redundant artifacts/704913477bytes removed; fixed archive hashes verified.",
+    "remaining": {
+      "other_name_pattern_matches": 147,
+      "static_name_pattern_matches": 0,
+      "unreviewed_castbar_caption_pattern_matches": 24,
+      "count_limit": "Only the measured one-pass encoding pattern; this does not certify every name/localization/grammar field. Remaining147 names and24 captions were not repaired/count-padded.",
+      "legacy": "Protected original Slaghammer EXE/cache and original payload/fidelity evidence,103151 unknownLINK2, prior reconstructed sequence fidelity and all36 whole client artifact chains remain open/separate. No error evidence discarded.",
+      "mixed_dberrors": "7111bytes SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged and not truncated.",
+      "original_slaghammer_exe_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C unchanged, not executed/overwritten/deleted.",
+      "client": "Actual font/cache display and gameplay traversal not observed; object names alone do not verify any artifact chain."
+    }
   }
 }
