@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 25,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch25.sql",
+  "migration_sha256": "46f7b6f01e01218f4c20e46ebab8d16430752b6338a4de16781ff47f4dae25b8",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 233454,
+      "old_hex": "C390C5BEC390C2B3C391E282ACC391C281C390C2BAC390C2B8C390C2B9204368657374",
+      "new_hex": "D09ED0B3D180D181D0BAD0B8D0B9204368657374",
+      "restored_name": "Огрский Chest",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233510,
+      "old_hex": "C390C5BEC390C2B6C390C2B5C391E282ACC390C2B5C390C2BBC391C592C390C2B520C391C28120C390C2BAC391E282ACC390C2B0C391C281C390C2BDC391E280B9C390C2BC20C390C2B7C391C692C390C2B1C390C2BEC390C2BC",
+      "new_hex": "D09ED0B6D0B5D180D0B5D0BBD18CD0B520D18120D0BAD180D0B0D181D0BDD18BD0BC20D0B7D183D0B1D0BED0BC",
+      "restored_name": "Ожерелье с красным зубом",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233516,
+      "old_hex": "C390E28098C391C5BDC391C281C391E2809A20C390C2BEC390C2B3C391E282ACC390C2B0",
+      "new_hex": "D091D18ED181D18220D0BED0B3D180D0B0",
+      "restored_name": "Бюст огра",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233554,
+      "old_hex": "C390C5BEC390C2B6C390C2B5C391E282ACC390C2B5C390C2BBC391C592C390C2B520C391C28120C391E2809EC390C2B8C390C2BEC390C2BBC390C2B5C391E2809AC390C2BEC390C2B2C391E280B9C390C2BC20C390C2B7C391C692C390C2B1C390C2BEC390C2BC",
+      "new_hex": "D09ED0B6D0B5D180D0B5D0BBD18CD0B520D18120D184D0B8D0BED0BBD0B5D182D0BED0B2D18BD0BC20D0B7D183D0B1D0BED0BC",
+      "restored_name": "Ожерелье с фиолетовым зубом",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233640,
+      "old_hex": "C390E28098C390C2BEC390C2BBC391C592C391CB86C390C2B0C391C28F2053656375726974792057616C6C",
+      "new_hex": "D091D0BED0BBD18CD188D0B0D18F2053656375726974792057616C6C",
+      "restored_name": "Большая Security Wall",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233722,
+      "old_hex": "C390C2A1C391E2809AC390C2BEC390C2BFC390C2BAC390C2B020C390C2BAC390C2BDC390C2B8C390C2B3",
+      "new_hex": "D0A1D182D0BED0BFD0BAD0B020D0BAD0BDD0B8D0B3",
+      "restored_name": "Стопка книг",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233731,
+      "old_hex": "C390C2A1C391E2809AC390C2BEC390C2BFC390C2BAC390C2B020C390C2BAC390C2BDC390C2B8C390C2B3",
+      "new_hex": "D0A1D182D0BED0BFD0BAD0B020D0BAD0BDD0B8D0B3",
+      "restored_name": "Стопка книг",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233843,
+      "old_hex": "C390C290C390C2B7C390C2B5C391E282ACC390C2BEC391E2809AC391C281C390C2BAC390C2B0C391C28F20C391E282ACC390C2BEC390C2B7C390C2B0",
+      "new_hex": "D090D0B7D0B5D180D0BED182D181D0BAD0B0D18F20D180D0BED0B7D0B0",
+      "restored_name": "Азеротская роза",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233955,
+      "old_hex": "C390C5A1C391E282ACC390C2BEC390C2B2C390C2B0C390C2B2C391E280B9C390C2B920C390C2BAC390C2BBC390C2B8C390C2BDC390C2BEC390C2BA",
+      "new_hex": "D09AD180D0BED0B2D0B0D0B2D18BD0B920D0BAD0BBD0B8D0BDD0BED0BA",
+      "restored_name": "Кровавый клинок",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234020,
+      "old_hex": "C390C5B8C390C2BEC390C2B4C390C2B0C391E282ACC390C2BEC390C2BA20C390E28098C390C2B0C391E282ACC390C2BEC391C281C390C2B0",
+      "new_hex": "D09FD0BED0B4D0B0D180D0BED0BA20D091D0B0D180D0BED181D0B0",
+      "restored_name": "Подарок Бароса",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
