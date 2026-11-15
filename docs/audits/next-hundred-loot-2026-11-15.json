@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-15",
+  "status": "13_DISTINCT_EXISTING_LOOT_LINKS_DEPLOYED_NATIVE_AND_LIVE_PASS_CLIENT_PENDING",
+  "implementation": "sql/updates/world/2026_11_15_84_creature_loot_links.sql",
+  "plan": "tools/tests/LootLink20261115Repairs.json",
+  "cause": "All13 ordinary/static-spawn entries had lootid0 despite existing same-entry authored creature loot tables. Native Unit::GenerateLoot and GeneratePersonalLoot both return on missing lootid; no alternate personal_loot_template entries or loot conditions were found for them. Data repair links their authored tables; native quest/personal rules still decide eligibility.",
+  "entries": [
+    108699,
+    108937,
+    117354,
+    122022,
+    123511,
+    123527,
+    126165,
+    126168,
+    126335,
+    126337,
+    126960,
+    127103,
+    127109
+  ],
+  "guards": "Exact old0/already-correct entry links and full other template fields; exact authored loot row count/signature, existing static spawn, native WDB type/classification, absent alternate personal source/conditions. Preserves flags_extra, AIName/ScriptName, spawn/health/scaling, all loot entries/chances/counts/quest-required/conditions. Native auto-loot/world-boss/tracking quest paths excluded by actual runtime assertions.",
+  "checks": {
+    "data": "Full-schema TEMP baseline/repair/replay and full template/source signatures;5 custom-link/metadata/missing/source-chance/source-missing refusals. Live13 links and13 unchanged source tables plus updater hash verified.",
+    "native": "Actual matching CreatureTemplate loader and authored LootStore loader plus Unit::GeneratePersonalLoot/GenerateLoot native branching. Thirteen entries x2 faction bytes x player/Pet/Guardian owner resolution, before/fixed and live.6 use personal branch;7 use ordinary. Untapped/untracked unrelated player receives no personal loot. Native ordinary empty quest-only personal loot may be removed; test preserves that behavior. Common native loot owner reaches authored source only after link restoration. No inventory insertion, quest credit, RNG probability guarantee or Unit::Kill execution is claimed.",
+    "shared": "Test-NativeLootDamageEligibility.ps1 passed real Creature API zero/exact/wide boundary/reset checks; production damage/owner/group logic unchanged.",
+    "paired_native": "build-extractors/runtime-test/loot-link-native/20261115-182739-412",
+    "live_native": "build-extractors/runtime-test/loot-link-native/20261115-183836-177",
+    "live_data": "build-extractors/runtime-test/loot-link-data/20261115-183016-274"
+  },
+  "fixture_repairs": "Resolved test-only include ordering, uninitialized movement registry assertion/exitC0000005, opcode registry errors and same-position player-zone mismatch. Used real native bootstrap/opcode registries and map-derived initial zone rather than disabling any check. Corrected expectation for legitimately empty ordinary quest-only personal loot. Final repaired regressions exit0/stderr0 and clean post-test diagnostics. No canonical crash report produced; exact failed stdout/stderr/diagnostics preserved and classified in local fixed archive after repair.",
+  "scope_limits": "Controlled world-map actors and socketless sessions, not real combat/one-hit death/client loot windows, active-quest pickup, groups/distance/re-entry or complete chains. Native Unit::Kill player/pet owner/looter and group/default-personal branches were traced in source; those shared rules were not changed. Socketless sessions using a read-only Login pool are deliberately reclaimed at native probe process exit to avoid WorldSession destructor account UPDATE; Character DB never opened.",
+  "runtime": "Canonical PID524 applied84 and reached fresh ready/shutdown0/exit0; all new diagnostics clean. Same canonical EXE remains deployed.",
+  "unresolved": "Actual client pickup/drop presentation and full relevant gameplay remain unverified; original artifact LINK payload/fidelity and mixed DBErrors unchanged."
+}
