@@ -1,0 +1,412 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi turpini ar10x10",
+  "status": "COMPLETED100_NEW_DISTINCT_CHEST_LINKS_DEPLOYED_CLIENT_PENDING",
+  "completed_repairs": 100,
+  "batches": 10,
+  "repairs_per_batch": 10,
+  "baseline_commit": "63f715bc6cd51307f6bf5201688bbed4b2aff006",
+  "scope": "100 new distinct unscripted chest template loot links; one defect class across100 sources, not100 whole quests or artifact chains.",
+  "no_recount": "100 new templates disjoint from prior250. One defect class across100 sources, not100 whole quests. Four unresolved post-loot references/research/check repetitions not counted.",
+  "selection": "181 zero-link candidates remained; fetched104, excluded four unresolved post-loot references, selected100 entries251820..268534. Original native failure retained. Existing authored same-entry valid nonreference loot, Broken Isles1220/Argus1669 spawns, no custom/template/per-spawn SmartGO.",
+  "plan": "tools/tests/TenTen20261115ChestRepairs.json",
+  "plan_sha256": "0f70fee1c6f82089de99829eaf60267534d91403bf06d20cb1245b09cb654d93",
+  "changes": "OnlyData1 restored using original-template exact-field guards, float size1e-6, zero/same-link admission and authored loot existence. No loot content/probabilities/counts/quest/lock/conditions/spawns changed. No production C++ or EXE change.",
+  "checks": {
+    "native": {
+      "native-screened": {
+        "cases": 100,
+        "live_data": false,
+        "stdout_sha256": "eaa08a3b171f695044e60a257544a11c8cd581ea8849d5a5e771dbf434b4cb32",
+        "inputs_sha256": "f6c32aeccbacc3afbb511777e673ec1bb8af00399c91bf8a5e785156453f2d45",
+        "ASAN": false
+      },
+      "native-live": {
+        "cases": 100,
+        "live_data": true,
+        "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+        "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+        "ASAN": false
+      }
+    },
+    "shadow": "10 final cohorts each10 fixes/replay/91 unrelated/all101 other column sets/custom-link refusal",
+    "live_readback_sha256": "a204e7741ef404477d970e4e2966a05fff40b1f237f0f980e5ab861aedb854d0",
+    "deferred_unmodified": 4,
+    "startup": "Owned canonicalPID35644 applied10 updater queries, fresh ready/shutdown0/exit0/gone, stderr empty and no new diagnostics.",
+    "diagnostics": {
+      "native-screened/diagnostics-after.json": "b85449ba63b4931ead4075ce0878ab07aa9fa678f402eaa6b1df25252142a5de",
+      "native-screened/native-diagnostics/diagnostics-after.json": "a94c3e4e56e7f98eae61541501aabb5633c46b15de3768c907315c2134cbce33",
+      "native-live/diagnostics-after.json": "f62ac1b8a375d740d721c5a10e70b68a10b1e1544dcceb29c6c710510c0b9839",
+      "native-live/native-diagnostics/diagnostics-after.json": "a858dfe18bfb9733923a6731da920091b540916609568e43d49c14e3b68cc5d0",
+      "live-readback/diagnostics-after.json": "bfa2d46b72556c11444c2173d13440bf00081de5c9570a79dd33f4a34ccacd8d",
+      "updater-startup/diagnostics-after.json": "62ab955526fdf3032f60f98270bb11b9246d2b295f7bd6004155bf4406c04016",
+      "shadow-final-1/diagnostics-after.json": "6edc97d00399e868a10fb2af3b47433b0831ebfa96ae4954e87709918239821b",
+      "shadow-final-2/diagnostics-after.json": "b568fc5ae6d46dc813585d6a48c265cc287b3664eec9c52fb510ca38ec59551c",
+      "shadow-final-3/diagnostics-after.json": "55b7dac90f1ac42349d0765d4010c6b7a302f3b5bc6bb09c0bfb6d03bf45ced7",
+      "shadow-final-4/diagnostics-after.json": "8c316d0c9e43981f699d7251f499ac7a0f141d8b9235057646340883d136907d",
+      "shadow-final-5/diagnostics-after.json": "f62eeba35fa908ebdfd31386af6eab3e4f5e89ad7e9a730d96ee8ec445d9a6da",
+      "shadow-final-6/diagnostics-after.json": "9b1d8c261d3eda55dfbdb8f141ec78ba9931f038c20b88245eb03a8df566d2ba",
+      "shadow-final-7/diagnostics-after.json": "dc79bb606c925c751a25cf646ee92dab5fbdc3f90907ddde7fb7b5c05490d89b",
+      "shadow-final-8/diagnostics-after.json": "af0ee75c5deeb7d5ecd93f12726ccc78da3935cf54761fdf50a3a83a6c0872d1",
+      "shadow-final-9/diagnostics-after.json": "8c377b166ca5b4dd943cb185d8f8145be1c53f46e37d2dcd7d8e0e086c33f3b2",
+      "shadow-final-10/diagnostics-after.json": "5ea96344d6520aab3c8c74f00e086d16d3887cde3468f457cc0a62c0ac91479e"
+    },
+    "scope": "Actual complete Release native loader/GetLootId/SendLoot/FillLoot and valid post-loot calls; source pose/player admission controlled, no authenticated inventory storage/save or client traversal. Release libraries not ASAN.",
+    "final_release_diagnostics_sha256": "672B8DEDB0440B35F9DB2E8517304A1ED78D0C25B565830E46ED0FD68C0B6B63"
+  },
+  "open_post_loot_audit": "docs/audits/chest-post-loot-open-2026-11-15.json",
+  "previous_artifact_opens": "docs/audits/artifact-open-followup-2026-11-15.json",
+  "canonical": {
+    "worldserver.exe": "6ffc5d6d7e7ca2b48ccc917376ea1e20be0c9893205674a5360949c5376524e4",
+    "worldserver.map": "d85475f9b9e7a9eda89b1bb8d8c8c84492867b4ad461dcd704c2d176075b1d45",
+    "bnetserver.exe": "e559f961c277cc92a95ccda27b21abb6a1981a00ddc4b0ae3516697032e22962",
+    "bnetserver.map": "61a784874f496e919047a0a6041f0b4fc97294f96166b3aa3a67d55526d82d81",
+    "logs/DBErrors.log": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1"
+  },
+  "protected_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+  "batch_details": [
+    {
+      "batch": 1,
+      "entries": [
+        251820,
+        251851,
+        251853,
+        251854,
+        251856,
+        251857,
+        252070,
+        252167,
+        252408,
+        252432
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch01.json",
+      "migration_sha256": "84fd711891152dbf950334c404831ed5b81e1f9c088748236d11198a88e11315"
+    },
+    {
+      "batch": 2,
+      "entries": [
+        252446,
+        252447,
+        252448,
+        252692,
+        252772,
+        252802,
+        252805,
+        252810,
+        252813,
+        252819
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch02.json",
+      "migration_sha256": "7551bd7b7e267942ebf063aba65efd7b7e56d585f17e07f6cefe46aa75b70ce0"
+    },
+    {
+      "batch": 3,
+      "entries": [
+        252821,
+        252824,
+        252828,
+        252830,
+        252831,
+        252832,
+        252833,
+        252834,
+        252835,
+        252836
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch03.json",
+      "migration_sha256": "69899ad1999fbe5a1ce0021e9be14c5912cb18773687ff73e1a6c6ab4158e98e"
+    },
+    {
+      "batch": 4,
+      "entries": [
+        252837,
+        252838,
+        252839,
+        252840,
+        252841,
+        252842,
+        252844,
+        252850,
+        252860,
+        252876
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch04.json",
+      "migration_sha256": "244f65a58b4555696acbfe147f434483bdf0dd5460fc2893e04091685ad79753"
+    },
+    {
+      "batch": 5,
+      "entries": [
+        252880,
+        252881,
+        252882,
+        252884,
+        253072,
+        254006,
+        254008,
+        254009,
+        254023,
+        254024
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch05.json",
+      "migration_sha256": "4ef94f7f92b7e688991735a10667679a6f4b344338984a83a5c07404ec45fc75"
+    },
+    {
+      "batch": 6,
+      "entries": [
+        254025,
+        254027,
+        254072,
+        254077,
+        254126,
+        254127,
+        255828,
+        255829,
+        257393,
+        257545
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch06.json",
+      "migration_sha256": "bfe5fa7286c9430c148f25baff9bda8de390c00bb7c492fc1d7c69f9ad06d4b4"
+    },
+    {
+      "batch": 7,
+      "entries": [
+        257546,
+        257978,
+        257999,
+        258034,
+        258849,
+        258850,
+        258851,
+        260248,
+        260249,
+        260492
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch07.json",
+      "migration_sha256": "48610fbfada7e5653235f80f6025c68f35d33863188562f968661f6f1af449af"
+    },
+    {
+      "batch": 8,
+      "entries": [
+        265551,
+        265552,
+        265554,
+        266092,
+        266117,
+        266118,
+        266119,
+        266120,
+        266122,
+        266123
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch08.json",
+      "migration_sha256": "cb7cbed26bf4047c98d798e4faf0e379c64306d8490a3dd145680fae9aab8c40"
+    },
+    {
+      "batch": 9,
+      "entries": [
+        266291,
+        266588,
+        266595,
+        267032,
+        267277,
+        267278,
+        267353,
+        267575,
+        267641,
+        267642
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch09.json",
+      "migration_sha256": "5f6e2a1e56e42882d74f6ee23396d2d2dd90fda8cf0a5eec264fa5d16f8d7096"
+    },
+    {
+      "batch": 10,
+      "entries": [
+        267655,
+        267729,
+        268472,
+        268510,
+        268511,
+        268512,
+        268513,
+        268532,
+        268533,
+        268534
+      ],
+      "audit": "docs/audits/ten-ten-2026-11-15-batch10.json",
+      "migration_sha256": "26d391560d58b4cf2e0a0d701c5c657db16d654556d54ff675d14c19d60ea3cd"
+    }
+  ],
+  "remaining": "Four missing-post-loot sources remainOPEN/unmodified with original evidence. Existing artifact LINK2/authentic flight/presentation and all36 actual client chains remainOPEN. No global clean-log claim.",
+  "cleanup": {
+    "audit": "docs/audits/ten-ten-archive-2026-11-15.json",
+    "archive": "build-extractors/bin/Release/fixed/ten-tens-2026-11-15",
+    "deleted_files": 14,
+    "reclaimed_bytes": 711119923,
+    "original_unresolved_reproduction": "native-pending executable/config/symbols/logs and unresolved-post-loot source plan/catalog retained outside fixed; no unknown-spell log cleared",
+    "task_servers": "All task-owned servers gracefully stopped; none remain"
+  },
+  "batch_commits": [
+    {
+      "batch": 1,
+      "entries": [
+        251820,
+        251851,
+        251853,
+        251854,
+        251856,
+        251857,
+        252070,
+        252167,
+        252408,
+        252432
+      ],
+      "commit": "95f2f5646dd073953c683bc0876732049d6af0c2"
+    },
+    {
+      "batch": 2,
+      "entries": [
+        252446,
+        252447,
+        252448,
+        252692,
+        252772,
+        252802,
+        252805,
+        252810,
+        252813,
+        252819
+      ],
+      "commit": "1fb42297329356eeb694dc838757fd96cd0a7a55"
+    },
+    {
+      "batch": 3,
+      "entries": [
+        252821,
+        252824,
+        252828,
+        252830,
+        252831,
+        252832,
+        252833,
+        252834,
+        252835,
+        252836
+      ],
+      "commit": "5710a375b8c861ea08ce0f842456ae55779ae1d1"
+    },
+    {
+      "batch": 4,
+      "entries": [
+        252837,
+        252838,
+        252839,
+        252840,
+        252841,
+        252842,
+        252844,
+        252850,
+        252860,
+        252876
+      ],
+      "commit": "468bda8c438ce3738b777a74ce34c1d493b84577"
+    },
+    {
+      "batch": 5,
+      "entries": [
+        252880,
+        252881,
+        252882,
+        252884,
+        253072,
+        254006,
+        254008,
+        254009,
+        254023,
+        254024
+      ],
+      "commit": "72b6d0079846e05e3d911a76bcbbf3533970e398"
+    },
+    {
+      "batch": 6,
+      "entries": [
+        254025,
+        254027,
+        254072,
+        254077,
+        254126,
+        254127,
+        255828,
+        255829,
+        257393,
+        257545
+      ],
+      "commit": "883d42c1b9387bd1c11d31937052b6cf5bc10551"
+    },
+    {
+      "batch": 7,
+      "entries": [
+        257546,
+        257978,
+        257999,
+        258034,
+        258849,
+        258850,
+        258851,
+        260248,
+        260249,
+        260492
+      ],
+      "commit": "be410bfd378b15b04a9f2c37bfc99ceaa54f8667"
+    },
+    {
+      "batch": 8,
+      "entries": [
+        265551,
+        265552,
+        265554,
+        266092,
+        266117,
+        266118,
+        266119,
+        266120,
+        266122,
+        266123
+      ],
+      "commit": "9f35a7c53c3b71f25e297aa3b15f215641931e8c"
+    },
+    {
+      "batch": 9,
+      "entries": [
+        266291,
+        266588,
+        266595,
+        267032,
+        267277,
+        267278,
+        267353,
+        267575,
+        267641,
+        267642
+      ],
+      "commit": "28647121497a4563a566f500238755571e844907"
+    },
+    {
+      "batch": 10,
+      "entries": [
+        267655,
+        267729,
+        268472,
+        268510,
+        268511,
+        268512,
+        268513,
+        268532,
+        268533,
+        268534
+      ],
+      "commit": "706fb87f69b52bdd15d7a642c267903704843f05"
+    }
+  ],
+  "open_finding_commit": "328f87c5106ba6df9d3796915dc7b98dc5f5b260",
+  "regression_commit": "2c0ab03a51dd248f106ae785088697f654e14734"
+}

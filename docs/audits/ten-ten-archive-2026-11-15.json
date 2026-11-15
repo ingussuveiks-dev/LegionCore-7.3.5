@@ -1,0 +1,275 @@
+{
+  "date": "2026-11-15",
+  "status": "RESOLVED_SELECTED100_CHEST_LINK_DIAGNOSTICS_ARCHIVED_FOUR_SOURCE_UNKNOWN_SPELL_REPRO_RETAINED_OPEN",
+  "archive": "build-extractors/bin/Release/fixed/ten-tens-2026-11-15",
+  "archive_manifest_sha256": "8FEDA9FF14D82EE333FE58B2C6A23610D8570400BBFAE9FBEEE0B2AB4CC62BCE",
+  "archived_files": 209,
+  "deleted_files": 14,
+  "reclaimed_bytes": 711119923,
+  "deleted": [
+    {
+      "bytes": 31589888,
+      "path": ".codex\\ten-tens-20261115\\native-live\\probe.exe",
+      "sha256": "AE39093736E59B35E0AD016F6CBAED4EBDA4CEFDE3EF964596770C0569954942"
+    },
+    {
+      "bytes": 196410210,
+      "path": ".codex\\ten-tens-20261115\\native-live\\probe.ilk",
+      "sha256": "3D342ED50CC7FA07714712676674ADC540125E5FBE18062C033A87454010BAD4"
+    },
+    {
+      "bytes": 96143755,
+      "path": ".codex\\ten-tens-20261115\\native-live\\probe.map",
+      "sha256": "FA1B46B53EFBEB5699450B04BEE40BBD15F270D7F1BBCD99D4A99C61D8D61308"
+    },
+    {
+      "bytes": 2155521,
+      "path": ".codex\\ten-tens-20261115\\native-live\\probe.obj",
+      "sha256": "C81E955F6F636A96397389A48CC1A2AE1BC7B49A0A3D5C0647F66A9D4CB984CA"
+    },
+    {
+      "bytes": 28667904,
+      "path": ".codex\\ten-tens-20261115\\native-live\\probe.pdb",
+      "sha256": "19D77D9C52C8546AF095BDC392B7DD414D07E5588701BB0AC69CF016BF80C88E"
+    },
+    {
+      "bytes": 119441,
+      "path": ".codex\\ten-tens-20261115\\native-live\\run-20261115-101247\\worldserver.conf",
+      "sha256": "CE7E4B547EFBE4EB3FEEEF8B666C17B9FCFCB5A8599A7B1A201B288B066EE036"
+    },
+    {
+      "bytes": 31590400,
+      "path": ".codex\\ten-tens-20261115\\native-screened\\probe.exe",
+      "sha256": "3849427D7473E519EA713C0ECCD0B9312D917EAC50FB83FCD633ED12861622B9"
+    },
+    {
+      "bytes": 196410266,
+      "path": ".codex\\ten-tens-20261115\\native-screened\\probe.ilk",
+      "sha256": "4D12BB484C7F3E9A989C2E2AD697A692D3848DE079C9D3EE0E5E993235530C82"
+    },
+    {
+      "bytes": 96143755,
+      "path": ".codex\\ten-tens-20261115\\native-screened\\probe.map",
+      "sha256": "A697D7B7A6A0BBA2DFCEADEDB32150DB71586F93335B28DEC6783AB7FDABD988"
+    },
+    {
+      "bytes": 2155567,
+      "path": ".codex\\ten-tens-20261115\\native-screened\\probe.obj",
+      "sha256": "54265118FFD8443A4436451DC1E045C28BEE49CDAE3AA4B24AD99936A7A60283"
+    },
+    {
+      "bytes": 28667904,
+      "path": ".codex\\ten-tens-20261115\\native-screened\\probe.pdb",
+      "sha256": "AFEA55BE9CCAD865F6C0F1CA8D46EC415EDCF4878C6FB4983B8248C2AB7AFF65"
+    },
+    {
+      "bytes": 119445,
+      "path": ".codex\\ten-tens-20261115\\native-screened\\run-20261115-101036\\worldserver.conf",
+      "sha256": "5C72C59BE57B5D98398C947F6054C48ED546B8160D31485EC96869AB0C59148E"
+    },
+    {
+      "bytes": 645632,
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\ChestPostLootSpellCatalog.exe",
+      "sha256": "F0F38E761F5C3EED3B02F1DA57D2F992CF83C7A81BF6862F36E3C9DCDD2C50E6"
+    },
+    {
+      "bytes": 300235,
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\ChestPostLootSpellCatalog.obj",
+      "sha256": "A694CDEC308705E94CC314B31C3F3FCA645A8B267C3DA2E1DFC5F94E6D201FA1"
+    }
+  ],
+  "fix_commits": [
+    {
+      "batch": 1,
+      "entries": [
+        251820,
+        251851,
+        251853,
+        251854,
+        251856,
+        251857,
+        252070,
+        252167,
+        252408,
+        252432
+      ],
+      "commit": "95f2f5646dd073953c683bc0876732049d6af0c2"
+    },
+    {
+      "batch": 2,
+      "entries": [
+        252446,
+        252447,
+        252448,
+        252692,
+        252772,
+        252802,
+        252805,
+        252810,
+        252813,
+        252819
+      ],
+      "commit": "1fb42297329356eeb694dc838757fd96cd0a7a55"
+    },
+    {
+      "batch": 3,
+      "entries": [
+        252821,
+        252824,
+        252828,
+        252830,
+        252831,
+        252832,
+        252833,
+        252834,
+        252835,
+        252836
+      ],
+      "commit": "5710a375b8c861ea08ce0f842456ae55779ae1d1"
+    },
+    {
+      "batch": 4,
+      "entries": [
+        252837,
+        252838,
+        252839,
+        252840,
+        252841,
+        252842,
+        252844,
+        252850,
+        252860,
+        252876
+      ],
+      "commit": "468bda8c438ce3738b777a74ce34c1d493b84577"
+    },
+    {
+      "batch": 5,
+      "entries": [
+        252880,
+        252881,
+        252882,
+        252884,
+        253072,
+        254006,
+        254008,
+        254009,
+        254023,
+        254024
+      ],
+      "commit": "72b6d0079846e05e3d911a76bcbbf3533970e398"
+    },
+    {
+      "batch": 6,
+      "entries": [
+        254025,
+        254027,
+        254072,
+        254077,
+        254126,
+        254127,
+        255828,
+        255829,
+        257393,
+        257545
+      ],
+      "commit": "883d42c1b9387bd1c11d31937052b6cf5bc10551"
+    },
+    {
+      "batch": 7,
+      "entries": [
+        257546,
+        257978,
+        257999,
+        258034,
+        258849,
+        258850,
+        258851,
+        260248,
+        260249,
+        260492
+      ],
+      "commit": "be410bfd378b15b04a9f2c37bfc99ceaa54f8667"
+    },
+    {
+      "batch": 8,
+      "entries": [
+        265551,
+        265552,
+        265554,
+        266092,
+        266117,
+        266118,
+        266119,
+        266120,
+        266122,
+        266123
+      ],
+      "commit": "9f35a7c53c3b71f25e297aa3b15f215641931e8c"
+    },
+    {
+      "batch": 9,
+      "entries": [
+        266291,
+        266588,
+        266595,
+        267032,
+        267277,
+        267278,
+        267353,
+        267575,
+        267641,
+        267642
+      ],
+      "commit": "28647121497a4563a566f500238755571e844907"
+    },
+    {
+      "batch": 10,
+      "entries": [
+        267655,
+        267729,
+        268472,
+        268510,
+        268511,
+        268512,
+        268513,
+        268532,
+        268533,
+        268534
+      ],
+      "commit": "706fb87f69b52bdd15d7a642c267903704843f05"
+    }
+  ],
+  "canonical": {
+    "worldserver.map": "D85475F9B9E7A9EDA89B1BB8D8C8C84492867B4AD461DCD704C2D176075B1D45",
+    "logs/DBErrors.log": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "worldserver.exe": "6FFC5D6D7E7CA2B48CCC917376EA1E20BE0C9893205674A5360949C5376524E4",
+    "bnetserver.exe": "E559F961C277CC92A95CCDA27B21ABB6A1981A00DDC4B0AE3516697032E22962",
+    "bnetserver.map": "61A784874F496E919047A0A6041F0B4FC97294F96166B3AA3A67D55526D82D81"
+  },
+  "protected_Slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+  "retained_original_failure": {
+    "path": ".codex/ten-tens-20261115/native-pending",
+    "bytes": 355164584,
+    "purpose": "Concrete reproduction of four unresolved post-loot81040/219461 references; original exe/config/symbols/inc/logs kept, not archived under fixed or counted as repaired. Source baseline63f715bc6 plus original wrapper/plan retained.",
+    "manifest": ".codex/ten-tens-20261115/unresolved-post-loot/evidence-manifest.json",
+    "manifest_sha256": "8b0a5ce954717c129bc52fc09c220e2241d0c757c9540bd634a297f11eb5eba5",
+    "audit": "docs/audits/chest-post-loot-open-2026-11-15.json"
+  },
+  "scope": "Only final clean selected100 Data1 repairs/10 shadow cohorts/canonical updater/readback records archived. Initial different100 selection had8 errors and remainsFAILED/OPEN outside fixed. No global clean-log claim.",
+  "diagnostics": "Final selected native100 exit0/stderr0 and canonical owned startup/shutdown0/exit0/gone; no new/changed crash or appended DBErrors/server warnings/errors/assertions. Original failed private log remains intact, canonical mixed7111byte DBErrors/Slaghammer hashes unchanged.",
+  "cleanup": "14 exact redundant artifacts from two clean native probe roots and the regenerable typed catalog removed after archive verification. Each absolute target checked inside explicit workspace with junction/symlink/reparse refusal; no recursive deletion. Original failed native probe/root excluded from deletion and archive. Canonical configuration/cert/DLL/EXE/map and required shared build libraries preserved.",
+  "deployment": "10 data-only migrations applied in canonical Release; actual100 readback plus4 excluded entries unchanged. No production C++ change or executable promotion required.",
+  "retained": [
+    "canonical Release/configuration/DLL/certificates/data",
+    "required shared native Release build libraries",
+    "reusable native/regression sources",
+    "original open LINK2/Slaghammer/video/route/target105 evidence",
+    "native-pending original failed100 repro executable/config/symbols/logs and unresolved-post-loot original plan/migrations/catalog; four missing-spell sources remain OPEN",
+    "Defender quarantine",
+    "recent coherent rollback copies from previous independent fixes"
+  ],
+  "remaining": "Client lock/visibility/eligibility/item receipt/full chain checks, four missing post-loot references and existing artifact LINK2/fidelity/all36 issues remainOPEN. Cleanup does not certify them.",
+  "final_verification_files": 16,
+  "final_verification_manifest_sha256": "008684DBCD618F3991F9CD3A4C924DDA05A718A6EB410B1C897A39363013DF3D"
+}
