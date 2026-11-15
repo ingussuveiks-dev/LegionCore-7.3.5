@@ -1,0 +1,493 @@
+{
+  "date": "2026-11-15",
+  "batch": 2,
+  "count": 30,
+  "kind": "Distinct text fields corrected, no gameplay/translation changes",
+  "implementation": "sql/updates/world/2026_11_15_81_text_batch02.sql",
+  "migration_sha256": "39407a0d4804eed11bb1bd37551cd167fc1d15d34ee3b1ade4fe135b9667dcc5",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241290
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C390C2B0C390C2BCC391C28FC391E2809AC390C2BDC390C2B8C390C2BA",
+      "new_hex": "D09FD0B0D0BCD18FD182D0BDD0B8D0BA",
+      "restored_text": "Памятник",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241410
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2BBC390C2BEC390C2BCC390C2B0C390C2BDC390C2BDC391E280B9C390C2B520C390C2B4C390C2BEC391C281C390C2BAC390C2B8",
+      "new_hex": "D0A1D0BBD0BED0BCD0B0D0BDD0BDD18BD0B520D0B4D0BED181D0BAD0B8",
+      "restored_text": "Сломанные доски",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241411
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2BBC390C2BEC390C2BCC390C2B0C390C2BDC390C2BDC391E280B9C390C2B9204368616972",
+      "new_hex": "D0A1D0BBD0BED0BCD0B0D0BDD0BDD18BD0B9204368616972",
+      "restored_text": "Сломанный Chair",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241465
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C390C2B0C390C2BCC391C28FC391E2809AC390C2BDC390C2B8C390C2BA",
+      "new_hex": "D09FD0B0D0BCD18FD182D0BDD0B8D0BA",
+      "restored_text": "Памятник",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241590
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28098C391C692C390C2BAC390C2B5C391E2809A20C391E280A0C390C2B2C390C2B5C391E2809AC390C2BEC390C2B2",
+      "new_hex": "D091D183D0BAD0B5D18220D186D0B2D0B5D182D0BED0B2",
+      "restored_text": "Букет цветов",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241744
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C390C2BBC390C2B0C391C281C391E2809A20C391C281C390C2BBC390C2B0C390C2BDC391E280A0C390C2B02046656C",
+      "new_hex": "D09FD0BBD0B0D181D18220D181D0BBD0B0D0BDD186D0B02046656C",
+      "restored_text": "Пласт сланца Fel",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241857
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "53746F6E6520C390C5B8C390C2BEC390C2B4C390C2BDC390C2B5C390C2B1C390C2B5C391C281C391C592C391C28F",
+      "new_hex": "53746F6E6520D09FD0BED0B4D0BDD0B5D0B1D0B5D181D18CD18F",
+      "restored_text": "Stone Поднебесья",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241865
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C390C2B5C391E282ACC391E280A620C391E282ACC391C692C390C2BDC390C2BDC390C2BEC390C2B3C390C2BE20C390C2BAC390C2B0C390C2BCC390C2BDC391C28F",
+      "new_hex": "D092D0B5D180D18520D180D183D0BDD0BDD0BED0B3D0BE20D0BAD0B0D0BCD0BDD18F",
+      "restored_text": "Верх рунного камня",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 242247
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "45676720C390C2BBC391C692C390C2BDC390C2BEC390C2BAC391E282ACC391E280B9C390C2BBC390C2B0",
+      "new_hex": "45676720D0BBD183D0BDD0BED0BAD180D18BD0BBD0B0",
+      "restored_text": "Egg лунокрыла",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 242536
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2AFC390C2BDC391E2809AC390C2B0C391E282ACC391C5922DC390C2BBC390C2B8C390C2BBC390C2B8C391C28F",
+      "new_hex": "D0AFD0BDD182D0B0D180D18C2DD0BBD0B8D0BBD0B8D18F",
+      "restored_text": "Янтарь-лилия",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 242567
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "4275636B657420C391C281204372797374616CC390C2B0C390C2BCC390C2B8",
+      "new_hex": "4275636B657420D181204372797374616CD0B0D0BCD0B8",
+      "restored_text": "Bucket с Crystalами",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243211
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A0C391C692C390C2BAC390C2BEC391C28FC391E2809AC391C59220C390E280BAC390C2B5C390C2B4C391C28FC390C2BDC390C2BEC390C2B920C390C2A1C390C2BAC390C2BEC391E282ACC390C2B1C390C2B8",
+      "new_hex": "D0A0D183D0BAD0BED18FD182D18C20D09BD0B5D0B4D18FD0BDD0BED0B920D0A1D0BAD0BED180D0B1D0B8",
+      "restored_text": "Рукоять Ледяной Скорби",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243348
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C390C2BEC390C2B3C391E282ACC390C2B5C390C2B1C390C2B0C390C2BBC391C592C390C2BDC391E280B9C390C2B920426F6E6669726520C390C2B2C390C2BEC390C2B6C390C2B4C391C28F",
+      "new_hex": "D09FD0BED0B3D180D0B5D0B1D0B0D0BBD18CD0BDD18BD0B920426F6E6669726520D0B2D0BED0B6D0B4D18F",
+      "restored_text": "Погребальный Bonfire вождя",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243493
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "4665617468657220C390C593C390C2B0C390C2BBC391E2809EC391C692C391E282ACC390C2B8C390C2BEC390C2BDC390C2B0",
+      "new_hex": "4665617468657220D09CD0B0D0BBD184D183D180D0B8D0BED0BDD0B0",
+      "restored_text": "Feather Малфуриона",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243496
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "4665617468657220C390C593C390C2B0C390C2BBC391E2809EC391C692C391E282ACC390C2B8C390C2BEC390C2BDC390C2B0",
+      "new_hex": "4665617468657220D09CD0B0D0BBD184D183D180D0B8D0BED0BDD0B0",
+      "restored_text": "Feather Малфуриона",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243497
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C593C390C2BEC391C281C391E2809A",
+      "new_hex": "D09CD0BED181D182",
+      "restored_text": "Мост",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243501
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C391E2809AC391E282ACC390C2B0C390C2BDC390C2B8C391E280A0C390C2B0",
+      "new_hex": "D0A1D182D180D0B0D0BDD0B8D186D0B0",
+      "restored_text": "Страница",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243567
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "4D696C697461727920C391E2809AC391E282ACC390C2BEC391E2809EC390C2B5C390C2B820C391C281C390C2B0C391E282ACC390C2B3C390C2B5C391E282ACC390C2B0C390C2B5C390C2B2",
+      "new_hex": "4D696C697461727920D182D180D0BED184D0B5D0B820D181D0B0D180D0B3D0B5D180D0B0D0B5D0B2",
+      "restored_text": "Military трофеи саргераев",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243717
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2BEC391C281C390C2BDC390C2BEC390C2B2C390C2B0C391C28F20C391CB86C390C2B8C391CB86C390C2BAC390C2B0",
+      "new_hex": "D0A1D0BED181D0BDD0BED0B2D0B0D18F20D188D0B8D188D0BAD0B0",
+      "restored_text": "Сосновая шишка",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243718
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C391C692C391E280A1C390C2BAC390C2B020C391C281C390C2BEC391C281C390C2BDC390C2BEC390C2B2C391E280B9C391E280A620C391CB86C390C2B8C391CB86C390C2B5C390C2BA",
+      "new_hex": "D09AD183D187D0BAD0B020D181D0BED181D0BDD0BED0B2D18BD18520D188D0B8D188D0B5D0BA",
+      "restored_text": "Кучка сосновых шишек",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243930
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C390C2B5C391E280A1C390C2B0C391E2809AC391C59220C390C2A1C390C2B2C390C2B5C391E2809AC390C2B0",
+      "new_hex": "D09FD0B5D187D0B0D182D18C20D0A1D0B2D0B5D182D0B0",
+      "restored_text": "Печать Света",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243931
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A5C391E282ACC390C2B0C390C2BCC390C2BEC390C2B2C390C2B0C391C28F2042656E6368",
+      "new_hex": "D0A5D180D0B0D0BCD0BED0B2D0B0D18F2042656E6368",
+      "restored_text": "Храмовая Bench",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243948
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390CB9CC391C281C390C2BFC390C2BEC390C2BBC391C592C390C2B7C390C2BEC390C2B2C390C2B0C390C2BDC390C2BDC390C2B0C391C28F20C391C281C391E2809EC390C2B5C391E282ACC390C2B020C390C2B2C390C2BBC390C2B0C391C281C391E2809AC390C2B8",
+      "new_hex": "D098D181D0BFD0BED0BBD18CD0B7D0BED0B2D0B0D0BDD0BDD0B0D18F20D181D184D0B5D180D0B020D0B2D0BBD0B0D181D182D0B8",
+      "restored_text": "Использованная сфера власти",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 243950
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2BEC390C2B3C390C2BEC391E2809AC391C59220C390C2BFC391E282ACC390C2BEC391E2809AC390C2BEC390C2B4C391E282ACC390C2B0C390C2BAC390C2BEC390C2BDC390C2B0",
+      "new_hex": "D09AD0BED0B3D0BED182D18C20D0BFD180D0BED182D0BED0B4D180D0B0D0BAD0BED0BDD0B0",
+      "restored_text": "Коготь протодракона",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244459
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "45676720C390C2B2C390C2BEC391E282ACC390C2BEC390C2BDC391C692C391E280A6C390C2B0",
+      "new_hex": "45676720D0B2D0BED180D0BED0BDD183D185D0B0",
+      "restored_text": "Egg воронуха",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244765
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "506564657374616C20C390E2809DC391E282ACC390C2B5C390C2B2C390C2BDC390C2B8C391E280A6",
+      "new_hex": "506564657374616C20D094D180D0B5D0B2D0BDD0B8D185",
+      "restored_text": "Pedestal Древних",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244821
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "537570706C69657320C391C28120C390C2B7C390C2B0C391E2809AC390C2BEC390C2BDC391C692C390C2B2C391CB86C390C2B5C390C2B3C390C2BE20C390C2BAC390C2BEC391E282ACC390C2B0C390C2B1C390C2BBC391C28F",
+      "new_hex": "537570706C69657320D18120D0B7D0B0D182D0BED0BDD183D0B2D188D0B5D0B3D0BE20D0BAD0BED180D0B0D0B1D0BBD18F",
+      "restored_text": "Supplies с затонувшего корабля",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244825
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2B0C391E282ACC391E2809AC390C2B8C390C2BDC390C2B020C390C2B8C390C2B720C390C2A8C390C2B0C390C2BBC390C2B0C390C2BDC390C2B8C391E282ACC390C2B0",
+      "new_hex": "D09AD0B0D180D182D0B8D0BDD0B020D0B8D0B720D0A8D0B0D0BBD0B0D0BDD0B8D180D0B0",
+      "restored_text": "Картина из Шаланира",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244826
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2B0C391E282ACC391E2809AC390C2B8C390C2BDC390C2B020C390C2B8C390C2B720C390C2A8C390C2B0C390C2BBC390C2B0C390C2BDC390C2B8C391E282ACC390C2B0",
+      "new_hex": "D09AD0B0D180D182D0B8D0BDD0B020D0B8D0B720D0A8D0B0D0BBD0B0D0BDD0B8D180D0B0",
+      "restored_text": "Картина из Шаланира",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244827
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2B0C391E282ACC391E2809AC390C2B8C390C2BDC390C2B020C390C2B8C390C2B720C390C2A8C390C2B0C390C2BBC390C2B0C390C2BDC390C2B8C391E282ACC390C2B0",
+      "new_hex": "D09AD0B0D180D182D0B8D0BDD0B020D0B8D0B720D0A8D0B0D0BBD0B0D0BDD0B8D180D0B0",
+      "restored_text": "Картина из Шаланира",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    }
+  ],
+  "checks": "Closed codec/ASCII invariance; actual TEMP install/replay/full-row snapshots and exact drift refusals; actual live full-column readback/RELEASED hash; paired/live native loaders/query/exact text builder/chat serializers. Prior400 templates/packets retained; normal Broadcast overrides preserved. Diagnostics clean.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json"
+}
