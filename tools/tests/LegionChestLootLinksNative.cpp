@@ -4,6 +4,7 @@
 #define MASTER_LOOT_NATIVE_SUPPORT_ONLY
 #include "MasterLootNative.cpp"
 #include "GameObject.h"
+#include "AchievementMgr.h"
 #include <fstream>
 #include "NativeChestEntries.inc"
 struct ChestLootObject : GameObject
@@ -50,6 +51,9 @@ int main(int argc,char** argv)
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{
         InitializeNative(argc,argv);opcodeTable.Initialize();LoadLootInputs();sObjectMgr->LoadPageTexts();sObjectMgr->LoadGameObjectTemplate();
+        // World startup loads these before any player/GO visibility update.
+        // Vignette admission uses actual modifier trees, even in a loot test.
+        sAchievementMgr->LoadCriteriaList();
         LoginDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("LoginDatabaseInfo",""),1,1);Require(!LoginDatabase.Open()&&LoginDatabase.PrepareStatements(),"Read-only login pool failed");LoginDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");LoginDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
         HashMapHolder<Player>::SetSize(20000);HashMapHolder<GameObject>::SetSize(20000);
         std::string ids;for(auto entry:ChestEntries){if(!ids.empty())ids+=",";ids+=std::to_string(entry);}
