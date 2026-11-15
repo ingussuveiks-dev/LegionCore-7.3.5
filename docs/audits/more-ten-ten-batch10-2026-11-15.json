@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 10,
+  "entries": [
+    {
+      "entry": 252410,
+      "name": "Scrolls, Ð¿ÐµÑ‡Ð°Ñ‚Ð¸ Ð¸ Ñ‚Ñ€Ð°Ð´Ð¸Ñ†Ð¸Ð¸ Ð½Ð¾Ñ‡Ð½Ð¾Ñ€Ð¾Ð¶Ð´ÐµÐ½Ð½Ñ‹Ñ…"
+    },
+    {
+      "entry": 252443,
+      "name": "Containment Crystal"
+    },
+    {
+      "entry": 252452,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 252665,
+      "name": "Challengers Cache"
+    },
+    {
+      "entry": 252668,
+      "name": "Challenger's Cache"
+    },
+    {
+      "entry": 252671,
+      "name": "Challenger's Cache"
+    },
+    {
+      "entry": 252674,
+      "name": "Challenger's Cache"
+    },
+    {
+      "entry": 252677,
+      "name": "Challenger's Cache"
+    },
+    {
+      "entry": 252680,
+      "name": "Challenger's Cache"
+    },
+    {
+      "entry": 252683,
+      "name": "Challenger's Cache"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_68_more_ten_chest_batch10.sql",
+  "sha256": "37b2e1ecc98b7a312321e6c642f8e111a0686fe962a21893b840c12ee8ceb33f",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-10/result.json",
+    "sha256": "0018fdb55014583a424329ff48f3a0bf861690475d99d3783839256767a286ab"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
