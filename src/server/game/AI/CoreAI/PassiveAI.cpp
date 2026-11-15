@@ -63,11 +63,11 @@ void CritterAI::InitializeAI()
     if (me->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH))
         return;
 
-    me->AddDelayedEvent(2000, [this]
+    me->AddDelayedEvent(2000, [actor = me]
     {
-        auto movementType = me->GetDefaultMovementType();
+        auto movementType = actor->GetDefaultMovementType();
         if (movementType < MAX_DB_MOTION_TYPE && movementType != WAYPOINT_MOTION_TYPE)
-            me->GetMotionMaster()->MoveRandom(urand(30, 50));
+            actor->GetMotionMaster()->MoveRandom(urand(30, 50));
     });
 }
 

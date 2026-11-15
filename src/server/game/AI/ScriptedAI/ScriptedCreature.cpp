@@ -356,10 +356,10 @@ Creature* ScriptedAI::DoSpawnCreature(uint32 entry, float offsetX, float offsetY
 
 void ScriptedAI::SummonCreatureDelay(uint32 delayTimer, uint32 entry, const Position &pos, TempSummonType spawnType, uint32 despawnTime)
 {
-    me->AddDelayedCombat(delayTimer, [this, entry, pos, spawnType, despawnTime]() -> void
+    me->AddDelayedCombat(delayTimer, [actor = me, entry, pos, spawnType, despawnTime]() -> void
     {
-        if (me)
-            me->SummonCreature(entry, pos, spawnType, despawnTime);
+        if (actor)
+            actor->SummonCreature(entry, pos, spawnType, despawnTime);
     });
 }
 
@@ -862,10 +862,10 @@ void BossAI::_EnterCombat()
         if (!instance->CheckRequiredBosses(_bossId, me->GetEntry()))
         {
             EnterEvadeMode();
-            AddDelayedEvent(200, [=, this]() -> void
+            AddDelayedEvent(200, [rejectedInstance = instance]() -> void
             {
-                if (instance)
-                    instance->RepopPlayersAtGraveyard();
+                if (rejectedInstance)
+                    rejectedInstance->RepopPlayersAtGraveyard();
             });
             return;
         }

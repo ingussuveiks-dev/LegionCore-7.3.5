@@ -510,7 +510,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             me->SetReactState(ReactStates(e.action.react.state));
 
             if (uint32 delay = e.action.react.returnStateTimer)
-                me->AddDelayedEvent(delay, [this, saveState]() -> void { if (me) me->SetReactState(saveState); });
+                me->AddDelayedEvent(delay, [actor = me, saveState]() -> void { if (actor) actor->SetReactState(saveState); });
 
             if (me->isInCombat() && e.action.react.stopAttack)
                 me->AttackStop();

@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-15",
+  "baseline": "aba0c7235",
+  "status": "FOUR_CORE_OWNER_CAPTURES_REPAIRED_ASAN_NATIVE_PE_DEPLOYED_CLIENT_PENDING",
+  "count": 4,
+  "cumulative_for_requested300": 15,
+  "repairs": [
+    {
+      "owner": "ScriptedAI",
+      "method": "SummonCreatureDelay",
+      "cause": "Combat queue belongs to Creature, not its replaceable AI. The stored this->me lookup used freed ScriptedAI.",
+      "repair": "Capture actor directly, preserve full entry/Position/spawnType/despawnTime and authored delay; summon remains owned by original actor. Actual Argus/Eonar/custom-event callers unchanged."
+    },
+    {
+      "owner": "SmartScript",
+      "method": "ProcessAction SMART_ACTION_SET_REACT_STATE",
+      "cause": "Unit ordinary queue can outlive embedded SmartScript destroyed with SmartAI. Timed restore dereferenced freed script->me.",
+      "repair": "Capture Creature directly and original saveState; preserve immediate ReactStates/stopAttack, native optional delay0 behavior and timed original-state restore."
+    },
+    {
+      "owner": "CritterAI",
+      "method": "InitializeAI",
+      "cause": "2000ms Unit queue followed retired CritterAI->me.",
+      "repair": "Capture original actor; preserve feign-death admission, movementType bound/waypoint exclusion and actual urand30..50 MoveRandom."
+    },
+    {
+      "owner": "BossAI",
+      "method": "_EnterCombat rejection",
+      "cause": "After failed required-boss admission,200ms Unit queue dereferenced destroyed BossAI to reach its cached instance.",
+      "repair": "Capture original rejected InstanceScript directly; instance belongs to actor map, not AI. Preserve actual CheckRequiredBosses/EnterEvadeMode,200ms/null guard/repop, successful and missing-instance paths. Map unload stops/clears Unit processing before script teardown; no new retained AI reference."
+    }
+  ],
+  "scope": "Complete3 affected source files exactly reverse to pinned aba0c7235 with four capture/receiver substitutions only. No header/ABI/layout, authored payload parameters/prerequisites/delay/credit, SQL/character/progression or ordinary branch change. No no-op, weak-guard dropping of actor-owned requests or registration of dormant classes.",
+  "tests": {
+    "asan_runs": [
+      "build-extractors/runtime-test/core-delayed-owners/20261115-231811-289",
+      "build-extractors/runtime-test/core-delayed-owners/20261115-231824-258",
+      "build-extractors/runtime-test/core-delayed-owners/20261115-231832-692"
+    ],
+    "asan": "Three complete production functions plus exact entire SmartScript action case, actual current FunctionProcessor/public header/MSVC STL. Four pinned old-source ASAN heap-use-after-free counterfactuals; fixed retired/live/cancelled cases. Extra movement0/1/waypoint/invalid/radius30and50/feign gates, summon copied-position/failed-summon once-only and optional timer0, allowed/no-instance/rejected boss branches. Actor/movement/summon/instance endpoints controlled, not full core ASAN.",
+    "native": "build-extractors/runtime-test/core-delayed-owners-native/20261115-232502-140",
+    "native_scope": "12 linked real dispatches: ScriptedAI actual WorldObject/Map/TempSummon creation-owner-fields/removal, SmartAI ProcessAction and real Creature react state, CritterAI actual MotionMaster random generator, BossAI real required-boss virtual rejection+Unit queue. Each live/replaced/cancelled; real Creature::AIM_Initialize destroys original AI/embedded SmartScript. Boss uses actual private InstanceMap1630, native script, empty player list; graveyard character relocation not certified. DB spawn GUID0/read-only World/Hotfix/Login/no Character database.",
+    "pe": "Actual matching Release PE/map resolves production callback endpoints including conditional tail branches. Summon/SetReactState/Repop receivers are directly captured actor/instance; MoveRandom receives actual captured actor embedded MotionMaster, native movement bounds and30..50 remain. No intermediary source AI/script read.",
+    "regressions": "Native existing18 Creature helper/cancellation/rearm/reentrant cases;43 Smart linked-cast retry/gates with unchanged11-context TEMP refusal/live read-only data and actual corpse/cleanup PE; canonical Scepter login recovery/source admission; no client traversal."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "330AA2E966A8FFEE6CEDAD5F4143C73F71712366CAD5C420D355D7C888AE3B8C",
+    "bnet_sha256": "790FF9079D4F9BFF97E3F3B0B4DA5D5B5F29ED7F6113C0A3D46DF3E09B471EA7",
+    "world_owned_pid": 32516,
+    "bnet_owned_pid": 6056,
+    "result": "Actual original game.lib rebuilt and original CMake final-link inputs staged; both EXE/map pairs promoted with exact hashes. Own world ready/shutdown0/exit0/stderr0/gone, own bnet ready/graceful SIGINT/exit0/stderr0/gone. Prior Bnet log copied/hashed before native write-mode start. No user/unknown server stopped."
+  },
+  "diagnostics": "No new canonical/own crash report or appended DBErrors/server warning/error/assertion in final tests/startups. A real earlier native fixture assertion/exception in MMapManager is preserved and resolved as described below, never hidden by passing wrapper diagnostic snapshots.",
+  "resolved_iterations": [
+    "Pinned original [=,this] requires C++20; C++17 fixture compile rejected before execution; wrapper corrected to20 without altering original body. Two original FunctionProcessor size_t->uint32 W4 diagnostics reviewed as existing API conversions in both baseline/fixed, unused by controlled counts and unchanged; no warning suppressed.",
+    "Native fixture used wrong difficulty spelling and omitted required InstanceMap parent argument; corrected against actual735 DBCEnums/Map.h, no executable ran in these compile failures.",
+    "First live summon observation used nearby-grid search and missed actual summon; replace that fixture observation with actual source/current AI JustSummoned record; native real summon identity/position/owner now verified and removed, no production bypass.",
+    "Inherited bootstrap preregistered only map1220; creating actual InstanceMap1630 caused MMapManager thread-unsafe invalid-map ASSERT and native c0000005. Register both1220and1630 in existing pre-thread VMAP/MMAP initialization before creation. Assertion remains enabled; repaired full12-case run exits0/stderr0 with no appended diagnostics. Failed stdout/stderr/status and original source evidence retained for hash archive."
+  ],
+  "not_changed": "Foreign-queue scan found2 unguarded this captures: Meatball nested this is unused in body; Antorus instance capture belongs to map whose resident actor runs queue. Neither was blindly changed or counted. Core helpers exposed by expanded scan provide actual4 source lifetime defects.",
+  "remaining": "Original4 LINK payloads, marked Slaghammer/FuZan/Yigthregor fidelity, Warrior finale/return and all36 full client chains remain open. Earlier11 fixes remain deployed/tested, not recounted. Four helper owners count4 once, not12 native cases or every encounter caller.300 remains incomplete;285 unallocated requested fixes is not285 established bugs.",
+  "cleanup": "Temporary stage/native/ASAN artifacts retained only for final combined acceptance/recovery while continuing next independent investigation; resolved diagnostic original-byte archives and exact redundant-file deletion recorded in continuation closeout. Mixed7111-byte DBErrors/original protected Slaghammer untouched."
+}
