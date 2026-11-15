@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-15",
+  "batch": 17,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch17.sql",
+  "migration_sha256": "0cd65af9b09f56b408d4b667b86b847d1dd9febb983e1f1323f44b41478a8238",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 235351,
+      "old_hex": "C390E280BAC390C2BEC390C2B2C390C2B5C391E280A020C391C281C390C2BDC390C2BEC390C2B220C390C2B8C390C2B7C390C2B3C390C2BEC390C2B5C390C2B2",
+      "new_hex": "D09BD0BED0B2D0B5D18620D181D0BDD0BED0B220D0B8D0B7D0B3D0BED0B5D0B2",
+      "restored_name": "Ловец снов изгоев",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 235638,
+      "old_hex": "C390C2A1C390C2B5C390C2B9C391E2809E20C390C2A3C391E282ACC390C2B0C391E2809AC390C2BEC390C2BAC390C2B0",
+      "new_hex": "D0A1D0B5D0B9D18420D0A3D180D0B0D182D0BED0BAD0B0",
+      "restored_name": "Сейф Уратока",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 236012,
+      "old_hex": "426F7820C391C28120C390C2B1C390C2BEC390C2B5C390C2BFC391E282ACC390C2B8C390C2BFC390C2B0C391C281C390C2B0C390C2BCC390C2B820C390E28093C390C2B5C390C2BBC390C2B5C390C2B7C390C2BDC390C2BEC390C2B920C390C5BEC391E282ACC390C2B4C391E280B9",
+      "new_hex": "426F7820D18120D0B1D0BED0B5D0BFD180D0B8D0BFD0B0D181D0B0D0BCD0B820D096D0B5D0BBD0B5D0B7D0BDD0BED0B920D09ED180D0B4D18B",
+      "restored_name": "Box с боеприпасами Железной Орды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237790,
+      "old_hex": "C390C5B8C390C2B0C390C2BCC391C28FC391E2809AC390C2BDC390C2B8C390C2BA20C390C2BFC391E282ACC390C2BEC391E282ACC390C2BEC390C2BAC391C69220C390E28099C390C2B5C390C2BBC390C2B5C390C2BDC391C692",
+      "new_hex": "D09FD0B0D0BCD18FD182D0BDD0B8D0BA20D0BFD180D0BED180D0BED0BAD18320D092D0B5D0BBD0B5D0BDD183",
+      "restored_name": "Памятник пророку Велену",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest_relation"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 239171,
+      "old_hex": "476C61737320C391E2809AC390C2B5C390C2BFC390C2BBC390C2BEC390C2B3C390C2BE20C390C2BCC390C2BEC390C2BBC390C2BEC390C2BAC390C2B0",
+      "new_hex": "476C61737320D182D0B5D0BFD0BBD0BED0B3D0BE20D0BCD0BED0BBD0BED0BAD0B0",
+      "restored_name": "Glass теплого молока",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 240312,
+      "old_hex": "C390C2A1C390C2B2C390C2B5C391E282ACC390C2BAC390C2B0C391C5BDC391E280B0C390C2B8C390C2B920436865737420C391C28120C391C281C390C2BEC390C2BAC391E282ACC390C2BEC390C2B2C390C2B8C391E280B0C390C2B0C390C2BCC390C2B8",
+      "new_hex": "D0A1D0B2D0B5D180D0BAD0B0D18ED189D0B8D0B920436865737420D18120D181D0BED0BAD180D0BED0B2D0B8D189D0B0D0BCD0B8",
+      "restored_name": "Сверкающий Chest с сокровищами",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 240655,
+      "old_hex": "C390C2A1C390C2B2C390C2B5C391E282ACC390C2BAC390C2B0C391C5BDC391E280B0C390C2B8C390C2B920436865737420C391C28120C391C281C390C2BEC390C2BAC391E282ACC390C2BEC390C2B2C390C2B8C391E280B0C390C2B0C390C2BCC390C2B8",
+      "new_hex": "D0A1D0B2D0B5D180D0BAD0B0D18ED189D0B8D0B920436865737420D18120D181D0BED0BAD180D0BED0B2D0B8D189D0B0D0BCD0B8",
+      "restored_name": "Сверкающий Chest с сокровищами",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 243106,
+      "old_hex": "22C390E2809DC391C692C391E280A6C390C2BEC390C2B1C390C2BEC390C2B922",
+      "new_hex": "22D094D183D185D0BED0B1D0BED0B922",
+      "restored_name": "\"Духобой\"",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 243385,
+      "old_hex": "C390C2A1C390C2B5C391E282ACC390C2B4C391E280A0C390C2B520C391E282ACC390C2BEC391E280B0C390C2B8",
+      "new_hex": "D0A1D0B5D180D0B4D186D0B520D180D0BED189D0B8",
+      "restored_name": "Сердце рощи",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 243821,
+      "old_hex": "C390E280BAC390C2B5C390C2B2C390C2B0C391C28F20C391E282ACC391C692C390C2BAC390C2B020C390E284A2C390C2BEC391E2809AC390C2BDC390C2B0C391E282ACC390C2B0",
+      "new_hex": "D09BD0B5D0B2D0B0D18F20D180D183D0BAD0B020D099D0BED182D0BDD0B0D180D0B0",
+      "restored_name": "Левая рука Йотнара",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
