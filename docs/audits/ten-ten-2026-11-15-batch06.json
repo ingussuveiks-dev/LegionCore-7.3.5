@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-15",
+  "batch": 6,
+  "status": "COMPLETED10_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 254025,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 254025,
+      "existing_spawns": 1,
+      "existing_loot_rows": 47
+    },
+    {
+      "entry": 254027,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 254027,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 254072,
+      "name": "Ð Ð¾Ð¼ ÐšÑ€Ð°ÑÐ½Ñ‹Ñ… ÐšÐ»Ð¸Ð½ÐºÐ¾Ð²",
+      "before_loot": 0,
+      "after_loot": 254072,
+      "existing_spawns": 14,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 254077,
+      "name": "The barrel Ñ€Ð¾Ð¼Ð°",
+      "before_loot": 0,
+      "after_loot": 254077,
+      "existing_spawns": 5,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 254126,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 254126,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 254127,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 254127,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 255828,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 255828,
+      "existing_spawns": 1,
+      "existing_loot_rows": 48
+    },
+    {
+      "entry": 255829,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 255829,
+      "existing_spawns": 1,
+      "existing_loot_rows": 53
+    },
+    {
+      "entry": 257393,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 257393,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    },
+    {
+      "entry": 257545,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 257545,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_42_legion_chest_links_ten_batch6.sql",
+  "migration_sha256": "bfe5fa7286c9430c148f25baff9bda8de390c00bb7c492fc1d7c69f9ad06d4b4",
+  "cause": "Data1=0 made native GetLootId return0 and Player::SendLoot skip FillLoot despite authored same-entry loot; only restoreData1.",
+  "shadow": "10 fixes/idempotent replay,91 unrelated records, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "9b1d8c261d3eda55dfbdb8f141ec78ba9931f038c20b88245eb03a8df566d2ba",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+    "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+    "ASAN": false
+  },
+  "live": "Canonical updater applied10 migrations; readback verifies all100 links/other captured fields/spawn and loot row counts, plus four deferred candidates unmodified.",
+  "diagnostics": "Final selected tests exit0, stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Initial different selection failed on four unresolved spells; preserved separately, not called passing.",
+  "limits": "Controlled synthetic player/source admission. No authenticated save/item storage, actual client visibility/lock/eligibility/drop distribution or full quest traversal claim. Faction/group/quest/respawn and pet progression rules not changed.",
+  "no_recount": "Ten distinct new sources disjoint from previous250/other nine cohorts; four unresolved post-loot candidates and repeated tests not counted."
+}
