@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-15",
+  "batch": 13,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch13.sql",
+  "migration_sha256": "f32fdb40d38a53d17e7742fde6ae98de8a5b3884fe11a465f6345e2f8f81546e",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 273292,
+      "old_hex": "4D617472697820636F7265202256696E6469636172C390C2B022",
+      "new_hex": "4D617472697820636F7265202256696E6469636172D0B022",
+      "restored_name": "Matrix core \"Vindicarа\"",
+      "static_spawns": 4,
+      "maps": "1669,1750",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 273467,
+      "old_hex": "4372797374616C20C390C2BAC390C2B0C391E282ACC390C2BEC390C2BDC390C2B8C391E2809AC390C2B0",
+      "new_hex": "4372797374616C20D0BAD0B0D180D0BED0BDD0B8D182D0B0",
+      "restored_name": "Crystal каронита",
+      "static_spawns": 1,
+      "maps": "1750",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 273470,
+      "old_hex": "C390E28099C390C2B5C391C281C390C2BBC390C2BE",
+      "new_hex": "D092D0B5D181D0BBD0BE",
+      "restored_name": "Весло",
+      "static_spawns": 3,
+      "maps": "1750",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 273474,
+      "old_hex": "4275636B6574204372797374616CC390C2BEC390C2B2",
+      "new_hex": "4275636B6574204372797374616CD0BED0B2",
+      "restored_name": "Bucket Crystalов",
+      "static_spawns": 3,
+      "maps": "1750",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 273478,
+      "old_hex": "C390C5B8C390C2BEC390C2B2C390C2BEC390C2B7C390C2BAC390C2B0",
+      "new_hex": "D09FD0BED0B2D0BED0B7D0BAD0B0",
+      "restored_name": "Повозка",
+      "static_spawns": 1,
+      "maps": "1750",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 273499,
+      "old_hex": "45676720C390C2AFC390C2B4C390C2BEC391E282ACC390C2BD",
+      "new_hex": "45676720D0AFD0B4D0BED180D0BD",
+      "restored_name": "Egg Ядорн",
+      "static_spawns": 10,
+      "maps": "1669",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 273846,
+      "old_hex": "506564657374616C20C390C2B4C390C2BBC391C28F20C390C2BAC390C2BEC391E282ACC390C2BEC390C2BDC391E280B9",
+      "new_hex": "506564657374616C20D0B4D0BBD18F20D0BAD0BED180D0BED0BDD18B",
+      "restored_name": "Pedestal для короны",
+      "static_spawns": 3,
+      "maps": "1669",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 276199,
+      "old_hex": "4C69676874686F757365202256696E6469636172C390C2B022",
+      "new_hex": "4C69676874686F757365202256696E6469636172D0B022",
+      "restored_name": "Lighthouse \"Vindicarа\"",
+      "static_spawns": 1,
+      "maps": "1669",
+      "usage_tags": [
+        "static",
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 277384,
+      "old_hex": "C390E28098C391E282ACC390C2BEC391CB86C390C2B5C390C2BDC390C2BDC390C2BEC390C2B520C391C281C390C2BEC390C2BAC391E282ACC390C2BEC390C2B2C390C2B8C391E280B0C390C2B5",
+      "new_hex": "D091D180D0BED188D0B5D0BDD0BDD0BED0B520D181D0BED0BAD180D0BED0B2D0B8D189D0B5",
+      "restored_name": "Брошенное сокровище",
+      "static_spawns": 1,
+      "maps": "1753",
+      "usage_tags": [
+        "static",
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 277388,
+      "old_hex": "53756D6D6D6F6E2053746F6E6520C390C2BFC391E282ACC390C2B55461626C65C390C2B020C390C2A2C391E282ACC390C2B8C391C692C390C2BCC390C2B2C390C2B8C391E282ACC390C2B0C391E2809AC390C2B0",
+      "new_hex": "53756D6D6D6F6E2053746F6E6520D0BFD180D0B55461626C65D0B020D0A2D180D0B8D183D0BCD0B2D0B8D180D0B0D182D0B0",
+      "restored_name": "Summmon Stone преTableа Триумвирата",
+      "static_spawns": 1,
+      "maps": "1669",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
