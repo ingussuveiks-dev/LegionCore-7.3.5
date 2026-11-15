@@ -1,0 +1,493 @@
+{
+  "date": "2026-11-15",
+  "batch": 5,
+  "count": 30,
+  "kind": "Distinct text fields corrected, no gameplay/translation changes",
+  "implementation": "sql/updates/world/2026_11_15_81_text_batch05.sql",
+  "migration_sha256": "cf5a374afd574f3b7197c05c221b96507d7e55097071d326cd414235dd5c8e79",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252495
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252496
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252868
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A4C390C2BEC390C2BBC390C2B8C390C2B0C390C2BDC391E2809A2046656C20C390E28099C390C2BEC391E282ACC390C2B3C390C2B0C390C2BBC391C692C391C281C390C2B020C390E2809DC390C2BEC391E282ACC390C2B0",
+      "new_hex": "D0A4D0BED0BBD0B8D0B0D0BDD1822046656C20D092D0BED180D0B3D0B0D0BBD183D181D0B020D094D0BED180D0B0",
+      "restored_text": "Фолиант Fel Воргалуса Дора",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 254785
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C390C2B0C390C2B1C390C2BBC390C2B8C391E280A1C390C2BAC390C2B020C390C2B220C390C2B7C390C2B2C390C2B5C391E282ACC390C2B8C390C2BDC391E280A0C390C2B520C3A2E282ACE2809C20C390C5B8C390C2B5C391C281C390C2BEC390C2BA",
+      "new_hex": "D0A2D0B0D0B1D0BBD0B8D187D0BAD0B020D0B220D0B7D0B2D0B5D180D0B8D0BDD186D0B520E2809320D09FD0B5D181D0BED0BA",
+      "restored_text": "Табличка в зверинце – Песок",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 255943
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C390C2BDC390C2B5C391CB86C390C2BDC390C2B8C390C2B920C390C2B2C390C2B8C390C2B420C390C5B8C390C2BEC390C2BBC391C28FC391E282ACC390C2BDC390C2BEC390C2B920C390C29DC390C2BEC391E280A1C390C2B8",
+      "new_hex": "D092D0BDD0B5D188D0BDD0B8D0B920D0B2D0B8D0B420D09FD0BED0BBD18FD180D0BDD0BED0B920D09DD0BED187D0B8",
+      "restored_text": "Внешний вид Полярной Ночи",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 257549
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 258907
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C390C2BDC390C2B5C391CB86C390C2BDC390C2B8C390C2B920C390C2B2C390C2B8C390C2B420C390C2A3C390C2B1C390C2B8C390C2B9C391E280A020C390C5A1C390C2BEC391E282ACC390C2BEC390C2BBC390C2B5C390C2B9",
+      "new_hex": "D092D0BDD0B5D188D0BDD0B8D0B920D0B2D0B8D0B420D0A3D0B1D0B8D0B9D18620D09AD0BED180D0BED0BBD0B5D0B9",
+      "restored_text": "Внешний вид Убийц Королей",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 258909
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C390C2BDC390C2B5C391CB86C390C2BDC390C2B8C390C2B920C390C2B2C390C2B8C390C2B420C390C2A3C390C2B1C390C2B8C390C2B9C391E280A020C390C5A1C390C2BEC391E282ACC390C2BEC390C2BBC390C2B5C390C2B9",
+      "new_hex": "D092D0BDD0B5D188D0BDD0B8D0B920D0B2D0B8D0B420D0A3D0B1D0B8D0B9D18620D09AD0BED180D0BED0BBD0B5D0B9",
+      "restored_text": "Внешний вид Убийц Королей",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 258911
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C390C2BDC390C2B5C391CB86C390C2BDC390C2B8C390C2B920C390C2B2C390C2B8C390C2B420C390C2A3C390C2B1C390C2B8C390C2B9C391E280A020C390C5A1C390C2BEC391E282ACC390C2BEC390C2BBC390C2B5C390C2B9",
+      "new_hex": "D092D0BDD0B5D188D0BDD0B8D0B920D0B2D0B8D0B420D0A3D0B1D0B8D0B9D18620D09AD0BED180D0BED0BBD0B5D0B9",
+      "restored_text": "Внешний вид Убийц Королей",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 259764
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "4C6F766520706F74696F6E20C3A2E2809EE2809338",
+      "new_hex": "4C6F766520706F74696F6E20E2849638",
+      "restored_text": "Love potion №8",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 259806
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A0C390C2B5C391E280A0C390C2B5C390C2BFC391E2809A20C390C2BBC391C5BDC390C2B1C390C2BEC390C2B2C390C2BDC390C2BEC390C2B3C390C2BE20C390C2B7C390C2B5C390C2BBC391C592C391C28F",
+      "new_hex": "D0A0D0B5D186D0B5D0BFD18220D0BBD18ED0B1D0BED0B2D0BDD0BED0B3D0BE20D0B7D0B5D0BBD18CD18F",
+      "restored_text": "Рецепт любовного зелья",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 260304
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "576573747068616C69616E20686973746F727920C3A2E282ACE2809C206261636B67726F756E64",
+      "new_hex": "576573747068616C69616E20686973746F727920E28093206261636B67726F756E64",
+      "restored_text": "Westphalian history – background",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "1",
+        "maps": "1651"
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 260305
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "576573747068616C69616E20686973746F727920C3A2E282ACE2809C20686179737461636B",
+      "new_hex": "576573747068616C69616E20686973746F727920E2809320686179737461636B",
+      "restored_text": "Westphalian history – haystack",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "1",
+        "maps": "1651"
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 260306
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "576573747068616C69616E20686973746F727920C3A2E282ACE2809C20686F6D65",
+      "new_hex": "576573747068616C69616E20686973746F727920E2809320686F6D65",
+      "restored_text": "Westphalian history – home",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "1",
+        "maps": "1651"
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 260307
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "576573747068616C69616E20686973746F727920C3A2E282ACE2809C206D75726C6F636B7320687574",
+      "new_hex": "576573747068616C69616E20686973746F727920E28093206D75726C6F636B7320687574",
+      "restored_text": "Westphalian history – murlocks hut",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "1",
+        "maps": "1651"
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 260308
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "576573747068616C69616E20686973746F727920C3A2E282ACE2809C2073746F6E65",
+      "new_hex": "576573747068616C69616E20686973746F727920E280932073746F6E65",
+      "restored_text": "Westphalian history – stone",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "1",
+        "maps": "1651"
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 265540
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C593C391C692C391E280A6C390C2B8",
+      "new_hex": "D09CD183D185D0B8",
+      "restored_text": "Мухи",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 266125
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "506F7274616C20C390C2B220C390E280BAC391C692C390C2BDC390C2BEC391C281C390C2B2C390C2B5C391E2809A",
+      "new_hex": "506F7274616C20D0B220D09BD183D0BDD0BED181D0B2D0B5D182",
+      "restored_text": "Portal в Луносвет",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 266957
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "506F7274616C20C390C2A2C390C2B5C390C2B9C390C2B4C390C2B0",
+      "new_hex": "506F7274616C20D0A2D0B5D0B9D0B4D0B0",
+      "restored_text": "Portal Тейда",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 266988
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809CC391E282ACC390C2BEC390C2B7C390C2BDC391E280B9C390C2B920C390E2809DC391C692C391E280A6",
+      "new_hex": "D093D180D0BED0B7D0BDD18BD0B920D094D183D185",
+      "restored_text": "Грозный Дух",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 266989
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C29DC390C2B5C390C2B1C390C2BE20C390C5A1C391E282ACC391C692C390C2B3C390C2BEC390C2B2C390C2B5C391E282ACC391E2809AC390C2B820C390C5B8C391C692C391C281C391E2809AC390C2BEC391E2809AC391E280B9",
+      "new_hex": "D09DD0B5D0B1D0BE20D09AD180D183D0B3D0BED0B2D0B5D180D182D0B820D09FD183D181D182D0BED182D18B",
+      "restored_text": "Небо Круговерти Пустоты",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 266998
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "506F7274616C20C390C2A2C390C2B5C390C2B9C390C2B4C390C2B0",
+      "new_hex": "506F7274616C20D0A2D0B5D0B9D0B4D0B0",
+      "restored_text": "Portal Тейда",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 267838
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C390C2B8C391E282ACC390C2BEC390C2B3",
+      "new_hex": "D09FD0B8D180D0BED0B3",
+      "restored_text": "Пирог",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 267840
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "426F74746C6520C390C2B2C390C2B8C390C2BDC390C2B0",
+      "new_hex": "426F74746C6520D0B2D0B8D0BDD0B0",
+      "restored_text": "Bottle вина",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 267842
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A4C390C2BEC390C2BDC391E2809AC390C2B0C390C2BD",
+      "new_hex": "D0A4D0BED0BDD182D0B0D0BD",
+      "restored_text": "Фонтан",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 268896
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "416E76696C20C390C2B8205468652062617272656C",
+      "new_hex": "416E76696C20D0B8205468652062617272656C",
+      "restored_text": "Anvil и The barrel",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 269382
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C390C2B0C390C2B8C390C2BDC391C281C391E2809AC390C2B2C390C2B5C390C2BDC390C2BDC390C2B0C391C28F2043616765",
+      "new_hex": "D0A2D0B0D0B8D0BDD181D182D0B2D0B5D0BDD0BDD0B0D18F2043616765",
+      "restored_text": "Таинственная Cage",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 269776
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C390C2B5C390C2BBC390C2BE",
+      "new_hex": "D0A2D0B5D0BBD0BE",
+      "restored_text": "Тело",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 269777
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2BEC391E282ACC390C2B7C390C2B8C390C2BDC390C2B0",
+      "new_hex": "D09AD0BED180D0B7D0B8D0BDD0B0",
+      "restored_text": "Корзина",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 273294
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2BEC391C281C391C28FC390C2BA20C390C2B7C390C2BEC390C2BBC390C2BEC391E2809AC390C2B8C391C281C391E2809AC391E280B9C391E280A620C391E282ACC391E280B9C390C2B1C390C2B5C391CB86C390C2B5C390C2BA",
+      "new_hex": "D09AD0BED181D18FD0BA20D0B7D0BED0BBD0BED182D0B8D181D182D18BD18520D180D18BD0B1D0B5D188D0B5D0BA",
+      "restored_text": "Косяк золотистых рыбешек",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    }
+  ],
+  "checks": "Closed codec/ASCII invariance; actual TEMP install/replay/full-row snapshots and exact drift refusals; actual live full-column readback/RELEASED hash; paired/live native loaders/query/exact text builder/chat serializers. Prior400 templates/packets retained; normal Broadcast overrides preserved. Diagnostics clean.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json"
+}
