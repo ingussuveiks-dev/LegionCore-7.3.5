@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-15",
+  "status": "OPEN_NEW_SERVER_ONLY_POST_LOOT179109_NOT_MODIFIED_OR_COUNTED",
+  "entry": 239692,
+  "name": "Arcane-infused Egg",
+  "spell": 179109,
+  "finding": "Initial next100 full native admission stopped before calling its unresolved post-loot spell. This failed assertion is not passing, and no production cast/log check was disabled. Matching26972 DB2/hotfix native reader finds179109 absent while240362/240402/254576 controls are present.",
+  "historical": "TDB735 build22566 and current TDB both retain239692 Data26=179109. Unlike251959 there is no evidence for zeroing it. Modern serverside_spell/serverside_spell_effect and old735 spell_dbc have no179109 record; bounded GitHub search recovered no primary definition. Intended action remains unproven, so no no-op/fake/guessed reward.",
+  "handling": "Data1=0/Data26=179109 preserved by live readback; initial selection replaced with240580. Four earlier deferred81040/219461 sources are resolved separately, not confused with this newly discovered issue.",
+  "evidence": {
+    "catalog_sha256": "4d490cf9ad3517c6ec4853864db3f1c6390ce50c7091771d4f0a0172b1c2f652",
+    "historical_sha256": "b5e4c83023be417eec6b27ea6313e467f7950a852ccdb1a3be572f1e174630bd",
+    "server_donor_sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "initial_failure_sha256": "8ce15c75490b3f98b8b12c62ca6d1ce9b6c84d0bb100c5948fa2b7bcd851e8d3",
+    "original_plan_sha256": "25fa02391771727df8187f08f520c2da336e7352adcfbf8463da00abe87007f8"
+  },
+  "retention": "Original next-native-pending reproduction/config/symbols/logs and egg179109-open source plan retained outside fixed for concrete unresolved179109 followup. Native catalog/source files retained. No unknown-spell production error or OS crash occurred in this early admission failure.",
+  "next": "Recover authentic179109 server action from matching historical/sniff/primary gameplay evidence; retain native post-loot dispatch and no extra quest/item grant. Do not relabel it repaired merely because final different100 pass."
+}
