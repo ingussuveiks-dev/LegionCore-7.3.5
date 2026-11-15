@@ -7,6 +7,7 @@
 #include "SmartAI.h"
 #include "GameObjectAI.h"
 #include "grey_shoals.h"
+#include "arcane_infused_egg.h"
 
 enum eSpells
 {
@@ -486,6 +487,7 @@ public:
 
 void AddSC_azsuna()
 {
+    ArcaneEggLoot::Register();
     new boss_levantus();
     new spell_massive_spoul();
     new boss_calamir();

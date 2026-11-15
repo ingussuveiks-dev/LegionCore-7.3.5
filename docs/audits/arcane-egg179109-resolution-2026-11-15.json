@@ -1,0 +1,138 @@
+{
+  "date": "2026-11-15",
+  "status": "FUNCTIONAL_RECONSTRUCTION_DEPLOYED_NATIVE_PASS_RETAIL_FIDELITY_AND_CLIENT_PENDING",
+  "source": {
+    "entry": 239692,
+    "spell": 179109,
+    "heron": 89652,
+    "quest": 37727,
+    "item": 120939,
+    "amount": 6
+  },
+  "cause": "The authored loot link was zero and the referenced server-only179109 definition was absent. Matching heron89652 has VehicleId3963, so its default VehicleAI intentionally ignores AttackStart; merely recreating a spell would not restore the observed reaction.",
+  "authorization": "Standing user acceptance of a marked reconstruction; original179109 spell payload was not recovered and is not claimed authentic.",
+  "implementation": "Retain Data26=179109 and native loot/item objectives; restore only Data1=239692. Hidden server-only self DUMMY dispatch authenticates the actual loot GUID/source, alive/inworld/map/phase/distance/spawn state; selects the nearest visible eligible89652 within that bird's native attack distance of the egg. Do not redirect an engaged guard, affect a player-controlled guard or grant progress. The heron's scoped derived VehicleAI retains vehicle conditions/boarding/dismissal and adds native CreatureAI attack/update/melee. No faction, vehicle, spawn, drop chance/count or quest metadata changes.",
+  "compatibility": "Native26972 DB2/hotfix free-ID scan reserved misc900010/effect900011 before insertion. Existing native hidden81040 attribute words were adapted to the local schema; these179109 fields and nearest/native-radius guard policy are reconstruction choices, not recovered Blizzard spell fields. No HotfixData client delivery row.",
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/object=239692/arcane-infused-egg",
+      "reviewed": "Six eggs and nearby watching Shallows Heron reaction; public comment is corroboration, not an original spell payload."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=37727/the-magister-of-mixology",
+      "reviewed": "Six120939 objective and quest giver/turn-in."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=x-Ws9N3miTI",
+      "title": "World of Warcraft Quest - The Magister of Mixology",
+      "uploader": "Game Guides Channel",
+      "upload": "2016-09-01",
+      "duration_seconds": 150,
+      "reviewed": "All149 sampled one-second silent frames in10 contact sheets covering the complete relevant sequence, not uninterrupted playback or audio. Quest accepted0-8s, travel9-55s, first egg58-60s, second63-65s and hostile/pet fight65-74s, third79-80s, manual Barrage84s, fourth87-89s, fifth93-96s, sixth118-120s, return121-136s, turn-in137-141s, recipe144-148s. Some nearby herons remain yellow. Exact179109 radius/chance/guard count not established.",
+      "video_sha256": "9c2e14a7811885ade8dd33e4121c916c870bb66222fdd72a10a3ef1d9141d62d"
+    },
+    {
+      "local": "Matching runtime data/source DB, Player::SendLoot sets loot GUID before normal post-loot cast; local735/modern Trinity/history/donor scans retain Data26 but no179109 payload was recovered."
+    }
+  ],
+  "checks": {
+    "native-v13": {
+      "inputs": {
+        "path": ".codex/egg-hundred-20261115/native-v13/native-inputs.json",
+        "sha256": "7821fc58390c975ec430739ea049b569932d7c294bf80ae672a789dd183981a0"
+      },
+      "stdout": {
+        "path": ".codex/egg-hundred-20261115/native-v13/run-20261115-121323/stdout.log",
+        "sha256": "280ee20b81a8af4834b2226423e061b0b00b88a2c10818ffe90f1cc808e743fe"
+      },
+      "process": {
+        "stdout": "280EE20B81A8AF4834B2226423E061B0B00B88A2C10818FFE90F1CC808E743FE",
+        "stderr": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "exit": 0
+      },
+      "diagnostics": {
+        "path": ".codex/egg-hundred-20261115/native-v13/native-diagnostics/diagnostics-after.json",
+        "sha256": "e67ed0adbca5a5def024319dea490bab3e7fa13563c8a9e3d941a3aacde47b0f"
+      }
+    },
+    "egg-native-live": {
+      "inputs": {
+        "path": ".codex/egg-hundred-20261115/egg-native-live/native-inputs.json",
+        "sha256": "479bf1ca6472ff2853b562a3bc221a652e345cb3ace9302962bb71dc9f65c4aa"
+      },
+      "stdout": {
+        "path": ".codex/egg-hundred-20261115/egg-native-live/run-20261115-121815/stdout.log",
+        "sha256": "abefd08097c689283e2e961d626d7f0e2106aa84a5e5821cf9998bd7f8a48ed0"
+      },
+      "process": {
+        "stderr": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "stdout": "ABEFD08097C689283E2E961D626D7F0E2106AA84A5E5821CF9998BD7F8A48ED0",
+        "exit": 0
+      },
+      "diagnostics": {
+        "path": ".codex/egg-hundred-20261115/egg-native-live/native-diagnostics/diagnostics-after.json",
+        "sha256": "314d7dd9c14b8eb8a6aecb9dc3a3a7df5f1d61cc08949dfccd538980da051c9f"
+      }
+    },
+    "egg-startup": {
+      "path": ".codex/egg-hundred-20261115/egg-startup/diagnostics-after.json",
+      "sha256": "886773359160519d9e05572d43fa6b747764957895877036340b98e38caf9a25"
+    },
+    "canonical-pe": {
+      "path": ".codex/egg-hundred-20261115/canonical-pe/diagnostics-after.json",
+      "sha256": "f6b106e10bf0a612acf8a32996298c4288352a4f0dd1a5df9bb8e30e43ac435f"
+    },
+    "stage-pe": {
+      "path": ".codex/egg-hundred-20261115/stage-pe/diagnostics-after.json",
+      "sha256": "4aeaf006fb7245bac7e24070313a25577cbfe1faeddbba2289fa55b071574c0e"
+    },
+    "scepter": {
+      "path": ".codex/egg-hundred-20261115/scepter/diagnostics-after.json",
+      "sha256": "318ae52fdc043476867054031afafa68fbb33e8c966a9cfcfc1c8de4a1d645df"
+    },
+    "promotion-evidence-v3": {
+      "path": ".codex/egg-hundred-20261115/promotion-evidence-v3/diagnostics-after.json",
+      "sha256": "c8625eaaef53158479a82c0ea72ce9e4ebf781569943beac26f4770026cdbc77"
+    }
+  },
+  "native_scope": "Both Human/Alliance and Orc/Horde socketless real Players collect six independent authored eggs through native SendLoot/BuildLootResponse/StoreLootItem; each physical slot stores once, native quest completes at six. Actual registered normal spell executes, nearest guard attacks, second remains idle, faction190 preserved, native evade clears victim. Native source-free, distant source/guards, wrong source/guard phases, controlled guards and engaged guard rejection tested. Original player identity PVP_ATTACKABLE flag is initialized; it does not enable PvP. Synthetic accepted quest, source positions and controlled-state input only; no authenticated save or real client traversal. Release libraries not ASAN.",
+  "live_data": {
+    "hotfix": {
+      "path": ".codex/egg-hundred-20261115/live-hotfix.tsv",
+      "sha256": "ac6bb0e3514ce7c3e48e07c8b5f04fbb294dcb0b7a3bc3c5c63c06d86fabcf34"
+    },
+    "world": {
+      "path": ".codex/egg-hundred-20261115/live-world.tsv",
+      "sha256": "1f03606fa393604c95d7f82527775d0bbc4bf5525e196f81b876738861290d52"
+    },
+    "result": "All fields/all rows of spell/spell_misc/spell_effect and full gameobject_template/creature_template match the independently patched private copies, equal row counts; exactly one179109 binding. Heron vehicle3963/faction190 retained."
+  },
+  "build": {
+    "map": "75AA988BFE314B49798ECBA90A8283B4CA587FD5185019820CDE70C7BC60BAA6",
+    "scripts": "37BB918006F4AB7EB1738E8CF622EDECBF2DDDE93188B49E13800CBF2EEF5C95",
+    "sources": {
+      "C:\\wamp64\\www\\LegionCore-7.3.5/src/server/scripts/Legion/zone_azsuna.cpp": "D5720DDB10CC2BBE50703D57F128ED82107A0D25B372A007783B14CD872DFEC3",
+      "C:\\wamp64\\www\\LegionCore-7.3.5/src/server/scripts/Legion/arcane_infused_egg.h": "19FEE1412F4A7A2CCA001BEE60EE451DF453B55C10B7BAB34240486A41E0362C"
+    },
+    "game": "95551C561B86EB73FAD158EC2E4DB4DEE2AE235073B245CDC8D696C13F863F14",
+    "world": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0"
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "promotion": {
+      "path": ".codex/egg-hundred-20261115/promotion.json",
+      "sha256": "ca36cabfb0646b76236e158b5a5621be25513343c935f1eb5f60ee629eb51e59"
+    },
+    "rollback": ".codex/release-before-arcane-egg-20261115",
+    "rollback_limit": "After live script bindings, binary-only downgrade is incoherent; rollback both data/bindings and executable together. No user/unknown process stopped. Owned canonicalPID15840 fresh ready/shutdown0/exit0/gone, stderr0 and no new runtime diagnostics."
+  },
+  "failed_investigation_runs": "Retained separately from passes: two compile API/name errors; private World SELECT-only grants prevented preparing write statements. Corrected by private physical clones of every DML-prepared table with scoped prepare privileges, all native transactions read-only; no DML privileges on views/source writes. Initial neutral-player flag omission, deferred normal cast update, VehicleAI no-op and reused evading guard were investigated; final native cases use correct native identity, actual event update and independent nest guards. Controlled test flag originally used network flag rather than actual ownership bool, corrected fixture input. First promotion assumed PDB files although original Release link produces EXE/map only; verified partial world copy resumed from original rollback, four EXE/maps verified. No failed run is called a pass.",
+  "remaining": [
+    "Actual 7.3.5 client egg collect/channel/combat/turn-in and native3365 nested dispatch under real latency.",
+    "Exact original179109 payload, probability, radius, number of guards, audio and visual fidelity remain unproven.",
+    "Pet/guardian/one-hit guard kill, full real evade/retry/re-entry/group eligibility and vehicle-seat interaction remain client/native follow-up; helper itself grants no kill credit or item, native ownership/loot rules unchanged.",
+    "Older missing LINK2/Slaghammer, other artifact presentation and all36 whole artifact chains remain separately OPEN."
+  ],
+  "diagnostics": "Final checks have exit0/stderr0 and no new crashes, appended DBErrors or server warnings/errors/assertions. Scepter check passes deployed PE; existing six signed/unsigned/conversion compiler warnings are unchanged in retained Scepter fixture/includes, not runtime warnings. Canonical mixed DBErrors7111bytes/hashfa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 preserved, never truncated. Original Slaghammer evidence and Defender boundary unchanged.",
+  "archive": "Resolved investigation/test evidence will be hash-archived under ignored fixed/egg-more-ten-ten-2026-11-15 after final checks; private schema/grant and redundant probe/stage cleanup recorded in final cleanup audit."
+}
