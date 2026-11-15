@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 1,
+  "entries": [
+    {
+      "entry": 240649,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 240855,
+      "name": "Tome of Secrets"
+    },
+    {
+      "entry": 241216,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 241267,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 241272,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 241449,
+      "name": "Blackfang Island Cache"
+    },
+    {
+      "entry": 241450,
+      "name": "Crystallized Fel Spike"
+    },
+    {
+      "entry": 241504,
+      "name": "Polished Crystal"
+    },
+    {
+      "entry": 241524,
+      "name": "Pale Removal Equipment"
+    },
+    {
+      "entry": 241553,
+      "name": "Ð‘Ð¾ÐµÐ²Ñ‹Ðµ ÐºÐ»Ð¸Ð½ÐºÐ¸ Ð¸Ð»Ð»Ð¸Ð´Ð°Ñ€Ð¸"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_59_more_ten_chest_batch1.sql",
+  "sha256": "2890b3150b42036568fcec5f7ad552a1d003bf210129dc3042424f9e6a5a3636",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-1/result.json",
+    "sha256": "e306655c389dd055ce953a977231e99bc89b48610a5b7960faaef5f5f077c1d2"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}

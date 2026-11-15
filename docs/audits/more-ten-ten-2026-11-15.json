@@ -1,0 +1,121 @@
+{
+  "date": "2026-11-15",
+  "status": "100_DISTINCT_CHEST_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "request": "Pabeidz atvērto un ņem10x10",
+  "baseline": "72b4dab03",
+  "open_fix": "72b4dab03 Arcane-infused Egg functional reconstruction, separate from these100",
+  "scope": "100 additional distinct existing chest-template links in ten groups of ten; other world/instance sources, zero Broken Isles/Argus sources. These are data repairs, not100 artifact quests or client traversals.",
+  "plan": "tools/tests/MoreTenTen20261115ChestRepairs.json",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "distinct_new_sources": 100,
+  "batches": 10,
+  "per_batch": 10,
+  "excluded": [
+    {
+      "entry": 248513,
+      "reason": "Existing personal_loot_template101002/type1 explicitly preallocates Krosus loot to this GO. Do not turn an absent container into a fresh generic roll; restore initial Data1=0 after rejected uncommitted first selection. Substitute266951."
+    }
+  ],
+  "selection": "Existing type3 sources, zero Data1, authored same-entry nonreference valid loot/counts, actual spawns, empty GO AI/ScriptName and no template or per-spawn SmartGO. Disjoint from455 previously selected sources including the egg. Source-specific instance/core paths reviewed separately; empty GO ScriptName does not mean absence of an instance controller.",
+  "instance_path_review": [
+    "ChallengeMgr lists eight of these end caches, InstanceScript tracks their GUIDs, Challenge completion enables the chest and establishes eligible/count/context state; actual Loot::FillLoot selects ProcessChallengeChest. No separate FillLoot call in Challenge.cpp: ordinary GO opening still needs the authored Data1 link. Completion, timing, eligible/count/context rules are unchanged; real challenge traversal remains pending.",
+    "ArmyTraining1626 maps discovered objects to reward chest entries, enables only discovered/reward chests at finish. Native Loot::FillLoot invokes InstanceScript::OnLootChestOpen, which adds the existing point-based rewards to251953/252452. All mappings, points, spawn/phase and rewards unchanged; Data1 restores that native dispatch. Actual whole scenario remains pending.",
+    "245847/246036 are tracked by their native Halls of Valor/Maw instance controllers, enabled through existing boss flow and flagged by Loot::IsLastEncounter. No personal_loot_template goEntry preallocation references them in the current DB. Flags, encounter IDs, personal mode and native cooldowns stay intact.",
+    "248513 was rejected after the first uncommitted selection: personal_loot_template101002/type1 explicitly preallocates real Krosus-earned loot, and Unit::GeneratePersonalLoot assigns it to the GO. Restored its initial Data1=0 with a guarded local correction before any user/client run; no history rows deleted/forged. Replaced with266951, naturally rehashed/reapplied the corrected uncommitted batch6 via the real updater. Final native/data100 and all10 shadow cohorts rerun on the final plan; rejected first selection is not final proof. Final readback:248513 Data1=0 and zero preallocation references for selected100.",
+    "Other direct numeric hits are spell IDs, not GO handlers. Neither those spells nor any source/instance C++ was edited by these100 migrations."
+  ],
+  "checks": {
+    "native": {
+      "hundred-final-pending": {
+        "cases": 100,
+        "live_data": false,
+        "inputs": {
+          "path": ".codex/egg-hundred-20261115/hundred-final-pending/native-inputs.json",
+          "sha256": "0e17f9311279884f0368968db62177fa348e96083a863122551b0715baa20cd8"
+        },
+        "stdout": {
+          "path": ".codex/egg-hundred-20261115/hundred-final-pending/run-20261115-122526/stdout.log",
+          "sha256": "56b1a8a14f3d0247183c48a80728c43a4578e8a49b0fe30ca50288267a0ae9d6"
+        },
+        "process": {
+          "exit": 0,
+          "stdout": "56B1A8A14F3D0247183C48A80728C43A4578E8A49B0FE30CA50288267A0AE9D6",
+          "stderr": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        },
+        "diagnostics": {
+          "path": ".codex/egg-hundred-20261115/hundred-final-pending/native-diagnostics/diagnostics-after.json",
+          "sha256": "3cd81e06a4c325d0cd9d9581a14848916d45d832689a0cf6c9d94e7027dd3848"
+        }
+      },
+      "hundred-final-live": {
+        "cases": 100,
+        "live_data": true,
+        "inputs": {
+          "path": ".codex/egg-hundred-20261115/hundred-final-live/native-inputs.json",
+          "sha256": "745dd71be24cafd4e2a716727d12d38ab2c4b62a64dc09a3ba3b7cf218981459"
+        },
+        "stdout": {
+          "path": ".codex/egg-hundred-20261115/hundred-final-live/run-20261115-122639/stdout.log",
+          "sha256": "29c9ab9a18488e3ce137c0a97af3a4b659bffc5d71883c5fd5662e661ea0d02c"
+        },
+        "process": {
+          "stdout": "29C9AB9A18488E3CE137C0A97AF3A4B659BFFC5D71883C5FD5662E661EA0D02C",
+          "exit": 0,
+          "stderr": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        },
+        "diagnostics": {
+          "path": ".codex/egg-hundred-20261115/hundred-final-live/native-diagnostics/diagnostics-after.json",
+          "sha256": "a83fe542c68be9372bdfa4fe2439becdd61d876f6de4729d778c3fb0e62d412c"
+        }
+      }
+    },
+    "shadow": "All10 final cohorts:10 install/replay,91 unrelated source rows preserved, all101 other-column rows preserved, foreign Data1 refused; temporary-table-only writes.",
+    "live": {
+      "path": ".codex/egg-hundred-20261115/hundred-readback/readback.tsv",
+      "sha256": "7a9960cb884ce6e04f16b99924b2467e2b6e2ca8c3ac2060c48f15ab7b1ab67b"
+    },
+    "locations": {
+      "path": ".codex/egg-hundred-20261115/final-locations.tsv",
+      "sha256": "c1e639451527560c000537d6d664169f91e05339c889f41f63875e250b92bdd0"
+    },
+    "diagnostics": {
+      "hundred-final-startup": {
+        "path": ".codex/egg-hundred-20261115/hundred-final-startup/diagnostics-after.json",
+        "sha256": "85a554e10075a9fccf5777461a15576911c51a153fe581fcdb9b570336d98423"
+      },
+      "hundred-readback": {
+        "path": ".codex/egg-hundred-20261115/hundred-readback/diagnostics-after.json",
+        "sha256": "72ef4a452c057925340c239cba0a4e092b658906d53c736415dfd974b4b6ad5a"
+      },
+      "hundred-final-sql-all": {
+        "path": ".codex/egg-hundred-20261115/hundred-final-sql-all/diagnostics-after.json",
+        "sha256": "f2ca597cd77044dcd60d8b53e82f99da380208b51b4d1997c9d2fd761db179ca"
+      }
+    },
+    "source_map_spawn_counts": {
+      "1463": 4,
+      "1464": 57,
+      "1468": 10,
+      "1481": 13,
+      "1477": 2,
+      "1492": 7,
+      "1456": 3,
+      "1458": 7,
+      "1502": 1,
+      "1007": 1,
+      "1501": 3,
+      "1544": 5,
+      "1516": 3,
+      "1626": 60,
+      "1512": 2,
+      "1571": 1,
+      "1493": 2,
+      "1466": 1,
+      "1693": 20
+    },
+    "startup": "Owned canonicalPID22472 initial10 updater files and PID32624 corrected batch6 rehash/reapply; both fresh ready/shutdown0/exit0/gone, stderr0. No new crashes, DBErrors, server warnings/errors/assertions. User/unknown processes never stopped."
+  },
+  "boundaries": "Native actual GetLootId/SendLoot/FillLoot use controlled positions, socketless player and independent cooldown inputs. Data1 is the only final100 source delta. Do not claim probability/item receipt, authenticated save, real locks/visibility, boss/challenge/army completion, group eligibility, client traversal or100 whole artifact quests. No progression or kill-credit code changed; native player/pet/guardian/group handling retained but full related client paths remain pending.",
+  "preserved": "Canonical configuration/certs/DLL/data, mixed7111-byte DBErrors hashfa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1, original SlaghammerHandoffNative.exe hashb231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c and Defender quarantine unchanged. Older LINK2/Slaghammer, authentic egg spell metadata and all36 full artifact chains still explicitly pending.",
+  "archive": "Final fixed/egg-more-ten-ten-2026-11-15 archive/cleanup handoff records hashes, reclaimed bytes, owned DB/grant deletion and retained coherent rollback/research evidence."
+}
