@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 7,
+  "entries": [
+    {
+      "entry": 248887,
+      "name": "Pile of Ancient Arkhana"
+    },
+    {
+      "entry": 248930,
+      "name": "Crate of Corks"
+    },
+    {
+      "entry": 249024,
+      "name": "Precipitating Powder"
+    },
+    {
+      "entry": 249460,
+      "name": "Crate of Sabelite Sulfate"
+    },
+    {
+      "entry": 249462,
+      "name": "Crate of Dragur Dust"
+    },
+    {
+      "entry": 249733,
+      "name": "Plasmatic Laser Bolt"
+    },
+    {
+      "entry": 251641,
+      "name": "Suramar Leyline Map"
+    },
+    {
+      "entry": 251668,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251669,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251745,
+      "name": "Treasure Chest"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_65_more_ten_chest_batch7.sql",
+  "sha256": "80d86d62c5baaa2c54d11ad9038fa78455a0f8602f935607ec393cd3513b02da",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-7/result.json",
+    "sha256": "0aab3e051b3511ceb9de4913fabcaf675048579be62f257c894476ffd27038cf"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
