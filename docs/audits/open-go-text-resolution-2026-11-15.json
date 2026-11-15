@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-15",
+  "request": "Finish open questions then10x10",
+  "baseline": "c96975f40421b794184b5b7591398da1954276df",
+  "status": "37_OPEN_STORED_ENCODING_FIELDS_RESOLVED_DEPLOYED_CLIENT_AND_ORIGINAL_GRAPH_PAYLOADS_PENDING",
+  "scope": "24 castBarCaption and13 unk1 fields on35 existing GameObject template rows; two paired-field rows atomic. No translation, role/state/loot/quest/animation change.",
+  "classification": "unk1 decodes to human-readable messages such as lockpick requirement, preparation/disarming and a sight-related exclamation. Native query sends it as UnkString; exact client UI role/visual rendering was not observed. Closing byte encoding review does not certify that client role.",
+  "implementation": "sql/updates/world/2026_11_15_82_open_go_text.sql",
+  "migration_sha256": "e6ae84162bb5d82f41e8723684f2f3b37465c5e8dd1c88887234a92e91854695",
+  "guards": "Full original/complete-after row SHA256 admission; exact35 rows; unknown metadata/text/missing or partially altered paired-row state refuses. Updates only declared captions/auxiliary strings, replay idempotent.",
+  "checks": {
+    "codec": "All37 exact closed1252/UTF8 reversals, ASCII formatting unchanged.",
+    "data": "Full-schema TEMP install/replay with582 complete-row signatures and4 foreign-text/metadata/missing/partial-pair refusals; actual live35 full rows/553 prior names and updater LF-normalized RELEASED SHA1 verified.",
+    "native": "Actual matching ObjectMgr loader, locale fallback, native7.3.5 query serializer and field/length parser. Both paired TEMP known-old/repaired and actual live inputs pass. Only declared changed string bytes and their required stats-size delta masked for cross-state wire comparison; all other bytes and553 existing names retained. No fake UI/click or gameplay traversal.",
+    "runs": [
+      "build-extractors/runtime-test/open-go-text-native/20261115-175059-741",
+      "build-extractors/runtime-test/open-go-text-native/20261115-175912-910",
+      "build-extractors/runtime-test/open-go-text-data/20261115-175912-917"
+    ]
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 10680,
+    "result": "Fresh ready/update82; graceful shutdown0/exit0/stderr0/gone. No new/changed crashes, appended DBErrors/server warnings/errors/assertions. No user/unknown process stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_changed": false
+  },
+  "legacy_research": {
+    "current": "103151 root0->1->missing2,100475 missing7/8 and100438 missing10 remain in current actual graph. Slaghammer101430 functional marked reconstruction already committed earlier, original payload fidelity still separate.",
+    "sources": "Current full local actor/template/addon/condition/spawn/caller graph; matching native shared target resolution (distance0 means native100yd default), spell bindings and prior typed catalogs; newer local Trinity SQL references, prior bounded GitHub history and fresh bounded web queries. No accepted matching735 original action recovered.",
+    "specific": "103151 is shared Effects Bunny, including seven static1539/phase5739 placements and distinct summoned use. Rootcaller104583 sends DATA1/1;202014/202015 no new spell-script binding found. A spell ID103151 in another boss is unrelated.",
+    "web_context_only": [
+      "https://warcraft.blizzplanet.com/blade-in-twilight-legion-shadow-priest-artifact-questline/",
+      "https://warcraft.wiki.gg/wiki/Blade_in_Twilight"
+    ],
+    "limit": "2015 alpha transcript/modern wiki describe wards context, not original missing SmartAI action. No new video playback reviewed this turn. No arbitrary terminal/no-op/zero-link/despawn added to hide an unresolved action."
+  },
+  "preserved": "Original protected Slaghammer EXE/cache and unresolved evidence kept outside fixed; mixed DBErrors7111bytes/hashFA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged. Client/all36 chains and original reconstruction fidelity remain pending; user availability requested asynchronously, no response/approval inferred.",
+  "next": "Additional100 distinct repairs investigated separately; these37 are not counted again. Final own test archive/cleanup recorded in handoff."
+}
