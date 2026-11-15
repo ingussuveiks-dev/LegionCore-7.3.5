@@ -423,10 +423,10 @@ void CreatureAI::EnterEvadeMode()
 
 void CreatureAI::DespawnOnRespawn(uint32 uiTimeToDespawn)
 {
-    me->AddDelayedEvent(100, [this, uiTimeToDespawn]() -> void
+    me->AddDelayedEvent(100, [actor = me, uiTimeToDespawn]() -> void
     {
-        me->DespawnOrUnsummon();
-        me->SetRespawnTime(uiTimeToDespawn);
+        actor->DespawnOrUnsummon();
+        actor->SetRespawnTime(uiTimeToDespawn);
     });
 }
 

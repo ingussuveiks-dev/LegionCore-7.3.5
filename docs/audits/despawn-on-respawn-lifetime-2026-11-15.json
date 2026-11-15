@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-15",
+  "baseline": "cf2a424da",
+  "request": "Labi tad pabeidz — continue remaining300 request",
+  "status": "ONE_COMMON_CREATURE_AI_LIFETIME_REPAIR_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "count": 1,
+  "cumulative_gameplay_data_for_request": 9,
+  "requested_total": 300,
+  "cause": "CreatureAI::DespawnOnRespawn captured this in a Unit-owned100ms FunctionProcessor callback. Actual Creature::AIM_Initialize can delete the old AI while the Creature and its queue survive; dereferencing old AI->me then accesses released memory.",
+  "repair": "Capture actor=me at scheduling time and use that same Creature directly for the unchanged DespawnOrUnsummon then SetRespawnTime argument. This operation belongs to the actor and must survive AI retirement; a weak-AI early return would lose an authorized despawn. No new timer, spawning, loot, HP/progression or respawn-order change.",
+  "source": "src/server/game/AI/CreatureAI.cpp",
+  "scope": "Entire CreatureAI.cpp reverses to cf2a424da by undoing only the capture and two endpoint receiver names. Four source call sites in Zaela/Tharbek/Everbloom/IronDocks retain their authored3s/5s arguments. Native full encounters/caller arrival are not newly traversed.",
+  "asan": {
+    "counterfactual": "build-extractors\\runtime-test\\despawn-on-respawn\\20261115-220518-028",
+    "repaired": "build-extractors\\runtime-test\\despawn-on-respawn\\20261115-220521-691",
+    "coverage": "Complete extracted production helper compiled with ASAN; actual100ms scheduling/closure body, controlled actor endpoints. Old heap-use-after-free expected counterfactual paired with repaired0/3/5s,99+1ms,once-only,cancellation and same-address replacement checks. No full-core ASAN claim."
+  },
+  "native": {
+    "run": "build-extractors\\runtime-test\\despawn-on-respawn-native\\20261115-220737-516",
+    "coverage": "12 real linked-helper cases: actual Creature::AIM_Initialize destruction, Unit FunctionProcessor, Creature::DespawnOrUnsummon/ForcedDespawn/death/RemoveCorpse and native respawn field.0/3/5 seconds ×live/replaced/cancelled/temporarily disabled AI. Real actor must have DBTableGUID0; read-only World/Hotfix/Login, no Character pool or persisted spawn/progress writes.",
+    "binary": "Actual original game.lib rebuilt; original CMake final-link libraries; matching PE/map checks100ms native queue, direct captured actor passed to real despawn with no indirect captured-AI read, and native zero/nonzero respawn branches."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "C202ABBB86EE321D24B5A38CA68B8243BAD05B86852A2CA725D703093E1C87B2",
+    "cpp_changed": true,
+    "bnet_changed": false,
+    "owned_pid": 11816,
+    "result": "Fresh canonical ready, graceful shutdown0/exit0/stderr0/gone; no user/unknown process stopped. Exact stage/canonical EXE-map copy hashes checked."
+  },
+  "diagnostics": "Before/after all actual tests clean: no new canonical/own crash, appended DBErrors or unexplained server warning/error/assertion. Two resolved test-launch/compiler iterations: ASAN executable initially lacked vcvars runtime DLL path (body never ran); native fixture used CreatureAI* for a UnitAI* getter. Corrected launch/type regressions pass; retain failed evidence until verified archival.",
+  "limits": "Full client/encounter reset/respawn travel not verified. Other original four LINK payloads and all36 artifact chains remain open; no300 completion claim. New inventory found only2 direct-player JustDied candidates: Geir is an already-fixed scoped owner handoff, XT scrapbot explicitly requires another boombot for its achievement; neither counted/changed.",
+  "preserved": "Protected original Slaghammer B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C and mixed7111-byte DBErrors FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 untouched; no quarantine/authentication/log bypass.",
+  "cleanup": "Per-issue diagnostic archive/temporary artifact cleanup recorded in continuation closeout after matching deployment/startup checks."
+}
