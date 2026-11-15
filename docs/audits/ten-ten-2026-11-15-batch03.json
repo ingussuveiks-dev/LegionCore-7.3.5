@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-15",
+  "batch": 3,
+  "status": "COMPLETED10_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 252821,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252821,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    },
+    {
+      "entry": 252824,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252824,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 252828,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252828,
+      "existing_spawns": 1,
+      "existing_loot_rows": 57
+    },
+    {
+      "entry": 252830,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252830,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    },
+    {
+      "entry": 252831,
+      "name": "Glimmering Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252831,
+      "existing_spawns": 1,
+      "existing_loot_rows": 57
+    },
+    {
+      "entry": 252832,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252832,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 252833,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252833,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    },
+    {
+      "entry": 252834,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252834,
+      "existing_spawns": 1,
+      "existing_loot_rows": 57
+    },
+    {
+      "entry": 252835,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252835,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 252836,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 252836,
+      "existing_spawns": 1,
+      "existing_loot_rows": 58
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_39_legion_chest_links_ten_batch3.sql",
+  "migration_sha256": "69899ad1999fbe5a1ce0021e9be14c5912cb18773687ff73e1a6c6ab4158e98e",
+  "cause": "Data1=0 made native GetLootId return0 and Player::SendLoot skip FillLoot despite authored same-entry loot; only restoreData1.",
+  "shadow": "10 fixes/idempotent replay,91 unrelated records, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "55b7dac90f1ac42349d0765d4010c6b7a302f3b5bc6bb09c0bfb6d03bf45ced7",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+    "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+    "ASAN": false
+  },
+  "live": "Canonical updater applied10 migrations; readback verifies all100 links/other captured fields/spawn and loot row counts, plus four deferred candidates unmodified.",
+  "diagnostics": "Final selected tests exit0, stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Initial different selection failed on four unresolved spells; preserved separately, not called passing.",
+  "limits": "Controlled synthetic player/source admission. No authenticated save/item storage, actual client visibility/lock/eligibility/drop distribution or full quest traversal claim. Faction/group/quest/respawn and pet progression rules not changed.",
+  "no_recount": "Ten distinct new sources disjoint from previous250/other nine cohorts; four unresolved post-loot candidates and repeated tests not counted."
+}
