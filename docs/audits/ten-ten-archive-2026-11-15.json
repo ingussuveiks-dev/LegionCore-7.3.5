@@ -271,5 +271,10 @@
   ],
   "remaining": "Client lock/visibility/eligibility/item receipt/full chain checks, four missing post-loot references and existing artifact LINK2/fidelity/all36 issues remainOPEN. Cleanup does not certify them.",
   "final_verification_files": 16,
-  "final_verification_manifest_sha256": "008684DBCD618F3991F9CD3A4C924DDA05A718A6EB410B1C897A39363013DF3D"
+  "final_verification_manifest_sha256": "008684DBCD618F3991F9CD3A4C924DDA05A718A6EB410B1C897A39363013DF3D",
+  "original_post_loot_resolution_followup": {
+    "audit": "docs/audits/chest-post-loot-resolution-2026-11-15.json",
+    "cleanup": "docs/audits/open-next-ten-ten-archive-2026-11-15.json",
+    "state": "Previously retained original four-source355MB repro now resolved/archived and redundant binary removed; original failure bytes retained in verified fixed archive."
+  }
 }

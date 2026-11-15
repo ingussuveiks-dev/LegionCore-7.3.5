@@ -1,0 +1,418 @@
+{
+  "date": "2026-11-15",
+  "request": "Pabeidz atvērto un ņem10x10",
+  "status": "FOUR_ORIGINAL_OPEN_CHESTS_RESOLVED_PLUS100_NEW_CHEST_LINKS_DEPLOYED_CLIENT_PENDING",
+  "original_open_resolved": 4,
+  "additional_repairs": 100,
+  "distinct_sources_this_request": 104,
+  "batches": 10,
+  "repairs_per_batch": 10,
+  "open_resolution_commit": "9b319d302",
+  "open_resolution_audit": "docs/audits/chest-post-loot-resolution-2026-11-15.json",
+  "scope": "100 additional distinct existing chest-template links in ten groups of ten after the four post-loot fixes:81 Broken Isles/Argus and19 other outdoor/instanced sources in the same735 world; not100 entire quests.",
+  "plan": "tools/tests/NextTenTen20261115ChestRepairs.json",
+  "plan_sha256": "c477e51c4db920ebb2a3e46ea3726a6fdcb96d7899560ef3adfb50490c5ae9e9",
+  "selection": "Initial strict direct nonreference candidates gave82 Legion/Argus,2 additional Draenor and13 other ordinary outdoor sources; next3 actual instanced sources had empty GO AI/ScriptName/no template/per-spawn SmartGO or direct C++ entry handler. Missing179109 egg excluded and240580 substituted, giving81 Legion/Argus+19 other source templates. Final per-source maps recorded, not all labelled Legion or all outdoor. Initial quota-generation assertions are tool/selection failures, not gameplay fixes.",
+  "checks": {
+    "native": {
+      "next-native-ready": {
+        "cases": 100,
+        "live_data": false,
+        "stdout_sha256": "c7eaa7aa84aa30cc069aba4a0e9bea5dd31f1f498c63c61442c05ce3c8adc2aa",
+        "inputs_sha256": "f284d9a61d6cfb332c3dcc06ea7aef714ded9b29d3626b64e571e40fc0001fa7"
+      },
+      "next-native-live": {
+        "cases": 100,
+        "live_data": true,
+        "stdout_sha256": "e163260a4f9cbcc2b6c4f81cfc4f15e70136f9fed1f9aff14b1609fa7b032ec2",
+        "inputs_sha256": "66bb43b448c3f4f59adc49097bde3f4e1757df315d3a1e773ce760b7dc8632da"
+      }
+    },
+    "shadow": "10 final cohorts of10 with full isolation/replay/all-column/custom-link checks",
+    "live_sha256": "b89fa4b40d46255dc863f363b21a603bde95057ff8085ffca8abf652a42a82f8",
+    "maps_sha256": "d8112f1fbd97b02ac6d188d710ae5a716817d844bd8c947668d0eb9eddd10392",
+    "retained_open_four": "Final combined4 native generation+170/167 execution passes after all100 updater deltas. Original unguarded100 binary also passes repaired four-source data without the later admission guard.",
+    "startup": "Owned canonicalPID30072 applied10 queries, fresh ready/shutdown0/exit0/gone; stderr0, no new diagnostics.",
+    "diagnostic_sha256": {
+      "next-native-ready/diagnostics-after.json": "7b58fb2d7ac01128b1c29942e40c5275ce39550673d332c3ab407235d46375aa",
+      "next-native-ready/native-diagnostics/diagnostics-after.json": "857410022a922bb539cb7b5b319d01b20d1bd2cda75a31c7eec9c3ee5e0bd0f4",
+      "next-native-live/diagnostics-after.json": "17e2dbe7b37693e5155cd3dee69aa6344848cb2c99e927f4f834ecfc07b55b67",
+      "next-native-live/native-diagnostics/diagnostics-after.json": "3ff213f664b46522366c3dc339fb995938b4b013e12eccd14c91b70285231636",
+      "next-updater-startup/diagnostics-after.json": "f1a43d6a884764ac0cb9bfc9daefe263a04efcd14c6554ad393f17faf41597e1",
+      "next-live-readback/diagnostics-after.json": "66dbf956ae5c21bf6156c41efce251e820f05e031e1fddd257dd3ac3fc03d60c",
+      "open-combined-native/diagnostics-after.json": "7a34df0d2911e11d727bc5b46266f179f547f9a5a3bbb2bb3cec8e40dfb1b316",
+      "open-combined-native/native-diagnostics/diagnostics-after.json": "6758eebe03903a4aa0ab36215214ed5d5f1cff2d6972bedde3f5653fa83a36c5",
+      "next-locations-evidence/diagnostics-after.json": "9daa5da4396a8281f0146086a949990fb1262d0c14e40c09247d6318c0597799",
+      "next-final-shadow-1/diagnostics-after.json": "73081f2baf1773102374fbd04ef1df6e0c7a9190716a0297de6ad4ceb211357e",
+      "next-final-shadow-2/diagnostics-after.json": "1249aab2df26ca22df5504739722e24ddca078db3f9c6cf09aecd32c1e1c39b3",
+      "next-final-shadow-3/diagnostics-after.json": "3975260cd059b52d6fa76acc098abaa9e5dad18540e01edcbe32bcf6edd3594f",
+      "next-final-shadow-4/diagnostics-after.json": "14695e29069148c0bac8d8bf925a34c02ce5036069fc318b454f80309afcab55",
+      "next-final-shadow-5/diagnostics-after.json": "fe85bbff2738a30276ec5ad9ed3fc76190c097225ffbc93a35e2c3f56f43c24f",
+      "next-final-shadow-6/diagnostics-after.json": "cf74739359a7f3346a8e71c270bcc3ad29af08bc5d9471f5a882d6d3dcb95bf3",
+      "next-final-shadow-7/diagnostics-after.json": "2f89676fcd33b507209456b3adcbf3071947991493effd0aa2b724f9959ecf8f",
+      "next-final-shadow-8/diagnostics-after.json": "d5cdbdc99bc2f610c55fbcf8937deb61f12eff095dc29bb8a00594ec5cc83afe",
+      "next-final-shadow-9/diagnostics-after.json": "31c832834ebebcf2ec4f9e152aea42b729e2c315572e62544fb548657fdc9e11",
+      "next-final-shadow-10/diagnostics-after.json": "3e088799b4dea42ee484432b09d6bced4beae522c364bd98f202a72f092ac552"
+    },
+    "final_release_diagnostics_sha256": "E93EADB5C8C81AD49B1C528818A01F0BF904476B0891ADCBBB1F1D90F878A06D"
+  },
+  "fixture_failure_repair": {
+    "failure": "Initial screened100 native probe exitedc0000005 on actual Vignette->ConditionMgr->AchievementMgr::CheckModifierTree because its bootstrap omitted the actual criteria/modifier-tree index. Canonical World startup already loads this index; no production AV fix claim.",
+    "repair": "Load native AchievementGlobalMgr::LoadCriteriaList before any private Player/GO visibility update, exactly as World startup does; retain vignette/visibility/conditions without bypass or synthetic success. Final identical selected100 pass with actual modifier conditions.",
+    "failed_stack_sha256": "c39643f93d7ba7899074e290a8bdf6329d881c5899e0452349d2f03a6acce8b9",
+    "passing_scope": "next-native-ready and next-native-live full100; Release libraries not ASAN. Initial crashed fixture is resolved and eligible for fixed archive, distinct from still-open179109."
+  },
+  "deferred_new": "docs/audits/arcane-egg179109-open-2026-11-15.json",
+  "other_pending": "docs/audits/artifact-open-followup-2026-11-15.json; missing LINK payloads/original flight fidelity/all36 actual client chains remainOPEN.",
+  "canonical": {
+    "worldserver.exe": "6ffc5d6d7e7ca2b48ccc917376ea1e20be0c9893205674a5360949c5376524e4",
+    "worldserver.map": "d85475f9b9e7a9eda89b1bb8d8c8c84492867b4ad461dcd704c2d176075b1d45",
+    "bnetserver.exe": "e559f961c277cc92a95ccda27b21abb6a1981a00ddc4b0ae3516697032e22962",
+    "bnetserver.map": "61a784874f496e919047a0a6041f0b4fc97294f96166b3aa3a67d55526d82d81",
+    "logs/DBErrors.log": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1"
+  },
+  "protected_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+  "no_recount": "One loot-link defect class across100 new sources, plus four original sources fixed by two underlying causes. Not104 whole quests. Data/fixture checks, phase helper restoration and repeat cases are not extra chest counts.",
+  "batch_details": [
+    {
+      "batch": 1,
+      "entries": [
+        233107,
+        236931,
+        239419,
+        239803,
+        268535,
+        268536,
+        268537,
+        268538,
+        268539,
+        268540
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch01.json",
+      "migration_sha256": "eecf5ed0e62de60e74d6207fba16617435ab61752f754dd9041fafc33a8e6e67"
+    },
+    {
+      "batch": 2,
+      "entries": [
+        268541,
+        268542,
+        268543,
+        268544,
+        268545,
+        268546,
+        268547,
+        268548,
+        268549,
+        268550
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch02.json",
+      "migration_sha256": "0c1a923c1c2d8fa10db8af5c70b5aae5fede19e85d14a11fe00555c4c3710ea3"
+    },
+    {
+      "batch": 3,
+      "entries": [
+        268551,
+        268552,
+        268553,
+        268554,
+        268555,
+        268556,
+        268557,
+        268558,
+        268559,
+        268560
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch03.json",
+      "migration_sha256": "049407050ae481779fd8b212ca5520351ef4aacbf10f279ca3dd64e264180c43"
+    },
+    {
+      "batch": 4,
+      "entries": [
+        268561,
+        268563,
+        268564,
+        268565,
+        268566,
+        268567,
+        268568,
+        268569,
+        268570,
+        268571
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch04.json",
+      "migration_sha256": "4567d25d06f8245d54df93b39face9fd723225b786e9b7d964f47face95df1f9"
+    },
+    {
+      "batch": 5,
+      "entries": [
+        268572,
+        268715,
+        268762,
+        268765,
+        271114,
+        271668,
+        271669,
+        271670,
+        271689,
+        271979
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch05.json",
+      "migration_sha256": "fd1ac32d6f55782c0fd812d959acb50dac510ea8a881383491b7767d0b6c4f17"
+    },
+    {
+      "batch": 6,
+      "entries": [
+        272458,
+        272460,
+        272463,
+        272741,
+        272744,
+        272745,
+        273833,
+        273839,
+        276223,
+        276224
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch06.json",
+      "migration_sha256": "8e0f814a97d9eb4ad95e06b14a3e9ccbb4fb4f81d462a2414fbd0329c9e618ec"
+    },
+    {
+      "batch": 7,
+      "entries": [
+        276225,
+        276226,
+        276227,
+        276228,
+        276229,
+        276230,
+        276489,
+        276490,
+        276491,
+        277204
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch07.json",
+      "migration_sha256": "89b8be7908bf16f17236ed827ebcf5dec335e0f27d7785095fccbacdfdcb3409"
+    },
+    {
+      "batch": 8,
+      "entries": [
+        277205,
+        277206,
+        277207,
+        277208,
+        277327,
+        277340,
+        277342,
+        277343,
+        277344,
+        277346
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch08.json",
+      "migration_sha256": "9730dd01a06c01dc200b720ff5d4f64275d46a8dc1ba1be4f0e3ac54ca99625e"
+    },
+    {
+      "batch": 9,
+      "entries": [
+        277348,
+        196395,
+        214985,
+        231775,
+        232596,
+        246267,
+        249393,
+        249702,
+        250678,
+        250682
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch09.json",
+      "migration_sha256": "fdbc95353d7e61601ec991ed84d924a495d5dd22c79a968581d13d26b74d6841"
+    },
+    {
+      "batch": 10,
+      "entries": [
+        251021,
+        254254,
+        254255,
+        255931,
+        268813,
+        278802,
+        239901,
+        240215,
+        240543,
+        240580
+      ],
+      "audit": "docs/audits/next-ten-ten-2026-11-15-batch10.json",
+      "migration_sha256": "5e59b9caf5fc4448dcfaef0ff8206faf6688896aa46ef63f14eddb8bb6a28699"
+    }
+  ],
+  "cleanup": {
+    "audit": "docs/audits/open-next-ten-ten-archive-2026-11-15.json",
+    "archive": "build-extractors/bin/Release/fixed/open-next-hundred-2026-11-15",
+    "deleted_files": 53,
+    "reclaimed_bytes": 2843464105,
+    "new179109_repro_retained_bytes": 355253296,
+    "private_schema_and_grant_removed": true
+  },
+  "batch_commits": [
+    {
+      "commit": "092bc498dc4688ff74364cb7676f0338db292c54",
+      "entries": [
+        233107,
+        236931,
+        239419,
+        239803,
+        268535,
+        268536,
+        268537,
+        268538,
+        268539,
+        268540
+      ],
+      "batch": 1
+    },
+    {
+      "commit": "e90e21f67f25583dac356160614d2168bc09626c",
+      "entries": [
+        268541,
+        268542,
+        268543,
+        268544,
+        268545,
+        268546,
+        268547,
+        268548,
+        268549,
+        268550
+      ],
+      "batch": 2
+    },
+    {
+      "commit": "de7965d0de4040f4a7b5ed04cc31ff63d20f07ea",
+      "entries": [
+        268551,
+        268552,
+        268553,
+        268554,
+        268555,
+        268556,
+        268557,
+        268558,
+        268559,
+        268560
+      ],
+      "batch": 3
+    },
+    {
+      "commit": "1f996f0cca819cd32dffd12ac08131bede5033fc",
+      "entries": [
+        268561,
+        268563,
+        268564,
+        268565,
+        268566,
+        268567,
+        268568,
+        268569,
+        268570,
+        268571
+      ],
+      "batch": 4
+    },
+    {
+      "commit": "c5788ac3e5c9cc32e326857c389560e2d2e9c4d2",
+      "entries": [
+        268572,
+        268715,
+        268762,
+        268765,
+        271114,
+        271668,
+        271669,
+        271670,
+        271689,
+        271979
+      ],
+      "batch": 5
+    },
+    {
+      "commit": "8a4a1a30b67bb84f05fa3ed63a39fa13bdad5a84",
+      "entries": [
+        272458,
+        272460,
+        272463,
+        272741,
+        272744,
+        272745,
+        273833,
+        273839,
+        276223,
+        276224
+      ],
+      "batch": 6
+    },
+    {
+      "commit": "95b0f96db77528322b12741ac784145c4b1f2d72",
+      "entries": [
+        276225,
+        276226,
+        276227,
+        276228,
+        276229,
+        276230,
+        276489,
+        276490,
+        276491,
+        277204
+      ],
+      "batch": 7
+    },
+    {
+      "commit": "eaf21c7daa793882fc0a2dcd71dce4a95959e497",
+      "entries": [
+        277205,
+        277206,
+        277207,
+        277208,
+        277327,
+        277340,
+        277342,
+        277343,
+        277344,
+        277346
+      ],
+      "batch": 8
+    },
+    {
+      "commit": "fe47f0ce7b63fd184eeb9ec0cf55edca7b290863",
+      "entries": [
+        277348,
+        196395,
+        214985,
+        231775,
+        232596,
+        246267,
+        249393,
+        249702,
+        250678,
+        250682
+      ],
+      "batch": 9
+    },
+    {
+      "commit": "7339cfd22fb90b97093ee27a78db2b959816cfa1",
+      "entries": [
+        251021,
+        254254,
+        254255,
+        255931,
+        268813,
+        278802,
+        239901,
+        240215,
+        240543,
+        240580
+      ],
+      "batch": 10
+    }
+  ]
+}

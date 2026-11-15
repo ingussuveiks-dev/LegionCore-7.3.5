@@ -1,0 +1,681 @@
+{
+  "date": "2026-11-15",
+  "status": "FOUR_ORIGINAL_POST_LOOT_ISSUES_PLUS100_LINKS_ARCHIVED_NEW179109_REPRO_RETAINED",
+  "archive": "build-extractors/bin/Release/fixed/open-next-hundred-2026-11-15",
+  "archive_manifest_sha256": "C2873E9220D0D74AEA340C73C55332044AD9F303254ABD6C3802A9124C15BC6F",
+  "archived_files": 772,
+  "deleted_files": 53,
+  "reclaimed_bytes": 2843464105,
+  "deleted": [
+    {
+      "sha256": "3C9424E16CFC56FEB425A3C116523B6FF4853629141F500FC2350A605ECF425F",
+      "path": ".codex\\open-hundred-20261115\\next-native-live\\probe.exe",
+      "bytes": 31590400
+    },
+    {
+      "sha256": "AF849BB332D04C31D5BA6C327419446D2C6415BC154EB65113E16D67118025CB",
+      "path": ".codex\\open-hundred-20261115\\next-native-live\\probe.ilk",
+      "bytes": 196411018
+    },
+    {
+      "sha256": "256D0F9DC477AA3553190F0684CCD505A954582353A22285F2630AA1560693E4",
+      "path": ".codex\\open-hundred-20261115\\next-native-live\\probe.map",
+      "bytes": 96143882
+    },
+    {
+      "sha256": "9576CC042A657CB281A964461A3B6CAEB0E64CEF8B5E8A4460C0B9B61E40CBAF",
+      "path": ".codex\\open-hundred-20261115\\next-native-live\\probe.obj",
+      "bytes": 2155703
+    },
+    {
+      "sha256": "1849B4FBDDE39D0956AD095C3AA7E0487A856749F42AC32EF7710D952FC50A6B",
+      "path": ".codex\\open-hundred-20261115\\next-native-live\\probe.pdb",
+      "bytes": 28667904
+    },
+    {
+      "sha256": "C6F40AE569C59DC9FA1BC9C51C576B683E3439BFBDCCA3D2A785AD624676D509",
+      "path": ".codex\\open-hundred-20261115\\next-native-live\\run-20261115-110932\\worldserver.conf",
+      "bytes": 119450
+    },
+    {
+      "sha256": "A0FFD97867EF1C9710F63D1BD362DFB28FB122FFF6967CC5472C5465665F6C99",
+      "path": ".codex\\open-hundred-20261115\\next-native-ready\\probe.exe",
+      "bytes": 31590400
+    },
+    {
+      "sha256": "ED0477562BD36E0037B6EE9E616D38234038E666AF5BB140121190DB18087D94",
+      "path": ".codex\\open-hundred-20261115\\next-native-ready\\probe.ilk",
+      "bytes": 196411026
+    },
+    {
+      "sha256": "A5EF2408FA05FFFF4A98F1F2B265BCD2A86DC175B987386585664F6B8A37932C",
+      "path": ".codex\\open-hundred-20261115\\next-native-ready\\probe.map",
+      "bytes": 96143882
+    },
+    {
+      "sha256": "45B23801AC4CCDA22C90576774EC39CBB3F6514552B430ED70B99BF7BE709771",
+      "path": ".codex\\open-hundred-20261115\\next-native-ready\\probe.obj",
+      "bytes": 2155745
+    },
+    {
+      "sha256": "F4A03C567AAD292E15FD350D4B2693581A93FB502AEED839C90DA5C9D6DD6418",
+      "path": ".codex\\open-hundred-20261115\\next-native-ready\\probe.pdb",
+      "bytes": 28667904
+    },
+    {
+      "sha256": "0465B92CAE55A89BABB138C5021D497BA893B7264673EBFC29245278750F69AB",
+      "path": ".codex\\open-hundred-20261115\\next-native-ready\\run-20261115-110818\\worldserver.conf",
+      "bytes": 119451
+    },
+    {
+      "sha256": "1B4B0F0E0833590F6EB5F88C47367455E746FBEE8D4DEBF4754C6C883936F822",
+      "path": ".codex\\open-hundred-20261115\\next-native-screened\\probe.exe",
+      "bytes": 31590400
+    },
+    {
+      "sha256": "195D41554EBADA68DDA8FE1FC966CF1EF3DF89185AA7134D825295DE761148B6",
+      "path": ".codex\\open-hundred-20261115\\next-native-screened\\probe.ilk",
+      "bytes": 196410410
+    },
+    {
+      "sha256": "8BE90AB1F73E5EF69E661DD363A76B89F3BB2D17EC6ECB1A660AEC29EDA25600",
+      "path": ".codex\\open-hundred-20261115\\next-native-screened\\probe.map",
+      "bytes": 96143755
+    },
+    {
+      "sha256": "70B8EF34BD6B8B3834710E2FFAAEC547D2B7364ED8B80B1E1F8B880C0907A074",
+      "path": ".codex\\open-hundred-20261115\\next-native-screened\\probe.obj",
+      "bytes": 2155575
+    },
+    {
+      "sha256": "4FBD9E2579BA99FB1E1E7571F75E3810DD1D62F18D90C364DC9495191596AC03",
+      "path": ".codex\\open-hundred-20261115\\next-native-screened\\probe.pdb",
+      "bytes": 28667904
+    },
+    {
+      "sha256": "F96872379D025BD5390E7E3DBA851BF7313548468D5AB766BE469F70FC27E30A",
+      "path": ".codex\\open-hundred-20261115\\next-native-screened\\run-20261115-110549\\worldserver.conf",
+      "bytes": 119454
+    },
+    {
+      "sha256": "606D18BD197BAC4BC9D1337C00E9B2537462876946E25E26B9EF44732CD52B27",
+      "path": ".codex\\open-hundred-20261115\\open-combined-native\\probe.exe",
+      "bytes": 31601152
+    },
+    {
+      "sha256": "AA8E112C43D88525AECBC4E52820C676094CB0D62FA993E7CC0ACB92B3B471D3",
+      "path": ".codex\\open-hundred-20261115\\open-combined-native\\probe.ilk",
+      "bytes": 196473675
+    },
+    {
+      "sha256": "7E78C1F8A49F16C88435E5E444B9AD66E9A3A9861A2FD13799B10FF1151FCF79",
+      "path": ".codex\\open-hundred-20261115\\open-combined-native\\probe.map",
+      "bytes": 96178022
+    },
+    {
+      "sha256": "C4E9F92706A1BD25C24953B09F39B638BDC167A642DC40F8FC3D3B4170D7CCD0",
+      "path": ".codex\\open-hundred-20261115\\open-combined-native\\probe.obj",
+      "bytes": 2223923
+    },
+    {
+      "sha256": "7F58D7960B4F96E400F8EEB3538C4E257F30F4731C12AD57B910D3D8D9900B82",
+      "path": ".codex\\open-hundred-20261115\\open-combined-native\\probe.pdb",
+      "bytes": 28684288
+    },
+    {
+      "sha256": "22CC0C6206FF3DF7EBA05920F8BFD2155406D8C86D3517A2F0F1341DBA1D67F8",
+      "path": ".codex\\open-hundred-20261115\\open-combined-native\\run-20261115-110949\\worldserver.conf",
+      "bytes": 119454
+    },
+    {
+      "sha256": "0AD067D96A7D35E230A3D167BFCD0F4649402A944D812B7C8D4F96EBDDD15593",
+      "path": ".codex\\open-hundred-20261115\\open-final-native\\probe.exe",
+      "bytes": 31601152
+    },
+    {
+      "sha256": "7E40EAC32A30559F290AD8437E5ACE77F6FBF877A0DA71A8F73A70E1F75DD40A",
+      "path": ".codex\\open-hundred-20261115\\open-final-native\\probe.ilk",
+      "bytes": 196473619
+    },
+    {
+      "sha256": "B7D36EFA35E02AB96F61293CEFFEAEDC4E30B12C49DD54E7D89EEDA9AD2A7D5D",
+      "path": ".codex\\open-hundred-20261115\\open-final-native\\probe.map",
+      "bytes": 96178022
+    },
+    {
+      "sha256": "4FDB21772C9931BDA44835DD636AF3B55F8257CB2EB519899B9017BE6F247B1C",
+      "path": ".codex\\open-hundred-20261115\\open-final-native\\probe.obj",
+      "bytes": 2223919
+    },
+    {
+      "sha256": "4A00815E71C79212A0817F54E772BB582ACB1057AE2F56CD6605B641E1F71D30",
+      "path": ".codex\\open-hundred-20261115\\open-final-native\\probe.pdb",
+      "bytes": 28684288
+    },
+    {
+      "sha256": "1DDF4BC5A7F204B836C31825ED23A8B59DAAE2FB480C84208EC4270FDCC2CC3C",
+      "path": ".codex\\open-hundred-20261115\\open-final-native\\run-20261115-105217\\worldserver.conf",
+      "bytes": 119451
+    },
+    {
+      "sha256": "F976A28B16BF2D51910DA357715813AAC1441E4398052F4F4CE5B5D7240EED39",
+      "path": ".codex\\open-hundred-20261115\\open-live-native\\probe.exe",
+      "bytes": 31601152
+    },
+    {
+      "sha256": "8FD65BDC2E5F2C6F2CD4036C7F80611B3A1E325F56EEE0B1B3EF638061843A0D",
+      "path": ".codex\\open-hundred-20261115\\open-live-native\\probe.ilk",
+      "bytes": 196473611
+    },
+    {
+      "sha256": "F3E8875B812AA6090A0097EA809D199B9FB66AED2C51BF072AAACC564AE4460E",
+      "path": ".codex\\open-hundred-20261115\\open-live-native\\probe.map",
+      "bytes": 96178022
+    },
+    {
+      "sha256": "6CB52C4E47E58EC1F83BB2EB31CCE98D7D4BCB9078FB4C6D6F8F83E350760D94",
+      "path": ".codex\\open-hundred-20261115\\open-live-native\\probe.obj",
+      "bytes": 2223919
+    },
+    {
+      "sha256": "F14925A8119BF62F4A9AD57416A17E027A6F657C2F9BA28ABE7901657FA66791",
+      "path": ".codex\\open-hundred-20261115\\open-live-native\\probe.pdb",
+      "bytes": 28684288
+    },
+    {
+      "sha256": "99F1A5D0162FF03E44B20B58C77799ADAE8B440B455282EFA07CE6C36A3F8E12",
+      "path": ".codex\\open-hundred-20261115\\open-live-native\\run-20261115-104614\\worldserver.conf",
+      "bytes": 119450
+    },
+    {
+      "sha256": "AFA03370410C017835DE902C12B88FDDC301E35FE780F4A84E59886DB28F62B7",
+      "path": ".codex\\open-hundred-20261115\\open-shadow-native\\probe.exe",
+      "bytes": 31601152
+    },
+    {
+      "sha256": "EE7F501E428D8357A97258FB482627C78BF6A91EC2E2DD4D16DE42FB442C04C9",
+      "path": ".codex\\open-hundred-20261115\\open-shadow-native\\probe.ilk",
+      "bytes": 196473347
+    },
+    {
+      "sha256": "A2FC9FAF707A64E73392CEAB540F073A3B377EF6F8E718A4DD288A2BDBF6D422",
+      "path": ".codex\\open-hundred-20261115\\open-shadow-native\\probe.map",
+      "bytes": 96178022
+    },
+    {
+      "sha256": "BDFAA645AC7D7367BDBD9C0F3C8BDB2C738CAC56DFBD6E3918DDC9E1B4EABC81",
+      "path": ".codex\\open-hundred-20261115\\open-shadow-native\\probe.obj",
+      "bytes": 2224058
+    },
+    {
+      "sha256": "E87161FC1A50D68F68E11FF5B943DB430B04BDBD7EC203A629826DD66CCC8D20",
+      "path": ".codex\\open-hundred-20261115\\open-shadow-native\\probe.pdb",
+      "bytes": 28684288
+    },
+    {
+      "sha256": "42175293CECD6F8E8D0CC067A0D78DDDD4636919E5CF6FF93A0EF6AD5D6E5378",
+      "path": ".codex\\open-hundred-20261115\\open-shadow-native\\run-20261115-104409\\worldserver.conf",
+      "bytes": 119463
+    },
+    {
+      "sha256": "D7AC29F933FF1B1182088C35F8E4D1CB403C4776C5AE053CFB92BE8EB7FA13CF",
+      "path": ".codex\\open-hundred-20261115\\original-regression\\run\\worldserver.conf",
+      "bytes": 119437
+    },
+    {
+      "sha256": "95A8CE5476D4D7BB8AE000728CF4AE2231F159D834492CBBF8B0F5F5A06E051B",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\probe.exe",
+      "bytes": 31589888
+    },
+    {
+      "sha256": "EDFDB2EACDA577EE1953A3680E3AA6A0A1B649678B48FC17A41F343570A16398",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\probe.ilk",
+      "bytes": 196410154
+    },
+    {
+      "sha256": "B2C7DFD76C1EB11B537FAEC5893E1B81B672AB514ECC1FF966D0ABF5DE23D2A6",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\probe.map",
+      "bytes": 96143675
+    },
+    {
+      "sha256": "3790124F11F11F291C20A22095132EDCA7CBE12A6A681C70CDD4E596E9CBBD39",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\probe.obj",
+      "bytes": 2155242
+    },
+    {
+      "sha256": "C883A9E3E447C0B8ADD9AC348D8A93F34A7210E622DD70612C8F23F204BC912D",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\probe.pdb",
+      "bytes": 28667904
+    },
+    {
+      "sha256": "67F212E131A640822E204CBC373804671C30CFC280BA771DDDC31B90390B014F",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\run-20261115-100624\\worldserver.conf",
+      "bytes": 119444
+    },
+    {
+      "sha256": "5F9E3DBF818FE14B99B600C50273D7A98BD8C64F9291D0F243CA80B0E4720E63",
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\NextChestPostLootCatalog.exe",
+      "bytes": 645632
+    },
+    {
+      "sha256": "B54168A981B92666DC01382515143F1F4538E72FE69960F3FA002268277B49E6",
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\NextChestPostLootCatalog.obj",
+      "bytes": 300235
+    },
+    {
+      "sha256": "DB5E9EBF0098755DDED6EDD70C1899046FD3A52562FB8537997778E7702ABF26",
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\ServerPhaseSpellCatalog.exe",
+      "bytes": 636416
+    },
+    {
+      "sha256": "A5AD719A620AD86BAC385CECD0F0841A8393311F566CB993C63F5E506F9E80CC",
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\ServerPhaseSpellCatalog.obj",
+      "bytes": 290078
+    }
+  ],
+  "resolved_private_logs_cleared": [
+    {
+      "original_sha256": "0ADB01EAB35CCBAE5F48AE501FFC7CF46EADC8FEFF500D0530AEA08B6D8C0636",
+      "archive": "resolved-original-four-source\\native-pending\\run-20261115-100624\\stderr.log",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\run-20261115-100624\\stderr.log",
+      "original_bytes": 722
+    },
+    {
+      "original_sha256": "7DA53B32E8B93F60CB0DD52364E36902D52E9CB24C2B08C257D1DA0068A9EFD2",
+      "archive": "resolved-original-four-source\\native-pending\\run-20261115-100624\\logs\\Server.log",
+      "path": ".codex\\ten-tens-20261115\\native-pending\\run-20261115-100624\\logs\\Server.log",
+      "original_bytes": 5234
+    }
+  ],
+  "fix_commits": {
+    "original_four": "9b319d302",
+    "new100": [
+      {
+        "commit": "092bc498dc4688ff74364cb7676f0338db292c54",
+        "entries": [
+          233107,
+          236931,
+          239419,
+          239803,
+          268535,
+          268536,
+          268537,
+          268538,
+          268539,
+          268540
+        ],
+        "batch": 1
+      },
+      {
+        "commit": "e90e21f67f25583dac356160614d2168bc09626c",
+        "entries": [
+          268541,
+          268542,
+          268543,
+          268544,
+          268545,
+          268546,
+          268547,
+          268548,
+          268549,
+          268550
+        ],
+        "batch": 2
+      },
+      {
+        "commit": "de7965d0de4040f4a7b5ed04cc31ff63d20f07ea",
+        "entries": [
+          268551,
+          268552,
+          268553,
+          268554,
+          268555,
+          268556,
+          268557,
+          268558,
+          268559,
+          268560
+        ],
+        "batch": 3
+      },
+      {
+        "commit": "1f996f0cca819cd32dffd12ac08131bede5033fc",
+        "entries": [
+          268561,
+          268563,
+          268564,
+          268565,
+          268566,
+          268567,
+          268568,
+          268569,
+          268570,
+          268571
+        ],
+        "batch": 4
+      },
+      {
+        "commit": "c5788ac3e5c9cc32e326857c389560e2d2e9c4d2",
+        "entries": [
+          268572,
+          268715,
+          268762,
+          268765,
+          271114,
+          271668,
+          271669,
+          271670,
+          271689,
+          271979
+        ],
+        "batch": 5
+      },
+      {
+        "commit": "8a4a1a30b67bb84f05fa3ed63a39fa13bdad5a84",
+        "entries": [
+          272458,
+          272460,
+          272463,
+          272741,
+          272744,
+          272745,
+          273833,
+          273839,
+          276223,
+          276224
+        ],
+        "batch": 6
+      },
+      {
+        "commit": "95b0f96db77528322b12741ac784145c4b1f2d72",
+        "entries": [
+          276225,
+          276226,
+          276227,
+          276228,
+          276229,
+          276230,
+          276489,
+          276490,
+          276491,
+          277204
+        ],
+        "batch": 7
+      },
+      {
+        "commit": "eaf21c7daa793882fc0a2dcd71dce4a95959e497",
+        "entries": [
+          277205,
+          277206,
+          277207,
+          277208,
+          277327,
+          277340,
+          277342,
+          277343,
+          277344,
+          277346
+        ],
+        "batch": 8
+      },
+      {
+        "commit": "fe47f0ce7b63fd184eeb9ec0cf55edca7b290863",
+        "entries": [
+          277348,
+          196395,
+          214985,
+          231775,
+          232596,
+          246267,
+          249393,
+          249702,
+          250678,
+          250682
+        ],
+        "batch": 9
+      },
+      {
+        "commit": "7339cfd22fb90b97093ee27a78db2b959816cfa1",
+        "entries": [
+          251021,
+          254254,
+          254255,
+          255931,
+          268813,
+          278802,
+          239901,
+          240215,
+          240543,
+          240580
+        ],
+        "batch": 10
+      }
+    ],
+    "native_modifier_fixture": "44bd00406"
+  },
+  "canonical": {
+    "worldserver.exe": "6FFC5D6D7E7CA2B48CCC917376EA1E20BE0C9893205674A5360949C5376524E4",
+    "bnetserver.exe": "E559F961C277CC92A95CCDA27B21ABB6A1981A00DDC4B0AE3516697032E22962",
+    "worldserver.map": "D85475F9B9E7A9EDA89B1BB8D8C8C84492867B4AD461DCD704C2D176075B1D45",
+    "bnetserver.map": "61A784874F496E919047A0A6041F0B4FC97294F96166B3AA3A67D55526D82D81",
+    "logs/DBErrors.log": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1"
+  },
+  "protected_Slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+  "private_schema": "Owned codex_phase_81040_20261115 plus its one SELECT grant removed after813-table shape/no-live-connection preflight and complete3-table preservation check. Post-cleanup canonical legion hotfix read verifies81040/misc900000/effects900001+900002 still present and private schema absent.",
+  "resolved_original": "Old355MB native-pending repro from ten-tens task removed only after unchanged original unguarded100 binary passed actual repaired data. Original8-error Server/stderr archived byte/hash-exact then cleared after no-writer checks. Old manifest retained with original hashes and archived copies; it describes a historical failure, not an ordinary passing run.",
+  "resolved_fixture_crash": "Actual c0000005 ModifierTree native fixture stderr/exit captured and archived; repaired native LoadCriteriaList (already present in canonical World startup) then full same100 passes. No production crash fix claimed.",
+  "still_open": {
+    "issue": "New Arcane-infused Egg239692/179109",
+    "audit": "docs/audits/arcane-egg179109-open-2026-11-15.json",
+    "retained_root": ".codex/open-hundred-20261115/next-native-pending and egg179109-open",
+    "bytes": 355253296,
+    "members": [
+      {
+        "relative": "next-native-pending\\appended-0-Server.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\appended-1-Server.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\appended-2-DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\appended-3-Server.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\appended-4-DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\appended-5-DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\build.cmd",
+        "sha256": "7A8BB069F203129B79B7E491279728DA15F36254418F0AC54BBB480E10D90CC9",
+        "bytes": 12141
+      },
+      {
+        "relative": "next-native-pending\\build.log",
+        "sha256": "E8254C46C80B92CE36D08A543B7A29F429FFEC6E76F86DFB52220919F43B44BB",
+        "bytes": 32
+      },
+      {
+        "relative": "next-native-pending\\check-output.log",
+        "sha256": "BDE2755D6C92D90A7A906F9AAD1E3BC06FCC72BAB829AC26902017B191EF67B4",
+        "bytes": 601
+      },
+      {
+        "relative": "next-native-pending\\diagnostics-after.json",
+        "sha256": "AA55547C9E3F88FECA3A36749F8090C44A198DD28EEB5046E4271E1DDC0E3C52",
+        "bytes": 184
+      },
+      {
+        "relative": "next-native-pending\\diagnostics-before.json",
+        "sha256": "0E3C1F9086748FCA8126A0D784B3CD86FE2B2B3A037C72422018CB97960D53C1",
+        "bytes": 1001
+      },
+      {
+        "relative": "next-native-pending\\NativeChestEntries.inc",
+        "sha256": "2F187464A3A3A07AAA78CA2AD050E50981A2F472AFA65DB0F11F3938889AA144",
+        "bytes": 739
+      },
+      {
+        "relative": "next-native-pending\\NativeFuZanQuest.inc",
+        "sha256": "EA5B632EBB5D8727074C1668CDB817CB4632B903551A3AC893715641C0C7B16E",
+        "bytes": 2381
+      },
+      {
+        "relative": "next-native-pending\\NativeLostArmyQuest.inc",
+        "sha256": "C9CCFE2FE2B4B8D076FC8D96779F2493CA62F86ABB4EC38883C90D988EF914D1",
+        "bytes": 2391
+      },
+      {
+        "relative": "next-native-pending\\NativeMonkScene.inc",
+        "sha256": "1F4C8D35C744763306F5037C77268A33A99AEC1A3CCDA2ED36A9A85CA7790AFB",
+        "bytes": 350
+      },
+      {
+        "relative": "next-native-pending\\NativeReturnSession.inc",
+        "sha256": "405CABA0BEDAAA35816B93E5863BEC4CBC7654D27283152E401F203AB1656380",
+        "bytes": 1274
+      },
+      {
+        "relative": "next-native-pending\\probe.exe",
+        "sha256": "09EAB1022C89CB1D551F74AAC04AE7D5187ED39F3953EC6C734CF872F5047A20",
+        "bytes": 31590400
+      },
+      {
+        "relative": "next-native-pending\\probe.ilk",
+        "sha256": "D5C8E03AE189F2A0A2F575ED5EF538546626E5CD4503F8458F43218EA814A637",
+        "bytes": 196410842
+      },
+      {
+        "relative": "next-native-pending\\probe.map",
+        "sha256": "582C2EC8511BCE12B3841C32B69CB4435BD44F975B3158608042E2C8ECF85819",
+        "bytes": 96143755
+      },
+      {
+        "relative": "next-native-pending\\probe.obj",
+        "sha256": "656A8A8DC1930BEC3A2675E3C7624163072DE1AA8677FE55850FCD727B170668",
+        "bytes": 2155575
+      },
+      {
+        "relative": "next-native-pending\\probe.pdb",
+        "sha256": "CFC553DAB3BDC8D8031D2DCB9AD62EFEA199CB903159AE50C8076E0D2F30D74A",
+        "bytes": 28667904
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\appended-0-Server.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\appended-1-Server.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\appended-2-DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\appended-3-Server.log",
+        "sha256": "B85C49C2C4A15E2FBD04EB1AAC8AFF34487D6B148C6B1470FF7E8879756EC553",
+        "bytes": 3362
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\appended-4-DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\appended-5-DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\check-output.log",
+        "sha256": "2C35ACDCF1D7A8AC04534E0537652F82E16C053997DAB8D43B791E21374A0650",
+        "bytes": 470
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\diagnostics-after.json",
+        "sha256": "8CE15C75490B3F98B8B12C62CA6D1CE9B6C84D0BB100C5948FA2B7BCD851E8D3",
+        "bytes": 184
+      },
+      {
+        "relative": "next-native-pending\\native-diagnostics\\diagnostics-before.json",
+        "sha256": "59292F502325E5ADBDC881FA80F25EF23C95251B01CC7002961D0CDC9A73B325",
+        "bytes": 1187
+      },
+      {
+        "relative": "next-native-pending\\run-20261115-110009\\process-result.json",
+        "sha256": "CE25BDEDC636B9330D1BA09F00A9CBA12ADCC7E9E87703C4DAB9FFC38DF6D61C",
+        "bytes": 181
+      },
+      {
+        "relative": "next-native-pending\\run-20261115-110009\\stderr.log",
+        "sha256": "45AE349B374A4D85E01265E2EA2A883C7F07D5B5CEEB4004274CDD67886AAD92",
+        "bytes": 86
+      },
+      {
+        "relative": "next-native-pending\\run-20261115-110009\\stdout.log",
+        "sha256": "EEF9ED0D9578C648B0A69FCE2B7C02D16A13F1841D53BA9E4CF2C3E1E64607F0",
+        "bytes": 3221
+      },
+      {
+        "relative": "next-native-pending\\run-20261115-110009\\worldserver.conf",
+        "sha256": "594EB23ED4B14FDA37C5E2B04A5FEF0AB153CB88005F303963B16DC30EA106C8",
+        "bytes": 119453
+      },
+      {
+        "relative": "next-native-pending\\run-20261115-110009\\logs\\DBErrors.log",
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+        "bytes": 0
+      },
+      {
+        "relative": "next-native-pending\\run-20261115-110009\\logs\\Server.log",
+        "sha256": "B85C49C2C4A15E2FBD04EB1AAC8AFF34487D6B148C6B1470FF7E8879756EC553",
+        "bytes": 3362
+      },
+      {
+        "relative": "egg179109-open\\original-plan.json",
+        "sha256": "25FA02391771727DF8187F08F520C2DA336E7352ADCFBF8463DA00ABE87007F8",
+        "bytes": 127923
+      },
+      {
+        "relative": "next-post-loot.tsv",
+        "sha256": "4D490CF9AD3517C6EC4853864DB3F1C6390CE50C7091771D4F0A0172B1C2F652",
+        "bytes": 179
+      },
+      {
+        "relative": "next-historical-templates.json",
+        "sha256": "B5E4C83023BE417EEC6B27EA6313E467F7950A852CCDB1A3BE572F1E174630BD",
+        "bytes": 4114
+      },
+      {
+        "relative": "egg-server-source.json",
+        "sha256": "A5338D955B09046EC0B16F3A9625B7955C763AAE07DC722E474E6078745F932F",
+        "bytes": 4
+      }
+    ],
+    "reason": "Concrete original admission reproduction/source context retained outside fixed. Missing179109 definition not recovered; no removal/fake spell/credit grant or passing claim."
+  },
+  "diagnostics": "All final selected native100 and retained4 plus canonical ready/shutdown0/exit0/gone; before/after logs/crashes clean. Original resolved errors and fixture crash archived separately, new unresolved179109 preserved. Mixed7111byte canonical DBErrors/Slaghammer/security/old artifact evidence untouched.",
+  "safety": "Only53 exact owned redundant artifacts/configs removed; absolute workspace targets/reparse/symlink/junctions checked, no recursive delete. Canonical binaries/maps/configuration/certs/DLL/extracted data/required shared libraries/rollback and personal data untouched. No user/unknown server stopped; no task server remains.",
+  "pending": "Actual client visibility/item receipt/phase UI/all36 artifact chains, original LINK2/LiLi/Ponshu payloads and original flight fidelity remain separate. Cleanup does not certify them.",
+  "final_verification_files": 26,
+  "final_verification_manifest_sha256": "15E9FA1AE139F749D85AB6BC3F221FBEB66C9099B559A2EA0BA68F298994A6CF"
+}

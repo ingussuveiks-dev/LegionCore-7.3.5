@@ -52,5 +52,11 @@
   "preservation": "Canonical mixed7111byte DBErrors and original LINK2/Slaghammer/video/route/security evidence unchanged. No log suppression or fake/no-op spell. Original private8-error record is now eligible for byte/hash-verified fixed archive after final regressions; mixed canonical log remains unresolved and must not be cleared.",
   "original_evidence_manifest_sha256": "8b0a5ce954717c129bc52fc09c220e2241d0c757c9540bd634a297f11eb5eba5",
   "remaining": "Actual client visibility/loot/phase UI/re-entry remains pending. Separate original artifact LINK2/LiLi/Ponshu payloads, retail flight/presentation fidelity and36 complete client chains remainOPEN; this does not close those.",
-  "cleanup": "Private schema/grant, resolved original355MB reproduction and task probe artifacts will be removed only after final100 regressions/startup; record final fixed archive and deletion manifest separately."
+  "cleanup": {
+    "audit": "docs/audits/open-next-ten-ten-archive-2026-11-15.json",
+    "fixed_archive": "build-extractors/bin/Release/fixed/open-next-hundred-2026-11-15",
+    "original_resolved_probe_and_private_schema_removed": true,
+    "original8_error_logs_archived_and_cleared": true,
+    "mixed_canonical_log_preserved": true
+  }
 }
