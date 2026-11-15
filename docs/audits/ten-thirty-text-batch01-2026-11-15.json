@@ -1,0 +1,493 @@
+{
+  "date": "2026-11-15",
+  "batch": 1,
+  "count": 30,
+  "kind": "Distinct text fields corrected, no gameplay/translation changes",
+  "implementation": "sql/updates/world/2026_11_15_81_text_batch01.sql",
+  "migration_sha256": "1bc7258e2da50672f09fb9143c325a2df5ad1ff9987de01f9d7e74df489908ff",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237064
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C390C2BCC390C2B0C391C281C391E2809AC390C2B5C391E282ACC391C281C390C2BAC390C2BEC390C2B920C390C2BDC390C2B0C391E280A1C390C2B5C391E282ACC391E2809AC390C2B0C391E2809AC390C2B5C390C2BBC391C28F",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D0BCD0B0D181D182D0B5D180D181D0BAD0BED0B920D0BDD0B0D187D0B5D180D182D0B0D182D0B5D0BBD18F",
+      "restored_text": "Заказ для мастерской начертателя",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237067
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C390C2BBC390C2B0C390C2B2C390C2BAC390C2B820C391C281C390C2B0C390C2BCC390C2BEC391E280A0C390C2B2C390C2B5C391E2809AC390C2BEC390C2B2",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D0BBD0B0D0B2D0BAD0B820D181D0B0D0BCD0BED186D0B2D0B5D182D0BED0B2",
+      "restored_text": "Заказ для лавки самоцветов",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237068
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C390C2BBC390C2B0C390C2B2C390C2BAC390C2B820C391C281C390C2B0C390C2BCC390C2BEC391E280A0C390C2B2C390C2B5C391E2809AC390C2BEC390C2B2",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D0BBD0B0D0B2D0BAD0B820D181D0B0D0BCD0BED186D0B2D0B5D182D0BED0B2",
+      "restored_text": "Заказ для лавки самоцветов",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237102
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C390C2BAC390C2BEC390C2B6C390C2B5C390C2B2C390C2BDC390C2B8",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D0BAD0BED0B6D0B5D0B2D0BDD0B8",
+      "restored_text": "Заказ для кожевни",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237104
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C390C2BAC390C2BEC390C2B6C390C2B5C390C2B2C390C2BDC390C2B8",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D0BAD0BED0B6D0B5D0B2D0BDD0B8",
+      "restored_text": "Заказ для кожевни",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237123
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C390C2BAC391C692C390C2B7C390C2BDC390C2B8C391E280A0C391E280B9",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D0BAD183D0B7D0BDD0B8D186D18B",
+      "restored_text": "Заказ для кузницы",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237169
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A7C390C2B5C391E282ACC390C2BDC391E280B9C390C2B920C390C2BAC390C2BEC390C2B3C390C2BEC391E2809AC391C59220C390C2A1C390C2B5C391E2809AC390C2B5",
+      "new_hex": "D0A7D0B5D180D0BDD18BD0B920D0BAD0BED0B3D0BED182D18C20D0A1D0B5D182D0B5",
+      "restored_text": "Черный коготь Сете",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237170
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2B6C390C2B5C391E282ACC390C2B5C390C2BBC391C592C390C2B520C390C2B8C390C2B720C390C2B7C391C692C390C2B1C390C2BEC390C2B220C390C2B3C390C2B0C391E282ACC390C2BDC390C2B0",
+      "new_hex": "D09ED0B6D0B5D180D0B5D0BBD18CD0B520D0B8D0B720D0B7D183D0B1D0BED0B220D0B3D0B0D180D0BDD0B0",
+      "restored_text": "Ожерелье из зубов гарна",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237184
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C390C2B0C391E2809AC391C692C391CB86C390C2BAC390C2B0",
+      "new_hex": "D09AD0B0D182D183D188D0BAD0B0",
+      "restored_text": "Катушка",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237186
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C391CB86C390C2B2C390C2B5C390C2B9C390C2BDC390C2BEC390C2B920C390C2BBC390C2B0C390C2B2C390C2BAC390C2B8",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D188D0B2D0B5D0B9D0BDD0BED0B920D0BBD0B0D0B2D0BAD0B8",
+      "restored_text": "Заказ для швейной лавки",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237335
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C391C692C390C2BFC390C2B5C390C2BBC391C59220C391C281C391C692C391E280B0C390C2BDC390C2BEC391C281C391E2809AC390C2B8",
+      "new_hex": "D09AD183D0BFD0B5D0BBD18C20D181D183D189D0BDD0BED181D182D0B8",
+      "restored_text": "Купель сущности",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237653
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809DC390C2B5C391E282ACC390C2B5C390C2B2C391C28FC390C2BDC390C2BDC390C2BEC390C2B520C391E280A1C391C692C391E280A1C390C2B5C390C2BBC390C2BE",
+      "new_hex": "D094D0B5D180D0B5D0B2D18FD0BDD0BDD0BED0B520D187D183D187D0B5D0BBD0BE",
+      "restored_text": "Деревянное чучело",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237654
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809DC390C2B5C391E282ACC390C2B5C390C2B2C391C28FC390C2BDC390C2BDC390C2BEC390C2B520C391E280A1C391C692C391E280A1C390C2B5C390C2BBC390C2BE",
+      "new_hex": "D094D0B5D180D0B5D0B2D18FD0BDD0BDD0BED0B520D187D183D187D0B5D0BBD0BE",
+      "restored_text": "Деревянное чучело",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237655
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809DC390C2B5C391E282ACC390C2B5C390C2B2C391C28FC390C2BDC390C2BDC390C2BEC390C2B520C391E280A1C391C692C391E280A1C390C2B5C390C2BBC390C2BE",
+      "new_hex": "D094D0B5D180D0B5D0B2D18FD0BDD0BDD0BED0B520D187D183D187D0B5D0BBD0BE",
+      "restored_text": "Деревянное чучело",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237666
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C390C2BAC390C2B0C390C2B720C390C2B4C390C2BBC391C28F20C391CB86C390C2B2C390C2B5C390C2B9C390C2BDC390C2BEC390C2B920C390C2BBC390C2B0C390C2B2C390C2BAC390C2B8",
+      "new_hex": "D097D0B0D0BAD0B0D0B720D0B4D0BBD18F20D188D0B2D0B5D0B9D0BDD0BED0B920D0BBD0B0D0B2D0BAD0B8",
+      "restored_text": "Заказ для швейной лавки",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237807
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "536B756C6C20C390CB9CC391C5BD",
+      "new_hex": "536B756C6C20D098D18E",
+      "restored_text": "Skull Ию",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237975
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C290C391E282ACC391E2809AC390C2B5C391E2809EC390C2B0C390C2BAC391E2809A20C390C2BAC390C2BBC390C2B0C390C2BDC390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC390C2B920C390C2B3C390C2BEC391E282ACC391E280B9",
+      "new_hex": "D090D180D182D0B5D184D0B0D0BAD18220D0BAD0BBD0B0D0BDD0B020D0A7D0B5D180D0BDD0BED0B920D0B3D0BED180D18B",
+      "restored_text": "Артефакт клана Черной горы",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 237976
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C290C391E282ACC391E2809AC390C2B5C391E2809EC390C2B0C390C2BAC391E2809A20C390C2BAC390C2BBC390C2B0C390C2BDC390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC390C2B920C390C2B3C390C2BEC391E282ACC391E280B9",
+      "new_hex": "D090D180D182D0B5D184D0B0D0BAD18220D0BAD0BBD0B0D0BDD0B020D0A7D0B5D180D0BDD0BED0B920D0B3D0BED180D18B",
+      "restored_text": "Артефакт клана Черной горы",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 238007
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "426F696C6572C390C2BEC390C2BA",
+      "new_hex": "426F696C6572D0BED0BA",
+      "restored_text": "Boilerок",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 238608
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "426F696C6572C390C2BEC390C2BA",
+      "new_hex": "426F696C6572D0BED0BA",
+      "restored_text": "Boilerок",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 239132
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809CC390C2BEC390C2BDC390C2BEC391E280A1C390C2BDC391E280B9C390C2B920C391E2809EC390C2BBC390C2B0C390C2B3",
+      "new_hex": "D093D0BED0BDD0BED187D0BDD18BD0B920D184D0BBD0B0D0B3",
+      "restored_text": "Гоночный флаг",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 239133
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809CC390C2BEC390C2BDC390C2BEC391E280A1C390C2BDC391E280B9C390C2B920486F72646520666C6167",
+      "new_hex": "D093D0BED0BDD0BED187D0BDD18BD0B920486F72646520666C6167",
+      "restored_text": "Гоночный Horde flag",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 239143
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "476C61737320C391E2809AC390C2B5C390C2BFC390C2BBC390C2BEC390C2B3C390C2BE20C390C2BCC390C2BEC390C2BBC390C2BEC390C2BAC390C2B0",
+      "new_hex": "476C61737320D182D0B5D0BFD0BBD0BED0B3D0BE20D0BCD0BED0BBD0BED0BAD0B0",
+      "restored_text": "Glass теплого молока",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 239267
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "42616E6E657220C390C2BAC390C2B0C391E282ACC391E2809AC390C2B5C390C2BBC391C28F20C390C2A2C391E282ACC391C5BDC390C2BCC390C2BDC391E280B9C391E280A620C390E28099C390C2BEC390C2B4",
+      "new_hex": "42616E6E657220D0BAD0B0D180D182D0B5D0BBD18F20D0A2D180D18ED0BCD0BDD18BD18520D092D0BED0B4",
+      "restored_text": "Banner картеля Трюмных Вод",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 239830
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809CC390C2BDC390C2B5C390C2B7C390C2B4C390C2BE20C390C2BAC390C2BEC391E282ACC391E2809AC390C2B8C390C2BAC390C2BBC391C5BDC390C2B2C390C2B0",
+      "new_hex": "D093D0BDD0B5D0B7D0B4D0BE20D0BAD0BED180D182D0B8D0BAD0BBD18ED0B2D0B0",
+      "restored_text": "Гнездо кортиклюва",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 240539
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A6C390C2B2C390C2B5C391E2809AC391C692C391E280B0C390C2B8C390C2B920C391C281C390C2B0C390C2B6C390C2B5C390C2BDC390C2B5C391E280A0",
+      "new_hex": "D0A6D0B2D0B5D182D183D189D0B8D0B920D181D0B0D0B6D0B5D0BDD0B5D186",
+      "restored_text": "Цветущий саженец",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241266
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "45676720C390C2B4C391E282ACC390C2B0C390C2BAC390C2BEC390C2BDC390C2B0",
+      "new_hex": "45676720D0B4D180D0B0D0BAD0BED0BDD0B0",
+      "restored_text": "Egg дракона",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241270
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809DC391E282ACC390C2B0C390C2BAC390C2BEC390C2BDC391C592C390C2B520C390C2B3C390C2BDC390C2B5C390C2B7C390C2B4C390C2BE",
+      "new_hex": "D094D180D0B0D0BAD0BED0BDD18CD0B520D0B3D0BDD0B5D0B7D0B4D0BE",
+      "restored_text": "Драконье гнездо",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241271
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C391C692C391C281C391E2809AC390C2BEC390C2B520C390C2B3C390C2BDC390C2B5C390C2B7C390C2B4C390C2BE",
+      "new_hex": "D09FD183D181D182D0BED0B520D0B3D0BDD0B5D0B7D0B4D0BE",
+      "restored_text": "Пустое гнездо",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 241276
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C29DC390C2B5C390C2BFC390C2BEC390C2B2C391E282ACC390C2B5C390C2B6C390C2B4C390C2B5C390C2BDC390C2BDC390C2BEC390C2B52045676720C391E2809AC390C2BEC391E282ACC390C2B8C390C2B3C390C2BDC390C2B8C391E282ACC390C2B0",
+      "new_hex": "D09DD0B5D0BFD0BED0B2D180D0B5D0B6D0B4D0B5D0BDD0BDD0BED0B52045676720D182D0BED180D0B8D0B3D0BDD0B8D180D0B0",
+      "restored_text": "Неповрежденное Egg торигнира",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    }
+  ],
+  "checks": "Closed codec/ASCII invariance; actual TEMP install/replay/full-row snapshots and exact drift refusals; actual live full-column readback/RELEASED hash; paired/live native loaders/query/exact text builder/chat serializers. Prior400 templates/packets retained; normal Broadcast overrides preserved. Diagnostics clean.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json"
+}

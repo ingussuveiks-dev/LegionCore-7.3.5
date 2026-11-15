@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini10x30",
+  "baseline": "13e37200c475f0fa4970d25619cbcb28a2fd489c",
+  "status": "300_ADDITIONAL_TEXT_FIELDS_DEPLOYED_NATIVE_DATA_VERIFIED_CLIENT_PENDING",
+  "scope": "Ten cohorts of30 distinct existing text fields:153 GameObject names and147 singleton creature_text.Text records. Stored-byte repairs for1251/1252 misdecoding, no translation or gameplay changes; prior400 name repairs excluded.",
+  "stats": {
+    "go_names": 153,
+    "go_static": 5,
+    "creature_lines": 147,
+    "direct_bc0": 7,
+    "codecs": {
+      "cp1252": 157,
+      "cp1251": 143
+    },
+    "bc_backed": 140
+  },
+  "source_use": {
+    "go": "5 statically spawned name definitions,148 without static spawn records; actual dynamic use not newly established. All153 are existing queryable definitions.",
+    "npc": "7 BC0/direct lines;140 stored fallback lines with native BroadcastTextID override. Their normal Broadcast-selected packets stay byte-identical. Repairing stored fallback does not establish a new visible speech effect for those140 records.",
+    "language": "Existing authored Cyrillic/mixed English text and typographic punctuation retained; no inferred English translation or grammar cleanup."
+  },
+  "cause": {
+    "inference": "A unique exact closed byte roundtrip identifies UTF-8 bytes misdecoded as Windows-1251 or Windows-1252. Windows1252 undefined81/8D/8F/90/9D and1251 undefined98 preserve original C1 identity before reversal. Historical producer/import not recovered.",
+    "current_path": "Current MySQL connection already uses utf8mb4; ObjectMgr/CreatureTextMgr read stored strings. Correct the data rather than changing logger or connection charset.",
+    "strictness": "Single-pass, strictly valid UTF8, shorter byte representation, exact original-byte regeneration, invariant ASCII projection including $n/%s/|3 grammar and formatting tokens. Already-correct, ambiguous, mixed unsupported or still-recoverable layered strings refuse."
+  },
+  "implementation": {
+    "plan": "tools/tests/TenThirty20261115TextRepairs.json",
+    "codec": "tools/tests/Utf8TextRecovery.py",
+    "generator": "tools/tests/ten_thirty_text_repairs.py",
+    "migrations": "sql/updates/world/2026_11_15_81_text_batch01.sql through batch10.sql",
+    "guards": "Exact old/new field hex and all-other-column fingerprints; exactly30 rows per cohort. NPC group must remain singleton. Composite CreatureID/GroupID/ID/Text PK handled with strict old/new Text admission; no ID or group changes. Mixed batch6 guards both tables before updates, no partial updates on drift.",
+    "preserved": "All other fields, script bindings, loot/quest credit, texts group IDs, language/type, emote, voice/sound, duration/probability/MinTimer/MaxTimer/SpellID and Broadcast IDs. No spawns or missing gameplay manufactured."
+  },
+  "investigation": "Matching local schemas/full rows/native loader, builder, serializers and current assets resolved byte corruption. Source text sample context and complete structural byte guards reviewed; no external modern behavior imported. Full relevant gameplay/video evidence is not claimed.",
+  "regressions": {
+    "codec": "300 unique closed roundtrips across157 Windows1252 and143 Windows1251 fields, correct-Unicode/malformed/layered rejection examples and prior400 exclusion; exact SQL generated-file comparison.",
+    "sql": "Ten full-schema TEMP install/replay cohorts; full-row signatures on554 GO records and selected NPC plus retained Slaghammer101430/101899 control rows.36 explicit foreign-text/metadata/missing-row/extra-group/mixed-table refusal states preserve full snapshots. No persistent test writes.",
+    "live": "All300 complete rows match source metadata plus declared field change; all400 previous complete GO templates unchanged; all10 updater records RELEASED with exact LF-normalized uppercase SHA1.",
+    "native": "Actual linked Release ObjectMgr/CreatureTextMgr loaders. Query serialization for153 new GO names and400 full-packet controls at every locale. Exact production CreatureTextBuilder class extracted/frozen from source; native Chat initializer/serializer for147 NPC rows at every locale, both genders and normal/forced-fallback contexts. Actual loaded identity/metadata checked; normal140 Broadcast-selected packets unchanged and fallback bytes restored.",
+    "counterfactuals": "Known old byte strings reconstructed only in guarded TEMP shadows and paired with migrated data. Forced BC0 builder context is fixture-only; persistent Broadcast IDs never cleared.",
+    "limits": "Builder has null sender/receiver and no actual speech dispatch, sound emission, actor proximity, player session, char/account DB write or client/font/cache traversal. General data loaded via GetTextMap; timed-only GetTextGroup is not the ordinary speech lookup. Native Release evidence is not ASAN/full-gameplay proof."
+  },
+  "fixture_corrections": [
+    {
+      "issue": "Broad source scan LOCATE mixed utf8mb4 collations produced1267.",
+      "repair": "Search exact byte patterns with CAST AS BINARY; no schema/column collation changes. Failed readonly scan capture retained."
+    },
+    {
+      "issue": "TEMP fixture DDL after SET READ ONLY produced1792 before migration execution.",
+      "repair": "Create/copy TEMP tables first, then set read-only before actual regression; persistent tables never mutated. Corrected generated capture file stem also removes an unintended trailing dot."
+    },
+    {
+      "issue": "Native test used GetTextGroup for untimed groups; this API deliberately returns null without MinTimer.",
+      "repair": "Inspect actual loaded owning GetTextMap (same backing data used by ordinary SendChat), retain original timers and use exact production builder. No production gate bypass, fabricated timer or credit."
+    }
+  ],
+  "runtime": {
+    "canonical": "build-extractors/bin/Release",
+    "owned_pid": 7808,
+    "result": "Fresh ready, all10 migrations applied; graceful shutdown0/exit0/stderr0/gone; no new crashes/appended DBErrors/server warnings/errors/assertions. No user/unknown server stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_changed": false,
+    "assets": "Existing world/bnet EXE/maps/configuration/certificates/DLLs/data preserved; data-only changes need no Release rebuild."
+  },
+  "open_limits": {
+    "measured_go_1252_name_pattern": 0,
+    "unreviewed_go_caption_pattern": 24,
+    "unreviewed_go_unknown_string_pattern": 13,
+    "other": "Remaining NPC texts, mixed/unsupported strings, comments and other text styles not globally certified. Pattern counts alone are not confirmed defects. Actual full36 artifact chains/client visuals, original Slaghammer payload fidelity and103151 LINK2 remain separate/open.",
+    "mixed_log": "Canonical mixed DBErrors7111bytes SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged; original protected Slaghammer EXE/cache retained, never executed/overwritten/deleted."
+  },
+  "local_evidence": ".codex/ten-thirty-20261115 and build-extractors/runtime-test/ten-thirty-text-{data,native}; final hash-verified archive/cleanup recorded in handoff."
+}
