@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 3,
+  "entries": [
+    {
+      "entry": 241835,
+      "name": "Bleeding Hollow Mushroom Stash"
+    },
+    {
+      "entry": 241841,
+      "name": "Looted Mystical Staff"
+    },
+    {
+      "entry": 241848,
+      "name": "Dazzling Rod"
+    },
+    {
+      "entry": 242649,
+      "name": "Fel-Tainted Apexis Formation"
+    },
+    {
+      "entry": 243693,
+      "name": "Dead Mans Chest"
+    },
+    {
+      "entry": 243794,
+      "name": "Unrefined Draenic Crystal"
+    },
+    {
+      "entry": 243860,
+      "name": "Gleaming Draenic Chest"
+    },
+    {
+      "entry": 244689,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 244691,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 244692,
+      "name": "Small Treasure Chest"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_61_more_ten_chest_batch3.sql",
+  "sha256": "2b85ae84bfda4e3be82f42c1356dad25bc737a28cc63e89d5831192d89cc74bd",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-3/result.json",
+    "sha256": "a4b087af447243e9b4dd0e442e1b57c7b32cb6bbb67cfb2044df283f27e77623"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
