@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-15",
+  "status": "OPEN_COLLIDING_ENCODING_DUPLICATE_RESOLVED_DEPLOYED_NATIVE_AND_LIVE_PASS",
+  "implementation": "sql/updates/world/2026_11_15_85_neptulon_text_duplicate.sql",
+  "scope": "Neptulon40792/group12 already had one correct Russian utterance and its closed1251/UTF8 encoding duplicate under ID0. Every other SQL column is identical. A simple UPDATE would collide with the Text-bearing primary key. Retain the correct row and remove only the exact misdecoded duplicate, rather than translating, replacing IDs or deleting the whole group. Separate from the additional100 count.",
+  "sequence": "Actual boss_ozumat.cpp phase3 uses ZoneTalk(12), a group selection, not an explicit variant ID. Both duplicate records formerly offered the same authored phrase; one had corrupted fallback bytes. Native repeat/choice bookkeeping now has one actual utterance; correct variant implicitID0 stays0. No combat transition, timing or boss behavior changed.",
+  "guards": "Accept exactly known two original rows or one already-correct row; require the existing correct record. Foreign voice/metadata, missing correct row or added member refuses. Exact full row fingerprints include all fields. Replay idempotent.",
+  "checks": {
+    "data": "Full-schema TEMP2-to1, replay and3 voice/missing-correct/extra-group drift refusals. Actual live one correct row and updater SHA1 RELEASED verified.",
+    "native": "Actual matching CreatureTextMgr loader confirms2-to1 and existing correct ID/voice/duration/timer/probability/spell/language preservation. Existing correct chat packet exactly stable for11 locales x2 genders. No actual client speech delivery claimed.",
+    "paired": "build-extractors/runtime-test/neptulon-text-native/20261115-183228-821",
+    "live": "build-extractors/runtime-test/neptulon-text-native/20261115-183836-180",
+    "data_live": "build-extractors/runtime-test/neptulon-text-data/20261115-183526-756"
+  },
+  "runtime": "Canonical own PID28532 applied85, reached fresh ready, graceful shutdown0/exit0/stderr0/gone. No new canonical/own crashes, DBErrors or unexplained appended warnings/errors/assertions. EXE unchanged.",
+  "limits": "Actual Ozumat phase3 audio/delivery and whole encounter not traversed in client. Original artifact LINK payloads/Slaghammer fidelity/all36 client chains remain open separately.",
+  "cleanup": "Hash-verified local archive and exact test-artifact deletion recorded by open-next-hundred-closeout-2026-11-15 audit."
+}
