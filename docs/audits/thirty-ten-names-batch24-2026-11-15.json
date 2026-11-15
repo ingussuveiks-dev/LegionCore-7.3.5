@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 24,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch24.sql",
+  "migration_sha256": "f6512521ce3cb073cc878d6e8bbff18ff346293cc060959a837ad356acf66ab5",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 232982,
+      "old_hex": "C390C29DC390C2B5C390C2B0C390C2BAC391E2809AC390C2B8C390C2B2C390C2BDC391E280B9C390C2B920C390C2B7C390C2BDC390C2B0C390C2BA",
+      "new_hex": "D09DD0B5D0B0D0BAD182D0B8D0B2D0BDD18BD0B920D0B7D0BDD0B0D0BA",
+      "restored_name": "Неактивный знак",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 232984,
+      "old_hex": "C390C29DC390C2B5C390C2B0C390C2BAC391E2809AC390C2B8C390C2B2C390C2BDC391E280B9C390C2B920C390C2B7C390C2BDC390C2B0C390C2BA",
+      "new_hex": "D09DD0B5D0B0D0BAD182D0B8D0B2D0BDD18BD0B920D0B7D0BDD0B0D0BA",
+      "restored_name": "Неактивный знак",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233015,
+      "old_hex": "C390E28099C391E280B9C391E280A6C390C2BEC390C2B420C390C2B8C390C2B720C390C2A2C390C2B5C390C2BCC390C2BDC391E280B9C391E280A620C390C2B7C390C2B5C390C2BCC390C2B5C390C2BBC391C592",
+      "new_hex": "D092D18BD185D0BED0B420D0B8D0B720D0A2D0B5D0BCD0BDD18BD18520D0B7D0B5D0BCD0B5D0BBD18C",
+      "restored_name": "Выход из Темных земель",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233038,
+      "old_hex": "C390C29DC390C2B5C390C2B0C390C2BAC391E2809AC390C2B8C390C2B2C390C2BDC391E280B9C390C2B920C390C2B7C390C2BDC390C2B0C390C2BA",
+      "new_hex": "D09DD0B5D0B0D0BAD182D0B8D0B2D0BDD18BD0B920D0B7D0BDD0B0D0BA",
+      "restored_name": "Неактивный знак",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233055,
+      "old_hex": "C390C29DC390C2B5C390C2B0C390C2BAC391E2809AC390C2B8C390C2B2C390C2BDC391E280B9C390C2B920C390C2B7C390C2BDC390C2B0C390C2BA",
+      "new_hex": "D09DD0B5D0B0D0BAD182D0B8D0B2D0BDD18BD0B920D0B7D0BDD0B0D0BA",
+      "restored_name": "Неактивный знак",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233115,
+      "old_hex": "C390C29DC390C2B5C390C2B0C390C2BAC391E2809AC390C2B8C390C2B2C390C2BDC391E280B9C390C2B920C390C2B7C390C2BDC390C2B0C390C2BA",
+      "new_hex": "D09DD0B5D0B0D0BAD182D0B8D0B2D0BDD18BD0B920D0B7D0BDD0B0D0BA",
+      "restored_name": "Неактивный знак",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233168,
+      "old_hex": "C390C2A3C391C281C390C2B8C390C2BBC390C2B5C390C2BDC390C2BDC390C2B0C391C28F20C391E282ACC391C692C390C2B4C390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC390C2B920C390C2B3C390C2BEC391E282ACC391E280B9",
+      "new_hex": "D0A3D181D0B8D0BBD0B5D0BDD0BDD0B0D18F20D180D183D0B4D0B020D0A7D0B5D180D0BDD0BED0B920D0B3D0BED180D18B",
+      "restored_name": "Усиленная руда Черной горы",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233269,
+      "old_hex": "4361676520C390C2BAC390C2BBC390C2B0C390C2BDC390C2B020C390C5B8C390C2B5C391C281C390C2BDC390C2B820C390E28099C390C2BEC390C2B9C390C2BDC391E280B9",
+      "new_hex": "4361676520D0BAD0BBD0B0D0BDD0B020D09FD0B5D181D0BDD0B820D092D0BED0B9D0BDD18B",
+      "restored_name": "Cage клана Песни Войны",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233401,
+      "old_hex": "C390C5A1C390C2BEC390C2B2C391E282ACC390C2B8C390C2BA20C390C2B2C391E280B9C390C2B7C390C2B4C390C2BEC391E282ACC390C2BEC390C2B2C390C2BBC390C2B5C390C2BDC390C2B8C391C28F",
+      "new_hex": "D09AD0BED0B2D180D0B8D0BA20D0B2D18BD0B7D0B4D0BED180D0BED0B2D0BBD0B5D0BDD0B8D18F",
+      "restored_name": "Коврик выздоровления",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 233453,
+      "old_hex": "45676720C390C2B3C390C2BEC391E282ACC390C2B5C390C2BDC390C2B0",
+      "new_hex": "45676720D0B3D0BED180D0B5D0BDD0B0",
+      "restored_name": "Egg горена",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
