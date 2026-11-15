@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-15",
+  "batch": 8,
+  "status": "COMPLETED10_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 265551,
+      "name": "Supplies from the shipwreck",
+      "before_loot": 0,
+      "after_loot": 265551,
+      "existing_spawns": 6,
+      "existing_loot_rows": 4
+    },
+    {
+      "entry": 265552,
+      "name": "Supplies from the shipwreck",
+      "before_loot": 0,
+      "after_loot": 265552,
+      "existing_spawns": 5,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 265554,
+      "name": "Supplies from the shipwreck",
+      "before_loot": 0,
+      "after_loot": 265554,
+      "existing_spawns": 6,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266092,
+      "name": "Nocturnal Birth Scroll",
+      "before_loot": 0,
+      "after_loot": 266092,
+      "existing_spawns": 12,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266117,
+      "name": "Ladey gambit",
+      "before_loot": 0,
+      "after_loot": 266117,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266118,
+      "name": "Victim Raven",
+      "before_loot": 0,
+      "after_loot": 266118,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266119,
+      "name": "Jungle war: the troll problem.",
+      "before_loot": 0,
+      "after_loot": 266119,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266120,
+      "name": "Zandalars are the true enemy.",
+      "before_loot": 0,
+      "after_loot": 266120,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266122,
+      "name": "Voodoo, geomancy and philistine magic",
+      "before_loot": 0,
+      "after_loot": 266122,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266123,
+      "name": "The art of destroying charms and piercing shields",
+      "before_loot": 0,
+      "after_loot": 266123,
+      "existing_spawns": 3,
+      "existing_loot_rows": 1
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_44_legion_chest_links_ten_batch8.sql",
+  "migration_sha256": "cb7cbed26bf4047c98d798e4faf0e379c64306d8490a3dd145680fae9aab8c40",
+  "cause": "Data1=0 made native GetLootId return0 and Player::SendLoot skip FillLoot despite authored same-entry loot; only restoreData1.",
+  "shadow": "10 fixes/idempotent replay,91 unrelated records, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "af0ee75c5deeb7d5ecd93f12726ccc78da3935cf54761fdf50a3a83a6c0872d1",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+    "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+    "ASAN": false
+  },
+  "live": "Canonical updater applied10 migrations; readback verifies all100 links/other captured fields/spawn and loot row counts, plus four deferred candidates unmodified.",
+  "diagnostics": "Final selected tests exit0, stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Initial different selection failed on four unresolved spells; preserved separately, not called passing.",
+  "limits": "Controlled synthetic player/source admission. No authenticated save/item storage, actual client visibility/lock/eligibility/drop distribution or full quest traversal claim. Faction/group/quest/respawn and pet progression rules not changed.",
+  "no_recount": "Ten distinct new sources disjoint from previous250/other nine cohorts; four unresolved post-loot candidates and repeated tests not counted."
+}
