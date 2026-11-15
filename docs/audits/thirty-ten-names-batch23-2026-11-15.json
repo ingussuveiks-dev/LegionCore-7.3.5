@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 23,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch23.sql",
+  "migration_sha256": "e04ac6eec55adec48a55cfdc7f3f339b8859bd986a46182f55d09438cf58ba13",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 228711,
+      "old_hex": "C390E2809CC390C2B0C391E282ACC390C2B4C390C2B5C391E282ACC390C2BEC390C2B1C390C2BDC391E280B9C390C2B920C391CB86C390C2BAC390C2B0C391E2809E",
+      "new_hex": "D093D0B0D180D0B4D0B5D180D0BED0B1D0BDD18BD0B920D188D0BAD0B0D184",
+      "restored_name": "Гардеробный шкаф",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228712,
+      "old_hex": "C390C5BEC390C2B4C390C2B5C391C28FC390C2BDC390C2B8C391C28F20C390C2BCC390C2B0C390C2B3C390C2B0",
+      "new_hex": "D09ED0B4D0B5D18FD0BDD0B8D18F20D0BCD0B0D0B3D0B0",
+      "restored_name": "Одеяния мага",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228713,
+      "old_hex": "C390C5A1C390C2B0C391E2809AC391C692C391CB86C390C2BAC390C2B0",
+      "new_hex": "D09AD0B0D182D183D188D0BAD0B0",
+      "restored_name": "Катушка",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228714,
+      "old_hex": "C390C2A0C391C692C390C2BBC390C2BEC390C2BD20C391E2809AC390C2BAC390C2B0C390C2BDC390C2B8",
+      "new_hex": "D0A0D183D0BBD0BED0BD20D182D0BAD0B0D0BDD0B8",
+      "restored_name": "Рулон ткани",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 229044,
+      "old_hex": "C390E2809CC391E282ACC391C692C390C2B4C390C2B020536B756C6CC390C2BEC390C2B22031",
+      "new_hex": "D093D180D183D0B4D0B020536B756C6CD0BED0B22031",
+      "restored_name": "Груда Skullов 1",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 229131,
+      "old_hex": "C390C2A2C390C2BEC391E2809AC390C2B5C390C2BC20C390E28098C390C2BEC391E282ACC390C2B3C390C2B0C390C2BBC390C2B0",
+      "new_hex": "D0A2D0BED182D0B5D0BC20D091D0BED180D0B3D0B0D0BBD0B0",
+      "restored_name": "Тотем Боргала",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 229161,
+      "old_hex": "C390C2A1C390C2B5C391E282ACC390C2B4C391E280A0C390C2B520C390C2A5C390C2B0C390C2BEC391C281C390C2B0",
+      "new_hex": "D0A1D0B5D180D0B4D186D0B520D0A5D0B0D0BED181D0B0",
+      "restored_name": "Сердце Хаоса",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 230742,
+      "old_hex": "4361676520C390C593C390C2BEC391E282ACC390C2BAC390C2B5C391E2809AC390C2B0",
+      "new_hex": "4361676520D09CD0BED180D0BAD0B5D182D0B0",
+      "restored_name": "Cage Моркета",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 231307,
+      "old_hex": "C390E28099C390C2B7C391E282ACC391E280B9C390C2B2C390C2BEC390C2BEC390C2BFC390C2B0C391C281C390C2BDC390C2B0C391C28F20C391E282ACC391C692C390C2B4C390C2B020C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC390C2B920C390C2B3C390C2BEC391E282ACC391E280B9",
+      "new_hex": "D092D0B7D180D18BD0B2D0BED0BED0BFD0B0D181D0BDD0B0D18F20D180D183D0B4D0B020D0A7D0B5D180D0BDD0BED0B920D0B3D0BED180D18B",
+      "restored_name": "Взрывоопасная руда Черной горы",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 232153,
+      "old_hex": "C390C2A7C390C2B8C391C281C391E2809AC390C2B8C390C2BBC391C592C391E280B0C390C2B8C390C2BA",
+      "new_hex": "D0A7D0B8D181D182D0B8D0BBD18CD189D0B8D0BA",
+      "restored_name": "Чистильщик",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
