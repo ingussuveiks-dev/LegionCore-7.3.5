@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-15",
+  "status": "OPEN_TWO_MISSING_NATIVE_POST_LOOT_SPELLS_FOUR_CANDIDATES_UNMODIFIED",
+  "finding": "Initial full native100 generation reached Player::SendLoot post-loot casts and logged8 unknown-spell errors. Raw process exit0 and100 CASE/PASS messages are not a passing test; strict stderr/log diagnostics correctly rejected it.",
+  "cause": "All matching DB2 stores and SpellMgr were loaded, not a whitelist fixture. Chest Data26 references81040 on257290/257291/266851 and219461 on251959. Both spells and their effects are absent from matching26972 Spell/SpellEffect plus active hotfix stores. Existing228183/238565 controls load successfully.",
+  "deferred": [
+    {
+      "entry": 251959,
+      "name": "Ancient Elven Chest",
+      "missing_post_loot_spell": 219461,
+      "status": "OPEN_NOT_MODIFIED_OR_COUNTED"
+    },
+    {
+      "entry": 257290,
+      "name": "Highmountain Clan Chest",
+      "missing_post_loot_spell": 81040,
+      "status": "OPEN_NOT_MODIFIED_OR_COUNTED"
+    },
+    {
+      "entry": 257291,
+      "name": "Nightborne Treasure Chest",
+      "missing_post_loot_spell": 81040,
+      "status": "OPEN_NOT_MODIFIED_OR_COUNTED"
+    },
+    {
+      "entry": 266851,
+      "name": "Wand of Simulated Life",
+      "missing_post_loot_spell": 81040,
+      "status": "OPEN_NOT_MODIFIED_OR_COUNTED"
+    }
+  ],
+  "native_catalog": "tools/research/ChestPostLootSpellCatalog.cpp",
+  "catalog_sha256": "4cc299f23d8c2768f5370132eb94579e732117d68bd8e6afdb669dca5621c67f",
+  "source_trace": "Player.cpp native SendLoot chest branch uses chest.spell/Data26 then CastSpell. GameObjectData.h declares slot26 as spell reference. Full RockawayChannelNative InitializeNative loads all DB2+SpellInfo; this was not a missing two-spell fixture initialization.",
+  "previous_evidence": "docs/audits/dalaran-crater-arrival-2026-10-14.json already marks81040 unresolved; later artifact audits preserve that shared issue. This run identifies four concrete additional chest paths and219461; no root repair or authentic replacement claimed.",
+  "handling": "No Data26 zeroing, fake spell, arbitrary replacement or log suppression. Four sources are excluded from this100 repair set and actual readback verifies theirData1=0 and originalData26 unchanged. Final100 substitutes four other untouched candidates. Their existing loot/quest/lock data remain unchanged.",
+  "regression_admission": "Shared generation harness now explicitly rejects unresolved post-loot SpellInfo before certifying a selected source; this is a test failure guard, not a production workaround. Original unguarded executable/logs/config/entries are retained for reproduction.",
+  "original_failure": {
+    "diagnostics_sha256": "d8f099ae57c7fa3629c7def0b31d45046a2a307c8aba247ded80fc75eda2f709",
+    "state": "FAILED_UNRESOLVED_NOT_EXPECTED_PASS",
+    "canonical_new_errors": false,
+    "new_crashes": false,
+    "private_server_errors": 8,
+    "manifest": ".codex/ten-tens-20261115/unresolved-post-loot/evidence-manifest.json",
+    "manifest_sha256": "8b0a5ce954717c129bc52fc09c220e2241d0c757c9540bd634a297f11eb5eba5"
+  },
+  "retention": "Original native-pending outputs/repro executable/config/symbols and unresolved-post-loot original plan/migrations/catalog remain ignored locally outside fixed. No log truncated or report relabelled resolved.",
+  "next": "Recover original intended post-loot behavior/replacement from matching client/build data and historical sources; keep shared81040 review separate from artifact LINK2. None of these four or this research is counted as a completed fix."
+}
