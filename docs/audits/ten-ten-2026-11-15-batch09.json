@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-15",
+  "batch": 9,
+  "status": "COMPLETED10_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 266291,
+      "name": "Fel Crystal",
+      "before_loot": 0,
+      "after_loot": 266291,
+      "existing_spawns": 5,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266588,
+      "name": "Chest of Moonfang Family",
+      "before_loot": 0,
+      "after_loot": 266588,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 266595,
+      "name": "Chest of Moonfang Family",
+      "before_loot": 0,
+      "after_loot": 266595,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267032,
+      "name": "Infecting the Fel Thomes",
+      "before_loot": 0,
+      "after_loot": 267032,
+      "existing_spawns": 13,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267277,
+      "name": "Fel Slug",
+      "before_loot": 0,
+      "after_loot": 267277,
+      "existing_spawns": 13,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267278,
+      "name": "Fel Gornilo",
+      "before_loot": 0,
+      "after_loot": 267278,
+      "existing_spawns": 7,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267353,
+      "name": "Stabilizing Crystal",
+      "before_loot": 0,
+      "after_loot": 267353,
+      "existing_spawns": 7,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267575,
+      "name": "Wrecked stash",
+      "before_loot": 0,
+      "after_loot": 267575,
+      "existing_spawns": 14,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267641,
+      "name": "Infestation of the Fel",
+      "before_loot": 0,
+      "after_loot": 267641,
+      "existing_spawns": 16,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 267642,
+      "name": "Ancient Skeleton",
+      "before_loot": 0,
+      "after_loot": 267642,
+      "existing_spawns": 16,
+      "existing_loot_rows": 1
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_45_legion_chest_links_ten_batch9.sql",
+  "migration_sha256": "5f6e2a1e56e42882d74f6ee23396d2d2dd90fda8cf0a5eec264fa5d16f8d7096",
+  "cause": "Data1=0 made native GetLootId return0 and Player::SendLoot skip FillLoot despite authored same-entry loot; only restoreData1.",
+  "shadow": "10 fixes/idempotent replay,91 unrelated records, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "8c377b166ca5b4dd943cb185d8f8145be1c53f46e37d2dcd7d8e0e086c33f3b2",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+    "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+    "ASAN": false
+  },
+  "live": "Canonical updater applied10 migrations; readback verifies all100 links/other captured fields/spawn and loot row counts, plus four deferred candidates unmodified.",
+  "diagnostics": "Final selected tests exit0, stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Initial different selection failed on four unresolved spells; preserved separately, not called passing.",
+  "limits": "Controlled synthetic player/source admission. No authenticated save/item storage, actual client visibility/lock/eligibility/drop distribution or full quest traversal claim. Faction/group/quest/respawn and pet progression rules not changed.",
+  "no_recount": "Ten distinct new sources disjoint from previous250/other nine cohorts; four unresolved post-loot candidates and repeated tests not counted."
+}
