@@ -7,6 +7,8 @@
 #include "AchievementMgr.h"
 #include <fstream>
 #include "NativeChestEntries.inc"
+struct ChestCooldownsTag {using Type=PlayerLootCooldownMap (Player::*)[MAX_LOOT_COOLDOWN_TYPE];friend Type Access(ChestCooldownsTag);};
+template struct FixtureAccess<ChestCooldownsTag,&Player::m_playerLootCooldown>;
 struct ChestLootObject : GameObject
 {
     ~ChestLootObject(){if(IsInWorld())GetMap()->RemoveFromMap(static_cast<GameObject*>(this),false);ResetMap();}
@@ -23,8 +25,16 @@ static void CheckChest(Player& player,Map& map,uint32 entry,uint32& guid)
     Require(info->GetLootId()==0||info->GetLootId()==entry,"Pending chest fixture refuses foreign loot link");
 #endif
     Require(LootTemplates_Gameobject.HaveLootFor(entry),"Actual authored chest loot table missing");
+    // The broken and repaired branches are independent accepted inputs.
+    // SendLoot itself records entry/difficulty cooldowns, even for a zero
+    // link. Restore only this socketless fixture's prior maps between cases;
+    // retaining the first case's cooldown would falsely reject the second.
+    auto& cooldowns=player.*Access(ChestCooldownsTag{});
+    std::array<PlayerLootCooldownMap,MAX_LOOT_COOLDOWN_TYPE> originalCooldowns;
+    for(unsigned i=0;i<MAX_LOOT_COOLDOWN_TYPE;++i)originalCooldowns[i]=cooldowns[i];
     for(bool repaired:{false,true})
     {
+        for(unsigned i=0;i<MAX_LOOT_COOLDOWN_TYPE;++i)cooldowns[i]=originalCooldowns[i];
         info->chest.chestLoot=repaired?entry:0; // Exact declared data delta/counterfactual, private memory only.
         ChestLootObject chest;auto pos=player.GetPosition();
         Require(chest.Create(++guid,entry,&map,1,pos,G3D::Quat(0,0,0,1),255,GO_STATE_READY)&&map.AddToMap(static_cast<GameObject*>(&chest)),"Native chest creation/map admission failed");
@@ -40,6 +50,7 @@ static void CheckChest(Player& player,Map& map,uint32 entry,uint32& guid)
         player.SetLootGUID(ObjectGuid::Empty);player.RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_LOOTING);
         player.RemoveLoot(chest.GetGUID());chest.loot.clear();
     }
+    for(unsigned i=0;i<MAX_LOOT_COOLDOWN_TYPE;++i)cooldowns[i]=originalCooldowns[i];
     info->chest.chestLoot=entry;
     Require(player.GetMoney()==money,"Generation test unexpectedly granted money");
     for(uint8 slot=EQUIPMENT_SLOT_START;slot<player.GetInventoryEndSlot();++slot)

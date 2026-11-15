@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-15",
+  "scope": "Native chest regression fixture only; no production cooldown behavior changed",
+  "cause": "The socketless zero-link counterfactual itself records an entry/difficulty loot cooldown. Reusing that mutated player input for the repaired raid-chest case wrongly rejected the second case (first observed at246036).",
+  "repair": "Save and restore only the fixture player's original cooldown maps before each independent case and on teardown. Retain the authored personal and encounter flags and execute actual Release Player::SendLoot/FillLoot in both cases.",
+  "checks": {
+    "native": ".codex/egg-hundred-20261115/hundred-pending-v2/native-inputs.json",
+    "result": "100 distinct sources pass paired native generation cases; exit0, stderr0, no new crashes, DBErrors or server warnings/errors/assertions",
+    "initial_failed_run": ".codex/egg-hundred-20261115/hundred-pending",
+    "initial_failure_is_not_a_pass": true
+  },
+  "limits": "Synthetic positions, socketless accepted context and independent inputs; no authenticated character saves, actual respawn/cooldown client test or complete quest traversal. This fixture correction is not counted as a production repair."
+}
