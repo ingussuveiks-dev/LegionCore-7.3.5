@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-15",
+  "batch": 30,
+  "status": "COMPLETED5_DISTINCT_CHEST_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 251774,
+      "name": "Soul Configuration Matrix",
+      "before_loot": 0,
+      "after_loot": 251774,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 251776,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251776,
+      "existing_spawns": 1,
+      "existing_loot_rows": 50
+    },
+    {
+      "entry": 251782,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251782,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 251784,
+      "name": "Vile Spirit Converter",
+      "before_loot": 0,
+      "after_loot": 251784,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 251792,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251792,
+      "existing_spawns": 1,
+      "existing_loot_rows": 53
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_36_legion_chest_links_five_batch30.sql",
+  "migration_sha256": "d469b1653c3b29c33a3a9db1886526afb481dee1e867182e03ea7b37bd7d34b9",
+  "root_cause": "Data1=0 made native Player::SendLoot skip FillLoot despite existing authored same-entry loot. Restore that link only.",
+  "shadow": "Five fixes, replay,146 unrelated entries, all151 other column sets preserved, foreign nonzero link refused; temporary tables only.",
+  "shadow_evidence_sha256": "1ac9c616c5f1b864f7d03286f8d3ef6438322ddc93d283f0d14c84e2340ccfd4",
+  "native": "These five entries are individually exercised in shared150-entry actual Release-core loader/SendLoot/FillLoot run; paired zero-link counterfactual. No synthetic success from merely checking SQL.",
+  "native_final_evidence": {
+    "cases": 150,
+    "stdout_sha256": "6bf01a13a3dcbd703e58a064cba9b6228c4933cc0047ef1f2db249e04c60ecff",
+    "inputs_sha256": "9bf4817559af10cfd68e5cb2c78a07cdab360f256d6c17fb5de65c61bf4a65c7",
+    "live_data": true,
+    "instrumented_core": false
+  },
+  "live": "Owned canonical updater applied all30 migrations; exact150 readback preserves other captured fields/spawn counts/loot row counts.",
+  "limits": "Controlled synthetic placement/player admission; no authenticated character save, real client visibility/lock/open/eligibility/storage/drop-distribution or whole-quest traversal proof. Pet kill credit is not modified by this Data1-only repair; faction/group/quest rules remain native.",
+  "diagnostics": "All final tests exit0, stderr empty, no new/changed crashes or appended DBErrors/server warnings/errors/assertions.",
+  "no_recount": "Five distinct previously zero-link templates, disjoint from prior100 and other29 cohorts. Source/tool generalization and repeated checks are not extra repairs."
+}
