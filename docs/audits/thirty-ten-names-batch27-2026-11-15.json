@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 27,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch27.sql",
+  "migration_sha256": "c09fc496e23a4b8494121f235238bff7c1a97661aa68d0787ad4ace2e29122ea",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 234284,
+      "old_hex": "C390C5BEC390C2B1C391C692C390C2B3C390C2BBC390C2B5C390C2BDC390C2BDC390C2B0C391C28F20C391C281C391C692C390C2BCC390C2BAC390C2B0",
+      "new_hex": "D09ED0B1D183D0B3D0BBD0B5D0BDD0BDD0B0D18F20D181D183D0BCD0BAD0B0",
+      "restored_name": "Обугленная сумка",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234290,
+      "old_hex": "C390C5B8C391C692C391C281C391E2809AC390C2BEC390C2B920C390C2BFC390C2B5C390C2BDC391C592",
+      "new_hex": "D09FD183D181D182D0BED0B920D0BFD0B5D0BDD18C",
+      "restored_name": "Пустой пень",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234293,
+      "old_hex": "C390C5B8C391C692C391C281C391E2809AC390C2BEC390C2B920C390C2BFC390C2B5C390C2BDC391C592",
+      "new_hex": "D09FD183D181D182D0BED0B920D0BFD0B5D0BDD18C",
+      "restored_name": "Пустой пень",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234294,
+      "old_hex": "C390C2A1C391C692C390C2BCC390C2BAC390C2B020C391E282ACC390C2B0C390C2B7C390C2B2C390C2B5C390C2B4C391E280A1C390C2B8C390C2BAC390C2B0",
+      "new_hex": "D0A1D183D0BCD0BAD0B020D180D0B0D0B7D0B2D0B5D0B4D187D0B8D0BAD0B0",
+      "restored_name": "Сумка разведчика",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234295,
+      "old_hex": "C390C593C390C2B5C391E2809AC390C2B0C391E2809AC390C2B5C390C2BBC391C592C390C2BDC391E280B9C390C2B920C391E2809AC390C2BEC390C2BFC390C2BEC391E282AC20C390C5BEC391E282ACC390C2B4C391E280B9",
+      "new_hex": "D09CD0B5D182D0B0D182D0B5D0BBD18CD0BDD18BD0B920D182D0BED0BFD0BED18020D09ED180D0B4D18B",
+      "restored_name": "Метательный топор Орды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234298,
+      "old_hex": "C390C5B8C391C692C391C281C391E2809AC390C2BEC390C2B920C390C2BFC390C2B5C390C2BDC391C592",
+      "new_hex": "D09FD183D181D182D0BED0B920D0BFD0B5D0BDD18C",
+      "restored_name": "Пустой пень",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 234443,
+      "old_hex": "C390C2A1C390C2BBC390C2B5C390C2B420C390E2809CC390C2B0C391E282ACC390C2BEC390C2BDC391E280B9",
+      "new_hex": "D0A1D0BBD0B5D0B420D093D0B0D180D0BED0BDD18B",
+      "restored_name": "След Гароны",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235095,
+      "old_hex": "C390C5B8C390C2B5C391E282ACC390C2B5C390C2BFC391C692C391E2809AC390C2B0C390C2BDC390C2BDC391E280B9C390C2B9205363726F6C6C",
+      "new_hex": "D09FD0B5D180D0B5D0BFD183D182D0B0D0BDD0BDD18BD0B9205363726F6C6C",
+      "restored_name": "Перепутанный Scroll",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235298,
+      "old_hex": "C390C5B8C391E282ACC390C2BEC390C2BCC390C2BEC390C2BAC391CB86C390C2B0C391C28F20C390C2B7C390C2B0C390C2BFC390C2B8C391C281C390C2BAC390C2B0",
+      "new_hex": "D09FD180D0BED0BCD0BED0BAD188D0B0D18F20D0B7D0B0D0BFD0B8D181D0BAD0B0",
+      "restored_name": "Промокшая записка",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235299,
+      "old_hex": "C390E2809DC390C2B5C390C2BDC391C592C390C2B3C390C2B820C390E2809DC390C2B5C390C2BDC391C592C390C2B3C390C2B5C390C2B3C390C2BDC391C692C391E2809AC390C2B0",
+      "new_hex": "D094D0B5D0BDD18CD0B3D0B820D094D0B5D0BDD18CD0B3D0B5D0B3D0BDD183D182D0B0",
+      "restored_name": "Деньги Деньгегнута",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
