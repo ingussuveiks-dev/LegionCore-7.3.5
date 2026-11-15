@@ -15,6 +15,7 @@ static void CheckChest(Player& player,Map& map,uint32 entry,uint32& guid)
     auto money=player.GetMoney();
     auto info=const_cast<GameObjectTemplate*>(sObjectMgr->GetGameObjectTemplate(entry));
     Require(info&&info->type==GAMEOBJECT_TYPE_CHEST&&info->ScriptId==0&&info->AIName.empty(),"Selected chest acquired custom script/type");
+    Require(!info->chest.spell||sSpellMgr->GetSpellInfo(info->chest.spell),"Selected chest has unresolved post-loot spell; cannot certify its full SendLoot call");
 #ifdef CHEST_LOOT_LIVE
     Require(info->GetLootId()==entry,"Actual live template loot link missing");
 #else
