@@ -1,0 +1,553 @@
+{
+  "date": "2026-11-15",
+  "batch": 10,
+  "count": 30,
+  "kind": "Distinct text fields corrected, no gameplay/translation changes",
+  "implementation": "sql/updates/world/2026_11_15_81_text_batch10.sql",
+  "migration_sha256": "6dc83a70b885e72d096e0aebe996cfbff2a4da7cdb4e0392cbfc8724b4fa4a5d",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98696,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D08ED0A1E2809AD0A1D082D0A0C2B0D0A0C2B6D0A0C2B02120D0A0D19FD0A1D082D0A0D191D0A0D291D0A0C2B5D0A1D082D0A0C2B6D0A0D191D0A1E2809AD0A0C2B520D0A0D191D0A1E280A621",
+      "new_hex": "D0A1D182D180D0B0D0B6D0B02120D09FD180D0B8D0B4D0B5D180D0B6D0B8D182D0B520D0B8D18521",
+      "restored_text": "Стража! Придержите их!",
+      "broadcast": 101209,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98696,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D08720D0A1D083D0A0D195D0A0C2B6D0A0D196D0A1D19320D0A0D086D0A0C2B0D0A1D08320D0A0C2B7D0A0C2B0D0A0C2B6D0A0D191D0A0D086D0A0D19521",
+      "new_hex": "D0AF20D181D0BED0B6D0B3D18320D0B2D0B0D18120D0B7D0B0D0B6D0B8D0B2D0BE21",
+      "restored_text": "Я сожгу вас заживо!",
+      "broadcast": 101210,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98696,
+        "GroupID": 7,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19B2C20D0A0D085D0A0C2B5D0A1E2809A2120D0A0D19AD0A0C2B5D0A0D085D0A1D08F2E2E2E20D0A0D197D0A1D082D0A0C2B5D0A0D291D0A0C2B0D0A0C2BBD0A0D1912E2E2E",
+      "new_hex": "D09E2C20D0BDD0B5D1822120D09CD0B5D0BDD18F2E2E2E20D0BFD180D0B5D0B4D0B0D0BBD0B82E2E2E",
+      "restored_text": "О, нет! Меня... предали...",
+      "broadcast": 101221,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98942,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19CD0A0D191D0A0D194D0A1E2809AD0A0D19520D0A0D085D0A0C2B520D0A1D083D0A0D198D0A0C2B5D0A0C2B5D0A1E2809A20D0A0D198D0A0D085D0A0C2B520D0A1D193D0A0D194D0A0C2B0D0A0C2B7D0A1E280B9D0A0D086D0A0C2B0D0A1E2809AD0A1D08A21",
+      "new_hex": "D09DD0B8D0BAD182D0BE20D0BDD0B520D181D0BCD0B5D0B5D18220D0BCD0BDD0B520D183D0BAD0B0D0B7D18BD0B2D0B0D182D18C21",
+      "restored_text": "Никто не смеет мне указывать!",
+      "broadcast": 100564,
+      "context": {
+        "spawn_count": "0",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98942,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19ED0A1E280B920D0A0D197D0A0D195D0A0C2B6D0A0C2B0D0A0C2BBD0A0C2B5D0A0C2B5D0A1E282ACD0A1D08A20D0A0D19520D0A1D083D0A0D086D0A0D195D0A0D191D0A1E280A620D0A1D083D0A0C2BBD0A0D195D0A0D086D0A0C2B0D0A1E280A621",
+      "new_hex": "D0A2D18B20D0BFD0BED0B6D0B0D0BBD0B5D0B5D188D18C20D0BE20D181D0B2D0BED0B8D18520D181D0BBD0BED0B2D0B0D18521",
+      "restored_text": "Ты пожалеешь о своих словах!",
+      "broadcast": 100559,
+      "context": {
+        "spawn_count": "0",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98949,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D08720D0A1D082D0A0C2B0D0A1D083D0A0D194D0A1D082D0A0C2B0D0A1E282ACD0A1D19320D0A0D194D0A1D082D0A0C2B5D0A0D197D0A0D195D0A1D083D0A1E2809AD0A1D08A20D0A0D086D0A0C2B0D0A1E282ACD0A0C2B5D0A0E2849620D0A0D194D0A1D082D0A0D195D0A0D086D0A1D08AD0A1D08B21",
+      "new_hex": "D0AF20D180D0B0D181D0BAD180D0B0D188D18320D0BAD180D0B5D0BFD0BED181D182D18C20D0B2D0B0D188D0B5D0B920D0BAD180D0BED0B2D18CD18E21",
+      "restored_text": "Я раскрашу крепость вашей кровью!",
+      "broadcast": 101266,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98949,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19CD0A0C2B520D0A1D193D0A0C2B1D0A0C2B5D0A0C2B6D0A0D191D0A1E282ACD0A1D08A2C20D0A0C2B1D0A1D193D0A0D194D0A0C2B0D0A1E282ACD0A0D194D0A0C2B02E2E2E",
+      "new_hex": "D09DD0B520D183D0B1D0B5D0B6D0B8D188D18C2C20D0B1D183D0BAD0B0D188D0BAD0B02E2E2E",
+      "restored_text": "Не убежишь, букашка...",
+      "broadcast": 101273,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98949,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D290D0A0C2B02120D0A0D19FD0A0D195D0A0E28496D0A0D198D0A0C2B0D0A0C2BB21",
+      "new_hex": "D0A5D0B02120D09FD0BED0B9D0BCD0B0D0BB21",
+      "restored_text": "Ха! Поймал!",
+      "broadcast": 101274,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98949,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19ED0A1D082D0A0C2B5D0A0D197D0A0C2B5D0A1E280B0D0A0D191D0A1E2809AD0A0C2B52E",
+      "new_hex": "D0A2D180D0B5D0BFD0B5D189D0B8D182D0B52E",
+      "restored_text": "Трепещите.",
+      "broadcast": 101272,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98949,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19FD0A0D195D0A0C2BBD0A1D193D0A1E280A1D0A0D19121",
+      "new_hex": "D09FD0BED0BBD183D187D0B821",
+      "restored_text": "Получи!",
+      "broadcast": 123575,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98949,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D199D0A0C2B0D0A0D1942E2E2E20D0A0C2B6D0A0C2B52E2E2E20D0A1E2809AD0A0C2B0D0A0D1942E2E2E",
+      "new_hex": "D09AD0B0D0BA2E2E2E20D0B6D0B52E2E2E20D182D0B0D0BA2E2E2E",
+      "restored_text": "Как... же... так...",
+      "broadcast": 101278,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98970,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0E2809CD0A0D195D0A1D082D0A0D191D0A1E2809AD0A0C2B521",
+      "new_hex": "D093D0BED180D0B8D182D0B521",
+      "restored_text": "Горите!",
+      "broadcast": 101284,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98970,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "7C54496E746572666163655C49636F6E735C7370656C6C5F736861646F775F7A64656D6F6E666F726D677265656E3A32307C74257320D0A0D197D0A1D082D0A0D191D0A0D198D0A0C2B5D0A0D085D0A1D08FD0A0C2B5D0A1E2809A20D0A0C2B7D0A0C2B0D0A0D194D0A0C2BBD0A0D191D0A0D085D0A0C2B0D0A0D085D0A0D191D0A0C2B5207C6346464646303030307C487370656C6C3A3139393139337C685B22D0A0D290D0A0D191D0A1E2809AD0A1D082D0A0D195D0A1D193D0A0D198D0A0D191D0A0C2B520D0A0D197D0A0D195D0A0D086D0A0C2B5D0A0C2BBD0A0D191D0A1E2809AD0A0C2B5D0A0C2BBD0A1D08F20D0A1D193D0A0C2B6D0A0C2B0D0A1D083D0A0C2B0225D7C687C7221",
+      "new_hex": "7C54496E746572666163655C49636F6E735C7370656C6C5F736861646F775F7A64656D6F6E666F726D677265656E3A32307C74257320D0BFD180D0B8D0BCD0B5D0BDD18FD0B5D18220D0B7D0B0D0BAD0BBD0B8D0BDD0B0D0BDD0B8D0B5207C6346464646303030307C487370656C6C3A3139393139337C685B22D0A5D0B8D182D180D0BED183D0BCD0B8D0B520D0BFD0BED0B2D0B5D0BBD0B8D182D0B5D0BBD18F20D183D0B6D0B0D181D0B0225D7C687C7221",
+      "restored_text": "|TInterface\\Icons\\spell_shadow_zdemonformgreen:20|t%s применяет заклинание |cFFFF0000|Hspell:199193|h[\"Хитроумие повелителя ужаса\"]|h|r!",
+      "broadcast": 122985,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98970,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0E28099D0A1E280B920D0A0D085D0A0C2B520D0A0D197D0A0D195D0A0D085D0A0D191D0A0D198D0A0C2B0D0A0C2B5D0A1E2809AD0A0C2B52C20D0A1D08320D0A1E280A1D0A0C2B5D0A0D19820D0A1D083D0A0D086D0A1D08FD0A0C2B7D0A0C2B0D0A0C2BBD0A0D191D0A1D083D0A1D08A2C20D0A1D083D0A0D198D0A0C2B5D0A1D082D0A1E2809AD0A0D085D0A1E280B9D0A0C2B52E2E2E",
+      "new_hex": "D092D18B20D0BDD0B520D0BFD0BED0BDD0B8D0BCD0B0D0B5D182D0B52C20D18120D187D0B5D0BC20D181D0B2D18FD0B7D0B0D0BBD0B8D181D18C2C20D181D0BCD0B5D180D182D0BDD18BD0B52E2E2E",
+      "restored_text": "Вы не понимаете, с чем связались, смертные...",
+      "broadcast": 101292,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 98970,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D08ED0A0D197D0A0D191D0A1E2809AD0A0C2B52E2E2E",
+      "new_hex": "D0A1D0BFD0B8D182D0B52E2E2E",
+      "restored_text": "Спите...",
+      "broadcast": 101289,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 102104,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19AD0A0D195D0A0C2B6D0A0C2B5D0A1E282ACD0A1D08A20D0A0D195D0A1E2809AD0A0D085D0A1D08FD0A1E2809AD0A1D08A20D0A0D198D0A0D195D0A1D08B20D0A0D291D0A1D193D0A1E282ACD0A1D1932C20D0A0D085D0A0D19520D0A0D198D0A0D195D0A1D08B20D0A0D086D0A0D195D0A0C2BBD0A1D08B20D0A1E2809AD0A0C2B5D0A0C2B1D0A0C2B520D0A0D085D0A0C2B520D0A1D083D0A0C2BBD0A0D195D0A0D198D0A0D191D0A1E2809AD0A1D08A21",
+      "new_hex": "D09CD0BED0B6D0B5D188D18C20D0BED182D0BDD18FD182D18C20D0BCD0BED18E20D0B4D183D188D1832C20D0BDD0BE20D0BCD0BED18E20D0B2D0BED0BBD18E20D182D0B5D0B1D0B520D0BDD0B520D181D0BBD0BED0BCD0B8D182D18C21",
+      "restored_text": "Можешь отнять мою душу, но мою волю тебе не сломить!",
+      "broadcast": 100493,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 102295,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19FD0A0D195D0A1D082D0A0D086D0A0C2B0D0A1E2809AD0A1D08A20D0A0D191D0A1E280A620D0A0D08620D0A0D194D0A0C2BBD0A0D195D0A1E280A1D0A1D08AD0A1D08F21",
+      "new_hex": "D09FD0BED180D0B2D0B0D182D18C20D0B8D18520D0B220D0BAD0BBD0BED187D18CD18F21",
+      "restored_text": "Порвать их в клочья!",
+      "broadcast": 104586,
+      "context": {
+        "spawn_count": "0",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 117489,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "257320D0A0D085D0A0C2B0D0A1E280A1D0A0D191D0A0D085D0A0C2B0D0A0C2B5D0A1E2809A20D0A0D198D0A0D195D0A1E280B0D0A0D085D0A1D193D0A1D08B20D0A0C2B0D0A1E2809AD0A0C2B0D0A0D194D0A1D1932E",
+      "new_hex": "257320D0BDD0B0D187D0B8D0BDD0B0D0B5D18220D0BCD0BED189D0BDD183D18E20D0B0D182D0B0D0BAD1832E",
+      "restored_text": "%s начинает мощную атаку.",
+      "broadcast": 11423,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 117489,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "257320D0A1D083D0A0C2BBD0A1E280B9D0A1E282ACD0A0D191D0A1E2809A20D0A0C2B7D0A0D195D0A0D08620D0A0D19120D0A0D197D0A0D195D0A0D291D0A0D085D0A0D191D0A0D198D0A0C2B0D0A0C2B5D0A1E2809AD0A1D083D0A1D08F2C20D0A1E280A1D0A1E2809AD0A0D195D0A0C2B1D0A1E280B920D0A1D083D0A0C2BBD0A1D193D0A0C2B6D0A0D191D0A1E2809AD0A1D08A20D0A1D083D0A0D086D0A0D195D0A0C2B5D0A0D198D0A1D19320D0A1E280A6D0A0D195D0A0C2B7D0A1D08FD0A0D191D0A0D085D0A1D1932E",
+      "new_hex": "257320D181D0BBD18BD188D0B8D18220D0B7D0BED0B220D0B820D0BFD0BED0B4D0BDD0B8D0BCD0B0D0B5D182D181D18F2C20D187D182D0BED0B1D18B20D181D0BBD183D0B6D0B8D182D18C20D181D0B2D0BED0B5D0BCD18320D185D0BED0B7D18FD0B8D0BDD1832E",
+      "restored_text": "%s слышит зов и поднимается, чтобы служить своему хозяину.",
+      "broadcast": 11424,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 117490,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "257320D0A0D085D0A0C2B0D0A1E280A1D0A0D191D0A0D085D0A0C2B0D0A0C2B5D0A1E2809A20D0A0D198D0A0D195D0A1E280B0D0A0D085D0A1D193D0A1D08B20D0A0C2B0D0A1E2809AD0A0C2B0D0A0D194D0A1D1932E",
+      "new_hex": "257320D0BDD0B0D187D0B8D0BDD0B0D0B5D18220D0BCD0BED189D0BDD183D18E20D0B0D182D0B0D0BAD1832E",
+      "restored_text": "%s начинает мощную атаку.",
+      "broadcast": 11423,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 117490,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "257320D0A1D083D0A0C2BBD0A1E280B9D0A1E282ACD0A0D191D0A1E2809A20D0A0C2B7D0A0D195D0A0D08620D0A0D19120D0A0D197D0A0D195D0A0D291D0A0D085D0A0D191D0A0D198D0A0C2B0D0A0C2B5D0A1E2809AD0A1D083D0A1D08F2C20D0A1E280A1D0A1E2809AD0A0D195D0A0C2B1D0A1E280B920D0A1D083D0A0C2BBD0A1D193D0A0C2B6D0A0D191D0A1E2809AD0A1D08A20D0A1D083D0A0D086D0A0D195D0A0C2B5D0A0D198D0A1D19320D0A1E280A6D0A0D195D0A0C2B7D0A1D08FD0A0D191D0A0D085D0A1D1932E",
+      "new_hex": "257320D181D0BBD18BD188D0B8D18220D0B7D0BED0B220D0B820D0BFD0BED0B4D0BDD0B8D0BCD0B0D0B5D182D181D18F2C20D187D182D0BED0B1D18B20D181D0BBD183D0B6D0B8D182D18C20D181D0B2D0BED0B5D0BCD18320D185D0BED0B7D18FD0B8D0BDD1832E",
+      "restored_text": "%s слышит зов и поднимается, чтобы служить своему хозяину.",
+      "broadcast": 11424,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 117491,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "257320D0A0D085D0A0C2B0D0A1E280A1D0A0D191D0A0D085D0A0C2B0D0A0C2B5D0A1E2809A20D0A0D198D0A0D195D0A1E280B0D0A0D085D0A1D193D0A1D08B20D0A0C2B0D0A1E2809AD0A0C2B0D0A0D194D0A1D1932E",
+      "new_hex": "257320D0BDD0B0D187D0B8D0BDD0B0D0B5D18220D0BCD0BED189D0BDD183D18E20D0B0D182D0B0D0BAD1832E",
+      "restored_text": "%s начинает мощную атаку.",
+      "broadcast": 11423,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 117491,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "257320D0A0D086D0A1E280B9D0A1D082D0A1E280B9D0A0D086D0A0C2B0D0A0C2B5D0A1E2809AD0A1D083D0A1D08F20D0A0D085D0A0C2B020D0A1D083D0A0D086D0A0D195D0A0C2B1D0A0D195D0A0D291D0A1D19320D0A0D191D0A0C2B720D0A1D083D0A0D086D0A0D195D0A0C2B5D0A0D196D0A0D19520D0A0D194D0A0D195D0A0D194D0A0D195D0A0D085D0A0C2B020D0A0D197D0A0D195D0A0D29120D0A0D088D0A0C2BBD0A1D08AD0A0C2B5D0A0D19820D0A0D192D0A1E282ACD0A0D1912E",
+      "new_hex": "257320D0B2D18BD180D18BD0B2D0B0D0B5D182D181D18F20D0BDD0B020D181D0B2D0BED0B1D0BED0B4D18320D0B8D0B720D181D0B2D0BED0B5D0B3D0BE20D0BAD0BED0BAD0BED0BDD0B020D0BFD0BED0B420D0A3D0BBD18CD0B5D0BC20D090D188D0B82E",
+      "restored_text": "%s вырывается на свободу из своего кокона под Ульем Аши.",
+      "broadcast": 11426,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 118079,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0E2809DD0A0C2B5D0A1D082D0A0C2B6D0A0D191D0A1E2809AD0A0C2B5D0A1D083D0A1D08A20D0A0D197D0A0D195D0A0D291D0A0C2B0D0A0C2BBD0A1D08AD0A1E282ACD0A0C2B52C20D0A0C2B5D0A1D083D0A0C2BBD0A0D19120D0A0D085D0A0C2B520D0A1E280A6D0A0D195D0A1E2809AD0A0D191D0A1E2809AD0A0C2B520D0A0D197D0A0D195D0A0C2BBD0A1D193D0A1E280A1D0A0D191D0A1E2809AD0A1D08A20D0A1E2809ED0A0C2B5D0A0E28496D0A0C2B5D0A1D082D0A0D086D0A0C2B5D0A1D082D0A0D194D0A0D195D0A0D19820D0A0D08620D0A0D196D0A0C2BBD0A0C2B0D0A0C2B721",
+      "new_hex": "D094D0B5D180D0B6D0B8D182D0B5D181D18C20D0BFD0BED0B4D0B0D0BBD18CD188D0B52C20D0B5D181D0BBD0B820D0BDD0B520D185D0BED182D0B8D182D0B520D0BFD0BED0BBD183D187D0B8D182D18C20D184D0B5D0B9D0B5D180D0B2D0B5D180D0BAD0BED0BC20D0B220D0B3D0BBD0B0D0B721",
+      "restored_text": "Держитесь подальше, если не хотите получить фейерверком в глаз!",
+      "broadcast": 126575,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 118080,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0E28098D0A0C2B02DD0A0C2B1D0A0C2B0D0A1E280A621",
+      "new_hex": "D091D0B02DD0B1D0B0D18521",
+      "restored_text": "Ба-бах!",
+      "broadcast": 126576,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 118081,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19FD0A1D082D0A0D195D0A1E280A1D0A1D08A20D0A1D08320D0A0D198D0A0D195D0A0C2B5D0A0E2849620D0A0C2BBD0A0D195D0A0D291D0A0D194D0A0D1912C20D0A0D195D0A1D082D0A0D291D0A1E280B9D0A0D085D0A1D083D0A0D194D0A0D195D0A0C2B520D0A0D195D0A1E2809AD0A1D082D0A0D195D0A0D291D0A1D08AD0A0C2B521",
+      "new_hex": "D09FD180D0BED187D18C20D18120D0BCD0BED0B5D0B920D0BBD0BED0B4D0BAD0B82C20D0BED180D0B4D18BD0BDD181D0BAD0BED0B520D0BED182D180D0BED0B4D18CD0B521",
+      "restored_text": "Прочь с моей лодки, ордынское отродье!",
+      "broadcast": 126577,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 118082,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D19FD0A1D082D0A0D195D0A1E280A1D0A1D08A20D0A1D08320D0A0D198D0A0D195D0A0C2B5D0A0E2849620D0A0C2BBD0A0D195D0A0D291D0A0D194D0A0D1912C20D0A1E282ACD0A0D086D0A0C2B0D0A0C2BBD0A1D08A20D0A0D191D0A0C2B720D0A0D192D0A0C2BBD0A1D08AD0A1D08FD0A0D085D0A1D083D0A0C2B021",
+      "new_hex": "D09FD180D0BED187D18C20D18120D0BCD0BED0B5D0B920D0BBD0BED0B4D0BAD0B82C20D188D0B2D0B0D0BBD18C20D0B8D0B720D090D0BBD18CD18FD0BDD181D0B021",
+      "restored_text": "Прочь с моей лодки, шваль из Альянса!",
+      "broadcast": 126578,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 118083,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0D290D0A0D195D0A1E280A1D0A0C2B5D0A1E282ACD0A1D08A20D0A0D086D0A0C2B7D0A1D082D0A1E280B9D0A0D086D0A0D195D0A0D0863F20D0A0D08ED0A0C2B5D0A0E28496D0A1E280A1D0A0C2B0D0A1D08320D0A1D08F20D0A1E2809AD0A0C2B5D0A0C2B1D0A0C2B520D0A0D191D0A1E280A620D0A1D193D0A1D083D0A1E2809AD0A1D082D0A0D195D0A1D08B2C20D0A0D291D0A1D193D0A0C2B1D0A0D191D0A0D085D0A0C2B021",
+      "new_hex": "D0A5D0BED187D0B5D188D18C20D0B2D0B7D180D18BD0B2D0BED0B23F20D0A1D0B5D0B9D187D0B0D18120D18F20D182D0B5D0B1D0B520D0B8D18520D183D181D182D180D0BED18E2C20D0B4D183D0B1D0B8D0BDD0B021",
+      "restored_text": "Хочешь взрывов? Сейчас я тебе их устрою, дубина!",
+      "broadcast": 126579,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 118084,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "D0A0E2809CD0A1D082D0A0D195D0A0D085D0A0D196D0A0D19520D0A0D194D0A1D082D0A1D193D0A1E282ACD0A0D191D0A1E2809AD0A1D08A21",
+      "new_hex": "D093D180D0BED0BDD0B3D0BE20D0BAD180D183D188D0B8D182D18C21",
+      "restored_text": "Гронго крушить!",
+      "broadcast": 126580,
+      "context": {
+        "spawn_count": "1",
+        "group_rows": "1"
+      }
+    },
+    {
+      "table": "creature_text",
+      "key": {
+        "CreatureID": 128117,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "field": "Text",
+      "codec": "cp1251",
+      "old_hex": "7C54496E746572666163655C49636F6E735C4142494C4954595F4D4147455F44454550465245455A452E424C503A32307C74D0A0D19FD0A0D195D0A0D291D0A0D195D0A0E28496D0A0D291D0A0D191D0A1E2809AD0A0C2B520D0A0D19420D0A0C2B6D0A0C2B0D0A1D082D0A0D195D0A0D086D0A0D085D0A0C2B52120D0A0E28099D0A0D195D0A1E2809A2DD0A0D086D0A0D195D0A1E2809A20D0A0D197D0A1D082D0A0D195D0A0D191D0A0C2B7D0A0D195D0A0E28496D0A0D291D0A0C2B5D0A1E2809A207C6346464646303030307C487370656C6C3A3235313730397C685BD0A0E280BAD0A0C2B5D0A0D291D0A1D08FD0A0D085D0A0C2B0D0A1D08F20D0A0D086D0A1D083D0A0D197D0A1E280B9D0A1E282ACD0A0D194D0A0C2B05D7C687C7221",
+      "new_hex": "7C54496E746572666163655C49636F6E735C4142494C4954595F4D4147455F44454550465245455A452E424C503A32307C74D09FD0BED0B4D0BED0B9D0B4D0B8D182D0B520D0BA20D0B6D0B0D180D0BED0B2D0BDD0B52120D092D0BED1822DD0B2D0BED18220D0BFD180D0BED0B8D0B7D0BED0B9D0B4D0B5D182207C6346464646303030307C487370656C6C3A3235313730397C685BD09BD0B5D0B4D18FD0BDD0B0D18F20D0B2D181D0BFD18BD188D0BAD0B05D7C687C7221",
+      "restored_text": "|TInterface\\Icons\\ABILITY_MAGE_DEEPFREEZE.BLP:20|tПодойдите к жаровне! Вот-вот произойдет |cFFFF0000|Hspell:251709|h[Ледяная вспышка]|h|r!",
+      "broadcast": 136661,
+      "context": {
+        "spawn_count": "4",
+        "group_rows": "1"
+      }
+    }
+  ],
+  "checks": "Closed codec/ASCII invariance; actual TEMP install/replay/full-row snapshots and exact drift refusals; actual live full-column readback/RELEASED hash; paired/live native loaders/query/exact text builder/chat serializers. Prior400 templates/packets retained; normal Broadcast overrides preserved. Diagnostics clean.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json"
+}
