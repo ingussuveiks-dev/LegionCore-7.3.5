@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi ņem 10×10",
+  "baseline": "9e71028b9",
+  "status": "DATA_REPAIRED_DEPLOYED_NATIVE_LIVE_VERIFIED_CLIENT_TRAVERSAL_PENDING",
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 3404,
+    "result": "Fresh ready, all11 migrations88/89 read by native updater; graceful shutdown0/exit0/stderr0/gone; no user/unknown process stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_changed": false,
+    "binary_changed": false
+  },
+  "diagnostics": "Canonical and own diagnostics bracket every test: no new crash, appended DBErrors or unexplained server warning/error/assertion. One generator-wrapper compilation failure corrected: wrapper initially selected the retained FollowingGoLootNative.cpp instead of generated LayeredNative.cpp; no process ran/crash/log error. Matching corrected native tests pass. Preserve failure evidence until verified archival.",
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Original protected EXE/cache not executed/overwritten/deleted; mixed log not truncated. Unknown original LINKs not suppressed or archived as fixed."
+  },
+  "cleanup": "See layered-hundred-closeout-2026-11-15.json after source commits and verified archival.",
+  "remaining": "No new authenticated client traversal. Original100438 LINK10,100475 LINK7/8,103151 LINK2 remain unchanged/open; original Slaghammer fidelity and all36 full artifact chains remain unverified. These are100 individual data fields, not100 completed artifact quests.",
+  "count": 63,
+  "counting": "One fix per distinct gameobject_template entry/field. Native cases, locales, controls, repetitions and SQL file count add no fixes.",
+  "plan": "tools/tests/QuestChests20261115.json",
+  "static_templates": 6,
+  "static_spawns": 55,
+  "usage_boundary": "No placements added. Remaining templates have no static spawns in the current DB; dynamically spawned use has not been newly established. Correct template fields do not prove reachable gameplay.",
+  "data": {
+    "live_run": "build-extractors/runtime-test/layered-loot-data/20261115-203733-827",
+    "baseline_repair_replay": "Full-schema connection-local TEMP shadows, normalized complete-row signatures and unrelated239692 control, exact immutable metadata guards and idempotent replay.",
+    "expected_drift_refusals": 35,
+    "live": "Every full immutable-row guard and after-field value plus LF-normalized RELEASED updater SHA1 checked read-only."
+  },
+  "native": {
+    "paired": "build-extractors/runtime-test/layered-loot-native/20261115-203540-373",
+    "live": "build-extractors/runtime-test/layered-loot-native/20261115-203731-155",
+    "release_not_asan": true,
+    "privacy": "Readonly World/Hotfix; TEMP shadows only. Loot additionally uses readonly Login pool, controlled socketless Player sessions reclaimed at process exit to avoid account UPDATE. No Character pool, authentication or persisted player/item/progress manipulation.",
+    "actual": "Actual GameObject::Create/map admission/update, ObjectMgr/LootStore loaders and Player::SendLoot; paired old Data1=0 versus repaired source, two race bytes/factions, real20yd denial, authored loot owner and nonlink metadata comparisons. Native item/money inventory remains unchanged; no storage path executed.",
+    "quest_gates": "29 representative actual item objectives/Quest constructors loaded with exact captured quest/item/objective/amount. Actual HasQuestForItem and Loot::AllowedForPlayer checked in NONE/INCOMPLETE/COMPLETE states on both races; accepted fixture state is controlled, not a claim of quest acceptance. Open generation tested with the actual quest gate active.",
+    "limits": "Representative quest item per source; full source rows remain exact. Loot RNG drop count, opening-lock/cast/UI, inventory receipt, complete quest prerequisites, all objectives, abandonment/re-entry/shared-group behavior and reachable spawn traversal are not client-certified."
+  },
+  "cause": "63 chest templates have Data1=0 despite authored same-entry loot sources. Player::SendLoot skips FillLoot without the native GetLootId link; questItem hints or existing source rows alone cannot generate loot.",
+  "repair": "Set only Data1 to each existing authored loot entry. Preserve all source chances/counts/QuestRequired flags, every other template column and original quest objectives. No placement, new loot, item grant or quest progress grant.",
+  "migrations": [
+    "sql/updates/world/2026_11_15_89_loot_batch01.sql",
+    "sql/updates/world/2026_11_15_89_loot_batch02.sql",
+    "sql/updates/world/2026_11_15_89_loot_batch03.sql",
+    "sql/updates/world/2026_11_15_89_loot_batch04.sql",
+    "sql/updates/world/2026_11_15_89_loot_batch05.sql",
+    "sql/updates/world/2026_11_15_89_loot_batch06.sql",
+    "sql/updates/world/2026_11_15_89_loot_batch07.sql"
+  ],
+  "quest_required_sources": 29,
+  "source_rows": 569,
+  "shared_scan": "Zero template or negative-spawn SmartAI source1 rows; no alternate personal_loot preallocator, no source4 loot conditions, no referenced source loot rows. Data6/8/25/26 and AIName/ScriptName all remain empty/zero; full current fields/source signatures guarded.",
+  "group_pet_boundary": "Chest source generation remains actual Player::SendLoot. No combat death, pet/guardian ownership, eligible-group credit or native repeat/loot ownership rules changed. Native two-race and20yd distance controls are exercised; real group/pet/faction quest admission and traversal remain client checks."
+}
