@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini ar atvērtajiem un tad ņem10x10",
+  "baseline": "8697a9509",
+  "status": "ORIGINAL_FOUR_LINK_PAYLOADS_AND_CLIENT_FIDELITY_STILL_OPEN_NO_GAMEPLAY_CHANGE",
+  "current_capture": {
+    "file": ".codex/open-following-ten-ten-20261115/open-graphs.tsv",
+    "sha256": "4cb256b3209ec53dc9657a8f8bcff5c35f1a8f86885fd89dcdc5315da769514c",
+    "missing": [
+      [
+        100438,
+        9,
+        10
+      ],
+      [
+        100475,
+        1,
+        7
+      ],
+      [
+        100475,
+        6,
+        8
+      ],
+      [
+        103151,
+        1,
+        2
+      ]
+    ],
+    "meaning": "Read-only actual current graph. Prior marked101430 functional AttackStart LINK2 exists; authentic original payload/fidelity remains separate. Ponshu45440 is later campaign. No absent node was zeroed, hidden or replaced by a no-op."
+  },
+  "new_target105_history": {
+    "local_repository": "C:/wamp64/www/TrinityCore",
+    "introduced_implementation_commit": "bbdb70ed57887465f5e06a131c8326b71743950c",
+    "commit_date": "2021-12-29",
+    "title": "Core/Spells: Implemented target105 TARGET_UNIT_CASTER_AND_PASSENGERS",
+    "implementation": "Add actual caster and actual occupied vehicle seats, then native area target script/max-target/dispatch handling. Modern implementation changes shared target semantics; no matching735 behavioral proof recovered.",
+    "earlier_commit": "a44e1c505e",
+    "earlier_date": "2011-08-17",
+    "earlier_finding": "Initial target-category table already declared105 as NONE/NYI, not an accidental recent removal in this project. This bounds provenance and does not prove when client-side semantics originated.",
+    "primary_sources": [
+      "https://github.com/TrinityCore/TrinityCore/commit/bbdb70ed57887465f5e06a131c8326b71743950c",
+      "https://github.com/TrinityCore/TrinityCore/commit/a44e1c505e"
+    ],
+    "local_captures": [
+      ".codex/open-following-ten-ten-20261115/target105-history.txt",
+      ".codex/open-following-ten-ten-20261115/target105-reference.patch"
+    ],
+    "matching_native_evidence": "Prior tools/research/ArtifactOpenTarget105Catalog.cpp matching26972 catalog remains214 effects/28 child spell IDs. Native catalog/schema/binary were not changed or re-certified as client behavior.",
+    "search": "Fresh bounded exact web searches for target name plus7.3.5 and exact103151/202014/SmartScript tokens returned no accepted original implementation. Prior bounded donor/GitHub/video evidence retained; no new video playback claimed."
+  },
+  "decision": "Do not port a2021 shared selector or fabricate LiLi/Ponshu/EffectsBunny continuations merely to close an audit. Need accepted matching735 original source or observed full sequence supporting a clearly marked scoped functional reconstruction. Existing kite/return/Slaghammer repairs remain intact.",
+  "diagnostics": "Current read-only SQL exit0/EOF/stderr0 and before/after canonical diagnostics clean; no server launched/stopped for this open-item investigation. No credentials, account/character content or logs committed.",
+  "preserved": "Original Slaghammer protected executable/cache, original LINK/video/route evidence and mixed7111-byte DBErrors remain outside fixed and untouched. All36 whole client chains and original reconstruction fidelity stay pending.",
+  "next": "Continue independent additional repairs; do not count this investigation as a fix."
+}
