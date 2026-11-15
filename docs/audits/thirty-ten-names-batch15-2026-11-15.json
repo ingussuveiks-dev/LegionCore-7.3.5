@@ -1,0 +1,210 @@
+{
+  "date": "2026-11-15",
+  "batch": 15,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch15.sql",
+  "migration_sha256": "09307e62b69e199db86c5858a5f522ffb83bacdc5134a6b088fd59b3a5efe450",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 237454,
+      "old_hex": "506F7274616C20C390C5B8C391E282ACC390C2B8C390C2B7C391E280B9C390C2B2C390C2B0",
+      "new_hex": "506F7274616C20D09FD180D0B8D0B7D18BD0B2D0B0",
+      "restored_name": "Portal Призыва",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "237454",
+          "175498",
+          "250739",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237456,
+      "old_hex": "C390C5B8C391C692C391E2809AC390C2B5C390C2B2C390C2BEC390C2B4C390C2BDC391E280B9C390C2B920C391C281C390C2B2C390C2B5C391E2809A",
+      "new_hex": "D09FD183D182D0B5D0B2D0BED0B4D0BDD18BD0B920D181D0B2D0B5D182",
+      "restored_name": "Путеводный свет",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "237456",
+          "175509",
+          "250764",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237588,
+      "old_hex": "436C61736820C391C28120C390C2BFC390C2B0C391E282ACC390C2BEC390C2B2C390C2BEC390C2B7C390C2BEC390C2BC",
+      "new_hex": "436C61736820D18120D0BFD0B0D180D0BED0B2D0BED0B7D0BED0BC",
+      "restored_name": "Clash с паровозом",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "237588",
+          "176082",
+          "251883",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 239080,
+      "old_hex": "436865737420C391C28120C390C2BDC390C2B0C390C2B3C391E282ACC390C2B0C390C2B4C390C2BEC390C2B920416C6C69616E6365",
+      "new_hex": "436865737420D18120D0BDD0B0D0B3D180D0B0D0B4D0BED0B920416C6C69616E6365",
+      "restored_name": "Chest с наградой Alliance",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "239080",
+          "178238",
+          "255619",
+          "76",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 247024,
+      "old_hex": "506F7274616C20C390C2B220C390E28094C390C2B0C390C2BB20C390C2A1C391E2809AC391E282ACC390C2B0C390C2B6C390C2B0",
+      "new_hex": "506F7274616C20D0B220D097D0B0D0BB20D0A1D182D180D0B0D0B6D0B0",
+      "restored_name": "Portal в Зал Стража",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "247024",
+          "204454",
+          "301740",
+          "171",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 251259,
+      "old_hex": "436C61736820C391E280A0C390C2B8C390C2BBC390C2B8C390C2BDC390C2B4C391E282ACC390C2BEC390C2B2",
+      "new_hex": "436C61736820D186D0B8D0BBD0B8D0BDD0B4D180D0BED0B2",
+      "restored_name": "Clash цилиндров",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "251259",
+          "215669",
+          "320693",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 251708,
+      "old_hex": "C390C5B8C391E282ACC390C2B8C390C2B7C391E282ACC390C2B0C391E280A1C390C2BDC391E280B9C390C2B920466C6F6174",
+      "new_hex": "D09FD180D0B8D0B7D180D0B0D187D0BDD18BD0B920466C6F6174",
+      "restored_name": "Призрачный Float",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "251708",
+          "218375",
+          "325132",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 229026,
+      "old_hex": "C390C2A2C390C2B5C390C2BCC390C2BDC391E280B9C390C2B520C390C2B2C391E282ACC390C2B0C391E2809AC390C2B0",
+      "new_hex": "D0A2D0B5D0BCD0BDD18BD0B520D0B2D180D0B0D182D0B0",
+      "restored_name": "Темные врата",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest",
+        "script"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 248419,
+      "old_hex": "C390C2A2C390C2B0C391C281C390C2B4C390C2BEC391E282ACC390C2B02C20C390C2BDC390C2B0C391C281C390C2BBC390C2B5C390C2B4C390C2B8C390C2B520C390E28099C390C2B5C391E2809AC391E282ACC390C2BEC390C2BAC391E282ACC391E280B9C390C2BBC391E280B9C391E280A6",
+      "new_hex": "D0A2D0B0D181D0B4D0BED180D0B02C20D0BDD0B0D181D0BBD0B5D0B4D0B8D0B520D092D0B5D182D180D0BED0BAD180D18BD0BBD18BD185",
+      "restored_name": "Тасдора, наследие Ветрокрылых",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "sai",
+        "loot",
+        "script"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 254087,
+      "old_hex": "C390C5A1C390C2BBC390C2B8C390C2BDC390C2BAC390C2B820C390C2A3C390C2B6C390C2B0C391C281C390C2B0",
+      "new_hex": "D09AD0BBD0B8D0BDD0BAD0B820D0A3D0B6D0B0D181D0B0",
+      "restored_name": "Клинки Ужаса",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot",
+        "script"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
