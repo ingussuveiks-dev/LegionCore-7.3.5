@@ -109,6 +109,13 @@
       "remaining": "No end-to-end certification from compilation, native endpoint harnesses or structural enumeration. No authenticated client available this turn; manual-login assistance question remains unanswered."
     }
   ],
+  "latest_open_followup": {
+    "date": "2026-11-15",
+    "audit": "docs/audits/artifact-open-followup-2026-11-15.json",
+    "state": "FIVE_MISSING_LINK_PAYLOADS_AND_CLIENT_FIDELITY_REMAIN_OPEN",
+    "finding": "Current World graph still has100438/10,100475/7/8,101430/2,103151/2. Matching26972 native reader enumerated214 effects using NYI target105, including Monk202478 and217819. Modern caster/passengers reference is a research lead, not a verified735 implementation or a missing LINK payload. No production artifact behavior changed in this followup.",
+    "no_recount": "Research and previous functional Yigthregor/return repairs are not counted as new fixes."
+  },
   "current_native_checks": {
     "Sharasdal": 68,
     "FuZan": 22,

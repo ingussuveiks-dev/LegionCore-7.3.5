@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-15",
+  "request": "Continue open artifact issues before30x5",
+  "status": "INVESTIGATED_ORIGINAL_LINK_PAYLOADS_AND_CLIENT_FIDELITY_STILL_OPEN",
+  "baseline_commit": "81d74713705b2a2f155844b0a7331339cb4b2319",
+  "previous_evidence": [
+    "docs/audits/artifact-open-reconciliation-2026-11-14.json",
+    "docs/audits/shared-link2-followup-2026-11-13.json",
+    "docs/audits/monk-crane-dialogue-research-2026-10-29.json",
+    "docs/audits/fuzan-yigthregor-reconstruction-2026-11-15.json"
+  ],
+  "current_graph": {
+    "sha256": "92cc57be01dccce84ff6e6faaf6112b604de8f46cf28d911c0c8a7710aa006a4",
+    "missing": [
+      [
+        100438,
+        9,
+        10
+      ],
+      [
+        100475,
+        1,
+        7
+      ],
+      [
+        100475,
+        6,
+        8
+      ],
+      [
+        101430,
+        1,
+        2
+      ],
+      [
+        103151,
+        1,
+        2
+      ]
+    ],
+    "writes": false,
+    "meaning": "Current read-only World capture retains the five missing LINK targets. No new original continuation recovered. Ponshu45440 is later campaign, not initial artifact admission."
+  },
+  "target105": {
+    "finding": "Matching26972 typed DB2/hotfix reader enumerated269891 SpellEffect records,214 effects using105 and28 child spell IDs.202478 forces202481 and217819 forces217820 through105. Current core metadata is NYI/referenceNONE; no target105 selection handler.",
+    "catalog_sha256": "21748d06c0a985116af8144551690acc00d83a7272b8bdc3a55309eec507464d",
+    "source": "tools/research/ArtifactOpenTarget105Catalog.cpp",
+    "native_source_sha256": "3d75dbe41df1f87a7b22acb2b25a41b23205d55dc0d79e9c86cd1ec8377f552a",
+    "modern_reference": {
+      "repository": "C:/wamp64/www/TrinityCore",
+      "head": "eaa32415b0",
+      "files": [
+        "src/server/game/Spells/Spell.cpp:1378",
+        "src/server/game/Spells/SpellInfo.cpp:353",
+        "src/server/game/Miscellaneous/SharedDefines.h:3065"
+      ],
+      "behavior": "Modern reference105 adds caster and each actual occupied vehicle seat; target95 is a different passenger target. Modern selection is not proof of Legion semantics.",
+      "primary_source": "https://github.com/TrinityCore/TrinityCore/blob/eaa32415b0/src/server/game/Spells/Spell.cpp"
+    },
+    "external_search": "Bounded GitHub/web queries for735 target105 plus217819 did not recover a matching735 handler. Current official Trinity documentation corroborates modern naming only. No claim of exhaustive absence.",
+    "remaining": "Need compatible735 semantics and native coverage of all affected target selection, caster/passenger/foreign/nested vehicles, implicit conditions and force-cast paths before a shared core change. This is a lead, not a completed gameplay fix.",
+    "preserved_functional_return": "Current Fu Zan return waits for native dismount spline then player-casts scoped child217820. Blindly swapping a vehicle-targeted parent after dismount cannot establish passenger selection or authentic arrival flight. No deployed return behavior changed."
+  },
+  "remaining": [
+    "Original101430/103151 id2 payloads and100475 id7/id8/100438 id10",
+    "Fu Zan exact original flight/Yigthregor trajectory authenticity",
+    "Latest Warrior finale/return presentation and Sharasdal living Lady client fidelity",
+    "All36 complete client artifact chains, voice/camera/pet/group/re-entry variants"
+  ],
+  "no_recount": "Research and214 target records are not counted among150 new repairs. Functional Yigthregor/return fixes from previous commits are not counted again.",
+  "diagnostics": "Before/after canonical+catalog runtime snapshots clean; native catalog and SQL exit0 with complete EOF. No client/login or production binary/data change for this investigation.",
+  "preserved": {
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors_bytes": 7111,
+    "Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "original_video_route_LINK2_evidence": "Retained outside fixed; no log suppression/truncation, no no-op/zero-link or invented cleanup."
+  }
+}
