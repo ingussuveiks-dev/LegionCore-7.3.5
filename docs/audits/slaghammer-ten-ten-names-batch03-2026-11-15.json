@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-15",
+  "batch": 3,
+  "count": 10,
+  "kind": "Ten distinct spawned GameObject name encoding repairs; not ten quest mechanics",
+  "implementation": "sql/updates/world/2026_11_15_72_gameobject_name_batch3.sql",
+  "migration_sha256": "423fc59fada4be1780a594df3bb91ae3c35860748033e2fb7a5ebdbbef741dee",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_TEXT_CACHE_RENDERING_PENDING",
+  "repairs": [
+    {
+      "entry": 245931,
+      "old_hex": "C390C2A1C390C2BAC390C2BBC390C2B0C390C2B4",
+      "new_hex": "D0A1D0BAD0BBD0B0D0B4",
+      "restored_name": "Склад",
+      "spawns": 1,
+      "maps": "1220"
+    },
+    {
+      "entry": 246170,
+      "old_hex": "4C6F77C391E280B9204368616972",
+      "new_hex": "4C6F77D18B204368616972",
+      "restored_name": "Lowы Chair",
+      "spawns": 1,
+      "maps": "1860"
+    },
+    {
+      "entry": 246421,
+      "old_hex": "C390C5B8C390C2B8C391E282ACC390C2B0C391E2809AC391C281C390C2BAC390C2B8C390C2B920C391E2809EC390C2BBC390C2B0C390C2B3",
+      "new_hex": "D09FD0B8D180D0B0D182D181D0BAD0B8D0B920D184D0BBD0B0D0B3",
+      "restored_name": "Пиратский флаг",
+      "spawns": 1,
+      "maps": "1545"
+    },
+    {
+      "entry": 246422,
+      "old_hex": "C390E2809DC391E282ACC390C2B5C390C2B2C390C2BAC390C2BE20C391E2809EC390C2BBC390C2B0C390C2B3C390C2B0",
+      "new_hex": "D094D180D0B5D0B2D0BAD0BE20D184D0BBD0B0D0B3D0B0",
+      "restored_name": "Древко флага",
+      "spawns": 1,
+      "maps": "1545"
+    },
+    {
+      "entry": 246423,
+      "old_hex": "C390C5A1C391E282ACC391C692C390C2B6C390C2BAC390C2B0",
+      "new_hex": "D09AD180D183D0B6D0BAD0B0",
+      "restored_name": "Кружка",
+      "spawns": 1,
+      "maps": "1545"
+    },
+    {
+      "entry": 246428,
+      "old_hex": "22C390C5A1C391E282ACC390C2BEC390C2B2C390C2B0C390C2B2C390C2B0C391C28F20C390C2B7C390C2B0C390C2B2C390C2B5C391C281C390C2B022",
+      "new_hex": "22D09AD180D0BED0B2D0B0D0B2D0B0D18F20D0B7D0B0D0B2D0B5D181D0B022",
+      "restored_name": "\"Кровавая завеса\"",
+      "spawns": 1,
+      "maps": "1545"
+    },
+    {
+      "entry": 246475,
+      "old_hex": "C390C5A1C391E282ACC391C5BDC390C2BA",
+      "new_hex": "D09AD180D18ED0BA",
+      "restored_name": "Крюк",
+      "spawns": 2,
+      "maps": "1545"
+    },
+    {
+      "entry": 246518,
+      "old_hex": "C390C5BEC391E2809AC391C281C391E280B9C391E282ACC390C2B5C390C2B2C391CB86C390C2B8C390C2B9204368657374",
+      "new_hex": "D09ED182D181D18BD180D0B5D0B2D188D0B8D0B9204368657374",
+      "restored_name": "Отсыревший Chest",
+      "spawns": 2,
+      "maps": "1545"
+    },
+    {
+      "entry": 246539,
+      "old_hex": "C390E28094C390C2B0C391E280A1C390C2B0C391E282ACC390C2BEC390C2B2C391E280B9C390C2B2C390C2B0C391C5BDC391E280B0C390C2B8C390C2B920536B756C6C",
+      "new_hex": "D097D0B0D187D0B0D180D0BED0B2D18BD0B2D0B0D18ED189D0B8D0B920536B756C6C",
+      "restored_name": "Зачаровывающий Skull",
+      "spawns": 1,
+      "maps": "1545"
+    },
+    {
+      "entry": 246779,
+      "old_hex": "C390C2A7C390C2B0C391CB86C390C2B020C391C281C390C2B8C390C2BBC391E280B9",
+      "new_hex": "D0A7D0B0D188D0B020D181D0B8D0BBD18B",
+      "restored_name": "Чаша силы",
+      "spawns": 12,
+      "maps": "1456,1458,1466,1477,1492,1493,1501,1516,1571,1651,1677,1753"
+    }
+  ],
+  "checks": "Strict byte reversal; TEMP install/replay; all other fields on101 templates/91 unrelated names; three exact refusal states; actual live full-column readback and RELEASED hash; actual native loader/locale/serializer paired and live checks. No new post-test diagnostics.",
+  "details": "docs/audits/slaghammer-ten-ten-names-2026-11-15.json"
+}
