@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 8,
+  "entries": [
+    {
+      "entry": 251746,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251747,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251748,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251749,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251750,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251751,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251752,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251753,
+      "name": "Treasure Chest"
+    },
+    {
+      "entry": 251754,
+      "name": "Glimmering Treasure Chest"
+    },
+    {
+      "entry": 251755,
+      "name": "Glimmering Treasure Chest"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_66_more_ten_chest_batch8.sql",
+  "sha256": "00d93546dc873e8e82376c3f8e6f19a256975299419a2a22513a9c2018673e42",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-8/result.json",
+    "sha256": "a782a18b83495747e961b2f5594b35abb51990e8113204af9779ea669db78fd0"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
