@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 21,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch21.sql",
+  "migration_sha256": "bbcee60345902618fea2ce77e097dc7127e3796c037c992ceac68ffe43e7db9c",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 228609,
+      "old_hex": "C390CB9CC390C2BDC390C2B3C391E282ACC390C2B5C390C2B4C390C2B8C390C2B5C390C2BDC391E2809AC391E280B920C390C2B4C390C2BBC391C28F20C390C2BDC390C2B0C390C2BBC390C2BEC390C2B6C390C2B5C390C2BDC390C2B8C391C28F20C391E280A1C390C2B0C391E282AC",
+      "new_hex": "D098D0BDD0B3D180D0B5D0B4D0B8D0B5D0BDD182D18B20D0B4D0BBD18F20D0BDD0B0D0BBD0BED0B6D0B5D0BDD0B8D18F20D187D0B0D180",
+      "restored_name": "Ингредиенты для наложения чар",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228615,
+      "old_hex": "C390CB9CC390C2BDC390C2B3C391E282ACC390C2B5C390C2B4C390C2B8C390C2B5C390C2BDC391E2809AC391E280B920C390C2B4C390C2BBC391C28F20C390C2BDC390C2B0C390C2BBC390C2BEC390C2B6C390C2B5C390C2BDC390C2B8C391C28F20C391E280A1C390C2B0C391E282AC",
+      "new_hex": "D098D0BDD0B3D180D0B5D0B4D0B8D0B5D0BDD182D18B20D0B4D0BBD18F20D0BDD0B0D0BBD0BED0B6D0B5D0BDD0B8D18F20D187D0B0D180",
+      "restored_name": "Ингредиенты для наложения чар",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228616,
+      "old_hex": "C390C2A1C391E2809AC390C2BEC390C2BFC390C2BAC390C2B020C390C2BAC390C2BDC390C2B8C390C2B3",
+      "new_hex": "D0A1D182D0BED0BFD0BAD0B020D0BAD0BDD0B8D0B3",
+      "restored_name": "Стопка книг",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228618,
+      "old_hex": "C390C5A1C391C692C390C2BFC390C2B5C390C2BBC391C59220C391C281C391C692C391E280B0C390C2BDC390C2BEC391C281C391E2809AC390C2B8",
+      "new_hex": "D09AD183D0BFD0B5D0BBD18C20D181D183D189D0BDD0BED181D182D0B8",
+      "restored_name": "Купель сущности",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228619,
+      "old_hex": "C390CB9CC390C2BDC390C2B3C391E282ACC390C2B5C390C2B4C390C2B8C390C2B5C390C2BDC391E2809AC391E280B920C390C2B4C390C2BBC391C28F20C390C2BDC390C2B0C390C2BBC390C2BEC390C2B6C390C2B5C390C2BDC390C2B8C391C28F20C391E280A1C390C2B0C391E282AC",
+      "new_hex": "D098D0BDD0B3D180D0B5D0B4D0B8D0B5D0BDD182D18B20D0B4D0BBD18F20D0BDD0B0D0BBD0BED0B6D0B5D0BDD0B8D18F20D187D0B0D180",
+      "restored_name": "Ингредиенты для наложения чар",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228621,
+      "old_hex": "C390CB9CC390C2BDC390C2B3C391E282ACC390C2B5C390C2B4C390C2B8C390C2B5C390C2BDC391E2809AC391E280B920C390C2B4C390C2BBC391C28F20C390C2BDC390C2B0C390C2BBC390C2BEC390C2B6C390C2B5C390C2BDC390C2B8C391C28F20C391E280A1C390C2B0C391E282AC",
+      "new_hex": "D098D0BDD0B3D180D0B5D0B4D0B8D0B5D0BDD182D18B20D0B4D0BBD18F20D0BDD0B0D0BBD0BED0B6D0B5D0BDD0B8D18F20D187D0B0D180",
+      "restored_name": "Ингредиенты для наложения чар",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228658,
+      "old_hex": "C390C5B8C391C692C390C2B7C391E280B9C391E282ACC390C2B5C390C2BA20C390C2B7C390C2B5C390C2BBC390C2B5C390C2BDC391E280B9C391E280A620C391E280A1C390C2B5C391E282ACC390C2BDC390C2B8C390C2BB",
+      "new_hex": "D09FD183D0B7D18BD180D0B5D0BA20D0B7D0B5D0BBD0B5D0BDD18BD18520D187D0B5D180D0BDD0B8D0BB",
+      "restored_name": "Пузырек зеленых чернил",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228659,
+      "old_hex": "5461626C6520C390C2BDC390C2B0C391E280A1C390C2B5C391E282ACC391E2809AC390C2B0C391E2809AC390C2B5C390C2BBC391C28F",
+      "new_hex": "5461626C6520D0BDD0B0D187D0B5D180D182D0B0D182D0B5D0BBD18F",
+      "restored_name": "Table начертателя",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228662,
+      "old_hex": "5461626C6520C390C2BDC390C2B0C391E280A1C390C2B5C391E282ACC391E2809AC390C2B0C391E2809AC390C2B5C390C2BBC391C28F",
+      "new_hex": "5461626C6520D0BDD0B0D187D0B5D180D182D0B0D182D0B5D0BBD18F",
+      "restored_name": "Table начертателя",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 228690,
+      "old_hex": "C390C2A0C391C692C390C2BBC390C2BEC390C2BD20C390C2B0C390C2BAC390C2B2C390C2B0C390C2BCC390C2B0C391E282ACC390C2B8C390C2BDC390C2BEC390C2B2C390C2BEC390C2B920C391E2809AC390C2BAC390C2B0C390C2BDC390C2B8",
+      "new_hex": "D0A0D183D0BBD0BED0BD20D0B0D0BAD0B2D0B0D0BCD0B0D180D0B8D0BDD0BED0B2D0BED0B920D182D0BAD0B0D0BDD0B8",
+      "restored_name": "Рулон аквамариновой ткани",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
