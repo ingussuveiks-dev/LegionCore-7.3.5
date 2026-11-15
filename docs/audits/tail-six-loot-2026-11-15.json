@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-15",
+  "baseline": "cf1182f05",
+  "request": "Turpini30×10",
+  "requested_gameplay_total": 300,
+  "status": "FOCUSED_REPAIR_DEPLOYED_TESTED_CLIENT_PENDING_NOT_300_COMPLETE",
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "CEE238C62FB79EBB1166BCF2453F00B5907394217DF458F4F4780FF61AB70F38",
+    "owned_pid": 11120,
+    "result": "Canonical ready after migration90 and staged exact final-link inputs; graceful shutdown0/exit0/stderr0/gone. No user/unknown process stopped."
+  },
+  "diagnostics": "No new canonical/own crash, appended DBErrors or unexplained runtime warning/error/assertion. Counterfactual ASAN failures and fixture/debug iterations are classified separately; see closeout.",
+  "preserved": "Original protected Slaghammer EXE/cache B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C and mixed7111-byte DBErrors FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged. Never executed/overwritten/deleted/cleared/archived as fixed.",
+  "cleanup": "See next-eight-closeout-2026-11-15.json after focused source commits and verified cleanup.",
+  "count": 6,
+  "cause": "Five chest templates and one fishing-hole template have Data1=0 despite their existing authored same-entry sources. GetLootId/Player::SendLoot skips FillLoot without a link.",
+  "repair": "Set only those six Data1 fields to existing source IDs; preserve all template fields, authored source quantities/chances/QuestRequired/LootMode and actual quest objectives. No new placement/item/progression grant.",
+  "plan": "tools/tests/TailLoot20261115.json",
+  "migration": "sql/updates/world/2026_11_15_90_tail_loot.sql",
+  "entries": [
+    211423,
+    269138,
+    272009,
+    272010,
+    272387,
+    273274
+  ],
+  "usage": "211423 Shipwreck Debris has24 current static spawns. Other five templates have no static placement; dynamic use is not newly established.",
+  "native": {
+    "paired": "See retained paired run native-inputs/process-result in tail-loot-native; no client certificate.",
+    "live": "build-extractors/runtime-test/tail-loot-native/20261115-214002-376",
+    "actual": "Actual ObjectMgr/LootStore/GetLootId/GameObject creation/map readiness/Player::SendLoot and authored loot owner; two race bytes, ordinary20yd denial, owned container generation. Four actual item-objective gates use Quest constructor, HasQuestForItem and Loot::AllowedForPlayer at NONE/INCOMPLETE/COMPLETE. No Character database or persisted progress/inventory/money writes.",
+    "fishing": "LOOT_FISHINGHOLE intentionally permits the pool at20yd; this native exception is tested independently, while ordinary LOOT_CORPSE still denies at20yd. Source80830 LootMode0 is native all-mode behavior and is unchanged.",
+    "limits": "Controlled map and accepted quest-state fixture. No actual fishing cast/loot receipt/client opening-lock/camera/equipment, complete quest admission/traversal/group/re-entry/drop RNG or placement claim."
+  },
+  "data": {
+    "live": "build-extractors/runtime-test/tail-loot-data/20261115-214001-338",
+    "checks": "Full-schema TEMP shadows, baseline/repair/idempotent replay, normalized complete-row/source signatures, unrelated239692 control, five exact custom-link/metadata/missing/source drift refusals. All six live full immutable-row guards/source signatures and RELEASED LF-normalized updater SHA1 verified."
+  },
+  "remaining": "This is six new data-field fixes, not six full quests; original four missing LINK payloads and all36 full artifact chains remain open."
+}
