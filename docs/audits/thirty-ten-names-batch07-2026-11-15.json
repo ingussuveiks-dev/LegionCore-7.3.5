@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-15",
+  "batch": 7,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch07.sql",
+  "migration_sha256": "c2fae56e18c2d19f3fadf4f4e446f2110082f56e48b8e4be0973f022a167d0d2",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 233951,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C59220C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC391E282ACC391C692C390C2BAC390C2B0",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C20D0A7D0B5D180D0BDD0BED180D183D0BAD0B0",
+      "restored_name": "Тигель Чернорука",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233952,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C59220C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC391E282ACC391C692C390C2BAC390C2B0",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C20D0A7D0B5D180D0BDD0BED180D183D0BAD0B0",
+      "restored_name": "Тигель Чернорука",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233953,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C59220C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC391E282ACC391C692C390C2BAC390C2B0",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C20D0A7D0B5D180D0BDD0BED180D183D0BAD0B0",
+      "restored_name": "Тигель Чернорука",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233954,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C59220C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC391E282ACC391C692C390C2BAC390C2B0",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C20D0A7D0B5D180D0BDD0BED180D183D0BAD0B0",
+      "restored_name": "Тигель Чернорука",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 234028,
+      "old_hex": "C390E28094C390C2B0C390C2B3C391E282ACC391C692C390C2B7C391E280A1C390C2B8C390C2BA20C390C2B1C390C2BEC390C2B5C390C2BFC391E282ACC390C2B8C390C2BFC390C2B0C391C281C390C2BEC390C2B2",
+      "new_hex": "D097D0B0D0B3D180D183D0B7D187D0B8D0BA20D0B1D0BED0B5D0BFD180D0B8D0BFD0B0D181D0BED0B2",
+      "restored_name": "Загрузчик боеприпасов",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 234029,
+      "old_hex": "446F6F7220C390C5A1C391E282ACC390C2BEC390C2BCC390C2BEC390C2B3C390C2B0",
+      "new_hex": "446F6F7220D09AD180D0BED0BCD0BED0B3D0B0",
+      "restored_name": "Door Кромога",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 234745,
+      "old_hex": "53746F6C656E20C391C281C390C2B5C390C2B9C391E2809E20C390C2A8C390C2B0C391E2809AC390C2B0C391E282AC",
+      "new_hex": "53746F6C656E20D181D0B5D0B9D18420D0A8D0B0D182D0B0D180",
+      "restored_name": "Stolen сейф Шатар",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 236839,
+      "old_hex": "446F6F7220C390C5A1C391E282ACC390C2BEC390C2BCC390C2BEC390C2B3C390C2B0",
+      "new_hex": "446F6F7220D09AD180D0BED0BCD0BED0B3D0B0",
+      "restored_name": "Door Кромога",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 236840,
+      "old_hex": "446F6F7220C390C5A1C391E282ACC390C2BEC390C2BCC390C2BEC390C2B3C390C2B0",
+      "new_hex": "446F6F7220D09AD180D0BED0BCD0BED0B3D0B0",
+      "restored_name": "Door Кромога",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 236842,
+      "old_hex": "446F6F7220C390C5B8C391E280B9C390C2BBC390C2B0C391C5BDC391E280B0C390C2B5C390C2B3C390C2BE20C390C2B8C391C281C391E2809AC390C2BEC391E280A1C390C2BDC390C2B8C390C2BAC390C2B0",
+      "new_hex": "446F6F7220D09FD18BD0BBD0B0D18ED189D0B5D0B3D0BE20D0B8D181D182D0BED187D0BDD0B8D0BAD0B0",
+      "restored_name": "Door Пылающего источника",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
