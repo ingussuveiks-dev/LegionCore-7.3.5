@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 4,
+  "entries": [
+    {
+      "entry": 244694,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 244699,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 244700,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 244701,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 245316,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 245345,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 245847,
+      "name": "Spoils of the Worthy"
+    },
+    {
+      "entry": 245849,
+      "name": "Ð¡Ð²Ð°Ð»ÑŒÐ½Ð³Ð°Ñ€Ð´"
+    },
+    {
+      "entry": 245934,
+      "name": "Heart of Zin-Azshari"
+    },
+    {
+      "entry": 245935,
+      "name": "chip of adamant armour"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_62_more_ten_chest_batch4.sql",
+  "sha256": "a005f6a54b22f2856a1abd2038cb41f53b0fcb86076762d8688fd17cdafe327b",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-4/result.json",
+    "sha256": "7f806c07fc3d0a6f3456e1224308e1cb5e3007ac020c236002b9f398501f5fe6"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
