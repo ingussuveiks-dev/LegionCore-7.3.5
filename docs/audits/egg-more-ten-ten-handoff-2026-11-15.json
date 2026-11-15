@@ -1,0 +1,226 @@
+{
+  "date": "2026-11-15",
+  "request": "Pabeidz atvērto un ņem10x10",
+  "status": "MARKED_EGG_RECONSTRUCTION_PLUS100_DISTINCT_DATA_REPAIRS_DEPLOYED_PUSHED_CLEANED_CLIENT_PENDING",
+  "open_resolution": {
+    "entry": 239692,
+    "commit": "72b4dab03",
+    "audit": "docs/audits/arcane-egg179109-resolution-2026-11-15.json",
+    "limit": "Functional reconstruction of missing179109 action, not recovered original spell metadata or client fidelity proof."
+  },
+  "additional": {
+    "count": 100,
+    "groups": 10,
+    "per_group": 10,
+    "audit": "docs/audits/more-ten-ten-2026-11-15.json",
+    "kind": "Existing chest source Data1 links; not100 whole artifact quests. Original455 sources excluded. Krosus248513 preallocation retained unchanged after rejected uncommitted selection; final substitution266951."
+  },
+  "batch_commits": [
+    {
+      "commit": "2151dedcfebb634e24542a2752e4ed37f44b800e",
+      "batch": 1,
+      "entries": [
+        240649,
+        240855,
+        241216,
+        241267,
+        241272,
+        241449,
+        241450,
+        241504,
+        241524,
+        241553
+      ]
+    },
+    {
+      "commit": "1050be7ce500a8acc77cdd375193b2bfb9552483",
+      "batch": 2,
+      "entries": [
+        241561,
+        241563,
+        241565,
+        241566,
+        241600,
+        241601,
+        241605,
+        241666,
+        241673,
+        241674
+      ]
+    },
+    {
+      "commit": "dcc445f981504288e631b6b7b005cb3cda5efeab",
+      "batch": 3,
+      "entries": [
+        241835,
+        241841,
+        241848,
+        242649,
+        243693,
+        243794,
+        243860,
+        244689,
+        244691,
+        244692
+      ]
+    },
+    {
+      "commit": "cd8d33fb4c2d478863a2a6cc75a6b3eed28e302e",
+      "batch": 4,
+      "entries": [
+        244694,
+        244699,
+        244700,
+        244701,
+        245316,
+        245345,
+        245847,
+        245849,
+        245934,
+        245935
+      ]
+    },
+    {
+      "commit": "f9d441f408442c18a25d82cf1d24719ced01fae1",
+      "batch": 5,
+      "entries": [
+        245936,
+        245937,
+        245938,
+        245996,
+        246036,
+        246125,
+        246147,
+        246249,
+        246309,
+        246519
+      ]
+    },
+    {
+      "commit": "76d691cea04d7acdfc7dbac2dff14f15f28b9eff",
+      "batch": 6,
+      "entries": [
+        246555,
+        246556,
+        246557,
+        246558,
+        246559,
+        246560,
+        246561,
+        246562,
+        247500,
+        266951
+      ]
+    },
+    {
+      "commit": "72967847ab769c48fab14a10f0b72bea30929484",
+      "batch": 7,
+      "entries": [
+        248887,
+        248930,
+        249024,
+        249460,
+        249462,
+        249733,
+        251641,
+        251668,
+        251669,
+        251745
+      ]
+    },
+    {
+      "commit": "ff90b1faa2dd247a78bab8b9227172a074cc6355",
+      "batch": 8,
+      "entries": [
+        251746,
+        251747,
+        251748,
+        251749,
+        251750,
+        251751,
+        251752,
+        251753,
+        251754,
+        251755
+      ]
+    },
+    {
+      "commit": "b198025a12135689da54a81aaea4b42ba72efdd9",
+      "batch": 9,
+      "entries": [
+        251756,
+        251757,
+        251758,
+        251759,
+        251953,
+        251954,
+        252056,
+        252160,
+        252162,
+        252266
+      ]
+    },
+    {
+      "commit": "f1822e35792bd1a274c9ccb7f66140b71ba4d0e8",
+      "batch": 10,
+      "entries": [
+        252410,
+        252443,
+        252452,
+        252665,
+        252668,
+        252671,
+        252674,
+        252677,
+        252680,
+        252683
+      ]
+    }
+  ],
+  "canonical": {
+    "bnetserver.exe": "D73FF69B757ED78695500D5440BE6E4D44B9356C95CF082461238D48D8F8816E",
+    "logs/DBErrors.log": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "worldserver.exe": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "worldserver.map": "75AA988BFE314B49798ECBA90A8283B4CA587FD5185019820CDE70C7BC60BAA6",
+    "bnetserver.map": "9EE67C2763FC2DB5E2BE2E0B6B24321763EE63632B911EB3C7EF759D8AFCCD31"
+  },
+  "final_ready": "Owned canonicalPID33856 after cleanup reached fresh ready, graceful shutdown0/exit0/gone, stderr0; final diagnostics contain no new/changed crashes, appended DBErrors or server warnings/errors/assertions. No user/unknown server stopped and no task server left running.",
+  "checks": "Both faction native egg spell/source/guard/loot/inventory/objective regressions; staged/canonical linked two factories and native combat calls; deployed Scepter login; final100 pending/live native generation pairs,10 final shadow cohorts and100 actual readbacks; owned canonical startup/updater/replay and final post-cleanup startup. Actual authenticated client traversal is separate.",
+  "native_wrapper": "Default schema arguments now use actual live World/Hotfix after owned private schemas were dropped. Explicit private names remain allowlisted. This is the same empty-argument path already exercised by egg-native-live, with AST syntax checked again after cleanup; no new production build needed.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/egg-more-ten-ten-2026-11-15",
+    "original_manifest_sha256": "D78AA50614446CEA53DA92055801D561EB977B403B9085E9D698424FBED5F307",
+    "original_files": 1174,
+    "supplement_files": 27,
+    "supplement_manifest_sha256": "40ED42FC38BC7271268861DE9E74EF82D492EC3D2D5A890D0BD4BE0E8B8D1DC9",
+    "mapping": "Prior .codex/egg-hundred-20261115/<relative> diagnostics are preserved as fixed/egg-more-ten-ten-2026-11-15/task/<relative>; old .codex/open-hundred-20261115/next-native-pending evidence as original-egg-admission/<relative>. Input hashes in earlier audits identify original bytes; reviewed private Server/stderr logs were subsequently cleared after verified archival. Canonical mixed DBErrors was not archived as resolved or truncated. Original179109 early guard failure resolved operationally by actual new native regression, not rerunning the old pre-modifier-bootstrap binary.",
+    "supplement": "final-supplement includes exact cleanup manifest, final diagnostics and owned process captures."
+  },
+  "cleanup": {
+    "removed_files": 116,
+    "reclaimed_bytes": 6585394728,
+    "reclaimed_decimal_GB": 6.59,
+    "manifest_sha256": "85805c14745ef825fbbdcaa9c24d1e0dcc63546c4e7b5dbfdb56169b8b073e3e",
+    "two_owned_private_schemas_and_all_schema_table_grants_removed": true,
+    "retained": [
+      ".codex/release-before-arcane-egg-20261115 coherent prior EXE/maps; rollback data/bindings together",
+      ".codex/egg-hundred-20261115/mixology.mp4 plus info and sampled contact sheets for still-open retail fidelity",
+      "Regression source/research and all older unresolved evidence"
+    ],
+    "no_runtime_dumps_configs_credentials_or_character_data_committed": true
+  },
+  "preserved": {
+    "SlaghammerHandoffNative_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "Defender": "Quarantine and security boundaries unchanged.",
+    "configuration": "Runtime conf/cert/DLL hashes retained across promotion/owned startup/cleanup; extracted data unchanged."
+  },
+  "still_open": [
+    "Exact retail179109 payload/radius/chance/guard count, actual egg channel/visual/audio/turn-in and pet/group/one-hit/real evade/re-entry client cases.",
+    "Original LINK payloads101430/103151 id2,100475 id7/id8 and100438 id10; useful Slaghammer/mixed diagnostics retained.",
+    "Authentic Fu Zan/Yigthregor movement and latest Warrior/Sharasdal client presentation.",
+    "All36 complete artifact chains and whole affected instances/scenarios remain client-pending; native generation is not whole-chain certification."
+  ],
+  "final_diagnostics_sha256": "C14E1AB15301614F4066F6E265454EBF7A73A31D22D00B27D55A453565F7B04C"
+}

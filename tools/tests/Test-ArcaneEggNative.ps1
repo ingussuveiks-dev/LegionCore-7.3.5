@@ -1,4 +1,4 @@
-param([switch]$VerifyLiveData,[string]$HotfixSchema="codex_egg_hotfix_20261115",[string]$WorldSchema="codex_egg_world_20261115",[string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/arcane-egg-native")
+param([switch]$VerifyLiveData,[string]$HotfixSchema="",[string]$WorldSchema="",[string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/arcane-egg-native")
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @($repo) -Test {
  $plan=Get-Content "$PSScriptRoot/ArcaneEgg20261115Source.json" -Raw|ConvertFrom-Json

@@ -117,5 +117,6 @@
   },
   "boundaries": "Native actual GetLootId/SendLoot/FillLoot use controlled positions, socketless player and independent cooldown inputs. Data1 is the only final100 source delta. Do not claim probability/item receipt, authenticated save, real locks/visibility, boss/challenge/army completion, group eligibility, client traversal or100 whole artifact quests. No progression or kill-credit code changed; native player/pet/guardian/group handling retained but full related client paths remain pending.",
   "preserved": "Canonical configuration/certs/DLL/data, mixed7111-byte DBErrors hashfa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1, original SlaghammerHandoffNative.exe hashb231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c and Defender quarantine unchanged. Older LINK2/Slaghammer, authentic egg spell metadata and all36 full artifact chains still explicitly pending.",
-  "archive": "Final fixed/egg-more-ten-ten-2026-11-15 archive/cleanup handoff records hashes, reclaimed bytes, owned DB/grant deletion and retained coherent rollback/research evidence."
+  "archive": "Final fixed/egg-more-ten-ten-2026-11-15 archive/cleanup handoff records hashes, reclaimed bytes, owned DB/grant deletion and retained coherent rollback/research evidence.",
+  "final_handoff": "docs/audits/egg-more-ten-ten-handoff-2026-11-15.json"
 }
