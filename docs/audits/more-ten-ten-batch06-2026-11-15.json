@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 6,
+  "entries": [
+    {
+      "entry": 246555,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246556,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246557,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246558,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246559,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246560,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246561,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246562,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 247500,
+      "name": "Ancient Highmountain Artifact"
+    },
+    {
+      "entry": 266951,
+      "name": "The barrel of storm honey"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_64_more_ten_chest_batch6.sql",
+  "sha256": "895477c3c5db342fcc80e9c3dc0b1496a436f5d60e11427261b790ab6dbabd3a",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-6/result.json",
+    "sha256": "e7a8a53928f56724c2a675f38bd914445a6ecd22dba2b9d30856616511392a9b"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
