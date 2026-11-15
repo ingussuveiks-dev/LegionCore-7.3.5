@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-15",
+  "request": "Finish open items then10x10",
+  "status": "87_DISTINCT_TEXT_FIELDS_DEPLOYED_NATIVE_AND_LIVE_PASS_CLIENT_PENDING",
+  "counts": {
+    "creature_text": 49,
+    "dialogue_groups": 21,
+    "gossip_option": 26,
+    "quest_request_items": 10,
+    "quest_objective": 1,
+    "localized_system_string": 1
+  },
+  "implementation": "sql/updates/world/2026_11_15_83_text_batch01.sql through batch09",
+  "plan": "tools/tests/NextText20261115Repairs.json",
+  "meaning": "Exact closed Windows1251/1252 to UTF8 restoration of authored bytes, not translation or87 new quest mechanics. Prior37 captions/auxiliary fields are not recounted. NPC7 BC0/direct and42 Broadcast-backed fallbacks; gossip1 BC0/direct and25 Broadcast-backed fallbacks. Actual locale/Broadcast selection remains native.",
+  "guards": "Full nontext metadata/known old-new bytes plus whole21 dialogue-group count and normalized full-row signature. Additional group members, custom metadata/text or missing rows refuse. Each batch transactional and replayable. Text is part of creature_text PK; known Neptulon duplicate excluded and resolved separately by85.",
+  "checks": {
+    "data": "Full-schema TEMP baseline/repair/replay, normalized full-row/group signatures and16 exact foreign/missing/metadata/extra-group refusals; live87 exact metadata/after bytes plus9 updater SHA1 RELEASED readbacks.",
+    "native": "Matching Release libraries; actual CreatureTextMgr loader preserves full21 groups including implicit IDs/order, all voice/timing/probability/spell values and all11 locales/male-female normal/fallback chat serialization. Actual GossipData/GossipMenu locale and Broadcast selection preserves actions, option/box metadata and serialized nontext fields. Actual Quest constructor/request/objective loaders and request/query serializers retain native fields. Native localized TrinityString getter retains other locale/fallback strings. No session/socket/save/client UI.",
+    "paired_native": "build-extractors/runtime-test/next-text-native/20261115-181734-487",
+    "live_native": "build-extractors/runtime-test/next-text-native/20261115-183836-168",
+    "live_data": "build-extractors/runtime-test/next-text-data/20261115-183015-312"
+  },
+  "runtime": "Canonical own PID524 fresh ready,9 text plus loot84 updater applied, shutdown0/exit0/stderr0/gone; no new crashes or unexplained appended warnings/errors/assertions/DBErrors. Production C++ and world EXE unchanged.",
+  "fixture_repairs": "Initial guarded SQL fixture exposed a true decoded-key collision in40792/group12; excluded rather than overwritten. Native locale9 is LOCALE_none; corrected test expectation to preserve actual source fallback. Passing repaired data/native regressions retained.",
+  "limits": "Full actual speech/menu/quest UI rendering, actor delivery and game traversal were not observed. No new whole artifact-chain verification. Original103151 LINK2, LiLi/Ponshu missing payloads, original Slaghammer fidelity and all36 full client chains remain separate/open."
+}
