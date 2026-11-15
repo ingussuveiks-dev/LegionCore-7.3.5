@@ -4,18 +4,19 @@
 #include <map>
 using uint32 = uint32_t;
 using uint16 = uint16_t;
+using uint8 = uint8_t;
 constexpr int CLASS_WARLOCK=9, QUEST_STATUS_INCOMPLETE=3, ALLIANCE=0;
 constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 #define TC_LOG_INFO(...) ((void)0)
 #define TC_LOG_DEBUG(...) ((void)0)
 #define TC_LOG_ERROR(...) ((void)0)
 #define TC_LOG_WARN(...) ((void)0)
-using Difficulty=int;
+using Difficulty=uint8;
 struct Player;
 struct InstanceMapFixture;
 namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=1155;}entry;Dbc*dbc=&entry;int map=1630,id=0,difficulty=12;};}
 struct Group {lfg::LFGDungeonData const* m_dungeon=nullptr;};
-struct Scenario { int id; int step=0; int GetScenarioId(){return id;} void* GetMap(){return nullptr;} bool IsCompleted(bool){return false;} };
+struct Scenario { uint32 id; int step=0; uint32 GetScenarioId(){return id;} void* GetMap(){return nullptr;} bool IsCompleted(bool){return false;} };
 struct Manager {
     std::map<int,Scenario*> scenarios;
     Scenario created{0};
@@ -30,7 +31,7 @@ struct SpellManager {
     SpellTargetPosition const* GetSpellTargetPosition(int id){assert(id==218595);return missing?nullptr:&destination;}
 } spellManager;
 auto sSpellMgr=&spellManager;
-struct ScenarioData {int ScenarioID;uint32 MapID=1630,Class=9,Team=0,DifficultyID=12,LfgDungeonID=0;};
+struct ScenarioData {uint32 ScenarioID;uint32 MapID=1630,Class=9,Team=0,DifficultyID=12,LfgDungeonID=0;};
 struct ObjectManager {
     ScenarioData other{999};
     bool HasScenarioInMap(int){return false;}
@@ -39,7 +40,8 @@ struct ObjectManager {
 auto sObjectMgr=&objectManager;
 struct LFGManager {
     lfg::LFGDungeonData data;
-    lfg::LFGDungeonData const* GetLFGDungeon(int selector,uint16 map){assert(selector==1155 && map==1630);return &data;}
+    lfg::LFGDungeonData const* GetLFGDungeon(uint16 selector,uint16 map){assert(selector==1155 && map==1630);return &data;}
+    lfg::LFGDungeonData const* GetLFGDungeon(uint32,uint32){return nullptr;}
     lfg::LFGDungeonData const* GetLFGDungeon(int map,int,int){assert(map==1630);return &data;}
 } lfgManager;
 auto sLFGMgr=&lfgManager;
@@ -52,10 +54,10 @@ struct Player {
     int map=1630,cls=9,status=0,selector=0,instance=17,loads=0;
     bool rewarded=false,relocated=false; float x=-400,y=-4500,z=170,o=0;
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
-    int getClass()const{return cls;} int GetTeam()const{return 1;}
+    uint8 getClass()const{return static_cast<uint8>(cls);} uint32 GetTeam()const{return 1;}
     int GetQuestStatus(int id){return id==43153?status:0;}
     bool IsQuestRewarded(int id){assert(id==43153);return rewarded;}
-    int GetScenarioId(){return selector;} void SetScenarioId(int id){selector=id;}
+    uint16 GetScenarioId(){return static_cast<uint16>(selector);} void SetScenarioId(uint16 id){selector=id;}
     uint32 GetMapId(){return map;} int GetInstanceId(){return instance;}
     void _LoadQuestStatus(int saved){status=saved;++loads;}
     void Relocate(float nx,float ny,float nz,float no){x=nx;y=ny;z=nz;o=no;relocated=true;}
@@ -79,14 +81,14 @@ bool allowed(Player* player,uint32 mapid){
 struct ConstructScenario {
     struct Map {int GetDifficultyID(){return 12;}} mapValue;
     lfg::LFGDungeonData dungeonValue;
-    int scenarioId=42;
+    uint32 scenarioId=42;
     explicit ConstructScenario(Player* player,bool find=false){auto map=&mapValue;auto dungeonData=&dungeonValue;
 #include "ConstructorSelector.inc"
     }
 };
 struct InstanceMapFixture {
     int instance;
-    int GetId(){return 1630;} int GetDifficultyID(){return 12;}
+    uint32 GetId(){return 1630;} Difficulty GetDifficultyID(){return 12;}
     int GetInstanceId(){return instance;} bool IsScenario(){return true;}
     bool add(Player* player){Group* group=nullptr;
 #include "AddScenario.inc"

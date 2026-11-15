@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-15",
+  "baseline": "b08be202a",
+  "status": "PRODUCER_CONSUMER_QUEUE_READ_SYNCHRONIZED_DEPLOYED_ASAN_NATIVE_PASS_CLIENT_PENDING",
+  "count": 1,
+  "cumulative_for_requested_300": 11,
+  "cause": "AddFunction writes the pending std::multimap under m_queue_lock, while AddFunctionsFromQueue read empty() before acquiring that lock. The actual MSVC multimap empty() reads non-atomic _Mysize, which insertion changes. Concurrent session producer/consumer use therefore had a C++ data race even if the queue swap itself was locked.",
+  "live_path": "WorldSocket::HandleConnectToFailed queues WorldSession::RetryInstanceConnection from the socket network thread through WorldSession::AddDelayedEvent. WorldSession::Update pumps that same FunctionProcessor on its consumer thread. This is an actual cross-thread use, not a hypothetical extra thread added to a single-thread queue.",
+  "repair": "Acquire the existing recursive pending-queue mutex before even checking empty(). Keep the empty path free of a temporary-map allocation. Swap the batch while locked, explicitly unlock before active-map insertion/callback work. Existing clock, cancellation boundary, batching, stable equal-deadline order, public header/layout/API and single-consumer active-map contract retained. No added progression or connection success.",
+  "scope": "Full current FunctionProcessor.cpp reverses exactly to pinned b08be202a by replacing only AddFunctionsFromQueue lock scope. Header unchanged. SizeQueue has no production callers and remains a consumer/idle observer; this change does not claim to make active-map APIs or concurrent KillAllFunctions thread-safe.",
+  "tests": {
+    "baseline": "build-extractors/runtime-test/function-handoff/20261115-223936-108",
+    "fixed": "build-extractors/runtime-test/function-handoff/20261115-224341-541",
+    "full_source": "Actual complete production CPP, real public header and MSVC STL compiled with ASAN. Pinned baseline exits1 with exact lock-escape message; repaired lock admission waits for held producer mutex. Four rounds of4 producers x2500 callbacks=40000, one actual consumer, every callback exactly once and same-producer order. Producer join barriers straddle consumer cancellation:1000 old discarded/1000 fresh retained.",
+    "limits": "Bounded lock-admission observation is paired with complete source and actual linked lock-dominance proof. ASAN/stress does not prove race freedom and old stress is not expected to fail; Windows MSVC ThreadSanitizer was not available. Tests deliberately do not invoke concurrent cancellation/active-map reads.",
+    "native_run": "build-extractors/runtime-test/function-cancellation-native/20261115-224453-945",
+    "native": "18 real linked Creature/Unit helper,cancellation,rearm,reentrancy and separate combat-queue cases pass against rebuilt original common.lib. No Character pool/persisted spawn/quest credit writes.",
+    "network": "Actual16 loopback startup exchanges, query/ban/close gates; handshake timeout/EOF/auth/session-detach fixture; five-attempt deadline/stale/duplicate/failed/cancelled-login fixture; native TCP SDK/receive counters. Actual final PE startup callback/handshake latch/diagnostic/deadline paths checked. Original intermittent client silence is still unproven.",
+    "fixture_warning": "Retry fixture World::session member shadowed the extracted real local session (C4458). Rename only the test member to fixtureSession; warning-free rerun passes. No production warning disabled. Scepter host signed int stubs mismatched native uint8/uint16/uint32 Scenario/Player/ScenarioData and missing two-uint32 LFG overload. Align relevant stub return/field types and overload; initial constructor int-to-uint32 narrowing compile rejection repaired with native uint32 scenarioId, final Scepter source+canonical binary test warning-free. These fixture repairs are excluded from gameplay count.",
+    "binary": "Matching x64 PE/map: _Mtx_lock on actual queue mutex precedes sole pending size read and both-node/size swap; empty and swapped paths unlock, empty branch has no temporary-map allocation. Cancellation and despawn helper production branches also rechecked."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "C85C9CB858A32589F95CDD9C172022E2275FE1CE3787F0D4508EE33C6434508B",
+    "bnet_sha256": "1466D983190FF33D7148895507E22EF7F14DE9C95E67F2AC909B7238982FC936",
+    "result": "Final original CMake link inputs and matching promoted EXE/maps; own canonical startup/exit diagnostics in continuation closeout. Previous transient FAE5 deployment/smoke was superseded after removing empty-path allocation, not represented as final."
+  },
+  "diagnostics": "No new canonical/owned crash, appended mixed DBErrors or unexplained runtime warning/error/assertion. Compile C4458 was understood and removed from fixture, not suppressed. One exploratory PE command used wrong argparse --release option before inspection; corrected positional invocation, not a runtime failure or passing regression.",
+  "remaining": "Original artifact LINK payloads, exact visual/dialogue fidelity, original Slaghammer provenance and all36 complete client chains remain unresolved. This shared queue repair is one new defect, not40000 fixes; cumulative11 of requested300, remaining289 is unallocated quota, not289 established defects. Client availability question remains unanswered.",
+  "cleanup": "See continuation closeout: original-byte diagnostic archives with verified hashes; task-owned redundant probes/stage outputs removed after final regression/deployment. Required canonical assets/libraries retained; no user/unknown process stopped."
+}

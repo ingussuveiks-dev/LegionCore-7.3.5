@@ -68,8 +68,8 @@ struct WorldSession {
 #include "RetryInstanceConnection.inc"
 #include "ClientConnectFailed.inc"
 struct World {
-    WorldSessionPtr session;
-    WorldSessionPtr FindSession(uint32 id){return id==1?session:nullptr;}
+    WorldSessionPtr fixtureSession;
+    WorldSessionPtr FindSession(uint32 id){return id==1?fixtureSession:nullptr;}
     void ProcessLinkInstanceSocket(std::pair<std::weak_ptr<WorldSocket>,uint64>);
 };
 #include "LinkInstanceSocket.inc"
@@ -100,25 +100,25 @@ int main(){
         cancelled.Advance(12000);assert(cancelled.sent.size()==1 && !cancelled.aborted);
     }
 
-    World world;world.session=std::make_shared<WorldSession>();
-    world.session->SendConnectToInstance(Serial::WorldAttempt1);
-    uint64 oldKey=world.session->GetConnectToInstanceKey();
-    world.session->Advance(12000);
+    World world;world.fixtureSession=std::make_shared<WorldSession>();
+    world.fixtureSession->SendConnectToInstance(Serial::WorldAttempt1);
+    uint64 oldKey=world.fixtureSession->GetConnectToInstanceKey();
+    world.fixtureSession->Advance(12000);
     auto stale=std::make_shared<WorldSocket>();world.ProcessLinkInstanceSocket({stale,oldKey});
-    assert(stale->delayedClose && !stale->associated && !world.session->forceExit);
+    assert(stale->delayedClose && !stale->associated && !world.fixtureSession->forceExit);
     auto valid=std::make_shared<WorldSocket>();
-    world.ProcessLinkInstanceSocket({valid,world.session->GetConnectToInstanceKey()});
-    assert(valid->associated && world.session->continued);
+    world.ProcessLinkInstanceSocket({valid,world.fixtureSession->GetConnectToInstanceKey()});
+    assert(valid->associated && world.fixtureSession->continued);
     auto duplicate=std::make_shared<WorldSocket>();
-    world.ProcessLinkInstanceSocket({duplicate,world.session->GetConnectToInstanceKey()});
-    assert(duplicate->delayedClose && !duplicate->associated && !world.session->forceExit);
-    assert(world.session->m_Socket[1]==valid);
-    world.session->Advance(12000);assert(world.session->sent.size()==2 && !world.session->aborted);
+    world.ProcessLinkInstanceSocket({duplicate,world.fixtureSession->GetConnectToInstanceKey()});
+    assert(duplicate->delayedClose && !duplicate->associated && !world.fixtureSession->forceExit);
+    assert(world.fixtureSession->m_Socket[1]==valid);
+    world.fixtureSession->Advance(12000);assert(world.fixtureSession->sent.size()==2 && !world.fixtureSession->aborted);
     auto unknown=std::make_shared<WorldSocket>();world.ProcessLinkInstanceSocket({unknown,99});assert(unknown->delayedClose);
     auto closed=std::make_shared<WorldSocket>();closed->open=false;world.ProcessLinkInstanceSocket({closed,oldKey});assert(!closed->associated);
-    World exiting;exiting.session=std::make_shared<WorldSession>();exiting.session->forceExit=true;
-    auto late=std::make_shared<WorldSocket>();exiting.ProcessLinkInstanceSocket({late,exiting.session->GetConnectToInstanceKey()});
-    assert(late->delayedClose&&!late->associated&&!exiting.session->continued);
+    World exiting;exiting.fixtureSession=std::make_shared<WorldSession>();exiting.fixtureSession->forceExit=true;
+    auto late=std::make_shared<WorldSocket>();exiting.ProcessLinkInstanceSocket({late,exiting.fixtureSession->GetConnectToInstanceKey()});
+    assert(late->delayedClose&&!late->associated&&!exiting.fixtureSession->continued);
     // Break test-only shared ownership cycles.
     valid->_worldSession.reset();
     std::cout<<"PASS: silent-client deadlines, five-attempt bound, queued failures, stale reports, successful/cancelled login and stale/duplicate authenticated sockets\n";

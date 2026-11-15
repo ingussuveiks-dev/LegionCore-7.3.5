@@ -81,14 +81,15 @@ void FunctionProcessor::AddFunction(std::function<void()> && Function, uint64 e_
 
 void FunctionProcessor::AddFunctionsFromQueue()
 {
+    // Producers insert under this same lock; even empty() reads shared
+    // multimap state and must not race a network-thread insertion.
+    std::unique_lock<std::recursive_mutex> queueLock(m_queue_lock);
     if (m_functions_queue.empty())
         return;
 
     FunctionList tempFunctions;
-    {
-        std::lock_guard<std::recursive_mutex> _queue_lock(m_queue_lock);
-        std::swap(tempFunctions, m_functions_queue);
-    }
+    std::swap(tempFunctions, m_functions_queue);
+    queueLock.unlock();
     FunctionList::iterator itr = tempFunctions.begin();
     for(; itr != tempFunctions.end(); ++itr)
         m_functions.insert(std::make_pair(itr->first, itr->second));
