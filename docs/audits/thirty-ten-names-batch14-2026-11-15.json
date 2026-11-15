@@ -1,0 +1,219 @@
+{
+  "date": "2026-11-15",
+  "batch": 14,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch14.sql",
+  "migration_sha256": "09813af7f781bdaa6af5682017367857a0a2b6c7048f5ddf414fb0ce8423226b",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 277637,
+      "old_hex": "C390C2A2C391E282ACC390C2BEC390C2BDC391C692C391E2809AC391E280B9C390C2B920C390E28098C390C2B5C390C2B7C390C2B4C390C2BDC390C2BEC390C2B920C391E2809AC390C2B0C390C2B9C390C2BDC390C2B8C390C2BA",
+      "new_hex": "D0A2D180D0BED0BDD183D182D18BD0B920D091D0B5D0B7D0B4D0BDD0BED0B920D182D0B0D0B9D0BDD0B8D0BA",
+      "restored_name": "Тронутый Бездной тайник",
+      "static_spawns": 8,
+      "maps": "1669",
+      "usage_tags": [
+        "static",
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 281120,
+      "old_hex": "C390E28098C390C2BEC390C2BCC390C2B1C390C2B020416C6C69616E6365",
+      "new_hex": "D091D0BED0BCD0B1D0B020416C6C69616E6365",
+      "restored_name": "Бомба Alliance",
+      "static_spawns": 1,
+      "maps": "1",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 227540,
+      "old_hex": "436C61736820C391E282ACC391C692C390C2B4C391E280B9",
+      "new_hex": "436C61736820D180D183D0B4D18B",
+      "restored_name": "Clash руды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "227540",
+          "156269",
+          "217466",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 227616,
+      "old_hex": "C390E28099C391C692C390C2BBC390C2BAC390C2B0C390C2BDC390C2B8C391E280A1C390C2B5C391C281C390C2BAC390C2B0C391C28F20C390C2B1C390C2BEC390C2BCC390C2B1C390C2B0",
+      "new_hex": "D092D183D0BBD0BAD0B0D0BDD0B8D187D0B5D181D0BAD0B0D18F20D0B1D0BED0BCD0B1D0B0",
+      "restored_name": "Вулканическая бомба",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "227616",
+          "156349",
+          "217749",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 227654,
+      "old_hex": "537065617220C390C5A1C390C2BEC391C281C391E2809AC390C2B5C390C2B3C390C2BBC390C2BEC390C2B4C390C2B0",
+      "new_hex": "537065617220D09AD0BED181D182D0B5D0B3D0BBD0BED0B4D0B0",
+      "restored_name": "Spear Костеглода",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2",
+        "loot"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "227654",
+          "156490",
+          "217830",
+          "76",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 227739,
+      "old_hex": "436C61736820C390C2BFC390C2BEC390C2B5C390C2B7C390C2B4C390C2BEC390C2B2",
+      "new_hex": "436C61736820D0BFD0BED0B5D0B7D0B4D0BED0B2",
+      "restored_name": "Clash поездов",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "227739",
+          "156632",
+          "218040",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 230610,
+      "old_hex": "C390C2A0C390C2B0C390C2B4C391C692C390C2B6C390C2BDC390C2BEC390C2B520456767",
+      "new_hex": "D0A0D0B0D0B4D183D0B6D0BDD0BED0B520456767",
+      "restored_name": "Радужное Egg",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "230610",
+          "161003",
+          "225824",
+          "76",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 232213,
+      "old_hex": "436C61736820C390C2BFC390C2BEC390C2B5C390C2B7C390C2B4C390C2BEC390C2B2",
+      "new_hex": "436C61736820D0BFD0BED0B5D0B7D0B4D0BED0B2",
+      "restored_name": "Clash поездов",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "232213",
+          "165234",
+          "233152",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233663,
+      "old_hex": "506F7274616C20C390C2B4C390C2B5C390C2BCC390C2BEC390C2BDC390C2BEC390C2B2",
+      "new_hex": "506F7274616C20D0B4D0B5D0BCD0BED0BDD0BED0B2",
+      "restored_name": "Portal демонов",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "233663",
+          "168037",
+          "237838",
+          "50",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 237264,
+      "old_hex": "C390C2A3C390C2BAC391E282ACC390C2B0C390C2B4C390C2B5C390C2BDC390C2BDC391E280B9C390C2B520C391E2809AC390C2BEC390C2B2C390C2B0C391E282ACC391E280B9",
+      "new_hex": "D0A3D0BAD180D0B0D0B4D0B5D0BDD0BDD18BD0B520D182D0BED0B2D0B0D180D18B",
+      "restored_name": "Украденные товары",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "db2",
+        "quest",
+        "loot"
+      ],
+      "base_db2_references": [
+        [
+          "SUMMON",
+          "237264",
+          "174805",
+          "249486",
+          "76",
+          "0"
+        ]
+      ],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
