@@ -1199,7 +1199,7 @@
   },
   "latest_ten_ten_repairs_2026_11_11": {
     "status": "COMPLETE_100_SELECTED_REPAIRS_TECHNICAL_CHECKED_DEPLOYED_CLIENT_AND_LEGACY_PENDING",
-    "request": "Turpini 10\u00d710",
+    "request": "Turpini 10×10",
     "completed": 100,
     "remaining": 0,
     "completed_batches": 10,
@@ -1315,7 +1315,7 @@
   },
   "latest_third_five_ten_repairs_2026_11_11": {
     "status": "TECHNICAL_50_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
-    "request": "Turpini 5\u00d710",
+    "request": "Turpini 5×10",
     "completed": 50,
     "batches": 5,
     "focused_commits": 50,
@@ -11361,5 +11361,17 @@
     "diagnostics": "All scoped final native/live/shadow/PE/Scepter and canonical ready/shutdown pass without new runtime diagnostics; no background servers.",
     "limits": "Marked179109 reconstruction; older LINK2/Slaghammer and all36 complete client artifact chains remain OPEN.",
     "cleanup": "116 exact temporary artifacts,6585394728bytes removed; fixed archive hashes verified; two private schemas/all grants removed; current coherent rollback/research and original unresolved evidence retained."
+  },
+  "latest_slaghammer_ten_ten_2026_11_15": {
+    "status": "MARKED_SLAGHAMMER_COMBAT_RECONSTRUCTION_PLUS100_NAME_FIELDS_DEPLOYED_PUSHED_CLEANED_CLIENT_PENDING",
+    "handoff": "docs/audits/slaghammer-ten-ten-handoff-2026-11-15.json",
+    "slaghammer_commit": "34f91950f",
+    "last_name_batch_commit": "7f336e739",
+    "new_name_fields": 100,
+    "counting": "100 distinct spawned GameObject name fields repaired by exact UTF-8/Windows-1252 byte reversal. This is one encoding defect class applied to100 records, not100 artifact quest mechanics. Existing authored Russian/English mixture retained.",
+    "canonical_world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "diagnostics": "Both owned canonical starts and final native/live/shadow regressions clean. No hidden servers. Original mixed logs/cache retained.",
+    "cleanup": "70 exact redundant artifacts/3767599254bytes removed; two fixed manifests hash verified.",
+    "limits": "Actual Slaghammer combat/camera/voice/path/door/companion and all36 full artifact chains remain pending. Actual object font/cache display not observed; restored names retain original mixed language. Neither native serializer nor startup certifies client visuals. Original Slaghammer payload fidelity and103151 remain OPEN."
   }
 }

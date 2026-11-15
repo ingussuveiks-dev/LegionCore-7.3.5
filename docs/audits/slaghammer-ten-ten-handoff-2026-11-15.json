@@ -1,0 +1,106 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini ar slaghammer un tad ņem10x10",
+  "status": "MARKED_SLAGHAMMER_COMBAT_RECONSTRUCTION_PLUS100_NAME_FIELDS_DEPLOYED_PUSHED_CLEANED_CLIENT_PENDING",
+  "slaghammer": {
+    "commit": "34f91950f",
+    "audit": "docs/audits/slaghammer-link2-reconstruction-2026-11-15.json",
+    "result": "Reconstructed missing101430 LINK2 using native49 guard combat, retaining actual guard death/owner-specific native companion handoff.18 new native and36 retained contexts pass; original unknown payload/fidelity remains OPEN, functional combat path repaired.",
+    "baseline": "Two exact absent-node errors are expected-broken TEMP counterfactuals, paired with clean repaired runs. Protected original Nov6 EXE/cache/evidence retained outside fixed; exact original cache exit0, not an established OS crash."
+  },
+  "additional": {
+    "count": 100,
+    "groups": 10,
+    "per_group": 10,
+    "kind": "100 distinct spawned GameObject name fields repaired by exact UTF-8/Windows-1252 byte reversal. This is one encoding defect class applied to100 records, not100 artifact quest mechanics. Existing authored Russian/English mixture retained.",
+    "audit": "docs/audits/slaghammer-ten-ten-names-2026-11-15.json",
+    "batch_commits": [
+      {
+        "batch": 1,
+        "commit": "8ac0ff59cabd98c98078749549403f40c19f30da"
+      },
+      {
+        "commit": "584f70b4c75ca89aedffb130b9f8da9fe786b4a4",
+        "batch": 2
+      },
+      {
+        "commit": "e7b0a784ed3a08bc36957fa867356a8371933d9e",
+        "batch": 3
+      },
+      {
+        "commit": "fc15f13a5b990837829a75fca718296099d34dcc",
+        "batch": 4
+      },
+      {
+        "commit": "5451c6707c47ae5d09ab855d5dfb6c5107041f66",
+        "batch": 5
+      },
+      {
+        "commit": "0a50fff40b94e21453ecb51bb484758b1c795edd",
+        "batch": 6
+      },
+      {
+        "commit": "4b11e5271bfd62b25fdf1dcc2440280bf1d2d3af",
+        "batch": 7
+      },
+      {
+        "commit": "e77044d7e9aca5428b7efa98c955e178fe29d726",
+        "batch": 8
+      },
+      {
+        "commit": "cd07274f0d18893c8a130b3b0bd6a891cd3c071f",
+        "batch": 9
+      },
+      {
+        "commit": "7f336e7398eb2ae7593b5fa3fce7db0b856dc53c",
+        "batch": 10
+      }
+    ],
+    "last_batch": "7f336e739",
+    "other_encoding_candidates_untouched": 132
+  },
+  "checks": {
+    "slaghammer": "Full-schema TEMP migration/refusal/replay and actual native intro/AttackStart/real Unit::Kill owner-pet-guardian-ally/Creature::Update handoff;36 retained cases.",
+    "names": "100 strict codec/SQL generation checks;10 TEMP install/replay cohorts/all other fields on101 templates/91 unrelated names each;30 refusal states;100 live full-template readbacks plus10 actual updater hashes; actual native loader/locale/query serializer paired and live.",
+    "final_native_paired_run": "build-extractors/runtime-test/gameobject-name-native/20261115-134721-150",
+    "final_native_live_run": "build-extractors/runtime-test/gameobject-name-native/20261115-134613-804",
+    "final_data_run": "build-extractors/runtime-test/gameobject-name-data/20261115-134929-875",
+    "canonical_startups": "Own PID35316 Slaghammer; own PID29716 names. Both fresh ready/shutdown0/exit0/stderr0/gone, no new crashes/appended DBErrors/server warnings/errors/assertions.",
+    "source_failure_handling": "Own isolated SQL-split native fixture crash/omitted lifecycle and name-fixture compile/hash/refusal/negative-case errors diagnosed and paired clean fixed regressions; documented in focused audits, not hidden as game passes.",
+    "post_cleanup": ".codex/slaghammer-next-hundred-20261115/final-post-cleanup: all1413 archived files/two manifest hashes and70 exact deletions verified; final native source/link inputs/canonical binaries/config assets/original mixed logs/cache preserved. No active world/bnet processes or canonical crashes; diagnostic wrapper clean."
+  },
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "release_cpp_changed": false,
+    "data_updates": "World69 Slaghammer plus70..79 name batches RELEASED; existing linked native code already supports these data-only repairs.",
+    "configuration_certificates_dlls_data": "Preserved; canonical EXE/maps/bnet unchanged.",
+    "servers_left_running": false
+  },
+  "cleanup": {
+    "deleted_files": 70,
+    "reclaimed_bytes": 3767599254,
+    "slaghammer": {
+      "archive": "build-extractors/bin/Release/fixed/slaghammer-link2-reconstruction-2026-11-15",
+      "archive_manifest_sha256": "33F6CD3BB402169C3FE4CE2BAC17C75DD60E635ADB8F1F084331D0C212139F6B",
+      "archived_files": 480,
+      "reclaimed_bytes": 2714187934
+    },
+    "names": {
+      "archive": "build-extractors/bin/Release/fixed/gameobject-names100-2026-11-15",
+      "archive_manifest_sha256": "D239E2FE230B3DD6E970859A4F3536A0E57138706FE1B74B63D262DA24353F46",
+      "archived_files": 933,
+      "reclaimed_bytes": 1053411320
+    },
+    "manifest": ".codex/slaghammer-next-hundred-20261115/{cleanup-manifest,name-cleanup-manifest}.json",
+    "scope": "Only exact task-owned probe executables/symbols/regenerable linker/compiler files/private config copies and duplicate pendingSQL; paths checked within repo and reparse points rejected. No user/unknown process stopped. Own resolved baseline/fixture DBErrors archived with verified bytes then cleared; mixed canonical log never cleared."
+  },
+  "preserved_open": {
+    "mixed_dberrors": "7111bytes SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged.",
+    "protected_original_slaghammer_exe": "SHA256B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C unchanged, never executed/overwritten/deleted this task.",
+    "original_payloads": "Exact Slaghammer LINK2 fidelity and103151 unknownLINK2 not recovered.",
+    "client": "Actual Slaghammer combat/camera/voice/path/door/companion and all36 full artifact chains remain pending. Actual object font/cache display not observed; restored names retain original mixed language. Neither native serializer nor startup certifies client visuals.",
+    "other": "Earlier Ponshu/LiLi/Warrior/Sharasdal/FuZan/Yigthregor fidelity checks remain separate; potential inventory findings were not counted as repairs. Defender/security boundaries untouched."
+  },
+  "local_research": "Silent2017 Slaghammer video/info/all11 sampled contact sheets retained with exact review limits in the Slaghammer audit; raw source inventories retained for further investigation."
+}
