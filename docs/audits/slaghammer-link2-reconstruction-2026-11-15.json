@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini ar slaghammer un tad ņem10x10",
+  "baseline": "a956180ec04d7647f7af85128cfcf84899b7d450",
+  "status": "MARKED_FUNCTIONAL_LINK2_RECONSTRUCTION_DEPLOYED_NATIVE_VERIFIED_CLIENT_AND_AUTHENTIC_PAYLOAD_PENDING",
+  "problem": "101430 conversation root0->1 referenced absent LINK2; native200165 advanced the scenario but Slaghammer never entered the guard fight.",
+  "implementation": {
+    "migration": "sql/updates/world/2026_11_15_69_slaghammer_link2_combat.sql",
+    "new_rows": 1,
+    "new_conditions": 8,
+    "native_action": "49 AttackStart nearest actual101122 within existing50yd death-receiver range",
+    "admission": "Clone source22 group2 native Player/alive/active40710/scenario991 stage1or2 gates for group3. Preserve root0/1, real guard DEATH DATA1/1, native path48160,8s/10s dialogue, wards/door and201004 owned companion acknowledgement48306.",
+    "guard": "Full hashes of ten existing SmartScript rows/twelve existing condition rows; exact instance/AI/faction bindings; foreign node2/conditions refused; replay idempotent.",
+    "not_added": [
+      "HP thresholds",
+      "kill timers",
+      "invented damage spell",
+      "direct quest/item grants",
+      "synthetic guard death",
+      "103151 replacement"
+    ]
+  },
+  "sources": {
+    "order": "Matching local7.3.5 data/DB/core and existing histories first, local Trinity references and prior bounded GitHub search did not recover original node2; then gameplay. No external code copied.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=kyQCNiG9NUw",
+      "title": "World of Warcraft Quest - Blade in Twilight",
+      "uploader": "Game Guides Channel/Boxofbeer",
+      "upload": "2017-03-31",
+      "duration_seconds": 685,
+      "actually_reviewed": "All171 sampled frames at4s intervals across entire0..680s silent480p video, in11 contact sheets; not continuous playback/audio.",
+      "sequence": "Quest accept/travel/camp/lake, betrayal212..220, nearby Slaghammer/guard combat216..236, guard death236, dialogue240/252, door264, later ritual/boss/pickup/finale through680.",
+      "limits": "Visual sequence supports helper combat only; exact original LINK2 payload/ability/timing not recovered. Exit in this video is Dalaran Hearthstone652..660, not proof of a portal."
+    },
+    "corroboration": "https://warcraft.blizzplanet.com/blade-in-twilight-legion-shadow-priest-artifact-questline/ is2015 alpha transcript only; Wowhead40710 and Xalatath guide consulted."
+  },
+  "regressions": {
+    "data": "Full-schema TEMP tables only: install/replay/all-original-column preservation/eight foreign-drift refusals; live updater69 RELEASED and LF-normalized SHA1 verified. Final data run20261115-131429-126.",
+    "baseline": "Both Human/BloodElf reproduce no native combat with exactly two original missingLINK2 diagnostics. Expected-broken counterfactual, not clean ordinary pass. Reusable TEMP absent-node reconstruction rechecked after live deployment20261115-133002-937.",
+    "native": "18 Human/BloodElf contexts: actual registered intro/conditions/nativeAttackStart; actual Unit::Kill by Player/Pet/Guardian/Slaghammer ally; actual Creature::Update combat cleanup -> original handoff, exactly-one companion/credit; missing guard, wrongclass/sharedPaladin,dead/inactive excluded. Final clean run20261115-133031-496.",
+    "retained": "36 prior owner/group/reset/dead/pet/guardian/rejoin/ward/door/companion cases clean in20261115-131430-390; its earlier intro is controlled, new18 supplies actual intro coverage.",
+    "limits": "Native kill uses Unit::Kill, not full scaled DealDamage fight. No client traversal, physical whole-path, precise combat presentation or original fidelity claim."
+  },
+  "diagnosed_fixture_failures": [
+    {
+      "run": "20261115-125909-537",
+      "cause": "Test wrapper split SQL at semicolon inside the new comment literal; truncated statement produced SQL1064/core abort and isolated native ACCESS_VIOLATION stack.",
+      "repair": "Quoted-literal-aware SQL statement splitting; same actual migration passes native and SQL shadow replay. No production parser/log suppressed.",
+      "classification": "New isolated fixture failure, distinct from protected original Slaghammer exit0 diagnostic cache; no canonical crash report."
+    },
+    {
+      "run": "20261115-130139-067",
+      "cause": "Fixture called AI::UpdateAI/Unit::Update directly, omitting real Creature::Update lifecycle.",
+      "repair": "Exercise actual Creature::Update and map move-list; native combat cleanup and handoff pass without forced CombatStop or fake credit."
+    },
+    {
+      "cause": "Live hash check initially used raw CRLF bytes, updater uses LF-normalized SHA1.",
+      "repair": "Match native updater normalization; no updater history changes."
+    }
+  ],
+  "runtime": {
+    "canonical": "build-extractors/bin/Release",
+    "owned_pid": 35316,
+    "result": "Ready, migration69 applied, shutdown0/exit0/stderr0/gone. Post-test diagnostics: no new crashes/appended DBErrors/server warnings/errors/assertions. No user server stopped.",
+    "binary": "SQL-only repair uses existing linked native action49; worldserver unchanged SHA2561F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0."
+  },
+  "preserved_open": {
+    "original_protected_cache_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "original_evidence": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-121715-172 retained outside fixed; source payload fidelity still OPEN, original exact artifact exit0/no established OS crash.",
+    "mixed_dberrors": "7111bytes SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged, not rotated/truncated.",
+    "other": "103151 unknown LINK2 unchanged; Defender boundaries untouched; all36 complete artifact chains/client visuals remain separate."
+  },
+  "next_request": {
+    "additional_requested": 100,
+    "additional_completed_in_this_commit": 0,
+    "status": "Investigation continues; inventories and already-safe callbacks are not counted as repairs."
+  },
+  "local_evidence": ".codex/slaghammer-next-hundred-20261115; own native/data runtime directories. Archive and cleanup manifest recorded separately after commit."
+}
