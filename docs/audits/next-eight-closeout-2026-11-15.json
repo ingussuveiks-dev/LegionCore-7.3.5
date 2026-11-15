@@ -1,0 +1,126 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini30×10",
+  "status": "8_GAMEPLAY_DATA_FIXES_VERIFIED_DEPLOYED_REQUEST300_REMAINS_PARTIAL",
+  "source_commits": [
+    "57769d46c59fe26ed554ea3ac8ec13aa0db91dc6",
+    "93520177ed8c09763f09c96bc246ec639f917677",
+    "db4e15c08dd920a421a2a9570d434fafdba33883"
+  ],
+  "counting": {
+    "requested": 300,
+    "implemented_gameplay_data": 8,
+    "remaining_unallocated_quota": 292,
+    "tooling_repairs_excluded": 1,
+    "note": "292 is the unfulfilled requested count, not292 newly established bugs. No additional comments, unregistered script trials, projections, repetitions or whole quest/client chains counted."
+  },
+  "ledger": [
+    {
+      "kind": "data",
+      "table": "gameobject_template",
+      "entry": 211423,
+      "field": "Data1"
+    },
+    {
+      "kind": "data",
+      "table": "gameobject_template",
+      "entry": 269138,
+      "field": "Data1"
+    },
+    {
+      "kind": "data",
+      "table": "gameobject_template",
+      "entry": 272009,
+      "field": "Data1"
+    },
+    {
+      "kind": "data",
+      "table": "gameobject_template",
+      "entry": 272010,
+      "field": "Data1"
+    },
+    {
+      "kind": "data",
+      "table": "gameobject_template",
+      "entry": 272387,
+      "field": "Data1"
+    },
+    {
+      "kind": "data",
+      "table": "gameobject_template",
+      "entry": 273274,
+      "field": "Data1"
+    },
+    {
+      "kind": "ai_lifetime",
+      "entry": 95675,
+      "script": "boss_god_king_skovald"
+    },
+    {
+      "kind": "ai_lifetime",
+      "entry": 96759,
+      "script": "boss_helya"
+    }
+  ],
+  "audits": [
+    "docs/audits/tail-six-loot-2026-11-15.json",
+    "docs/audits/pending-two-ai-lifetimes-2026-11-15.json",
+    "docs/audits/lifetime-scope-composition-2026-11-15.json"
+  ],
+  "validation": {
+    "data": "Six exact Data1 changes; full TEMP old/fixed/replay row/source/control equality and five exact drift refusals; all actual live fields/source signatures/normalized RELEASED migration90 hash verified.",
+    "native": "Six real GO source-generation selectors through Player::SendLoot, two race bytes, real distance denial and native ranged fishing-hole exception; four actual quest gates across NONE/INCOMPLETE/COMPLETE. Two real AI admission scopes use actual Creature AI destruction/Unit queues with controlled payload. No Character writes.",
+    "asan": "Four selected pinned counterfactual admissions reproduce expected heap-use-after-free; repaired guard projections pass live/retired/cancelled/same-address replacement. This is controlled payload/capture proof, not full production encounter-body ASAN.",
+    "binary": "Actual rebuilt original scripts library/original CMake final-link inputs; canonical matching PE/map verifies all four affected production closures gate captured AI dereferences and payload calls. Complete two affected source files reverse to cf1182f05.",
+    "legacy": "All nine historical37..45 full-file scope regressions pass:86 active historical cases/four withdrawn AI-owned cases; later lifetime edits/death-owner repair/heal uint64 widening composed explicitly, no checks disabled."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "CEE238C62FB79EBB1166BCF2453F00B5907394217DF458F4F4780FF61AB70F38",
+    "owned_pid": 11120,
+    "result": "New canonical EXE/map promoted by matching copy hashes; native updater90 reached fresh ready; graceful shutdown0/exit0/stderr0/gone. No user/unknown server stopped; no task-owned hidden server left.",
+    "compile_warning": "Pre-existing BrokenIslands C4805 reviewed: explicit unknown -1 skipped before comparing remaining int8 0/1 to bool. That source file trial was fully reverted and is not a new repair; no warning suppressed or unexplained runtime warning."
+  },
+  "post_test": "Canonical and own before/after snapshots show no new crash, appended DBErrors or unexplained server warning/error/assertion. Post-cleanup complete source/link/process-result/stdout/stderr/live/updater/archive/assets/old-root proof passes; canonical4 closure guards independently re-read.",
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/next-eight-2026-11-15",
+    "archive_manifest_sha256": "FA0ACBD077F9C655F3A1F90337A8DA4F48E8C47FAE88575CD64AA353CE54F4AE",
+    "archived_files": 688,
+    "supplemental_verifier_archive": {
+      "archive": "build-extractors\\bin\\Release\\fixed\\next-eight-2026-11-15\\post-cleanup-verification",
+      "files": 24,
+      "manifest_sha256": "4E2F543C188E3CDB8D80AF04AA1D6755E6F3AF13E704ADFEDC00AF302E1E8607"
+    },
+    "deleted_artifacts": 89,
+    "reclaimed_bytes": 1631302308,
+    "retained_rollback": "One ignored prior canonical worldserver EXE/map pair in .codex/thirty-ten-20261115/rollback pending first actual client acceptance of guarded callbacks. Original1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0 EXE hash retained; this is not a running test server.",
+    "older_root": "This dated root contained earlier work. Only explicit current runtime roots, post21:00 stage artifacts and the exact new90 duplicate SQL were deleted, with absolute/reparse checks. Older root files were hash-protected and retained.",
+    "fixture_classifications": {
+      "historical-source-final": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "ai-linked-stage-repaired": "Resolved selection error: Abyssal/flame/guards classes not registered or linked. All3 source trials reverted; final active2/4 actual PE closures pass. These inactive source hazards remain uncounted.",
+      "historical-source-composed": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "historical-lifetime-complete": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "historical-source-proof": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "historical-lifetime-groups": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "auchindoun_teronogor_mob_abyssalAIPendingLifetime-20261115-212317-339": "Resolved current-fixture extraction incorrectly invoked historical normalizations; replaced with exact current-source validator/direct controlled admission extraction. No native executable launched in this failed case.",
+      "ai-scope-proof": "Resolved reverse-check fixture removed the first matching member in another class; fixed by limiting reversal to the exact declared class.",
+      "historical-lifetime-all": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "historical-source-repaired": "Resolved pre-existing historical certificate composition/withdrawn CosmeticAI/native uint64 signature/later46th death-owner mismatch; final nine-group pinned complete-file regression passes.",
+      "ai-linked-stage": "Resolved PE checker environment: missing capstone search path and unquoted runtime-array argument; fixed explicit local dependency path/quoted directory."
+    },
+    "post_cleanup_fixture": "Two verifier-only file assumptions repaired: deleted duplicate pending SQL read from verified archive with byte equality to canonical migration; silent fixed ASAN runs checked via actual run logs, counterfactual build flag and completed diagnostics. Both failing attempts and final pass archived with24 hashes; no runtime process failed there.",
+    "iteration_record_limit": "The private build driver reused its fixed evidence/log labels for the final active rebuild, replacing the first trial-build record. Final build/link, actual canonical closure and source/library/hash proofs are retained; do not claim an immutable per-iteration record of that first trial."
+  },
+  "remaining": {
+    "request": "No300 completion claim. Continue substantiated gameplay investigation; optional question about counting technical descriptions has no reply, so none were modified/counted.",
+    "original_links": "100438 row9->10,100475 row1->7/row6->8 and103151 row1->2 remain unchanged/unknown. Original Slaghammer fidelity and all36 full acquisition chains still require matching sequence/client evidence.",
+    "client": "No new authenticated client traversal, actual fishing cast/loot receipt, full Skovald/Helya combat/visuals/group/pet/re-entry or whole artifact quests certified.",
+    "inactive": "Three trial AI classes are unregistered/not linked; all their changes were reverted and excluded. Generated model controls/source/logs remain clearly labelled; no dormant hazard represented as a deployed gameplay repair."
+  },
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Unchanged; original protected EXE/cache never executed, overwritten, deleted or archived as fixed. Mixed log never cleared; Defender/quarantine boundaries unchanged."
+  }
+}

@@ -11574,5 +11574,49 @@
       "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
       "result": "Unchanged. Original protected EXE/cache not executed/overwritten/deleted or archived as fixed; mixed log never cleared; Defender/quarantine boundaries unchanged."
     }
+  },
+  "latest_next_eight_2026_11_15": {
+    "audit": "docs/audits/next-eight-closeout-2026-11-15.json",
+    "status": "8_GAMEPLAY_DATA_FIXES_VERIFIED_DEPLOYED_REQUEST300_REMAINS_PARTIAL",
+    "source_commits": [
+      "57769d46c59fe26ed554ea3ac8ec13aa0db91dc6",
+      "93520177ed8c09763f09c96bc246ec639f917677",
+      "db4e15c08dd920a421a2a9570d434fafdba33883"
+    ],
+    "counting": {
+      "requested": 300,
+      "implemented_gameplay_data": 8,
+      "remaining_unallocated_quota": 292,
+      "tooling_repairs_excluded": 1,
+      "note": "292 is the unfulfilled requested count, not292 newly established bugs. No additional comments, unregistered script trials, projections, repetitions or whole quest/client chains counted."
+    },
+    "delta": "Six existing authored loot links, including Shipwreck Debris24 spawns; Skovald and Helya four missing weak admissions across two registered AI classes. One separate historical regression-tool repair excluded from gameplay count.",
+    "runtime": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "CEE238C62FB79EBB1166BCF2453F00B5907394217DF458F4F4780FF61AB70F38",
+      "owned_pid": 11120,
+      "result": "New canonical EXE/map promoted by matching copy hashes; native updater90 reached fresh ready; graceful shutdown0/exit0/stderr0/gone. No user/unknown server stopped; no task-owned hidden server left.",
+      "compile_warning": "Pre-existing BrokenIslands C4805 reviewed: explicit unknown -1 skipped before comparing remaining int8 0/1 to bool. That source file trial was fully reverted and is not a new repair; no warning suppressed or unexplained runtime warning."
+    },
+    "verification": {
+      "data": "Six exact Data1 changes; full TEMP old/fixed/replay row/source/control equality and five exact drift refusals; all actual live fields/source signatures/normalized RELEASED migration90 hash verified.",
+      "native": "Six real GO source-generation selectors through Player::SendLoot, two race bytes, real distance denial and native ranged fishing-hole exception; four actual quest gates across NONE/INCOMPLETE/COMPLETE. Two real AI admission scopes use actual Creature AI destruction/Unit queues with controlled payload. No Character writes.",
+      "asan": "Four selected pinned counterfactual admissions reproduce expected heap-use-after-free; repaired guard projections pass live/retired/cancelled/same-address replacement. This is controlled payload/capture proof, not full production encounter-body ASAN.",
+      "binary": "Actual rebuilt original scripts library/original CMake final-link inputs; canonical matching PE/map verifies all four affected production closures gate captured AI dereferences and payload calls. Complete two affected source files reverse to cf1182f05.",
+      "legacy": "All nine historical37..45 full-file scope regressions pass:86 active historical cases/four withdrawn AI-owned cases; later lifetime edits/death-owner repair/heal uint64 widening composed explicitly, no checks disabled."
+    },
+    "cleanup": "688 original-byte archive hashes plus24 supplemental verifier hashes;89 exact own artifacts/1631302308bytes removed. One rollback EXE/map pair retained; older dated-root work preserved; no hidden server remains.",
+    "remaining": {
+      "request": "No300 completion claim. Continue substantiated gameplay investigation; optional question about counting technical descriptions has no reply, so none were modified/counted.",
+      "original_links": "100438 row9->10,100475 row1->7/row6->8 and103151 row1->2 remain unchanged/unknown. Original Slaghammer fidelity and all36 full acquisition chains still require matching sequence/client evidence.",
+      "client": "No new authenticated client traversal, actual fishing cast/loot receipt, full Skovald/Helya combat/visuals/group/pet/re-entry or whole artifact quests certified.",
+      "inactive": "Three trial AI classes are unregistered/not linked; all their changes were reverted and excluded. Generated model controls/source/logs remain clearly labelled; no dormant hazard represented as a deployed gameplay repair."
+    },
+    "preserved": {
+      "mixed_dberrors_bytes": 7111,
+      "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+      "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+      "result": "Unchanged; original protected EXE/cache never executed, overwritten, deleted or archived as fixed. Mixed log never cleared; Defender/quarantine boundaries unchanged."
+    }
   }
 }
