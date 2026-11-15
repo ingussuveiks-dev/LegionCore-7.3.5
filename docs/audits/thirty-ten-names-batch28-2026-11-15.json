@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-15",
+  "batch": 28,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch28.sql",
+  "migration_sha256": "869cf24fbf8139f6d24d877d1c567aca6d31bcfb2ed389f4f90572fc716c6a8b",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 235640,
+      "old_hex": "476174686572C390C2BDC390C2B8C390C2BA20C391C281C391E2809AC390C2B8C391E280A6C390C2BEC390C2B2",
+      "new_hex": "476174686572D0BDD0B8D0BA20D181D182D0B8D185D0BED0B2",
+      "restored_name": "Gatherник стихов",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235642,
+      "old_hex": "C390C5B8C390C2BEC391E280A1C390C2B5C391E282ACC390C2BDC390C2B5C390C2B2C391CB86C390C2B8C390C2B920C390C2B6C390C2B5C390C2BBC390C2B5C390C2B7C390C2BDC391E280B9C390C2B920C390C2BAC390C2BBC391C5BDC391E280A1",
+      "new_hex": "D09FD0BED187D0B5D180D0BDD0B5D0B2D188D0B8D0B920D0B6D0B5D0BBD0B5D0B7D0BDD18BD0B920D0BAD0BBD18ED187",
+      "restored_name": "Почерневший железный ключ",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235643,
+      "old_hex": "C390E2809DC391E282ACC390C2B5C390C2BDC390C2B5C390C2B9C391C281C390C2BAC390C2B8C390C2B520C391E2809AC390C2B5C390C2BAC391C281C391E2809AC391E280B9",
+      "new_hex": "D094D180D0B5D0BDD0B5D0B9D181D0BAD0B8D0B520D182D0B5D0BAD181D182D18B",
+      "restored_name": "Дренейские тексты",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235719,
+      "old_hex": "C390C5A1C390C2BEC390C2BBC391C592C391C28F20416C6C69616E6365",
+      "new_hex": "D09AD0BED0BBD18CD18F20416C6C69616E6365",
+      "restored_name": "Колья Alliance",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235720,
+      "old_hex": "C390C5B8C390C2BEC390C2B2C390C2BEC390C2B7C390C2BAC390C2B020416C6C69616E6365",
+      "new_hex": "D09FD0BED0B2D0BED0B7D0BAD0B020416C6C69616E6365",
+      "restored_name": "Повозка Alliance",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235721,
+      "old_hex": "C390E28094C390C2B0C390C2BAC391E282ACC391E280B9C391E2809AC391E280B9C390C2B920426F7820416C6C69616E6365",
+      "new_hex": "D097D0B0D0BAD180D18BD182D18BD0B920426F7820416C6C69616E6365",
+      "restored_name": "Закрытый Box Alliance",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235724,
+      "old_hex": "53746F6F6C20C390C5BEC391E282ACC390C2B4C391E280B9",
+      "new_hex": "53746F6F6C20D09ED180D0B4D18B",
+      "restored_name": "Stool Орды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235727,
+      "old_hex": "C390C5A1C390C2BEC390C2BBC391C592C391C28F20C390C2B1C390C2B0C391E282ACC391E282ACC390C2B8C390C2BAC390C2B0C390C2B420C390C5BEC391E282ACC390C2B4C391E280B9",
+      "new_hex": "D09AD0BED0BBD18CD18F20D0B1D0B0D180D180D0B8D0BAD0B0D0B420D09ED180D0B4D18B",
+      "restored_name": "Колья баррикад Орды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235730,
+      "old_hex": "4361676520C390C5BEC391E282ACC390C2B4C391E280B9",
+      "new_hex": "4361676520D09ED180D0B4D18B",
+      "restored_name": "Cage Орды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    },
+    {
+      "entry": 235731,
+      "old_hex": "C390C5B8C390C2BEC390C2B2C390C2BEC390C2B7C390C2BAC390C2B020C390C5BEC391E282ACC390C2B4C391E280B9",
+      "new_hex": "D09FD0BED0B2D0BED0B7D0BAD0B020D09ED180D0B4D18B",
+      "restored_name": "Повозка Орды",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [],
+      "base_db2_references": [],
+      "usage_limit": "No in-world use established; installed template/query bytes only"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
