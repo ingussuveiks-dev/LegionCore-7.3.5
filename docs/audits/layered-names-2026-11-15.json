@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi ņem 10×10",
+  "baseline": "9e71028b9",
+  "status": "DATA_REPAIRED_DEPLOYED_NATIVE_LIVE_VERIFIED_CLIENT_TRAVERSAL_PENDING",
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 3404,
+    "result": "Fresh ready, all11 migrations88/89 read by native updater; graceful shutdown0/exit0/stderr0/gone; no user/unknown process stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_changed": false,
+    "binary_changed": false
+  },
+  "diagnostics": "Canonical and own diagnostics bracket every test: no new crash, appended DBErrors or unexplained server warning/error/assertion. One generator-wrapper compilation failure corrected: wrapper initially selected the retained FollowingGoLootNative.cpp instead of generated LayeredNative.cpp; no process ran/crash/log error. Matching corrected native tests pass. Preserve failure evidence until verified archival.",
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Original protected EXE/cache not executed/overwritten/deleted; mixed log not truncated. Unknown original LINKs not suppressed or archived as fixed."
+  },
+  "cleanup": "See layered-hundred-closeout-2026-11-15.json after source commits and verified archival.",
+  "remaining": "No new authenticated client traversal. Original100438 LINK10,100475 LINK7/8,103151 LINK2 remain unchanged/open; original Slaghammer fidelity and all36 full artifact chains remain unverified. These are100 individual data fields, not100 completed artifact quests.",
+  "count": 37,
+  "counting": "One fix per distinct gameobject_template entry/field. Native cases, locales, controls, repetitions and SQL file count add no fixes.",
+  "plan": "tools/tests/LayeredNames20261115.json",
+  "static_templates": 1,
+  "static_spawns": 1,
+  "usage_boundary": "No placements added. Remaining templates have no static spawns in the current DB; dynamically spawned use has not been newly established. Correct template fields do not prove reachable gameplay.",
+  "data": {
+    "live_run": "build-extractors/runtime-test/layered-names-data/20261115-203731-112",
+    "baseline_repair_replay": "Full-schema connection-local TEMP shadows, normalized complete-row signatures and unrelated239692 control, exact immutable metadata guards and idempotent replay.",
+    "expected_drift_refusals": 12,
+    "live": "Every full immutable-row guard and after-field value plus LF-normalized RELEASED updater SHA1 checked read-only."
+  },
+  "native": {
+    "paired": "build-extractors/runtime-test/layered-names-native/20261115-203523-404",
+    "live": "build-extractors/runtime-test/layered-names-native/20261115-203731-149",
+    "release_not_asan": true,
+    "privacy": "Readonly World/Hotfix; TEMP shadows only. Loot additionally uses readonly Login pool, controlled socketless Player sessions reclaimed at process exit to avoid account UPDATE. No Character pool, authentication or persisted player/item/progress manipulation.",
+    "actual": "Actual matching ObjectMgr template/locale loaders and QueryGameObjectResponse::Write; response population mirrors HandleQueryGameObject. All locale fallbacks parsed, header/length/name bytes checked and packet bytes compared with only name masked.",
+    "limits": "No authenticated client query/cache/rendering observation; unchanged script/quest/loot/progression fields guarded. Combat/pet/group kill-credit dispatch is unaffected."
+  },
+  "cause": "Names were UTF8 bytes misdecoded twice as Windows1252. The old exactly-single-pass policy correctly refused these layered strings.",
+  "repair": "Restore37 complete names through exactly two unique cp1252 byte roundtrips. Exact byte reduction/ASCII invariance each step; final printable closed Cyrillic. No translation or guessed text; existing single-pass helper unchanged.",
+  "refused": "Two other queried names fail full recovery/truncation checks and remain unchanged; correct, single-layer, control/replacement strings are negative controls.",
+  "migrations": [
+    "sql/updates/world/2026_11_15_88_names_batch01.sql",
+    "sql/updates/world/2026_11_15_88_names_batch02.sql",
+    "sql/updates/world/2026_11_15_88_names_batch03.sql",
+    "sql/updates/world/2026_11_15_88_names_batch04.sql"
+  ]
+}
