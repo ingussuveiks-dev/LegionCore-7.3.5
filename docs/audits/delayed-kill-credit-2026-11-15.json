@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-15",
+  "baseline": "cc4eb0ea7",
+  "status": "CONFIRMED_KILL_CREDIT_SURVIVES_CORPSE_REMOVAL_NATIVE_AND_PE_DEPLOYED_CLIENT_PENDING",
+  "count": 1,
+  "cumulative_for_requested300": 16,
+  "cause": "KillRewarder queued native monster credit on the eligible Player for50ms, then required ObjectAccessor to find the victim again. A legitimate killed creature removed from its map before that delay silently lost the credit. Raw victim object lifetime is not the lifetime of a confirmed kill.",
+  "repair": "Capture native victim entry with its original GUID when the admitted kill is queued. Resolve its native CreatureTemplate on execution and call ordinary Player::KilledMonster, retaining original template KillCredit aliases and native quest/status/raid/scenario filters. Keep50ms, existing eligible-player/group guard and exactly one queued dispatch. Only optional live corpse AddRewardPlayer still requires resolving the real actor. Missing template safely grants nothing; no artificial nearby-player, quest/item/completion grant or logging suppression.",
+  "scope": "Full KillRewarder.cpp differs from pinned cc4eb0ea7 only by direct ObjectMgr header and the declared helper change. Group admission/range/CanContact, owner/player selection,XP/honor/reputation/encounter/achievements and other helper bodies unchanged. Player::KilledMonster/KilledMonsterCredit and Unit::Kill unchanged.",
+  "ownership": "Actual Unit::Kill rejects already-dead/in-killing-process victims, resolves GetCharmerOrOwnerPlayerOrPlayerItself (also pet/guardian owner route), verifies damage/tap eligibility and calls Player::RewardPlayerAndGroupAtKill. That calls real KillRewarder::Reward; existing _RewardGroup admits legitimate same-group in-range/contactable members. No delayed credit is scheduled on a pet. Native fixture alternates direct player and actual owned-creature->Player resolution via normal creator/owner GUID fields, without fabricating a Pet subclass/type mask. Full actual pet/guardian final-blow and group combat/client pipeline remain separate checks.",
+  "tests": {
+    "asan_runs": [
+      "build-extractors/runtime-test/delayed-kill-credit/20261115-233320-648",
+      "build-extractors/runtime-test/delayed-kill-credit/20261115-233324-569",
+      "build-extractors/runtime-test/delayed-kill-credit/20261115-233833-869",
+      "build-extractors/runtime-test/delayed-kill-credit/20261115-233837-535"
+    ],
+    "asan": "Complete actual helper, actual Player::KilledMonster alias dispatcher and actual FunctionProcessor/header/STL under ASAN with controlled actor/catalog/player endpoints. Old pinned source exits1 with exact lost-corpse-credit counterfactual; fixed gone/present,cancel,group dead-with/without corpse,dead solo corpse,50ms,once-only,alias/GUID and missing-template controls pass.",
+    "native_baseline": "build-extractors/runtime-test/delayed-kill-credit-native/20261115-234204-507",
+    "native_fixed": "build-extractors/runtime-test/delayed-kill-credit-native/20261115-234223-453",
+    "native_scope": "Complete helper extracted with only class-name adaptation, real native Player::KilledMonster/KilledMonsterCredit/quest storage and Unit FunctionProcessor. Actual matching World quest14 objective251611 (entry121,amount5,storage1) loaded by native Quest constructor/LoadQuestObjective and native runtime kill flag; controlled accepted/complete state. Old native baseline:removed actor0 credit,present1. Fixed:removed1,present1,cancel0,already complete0,49ms0 and once-only. Native actor deleted/unregistered, not a mock failed lookup. Read-only World/Hotfix/Login; no Character pool, client login, item/reward or persisted writes.",
+    "native_limits": "Native helper extraction does not execute the entire Unit::Kill/Reward XP/group pipeline. Source trace preserves those gates; controlled actual owner resolution is not a claim of full pet final-blow/client/group traversal. Socketless sessions reclaimed at process exit to avoid their destructor account.online update.",
+    "binary": "Real deployed KillRewarder _Do_call closure calls actual ObjectMgr::GetCreatureTemplate using copied entry and Player::KilledMonster with original GUID before optional ObjectAccessor corpse lookup. Both template-null and corpse-null guards retained. Native full-file reversal and matching PE/map verify deployment."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "BF90EFFB0F226EF45872C14A9F6342C1F19BF8C538C5659EB6097CE44110CDE4",
+    "bnet_sha256": "027B3755E6FCB4069FDCA7755C33A1804E4B0347E36F86170FCC09B28F9C9BCB",
+    "world_owned_pid": 33596,
+    "bnet_owned_pid": 32160,
+    "result": "Original game library rebuilt/original CMake final-link inputs; staged final EXEs/maps promoted with exact hashes. Both owned canonical servers ready/graceful shutdown/exit0/stderr0/gone; prior Bnet file copied and hashed before native write-mode start. No user/unknown process stopped."
+  },
+  "diagnostics": "Final source/ASAN/native baseline+repaired/PE/startups have no new crash, appended mixed DBErrors or unexplained runtime warning/error/assertion. Read-only research initially selected absent c.name instead of735 c.Name1; failed query preserved separately, corrected query exits0/EOF. Optional native owner-route fixture initially set only summoned-by rather than native creator/owner field; corrected against Unit getters and Minion initialization, actual lookup now passes. Player hash-holder capacity explicitly covers synthetic18000 IDs. These fixture corrections are not gameplay fixes.",
+  "prior11": "Current canonical PE rechecks all2/4 Skovald/Helya guards, original actor-based despawn and both FunctionProcessor repairs. Final linked native18 queue/helper regressions and six actual source/loot/quest-gate paths plus live/updater/full-metadata TEMP data/refusals pass. Previously completed11 are not counted again and whole encounters/client chains remain pending.",
+  "remaining": "16/300 completed code/data repairs,284 unallocated quota, not284 established errors. Original4 LINK payloads, marked reconstruction authenticity and all36 complete actual client chains remain open. None cleared by this generic death-credit repair.",
+  "cleanup": "Final archive/deletion/protected asset proof in continuation closeout; resolved fixture evidence retained, source/reusable tools kept. Mixed DBErrors7111 and original protected Slaghammer evidence unchanged."
+}

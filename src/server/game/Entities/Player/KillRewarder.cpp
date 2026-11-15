@@ -22,6 +22,7 @@
 #include "GuildMgr.h"
 #include "InstanceScript.h"
 #include "KillRewarder.h"
+#include "ObjectMgr.h"
 #include "Player.h"
 #include "ScenarioMgr.h"
 
@@ -196,13 +197,16 @@ inline void KillRewarder::_RewardKillCredit(Player* player)
         if (Creature* creature = _victim->ToCreature())
         {
             ObjectGuid victimGuid = creature->GetGUID();
+            uint32 victimEntry = creature->GetEntry();
             player->AddDelayedEvent(50, [=]() -> void
             {
+                // Death credit belongs to this confirmed kill. Its corpse may
+                // already have left the map before the player queue is pumped.
+                if (CreatureTemplate const* victimTemplate = sObjectMgr->GetCreatureTemplate(victimEntry))
+                    player->KilledMonster(victimTemplate, victimGuid);
+
                 if (Creature* target = ObjectAccessor::GetCreature(*player, victimGuid))
-                {
-                    player->KilledMonster(target->GetCreatureTemplate(), victimGuid);
                     target->AddRewardPlayer(player->GetGUID());
-                }
             });
         }
 }
