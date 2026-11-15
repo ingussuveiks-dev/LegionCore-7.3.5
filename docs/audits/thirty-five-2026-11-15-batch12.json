@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-15",
+  "batch": 12,
+  "status": "COMPLETED5_DISTINCT_CHEST_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 246712,
+      "name": "Murloc Trinket",
+      "before_loot": 0,
+      "after_loot": 246712,
+      "existing_spawns": 22,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 246745,
+      "name": "Gunpowder keg",
+      "before_loot": 0,
+      "after_loot": 246745,
+      "existing_spawns": 19,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 246875,
+      "name": "Ð£Ð½Ð¸Ñ‡Ñ‚Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ð¹ Ð¿ÐµÑ€ÐµÐ½Ð¾ÑÐ½Ð¾Ð¹ Ð¿ÑƒÐ»ÐµÐ¼ÐµÑ‚",
+      "before_loot": 0,
+      "after_loot": 246875,
+      "existing_spawns": 14,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 246915,
+      "name": "Mammoth Skin Bag",
+      "before_loot": 0,
+      "after_loot": 246915,
+      "existing_spawns": 10,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 247063,
+      "name": "Demonwaste Pile",
+      "before_loot": 0,
+      "after_loot": 247063,
+      "existing_spawns": 18,
+      "existing_loot_rows": 8
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_18_legion_chest_links_five_batch12.sql",
+  "migration_sha256": "e46d71e10daebb0f6b5c04e4ccac5ad3fa595d50c6212ccfa2598a36730b8e6d",
+  "root_cause": "Data1=0 made native Player::SendLoot skip FillLoot despite existing authored same-entry loot. Restore that link only.",
+  "shadow": "Five fixes, replay,146 unrelated entries, all151 other column sets preserved, foreign nonzero link refused; temporary tables only.",
+  "shadow_evidence_sha256": "1bbdd25dcdc4f6a1171c363a3749339ed0afa262a8702dd00636126eb7a7bd06",
+  "native": "These five entries are individually exercised in shared150-entry actual Release-core loader/SendLoot/FillLoot run; paired zero-link counterfactual. No synthetic success from merely checking SQL.",
+  "native_final_evidence": {
+    "cases": 150,
+    "stdout_sha256": "6bf01a13a3dcbd703e58a064cba9b6228c4933cc0047ef1f2db249e04c60ecff",
+    "inputs_sha256": "9bf4817559af10cfd68e5cb2c78a07cdab360f256d6c17fb5de65c61bf4a65c7",
+    "live_data": true,
+    "instrumented_core": false
+  },
+  "live": "Owned canonical updater applied all30 migrations; exact150 readback preserves other captured fields/spawn counts/loot row counts.",
+  "limits": "Controlled synthetic placement/player admission; no authenticated character save, real client visibility/lock/open/eligibility/storage/drop-distribution or whole-quest traversal proof. Pet kill credit is not modified by this Data1-only repair; faction/group/quest rules remain native.",
+  "diagnostics": "All final tests exit0, stderr empty, no new/changed crashes or appended DBErrors/server warnings/errors/assertions.",
+  "no_recount": "Five distinct previously zero-link templates, disjoint from prior100 and other29 cohorts. Source/tool generalization and repeated checks are not extra repairs."
+}
