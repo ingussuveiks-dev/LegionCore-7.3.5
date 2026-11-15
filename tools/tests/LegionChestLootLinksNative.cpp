@@ -52,7 +52,7 @@ int main(int argc,char** argv)
         LoginDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("LoginDatabaseInfo",""),1,1);Require(!LoginDatabase.Open()&&LoginDatabase.PrepareStatements(),"Read-only login pool failed");LoginDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");LoginDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
         HashMapHolder<Player>::SetSize(20000);HashMapHolder<GameObject>::SetSize(20000);
         std::string ids;for(auto entry:ChestEntries){if(!ids.empty())ids+=",";ids+=std::to_string(entry);}
-        auto& table=LootTemplates_Gameobject.*Access(LootTableNameTag{});auto original=table;table+=" WHERE Entry IN("+ids+") ORDER BY Entry,Item";auto rows=(LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();table=original;Require(rows>=20,"Actual authored loot rows missing");
+        auto& table=LootTemplates_Gameobject.*Access(LootTableNameTag{});auto original=table;table+=" WHERE Entry IN("+ids+") ORDER BY Entry,Item";auto rows=(LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();table=original;Require(rows>=std::size(ChestEntries),"Actual authored loot rows missing");
         // Socketless private session: never run its account-write destructor.
         auto session=new WorldSession(0,"Native chest loot-link regression",{},SEC_PLAYER,6,0,"Win",LOCALE_enUS,0,false,AT_AUTH_FLAG_NONE,{});
         {
@@ -63,6 +63,6 @@ int main(int argc,char** argv)
             session->SetPlayer(nullptr);
         }
         LoginDatabase.Close();HotfixDatabase.Close();WorldDatabase.Close();
-        std::cout<<"PASS20 native distinct chest loot links, paired zero-link counterfactuals and full native SendLoot/FillLoot generation; positions/admission context controlled, no probability/item/quest grants or character saves/client traversal\n";return 0;
+        std::cout<<"PASS"<<std::size(ChestEntries)<<" native distinct chest loot links, paired zero-link counterfactuals and full native SendLoot/FillLoot generation; positions/admission context controlled, no probability/item/quest grants or character saves/client traversal\n";return 0;
     }catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
