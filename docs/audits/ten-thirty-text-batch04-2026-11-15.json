@@ -1,0 +1,493 @@
+{
+  "date": "2026-11-15",
+  "batch": 4,
+  "count": 30,
+  "kind": "Distinct text fields corrected, no gameplay/translation changes",
+  "implementation": "sql/updates/world/2026_11_15_81_text_batch04.sql",
+  "migration_sha256": "f9340714a120aec4117cf0a03cb1786fa05403a2b669c23d37bd15838c6218a5",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 249385
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28098C390C2B0C391E282ACC391C592C390C2B5C391E282AC20C391E280A1C390C2B0C391E282AC",
+      "new_hex": "D091D0B0D180D18CD0B5D18020D187D0B0D180",
+      "restored_text": "Барьер чар",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 250419
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2BFC391C692C391C281C390C2BAC390C2BEC390C2B2C390C2BEC390C2B920C391E282ACC391E280B9C391E280A1C390C2B0C390C2B320C391C281C390C2B4C390C2B5C391E282ACC390C2B6C390C2B8C390C2B2C390C2B0C391E2809AC390C2B5C390C2BBC391C28F20C390C2BFC390C2BEC391E2809AC390C2BEC390C2BAC390C2B0",
+      "new_hex": "D0A1D0BFD183D181D0BAD0BED0B2D0BED0B920D180D18BD187D0B0D0B320D181D0B4D0B5D180D0B6D0B8D0B2D0B0D182D0B5D0BBD18F20D0BFD0BED182D0BED0BAD0B0",
+      "restored_text": "Спусковой рычаг сдерживателя потока",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 250420
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809CC390C2B8C390C2B4C391E282ACC390C2BEC391C281C390C2B8C390C2BDC391E280A6C391E282ACC390C2BEC390C2BDC390C2BDC391E280B9C390C2B920C390C2BCC390C2B0C391E282ACC391CB86C391E282ACC391C692C391E2809AC390C2B8C390C2B7C390C2B0C391E2809AC390C2BEC391E282AC",
+      "new_hex": "D093D0B8D0B4D180D0BED181D0B8D0BDD185D180D0BED0BDD0BDD18BD0B920D0BCD0B0D180D188D180D183D182D0B8D0B7D0B0D182D0BED180",
+      "restored_text": "Гидросинхронный маршрутизатор",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 250874
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A8C390C2B5C391C281C391E2809A20C391C28120536B756C6CC390C2BEC390C2BC",
+      "new_hex": "D0A8D0B5D181D18220D18120536B756C6CD0BED0BC",
+      "restored_text": "Шест с Skullом",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 251051
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "506F7274616C20C390C2B8C390C2B720C390C2BCC390C2B8C391E282ACC390C2B020C391C28DC391E282ACC390C2B5C390C2B4C390C2B0C391E282ACC390C2BEC390C2B2",
+      "new_hex": "506F7274616C20D0B8D0B720D0BCD0B8D180D0B020D18DD180D0B5D0B4D0B0D180D0BED0B2",
+      "restored_text": "Portal из мира эредаров",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 251430
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809CC391C692C391C281C391E2809AC390C2BEC390C2B920466F67",
+      "new_hex": "D093D183D181D182D0BED0B920466F67",
+      "restored_text": "Густой Fog",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252116
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252117
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252118
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252119
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252121
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252153
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252154
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252155
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252197
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C29DC390C2B5C390C2BAC391C281C391C692C391C2812054656C65706F7274C390C2B0C391E280A0C390C2B8C390C2B8",
+      "new_hex": "D09DD0B5D0BAD181D183D1812054656C65706F7274D0B0D186D0B8D0B8",
+      "restored_text": "Нексус Teleportации",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252437
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C391C692C390C2B4C391C592C390C2B1C390C2B020C390C2ADC390C2B3C390C2B2C390C2B8C390C2BD",
+      "new_hex": "D0A1D183D0B4D18CD0B1D0B020D0ADD0B3D0B2D0B8D0BD",
+      "restored_text": "Судьба Эгвин",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252438
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A4C390C2BEC390C2BBC390C2B8C390C2B0C390C2BDC391E2809A2046656C20C390E28099C390C2BEC391E282ACC390C2B3C390C2B0C390C2BBC391C692C391C281C390C2B020C390E2809DC390C2BEC391E282ACC390C2B0",
+      "new_hex": "D0A4D0BED0BBD0B8D0B0D0BDD1822046656C20D092D0BED180D0B3D0B0D0BBD183D181D0B020D094D0BED180D0B0",
+      "restored_text": "Фолиант Fel Воргалуса Дора",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252461
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252462
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252466
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252467
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252468
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252469
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252478
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252479
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252480
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252481
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252482
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252483
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 252494
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2BAC390C2BDC390C2BE",
+      "new_hex": "D09ED0BAD0BDD0BE",
+      "restored_text": "Окно",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    }
+  ],
+  "checks": "Closed codec/ASCII invariance; actual TEMP install/replay/full-row snapshots and exact drift refusals; actual live full-column readback/RELEASED hash; paired/live native loaders/query/exact text builder/chat serializers. Prior400 templates/packets retained; normal Broadcast overrides preserved. Diagnostics clean.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json"
+}
