@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 2,
+  "entries": [
+    {
+      "entry": 241561,
+      "name": "Jewel of the Fallen Star"
+    },
+    {
+      "entry": 241563,
+      "name": "Censer of Torment"
+    },
+    {
+      "entry": 241565,
+      "name": "Looted Bleeding Hollow Treasure"
+    },
+    {
+      "entry": 241566,
+      "name": "Rune Etched Femur"
+    },
+    {
+      "entry": 241600,
+      "name": "Discarded Helm"
+    },
+    {
+      "entry": 241601,
+      "name": "Scouts Belongings"
+    },
+    {
+      "entry": 241605,
+      "name": "Crystallized Essence of the Elements"
+    },
+    {
+      "entry": 241666,
+      "name": "Mysterious Corrupted Obelisk"
+    },
+    {
+      "entry": 241673,
+      "name": "Looted Bleeding Hollow Treasure"
+    },
+    {
+      "entry": 241674,
+      "name": "Skull of the Mad Chief"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_60_more_ten_chest_batch2.sql",
+  "sha256": "462290dd64c6cca30beec487e71947f9f72ed4bb9370aa8be143e7083cccd8eb",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-2/result.json",
+    "sha256": "c99b3a086eb4ee6f5da5b22ace382496efd0f525dcfdf8ba757778636c6095ba"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
