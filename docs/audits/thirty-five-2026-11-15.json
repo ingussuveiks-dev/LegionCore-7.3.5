@@ -1,0 +1,813 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini ar atvērtajiem un tad ņem30x5",
+  "status": "COMPLETED150_DISTINCT_TEMPLATE_LOOT_LINKS_DEPLOYED_CLIENT_PENDING",
+  "completed_repairs": 150,
+  "batches": 30,
+  "repairs_per_batch": 5,
+  "baseline_commit": "81d74713705b2a2f155844b0a7331339cb4b2319",
+  "scope": "150 distinct existing unscripted chest templates with missing native loot links. These are template-level repairs, not complete artifact quests or chains. Open investigations are separate.",
+  "open_followup": "docs/audits/artifact-open-followup-2026-11-15.json",
+  "no_recount": "150 newly selected distinct Data1=0 templates, disjoint from prior100. One bug class across150 authored sources; not150 whole quests or artifact chains. Open research, previous repairs and test repetitions are not counted.",
+  "selection": "331 remaining eligible Broken Isles1220/Argus1669 unscripted chest templates found; first150 selected245221..251792, existing same-entry nonreference valid authored loot and actual Legion spawns. No custom AI or template/per-spawn SmartGO.",
+  "cause": "ObjectMgr World template load overwrites raw Data1 from SQL; zero is not a DB2 fallback. GetLootId returns0 and actual Player::SendLoot skips FillLoot. Set onlyData1 to existing authored loot id.",
+  "preservation": "Exact captured-template guards, type3/empty AI and ScriptName, existing loot check, zero/same-link admission; foreign links refuse overwrite. Size guard1e-6 handles SQL float representation without changing size. No loot content/chances/counts/conditions/spawns/quest or item grants modified.",
+  "plan": "tools/tests/ThirtyFive20261115ChestRepairs.json",
+  "plan_sha256": "6263c443628d8d36d17c31f30cc8e89322a699ea187b8056e30b37806a3f8124",
+  "checks": {
+    "shadow": "30 disjoint five-entry cohorts, replay/isolation/all-column preservation/custom-link refusal",
+    "native": {
+      "native-pending": {
+        "cases": 150,
+        "stdout_sha256": "e29ca362a4f5be3a82fc4407fb271d5369a4a4b511a2c19912411f5e3568ead1",
+        "inputs_sha256": "f85bc3bfeda9bc7b43cee4b89e6f600bc180bfae8e2f7898c402ef2e65f5ee29",
+        "live_data": false,
+        "instrumented_core": false
+      },
+      "native-live": {
+        "cases": 150,
+        "stdout_sha256": "170076903a065699c0af2200f4d8277197b000017f0c5b2a51a5afee9fcb6c80",
+        "inputs_sha256": "4a3ad2b0743ab9573a9608aa6ed4d3d02c31b848dc394614eeb619376ae93f64",
+        "live_data": true,
+        "instrumented_core": false
+      },
+      "native-final": {
+        "cases": 150,
+        "stdout_sha256": "6bf01a13a3dcbd703e58a064cba9b6228c4933cc0047ef1f2db249e04c60ecff",
+        "inputs_sha256": "9bf4817559af10cfd68e5cb2c78a07cdab360f256d6c17fb5de65c61bf4a65c7",
+        "live_data": true,
+        "instrumented_core": false
+      },
+      "retained-twenty": {
+        "cases": 20,
+        "stdout_sha256": "c3831f8647d4b0a6e36b4f3c2f868e74aeba5c7a75a1c8c1808cf9fab0b46d8f",
+        "inputs_sha256": "ed32c679e127eabb58fc77d74f6f2161310b0a389e15e6505a1042fc769f3f53",
+        "live_data": true,
+        "instrumented_core": false
+      }
+    },
+    "actual_readback_sha256": "1010a7cdaadb08335fa7998bd7e34a35f10ccc4ba4786988d47a3fbe21f71b05",
+    "diagnostic_snapshots": {
+      "candidate-evidence\\diagnostics-after.json": "b7ef7d9c375588976ecdd3f4f4a98a2ec986232a582e4c046f759b0e6862b185",
+      "live-readback\\diagnostics-after.json": "7835f9070f4d5832d011984e467595b90e233ce1b45d4fd5140b361aa3812d79",
+      "live-readback-final\\diagnostics-after.json": "1fb38b2818c464255e10e158b142306f7880abd7b82e64d8df06f1935b33b1ee",
+      "native-final\\diagnostics-after.json": "9352e1823991f69a1f3b4acfacb484545b1cd77e4c0dc7ac6845d5c462628798",
+      "native-live\\diagnostics-after.json": "bebfed7f0c0f53e200bcc7df5c9ef3ede2e4a6e269eef4a165804ca15c640be6",
+      "native-pending\\diagnostics-after.json": "587e02b6afc018053cbb3b8b8ab9cce0bc326c012c256c42032e3279650232a2",
+      "open-catalog-evidence\\diagnostics-after.json": "88d673cd6285030d9ad94725684e4ee0bcf09533f6741813374fa37a61e1c7b4",
+      "open-graph-evidence\\diagnostics-after.json": "9b10893567628a3a6ca3323e8fa98263b25f437e4fc180512d1ac050b61c765a",
+      "retained-twenty\\diagnostics-after.json": "39f6daef024dbe4f6e895b0d990cef7124433711af9c8b12ef81bea9ba3720d7",
+      "shadow-1\\diagnostics-after.json": "dc1601a65006eb9b597d176c98c6db074ef11487cf11d8f2a5b14438eef216a8",
+      "shadow-10\\diagnostics-after.json": "8826db4f62a8951eb1fb4ff31f47247e68893def021bb9ce1b48e23258e53758",
+      "shadow-11\\diagnostics-after.json": "faa20461f2a3802c7c0e2d4f39d22cb8cf582ff45ace2f55744116e087de6469",
+      "shadow-12\\diagnostics-after.json": "1bbdd25dcdc4f6a1171c363a3749339ed0afa262a8702dd00636126eb7a7bd06",
+      "shadow-13\\diagnostics-after.json": "84d01752a2eb9e8bda4687ef5f15ccb6a420ab72c3793e587330264a3122748d",
+      "shadow-14\\diagnostics-after.json": "5fa801431d637afc36f7146dfcba87cdfd3ed59158337aedea36cddc0227a298",
+      "shadow-15\\diagnostics-after.json": "b2b33e8e1f9b3e2c4c56df7916e7d0d2aaa39337af0a3f2d794370485395118b",
+      "shadow-16\\diagnostics-after.json": "3535c0f5be3fe4d00eb3a9e22705b24297b2feda0867ac04aba8e024859cdbd7",
+      "shadow-17\\diagnostics-after.json": "a0b0af7562304ca6bd7d77db34d5543ecd762cc007f98bd43e778e651d5af124",
+      "shadow-18\\diagnostics-after.json": "ebca8187d8fec8194ed0085528cf3e95ea89220970c7428c4e988b4173151b5b",
+      "shadow-19\\diagnostics-after.json": "58f2728cb7aa9cc7648bc1985d1f073dccf226bbcb18885b4c475d37002efe04",
+      "shadow-2\\diagnostics-after.json": "8efff780e612b3380e21629e43cbbe6c50b09c5899f780de3ce86bf634bb75cd",
+      "shadow-20\\diagnostics-after.json": "9c611b3e1880f3ccb5945d69e7402826913e94456c318a33fa5e726444ff7512",
+      "shadow-21\\diagnostics-after.json": "30be8e5fbccf80f38406224379d52c0aa4322e02c45514190635b77167fafa11",
+      "shadow-22\\diagnostics-after.json": "a06502797059e3fbed9cca06edec48b7bcc93b6a51c40d91fd8e6d467a55691a",
+      "shadow-23\\diagnostics-after.json": "6c674249425c81092f2d96139c10a150bfc554fad150adb06422e78f12674de1",
+      "shadow-24\\diagnostics-after.json": "e5b1d7898043befa3f492d2b43a00dc962d055cfdbfeb40bf6d26f5d0f27b205",
+      "shadow-25\\diagnostics-after.json": "c734a1e2e54262355964b359240929a7e59875eeea20d5bbac44f8c98ce9b2e8",
+      "shadow-26\\diagnostics-after.json": "39305f09cdbfb24f64fde52ad545429bbc31ead390e659ca7635ccf2a502f82e",
+      "shadow-27\\diagnostics-after.json": "2da3cb74ef62693f71872e3dee1a137c1faf785643a47fc4f2773bd2ac947708",
+      "shadow-28\\diagnostics-after.json": "d03b7025bbdadc84939c71182db632f233b7258d9b9c2bb9ed70eb144412b2e0",
+      "shadow-29\\diagnostics-after.json": "963aa151d4dd1e6e668a77a9c7f44978ab25dc027155dd394bb444e1773d500e",
+      "shadow-3\\diagnostics-after.json": "e253a1e5c70aea76938c0b1e108f020ac21576439811ceef437e1e1288914795",
+      "shadow-30\\diagnostics-after.json": "1ac9c616c5f1b864f7d03286f8d3ef6438322ddc93d283f0d14c84e2340ccfd4",
+      "shadow-4\\diagnostics-after.json": "b35d3cfe99662fc256eda9f1457554edc73a8a39cb9117d21256581edc5fa8f5",
+      "shadow-5\\diagnostics-after.json": "42e3fadbf7274a375d0a31e3b811da5388a6ddd8ab9f23e06468a01b6b7498b7",
+      "shadow-6\\diagnostics-after.json": "0f5895855af7865e835d7caa4e6305c0e05e1930ef512aed0a7892c8ba16efdb",
+      "shadow-7\\diagnostics-after.json": "8cea1215d8c0aca74f649210739693b13ae42208317b5dd8fe866a4cb18ac2a8",
+      "shadow-8\\diagnostics-after.json": "723b5e42eae06bebdd664a5d3fd97b2d3ccf0e409e4d24af863fdf7afabbefff",
+      "shadow-9\\diagnostics-after.json": "33aac5dec609073087daedf59217d9d52b1722d06bcba2e7dc7db54905fba1f2",
+      "updater-startup\\diagnostics-after.json": "a7ed0daf92dcb276f783409e31678dcb284829c31a1f32eb4422e5de07148655",
+      "native-final\\native-diagnostics\\diagnostics-after.json": "aa316a6227aab4c42c1623bf77afe861dff308d33f1e03e7b236b2b3e15c1bfb",
+      "native-live\\native-diagnostics\\diagnostics-after.json": "4f55cf3a9a29125a8d5aefcf47c135bc995cc91855bc5e06748d8e5d57e3550b",
+      "native-pending\\native-diagnostics\\diagnostics-after.json": "3fc6bcb6b9035997bb88e2c81f79a9b50794d5791f20d0124fc21c91726a4c74",
+      "retained-twenty\\native-diagnostics\\diagnostics-after.json": "16f4d8e9c17bba1fed449245a12d03f623c11904203571a46bbc8c120a3008f2"
+    },
+    "startup": "Canonical task-owned PID19320 applied30 updater queries, fresh ready, shutdown0, exit0/gone; stderr empty. No new crash/DBErrors/server warning/error/assertion.",
+    "binary": "Data-only repair uses unchanged canonical compiled Release loader/loot implementation; no new C++ production change or new executable deployment claimed.",
+    "final_cleanup_diagnostics_sha256": "031e1e341206c932c9aa439cc389d776133260dcb78b91f5a4c9ef1ca94b4b3f",
+    "final_release_diagnostics_sha256": "1B9E8D0D74F36B7C75C66793350B182171691F3AB5FF478E49E0C76CFDE5463E"
+  },
+  "limits": "Full actual native core is Release, not ASAN. Synthetic source placement/player admission is controlled; no authenticated item storage/save/whole quest or client traversal. All36 artifact chains and old evidence-backed OPEN entries remain separate.",
+  "canonical": {
+    "worldserver.exe": "6ffc5d6d7e7ca2b48ccc917376ea1e20be0c9893205674a5360949c5376524e4",
+    "worldserver.map": "d85475f9b9e7a9eda89b1bb8d8c8c84492867b4ad461dcd704c2d176075b1d45",
+    "bnetserver.exe": "e559f961c277cc92a95ccda27b21abb6a1981a00ddc4b0ae3516697032e22962",
+    "bnetserver.map": "61a784874f496e919047a0a6041f0b4fc97294f96166b3aa3a67d55526d82d81",
+    "logs/DBErrors.log": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1"
+  },
+  "protected_Slaghammer_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+  "batch_details": [
+    {
+      "batch": 1,
+      "entries": [
+        245221,
+        245230,
+        245236,
+        245245,
+        245357
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch01.json",
+      "migration_sha256": "360949f960a9354b083997ec734c9978c590a0cbb83570b4ab9d4dbd3aacf07d"
+    },
+    {
+      "batch": 2,
+      "entries": [
+        245507,
+        245525,
+        245527,
+        245528,
+        245530
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch02.json",
+      "migration_sha256": "fdc2976c61f426c1d9aafc88a4fde8a4fd8e59e76ef1fc3e7f7f7b92be33d85e"
+    },
+    {
+      "batch": 3,
+      "entries": [
+        245531,
+        245534,
+        245535,
+        245536,
+        245541
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch03.json",
+      "migration_sha256": "173dc58091ea6d4ffc9b9ffdf0973005fe49a1f759896bdf10bb3416fce2bba9"
+    },
+    {
+      "batch": 4,
+      "entries": [
+        245542,
+        245543,
+        245545,
+        245551,
+        245553
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch04.json",
+      "migration_sha256": "7235ff2f25949c3587752302d2307c2bd492419b4f2034fca73e2165e961ae13"
+    },
+    {
+      "batch": 5,
+      "entries": [
+        245554,
+        245555,
+        245580,
+        245602,
+        245603
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch05.json",
+      "migration_sha256": "4e2d4c4eb5b19ba781fe30e5858125d04ab33a5295ddd19ddf06820bee1ea91b"
+    },
+    {
+      "batch": 6,
+      "entries": [
+        245620,
+        245681,
+        245682,
+        245791,
+        245792
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch06.json",
+      "migration_sha256": "4d74048ffc6c4f56e5179ae857a48a016a09794374f4f5218f0f9cf6e08087d7"
+    },
+    {
+      "batch": 7,
+      "entries": [
+        245887,
+        245940,
+        245941,
+        245943,
+        245944
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch07.json",
+      "migration_sha256": "1a98e9693cb351c44faa32d0e3d93b692c57b0da66fd176d70e1ccbe5757936f"
+    },
+    {
+      "batch": 8,
+      "entries": [
+        245945,
+        245960,
+        246037,
+        246126,
+        246127
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch08.json",
+      "migration_sha256": "12600e815c390298e6197f7ed4c461ea70aceee25a338dcc057957462c3107f7"
+    },
+    {
+      "batch": 9,
+      "entries": [
+        246205,
+        246206,
+        246225,
+        246228,
+        246229
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch09.json",
+      "migration_sha256": "3b1f800fc8e86d03cce5d5476bd635c7650e07e068418f2ae772f867f760a6b2"
+    },
+    {
+      "batch": 10,
+      "entries": [
+        246266,
+        246522,
+        246523,
+        246524,
+        246525
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch10.json",
+      "migration_sha256": "4fcb59aef357dbdcf2d47fcae10a94dabdf3eb0b0dbaf3da4a0148cced1b0758"
+    },
+    {
+      "batch": 11,
+      "entries": [
+        246527,
+        246702,
+        246703,
+        246704,
+        246710
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch11.json",
+      "migration_sha256": "0e2d7dea2bd3b0ab04008460e81c6d2839cdb11ba19a19d3fea3affb2a57b258"
+    },
+    {
+      "batch": 12,
+      "entries": [
+        246712,
+        246745,
+        246875,
+        246915,
+        247063
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch12.json",
+      "migration_sha256": "e46d71e10daebb0f6b5c04e4ccac5ad3fa595d50c6212ccfa2598a36730b8e6d"
+    },
+    {
+      "batch": 13,
+      "entries": [
+        247339,
+        247398,
+        247412,
+        247609,
+        247695
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch13.json",
+      "migration_sha256": "9a1334e72bc30ecad3f28babd07f59c64fbf09c66b71ae53efa6f82db3ba05af"
+    },
+    {
+      "batch": 14,
+      "entries": [
+        247901,
+        247999,
+        248000,
+        248001,
+        248002
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch14.json",
+      "migration_sha256": "327ab4482e34fb79d7f8a97e5e4c697d88241d7ad2f3ccf4c45925390b7f956f"
+    },
+    {
+      "batch": 15,
+      "entries": [
+        248003,
+        248004,
+        248007,
+        248008,
+        248009
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch15.json",
+      "migration_sha256": "bdbf87b8c22f2aeeffc5579dd17f05c59269329f7552c1c77335d6e4af575226"
+    },
+    {
+      "batch": 16,
+      "entries": [
+        248010,
+        248011,
+        248012,
+        248090,
+        248091
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch16.json",
+      "migration_sha256": "ca37ee335fb128cebd683c8483ef353cd90702344693b13d4ba5c489f8c767fe"
+    },
+    {
+      "batch": 17,
+      "entries": [
+        248092,
+        248407,
+        248416,
+        248583,
+        248781
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch17.json",
+      "migration_sha256": "85a0faa4de135c6c8dec301ac9c4b11a2672b2b4f6ae34688f8a669eae391213"
+    },
+    {
+      "batch": 18,
+      "entries": [
+        248782,
+        248876,
+        248931,
+        249000,
+        249344
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch18.json",
+      "migration_sha256": "66dbcbdd1730065dd0470d175744246ea7b780d4a6bb996a0de03ac134510256"
+    },
+    {
+      "batch": 19,
+      "entries": [
+        249345,
+        249514,
+        249524,
+        249704,
+        249729
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch19.json",
+      "migration_sha256": "81f197eae30de74109bcf9abe33ac70af2fc871e6046f81854bc92595db32103"
+    },
+    {
+      "batch": 20,
+      "entries": [
+        249739,
+        249826,
+        249827,
+        249828,
+        249890
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch20.json",
+      "migration_sha256": "0a7220d9af0f0a26423488a581eba1f20ea1ad2ba6422ca1bde8b294aad16c1a"
+    },
+    {
+      "batch": 21,
+      "entries": [
+        249997,
+        250081,
+        250083,
+        250084,
+        250085
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch21.json",
+      "migration_sha256": "ddacee048715786caa33c5c83e68abf9ec0232a5a4e07a76652b134c0968bc7b"
+    },
+    {
+      "batch": 22,
+      "entries": [
+        250087,
+        250088,
+        250090,
+        250091,
+        250092
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch22.json",
+      "migration_sha256": "9f2c81db8e64d95b19e68735d06daaed18d303d5dbe919f7415648d429773ecd"
+    },
+    {
+      "batch": 23,
+      "entries": [
+        250093,
+        250095,
+        250096,
+        250103,
+        250104
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch23.json",
+      "migration_sha256": "f14fd22eeaa10370773793aaebee058c7d5aaf2e1d47e8b5a3d0a2bf052fec5a"
+    },
+    {
+      "batch": 24,
+      "entries": [
+        250106,
+        250107,
+        250108,
+        250109,
+        250239
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch24.json",
+      "migration_sha256": "358513c939ab75e5f03a936daef877927c421613b999ab12f376a38996570176"
+    },
+    {
+      "batch": 25,
+      "entries": [
+        250240,
+        250413,
+        250417,
+        250984,
+        250985
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch25.json",
+      "migration_sha256": "4f63abb1badbaa4cda109b8a68e1eb297da7faec031e5f0584d10a23390f7540"
+    },
+    {
+      "batch": 26,
+      "entries": [
+        250987,
+        251007,
+        251008,
+        251052,
+        251181
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch26.json",
+      "migration_sha256": "707fa73e262cf678a2742461075e93d793ea078e931a148e45b005d3efc34ab2"
+    },
+    {
+      "batch": 27,
+      "entries": [
+        251552,
+        251656,
+        251713,
+        251714,
+        251716
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch27.json",
+      "migration_sha256": "88307ffae2e3c10b1c8d0944fe220784d15532119f01944a8751ef26e37f6921"
+    },
+    {
+      "batch": 28,
+      "entries": [
+        251719,
+        251720,
+        251723,
+        251737,
+        251738
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch28.json",
+      "migration_sha256": "6b96fcb8876ff60f4f350c37902934c4ee55839872c2f3abc240e1c58430bb0a"
+    },
+    {
+      "batch": 29,
+      "entries": [
+        251761,
+        251762,
+        251764,
+        251771,
+        251772
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch29.json",
+      "migration_sha256": "8e4cba769ed835248c2766bf5eb1832dda0377f330f9116786bb39399f0631bf"
+    },
+    {
+      "batch": 30,
+      "entries": [
+        251774,
+        251776,
+        251782,
+        251784,
+        251792
+      ],
+      "audit": "docs/audits/thirty-five-2026-11-15-batch30.json",
+      "migration_sha256": "d469b1653c3b29c33a3a9db1886526afb481dee1e867182e03ea7b37bd7d34b9"
+    }
+  ],
+  "cleanup": {
+    "audit": "docs/audits/thirty-five-archive-2026-11-15.json",
+    "removed_files": 26,
+    "reclaimed_bytes": 1421352822,
+    "archive": "build-extractors/bin/Release/fixed/thirty-fives-2026-11-15",
+    "retained": "Mixed DBErrors, original LINK2/Slaghammer, open target105 catalog/graph/video/route sources and prior coherent rollback copies preserved. No temporary task-owned server remains."
+  },
+  "batch_commits": [
+    {
+      "entries": [
+        245221,
+        245230,
+        245236,
+        245245,
+        245357
+      ],
+      "commit": "ae80d993398aa915fdffcc9b41a31e8169dfb15e",
+      "batch": 1
+    },
+    {
+      "entries": [
+        245507,
+        245525,
+        245527,
+        245528,
+        245530
+      ],
+      "commit": "054d04ba83d727d561ec8c91804fb9b74061c608",
+      "batch": 2
+    },
+    {
+      "entries": [
+        245531,
+        245534,
+        245535,
+        245536,
+        245541
+      ],
+      "commit": "32269c0f9a528b55307e8cea7dcb3883683ee772",
+      "batch": 3
+    },
+    {
+      "entries": [
+        245542,
+        245543,
+        245545,
+        245551,
+        245553
+      ],
+      "commit": "13017f8f978dba625158e5a73b3f5b966f0531de",
+      "batch": 4
+    },
+    {
+      "entries": [
+        245554,
+        245555,
+        245580,
+        245602,
+        245603
+      ],
+      "commit": "134a9f733e05935b3d8383bc77acb817e84d44f7",
+      "batch": 5
+    },
+    {
+      "entries": [
+        245620,
+        245681,
+        245682,
+        245791,
+        245792
+      ],
+      "commit": "c9a84d5397de9e5c159b52e47f9af92e8d7664ac",
+      "batch": 6
+    },
+    {
+      "entries": [
+        245887,
+        245940,
+        245941,
+        245943,
+        245944
+      ],
+      "commit": "d9ebdaf8cd32528831872e7cdeccc2f9a6c82a53",
+      "batch": 7
+    },
+    {
+      "entries": [
+        245945,
+        245960,
+        246037,
+        246126,
+        246127
+      ],
+      "commit": "9bb38a10556a8b6e0bafc21845fb009a7022c5ed",
+      "batch": 8
+    },
+    {
+      "entries": [
+        246205,
+        246206,
+        246225,
+        246228,
+        246229
+      ],
+      "commit": "597427aac633c4f3aa7b333683d9f34679dae917",
+      "batch": 9
+    },
+    {
+      "entries": [
+        246266,
+        246522,
+        246523,
+        246524,
+        246525
+      ],
+      "commit": "42b6bcd301ebeb770d8864134311d160b1f5e6c5",
+      "batch": 10
+    },
+    {
+      "entries": [
+        246527,
+        246702,
+        246703,
+        246704,
+        246710
+      ],
+      "commit": "764834b3216a35ce411672285c08c633b3b7f4a3",
+      "batch": 11
+    },
+    {
+      "entries": [
+        246712,
+        246745,
+        246875,
+        246915,
+        247063
+      ],
+      "commit": "7da5896ae4e27f23f47e6ba64cb6e39d2b159dd3",
+      "batch": 12
+    },
+    {
+      "entries": [
+        247339,
+        247398,
+        247412,
+        247609,
+        247695
+      ],
+      "commit": "881c4581a2e94012ab1fd2dc0812c61d006c02b3",
+      "batch": 13
+    },
+    {
+      "entries": [
+        247901,
+        247999,
+        248000,
+        248001,
+        248002
+      ],
+      "commit": "1888ecd36d246dbc427aced9602719c09dd4f25a",
+      "batch": 14
+    },
+    {
+      "entries": [
+        248003,
+        248004,
+        248007,
+        248008,
+        248009
+      ],
+      "commit": "670457df8376a39bb37563bd94ff880b549eb7b3",
+      "batch": 15
+    },
+    {
+      "entries": [
+        248010,
+        248011,
+        248012,
+        248090,
+        248091
+      ],
+      "commit": "ecd0a09ee834f3303cbf94cda507ac39d3f0ce37",
+      "batch": 16
+    },
+    {
+      "entries": [
+        248092,
+        248407,
+        248416,
+        248583,
+        248781
+      ],
+      "commit": "1b1c40f65a58f43fac52bdf557477fde02c28bab",
+      "batch": 17
+    },
+    {
+      "entries": [
+        248782,
+        248876,
+        248931,
+        249000,
+        249344
+      ],
+      "commit": "5e2f100fe13580064b9e20b3c8a2286135aa79b7",
+      "batch": 18
+    },
+    {
+      "entries": [
+        249345,
+        249514,
+        249524,
+        249704,
+        249729
+      ],
+      "commit": "87632e799341f6c1fa2b3a5bf78513ec57abffdb",
+      "batch": 19
+    },
+    {
+      "entries": [
+        249739,
+        249826,
+        249827,
+        249828,
+        249890
+      ],
+      "commit": "b83d09636dd89530106d91a77378e9fb95470c01",
+      "batch": 20
+    },
+    {
+      "entries": [
+        249997,
+        250081,
+        250083,
+        250084,
+        250085
+      ],
+      "commit": "7b0f2f96b69498b308b705e85d7d219f6a71c1ba",
+      "batch": 21
+    },
+    {
+      "entries": [
+        250087,
+        250088,
+        250090,
+        250091,
+        250092
+      ],
+      "commit": "05a29cf38698e6dcda161606c364ff39e61e71eb",
+      "batch": 22
+    },
+    {
+      "entries": [
+        250093,
+        250095,
+        250096,
+        250103,
+        250104
+      ],
+      "commit": "8eac781d692121467a316d5f1f22f7337a22b5e0",
+      "batch": 23
+    },
+    {
+      "entries": [
+        250106,
+        250107,
+        250108,
+        250109,
+        250239
+      ],
+      "commit": "ff1df2fb4345c1217863b81ca6bb240888b60648",
+      "batch": 24
+    },
+    {
+      "entries": [
+        250240,
+        250413,
+        250417,
+        250984,
+        250985
+      ],
+      "commit": "7ff12b7133ba592ca840862663c2ba88b1bca758",
+      "batch": 25
+    },
+    {
+      "entries": [
+        250987,
+        251007,
+        251008,
+        251052,
+        251181
+      ],
+      "commit": "163acc7dbd8314d87ae5456cad88ffb6bbf94cea",
+      "batch": 26
+    },
+    {
+      "entries": [
+        251552,
+        251656,
+        251713,
+        251714,
+        251716
+      ],
+      "commit": "b8ea4f18536fc2a13e7e6bc6582f663ebde989c6",
+      "batch": 27
+    },
+    {
+      "entries": [
+        251719,
+        251720,
+        251723,
+        251737,
+        251738
+      ],
+      "commit": "0bc9a4d8ebccd20bc1f6901a1320ecb853a78216",
+      "batch": 28
+    },
+    {
+      "entries": [
+        251761,
+        251762,
+        251764,
+        251771,
+        251772
+      ],
+      "commit": "3ed9e2b2f499d72cccdfa5cb8d9462f4d5a0e512",
+      "batch": 29
+    },
+    {
+      "entries": [
+        251774,
+        251776,
+        251782,
+        251784,
+        251792
+      ],
+      "commit": "b357bfd4cdbd2479717314d10a0745c6b83e7784",
+      "batch": 30
+    }
+  ],
+  "open_research_commit": "c01fe6250",
+  "regression_commit": "164badfe442d7bb0db09255f4155cf4160033e77"
+}

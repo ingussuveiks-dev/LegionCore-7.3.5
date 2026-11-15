@@ -1,0 +1,507 @@
+{
+  "date": "2026-11-15",
+  "status": "RESOLVED_150_CHEST_LINK_DIAGNOSTICS_ARCHIVED_REDUNDANT_OWNED_ARTIFACTS_REMOVED",
+  "archive": "build-extractors/bin/Release/fixed/thirty-fives-2026-11-15",
+  "archive_manifest_sha256": "73927ddbcff53690a36ced5516b304f46033191009014b0f722441f4dd7d0120",
+  "archived_files": 543,
+  "post_cleanup_manifest_sha256": "34472331c210be8bb6ce19b7ca253aeb02bee1d962e7b0589a852b957147847f",
+  "post_cleanup_files": 9,
+  "deleted_files": 26,
+  "reclaimed_bytes": 1421352822,
+  "deleted": [
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-final\\probe.exe",
+      "bytes": 31589888,
+      "sha256": "1749ABCB3064685207F0766EAE5511DC8492DD4289B7E9E88B2B04A539237F8B"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-final\\probe.ilk",
+      "bytes": 196410018,
+      "sha256": "BB8F13050FC163BF00608BD24D07C2E5660710643427958A9CC174AD6EBECBB7"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-final\\probe.map",
+      "bytes": 96143675,
+      "sha256": "F134E50D239D410902BD10BA0A964CE99331A836EE5BBF5894E7ED4687EECC62"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-final\\probe.obj",
+      "bytes": 2155410,
+      "sha256": "58336689BA8BBE61156483A52C05F46E4F76F862F95EFDAFF6C06AA71D4D4DA2"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-final\\probe.pdb",
+      "bytes": 28667904,
+      "sha256": "FDEA0988A3FCEBF8EB99F721D3E6589AAFDB3CA4E5C72A153203985727020B07"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-final\\run-20261115-053416\\worldserver.conf",
+      "bytes": 119446,
+      "sha256": "8AECC95B75CA7BAE097F03ADE17BD5F8A6C3EBD035554DE968D472C9B9AC42E6"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-live\\probe.exe",
+      "bytes": 31589888,
+      "sha256": "FBD6EB2729DD72DC1810F735008F4E37B9986A6CC43313B9C6D6216393F956BF"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-live\\probe.ilk",
+      "bytes": 196410162,
+      "sha256": "B1DA9979D505FC76485FE2E461952DB8E86ED57D085548AD0815E0D8D0BE8AE2"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-live\\probe.map",
+      "bytes": 96143675,
+      "sha256": "0481E3D05DEF07705D49DE0BF02D03BAE1831319545B1CA20581E903E8FBB578"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-live\\probe.obj",
+      "bytes": 2155410,
+      "sha256": "012D5CA218CA6D500F919337FC3EA691769BFFA6E00B755760E8086696BBE151"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-live\\probe.pdb",
+      "bytes": 28667904,
+      "sha256": "D2AC643F44FD476F2D9C81BCBDFDA0F96A6D1CB3DF096BEAF4C9A33D1AF7CC54"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-live\\run-20261115-053151\\worldserver.conf",
+      "bytes": 119445,
+      "sha256": "749F69C81A195F662DF7A509536EA133C3FDFCBE589DC465374B3432E06D6214"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-pending\\probe.exe",
+      "bytes": 31589888,
+      "sha256": "671ABEF44ACE951E04EC3BFBF445F0C5A1562E3CBB885B66D2FDD6623CBF7472"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-pending\\probe.ilk",
+      "bytes": 196410050,
+      "sha256": "626C70916430CD0C7E4B54B2777ED5362493D681B68409C6793F783E0C8A5D01"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-pending\\probe.map",
+      "bytes": 96143675,
+      "sha256": "E8154D376A67E554986B28C2C6D62900D4785B053899A3DDDBC61E0DB4E23511"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-pending\\probe.obj",
+      "bytes": 2155440,
+      "sha256": "6CD7EB5DFC2F626C1F0445BFA43A061A39BDB3E13829D8BCC388587E897DF25C"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-pending\\probe.pdb",
+      "bytes": 28667904,
+      "sha256": "9D1863B649D6AC35C9D8E015EB40C96A125E3727C5EB15739E9A579E7D2EFB6C"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\native-pending\\run-20261115-053023\\worldserver.conf",
+      "bytes": 119448,
+      "sha256": "53812C5CD06732873473930A472D431DE0DA0E128B47ADC0A992004E24652D8A"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\retained-twenty\\probe.exe",
+      "bytes": 31589376,
+      "sha256": "35621E1CAE68FC8CD342BCD343D13B46C364BEB1BFEFB088804098E111EF3268"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\retained-twenty\\probe.ilk",
+      "bytes": 196410050,
+      "sha256": "624855DFE0FCB083B58278C5A7C3BA9F42AC5593E365634076384A68B9022279"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\retained-twenty\\probe.map",
+      "bytes": 96143675,
+      "sha256": "2390038A5AC30BF087EF19345B148D46C6079B81DDE66E139ED86785116F928D"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\retained-twenty\\probe.obj",
+      "bytes": 2154880,
+      "sha256": "0D61C4DC110AD31EC22A0FFA6CA30F8BDFF6A30838DF0653D43922F7A3D52811"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\retained-twenty\\probe.pdb",
+      "bytes": 28667904,
+      "sha256": "DD2D3BA77B5AE6A62E9186BD5B9AE383D2867117F521704F22AB972F3465DBDE"
+    },
+    {
+      "path": ".codex\\thirty-fives-20261115\\retained-twenty\\run-20261115-053252\\worldserver.conf",
+      "bytes": 119449,
+      "sha256": "66E040C9B1A264F3285700510E6271E2BE8DF0D7615DE8C0A43DFAB0858B7448"
+    },
+    {
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\ArtifactOpenTarget105Catalog.exe",
+      "bytes": 651776,
+      "sha256": "E8AC88BB4EADB36F09E1735798E538529D69C7874014F61DEA9D3FBFEFD9D169"
+    },
+    {
+      "path": "build-extractors\\runtime-test\\legion-legendary-catalog\\ArtifactOpenTarget105Catalog.obj",
+      "bytes": 356482,
+      "sha256": "E617BFB2984027DA3A379BBEF2898B5105DCE42FD46610CEA0372CA9E74D31DB"
+    }
+  ],
+  "fix_commits": [
+    {
+      "entries": [
+        245221,
+        245230,
+        245236,
+        245245,
+        245357
+      ],
+      "commit": "ae80d993398aa915fdffcc9b41a31e8169dfb15e",
+      "batch": 1
+    },
+    {
+      "entries": [
+        245507,
+        245525,
+        245527,
+        245528,
+        245530
+      ],
+      "commit": "054d04ba83d727d561ec8c91804fb9b74061c608",
+      "batch": 2
+    },
+    {
+      "entries": [
+        245531,
+        245534,
+        245535,
+        245536,
+        245541
+      ],
+      "commit": "32269c0f9a528b55307e8cea7dcb3883683ee772",
+      "batch": 3
+    },
+    {
+      "entries": [
+        245542,
+        245543,
+        245545,
+        245551,
+        245553
+      ],
+      "commit": "13017f8f978dba625158e5a73b3f5b966f0531de",
+      "batch": 4
+    },
+    {
+      "entries": [
+        245554,
+        245555,
+        245580,
+        245602,
+        245603
+      ],
+      "commit": "134a9f733e05935b3d8383bc77acb817e84d44f7",
+      "batch": 5
+    },
+    {
+      "entries": [
+        245620,
+        245681,
+        245682,
+        245791,
+        245792
+      ],
+      "commit": "c9a84d5397de9e5c159b52e47f9af92e8d7664ac",
+      "batch": 6
+    },
+    {
+      "entries": [
+        245887,
+        245940,
+        245941,
+        245943,
+        245944
+      ],
+      "commit": "d9ebdaf8cd32528831872e7cdeccc2f9a6c82a53",
+      "batch": 7
+    },
+    {
+      "entries": [
+        245945,
+        245960,
+        246037,
+        246126,
+        246127
+      ],
+      "commit": "9bb38a10556a8b6e0bafc21845fb009a7022c5ed",
+      "batch": 8
+    },
+    {
+      "entries": [
+        246205,
+        246206,
+        246225,
+        246228,
+        246229
+      ],
+      "commit": "597427aac633c4f3aa7b333683d9f34679dae917",
+      "batch": 9
+    },
+    {
+      "entries": [
+        246266,
+        246522,
+        246523,
+        246524,
+        246525
+      ],
+      "commit": "42b6bcd301ebeb770d8864134311d160b1f5e6c5",
+      "batch": 10
+    },
+    {
+      "entries": [
+        246527,
+        246702,
+        246703,
+        246704,
+        246710
+      ],
+      "commit": "764834b3216a35ce411672285c08c633b3b7f4a3",
+      "batch": 11
+    },
+    {
+      "entries": [
+        246712,
+        246745,
+        246875,
+        246915,
+        247063
+      ],
+      "commit": "7da5896ae4e27f23f47e6ba64cb6e39d2b159dd3",
+      "batch": 12
+    },
+    {
+      "entries": [
+        247339,
+        247398,
+        247412,
+        247609,
+        247695
+      ],
+      "commit": "881c4581a2e94012ab1fd2dc0812c61d006c02b3",
+      "batch": 13
+    },
+    {
+      "entries": [
+        247901,
+        247999,
+        248000,
+        248001,
+        248002
+      ],
+      "commit": "1888ecd36d246dbc427aced9602719c09dd4f25a",
+      "batch": 14
+    },
+    {
+      "entries": [
+        248003,
+        248004,
+        248007,
+        248008,
+        248009
+      ],
+      "commit": "670457df8376a39bb37563bd94ff880b549eb7b3",
+      "batch": 15
+    },
+    {
+      "entries": [
+        248010,
+        248011,
+        248012,
+        248090,
+        248091
+      ],
+      "commit": "ecd0a09ee834f3303cbf94cda507ac39d3f0ce37",
+      "batch": 16
+    },
+    {
+      "entries": [
+        248092,
+        248407,
+        248416,
+        248583,
+        248781
+      ],
+      "commit": "1b1c40f65a58f43fac52bdf557477fde02c28bab",
+      "batch": 17
+    },
+    {
+      "entries": [
+        248782,
+        248876,
+        248931,
+        249000,
+        249344
+      ],
+      "commit": "5e2f100fe13580064b9e20b3c8a2286135aa79b7",
+      "batch": 18
+    },
+    {
+      "entries": [
+        249345,
+        249514,
+        249524,
+        249704,
+        249729
+      ],
+      "commit": "87632e799341f6c1fa2b3a5bf78513ec57abffdb",
+      "batch": 19
+    },
+    {
+      "entries": [
+        249739,
+        249826,
+        249827,
+        249828,
+        249890
+      ],
+      "commit": "b83d09636dd89530106d91a77378e9fb95470c01",
+      "batch": 20
+    },
+    {
+      "entries": [
+        249997,
+        250081,
+        250083,
+        250084,
+        250085
+      ],
+      "commit": "7b0f2f96b69498b308b705e85d7d219f6a71c1ba",
+      "batch": 21
+    },
+    {
+      "entries": [
+        250087,
+        250088,
+        250090,
+        250091,
+        250092
+      ],
+      "commit": "05a29cf38698e6dcda161606c364ff39e61e71eb",
+      "batch": 22
+    },
+    {
+      "entries": [
+        250093,
+        250095,
+        250096,
+        250103,
+        250104
+      ],
+      "commit": "8eac781d692121467a316d5f1f22f7337a22b5e0",
+      "batch": 23
+    },
+    {
+      "entries": [
+        250106,
+        250107,
+        250108,
+        250109,
+        250239
+      ],
+      "commit": "ff1df2fb4345c1217863b81ca6bb240888b60648",
+      "batch": 24
+    },
+    {
+      "entries": [
+        250240,
+        250413,
+        250417,
+        250984,
+        250985
+      ],
+      "commit": "7ff12b7133ba592ca840862663c2ba88b1bca758",
+      "batch": 25
+    },
+    {
+      "entries": [
+        250987,
+        251007,
+        251008,
+        251052,
+        251181
+      ],
+      "commit": "163acc7dbd8314d87ae5456cad88ffb6bbf94cea",
+      "batch": 26
+    },
+    {
+      "entries": [
+        251552,
+        251656,
+        251713,
+        251714,
+        251716
+      ],
+      "commit": "b8ea4f18536fc2a13e7e6bc6582f663ebde989c6",
+      "batch": 27
+    },
+    {
+      "entries": [
+        251719,
+        251720,
+        251723,
+        251737,
+        251738
+      ],
+      "commit": "0bc9a4d8ebccd20bc1f6901a1320ecb853a78216",
+      "batch": 28
+    },
+    {
+      "entries": [
+        251761,
+        251762,
+        251764,
+        251771,
+        251772
+      ],
+      "commit": "3ed9e2b2f499d72cccdfa5cb8d9462f4d5a0e512",
+      "batch": 29
+    },
+    {
+      "entries": [
+        251774,
+        251776,
+        251782,
+        251784,
+        251792
+      ],
+      "commit": "b357bfd4cdbd2479717314d10a0745c6b83e7784",
+      "batch": 30
+    }
+  ],
+  "canonical": {
+    "worldserver.exe": "6FFC5D6D7E7CA2B48CCC917376EA1E20BE0C9893205674A5360949C5376524E4",
+    "bnetserver.exe": "E559F961C277CC92A95CCDA27B21ABB6A1981A00DDC4B0AE3516697032E22962",
+    "bnetserver.map": "61A784874F496E919047A0A6041F0B4FC97294F96166B3AA3A67D55526D82D81",
+    "worldserver.map": "D85475F9B9E7A9EDA89B1BB8D8C8C84492867B4AD461DCD704C2D176075B1D45",
+    "logs/DBErrors.log": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1"
+  },
+  "protected_Slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+  "open_research": {
+    "retained_outside_fixed": {
+      "target105.tsv": "21748D06C0A985116AF8144551690ACC00D83A7272B8BDC3A55309EEC507464D",
+      "open-graph.tsv": "92CC57BE01DCCCE84FF6E6FAAF6112B604DE8F46CF28D911C0C8A7710AA006A4",
+      "target105-build-run.log": "229ECCE89A55DC9CFCC4305F801022B9AE8E0E06922F1534B35168EF4C92CE2A",
+      "open-graph.stderr": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "research-open.ps1": "2E2F0E35E736A35BD340E62414A09DD650E4D92960C79A08A74156D6E3C41ECB"
+    },
+    "state": "Still open, not archived as repaired gameplay. Only regenerable research probe exe/obj removed after successful read-only catalog; C++/TSV/graph/source/evidence retained."
+  },
+  "diagnostics": "All test processes exit0, captured stderr empty; before/after canonical+own runtime snapshots have no new/changed crash or appended DBErrors/server warning/error/assertion. Final cleanup snapshot clean, Crashes empty, no world/bnet processes remain.",
+  "maintenance": "No active log truncated or rotated. Byte/hash-verified copies of task-owned resolved chest diagnostics preserved before26 exact redundant artifacts/configs removed. No recursive directory deletion; each absolute target checked inside named workspace with reparse/junction/symlink rejection. Config/cert/DLL/native libraries/canonical EXE+map unchanged.",
+  "deployment": "30 data-only migrations applied by canonical Release updater; actual150 readback and complete native150 generation pass. No executable promotion or rebuild needed for unchanged production C++.",
+  "retained": [
+    "canonical Release/configuration/DLL/certificates/data",
+    "required shared native Release build libraries",
+    "reusable native/regression sources",
+    "original open LINK2/Slaghammer/video/route and target105 evidence",
+    "Defender quarantine",
+    "recent coherent rollback copies from previous independent fixes"
+  ],
+  "limitations": "Actual client traversal/eligibility/lock opening/item receipt, all36 artifact chains and original shared LINK/flight authenticity questions remain separate. Cleanup does not certify them.",
+  "final_release_files": 7,
+  "final_release_manifest_sha256": "450E48B1E1A87B0C95A3974DD4CC126D031DC3459218333EE897394B933529D1"
+}
