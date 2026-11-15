@@ -1,0 +1,29 @@
+param([switch]$VerifyLiveData,[string]$SqlDirectory='')
+$ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");if(!$SqlDirectory){$SqlDirectory="$repo/sql/updates/world"}
+$out="$repo/build-extractors/runtime-test/gameobject-name-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)";[void][IO.Directory]::CreateDirectory("$out/logs")
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
+ $plan=[IO.File]::ReadAllText("$PSScriptRoot/GameObjectName20261115Repairs.json")|ConvertFrom-Json;$rows=@($plan.repairs);if($rows.Count -ne 100 -or @($rows.entry|Sort-Object -Unique).Count -ne 100){throw 'Expected100 distinct names'}
+ $entries=$rows.entry-join ',';$decl='struct NameRow {uint32 entry;char const* before;char const* after;};static NameRow const NameRows[]={'+(($rows|ForEach-Object {'{'+$_.entry+',"'+$_.before_hex+'","'+$_.after_hex+'"}'})-join ',')+'};static char const* NameIds="'+$entries+'";'
+ $sqlFiles=@(1..10|ForEach-Object {Join-Path $SqlDirectory "2026_11_15_$($_+69)_gameobject_name_batch$_.sql"});$statements=@();foreach($path in $sqlFiles){$text=([IO.File]::ReadAllText((Resolve-Path $path)) -split "`n"|Where-Object {$_ -notmatch '^--'})-join "`n";$statements+=@([regex]::Split($text,";(?=(?:[^']*'[^']*')*[^']*$)")|Where-Object {$_.Trim()})}
+ $decl+='static char const* const NameMigrations[]={'+(($statements|ForEach-Object {'R"GONAME('+$_+')GONAME"'})-join ',')+'};';[IO.File]::WriteAllText("$out/GameObjectNameRows.inc",$decl)
+ [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj";$group=$project.Project.ItemDefinitionGroup|Where-Object Condition -like '*Release|x64*'|Select-Object -First 1
+ $includes=$group.ClCompile.AdditionalIncludeDirectories.Split(';')|Where-Object {$_ -and $_ -notlike '%*'};$libs=$group.Link.AdditionalDependencies.Split(';')|Where-Object {$_ -and $_ -notlike '%*'}|ForEach-Object {if($_ -like '..*'){[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $_))}else{$_}}
+ if($group.ClCompile.RuntimeLibrary -ne 'MultiThreadedDLL'){throw 'Release runtime ABI differs'}
+ $language=switch($group.ClCompile.LanguageStandard){'stdcpp17'{'/std:c++17'}'stdcpp20'{'/std:c++20'}'stdcpplatest'{'/std:c++latest'}default{throw 'Unknown Release language'}}
+ $inputs=@("$PSScriptRoot/GameObjectNameNative.cpp","$PSScriptRoot/GameObjectName20261115Repairs.json","$PSScriptRoot/gameobject_name_encoding.py","$out/GameObjectNameRows.inc","$repo/src/server/game/Globals/ObjectMgr.cpp","$repo/src/server/game/Entities/GameObject/GameObjectData.h","$repo/src/server/game/Handlers/QueryHandler.cpp","$repo/src/server/game/Server/Packets/QueryPackets.cpp","$repo/src/server/game/Server/Packets/QueryPackets.h","$repo/src/server/database/Database/MySQLConnection.cpp")+$sqlFiles+@($libs|Where-Object {Test-Path -LiteralPath $_})
+ $hashes=@{};foreach($path in $inputs){$hashes[$path]=(Get-FileHash -LiteralPath $path).Hash}
+ $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+ $extra=@('src/common/Collision/Management','src/common/Collision','dep/g3dlite/include','dep/recastnavigation/Detour/Include')|ForEach-Object {Join-Path $repo $_}
+ $arguments=@('/nologo','/EHsc',$language,'/MD','/DNDEBUG','/DNOMINMAX','/DWIN32_LEAN_AND_MEAN','/D_WIN32_WINNT=0x0601','/DBOOST_ALL_NO_LIB');if($VerifyLiveData){$arguments+='/DGO_NAMES_LIVE'}
+ $arguments+=($includes+$extra+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include',$out)|ForEach-Object {'/I"'+$_+'"'})
+ $arguments+='"'+$PSScriptRoot+'/GameObjectNameNative.cpp"';$arguments+=@('/Fe"'+$out+'/probe.exe"','/Fo"'+$out+'/probe.obj"','/link','/DEBUG','/MAP:"'+$out+'/probe.map"','/PDB:"'+$out+'/probe.pdb"');$arguments+=($libs|ForEach-Object {'"'+$_+'"'})
+ [IO.File]::WriteAllText("$out/build.cmd","@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl "+($arguments-join ' ')+"`r`nexit /b %errorlevel%`r`n")
+ & "$out/build.cmd" *> "$out/build.log";if($LASTEXITCODE){Get-Content "$out/build.log" -Tail 12;throw 'Native name build failed'}
+ $runtime="$repo/build-extractors/bin/Release";$configPath="$runtime/worldserver.conf";$configHash=(Get-FileHash $configPath).Hash;$config=[regex]::Replace([IO.File]::ReadAllText($configPath),'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'/logs"'));[IO.File]::WriteAllText("$out/worldserver.conf",$config);$prior=$env:PATH
+ try{$env:PATH="$runtime;$prior";Push-Location $runtime;try{& "$out/probe.exe" "$out/worldserver.conf" "$runtime/" > "$out/stdout.log" 2> "$out/stderr.log";$code=$LASTEXITCODE}finally{Pop-Location}}finally{$env:PATH=$prior}
+ @{exit=$code;stdout=(Get-FileHash "$out/stdout.log").Hash;stderr=(Get-FileHash "$out/stderr.log").Hash}|ConvertTo-Json|Set-Content "$out/process-result.json"
+ if($code -or (Get-Item "$out/stderr.log").Length){Get-Content "$out/stderr.log" -Tail 16;throw "Native name exit=$code/stderr"};$lines=@(Get-Content "$out/stdout.log");if(@($lines|Where-Object {$_ -match '^CASE native name=.* PASS$'}).Count -ne 100 -or @($lines|Where-Object {$_ -match '^PASS100 native ObjectMgr names,'}).Count -ne 1){throw 'Native100 name proof incomplete'}
+ foreach($path in $inputs){if((Get-FileHash -LiteralPath $path).Hash -ne $hashes[$path]){throw 'Native name source/link input drift'}};if((Get-FileHash $configPath).Hash -ne $configHash){throw 'Canonical configuration changed'}
+ @{inputs=$hashes;probe_sha256=(Get-FileHash "$out/probe.exe").Hash;live=[bool]$VerifyLiveData;native_release_not_asan=$true;no_character_or_account_database=$true}|ConvertTo-Json -Depth 5|Set-Content "$out/native-inputs.json"
+ $lines|Where-Object {$_ -match '^PASS100'}
+}

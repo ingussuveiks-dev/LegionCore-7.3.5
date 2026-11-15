@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-15",
+  "request": "Slaghammer then10x10",
+  "baseline": "34f91950f",
+  "status": "100_DISTINCT_OBJECT_NAME_ENCODING_REPAIRS_DEPLOYED_NATIVE_DATA_VERIFIED_CLIENT_PENDING",
+  "counting": "Ten groups of ten distinct GameObject template name fields. These are100 name/data repairs for one encoding defect class, not100 new artifact quest mechanics or whole-chain client passes. Earlier loot fixes on some of the same entries changed different fields and are not counted again as loot fixes.",
+  "cause": {
+    "stored_data": "HEX(name) proves UTF-8 sequences were misdecoded as Windows-1252 and then stored as valid UTF-8 mojibake. Five undefined Windows-1252 bytes retained their C1 codepoints.",
+    "transport": "Current MySQLConnection::Open already calls mysql_set_character_set(utf8mb4); current ObjectMgr reads name as GetString and the7.3.5 query serializer sends those bytes unchanged. The corruption is in the stored names, not repaired by changing the connection charset.",
+    "limit": "The historical import/producer responsible for the bad conversion was not identified; no claim that every importer is verified. The targeted migration restores exact recoverable bytes and rejects unrelated/custom input."
+  },
+  "sources": [
+    "Live MariaDB gameobject_template HEX/name/full-column snapshots, matching spawned source records and locales",
+    "Matching7.3.5 ObjectMgr::LoadGameObjectTemplate/LoadGameObjectLocales",
+    "Matching WorldSession::HandleQueryGameObject and QueryGameObjectResponse::Write",
+    "Matching current database connection utf8mb4 setup"
+  ],
+  "implementation": {
+    "plan": "tools/tests/GameObjectName20261115Repairs.json",
+    "codec": "tools/tests/gameobject_name_encoding.py",
+    "selection": "Fury Prison Runestone244940 first, then spawned newer-map records1220..1900 by entry; includes artifact pickups, class-hall/quest objects, portals, fishing nodes and other world/raid objects.",
+    "candidate_count": 232,
+    "selected_count": 100,
+    "other_candidates_left_unchanged": 132,
+    "preservation": "Only name changes. Every other template field is fingerprinted in guards; all typed data, AI/ScriptName bindings, quest item IDs, source spawns, loot/credit/timing/conditions and locale tables retained. Exact BINARY/HEX old or new name required; no collation-based broad conversion.",
+    "repeat": "Guarded ten-row atomic transaction; known fixed rows replay; foreign name, metadata drift or missing source refuses entire cohort without overwrites.",
+    "language": "Restores existing authored Cyrillic/mixed Russian-English text. This is not an English translation, original Blizzard text recovery, or a grammatical cleanup."
+  },
+  "examples": [
+    {
+      "entry": 244940,
+      "before": "Ð¢ÑŽÑ€ÐµÐ¼Ð½Ñ‹Ð¹ Ñ€ÑƒÐ½Ð½Ñ‹Ð¹ Stone",
+      "after": "Тюремный рунный Stone"
+    },
+    {
+      "entry": 241553,
+      "before": "Ð‘Ð¾ÐµÐ²Ñ‹Ðµ ÐºÐ»Ð¸Ð½ÐºÐ¸ Ð¸Ð»Ð»Ð¸Ð´Ð°Ñ€Ð¸",
+      "after": "Боевые клинки иллидари"
+    },
+    {
+      "entry": 248101,
+      "before": "Altar Legion (Ñ Ð»ÑƒÐºÐ¾Ð¼ Ð¢Ð°ÑÐ´Ð¾Ñ€Ð°)",
+      "after": "Altar Legion (с луком Тасдора)"
+    },
+    {
+      "entry": 248831,
+      "before": "ÐŸÐ°Ð½Ñ†Ð¸Ñ€ÑŒ Ð¥Ñ€Ð°Ð½Ð¸Ñ‚ÐµÐ»Ñ Ð—ÐµÐ¼Ð»Ð¸",
+      "after": "Панцирь Хранителя Земли"
+    },
+    {
+      "entry": 248832,
+      "before": "Ð‘Ð¾ÐµÐ²Ñ‹Ðµ SwordÐ¸ Ð´Ð¾Ð±Ð»ÐµÑÑ‚Ð¸",
+      "after": "Боевые Swordи доблести"
+    },
+    {
+      "entry": 249347,
+      "before": "ÐšÐ»Ñ‹ÐºÐ¸ ÐŸÐ¾Ð¶Ð¸Ñ€Ð°Ñ‚ÐµÐ»Ñ",
+      "after": "Клыки Пожирателя"
+    }
+  ],
+  "regression": {
+    "codec": "All100 strict UTF-8/Windows-1252 roundtrips regenerate exact prior bytes; no replacement characters, decoded controls, partial encodings or already-correct inputs admitted. SQL generation compared exactly to committed files.",
+    "data": "Ten cohorts: TEMP full-schema install and replay; all other fields on101 templates preserved,91 unrelated names retained per cohort;30 explicit foreign-name/metadata/missing-row refusal counterfactuals retain full before/after signatures. No persistent test writes.",
+    "live": "All100 complete template readbacks match original metadata plus declared new name. All10 actual updater entries RELEASED with exact native LF-normalized uppercase SHA1.",
+    "native": "Actual linked Release ObjectMgr loader and GameObject locale fallback, actual7.3.5 QueryGameObjectResponse serializer. Pending TEMP paired old/repaired name input plus separate real live readback. All locale indices, packet byte-length, name bytes and all other packet fields checked; normalized payloads preserve non-name fields.",
+    "limits": "Response population mirrors real HandleQueryGameObject; the session/socket handler and actual client font/cache display were not traversed. No authenticated session/account/character DB writes or saves. This text-only change does not establish combat, artifact progression, timing, exit portals or any36 whole-chain traversal."
+  },
+  "fixture_corrections": [
+    "Initial negative codec fixture D0 81 was legitimate Cyrillic Yo; replaced by an actually invalid trailing byte. No valid recovery was disabled.",
+    "MariaDB --force refusal stderr includes statement delimiter echo; strict classifier now checks the exact complete echo plus one1644/45000, not arbitrary stderr suppression.",
+    "Standalone native source needed unordered_set before the precompiled-header-dependent DB2Stores include; compile-only failure fixed without production change.",
+    "Updater hash test originally lowercased expected SHA1 while native history is uppercase; exact expected casing corrected. No updater history or migration content altered to bypass a mismatch."
+  ],
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 29716,
+    "result": "Fresh ready; all10 migrations70..79 applied; graceful shutdown0/exit0/stderr0/gone. No new crashes or appended DBErrors/server warnings/errors/assertions.",
+    "binary": "No production C++ changes. Existing canonical worldserver.exe SHA2561F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0 retained.",
+    "ownership": "No user/unknown server stopped; no hidden server remains."
+  },
+  "preserved_open": "Slaghammer marked combat reconstruction is separately committed34f91950f. Original unknown payload evidence/EXE and103151 LINK2 remain retained; mixed7111byte DBErrors unchanged and not cleared. Client artifact/fidelity checks remain separate.",
+  "local_evidence": ".codex/slaghammer-next-hundred-20261115 and build-extractors/runtime-test/gameobject-name-{data,native}; final archive/cleanup manifest recorded in handoff."
+}
