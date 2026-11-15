@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-15",
+  "status": "REGRESSION_TOOL_REPAIRED_NOT_NEW_GAMEPLAY_COUNT",
+  "cause": "Historical whole-file lifetime certificates stopped at their own ten-class delta. Subsequent groups touching other classes in the same file, withdrawn AI-owned CosmeticAI guards, later46th-group owner-death edits and ad8f15d59 uint64 native healing signatures left legitimate differences against pinned whole files. Existing Fortieth test already failed on a withdrawn Ashran class before these new production guards.",
+  "repair": "Compose complete declared later edits in reverse chronological order; require both withdrawn actors to remain at original source and confirm actual AI-owned queue overload. For baselines predating withdrawal, reconstruct their complete old guarded class only inside the historical view. Normalize only the two explicitly known later64bit Highmaul hook signatures. Retain final exact complete-file equality to every original Git baseline; no production code/API narrowing or weakened error checks.",
+  "files": [
+    "tools/tests/verify_lifetime_queue_scope.py"
+  ],
+  "new_guard_composition": "five_ten_20261113_scope first verifies the complete current two-AI source delta, then normalizes that precise declared delta for earlier certificates; behavioral fixtures and linked PE checks read actual current code directly.",
+  "validation": "All nine ThirtySeventh..FortyFifth scope commands pass in one final diagnostic-wrapped run:86 active historical cases and4 withdrawn AI-owned cases. Complete pinned file comparison remains mandatory. Earlier failing/debugging outputs are retained as resolved fixture evidence; diagnostic diff renderers are not passing regression results.",
+  "evidence": ".codex/thirty-ten-20261115/historical-lifetime-final",
+  "counting": "One regression-tool repair, excluded from the8 gameplay/data changes and from completing the requested300. No new character/item/quest/progression/binary changes from this helper."
+}
