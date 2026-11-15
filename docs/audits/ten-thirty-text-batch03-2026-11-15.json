@@ -1,0 +1,493 @@
+{
+  "date": "2026-11-15",
+  "batch": 3,
+  "count": 30,
+  "kind": "Distinct text fields corrected, no gameplay/translation changes",
+  "implementation": "sql/updates/world/2026_11_15_81_text_batch03.sql",
+  "migration_sha256": "0b0d8686ba50f6ffffbb081ac51d3e243a01181c86f77500c7aae97e0552dfce",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244843
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "52756E6520C390C2BCC390C2BEC391E280B0C390C2B82046656C",
+      "new_hex": "52756E6520D0BCD0BED189D0B82046656C",
+      "restored_text": "Rune мощи Fel",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 244984
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C391E282ACC390C2BEC390C2BAC390C2BBC391C28FC391E2809AC390C2BEC390C2B520486F726EC390C2B8C390C2BBC390C2BE20C390C2BDC390C2B0C391E2809AC391E282ACC390C2B5C390C2B7C390C2B8C390C2BCC390C2BEC390C2B2",
+      "new_hex": "D09FD180D0BED0BAD0BBD18FD182D0BED0B520486F726ED0B8D0BBD0BE20D0BDD0B0D182D180D0B5D0B7D0B8D0BCD0BED0B2",
+      "restored_text": "Проклятое Hornило натрезимов",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245069
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E280A2C390C2B4C390C2B0",
+      "new_hex": "D095D0B4D0B0",
+      "restored_text": "Еда",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245268
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28098C390C2BEC390C2B5C390C2B2C390C2BEC390C2B920C390C2BAC390C2BBC390C2B8C390C2BDC390C2BEC390C2BA",
+      "new_hex": "D091D0BED0B5D0B2D0BED0B920D0BAD0BBD0B8D0BDD0BED0BA",
+      "restored_text": "Боевой клинок",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245294
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C390C2BEC391E2809AC390C2B5C390C2BC20C390C2BFC390C2BBC390C2B5C390C2BCC390C2B5C390C2BDC390C2B820C390C2A0C390C2B5C391E280A1C390C2BDC390C2BEC390C2B920C390E2809CC391E282ACC390C2B8C390C2B2C391E280B9",
+      "new_hex": "D0A2D0BED182D0B5D0BC20D0BFD0BBD0B5D0BCD0B5D0BDD0B820D0A0D0B5D187D0BDD0BED0B920D093D180D0B8D0B2D18B",
+      "restored_text": "Тотем племени Речной Гривы",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245295
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C390C2BEC391E2809AC390C2B5C390C2BC20C390C2BFC390C2BBC390C2B5C390C2BCC390C2B5C390C2BDC390C2B820C390C29DC390C2B5C390C2B1C390C2B5C391C281C390C2BDC390C2BEC390C2B3C390C2BE20C390C2A0C390C2BEC390C2B3C390C2B0",
+      "new_hex": "D0A2D0BED182D0B5D0BC20D0BFD0BBD0B5D0BCD0B5D0BDD0B820D09DD0B5D0B1D0B5D181D0BDD0BED0B3D0BE20D0A0D0BED0B3D0B0",
+      "restored_text": "Тотем племени Небесного Рога",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245296
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C390C2BEC391E2809AC390C2B5C390C2BC20C390C2BFC390C2BBC390C2B5C390C2BCC390C2B5C390C2BDC390C2B820C390C5A1C391E282ACC390C2BEC390C2B2C390C2B0C390C2B2C390C2BEC390C2B3C390C2BE20C390C2A2C390C2BEC391E2809AC390C2B5C390C2BCC390C2B0",
+      "new_hex": "D0A2D0BED182D0B5D0BC20D0BFD0BBD0B5D0BCD0B5D0BDD0B820D09AD180D0BED0B2D0B0D0B2D0BED0B3D0BE20D0A2D0BED182D0B5D0BCD0B0",
+      "restored_text": "Тотем племени Кровавого Тотема",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245354
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "22C390C2A7C391C692C390C2B4C390C2B5C391C281C390C2B020C390C2B820C390C2B2C391E280B922",
+      "new_hex": "22D0A7D183D0B4D0B5D181D0B020D0B820D0B2D18B22",
+      "restored_text": "\"Чудеса и вы\"",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245360
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "22C390E28093C390C2B5C391E282ACC391E2809AC390C2B2C391E280B920C390C2B2C390C2BE20C390C2B8C390C2BCC391C28F20C390C2B4C391E282ACC391C692C390C2B7C390C2B5C390C2B922",
+      "new_hex": "22D096D0B5D180D182D0B2D18B20D0B2D0BE20D0B8D0BCD18F20D0B4D180D183D0B7D0B5D0B922",
+      "restored_text": "\"Жертвы во имя друзей\"",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245362
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2B5C391E282ACC390C2B5C390C2B1C391E282ACC391C28FC390C2BDC391E280B9C390C2B920C391E282ACC390C2BEC390C2B320C390C2BEC391E282ACC391C692C390C2B6C390C2B5C390C2BDC390C2BEC391C281C391E280A0C390C2B0",
+      "new_hex": "D0A1D0B5D180D0B5D0B1D180D18FD0BDD18BD0B920D180D0BED0B320D0BED180D183D0B6D0B5D0BDD0BED181D186D0B0",
+      "restored_text": "Серебряный рог оруженосца",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245638
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C391E2809AC390C2BEC390C2B9C390C2BAC390C2B020C390C2B4C390C2BBC391C28F20C390C2BAC390C2B0C390C2BFC390C2B5C390C2BBC391C592C390C2BDC390C2B8C391E280A0C391E280B9",
+      "new_hex": "D0A1D182D0BED0B9D0BAD0B020D0B4D0BBD18F20D0BAD0B0D0BFD0B5D0BBD18CD0BDD0B8D186D18B",
+      "restored_text": "Стойка для капельницы",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245639
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "426F7820C391C28120C390C2BCC390C2B5C390C2B4C390C2B8C390C2BAC390C2B0C390C2BCC390C2B5C390C2BDC391E2809AC390C2B0C390C2BCC390C2B8",
+      "new_hex": "426F7820D18120D0BCD0B5D0B4D0B8D0BAD0B0D0BCD0B5D0BDD182D0B0D0BCD0B8",
+      "restored_text": "Box с медикаментами",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 245673
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C29DC390C2B5426967205461626C65",
+      "new_hex": "D09DD0B5426967205461626C65",
+      "restored_text": "НеBig Table",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 246744
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "496E76697369626C6520446F6F722028C390C2BCC390C2B0C391C281C391CB86C391E2809AC390C2B0C390C2B1203529",
+      "new_hex": "496E76697369626C6520446F6F722028D0BCD0B0D181D188D182D0B0D0B1203529",
+      "restored_text": "Invisible Door (масштаб 5)",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 246811
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C290C391E282ACC391E280A6C390C2B5C390C2BEC390C2BBC390C2BEC390C2B3C390C2B8C391E280A1C390C2B5C391C281C390C2BAC390C2B0C391C28F20C390C2BDC390C2B0C391E280A6C390C2BEC390C2B4C390C2BAC390C2B020C390C2B2C391E280B9C391C281C390C2BEC390C2BAC390C2BEC391E282ACC390C2BEC390C2B6C390C2B4C390C2B5C390C2BDC390C2BDC391E280B9C391E280A6",
+      "new_hex": "D090D180D185D0B5D0BED0BBD0BED0B3D0B8D187D0B5D181D0BAD0B0D18F20D0BDD0B0D185D0BED0B4D0BAD0B020D0B2D18BD181D0BED0BAD0BED180D0BED0B6D0B4D0B5D0BDD0BDD18BD185",
+      "restored_text": "Археологическая находка высокорожденных",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 246866
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5BEC390C2B3C391E282ACC390C2B0C390C2B4C390C2B020C390E28098C390C2B5C390C2B7C390C2B4C390C2BDC391E280B9",
+      "new_hex": "D09ED0B3D180D0B0D0B4D0B020D091D0B5D0B7D0B4D0BDD18B",
+      "restored_text": "Ограда Бездны",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 246937
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C390C2BEC391C281C391E280A6C390C2B8C391E2809AC390C2B8C391E2809AC390C2B5C390C2BBC391C592C390C2BDC390C2B0C391C28F20C390C2BFC390C2BEC390C2B4C391C281C391E2809AC390C2B0C390C2B2C390C2BAC390C2B020C390C2BFC390C2BEC390C2B420C391E2809EC391E282ACC391C692C390C2BAC391E2809AC391E280B9",
+      "new_hex": "D092D0BED181D185D0B8D182D0B8D182D0B5D0BBD18CD0BDD0B0D18F20D0BFD0BED0B4D181D182D0B0D0B2D0BAD0B020D0BFD0BED0B420D184D180D183D0BAD182D18B",
+      "restored_text": "Восхитительная подставка под фрукты",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 246970
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C391E282ACC391C28FC390C2B6C390C2B5C390C2BDC390C2BDC390C2BEC390C2B520486F726EC390C2B8C390C2BBC390C2BE20C390C5B8C391C692C391C281C391E2809AC390C2BEC391E2809AC391E280B9",
+      "new_hex": "D097D0B0D180D18FD0B6D0B5D0BDD0BDD0BED0B520486F726ED0B8D0BBD0BE20D09FD183D181D182D0BED182D18B",
+      "restored_text": "Заряженное Hornило Пустоты",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247009
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2B8C390C2BCC390C2B2C390C2BEC390C2BB20C391E282ACC390C2B5C390C2B3C390C2B5C390C2BDC390C2B5C391E282ACC390C2B0C391E280A0C390C2B8C390C2B8",
+      "new_hex": "D0A1D0B8D0BCD0B2D0BED0BB20D180D0B5D0B3D0B5D0BDD0B5D180D0B0D186D0B8D0B8",
+      "restored_text": "Символ регенерации",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247011
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E280BAC390C2B5C390C2B4C391C28FC390C2BDC390C2B0C391C28F20C390C2B3C390C2BBC391E280B9C390C2B1C390C2B0",
+      "new_hex": "D09BD0B5D0B4D18FD0BDD0B0D18F20D0B3D0BBD18BD0B1D0B0",
+      "restored_text": "Ледяная глыба",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247012
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E280BAC390C2B5C390C2B4C391C28FC390C2BDC390C2B0C391C28F20C390C2B3C390C2BBC391E280B9C390C2B1C390C2B0",
+      "new_hex": "D09BD0B5D0B4D18FD0BDD0B0D18F20D0B3D0BBD18BD0B1D0B0",
+      "restored_text": "Ледяная глыба",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247078
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5B8C391E282ACC390C2BEC390C2BAC390C2BBC391C28FC391E2809AC390C2BEC390C2B520486F726EC390C2B8C390C2BBC390C2BE20C390C2BDC390C2B0C391E2809AC391E282ACC390C2B5C390C2B7C390C2B8C390C2BCC390C2BEC390C2B2",
+      "new_hex": "D09FD180D0BED0BAD0BBD18FD182D0BED0B520486F726ED0B8D0BBD0BE20D0BDD0B0D182D180D0B5D0B7D0B8D0BCD0BED0B2",
+      "restored_text": "Проклятое Hornило натрезимов",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247319
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "4D6167696320C391C281C391E2809AC391E282ACC390C2B0C390C2B6",
+      "new_hex": "4D6167696320D181D182D180D0B0D0B6",
+      "restored_text": "Magic страж",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247349
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28094C390C2B0C391E282ACC391C28FC390C2B6C390C2B5C390C2BDC390C2BDC390C2BEC390C2B520486F726EC390C2B8C390C2BBC390C2BE20C390C5B8C391C692C391C281C391E2809AC390C2BEC391E2809AC391E280B9",
+      "new_hex": "D097D0B0D180D18FD0B6D0B5D0BDD0BDD0BED0B520486F726ED0B8D0BBD0BE20D09FD183D181D182D0BED182D18B",
+      "restored_text": "Заряженное Hornило Пустоты",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 247864
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E2809DC391E282ACC390C2B5C390C2B2C390C2BDC390C2B8C390C2B520C391C281C390C2BAC391E282ACC390C2B8C390C2B6C390C2B0C390C2BBC390C2B820C390C29DC390C2B5C390C2BBC391E2809AC390C2B0C391E282ACC390C2B8C390C2BEC390C2BDC390C2B0",
+      "new_hex": "D094D180D0B5D0B2D0BDD0B8D0B520D181D0BAD180D0B8D0B6D0B0D0BBD0B820D09DD0B5D0BBD182D0B0D180D0B8D0BED0BDD0B0",
+      "restored_text": "Древние скрижали Нелтариона",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 248875
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2B5C390C2B9C391E2809E",
+      "new_hex": "D0A1D0B5D0B9D184",
+      "restored_text": "Сейф",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 248893
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A1C390C2B2C390C2BEC390C2B1C390C2BEC390C2B4C390C2BDC390C2BEC390C2B520C390C2BCC390C2B5C391C281C391E2809AC390C2BE",
+      "new_hex": "D0A1D0B2D0BED0B1D0BED0B4D0BDD0BED0B520D0BCD0B5D181D182D0BE",
+      "restored_text": "Свободное место",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 248899
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C5A1C391E282ACC390C2BEC390C2B2C391C592",
+      "new_hex": "D09AD180D0BED0B2D18C",
+      "restored_text": "Кровь",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 248900
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390C2A2C391E282ACC390C2B5C390C2B7C391C692C390C2B1C390C2B5C391E280A020C390C2B1C391C692C391E282ACC390C2B0C390C2BDC390C2B0",
+      "new_hex": "D0A2D180D0B5D0B7D183D0B1D0B5D18620D0B1D183D180D0B0D0BDD0B0",
+      "restored_text": "Трезубец бурана",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    },
+    {
+      "table": "gameobject_template",
+      "key": {
+        "entry": 248903
+      },
+      "field": "name",
+      "codec": "cp1252",
+      "old_hex": "C390E28099C391E282ACC390C2B0C391E2809AC390C2B0",
+      "new_hex": "D092D180D0B0D182D0B0",
+      "restored_text": "Врата",
+      "broadcast": null,
+      "context": {
+        "spawn_count": "0",
+        "maps": null
+      }
+    }
+  ],
+  "checks": "Closed codec/ASCII invariance; actual TEMP install/replay/full-row snapshots and exact drift refusals; actual live full-column readback/RELEASED hash; paired/live native loaders/query/exact text builder/chat serializers. Prior400 templates/packets retained; normal Broadcast overrides preserved. Diagnostics clean.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json"
+}
