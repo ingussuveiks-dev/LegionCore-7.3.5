@@ -11401,5 +11401,40 @@
       "original_slaghammer_exe_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C unchanged, not executed/overwritten/deleted.",
       "client": "Actual font/cache display and gameplay traversal not observed; object names alone do not verify any artifact chain."
     }
+  },
+  "latest_ten_thirty_text_2026_11_15": {
+    "status": "300_TEXT_FIELDS_TEN30_COHORTS_DEPLOYED_PUSHED_CLEANED_CLIENT_PENDING",
+    "handoff": "docs/audits/ten-thirty-text-handoff-2026-11-15.json",
+    "new_text_fields": 300,
+    "groups": 10,
+    "per_group": 30,
+    "first_fix_commit": "5475dc584acbe143e2a10eadf15cda2543600c11",
+    "last_fix_commit": "f08bc66ac81c45762ef27abad5c1026f54f35fa4",
+    "stats": {
+      "go_names": 153,
+      "go_static": 5,
+      "creature_lines": 147,
+      "direct_bc0": 7,
+      "codecs": {
+        "cp1252": 157,
+        "cp1251": 143
+      },
+      "bc_backed": 140
+    },
+    "counting": "300 additional distinct text fields corrected for stored1251/1252 misdecoding:153 gameobject_template.name and147 singleton creature_text.Text rows. Prior400 name fields are controls and not counted again. No new quest mechanics, translation, spawns, grants or whole-chain client verification.",
+    "limits": "5 GO names have static spawn records;148 have no static spawn record and actual dynamic use not newly established.7 NPC lines are BC0/direct;140 are stored fallbacks with Broadcast-selected normal packets unchanged. Actual client font/display/speech delivery remains unobserved.",
+    "canonical_world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "diagnostics": "Canonical ready/shutdown and final native/live/TEMP/codec checks clean; no hidden servers, original logs/cache preserved.",
+    "cleanup": "28 exact artifacts/1073402257bytes removed;745 archive hashes verified.",
+    "open_limits": {
+      "measured_go1252_name_pattern": 0,
+      "caption_pattern_unreviewed": 24,
+      "unknown_string_pattern_unreviewed": 13,
+      "other": "Other NPC lines, unsupported/mixed strings, comments, localization/grammar and full artifact gameplay not globally certified. Pattern matches alone are not proof of defects.",
+      "legacy": "Original Slaghammer payload/fidelity evidence and protected original EXE/cache,103151 LINK2, prior reconstruction fidelity and all36 complete client artifact chains retained/open.",
+      "mixed_dberrors": "7111bytes SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged/not truncated.",
+      "original_cache_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C unchanged, not executed/overwritten/deleted.",
+      "security": "Defender/quarantine boundaries unchanged; fixed archive excludes original unresolved evidence."
+    }
   }
 }

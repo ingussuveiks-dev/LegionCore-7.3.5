@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini10x30",
+  "baseline": "13e37200c475f0fa4970d25619cbcb28a2fd489c",
+  "status": "300_TEXT_FIELDS_TEN30_COHORTS_DEPLOYED_PUSHED_CLEANED_CLIENT_PENDING",
+  "completed": 300,
+  "groups": 10,
+  "per_group": 30,
+  "counting": "300 additional distinct text fields corrected for stored1251/1252 misdecoding:153 gameobject_template.name and147 singleton creature_text.Text rows. Prior400 name fields are controls and not counted again. No new quest mechanics, translation, spawns, grants or whole-chain client verification.",
+  "stats": {
+    "go_names": 153,
+    "go_static": 5,
+    "creature_lines": 147,
+    "direct_bc0": 7,
+    "codecs": {
+      "cp1252": 157,
+      "cp1251": 143
+    },
+    "bc_backed": 140
+  },
+  "source_limits": "5 GO names have static spawn records;148 have no static spawn record and actual dynamic use not newly established.7 NPC lines are BC0/direct;140 are stored fallbacks with Broadcast-selected normal packets unchanged. Actual client font/display/speech delivery remains unobserved.",
+  "details": "docs/audits/ten-thirty-text-2026-11-15.json",
+  "plan": "tools/tests/TenThirty20261115TextRepairs.json",
+  "first_fix_commit": "5475dc584acbe143e2a10eadf15cda2543600c11",
+  "last_fix_commit": "f08bc66ac81c45762ef27abad5c1026f54f35fa4",
+  "batch_commits": [
+    {
+      "batch": 1,
+      "commit": "5475dc584acbe143e2a10eadf15cda2543600c11"
+    },
+    {
+      "commit": "8dc92afc97e21b7553d87827e36fd33dbc12a8a8",
+      "batch": 2
+    },
+    {
+      "commit": "ae70df1858285212e307344705f5ac30e3970077",
+      "batch": 3
+    },
+    {
+      "commit": "73e414d2b9ae69d2fb0aedecc52ed1f5f9e554c8",
+      "batch": 4
+    },
+    {
+      "commit": "4121d1c06339fd0281a5c0005508484957027ec4",
+      "batch": 5
+    },
+    {
+      "commit": "14b235663ec75afe64e7fc64ac1ee7099e77cf81",
+      "batch": 6
+    },
+    {
+      "commit": "d5bb30b6d00eccba887381d808d23c614558a0e4",
+      "batch": 7
+    },
+    {
+      "commit": "c072517a2cdfb52f20642c3ce561c0045af3ed5e",
+      "batch": 8
+    },
+    {
+      "commit": "27277c8ad0c7df766127d112ccdd129be7950246",
+      "batch": 9
+    },
+    {
+      "commit": "f08bc66ac81c45762ef27abad5c1026f54f35fa4",
+      "batch": 10
+    }
+  ],
+  "checks": {
+    "codec": "Unique closed exact roundtrip, no replacement/control injection, identical ASCII parser/formatting tokens; malformed/layered/already-correct inputs refused.157 Windows1252/143 Windows1251 fields; exact generated SQL verified.",
+    "sql": "Ten full-schema TEMP install/replay cohorts; normalized full-row554 GO and selected NPC+legacy Slaghammer control signatures.36 exact drift refusals, including mixed-table and extra-group shape, retain full raw snapshots. All captured SQL exits/status/stdout/stderr checked; no persistent test writes.",
+    "live": "All300 complete rows plus400 previous complete GO controls match original metadata and declared deltas. All10 updater entries RELEASED with exact LF-normalized native SHA1.",
+    "native": "Actual loaders and native query/chat serializers, exact extracted production CreatureTextBuilder. All locale indices/male/female and normal/forced-fallback contexts;140 normal Broadcast packet bytes and400 prior complete GO packets unchanged. NPC identity/type/language/probability/voice/emote/timing/spell metadata preserved; singleton group guards retain implicit IDs.",
+    "limits": "Null builder sender/receiver, no native SendChat dispatch/player recipient/audio/quest progression/scene/client traversal. Forced BC0 rendering is fixture-only; native Broadcast IDs kept in persistent data. Native Release testing is not ASAN gameplay proof.",
+    "native_paired_run": "build-extractors/runtime-test/ten-thirty-text-native/20261115-164838-303",
+    "native_live_run": "build-extractors/runtime-test/ten-thirty-text-native/20261115-165303-179",
+    "live_data_run": "build-extractors/runtime-test/ten-thirty-text-data/20261115-165303-151",
+    "startup": "Owned PID7808 canonical fresh ready, all10 updates applied, graceful shutdown0/exit0/stderr0/gone; no new crashes or appended DBErrors/server warnings/errors/assertions.",
+    "post_cleanup": ".codex/ten-thirty-20261115/final-post-cleanup verifies745 archive byte hashes/manifest,28 exact deletions, canonical assets/original mixed log/protected cache, final native source/link/builder inputs, native exit/stdout/stderr and36 controlled SQL refusals; stdout severity and diagnostics clean; no active world/bnet processes."
+  },
+  "fixture_failures": "Readonly scan collation1267 repaired by binary byte search; TEMP DDL1792 repaired by creating connection-local tables before read-only regression mode; timed-only GetTextGroup API misuse repaired by inspecting the actual owning loaded map for untimed groups. One local cleanup script parenthesis typo failed parsing before any operations, corrected before successful cleanup; failure evidence retained. No new production crash/error or logger/check suppression.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_changed": false,
+    "data": "World2026_11_15_81_text_batch01.sql through batch10.sql RELEASED. Existing executable supports all data changes.",
+    "assets": "World/bnet EXE/maps, configuration/certificates/DLLs/extracted data preserved.",
+    "owned_servers_remaining": 0,
+    "persistent_test_schemas_created": 0
+  },
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/ten-thirty-text-2026-11-15",
+    "archive_manifest_sha256": "B8373D68FBEA3FAB7A7FCC4E4DF8E5CF71F2D7CF30CF3055853B4BD941F6A997",
+    "archived_files": 745,
+    "reclaimed_bytes": 1073402257,
+    "deleted_artifacts": 28,
+    "scope": "Only exact own probe executables/symbols/compiler/linker/private config copies and duplicate pending SQL. Safe absolute targets/no reparse points; no user/unknown server stopped."
+  },
+  "open_limits": {
+    "measured_go1252_name_pattern": 0,
+    "caption_pattern_unreviewed": 24,
+    "unknown_string_pattern_unreviewed": 13,
+    "other": "Other NPC lines, unsupported/mixed strings, comments, localization/grammar and full artifact gameplay not globally certified. Pattern matches alone are not proof of defects.",
+    "legacy": "Original Slaghammer payload/fidelity evidence and protected original EXE/cache,103151 LINK2, prior reconstruction fidelity and all36 complete client artifact chains retained/open.",
+    "mixed_dberrors": "7111bytes SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged/not truncated.",
+    "original_cache_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C unchanged, not executed/overwritten/deleted.",
+    "security": "Defender/quarantine boundaries unchanged; fixed archive excludes original unresolved evidence."
+  },
+  "local_evidence": ".codex/ten-thirty-20261115; reusable source/tests/research retained, exact cleanup-manifest.json and fixed archive manifest preserved."
+}
