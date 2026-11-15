@@ -45,5 +45,10 @@
     "manifest_sha256": "8b0a5ce954717c129bc52fc09c220e2241d0c757c9540bd634a297f11eb5eba5"
   },
   "retention": "Original native-pending outputs/repro executable/config/symbols and unresolved-post-loot original plan/migrations/catalog remain ignored locally outside fixed. No log truncated or report relabelled resolved.",
-  "next": "Recover original intended post-loot behavior/replacement from matching client/build data and historical sources; keep shared81040 review separate from artifact LINK2. None of these four or this research is counted as a completed fix."
+  "next": "Recover original intended post-loot behavior/replacement from matching client/build data and historical sources; keep shared81040 review separate from artifact LINK2. None of these four or this research is counted as a completed fix.",
+  "resolution_followup": {
+    "status": "RESOLVED_NATIVE_DATA_AND_ORIGINAL_UNGUARDED100_REGRESSION_PASSED_CLIENT_PENDING",
+    "audit": "docs/audits/chest-post-loot-resolution-2026-11-15.json",
+    "correction": "81040 is a server-only phase helper, not a missing client spell requiring removal.251959 Data26 restored to matching TDB735 zero. Original failed record remains historical, not relabelled passing."
+  }
 }

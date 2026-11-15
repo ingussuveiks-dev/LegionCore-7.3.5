@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "RESOLVED_FOUR_CHEST_LOOT_AND_NATIVE_SERVER_PHASE81040_DATA_DEPLOYED_CLIENT_PENDING",
+  "baseline": "47d24a1bfdc011f946e1b6e3352dafe90f21771f",
+  "count": "Four previously deferred sources, separate from next100 fixes. Server81040 restoration and251959 correction are the two underlying causes, not additional chest counts.",
+  "cause_81040": "81040 is intentionally server-only/non-DB2, not a deleted item-reward spell. Its definition was missing from this native hotfix data path. Existing chest/trigger references must retain it. Restore implicit-self effects170 UpdateAreaDependentAuras and167 delayed player phase refresh using existing735 handlers.",
+  "primary_source": "https://github.com/TrinityCore/TrinityCore/issues/29220",
+  "compatibility": "Modern serverside_spell SQL is a reference, not copied schema/API. Its first7 attribute words, casttime1/range1/school1/self target and effect170/167 are mapped to actual26972 spell/spell_misc/spell_effect columns and executed through this735 core. Both effect handlers already exist; no new production C++ or EXE. Hidden no-visual helper; no HotfixData client delivery row, item/reward or quest grant introduced.",
+  "cause_251959": "Ancient Elven Chest Data26=219461 was a bad local override. Matching historical TDB735 entry251959 build22566 hasData26=0, corroborated by current TDB; restore that specific native zero. Do not remove81040 from the other three chests.",
+  "historical_evidence": {
+    "file": ".codex/open-hundred-20261115/historical-templates.json",
+    "sha256": "58bf620464e480aec9e4fc9d387872db2d308e4c17ff942fb5d1b93b654c2945",
+    "limits": "Archived TDB735 client build22566/22995 is an earlier Legion reference; current26972 layout/effect compatibility and real native execution are separately checked. Modern database is corroboration only."
+  },
+  "migrations": {
+    "hotfix": "sql/updates/hotfixes/2026_11_15_00_server_phase_81040.sql",
+    "hotfix_sha256": "29383e95b71d53ba8ed9cbd855cc79d749bad4da753d3dd010e69c1c306d6563",
+    "world": "sql/updates/world/2026_11_15_47_chest_post_loot_recovery.sql",
+    "world_sha256": "2b7f4e48bdb4b444a75363ec596ccbcaba1597fb29b32fece67ca92166e2e14f"
+  },
+  "checks": {
+    "reserved_ids": "Complete native DB2+active hotfix catalog confirms misc900000/effects900001+900002 unused before restoration; no foreign spell overwritten.",
+    "isolated_hotfix": "Private schema codex_phase_81040_20261115 clones only3 small tables and uses read-only views for other native tables; migration replay yields one spell/one misc/two effects. After promotion all261/248/314 rows exactly match private copy, zero changed old rows. Existing legion user had noCREATE DATABASE; captured refusal retained, task-owned schema created using established local admin path and SELECT grant only to that private schema.",
+    "World": "Four-entry temp-table install/replay, unrelated source, all nonData1/nonData26 fields preserved, expectedData26 deltas and foreign-link refusal. Exact live four-template readback passes.",
+    "native": "Actual full Release-core load plus complete SendLoot/FillLoot of all4, paired zero-link counterfactuals;170 applies a controlled real area aura and167 retains native100ms delay then releases actual phase-update flag. Both effects repeated twice. Queued post-loot callbacks pumped before teardown.",
+    "original_regression": {
+      "stdout_sha256": "139044BEC93DE2FFF9A7B9A92611DA930CBDCC6B59E353FAC4138E80F761D5EC",
+      "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "exe_sha256": "95A8CE5476D4D7BB8AE000728CF4AE2231F159D834492CBBF8B0F5F5A06E051B",
+      "exit": 0
+    },
+    "startup": "Owned canonicalPID13388 applied World47 and hotfix00, fresh ready/shutdown0/exit0/gone, stderr0 and no new errors/warnings/assertions/crashes.",
+    "shared_use": "World spell_area81040 has0 rows, excluding recursive autocast; other chest/SmartAI references retained. Source170/167 are native player-only/self semantics; no pet/group/kill/item progress changed. Other callers/actual client phase presentation remain separately scoped.",
+    "diagnostic_sha256": {
+      "historical-evidence/diagnostics-after.json": "c755a61d4418ad61a16e67eb46b7c33b9659942682d74ac1cec58ceb6c4f5a3d",
+      "phase-id-evidence/diagnostics-after.json": "20227b954ed787c10a665b9ab9418d1e008d7d7b933563ef05de4a0ec9f8d643",
+      "open-world-shadow/diagnostics-after.json": "b4d685d1a2393e53b898359887085ed9bc0bad6bbd7953d94c18388c5d21f6f3",
+      "open-updater-startup/diagnostics-after.json": "e93ba731c75b4cdae04b410ffd0faed45bf62811a78552d9362c6b98195893cb",
+      "open-readback-evidence/diagnostics-after.json": "742b467264dbb349d8c39e32a4bd42b0beafc1ea16cca5d79b2aa5c8a37b1062",
+      "open-hotfix-readback-evidence/diagnostics-after.json": "cbaec2351f5810fe4bab5ed072ac34880998d42843fe8ff49872cd5cbbacc54a",
+      "open-shadow-native/diagnostics-after.json": "48a8c42bf478d7cd4f92c1c818a1875913605b20931700ee6cfc807aed43a599",
+      "open-shadow-native/native-diagnostics/diagnostics-after.json": "73941196560c5fd4f39ad32b8e26cdac43166a7be23499b7e6d39b3b2c048615",
+      "open-live-native/diagnostics-after.json": "1a213e05d61560df2b17bce1469c328b98943fd4157ebe29b94e3e4b0bd5b0f8",
+      "open-live-native/native-diagnostics/diagnostics-after.json": "28def22d60ffad2d881ef9d3263eac949ea43d1056435e85deb748b9bc6086f0",
+      "open-final-native/diagnostics-after.json": "c360375311237e300d5dee8e7e222ffc222ca1ac12022ea9a60155b7e9ccc432",
+      "open-final-native/native-diagnostics/diagnostics-after.json": "dba5d8d1d360532b70ab5081913a2200aed4462a3f5d8782ad01d4ea4907b049",
+      "original-regression/evidence/diagnostics-after.json": "cd4d6298c6a3e15cc9238604cb7e4c06eef0770a1c11ed1b55f3468258c6e9f5"
+    },
+    "live_world_sha256": "dc4778c3163c51cacd2a3069aba5f6c2839f59075ace76b4b60a8c2129307fde",
+    "live_hotfix_sha256": "9ed9a5c25c593c29f8627de1bb2cc77ee91b7ae78c7e22b5ce3778df27c04e7f"
+  },
+  "preservation": "Canonical mixed7111byte DBErrors and original LINK2/Slaghammer/video/route/security evidence unchanged. No log suppression or fake/no-op spell. Original private8-error record is now eligible for byte/hash-verified fixed archive after final regressions; mixed canonical log remains unresolved and must not be cleared.",
+  "original_evidence_manifest_sha256": "8b0a5ce954717c129bc52fc09c220e2241d0c757c9540bd634a297f11eb5eba5",
+  "remaining": "Actual client visibility/loot/phase UI/re-entry remains pending. Separate original artifact LINK2/LiLi/Ponshu payloads, retail flight/presentation fidelity and36 complete client chains remainOPEN; this does not close those.",
+  "cleanup": "Private schema/grant, resolved original355MB reproduction and task probe artifacts will be removed only after final100 regressions/startup; record final fixed archive and deletion manifest separately."
+}
