@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi ņem30x10",
+  "baseline": "d6fbb5deddb413058c2ce13b39df9ffd67d1f668",
+  "status": "300_ADDITIONAL_NAME_FIELDS_DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "scope": "Thirty groups of ten additional distinct GameObject template.name encoding repairs. One stored-encoding defect class applied to300 definitions. No translation or gameplay edits; previous100 name entries excluded.",
+  "selection": {
+    "static_spawned_definitions": 132,
+    "other_authored_references": 48,
+    "template_query_only_definitions": 120,
+    "counts": {
+      "static_spawns": 132,
+      "with_authored_reference": 180,
+      "static": 132,
+      "loot": 34,
+      "quest": 12,
+      "quest_relation": 2,
+      "no_static_spawn": 168,
+      "db2": 15,
+      "script": 3,
+      "sai": 2,
+      "template_query_only_usage_not_established": 120
+    },
+    "limit": "For120 installed/queryable definitions no in-world static/dynamic use was established. Other references include base DB2 records, authored quests/loot/SmartAI/ScriptName; references alone do not prove actual availability/casting/traversal. No new spawn or progression was fabricated to make a source appear used."
+  },
+  "cause": {
+    "stored_bytes": "Strict reversible UTF-8 bytes misdecoded once as Windows-1252 and stored as UTF-8 mojibake; undefined1252 bytes81/8D/8F/90/9D retain C1 identity before reversal.",
+    "current_reader": "Current MySQLConnection::Open already requests utf8mb4. ObjectMgr reads name bytes directly; GameObject::Create calls SetName and HandleQueryGameObject projects it to the native7.3.5 serializer. Stored data is corrected, with exact old/new name and all-other-field guards.",
+    "producer_limit": "Historical import/producer not recovered; no claim that all importers/text fields are repaired.",
+    "shared_use_review": "No name-equality/find/compare script behavior found in the bounded scripts scan; object behavior continues to use template IDs/data/script bindings. Existing mixed English-Cyrillic language and grammar retained without inventing Blizzard English text."
+  },
+  "sources": {
+    "matching_local": "Actual World full-column/HEX metadata/spawn/quest/SmartAI/loot records, current source and canonical7.3.5 assets. This resolves byte corruption without importing external behavior.",
+    "db2_reader": "tools/tests/GameObjectNameReferences.cpp reads actual SpellEffect and GameObjects DB2 via native reader; raw base references, not post-hotfix cast/availability proof. Effects50/76/104/171 match native EffectTransmitted/EffectSummonObjectWild/EffectSummonObject handlers.",
+    "catalog_sha256": "1bad0c8c23b9c6c89cfbd149745fcaac7dde70084cf4dc4a58e3873b36b6512d",
+    "spell_effect_db2_sha256": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "gameobjects_db2_sha256": "56aec80a3b0b0306b7f1216a33c2754ba1be395659af915372462ca8e1a5d75c",
+    "world_snapshot_sha256": "2358d4f586abbcad0cd03ed9298059af193fc23e964f6127ce17a847781a260f",
+    "git": "Fetched origin/main and verified d6fbb5ded before edits; focused commits pushed separately."
+  },
+  "implementation": {
+    "plan": "tools/tests/ThirtyTen20261115NameRepairs.json",
+    "codec": "tools/tests/thirty_ten_name_encoding.py imports tested strict codec/SQL builder from gameobject_name_encoding.py",
+    "migration_files": "sql/updates/world/2026_11_15_80_name_batch01.sql through batch30.sql",
+    "delta": "Only name; all other column bytes fingerprinted. Each10-row transaction admits exact old/new text and original metadata, restores only known old name, refuses unknown name/metadata/missing-row cohort. No new ScriptName or C++ runtime change.",
+    "previous_controls": "Previous100 full template records and complete locale query packets retained and checked, plus239692 unrelated SQL control."
+  },
+  "checks": {
+    "codec": "300 exact byte roundtrips,30 disjoint ten-entry cohorts, zero prior100 overlap, exact generated SQL. All300 before/after texts reviewed in local name-review.txt.",
+    "sql_shadow": "30 full-schema TEMP cohorts: install/replay, all other fields on401 templates preserved and391 unrelated names unchanged each;90 foreign-name/metadata/missing-row refusal states preserve complete signatures. Captured exit/status/stdout/stderr/EOF; no persistent test writes.",
+    "native_paired": "Actual Release ObjectMgr loader and native7.3.5 query serializer, all locale indices; TEMP shadow and known-old-byte counterfactual paired with migrated data. Every new300 name byte string and non-name packet field checked. Previous100 complete packets unchanged in both phases.",
+    "native_live": "Separate actual live300 template/locale/serializer run, without template writes. Source and real final-link library/DBC inputs frozen and hashed.",
+    "live_data": "All300 complete template readbacks match original metadata plus declared new name; all30 native updater records RELEASED with exact LF-normalized uppercase SHA1. Previous100 complete original template fields/fixed names also match.",
+    "limits": "Response population reuses the prior native helper mirroring HandleQueryGameObject, not a real socket/client query. No authenticated account/character writes, saves, cast, quest credit, pathing, item storage or full artifact traversal. Native Release tests are not ASAN gameplay tests."
+  },
+  "fixture_correction": {
+    "issue": "Initial reference reader used GameObjectsLoadInfo casing; this core spells it GameobjectsLoadInfo. Compile failed before execution.",
+    "repair": "Use exact matching declaration; successful native reader exit0/EOF, then passing pending/live tests. No production runtime error/log suppression or crash."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 33508,
+    "result": "Fresh ready, all30 new migrations applied, graceful shutdown0/exit0/stderr0/gone; no new/changed crash reports, appended DBErrors or server warnings/errors/assertions. No user/unknown process stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "binary_change": false,
+    "preserved": "Canonical bnet/world EXE/maps, configurations/certificates/DLLs/extracted data retained; no Release rebuild required for these data-only corrections."
+  },
+  "remaining_visible": {
+    "name_pattern_matches": 147,
+    "static_name_pattern_matches": 0,
+    "castbar_caption_pattern_matches_unreviewed": 24,
+    "limit": "These counts cover only the measured one-pass mojibake pattern, not every localization/grammar issue or world use. Remaining147 name definitions and24 unreviewed caption matches were not counted as fixed.",
+    "legacy": "Original Slaghammer payload fidelity/protected original cache and103151 LINK2 remain OPEN; mixed7111byte DBErrors retained, not rotated/truncated. All36 complete client artifact chains and prior reconstruction fidelity checks remain separate."
+  },
+  "local_evidence": ".codex/thirty-ten-20261115; build-extractors/runtime-test/thirty-ten-name-{data,native}. Final archive and cleanup recorded in handoff."
+}
