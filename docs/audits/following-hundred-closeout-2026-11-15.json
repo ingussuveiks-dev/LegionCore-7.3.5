@@ -1,0 +1,82 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini ar atvērtajiem un tad ņem10x10",
+  "baseline": "8697a9509cd1d32be5fc0ba96e3249716f5b1db4",
+  "status": "100_MORE_DISTINCT_CHEST_DATA_LINKS_DEPLOYED_ORIGINAL_FOUR_LINK_PAYLOADS_AND_CLIENT_FIDELITY_STILL_OPEN",
+  "branch": "main",
+  "research_commit": "840a37895af07ea84ab446f4f065516a052fa6a1",
+  "fix_commit": "59adae22d53bd8bb10d2e5b7a56e1be71786c1f3",
+  "proof_audit": "docs/audits/following-go-loot-2026-11-15.json",
+  "open_audit": "docs/audits/open-following-hundred-research-2026-11-15.json",
+  "counting": {
+    "additional_repairs": 100,
+    "cohorts": 10,
+    "per_cohort": 10,
+    "field": "gameobject_template.Data1",
+    "existing_authored_loot_rows": 2986,
+    "prior_six_chest_plans_overlap": 0,
+    "static_template": 267580,
+    "static_template_count": 1,
+    "static_spawns": 6,
+    "other99_placement_or_dynamic_use": "Not newly established; explicitly not100 traversed quests or current visible player failures.",
+    "earlier_fixes_recounted": 0,
+    "new_gameplay_fixes_for_original_open_links": 0
+  },
+  "deployed": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "binary_changed": false,
+    "production_cpp_changed": false,
+    "sql": "86_go_loot_batch01..10 applied and exact normalized SHA1 RELEASED readbacks verified. Actual live100 complete nonlink metadata/100 source signatures preserved.",
+    "owned_pid": 4624,
+    "runtime": "Fresh ready, graceful shutdown0/exit0/stderr0/gone. No user/unknown server stopped and no task-owned hidden server remains.",
+    "diagnostics": "Final paired/live native actual SendLoot, TEMP/codec generation and canonical startup have no new/changed canonical/own crash files, DBErrors or unexplained server warnings/errors/assertions. Test-only link error and unopened Character mailbox failures are separately classified, repaired and archived after native regression passes. No original evidence hidden."
+  },
+  "checks": {
+    "data": "Ten baseline/repair/replay cases,101 full template/control signatures,2986 authored loot rows and50 exact drift refusals; live100/source100/updater10 verified.",
+    "native": "Actual loader/GetLootId/GameObject Create/AddToMap/Update/Player::SendLoot/FillLoot with two controlled faction contexts and real20yd distance denials.99 personal/1 ordinary; native nonlink raw/flags/faction/script/quest-items/query data unchanged, no money/item storage. Matching source/generated/final-link hashes and exit/stdout/stderr verified after cleanup.",
+    "limits": "No ASAN claim; no real client open-lock/geometry/collision/spawn visibility, actual item receipt/drop-rate guarantee, group/re-entry/world traversal or full artifact chain certified. No combat/pet-killer or progression code changed. Character DB never opened/read/written; empty synthetic mailbox only.",
+    "final_verification": ".codex/open-following-ten-ten-20261115/final-verification"
+  },
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/following-go-loot-2026-11-15",
+    "archive_manifest_sha256": "C83F77649C8ACABDDCEC098D30165309C05776433237FBF0536460BD99EFE426",
+    "archived_files": 747,
+    "deleted_artifacts": 43,
+    "reclaimed_bytes": 1790273202,
+    "manifest": ".codex/open-following-ten-ten-20261115/cleanup-manifest.json",
+    "result": "747 original diagnostic/source evidence file hashes verified;43 exact redundant exe/obj/PDB/maps/ILK/private configs/duplicate pending SQL artifacts removed after successful deployment/proofs. Retained reusable tests, generated proof and required native libraries. No canonical config/certificates/DLLs/extracted data, other test scope or original unresolved evidence deleted."
+  },
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Unchanged; mixed log never cleared and original protected EXE/cache never executed, overwritten, deleted or moved into fixed. Defender/quarantine boundaries untouched."
+  },
+  "remaining": {
+    "missing_original_links": [
+      [
+        100438,
+        9,
+        10
+      ],
+      [
+        100475,
+        1,
+        7
+      ],
+      [
+        100475,
+        6,
+        8
+      ],
+      [
+        103151,
+        1,
+        2
+      ]
+    ],
+    "target105": "Upstream history identifies2021 implementation,2011 NYI metadata; matching735 semantics remain unproven. No shared selector ported or no-op/zero-link added.",
+    "other": "Marked Slaghammer and earlier FuZan/Yigthregor/Warrior/Sharasdal original fidelity plus all36 complete client artifact chains remain open; no new client traversal occurred."
+  }
+}
