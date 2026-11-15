@@ -1,0 +1,216 @@
+{
+  "date": "2026-11-15",
+  "request": "Turpini ar atvērtajiem un tad ņem10x10",
+  "baseline": "8697a9509",
+  "status": "100_ADDITIONAL_DISTINCT_CHEST_TEMPLATE_LINKS_DEPLOYED_NATIVE_LIVE_PASS_99_PLACEMENTS_UNESTABLISHED_ORIGINAL_ARTIFACT_OPEN",
+  "scope": "Exactly100 existing type3 chest Data1 fields, ten cohorts of ten. Existing same-entry authored loot tables already contain2986 rows. GetLootId returns Data1; zero prevented Player::SendLoot from calling FillLoot. Restore Data1=entry without modifying loot entries/chances/quantity/quest rules, names, locks, cooldown/personal fields, flags, scripts, positions or spawns. These are100 template data repairs, not100 newly traversed quests or proven world placements.",
+  "source_limits": {
+    "static_template": 267580,
+    "static_spawns": 6,
+    "other_templates_with_no_static_spawn": 99,
+    "personal_loot_containers": 99,
+    "ordinary_container": 267580,
+    "actual_other_dynamic_usage": "Not newly established. No personal_loot_template.goEntry references among these100; no template/per-spawn SmartGO rows found. Actual availability/visibility/open-lock interaction and full gameplay of99 dynamic/unplaced templates are unverified. This limitation is part of the completed data repair scope, not evidence of100 currently encountered player failures."
+  },
+  "selection": "Matching735 local templates and source tables first; type3, zeroData1, no custom AI/ScriptName, zero questID/Data8, event/Data6, dungeon encounter/Data25, post-loot spell/Data26 and group-rules/Data15. No authored QuestRequired/reference loot row, alternate personal entry/type0, source4 loot conditions or preallocated personal GO reference. Native store validates all2986 authored nonreference loot records.",
+  "prior_counting": "Compared all100 IDs against the six earlier FiveTwenty/ThirtyFive/TenTen/OpenChestPostLoot/NextTenTen/MoreTenTen chest plans:zero overlap. Earlier37/87 text fields,13 creature links and Neptulon duplicate are not recounted.",
+  "plan": "tools/tests/FollowingGoLoot20261115Repairs.json",
+  "implementation": [
+    "sql/updates/world/2026_11_15_86_go_loot_batch01.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch02.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch03.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch04.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch05.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch06.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch07.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch08.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch09.sql",
+    "sql/updates/world/2026_11_15_86_go_loot_batch10.sql"
+  ],
+  "cohorts": [
+    {
+      "batch": 1,
+      "entries": [
+        239821,
+        240312,
+        240354,
+        240608,
+        240638,
+        240641,
+        240655,
+        241148,
+        241150,
+        241151
+      ]
+    },
+    {
+      "batch": 2,
+      "entries": [
+        241152,
+        241153,
+        241154,
+        241208,
+        241280,
+        241717,
+        241772,
+        242242,
+        242346,
+        242644
+      ]
+    },
+    {
+      "batch": 3,
+      "entries": [
+        242662,
+        242664,
+        242667,
+        242678,
+        243106,
+        243698,
+        243716,
+        243773,
+        243821,
+        243855
+      ]
+    },
+    {
+      "batch": 4,
+      "entries": [
+        244473,
+        244494,
+        244499,
+        244513,
+        244519,
+        244535,
+        244573,
+        244628,
+        244697,
+        244698
+      ]
+    },
+    {
+      "batch": 5,
+      "entries": [
+        244905,
+        244917,
+        245506,
+        245524,
+        245529,
+        245532,
+        245533,
+        245537,
+        245538,
+        245547
+      ]
+    },
+    {
+      "batch": 6,
+      "entries": [
+        245548,
+        245550,
+        245579,
+        245581,
+        245601,
+        246254,
+        246269,
+        250080,
+        250097,
+        250098
+      ]
+    },
+    {
+      "batch": 7,
+      "entries": [
+        250102,
+        250445,
+        250541,
+        250587,
+        250588,
+        250589,
+        250590,
+        251416,
+        251780,
+        252269
+      ]
+    },
+    {
+      "batch": 8,
+      "entries": [
+        252270,
+        252272,
+        252273,
+        252277,
+        252278,
+        252279,
+        252282,
+        252284,
+        252289,
+        252449
+      ]
+    },
+    {
+      "batch": 9,
+      "entries": [
+        252450,
+        252451,
+        252803,
+        252806,
+        252807,
+        252808,
+        252809,
+        252812,
+        252820,
+        252822
+      ]
+    },
+    {
+      "batch": 10,
+      "entries": [
+        252829,
+        252883,
+        252993,
+        253076,
+        253957,
+        254028,
+        254128,
+        254141,
+        255341,
+        267580
+      ]
+    }
+  ],
+  "guards": "Each transactional cohort requires exactly10 known zero/already-linked rows, exact every-other-column SHA256, exact authored source row count/hash and absent alternate personal entry/loot conditions. Missing/custom links, changed metadata, missing/changed source refuses; replay idempotent. Fresh read-only source scan also confirms no per-spawn/template scripts or preallocated personal GO references.",
+  "checks": {
+    "data": "Full-schema TEMP101 templates incl prior Arcane Egg control and all2986 source rows. Ten independent known-old/repaired/replay cases, normalized complete-row signatures and50 exactly classified foreign-link/metadata/missing/source-chance/source-missing refusals. Actual live100 field/metadata plus100 unchanged source signatures and10 RELEASED updater SHA1 hashes verified.",
+    "native": "Actual matching ObjectMgr loader/GetLootId, LootStore validation, GameObject creation/map admission/Update and Player::SendLoot/FillLoot. Paired actual SQL before/fixed and separate live loading. Native Human/Orc controlled player contexts for100 sources, actual20-yard distance denials and actual loot ownership only after link restoration. Nonlink native raw/query/flags/faction/script/gold/quest-items metadata stable; no money or inventory insertion. Full SQL signatures cover all source metadata.",
+    "paired_native": "build-extractors/runtime-test/following-go-loot-native/20261115-192453-134",
+    "live_native": "build-extractors/runtime-test/following-go-loot-native/20261115-192833-870",
+    "live_data": "build-extractors/runtime-test/following-go-loot-data/20261115-192853-247",
+    "native_runtime": "Release native, not ASAN. Controlled admitted/open contexts and positions; model/collision/client opening locks, actual delivery/loot receipt/re-entry/full group traversal not exercised. All Data15 group-rule flags remain0; personal/ordinary branching unchanged. No combat or kill-credit code modified; pet/guardian killer dispatch is outside these GO-only data changes.",
+    "privacy": "World/Hotfix/Login read-only pools, TEMP tables only in native/data probes. Character DB never opened; fresh synthetic mailbox seeded empty before legendary-quality count. Socketless sessions reclaimed at process exit to avoid account.online UPDATE. No actual character, mail, account or inventory rows read/written."
+  },
+  "diagnosed_test_failures": [
+    {
+      "run": "20261115-191826-293",
+      "cause": "Test used derived Chest pointer for explicitly instantiated Map::AddToMap; LNK2019 before execution.",
+      "repair": "Pass actual GameObject base pointer; real Map specialization retained."
+    },
+    {
+      "runs": [
+        "20261115-191931-442",
+        "20261115-192115-740"
+      ],
+      "cause": "Test player lacked declared loaded-mail state; real legendary quality scan attempted _LoadMail with unopened Character pool, causing isolated exitC0000005. Trace captured GetPreparedStatement/_LoadMail/CalculateLegendaryDropChance/rareGO FillLoot/SendLoot. No actual Character query reached a database.",
+      "repair": "Use same explicit empty synthetic mailbox state as retained LegionChestLootLinksNative; load native criteria/modifier bootstrap for GO visibility. Do not open/query real character mail, disable legendary/drop checks or suppress diagnostics. Repaired native paired and live runs exit0/stderr0 and clean post diagnostics. No canonical crash report produced."
+    }
+  ],
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "owned_pid": 4624,
+    "result": "Fresh ready after10 updater86 cohorts, shutdown0/exit0/stderr0/gone; no new canonical/own crash files, DBErrors or unexplained warnings/errors/assertions. No user/unknown server stopped.",
+    "world_sha256": "1F94564C8DD596095E446BC062E3299EFF8C6FEF3D00CE0155DB75CF4BF946A0",
+    "production_cpp_or_binary_changed": false
+  },
+  "open_artifacts": "See docs/audits/open-following-hundred-research-2026-11-15.json. Four original absent LINK payloads and all36 whole-client chains/original fidelity remain open. New2021 target105 provenance is research only, not a gameplay fix; protected Slaghammer cache and mixed7111-byte DBErrors preserved.",
+  "cleanup": "Own test artifact archive/deletions and final preservation checks recorded in following-hundred-closeout-2026-11-15 audit; no original unresolved evidence classified fixed."
+}
