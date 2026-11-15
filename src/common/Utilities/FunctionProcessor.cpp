@@ -30,18 +30,19 @@ FunctionProcessor::~FunctionProcessor()
 
 void FunctionProcessor::Update(uint32 p_time)
 {
+    // Clear the cancelled active generation before admitting work scheduled
+    // after KillAllFunctions. The pending queue was cleared at cancellation.
+    if (clean)
+    {
+        m_functions.clear();
+        clean = false;
+    }
+
     //move from queue
     AddFunctionsFromQueue();
 
     // update time
     m_time += p_time;
-
-    if (clean)
-    {
-        m_functions.clear();
-        clean = false;
-        return;
-    }
 
     if (m_functions.empty())
         return;
@@ -50,14 +51,25 @@ void FunctionProcessor::Update(uint32 p_time)
     FunctionList::iterator i;
     while (((i = m_functions.begin()) != m_functions.end()) && i->first <= m_time)
     {
-        // get and remove event from queue
-        i->second();
+        // Remove the callback before invoking it: cancellation or a recursive
+        // Update must not destroy/re-enter the currently executing function.
+        auto function = std::move(i->second);
         m_functions.erase(i);
+        function();
+
+        if (clean)
+        {
+            m_functions.clear();
+            clean = false;
+            break;
+        }
     }
 }
 
 void FunctionProcessor::KillAllFunctions()
 {
+    std::lock_guard<std::recursive_mutex> _queue_lock(m_queue_lock);
+    m_functions_queue.clear();
     clean = true;
 }
 

@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-15",
+  "baseline": "81ebae028",
+  "status": "SHARED_CANCELLATION_REARM_REPAIR_DEPLOYED_FULL_SOURCE_ASAN_NATIVE_PASS_CLIENT_PENDING",
+  "count": 1,
+  "cumulative_gameplay_data_for_request": 10,
+  "requested_total": 300,
+  "cause": "KillAllFunctions only marked clean. The next Update first admitted all queued functions, then cleared them, discarding new work scheduled after cancellation. A callback cancelling its own generation still allowed other already-due callbacks to run in the same Update. The current callback also remained in the map while executing, so recursive Update replayed it and cancellation could invalidate its node.",
+  "repair": "Clear the pending queue under its existing mutex at cancellation; clear cancelled active callbacks before admitting the fresh pending queue. Move and erase the current function before invocation, then stop/clear the old active generation if its callback cancels. Leave freshly scheduled work pending until the next normal update. Existing clock, equal-time order, queue separation, ABI/header/layout and public APIs retained.",
+  "source": "src/common/Utilities/FunctionProcessor.cpp",
+  "example": "Existing Sentinax DoAction(1) calls KillAllDelayedEvents then schedules a10s summons cleanup. Old scheduler discards that new callback; native tests exercise the exact cancellation/rearm API sequence without claiming whole Sentinax or artifact traversal.",
+  "asan": {
+    "baseline": "build-extractors\\runtime-test\\function-cancellation\\20261115-223111-529",
+    "fixed": "build-extractors\\runtime-test\\function-cancellation\\20261115-223122-852",
+    "actual": "Complete original production FunctionProcessor.cpp with actual header/STL, compiled with ASAN. Six pinned old-source logical counterfactual failures:queued/active rearm,same-tick cancel,callback rearm,reentrant replay,repeated cancel. Eight repaired cases also cover order/deferred zero-delay tasks and empty cancellation clock. Original case failures are expected counterfactuals, not ordinary passes."
+  },
+  "native": {
+    "run": "build-extractors\\runtime-test\\function-cancellation-native\\20261115-222338-155",
+    "actual": "18 real linked integration cases: existing12 actual CreatureAI helper/AI replacement/Creature despawn-state cases plus6 Unit queue cancellation/rearm/reentrant/independent combat cases. Actors have DBTableGUID0; readonly World/Hotfix/Login, no Character pool/persisted spawn/progression writes.",
+    "release": "Actual original common.lib rebuilt after regenerating its obsolete October compiler PCH; original CMake final-link libraries. Actual canonical PE shows old active generation clear before fresh queue admission, moved/extracted map node before callback dispatch, post-callback cancellation branch and pending queue mutex/clear path."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "F71F7AE0F6C7CD50894BA8CB6A965B1AB5A8D910B5A6C84EBEEC4D9548FE6201",
+    "bnet_sha256": "606446C5F1D4F92D241690AECB1A64F62321778D4B7F04C6C63C95197FF7F0D8",
+    "bnet_owned_pid": 2672,
+    "world_owned_pid": 23404,
+    "result": "Both staged Release EXEs/maps copied with matching hashes. Owned bnet fresh ready/graceful SIGINT/exit0/stderr0/gone; owned world fresh ready/shutdown0/exit0/stderr0/gone recorded in continuation closeout. No user/unknown server stopped."
+  },
+  "diagnostics": "No new canonical/own crash, appended DBErrors or unexplained server warnings/errors/assertions. Reviewed fixture iterations: initial stdout/stderr file lifetime observation replaced with owned redirected process streams; obsolete common PCH rejected C1853 and exactly that regenerable cache rebuilt; bnet ready observer incorrectly assumed append-mode while native Appender.Bnet uses write-mode.",
+  "bnet_log_limit": "First bnet smoke used native existing write-mode Appender.Bnet, overwriting the prior3927-byte Nov13 Bnet.log before a byte copy was made. The old length/timestamp and later first-run stdout/log are retained, but do not claim the old complete bytes were preserved. Driver now snapshots/hashes the previous Bnet file before launch, observes fresh per-run stdout and reviews the entire new log. No log configuration changed and mixed DBErrors never cleared.",
+  "remaining": "A separate AddFunctionsFromQueue empty-check outside its queue mutex remains under investigation; not certified by cancellation tests. No additional gameplay count from duplicate18 tests, common rebuild/cache repair or log observer repair. Full native/client encounters and original4 LINK/all36 artifact chains remain open.",
+  "cleanup": "Own resolved compiler/test evidence and temporary stage/probe artifacts archived/removed with hashes in continuation closeout after final combined deployment checks; required original static libraries retained."
+}
