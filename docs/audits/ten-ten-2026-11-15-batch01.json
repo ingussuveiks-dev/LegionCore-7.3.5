@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-15",
+  "batch": 1,
+  "status": "COMPLETED10_DISTINCT_LOOT_LINKS_DEPLOYED_NATIVE_LIVE_PASSED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 251820,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251820,
+      "existing_spawns": 1,
+      "existing_loot_rows": 52
+    },
+    {
+      "entry": 251851,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251851,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 251853,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251853,
+      "existing_spawns": 1,
+      "existing_loot_rows": 48
+    },
+    {
+      "entry": 251854,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251854,
+      "existing_spawns": 1,
+      "existing_loot_rows": 49
+    },
+    {
+      "entry": 251856,
+      "name": "Small Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251856,
+      "existing_spawns": 1,
+      "existing_loot_rows": 51
+    },
+    {
+      "entry": 251857,
+      "name": "Treasure Chest",
+      "before_loot": 0,
+      "after_loot": 251857,
+      "existing_spawns": 1,
+      "existing_loot_rows": 55
+    },
+    {
+      "entry": 252070,
+      "name": "Fel Engine Ignition",
+      "before_loot": 0,
+      "after_loot": 252070,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 252167,
+      "name": "Supply Crate",
+      "before_loot": 0,
+      "after_loot": 252167,
+      "existing_spawns": 12,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 252408,
+      "name": "Ancient Mana Shard",
+      "before_loot": 0,
+      "after_loot": 252408,
+      "existing_spawns": 164,
+      "existing_loot_rows": 1
+    },
+    {
+      "entry": 252432,
+      "name": "Shimmering Ancient Mana Cluster",
+      "before_loot": 0,
+      "after_loot": 252432,
+      "existing_spawns": 1,
+      "existing_loot_rows": 1
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_37_legion_chest_links_ten_batch1.sql",
+  "migration_sha256": "84fd711891152dbf950334c404831ed5b81e1f9c088748236d11198a88e11315",
+  "cause": "Data1=0 made native GetLootId return0 and Player::SendLoot skip FillLoot despite authored same-entry loot; only restoreData1.",
+  "shadow": "10 fixes/idempotent replay,91 unrelated records, all101 other column sets preserved and foreign nonzero loot link refused; temporary tables only.",
+  "shadow_sha256": "6edc97d00399e868a10fb2af3b47433b0831ebfa96ae4954e87709918239821b",
+  "native_final": {
+    "cases": 100,
+    "live_data": true,
+    "stdout_sha256": "66e505b82b706fee5399512e82b34de7de84e8eca0c9332640e920bb3101a849",
+    "inputs_sha256": "7269cfd8b04f104343cde76bb7473b2957abbf9a6ca9f603d8d92cb28ee0b7c2",
+    "ASAN": false
+  },
+  "live": "Canonical updater applied10 migrations; readback verifies all100 links/other captured fields/spawn and loot row counts, plus four deferred candidates unmodified.",
+  "diagnostics": "Final selected tests exit0, stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Initial different selection failed on four unresolved spells; preserved separately, not called passing.",
+  "limits": "Controlled synthetic player/source admission. No authenticated save/item storage, actual client visibility/lock/eligibility/drop distribution or full quest traversal claim. Faction/group/quest/respawn and pet progression rules not changed.",
+  "no_recount": "Ten distinct new sources disjoint from previous250/other nine cohorts; four unresolved post-loot candidates and repeated tests not counted."
+}
