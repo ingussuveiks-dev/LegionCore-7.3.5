@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-15",
+  "batch": 16,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch16.sql",
+  "migration_sha256": "b559adb05ac2f6c9cfc2acc0aa813a0b54493ca3161eea4628e3fd9d3ce48d52",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 227793,
+      "old_hex": "C390C2A4C390C2B0C390C2BCC390C2B8C390C2BBC391C592C390C2BDC390C2BEC390C2B520C391C281C390C2BEC390C2BAC391E282ACC390C2BEC390C2B2C390C2B8C391E280B0C390C2B520C390C290C390C2B0C391E282ACC390C2BAC390C2BE",
+      "new_hex": "D0A4D0B0D0BCD0B8D0BBD18CD0BDD0BED0B520D181D0BED0BAD180D0BED0B2D0B8D189D0B520D090D0B0D180D0BAD0BE",
+      "restored_name": "Фамильное сокровище Аарко",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 230726,
+      "old_hex": "C390E28094C390C2B2C390C2B5C390C2B7C390C2B4C390C2BEC390C2BAC390C2BEC391E282ACC390C2B5C390C2BDC391C592",
+      "new_hex": "D097D0B2D0B5D0B7D0B4D0BED0BAD0BED180D0B5D0BDD18C",
+      "restored_name": "Звездокорень",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 230949,
+      "old_hex": "526F706520C391C28120C390C2BAC391E282ACC391C5BDC390C2BAC390C2BEC390C2BC",
+      "new_hex": "526F706520D18120D0BAD180D18ED0BAD0BED0BC",
+      "restored_name": "Rope с крюком",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 232458,
+      "old_hex": "436865737420C390C29DC390C2B8C390C2B7C390C2B7C390C2B8C390C2BAC391C281C390C2B0",
+      "new_hex": "436865737420D09DD0B8D0B7D0B7D0B8D0BAD181D0B0",
+      "restored_name": "Chest Низзикса",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 234618,
+      "old_hex": "C390E2809DC390C2B0C391E282AC20C390C290C390C2BDC390C2B7C391C692",
+      "new_hex": "D094D0B0D18020D090D0BDD0B7D183",
+      "restored_name": "Дар Анзу",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "loot"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 235321,
+      "old_hex": "C390C5A1C391C692C390C2B7C390C2BDC390C2B5C391E280A1C390C2BDC391E280B9C390C2B920C390C2BCC390C2BEC390C2BBC390C2BEC391E2809A",
+      "new_hex": "D09AD183D0B7D0BDD0B5D187D0BDD18BD0B920D0BCD0BED0BBD0BED182",
+      "restored_name": "Кузнечный молот",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 235322,
+      "old_hex": "C390C5A1C391C692C390C2B7C390C2BDC390C2B5C391E280A1C390C2BDC391E280B9C390C2B520C390C2BCC390C2B5C391E280A6C390C2B820C391C281C391E2809AC390C2B8C391E280A6C390C2B8C390C2B9",
+      "new_hex": "D09AD183D0B7D0BDD0B5D187D0BDD18BD0B520D0BCD0B5D185D0B820D181D182D0B8D185D0B8D0B9",
+      "restored_name": "Кузнечные мехи стихий",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 235333,
+      "old_hex": "C390C5B8C391E282ACC390C2B5C390C2B4C391C281C390C2BAC390C2B0C390C2B7C390C2B0C390C2BDC390C2B8C390C2B520C390C2A1C391C692C390C2B4C390C2BDC390C2BEC390C2B3C390C2BE20C390C2B4C390C2BDC391C28F",
+      "new_hex": "D09FD180D0B5D0B4D181D0BAD0B0D0B7D0B0D0BDD0B8D0B520D0A1D183D0B4D0BDD0BED0B3D0BE20D0B4D0BDD18F",
+      "restored_name": "Предсказание Судного дня",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 235338,
+      "old_hex": "536869656C6420C390C2B3C390C2BBC390C2B0C390C2B4C390C2B8C390C2B0C391E2809AC390C2BEC391E282ACC390C2B0",
+      "new_hex": "536869656C6420D0B3D0BBD0B0D0B4D0B8D0B0D182D0BED180D0B0",
+      "restored_name": "Shield гладиатора",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 235341,
+      "old_hex": "53746F6E6520C390C2B2C391C281C391E2809AC390C2B0C390C2B2C390C2BDC390C2B0C391C28F20C391E280A1C390C2B5C390C2BBC391C5BDC391C281C391E2809AC391C592",
+      "new_hex": "53746F6E6520D0B2D181D182D0B0D0B2D0BDD0B0D18F20D187D0B5D0BBD18ED181D182D18C",
+      "restored_name": "Stone вставная челюсть",
+      "static_spawns": 0,
+      "maps": null,
+      "usage_tags": [
+        "quest"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
