@@ -31,5 +31,6 @@
   "diagnostics": "Before/after all actual tests clean: no new canonical/own crash, appended DBErrors or unexplained server warning/error/assertion. Two resolved test-launch/compiler iterations: ASAN executable initially lacked vcvars runtime DLL path (body never ran); native fixture used CreatureAI* for a UnitAI* getter. Corrected launch/type regressions pass; retain failed evidence until verified archival.",
   "limits": "Full client/encounter reset/respawn travel not verified. Other original four LINK payloads and all36 artifact chains remain open; no300 completion claim. New inventory found only2 direct-player JustDied candidates: Geir is an already-fixed scoped owner handoff, XT scrapbot explicitly requires another boombot for its achievement; neither counted/changed.",
   "preserved": "Protected original Slaghammer B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C and mixed7111-byte DBErrors FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 untouched; no quarantine/authentication/log bypass.",
-  "cleanup": "Per-issue diagnostic archive/temporary artifact cleanup recorded in continuation closeout after matching deployment/startup checks."
+  "cleanup": "Per-issue diagnostic archive/temporary artifact cleanup recorded in continuation closeout after matching deployment/startup checks.",
+  "continuation_closeout": "docs/audits/three-shared-lifetimes-closeout-2026-11-15.json"
 }

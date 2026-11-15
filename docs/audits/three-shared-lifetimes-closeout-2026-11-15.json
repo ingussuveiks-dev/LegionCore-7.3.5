@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-15",
+  "request": "Labi tad pabeidz; preceding30x10",
+  "baseline": "cf2a424da",
+  "status": "THREE_MORE_SHARED_GAMEPLAY_REPAIRS_DEPLOYED_VERIFIED_CLEANUP_COMPLETE_REQUEST300_PARTIAL_CLIENT_FIDELITY_OPEN",
+  "source_commits": [
+    "81ebae028d2e4769a7c1be89bd773a2007b2c3a0",
+    "b08be202aaac375d873b2d91058de849e6fc17e2",
+    "c2f4ecb75c4d4fc6c70f470206ad8a00c7f8ffcc"
+  ],
+  "counting": {
+    "requested": 300,
+    "previous_completed": 8,
+    "this_continuation": 3,
+    "cumulative": 11,
+    "remaining_unallocated_quota": 289,
+    "note": "289 is an unfulfilled requested count, not289 already established bugs. Source/helper/queue defects are each counted once, not per fixture case, caller or repeated build. Compiler fixture/type/observer/cache/tooling repairs and research are excluded."
+  },
+  "ledger": [
+    {
+      "commit": "81ebae028d2e4769a7c1be89bd773a2007b2c3a0",
+      "source": "src/server/game/AI/CreatureAI.cpp",
+      "repair": "DespawnOnRespawn100ms request captures surviving actor directly, avoiding retired/replaced AI; preserves actual despawn and zero/nonzero respawn override."
+    },
+    {
+      "commit": "b08be202aaac375d873b2d91058de849e6fc17e2",
+      "source": "src/common/Utilities/FunctionProcessor.cpp",
+      "repair": "Cancellation clears old pending generation; fresh rearm survives, same-tick cancelled tasks stop and executing node is removed before invocation/reentrant Update."
+    },
+    {
+      "commit": "c2f4ecb75c4d4fc6c70f470206ad8a00c7f8ffcc",
+      "source": "src/common/Utilities/FunctionProcessor.cpp",
+      "repair": "Pending empty read and batch swap both use actual producer mutex; preserve no-allocation empty path and unlock before active-map processing."
+    }
+  ],
+  "audits": [
+    "docs/audits/despawn-on-respawn-lifetime-2026-11-15.json",
+    "docs/audits/function-cancellation-rearm-2026-11-15.json",
+    "docs/audits/function-queue-handoff-2026-11-15.json"
+  ],
+  "validation": {
+    "asan": "Actual whole helper function and complete actual FunctionProcessor.cpp/public header/MSVC STL; helper expected retired-AI ASAN heap-use-after-free counterfactual, six logical old cancellation failures and old lock-escape failure paired with fixed passes. Final8 cancellation cases,3 producer-handoff cases,40000 concurrent callbacks exactly once/in-order. ASAN stress is not TSAN or a proof of all races.",
+    "native": "Latest18 linked real CreatureAI replacement/Unit queues/actual Creature despawn-death-corpse/respawn cases, cancellation/rearm/reentrancy/separate combat queue. Native original Release libraries, not full-native-core ASAN. Read-only World/Hotfix/Login and DB spawn GUID0; no Character writes.",
+    "binary": "Final native input hashes match actual current sources and original common/game/etc libraries. Final canonical matching PE/map verifies helper actor capture,100ms and respawn branches; cancellation-generation order, removed executing node/post-callback cancel; queue lock before pending size read+swap, both paths unlock and no empty-map allocation.",
+    "network": "16 actual loopback starts/query/ban/closed gates; native TCP diagnostics; handshake lifetime/timeout/EOF/auth/detach and instance deadline/five-attempt/stale/duplicate/cancel controls. Actual final PE WorldSocket start/handshake latch/diagnostics pass. Original intermittent client silence remains unproven.",
+    "scepter": "Real extracted login/constructor/admission blocks preserve selector-before-map-creation, fresh/live/wrong-scenario/map/class/status/destination gates; canonical Scepter recovery marker verified. Fixture native unsigned types/LFG overload corrected, final run warning-free."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "C85C9CB858A32589F95CDD9C172022E2275FE1CE3787F0D4508EE33C6434508B",
+    "bnet_sha256": "1466D983190FF33D7148895507E22EF7F14DE9C95E67F2AC909B7238982FC936",
+    "final_owned_world_pid": 2868,
+    "final_owned_bnet_pid": 524,
+    "result": "Both original CMake final-link EXEs/maps promoted with matching hashes. Final own world ready/shutdown0/exit0/stderr0/gone and bnet ready/graceful SIGINT/exit0/stderr0/gone. No user/unknown server stopped. Earlier ownedWorld11816/23404/33568 and bnet30172/2672/6596 also exited0 and gone; intermediate binaries superseded by final C85C."
+  },
+  "post_test": "All canonical/own snapshots: no new/changed crash, appended mixed DBErrors or unexplained runtime warning/error/assertion. Final post-cleanup source+link/input/status/stdout/stderr/archive/deletion/assets/protected-evidence proofs and actual canonical3 PE checks pass. No hidden/background server left.",
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/three-shared-lifetimes-2026-11-15",
+    "archived_files": 803,
+    "manifest_sha256": "51EBD8ED6A44ED9D3BED76F970173643C9AA2B41AD327715A4D1B3303C658587",
+    "supplement": {
+      "files": 9,
+      "path": "build-extractors/bin/Release/fixed/three-shared-lifetimes-2026-11-15/post-cleanup-verification",
+      "manifest_sha256": "8509468E50BA656E331A156447D2272BD497A42F86EAA549453FD08D8D09D869"
+    },
+    "deleted_artifacts": 98,
+    "reclaimed_bytes": 1987468603,
+    "deletions_sha256": "BF5F32AA16E8B02B2F0ED249F9B88DFD0AE735A7B6742BDD5E4644E6AAD7E698",
+    "retained": "One task rollback-before-handoff F71F world/bnet EXE-map set until first actual client acceptance. Older pre-existing rollback in thirty-ten tree retained for earlier outstanding client/lifetime checks; unrelated earlier dated roots not deleted. Required original build libraries, canonical runtime/config/certs/DLL/data and mixed logs preserved.",
+    "method": "Exact absolute validated non-reparse files only; no running process targets;98 regenerable probes/objects/symbols/stage EXEs/maps/own credential config copies removed. Canonical assets and original evidence rehashed after deletion.",
+    "resolved_iterations": [
+      "ASAN initial DLL_NOT_FOUND before body fixed by vcvars launch environment",
+      "Native helper host correct UnitAI* type; no production cast workaround",
+      "Cancellation wrapper stream-sharing fixed with owned redirected streams",
+      "Obsolete223281152-byte October common PCH caused C1853; exact regenerable cache recorded/removed/rebuilt in original library path",
+      "Native bnet write-mode ready observer repaired; actual30172 startup healthy and exit0, see history limitation",
+      "Retry fixture member shadow renamed; Scepter fixture native unsigned return/field types and LFG overload aligned, constructor narrowing repaired; final reruns warning-free"
+    ],
+    "counterfactuals": "Pinned expected-broken ASAN/logical/lock failures are preserved as counterfactuals, never ordinary successful runs. Original fixed archives do not certify unseen client sequences."
+  },
+  "bnet_history_limit": "Initial native bnet startup30172 rewrote existing3927-byte Nov13 Bnet.log through its unchanged write-mode appender before a byte copy was made. Old length/timestamp retained, complete old bytes not preserved. This is a real evidence limitation; do not claim full original history archive. Later bnet tests first snapshot/hash previous log, observe fresh owned stdout and review entire new file. No active mixed DBErrors truncation or log suppression.",
+  "remaining": {
+    "original_links": "100438 row9->10,100475 row1->7 and row6->8,103151 row1->2 remain unchanged and original continuations unknown. Earlier marked Slaghammer/FuZan/Yigthregor reconstructions remain distinct from original fidelity, not counted again.",
+    "client": "No new authenticated client traversal. Latest Warrior pickup/outro/return, Sharasdal living Lady, LiLi/crane dialogue/timing/retry/concurrent-player paths, pet/group/reentry/camera/voice and all36 whole acquisition chains still need actual client evidence. Client availability question is pending, no answer inferred.",
+    "target105": "Matching26972 catalog214 effects and modern reference remain research;735 shared-selector semantics not established, no blind modern port. Remaining original videos/LINK2/protected Slaghammer evidence not moved to fixed."
+  },
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Original protected Slaghammer executable/cache never executed/overwritten/deleted or archived as fixed. Mixed DBErrors unchanged7111 bytes; canonical Crashes empty. Defender/quarantine boundaries preserved."
+  }
+}

@@ -11618,5 +11618,49 @@
       "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
       "result": "Unchanged; original protected EXE/cache never executed, overwritten, deleted or archived as fixed. Mixed log never cleared; Defender/quarantine boundaries unchanged."
     }
+  },
+  "latest_three_shared_repairs_2026_11_15": {
+    "audit": "docs/audits/three-shared-lifetimes-closeout-2026-11-15.json",
+    "status": "THREE_MORE_SHARED_GAMEPLAY_REPAIRS_DEPLOYED_VERIFIED_CLEANUP_COMPLETE_REQUEST300_PARTIAL_CLIENT_FIDELITY_OPEN",
+    "source_commits": [
+      "81ebae028d2e4769a7c1be89bd773a2007b2c3a0",
+      "b08be202aaac375d873b2d91058de849e6fc17e2",
+      "c2f4ecb75c4d4fc6c70f470206ad8a00c7f8ffcc"
+    ],
+    "counting": {
+      "requested": 300,
+      "previous_completed": 8,
+      "this_continuation": 3,
+      "cumulative": 11,
+      "remaining_unallocated_quota": 289,
+      "note": "289 is an unfulfilled requested count, not289 already established bugs. Source/helper/queue defects are each counted once, not per fixture case, caller or repeated build. Compiler fixture/type/observer/cache/tooling repairs and research are excluded."
+    },
+    "delta": [
+      "DespawnOnRespawn100ms request captures surviving actor directly, avoiding retired/replaced AI; preserves actual despawn and zero/nonzero respawn override.",
+      "Cancellation clears old pending generation; fresh rearm survives, same-tick cancelled tasks stop and executing node is removed before invocation/reentrant Update.",
+      "Pending empty read and batch swap both use actual producer mutex; preserve no-allocation empty path and unlock before active-map processing."
+    ],
+    "runtime": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "C85C9CB858A32589F95CDD9C172022E2275FE1CE3787F0D4508EE33C6434508B",
+      "bnet_sha256": "1466D983190FF33D7148895507E22EF7F14DE9C95E67F2AC909B7238982FC936",
+      "final_owned_world_pid": 2868,
+      "final_owned_bnet_pid": 524,
+      "result": "Both original CMake final-link EXEs/maps promoted with matching hashes. Final own world ready/shutdown0/exit0/stderr0/gone and bnet ready/graceful SIGINT/exit0/stderr0/gone. No user/unknown server stopped. Earlier ownedWorld11816/23404/33568 and bnet30172/2672/6596 also exited0 and gone; intermediate binaries superseded by final C85C."
+    },
+    "post_test": "All canonical/own snapshots: no new/changed crash, appended mixed DBErrors or unexplained runtime warning/error/assertion. Final post-cleanup source+link/input/status/stdout/stderr/archive/deletion/assets/protected-evidence proofs and actual canonical3 PE checks pass. No hidden/background server left.",
+    "cleanup": "803 original-byte verified archives+9 post-cleanup files;98 exact artifacts/1987468603bytes removed. One own F71F rollback set retained.",
+    "bnet_history_limit": "Initial native bnet startup30172 rewrote existing3927-byte Nov13 Bnet.log through its unchanged write-mode appender before a byte copy was made. Old length/timestamp retained, complete old bytes not preserved. This is a real evidence limitation; do not claim full original history archive. Later bnet tests first snapshot/hash previous log, observe fresh owned stdout and review entire new file. No active mixed DBErrors truncation or log suppression.",
+    "remaining": {
+      "original_links": "100438 row9->10,100475 row1->7 and row6->8,103151 row1->2 remain unchanged and original continuations unknown. Earlier marked Slaghammer/FuZan/Yigthregor reconstructions remain distinct from original fidelity, not counted again.",
+      "client": "No new authenticated client traversal. Latest Warrior pickup/outro/return, Sharasdal living Lady, LiLi/crane dialogue/timing/retry/concurrent-player paths, pet/group/reentry/camera/voice and all36 whole acquisition chains still need actual client evidence. Client availability question is pending, no answer inferred.",
+      "target105": "Matching26972 catalog214 effects and modern reference remain research;735 shared-selector semantics not established, no blind modern port. Remaining original videos/LINK2/protected Slaghammer evidence not moved to fixed."
+    },
+    "preserved": {
+      "mixed_dberrors_bytes": 7111,
+      "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+      "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+      "result": "Original protected Slaghammer executable/cache never executed/overwritten/deleted or archived as fixed. Mixed DBErrors unchanged7111 bytes; canonical Crashes empty. Defender/quarantine boundaries preserved."
+    }
   }
 }
