@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "status": "TEN_DISTINCT_DATA1_LINKS_DEPLOYED_NATIVE_PASS_CLIENT_PENDING",
+  "batch": 5,
+  "entries": [
+    {
+      "entry": 245936,
+      "name": "chip of adamant armour"
+    },
+    {
+      "entry": 245937,
+      "name": "chip of adamant armour"
+    },
+    {
+      "entry": 245938,
+      "name": "chip of adamant armour"
+    },
+    {
+      "entry": 245996,
+      "name": "Little Chest with the treasure."
+    },
+    {
+      "entry": 246036,
+      "name": "Waterlogged Cache of Ancient Relics"
+    },
+    {
+      "entry": 246125,
+      "name": "Musty Crate"
+    },
+    {
+      "entry": 246147,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246249,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246309,
+      "name": "Small Treasure Chest"
+    },
+    {
+      "entry": 246519,
+      "name": "Fel Reaver Husk"
+    }
+  ],
+  "migration": "sql/updates/world/2026_11_15_63_more_ten_chest_batch5.sql",
+  "sha256": "71fe2b822f722b9705acfd9af29b95155a0dabeaacfb6397c6c0f72b7a931b05",
+  "plan_sha256": "d32c9565bbc7b66e13b475a75b32460884adcb3e026f01dfdf81683ec406d81c",
+  "checks": {
+    "path": ".codex/egg-hundred-20261115/hundred-final-shadow-5/result.json",
+    "sha256": "3ed6e69b6d877ae429acd643fc4389dd73f66a477a8e6c6a35c4d1f1640e7ccb"
+  },
+  "native_and_live": "docs/audits/more-ten-ten-2026-11-15.json",
+  "scope": "Ten source-template data repairs; actual whole quests/scenarios/client and ownership paths pending. Existing instance/native loot rules preserved."
+}
