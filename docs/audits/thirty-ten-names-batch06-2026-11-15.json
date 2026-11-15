@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-15",
+  "batch": 6,
+  "count": 10,
+  "kind": "Ten additional distinct template.name UTF-8 repairs, one encoding defect class",
+  "implementation": "sql/updates/world/2026_11_15_80_name_batch06.sql",
+  "migration_sha256": "2ace3d59285b2d7ebe90eba8d3d4d176a6a21cd58ea1a117b2694877c11d3395",
+  "status": "DEPLOYED_DATA_NATIVE_VERIFIED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "entry": 233562,
+      "old_hex": "C390C5BEC390C2BFC391C692C391C281C390C2BAC390C2BDC390C2B0C391C28F20C391E282ACC390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C391C281C390C2BAC390C2BBC390C2B0C390C2B4C390C2B0",
+      "new_hex": "D09ED0BFD183D181D0BAD0BDD0B0D18F20D180D0B5D188D0B5D182D0BAD0B020D181D0BAD0BBD0B0D0B4D0B0",
+      "restored_name": "Опускная решетка склада",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233563,
+      "old_hex": "C390C5BEC390C2BFC391C692C391C281C390C2BAC390C2BDC390C2B0C391C28F20C391E282ACC390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C391C281C390C2BAC390C2BBC390C2B0C390C2B4C390C2B0",
+      "new_hex": "D09ED0BFD183D181D0BAD0BDD0B0D18F20D180D0B5D188D0B5D182D0BAD0B020D181D0BAD0BBD0B0D0B4D0B0",
+      "restored_name": "Опускная решетка склада",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233564,
+      "old_hex": "C390C5BEC390C2BFC391C692C391C281C390C2BAC390C2BDC390C2B0C391C28F20C391E282ACC390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C391C281C390C2BAC390C2BBC390C2B0C390C2B4C390C2B0",
+      "new_hex": "D09ED0BFD183D181D0BAD0BDD0B0D18F20D180D0B5D188D0B5D182D0BAD0B020D181D0BAD0BBD0B0D0B4D0B0",
+      "restored_name": "Опускная решетка склада",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233565,
+      "old_hex": "C390C5BEC390C2BFC391C692C391C281C390C2BAC390C2BDC390C2B0C391C28F20C391E282ACC390C2B5C391CB86C390C2B5C391E2809AC390C2BAC390C2B020C391C281C390C2BAC390C2BBC390C2B0C390C2B4C390C2B0",
+      "new_hex": "D09ED0BFD183D181D0BAD0BDD0B0D18F20D180D0B5D188D0B5D182D0BAD0B020D181D0BAD0BBD0B0D0B4D0B0",
+      "restored_name": "Опускная решетка склада",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233757,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C592",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C",
+      "restored_name": "Тигель",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233758,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C592",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C",
+      "restored_name": "Тигель",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233759,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C592",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C",
+      "restored_name": "Тигель",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233839,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C592",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C",
+      "restored_name": "Тигель",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233841,
+      "old_hex": "C390C5B8C390C2BEC390C2B4C390C2B2C390C2B5C391CB86C390C2B5C390C2BDC390C2BDC390C2B0C391C28F20C390C2B6C390C2B5C390C2BBC390C2B5C390C2B7C390C2BDC390C2B0C391C28F20C390C2B7C390C2B2C390C2B5C390C2B7C390C2B4C390C2B0",
+      "new_hex": "D09FD0BED0B4D0B2D0B5D188D0B5D0BDD0BDD0B0D18F20D0B6D0B5D0BBD0B5D0B7D0BDD0B0D18F20D0B7D0B2D0B5D0B7D0B4D0B0",
+      "restored_name": "Подвешенная железная звезда",
+      "static_spawns": 2,
+      "maps": "530,1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    },
+    {
+      "entry": 233950,
+      "old_hex": "C390C2A2C390C2B8C390C2B3C390C2B5C390C2BBC391C59220C390C2A7C390C2B5C391E282ACC390C2BDC390C2BEC391E282ACC391C692C390C2BAC390C2B0",
+      "new_hex": "D0A2D0B8D0B3D0B5D0BBD18C20D0A7D0B5D180D0BDD0BED180D183D0BAD0B0",
+      "restored_name": "Тигель Чернорука",
+      "static_spawns": 1,
+      "maps": "1205",
+      "usage_tags": [
+        "static"
+      ],
+      "base_db2_references": [],
+      "usage_limit": "Authored reference/static data does not certify actual traversal"
+    }
+  ],
+  "checks": "Strict byte reversal; full-schema TEMP install/replay,401 other-field/391 unrelated-name preservation and three explicit refusal states; full live readback/RELEASED hash; actual native paired/live loader/locale/serializer with previous100 full-packet controls. Post-test diagnostics clean.",
+  "details": "docs/audits/thirty-ten-names-2026-11-15.json"
+}
