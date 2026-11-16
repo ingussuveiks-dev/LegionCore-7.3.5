@@ -40,6 +40,12 @@ namespace WarriorPickupReturn
         for (QuestObjective const& objective : quest->GetObjectives())
         {
             if (objective.ObjectID == 103739) { arrival = true; continue; }
+            // Fury's actual owned acquisition admits its pickup presentation
+            // and manual transport, including a resumed attempt. An earlier
+            // Aerylia conversation is not a second weapon/storage receipt.
+            // SkyholdArtifactReturn retains the full quest-credit policy.
+            if (&mode == &fury && objective.ObjectID == 98032)
+                continue;
             if (objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL)
                 continue;
             if (uint32(objective.ObjectID) == mode.acquisition)
@@ -190,7 +196,7 @@ namespace WarriorPickupReturn
         uint32 instance, retry = 0, sceneTimeout = 60000;
         bool sceneStarted = false, equipAck = false, storageAck = false;
         std::atomic<bool> sceneAck{false};
-        bool warnedScene = false, warnedConversation = false, warnedSpawn = false;
+        bool warnedScene = false, warnedConversation = false, warnedSpawn = false, warnedEntry = false;
         std::shared_ptr<QuestCancellationReceipt const> attempt;
         ObjectGuid conversation, valkyr;
         std::shared_ptr<Publication> publication;
@@ -226,6 +232,11 @@ namespace WarriorPickupReturn
             retry = 1000;
             if (!Earned(player, *mode) || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported())
                 return;
+            if (mode == &fury && !warnedEntry && player->GetQuestObjectiveData(mode->quest, 98032) < 1)
+            {
+                warnedEntry = true;
+                TC_LOG_WARN("scripts.ai", "Warrior pickup return: earned Fury artifact has no Aerylia 98032 receipt; pickup presentation and manual exit remain available, native Skyhold arrival and quest completion prerequisites are unchanged");
+            }
             if (mode->conversation && (!publication || !publication->finished.load(std::memory_order_acquire)))
             {
                 if (!ObjectAccessor::GetConversation(*player, conversation))
