@@ -8,10 +8,13 @@ p = runpy.run_path(str(Path(__file__).with_name('verify_tuure_first_fight_releas
 n, instructions, values = p['n'], p['instructions'], p['values']
 scope = 'instance_tuure_InstanceMapScript@instance_tuure@@'
 record, update, progress = ('?' + name + '@' + scope for name in ('RecordRouteDeath', 'UpdateRoute', 'HasRouteProgress'))
+middle = '?CompleteRouteMiddle@' + scope
 assert n['symbol'](record) in n['calls']('?CreatureDies@' + scope)
 assert n['symbol'](update) in n['calls']('?Update@' + scope)
 assert {106221, 361429, 1085, 41993} <= values(record)
-assert {9859002, 47883, 47882, 50831, 106221, 1000, 5000, 2007, 2039, 361432} <= values(update)
+assert {9859002, 47883, 47882, 50831, 106221, 1000, 5000, 2039, 361432} <= values(update)
+assert n['symbol'](middle) in n['calls'](update)
+assert {2007, 41993, 1000, 30} <= values(middle)
 for prefix in ('?Recipient@TuureFirstFight@@', '?AddQuestDelayedEvent@Player@@', '?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@'):
     assert n['symbol'](prefix) in n['calls'](record), prefix
 native_credit = '?UpdateAchievementCriteria@Scenario@@QEAAXW4CriteriaTypes'

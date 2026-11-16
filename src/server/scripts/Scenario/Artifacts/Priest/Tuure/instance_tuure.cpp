@@ -13,6 +13,8 @@
 #include "MoveSpline.h"
 #include "MapManager.h"
 #include "SpellMgr.h"
+#include "Conversation.h"
+#include "ObjectAccessor.h"
 
 
 class instance_tuure : public InstanceMapScript
@@ -42,6 +44,7 @@ public:
         std::weak_ptr<uint8> routeAttempt;
         uint32 routeDelay = 1000, routeRetry = 0;
         bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;
+        #include "tuure_route_middle.h"
 
         bool HasRouteProgress(uint32 tree)
         {
@@ -62,6 +65,7 @@ public:
             routeDelay = 1000;
             routeRetry = 0;
             routeKillWarning = routeArrivalWarning = routePathWarning = routeOpening = routeMiddle = routeAlliedKill = false;
+            ResetRouteMiddle();
         }
 
         void RecordRouteDeath(Creature* creature, Unit* killer)
@@ -95,7 +99,7 @@ public:
             if (firstRoute == FirstRoute::Waiting || firstRoute == FirstRoute::Done || routeDelivering) return;
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1085) return;
-            if (scenario->GetCurrentStep() > 2) { firstRoute = FirstRoute::Done; return; }
+            if (scenario->GetCurrentStep() > 2) { routeMiddlePending = false; firstRoute = FirstRoute::Done; return; }
             Player* player = TuureFirstFight::Find(instance, routeRecipient);
             QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
             if (routeAttempt.expired() || (player && (!status || status->ScriptLifetime != routeAttempt.lock())))
@@ -126,12 +130,13 @@ public:
                 uint32 node = boros->GetCurrentWaypointID(); // native OnArrived writes this even without an AI
                 if (node != uint32(-1) && node >= 6 && node < 13 && !routeMiddle)
                 {
-                    routeMiddle = true;
-                    boros->CreateConversation(2007);
+                    routeMiddlePending = true;
+                    CompleteRouteMiddle(diff);
                 }
                 if (node == uint32(-1) || node < 10 || node >= 13) return;
                 firstRoute = FirstRoute::Arrived;
             }
+            else if (firstRoute == FirstRoute::Arrived) CompleteRouteMiddle(diff);
             boros = GetBoros(); // optional conversations can run script callbacks
             player = TuureFirstFight::Find(instance, routeRecipient);
             status = player ? player->getQuestStatus(41993) : nullptr;
@@ -558,6 +563,8 @@ public:
         {
             if (!creature || creature->GetMap() != instance) return;
             InstanceScript::OnCreatureCreate(creature);
+            if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||
+                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();
             if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)
                 borosGuid = creature->GetGUID();
             else if (creature->GetEntry() == 106221 && creature->GetDBTableGUIDLow() == 361429)

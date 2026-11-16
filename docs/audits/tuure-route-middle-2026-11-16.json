@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-16",
+  "status": "DEPLOYED_NATIVE_VERIFIED_CLIENT_PENDING",
+  "request": "Continue unfinished artifact quest behavior repairs after the Erunak handoff.",
+  "scope": "Priest41993/map1489/scenario1085,original second-opponent route9859002 at native waypoint indexes6..12 and optional conversation2007. One focused dialogue-lifecycle repair;not whole Tuure/all36 verification.",
+  "cause": "UpdateRoute set routeMiddle=true before calling void Unit::CreateConversation(2007). Actual Conversation creation can fail for unavailable data or actors;the one-shot flag prevented every later retry. The native creature resolver also selects nearest entries rather than the actual captured Boros/Jace roles.",
+  "matching_data": "Read-only local World capture:2007 has3 original lines4221/4222/4614 at0/3050/6850ms and two creature roles106137/106134,each3550ms. Native duration adds5000ms,currently12100ms. Real local roles are Jace361432 and Boros361419,phase6374. Imported conversation creatureGuid values are not used by this core;matching entries/actual role captures are retained. No text/sound/timer/SQL change or external/unseen-video claim.",
+  "repair": [
+    "Arm pending presentation only from the original native moving-route window. Use actual checked Conversation::CreateConversation,retain native NPC Boros caster/publication/duration,and set success only after real map ownership and revalidation of the same quest attempt/original recipient/current Boros. Bind the successful object to that quest lifetime. Failed caller-owned allocations are deleted;invalid successful map-owned objects are removed normally.",
+    "Capture actual Boros/Jace full GUIDs and exact authored DB spawns for native actor serialization;no nearer clone or unrelated player fallback. Keep original TuureFirstFight eligibility,including its dead-owner policy. Alive actor/map/phase/range and original41993 ScriptLifetime must still match.",
+    "Retry at1000ms with a separate reentry guard and30-attempt bound. Retain useful exhaustion warning and original-player/actual-actor reentry rearm. A genuine eligible-owner/speaker readiness transition also rearms an exhausted window without requiring another grid-create or login event. Cancel the pending phase on real route cancellation/phase end;do not replay an acknowledged story.",
+    "Conversation success is never a prerequisite for native47883 kill or47882/50831 arrival. Preserve movement,the earlier opening2039,first-victory2009,cage/captain/exit/loot,all ownership/credit and shared-map scenario rules. No item/quest grant,teleport,path restart or fabricated arrival."
+  ],
+  "checks": {
+    "counterfactual": "2 pinned42b10683c full native-instance controls,Human/BloodElf:temporarily unavailable in-memory2007 data makes real CreateConversation fail;the old flag consumes it and restoring data does not recover. Explicit expected-broken controls,not ordinary success.",
+    "current_native": "20 whole current instance/native Conversation/Map/Player/Scenario contexts across both races:failed creation and1000ms retry,quest loss/replaced attempt,owner range/GM/phase,stunned Boros,actual Jace disappearance/reentry,duplicate updates and nearer same-entry foreign speaker. Assert actual original NPC caster,all3 lines/native12100ms lifetime,both serialized full actor GUIDs and unchanged progress-map size. Earlier quest/stage victory and waypoint6 are controlled prerequisites;not real path/combat traversal. Final run uses the actual final original CMake link-library hashes.",
+    "faults": "4 separate deliberate exhaustion contexts across both races:missing in-memory dialogue data or absent speaker phase. Each remains bounded at30 with exactly1 retained warning,then recovers through original-owner entry or real speaker readiness without create/login respectively. Wrapper accepts only exactly4 known warnings with Completed=true,zero new crashes/DBErrors and successful native exit/cases;all other diagnostics still fail. No warning was removed or suppressed in production.",
+    "retained_asan": "Original full-controller modeled suites pass:28 first-fight variants;40 route successes/16 missing-native-owned-reward denials;native cage lock/use and23 denials plus recovery;56 captain primary/missing-AI variants. Player/pet/guardian/charmer/three allies,live/dead owners,status,actual extracted kill/owner/native waypoint/quest/criteria boundaries and original fault variants remain as those hosts document. The hosts use the exact certified pre-delta instance;they preserve progression coverage,while the20+4 native cases execute current dialogue code.",
+    "source_and_pe": "Exact full-file inverse of the declared instance edits plus the new-header SHA256 against42b10683c;historical expected source hashes retained. Staged/canonical selected PE chain checks actual instance factory/hook table,UpdateRoute->CompleteRouteMiddle,native checked creation/quest binding,captured-actor vtable/no nearest lookup,and unchanged selected death/reward/arrival paths. Original Release scripts.lib recompiles instance_tuure.cpp;original game/shared/common final-link inputs,no global OutDir substitution.",
+    "iterations": "Resolved fixture-only failures retained:ambiguous GetConversationData overload was typed;custom fixture assigns DB spawn after Creature::Create,so it explicitly dispatches the actual instance OnCreatureCreate after full role binding. First guarded wrapper catch was attached to a scriptblock rather than a try;fixed before execution. PE forbidden-call lookup was changed to inspect all matching overload addresses,keeping every assertion. Readiness-after-exhaustion was added during source review and verified by the additional two recovered speaker-phase cases;the intermediate AB864AE8 build/startup is retained as superseded evidence. Native Release is not whole-core ASAN or client/audio playback. Final whitespace cleanup only follows passing fixtures.",
+    "evidence": [
+      ".codex/tuure-route-dialogue-20261116/story-result.log",
+      ".codex/tuure-route-dialogue-20261116/baseline.log",
+      ".codex/tuure-route-dialogue-20261116/native-final-linked.log",
+      ".codex/tuure-route-dialogue-20261116/faults-final.log",
+      ".codex/tuure-route-dialogue-20261116/retained-first-fight.log",
+      ".codex/tuure-route-dialogue-20261116/retained-cage.log",
+      ".codex/tuure-route-dialogue-20261116/retained-captain.log",
+      ".codex/tuure-route-dialogue-20261116/final-stage-proof.log",
+      ".codex/tuure-route-dialogue-20261116/canonical-proof.log"
+    ]
+  },
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "B1EF8DD4E9C053A5514CF4325AB0F37049915DFDF8B04AA02AFA10F9510C5ED7",
+    "map_sha256": "4DA043926019B3F52599F6F13529272CC7C44EDCA3D501026EAF974D9E6D60BB",
+    "deployment": "Absent-server checks before both promotions. Original23C151B3 recovery copy preserved across the superseded intermediate build. Final task-owned canonical PID20432 ready/server shutdown0/exit0/empty stderr/gone. Configuration/certificates/DLLs/bnet unchanged;no user server stopped and no hidden process retained. No SQL migration."
+  },
+  "diagnostics": "Ordinary final native/ASAN/source/PE/build/canonical runs have pre/post crash/log snapshots and no new crashes,appended DBErrors,warnings,errors or assertions. Four expected private native exhaustion warnings are explicitly reviewed as recovered faults. Canonical Crashes empty;preexisting mixed7111-byte DBErrors and earlier unresolved handshake diagnostics remain untouched and unresolved. Diagnostic archive/temporary cleanup recorded after the focused commit.",
+  "remaining": "Actual client route,conversation visibility/audio/timing,both full paths/camera/pet/group/relog and final pickup/return remain pending. Active Hruthnir/Protection gameplay was not tested or modified. This focused optional2007 repair does not certify all Tuure or all36 artifact chains. Other optional dialogue call sites remain separate source leads,not extra repairs."
+}

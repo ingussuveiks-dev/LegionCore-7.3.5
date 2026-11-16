@@ -1,0 +1,34 @@
+{
+  "baseline": "42b10683c",
+  "path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp",
+  "before_sha256": "84bda6a0ac0bde577bcd68b48dbe84ad0d40c9d94b4b19e11c1edc3fa027be65",
+  "after_sha256": "5bd83de45e2a2d5b36d43242eaea3c6d25664328de3cc1d945431654c4779ae4",
+  "header": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/tuure_route_middle.h",
+  "header_sha256": "40be16ad122eeef81c5a61b7a3f0ad43d81aed7261a2424e3e743d48faa1fbc9",
+  "edits": [
+    {
+      "old": "#include \"MapManager.h\"\n#include \"SpellMgr.h\"\n\n\n",
+      "new": "#include \"MapManager.h\"\n#include \"SpellMgr.h\"\n#include \"Conversation.h\"\n#include \"ObjectAccessor.h\"\n\n\n"
+    },
+    {
+      "old": "        uint32 routeDelay = 1000, routeRetry = 0;\n        bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;\n\n        bool HasRouteProgress(uint32 tree)\n",
+      "new": "        uint32 routeDelay = 1000, routeRetry = 0;\n        bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;\n        #include \"tuure_route_middle.h\"\n\n        bool HasRouteProgress(uint32 tree)\n"
+    },
+    {
+      "old": "            routeRetry = 0;\n            routeKillWarning = routeArrivalWarning = routePathWarning = routeOpening = routeMiddle = routeAlliedKill = false;\n        }\n\n",
+      "new": "            routeRetry = 0;\n            routeKillWarning = routeArrivalWarning = routePathWarning = routeOpening = routeMiddle = routeAlliedKill = false;\n            ResetRouteMiddle();\n        }\n\n"
+    },
+    {
+      "old": "            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n            if (!scenario || scenario->GetScenarioId() != 1085) return;\n            if (scenario->GetCurrentStep() > 2) { firstRoute = FirstRoute::Done; return; }\n            Player* player = TuureFirstFight::Find(instance, routeRecipient);\n            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;\n",
+      "new": "            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n            if (!scenario || scenario->GetScenarioId() != 1085) return;\n            if (scenario->GetCurrentStep() > 2) { routeMiddlePending = false; firstRoute = FirstRoute::Done; return; }\n            Player* player = TuureFirstFight::Find(instance, routeRecipient);\n            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;\n"
+    },
+    {
+      "old": "                if (node != uint32(-1) && node >= 6 && node < 13 && !routeMiddle)\n                {\n                    routeMiddle = true;\n                    boros->CreateConversation(2007);\n                }\n                if (node == uint32(-1) || node < 10 || node >= 13) return;\n                firstRoute = FirstRoute::Arrived;\n            }\n            boros = GetBoros(); // optional conversations can run script callbacks\n            player = TuureFirstFight::Find(instance, routeRecipient);\n",
+      "new": "                if (node != uint32(-1) && node >= 6 && node < 13 && !routeMiddle)\n                {\n                    routeMiddlePending = true;\n                    CompleteRouteMiddle(diff);\n                }\n                if (node == uint32(-1) || node < 10 || node >= 13) return;\n                firstRoute = FirstRoute::Arrived;\n            }\n            else if (firstRoute == FirstRoute::Arrived) CompleteRouteMiddle(diff);\n            boros = GetBoros(); // optional conversations can run script callbacks\n            player = TuureFirstFight::Find(instance, routeRecipient);\n"
+    },
+    {
+      "old": "            if (!creature || creature->GetMap() != instance) return;\n            InstanceScript::OnCreatureCreate(creature);\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)\n                borosGuid = creature->GetGUID();\n",
+      "new": "            if (!creature || creature->GetMap() != instance) return;\n            InstanceScript::OnCreatureCreate(creature);\n            if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||\n                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)\n                borosGuid = creature->GetGUID();\n"
+    }
+  ]
+}

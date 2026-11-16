@@ -8,6 +8,14 @@ function Replace-Fixture([string]$value,[string]$old,[string]$new){if(!$value.Co
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline -or $CageBaseline -or $CaptainBaseline){'baseline'}elseif($RouteBaseline){'route-baseline'}else{'current'})" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Priest/Tuure/Tuure.cpp';$source=Get-Content "$repo/$path" -Raw
  $instancePath='src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp';$selected=$source;$instanceSource=Get-Content "$repo/$instancePath" -Raw
+ if($instanceSource.Contains('#include "tuure_route_middle.h"')){
+  & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/tuure_route_middle_scope.py"
+  if($LASTEXITCODE){throw 'Current middle-dialogue source amendment is not certified'}
+  # The new native host runs current dialogue behavior. These retained modeled
+  # progression matrices keep their full original instance after exact reversal.
+  $instanceSource=(& git -C $repo show "42b10683c:$instancePath") -join "`n"
+  if($LASTEXITCODE){throw 'Certified retained Tuure instance unavailable'}
+ }
  if($Baseline){$selected=(& git -C $repo show "8c946eb5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight actor missing'};$instanceSource=(& git -C $repo show "8c946eb5:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight instance missing'}}
  [IO.File]::WriteAllText("$out/Instance.inc",(Block $instanceSource 'struct instance_tuure_InstanceMapScript :')+';')
  [IO.File]::WriteAllText("$out/Policy.inc",(Block $source 'namespace TuureFirstFight')+(Block $source 'namespace TuureIntroHeal')+(Block $source 'namespace TuureCompanion'))
