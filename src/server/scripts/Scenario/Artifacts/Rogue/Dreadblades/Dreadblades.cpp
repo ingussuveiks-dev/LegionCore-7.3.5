@@ -130,32 +130,86 @@ public:
         }
         
         bool intro;
+        bool summonIntro = false;
+        bool presentationWarning = false;
+        ObjectGuid introPlayer;
+        std::shared_ptr<QuestCancellationReceipt const> introReceipt;
         EventMap events;
         
         void Reset() override
         {
-            events.Reset();
+            // Both events are authored presentation, not combat abilities.
+            // A combat reset must not retire an already claimed introduction.
         }
         
+        bool CanStartIntro(Player* player) const
+        {
+            if (!me->IsInWorld() || !me->IsAlive() || me->IsPreDelete() || me->GetEntry() != 102179 ||
+                !player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->isGameMaster() ||
+                player->IsBeingTeleported() || player->getClass() != CLASS_ROGUE || me->GetMapId() != 1545 ||
+                player->GetMap() != me->GetMap() || !me->InSamePhase(player) || !me->InSamePhaseId(player) ||
+                !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me) || !player->canSeeOrDetect(me) ||
+                !me->IsWithinDistInMap(player, 30.0f) || player->GetQuestStatus(40849) != QUEST_STATUS_INCOMPLETE ||
+                player->GetQuestRewardStatus(40849))
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 1012 && scenario->GetCurrentStep() == 0;
+        }
+
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER || !me->IsWithinDistInMap(who, 30.0f))
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (intro || !CanStartIntro(player))
                 return;
-            if (me->GetEntry() != 102179)
-                return;
-            
-            if (intro)
-                return;
-            
             intro = true;
+            introPlayer = player->GetGUID();
+            introReceipt = player->GetQuestCancellationReceipt(40849);
             events.RescheduleEvent(EVENT_2, 5000);
         }
         
         void IsSummonedBy(Unit* summoner) override
         {
-            if (me->GetEntry() != 102212)
+            if (me->GetEntry() != 102212 || summonIntro)
                 return;
+            summonIntro = true;
             events.RescheduleEvent(EVENT_1, 3000);
+        }
+
+        bool PublishPresentation(uint32 conversationId, uint32 eventId)
+        {
+            Player* player = eventId == EVENT_2 ? ObjectAccessor::GetPlayer(*me, introPlayer) : nullptr;
+            if (eventId == EVENT_2 && (!CanStartIntro(player) || player->GetQuestCancellationReceipt(40849) != introReceipt))
+            {
+                intro = false;
+                introPlayer.Clear();
+                introReceipt.reset();
+                presentationWarning = false;
+                return false;
+            }
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), conversationId, me, NULL, *me))
+            {
+                delete conversation;
+                events.RescheduleEvent(eventId, 1000);
+                if (!presentationWarning)
+                    TC_LOG_WARN("scripts", "Dreadblades Tethys: native conversation%u unavailable; retain original presentation before departure", conversationId);
+                presentationWarning = true;
+                return false;
+            }
+            if (eventId == EVENT_2)
+            {
+                if (!CanStartIntro(player) || player->GetQuestCancellationReceipt(40849) != introReceipt)
+                {
+                    conversation->Remove();
+                    intro = false;
+                    introPlayer.Clear();
+                    introReceipt.reset();
+                    return false;
+                }
+                introPlayer.Clear();
+                introReceipt.reset();
+            }
+            return true;
         }
         
         void UpdateAI (uint32 diff) override
@@ -168,17 +222,15 @@ public:
                 {
                     case EVENT_1:
                         {
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1122, me, NULL, *me))
-                                delete conversation;
+                            if (!PublishPresentation(1122, EVENT_1))
+                                break;
                             me->GetMotionMaster()->MovePoint(0, -1210.06f, 5803.85f, 19.17f);
                         }
                         break;   
                    case EVENT_2:
                         {
-                            Conversation* conversation1 = new Conversation;
-                            if (!conversation1->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1114, me, NULL, *me))
-                                delete conversation1;
+                            if (!PublishPresentation(1114, EVENT_2))
+                                break;
                             me->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
                             me->SetAnimKitId(0);
                             me->SetWalk(true);

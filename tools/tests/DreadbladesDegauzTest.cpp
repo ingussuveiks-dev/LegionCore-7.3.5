@@ -29,6 +29,7 @@ struct Creature:Unit{
  uint32 mapId=1545,flags=0,stops=0,despawns=0,removed=0,react=1,moves=0,entry=102185;bool walk=true,failSpawn=false;
  std::vector<uint32> summons;std::vector<Creature*> adds;CreatureAI* primary=nullptr;CreatureAI* i_disabledAI=nullptr;
  Creature* ToCreature(){return this;}CreatureAI* AI(){return primary;}InstanceScript* GetInstanceScript(){return nullptr;}
+ bool IsAlive()const{return alive;}
  uint64 GetHealth()const{return health;}uint64 GetHealth(Unit*)const{return targetHealth;}
  uint64 GetMaxHealth(Unit*)const{return targetMaximum;}uint64 CountPctFromMaxHealth(uint32 pct,Unit* u)const{return GetMaxHealth(u)*pct/100;}
  bool HealthBelowPct(uint32 pct)const{return health<maximum*pct/100;}
