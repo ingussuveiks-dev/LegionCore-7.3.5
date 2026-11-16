@@ -1,0 +1,28 @@
+{
+  "archive_manifest_sha256": "A714667E07217368273F36B2A9F5FC2299987019469DAADB9696BA4392AFA35E",
+  "archive": "build-extractors/bin/Release/fixed/sharasdal-erunak-evade-20261116",
+  "archive_files": 251,
+  "mixed_db_errors_bytes": 7111,
+  "implementation_commits": [
+    "918de1cef",
+    "9eccf70bc"
+  ],
+  "removed_files": 33,
+  "canonical_unchanged": true,
+  "servers": [],
+  "active_crashes": 0,
+  "mixed_db_errors_unchanged": true,
+  "reclaimed_bytes": 1310356765.0,
+  "deletion_manifest_sha256": "5024F2EE41DC8049CBECB9E4F35339F8156904BC53FF0A0A5F5586DBC5F9D676",
+  "date": "2026-11-16",
+  "status": "DEPLOYED_PUSHED_DIAGNOSTICS_ARCHIVED_CLIENT_PENDING",
+  "gameplay_fix_commit": "9eccf70bc",
+  "source_provenance_commit": "918de1cef",
+  "shared_audit": "docs/audits/sharasdal-erunak-evade-2026-11-16.json",
+  "archive_review": "Original-byte diagnostic files and source/destination SHA256 checked. Resolved compiler/API,source-provenance orchestration and native-initialization-clock fixture failures are retained together with passing repairs. Existing mixed canonical diagnostics were not archived as fixed or truncated.",
+  "removed": "33 task-owned completed staged/test EXE/OBJ/PDB/ILK/MAP/private copied configurations. Exact absolute task-root/ancestor-reparse/process checks applied;shared catalog removal limited to the two uniquely rebuilt named probes. Original libraries,canonical EXE/map/config/DLL/certs/data and recovery copies preserved.",
+  "retained": "755E61D7 rollback-before-resume retained for this concrete pending client check,plus prior recovery material. Source/regression tools and input/evidence hashes retained. Canonical23C151B3 repair hash unchanged after cleanup;no hidden process remains.",
+  "checks": "2 expected-broken native controls;18 repaired native contexts plus18 story callbacks,including real timed waypoint spline/destination;46 retained coupled ASAN contexts;68 current native living-finale contexts;4-file/33 partial-edit source-provenance controls;staged/canonical selected PE checks;owned canonical ready/shutdown0/exit0 with empty stderr. No full client or whole-core ASAN claim.",
+  "remaining": "User client checks:Hruthnir/Protection and Sharasdal Erunak route/healing/repeated fights,then reconstructed finale/pickup/return. Other full artifact chains remain open. Older Sharasdal living-finale,Fu Zan return/Yigthregor and Slaghammer LINK2 missing-implementation research labels have later user-approved functional reconstructions;authenticity/client checks remain and must not be retold as absent code.",
+  "next_independent_review": "Priest Tuure guide middle-route2007 publication:current instance routeMiddle is consumed before unchecked CreateConversation. This is a newly inspected source lead,not a reproduced defect or completed repair;no Tuure code changed or extra repair counted."
+}
