@@ -1,0 +1,20 @@
+{
+    "date":  "2026-11-16",
+    "status":  "SOURCE_DATA_SEQUENCE_REVIEWED_CURRENT_ESCORT_BUILD_CLIENT_RETEST_PENDING",
+    "scope":  "Protection39191/scenario909 first three stages and original door243522/spawn134166/map1495/phase6999.",
+    "request":  "User clarifies door remains unavailable because Stage1 remains, and requests checking descent-\u003eStage2, fight-\u003eStage3, Hruthnir actual approach-\u003edoor opening and native blue rune disappearance.",
+    "findings":  [
+                     "Matching26972 ScenarioStep1856/tree45335/Criteria28952 is native script event46288. Original route9859004 has seven nodes and WaypointMovementGenerator publishes zero-based6 at the last actual waypoint. Hruthnir QueuePillikHandoff/TryPillikEntry requests native46288 for eligible living Warrior in the same instance/phase/range100; retries500ms if participant absent or native criterion rejected. Walking ahead alone does not simulate the missing companion arrival.",
+                     "Stage2 is ScenarioStep1828/tree45337/Criteria28953, actual script event46289. Shared instance captures original94714/DB361361 actual death and native loot recipient. Hruthnir waits for actual entry and original full5s cue, then uses real death receipt/native event46289 and preserves early/one-hit/player/pet/guardian ownership handling. Remaining Lesser Imps are not an extra native objective; the authored goal is Defeat Pillik.",
+                     "After successful handoff, actual point2 movement is4809.14/164.68/-11.20. On actual POINT2 callback, nearby original243522/134166 door at4810.29/169.38/-11.217 is within30yd and existing InstanceScript::HandleGameObject sets GO_STATE_ACTIVE. Original4s next-room talk/attack clock follows. This is companion arrival, not a direct door unlock from merely viewingStage3.",
+                     "Matching GameObjectDisplayInfo33309 points to native FileDataID1331378/model7vr_vrykul_tombdoor02. Read-only actual26972 CASC model contains blue7vr_vrykul_tombdoor_g.blp, visually matched rune glyphs, animations147Closed,148Open3334ms,149Opened and146Close2166ms. Existing door defaultstate1/READY and physical model opening handle rune fade/opening; no additional spell aura should replace that native presentation.",
+                     "The reported earlier Onward stationary chase blocked the real route/Stage2 producer. Deployed5c6525d04/B3189E36 repairs native combat/threat cleanup and clears covering active chase before idle route. No additional implementation or progression change follows this source review; the new run has not yet established the full physical sequence."
+                 ],
+    "video":  {
+                  "url":  "https://www.youtube.com/watch?v=svtJiYa_Gaw",
+                  "review":  "Existing locally downloaded reference: previously sampled2:20-4:48 at2s intervals, plus this review sampled3:58-4:05.75 at0.25s intervals for rune/door animation comparison. Sampled footage, not continuous whole-video playback. Original user4:00 and subsequent frame support before/after appearance. No unseen behavior claimed.",
+                  "evidence":  ".codex/hruthnir-first-door-20261116 door-model.bin,door-glow.blp/png,native-display.json,native-stage-criteria.json,door-sequence-01/02.jpg."
+              },
+    "diagnostics":  "User-owned world28524/bnet21268 started canonical runtime. Actual updater applied2026_11_16_04_pillik_fel_ground_visual.sql at12:59:47 and server ready13:00:05. Server14801090-\u003e14857116 reviewed with no WARN/ERROR/FATAL/assertion; Bnet shortened3927-\u003e3472 on restart and full current file reviewed,0diagnostics. DBErrors7111 unchanged/mixed unresolved; canonical Crashes empty. No server started/stopped by agent.",
+    "limits":  "Source/native-data/asset review only. No separate automated/modeled/native/ASAN/PE-verifier/regression/startup tests, per active gameplay workflow. Actual physical descent/Stage2/Pillik/Stage3/door opening/rune fade and previous native green ground effect remain pending user traversal on current build. No fake credit, manual counter edit, door force-open or shared-template visual mutation."
+}
