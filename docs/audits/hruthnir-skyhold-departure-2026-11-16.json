@@ -1,6 +1,6 @@
 {
     "date":  "2026-11-16",
-    "status":  "DEPLOYED_USER_HRUTHNIR_TRAVEL_RETEST_PENDING",
+    "status":  "CLIENT_CONFIRMED_HRUTHNIR_TRANSFER",
     "scope":  "Warrior Protection39191, Hruthnir96660/menu18694 option0, Skyhold1479 departure191216 -\u003e187803 -\u003emap1495/scenario909. No progression, character, item or live SQL edits.",
     "report":  "User selected Let us go to the tomb, rose into the air and landed at the same Skyhold location. Screenshots show active Legacy of the Icebreaker. This switches the active user-led traversal from completed Fury to Protection.",
     "cause":  "Actual SmartAI96660 link1 requests invoker191216. Existing local matching26972 SpellEffect export identifies effect42 with native TriggerSpell187803; that spell has effect227/self plus destination17 and existing target1495/4916.3/-94/66.3/2.45, LFG1028. Hotfix spell_effect has no overrides for either ID. SkyholdDeparture only included eleven Aerylia pairs, omitting this Hruthnir pair. EffectJumpDest left its nonzero arrival spell target GUID empty. EffectMovementGenerator resolved no Unit, and native Unit::CastSpell immediately rejected null victim, so no187803 teleport occurred.",
@@ -9,15 +9,16 @@
     "checks":  {
                    "compilation":  "Release x64 original game.vcxproj rebuilt MotionMaster.cpp, PointMovementGenerator.cpp and SpellEffects.cpp; scripts project up to date. Build and final link exit0. One existing C5055 warning at unrelated SpellEffects.cpp4337 preserved, no compiler errors.",
                    "final_link":  "Original GAME:MotionMaster.obj, GAME:SpellEffects.obj and GAME:PointMovementGenerator.obj appear in final map. Original game/scripts/shared/common Release libraries used; no global OutDir override. Staged/copied EXE and map hashes equal.",
-                   "diagnostics":  "Prior user-run interval and build/deployment passive log review: Server14733888, DBErrors7111, Bnet3927 bytes unchanged, no new appended warnings/errors/assertions. Active canonical Crashes empty. No test process started and no client exit status available. Mixed preexisting DBErrors7111 remains unresolved and unchanged.",
+                   "diagnostics":  "User-owned canonical worldserver20648/bnet18728 are running; no agent process started/stopped. Server.log14733888-\u003e14794775,60887 appended characters reviewed: no WARN/ERROR/FATAL/assertion. Bnet.log shortened3927-\u003e3472 on restart; full current3472 reviewed with no error, so no uninterrupted append-history claim. DBErrors7111 unchanged and unresolved/mixed; canonical Crashes empty. Current canonical9E326252 EXE and protected bnet/config/cert/DLL hashes unchanged. No active log rotated/truncated.",
                    "intentionally_not_run":  "No separate automated/modeled/native/ASAN/PE-verifier/regression/startup tests, per active user-led workflow. Compilation/source review/copied identity are preparation checks, not actual client transfer verification.",
-                   "pending":  "User start canonical server, select same Hruthnir option and confirm actual transfer to1495/scenario909 stage1. Actual load screen/camera/pet/relog, full Protection sequence and interrupted/abandoned alternative paths remain client checks."
+                   "pending":  "Full Protection traversal, camera/pet/relog and interrupted/abandoned alternatives remain unverified; the actual reported Hruthnir destination is now user-confirmed."
                },
     "deployment":  {
                        "worldserver_sha256":  "9E3262529B0E53F40DD9023941450A1DEE7D9B93BE3341BE12A6B38C6CAC6791",
                        "map_sha256":  "59DC2287F473544657E9DC798E3825569E749B99B2982A8E7EB0542F6C0D44FC",
                        "safety":  "No worldserver/bnetserver process before build or immediately before copy. No user server stopped or task server launched. Canonical bnet/configuration/certificate/DLL hashes unchanged.",
-                       "retained":  "Ignored .codex/hruthnir-skyhold-travel-20261116 evidence and matching release stage retained for pending client retest; rollback-before-travel retains previous03750A88 EXE/map. Resolved-evidence archival and redundant stage cleanup deferred until actual behavior confirmation. Personal backups/shared data/native build libraries preserved."
+                       "retained":  "Resolved evidence archived under build-extractors/bin/Release/fixed/2026-11-16-hruthnir-skyhold-travel-20261116;29 files, SHA256 manifest FEE5EE922DF415224785457B8D2D99DAAF2837AB777721F5C3FC95A44FB2A0C6. Removed8 redundant stage exe/map/rsp/cmd outputs,179648539 bytes; absolute paths/non-reparse/stage processes checked. Retain previous03750A88 rollback for recovery, original build libraries, private backups and mixed/unresolved evidence. No user server touched."
                    },
-    "limitations":  "Focused transfer repair prepared and deployed; user gameplay confirmation remains OPEN. Earlier Warrior remaining-choice UI retest is separately pending; accepting Protection does not prove the UI hid the two completed routes."
+    "limitations":  "User confirms actual correct destination after the native Hruthnir jump. No claim of the entire Protection chain or alternative-path verification.",
+    "client_confirmation":  "User explicitly confirms only Protection is offered and Hruthnir now delivers to the intended destination. This confirms these two reported paths in the real client, not the entire Protection chain or unseen alternatives."
 }
