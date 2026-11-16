@@ -28,5 +28,16 @@
   },
   "diagnostics": "All counterfactual/native/fault/retained/startup pre-post crash and log snapshots reviewed. Ordinary and final startup runs have no new warnings/errors/assertions or appended DBErrors. Ten deliberate unavailable-boss warnings are reviewed recovered faults. Canonical Crashes empty;existing mixed7111-byte DBErrors and prior unresolved instance-handshake warnings preserved without truncation or being declared fixed.",
   "evidence": ".codex/dreadblades-scout-20261116;timestamped native runs and actual-input hashes. Reviewed diagnostics are archived under canonical fixed/dreadblades-scout-20261116 with a subsequent cleanup record. Runtime/configuration/character data excluded from Git.",
+  "cleanup": {
+    "fix_commit": "82d57600a",
+    "archive": "build-extractors/bin/Release/fixed/dreadblades-scout-20261116",
+    "manifest_sha256": "1B078A6F38D49238D751D7BD3FFDE1816BBD9BDCA3607C4DD03048AC6F227B2F",
+    "retained_check_manifest_sha256": "7FB9B3E592F58305C027365E1BBC6306BC2B7F053201A3C39C3652513668A66D",
+    "archived_files": 229,
+    "deleted_files": 40,
+    "reclaimed_bytes": 1549085529,
+    "removed": "Completed scout final-link stage,task-owned scout native EXE/OBJ/ILK and timestamped maps/symbols/private copied configs,latest retained Tethys native outputs,and redundant Brinebeard/catalog compiler outputs. Exact local paths/process/reparse checks and archive readback hashes verified. Source and reusable tools retained.",
+    "preserved": "Canonical755E61D7 EXE/map/config/certs/DLL/bnet/data;2D1EBD14 rollback plus earlier client-pending Protection evidence;original static libraries,personal/character backups,mixed7111-byte DBErrors and unresolved handshake reports. No log truncated;no hidden task process remains."
+  },
   "next": "User's Hruthnir/Protection traversal remains pending. Outlaw client should confirm actual scout arrival,second line after6s,original boss intro then normal48531 fight and later Eliza/pickup. This focused handoff repair does not certify any whole artifact chain or all36."
 }
