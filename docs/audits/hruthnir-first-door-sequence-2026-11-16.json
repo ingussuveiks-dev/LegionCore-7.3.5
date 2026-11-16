@@ -1,6 +1,6 @@
 {
     "date":  "2026-11-16",
-    "status":  "SOURCE_DATA_SEQUENCE_REVIEWED_CURRENT_ESCORT_BUILD_CLIENT_RETEST_PENDING",
+    "status":  "CLIENT_CONFIRMED_FIRST_DOOR_OPENS_HILL_COMBAT_ASSISTANCE_FOLLOWUP_STAGED",
     "scope":  "Protection39191/scenario909 first three stages and original door243522/spawn134166/map1495/phase6999.",
     "request":  "User clarifies door remains unavailable because Stage1 remains, and requests checking descent-\u003eStage2, fight-\u003eStage3, Hruthnir actual approach-\u003edoor opening and native blue rune disappearance.",
     "findings":  [
@@ -16,5 +16,5 @@
                   "evidence":  ".codex/hruthnir-first-door-20261116 door-model.bin,door-glow.blp/png,native-display.json,native-stage-criteria.json,door-sequence-01/02.jpg."
               },
     "diagnostics":  "User-owned world28524/bnet21268 started canonical runtime. Actual updater applied2026_11_16_04_pillik_fel_ground_visual.sql at12:59:47 and server ready13:00:05. Server14801090-\u003e14857116 reviewed with no WARN/ERROR/FATAL/assertion; Bnet shortened3927-\u003e3472 on restart and full current file reviewed,0diagnostics. DBErrors7111 unchanged/mixed unresolved; canonical Crashes empty. No server started/stopped by agent.",
-    "limits":  "Source/native-data/asset review only. No separate automated/modeled/native/ASAN/PE-verifier/regression/startup tests, per active gameplay workflow. Actual physical descent/Stage2/Pillik/Stage3/door opening/rune fade and previous native green ground effect remain pending user traversal on current build. No fake credit, manual counter edit, door force-open or shared-template visual mutation."
+    "limits":  "User now explicitly confirms downhill continuation, bottom fight and first door opening. UI stage labels/native rune disappearance/green ground visual are not explicitly confirmed, and the whole Protection chain remains open. User reports other slope groups skipped; focused combat assist repair af61cc8c6 is staged awaiting offline promotion. No separate test/startup or forced credit/door override."
 }
