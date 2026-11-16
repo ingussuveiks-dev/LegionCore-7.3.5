@@ -19,6 +19,7 @@
 #include "magnar_start.h"
 #include "magnar_combat.h"
 #include "hruthnir_pillik.h"
+#include "earthwarder_crypt.h"
 #include <memory>
 #include <set>
 #include <array>
@@ -148,6 +149,61 @@ public:
         uint32 magnarRoutePoint = 0;
         uint32 magnarRouteTimer = 0;
         bool magnarRouteFailureReported = false;
+        uint32 cryptApproachTimer = 0;
+        bool cryptApproachFailureReported = false;
+
+        void UpdateCryptApproach(uint32 diff)
+        {
+            if (!thirdfighting && !fourfighting)
+                return;
+            bool rear = !thirdfighting && fourfighting;
+            if (cryptApproachTimer > diff)
+            {
+                cryptApproachTimer -= diff;
+                return;
+            }
+            cryptApproachTimer = 1000;
+            if (!IsPillikContext() || me->GetDBTableGUIDLow() != 361306 ||
+                sScenarioMgr->GetScenario(me->GetInstanceId())->GetCurrentStep() != 2 ||
+                me->isInCombat() || me->HasUnitState(UNIT_STATE_NOT_MOVE) ||
+                me->IsMovementPreventedByCasting() || !me->movespline->Finalized())
+                return;
+            bool participant = false;
+            for (auto const& reference : me->GetMap()->GetPlayers())
+                if (IsPillikPlayer(reference.getSource()) && reference.getSource()->IsAlive())
+                    participant = true;
+            if (!participant)
+                return;
+            InstanceScript* instance = me->GetInstanceScript();
+            if (instance->GetData(rear ? EarthwarderCrypt::RearWindshaperDefeated : EarthwarderCrypt::ReylarDefeated))
+            {
+                if (rear)
+                {
+                    fourfighting = false;
+                    Talk(11);
+                    me->GetMotionMaster()->MovePoint(5, 4822.31f, 328.56f, -30.14f);
+                }
+                else
+                {
+                    thirdfighting = false;
+                    me->GetMotionMaster()->MovePoint(4, 4824.81f, 246.52f, -24.29f);
+                }
+                return;
+            }
+            Creature* target = me->GetMap()->GetCreature(instance->GetGuidData(rear ? EarthwarderCrypt::RearWindshaperActor : EarthwarderCrypt::ReylarActor));
+            if (!target || !target->IsInWorld() || !target->IsAlive() ||
+                target->GetEntry() != (rear ? 94813 : 96433) || target->GetDBTableGUIDLow() != (rear ? 361411 : 361404) ||
+                !target->InSamePhase(me) || !me->IsWithinDistInMap(target, 70.0f))
+                return;
+            Creature* companion = me;
+            AttackStart(target);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
+            bool accepted = me->getVictim() == target;
+            if (!accepted && !cryptApproachFailureReported)
+                TC_LOG_WARN("scripts", "Earthwarder crypt: Hruthnir could not attack original actor %u in instance %u; approach retained for retry", target->GetDBTableGUIDLow(), me->GetInstanceId());
+            cryptApproachFailureReported = !accepted;
+        }
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -1043,25 +1099,10 @@ public:
             {
                 TryPillikHandoff();
             }
-            if (thirdfighting) // electrify balls
+            if (thirdfighting || fourfighting)
             {
-                thirdfighting = false;
-                me->GetMotionMaster()->MovePoint(4, 4824.81f, 246.52f, -24.29f);
-            }
-            if (fourfighting)
-            {
-                fourfighting = false;
-                Talk(11);
-                me->GetMotionMaster()->MovePoint(5, 4822.31f, 328.56f, -30.14f);
-            }
-        }
-
-        void KilledUnit(Unit* who) override
-        {
-            if (who->GetEntry() == 96443)
-            {
-                thirdfighting = false;
-                me->GetMotionMaster()->MovePoint(4, 4824.81f, 246.52f, -24.29f);
+                cryptApproachTimer = 0;
+                UpdateCryptApproach(0);
             }
         }
 
@@ -1071,9 +1112,9 @@ public:
             {
                 case 1:
                     fourfighting = true;
-                    if (Creature* targ = me->FindNearestCreature(94813, 40.0f, true))
-                        AttackStart(targ);
                     Talk(10);
+                    cryptApproachTimer = 0;
+                    UpdateCryptApproach(0);
                     break;
                 case 2:
                 {
@@ -1188,17 +1229,17 @@ public:
                         {
                             Talk(19);
                             Talk(6);
-                            if (Creature* targ = me->FindNearestCreature(96443, 70.0f, true))
-                                AttackStart(targ);
                             thirdfighting = true;
+                            cryptApproachTimer = 0;
+                            UpdateCryptApproach(0);
                         });
                         break;
                     case 3:
                         Talk(19);
                         Talk(6);
-                        if (Creature* targ = me->FindNearestCreature(96443, 70.0f, true))
-                            AttackStart(targ);
                         thirdfighting = true;
+                        cryptApproachTimer = 0;
+                        UpdateCryptApproach(0);
                         break;
                     case 4:
                         Talk(7);
@@ -1353,6 +1394,9 @@ public:
             if (companion->AI() != this || !companion->IsInWorld())
                 return;
             UpdateMagnarIntro(diff);
+            UpdateCryptApproach(diff);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
             if (!UpdateVictim())
                 return;
 

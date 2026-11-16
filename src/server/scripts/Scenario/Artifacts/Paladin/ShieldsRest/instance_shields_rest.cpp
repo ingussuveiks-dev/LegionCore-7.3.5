@@ -10,6 +10,7 @@
 #include <array>
 #include "../../Warrior/EarthWarder/magnar_start.h"
 #include "../../Warrior/EarthWarder/hruthnir_pillik.h"
+#include "../../Warrior/EarthWarder/earthwarder_crypt.h"
 #include "../../Warrior/EarthWarder/magnar_combat.h"
 #include "TemporarySummon.h"
 #include <set>
@@ -47,6 +48,16 @@ public:
         bool magnarGuardsDelivered;
         bool magnarGuardDispatching;
         uint32 magnarGuardGeneration = 0;
+        ObjectGuid reylarGUID;
+        bool reylarDefeated = false;
+        ObjectGuid rearWindshaper;
+        bool rearWindshaperDefeated = false;
+        bool warriorWindHandoff = false;
+        std::array<ObjectGuid, 2> warriorWindshapers;
+        std::array<bool, 2> warriorWindDeaths{};
+        std::array<ObjectGuid, 2> warriorWindSources;
+        std::array<bool, 2> warriorWindFailures{};
+        ObjectGuid warriorWindBarrier;
 
         void Initialize() override
         {
@@ -58,6 +69,16 @@ public:
             windshaperDiedCount = 0;
             igrimEvent = 0;
             count_kills = 0;
+            reylarGUID.Clear();
+            reylarDefeated = false;
+            rearWindshaper.Clear();
+            rearWindshaperDefeated = false;
+            warriorWindHandoff = false;
+            warriorWindshapers = {};
+            warriorWindDeaths = {};
+            warriorWindSources = {};
+            warriorWindFailures = {};
+            warriorWindBarrier.Clear();
             magnarGuardGUIDs = {};
             magnarGuardDeaths = {};
             magnarCompanionGUID.Clear();
@@ -82,6 +103,34 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
+            if (creature->GetPhases().count(6999))
+            {
+                if (creature->GetEntry() == 96433 && creature->GetDBTableGUIDLow() == 361404)
+                {
+                    reylarGUID = creature->GetGUID();
+                    if (creature->IsAlive())
+                        reylarDefeated = false;
+                }
+                for (unsigned slot = 0; slot < 2; ++slot)
+                {
+                    if (creature->GetEntry() == 94813 && creature->GetDBTableGUIDLow() == 361408 + slot * 2)
+                    {
+                        warriorWindshapers[slot] = creature->GetGUID();
+                        if (creature->IsAlive())
+                            warriorWindDeaths[slot] = false;
+                        if (creature->IsAlive())
+                            warriorWindHandoff = false;
+                    }
+                    if (creature->GetEntry() == 96740 && creature->GetDBTableGUIDLow() == 361407 + slot * 2)
+                        warriorWindSources[slot] = creature->GetGUID();
+                }
+                if (creature->GetEntry() == 94813 && creature->GetDBTableGUIDLow() == 361411)
+                {
+                    rearWindshaper = creature->GetGUID();
+                    if (creature->IsAlive())
+                        rearWindshaperDefeated = false;
+                }
+            }
             MagnarCombat::Bind(instance, magnarCombat, creature, magnarGuardGeneration);
             if (creature->GetEntry() == 94714 && creature->GetDBTableGUIDLow() == 361361)
             {
@@ -117,6 +166,8 @@ public:
 
         void OnGameObjectCreate(GameObject* go) override
         {
+            if (go->GetEntry() == 243541 && go->GetDBTableGUIDLow() == 134168 && go->GetPhases().count(6999))
+                warriorWindBarrier = go->GetGUID();
             if (go->GetEntry() == 243897 && go->GetDBTableGUIDLow() == 134170)
             {
                 magnarDoorGUID = go->GetGUID();
@@ -180,6 +231,12 @@ public:
                 case 94714:
                     RegisterPillikDeath(unit);
                     break;
+                case 96433:
+                    if (unit->GetGUID() == reylarGUID && !unit->IsAlive() && unit->GetMap() == instance)
+                        if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                            if (scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() <= 2)
+                                reylarDefeated = true;
+                    break;
                 case NPC_INNA_THE_CRYPTSTALKER:
                 case NPC_DRAKE_SHAE:
                 {
@@ -221,6 +278,20 @@ public:
                     }
                     break;
                 case 94813:
+                    if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                        if (scenario->GetScenarioId() == 909)
+                        {
+                            if (!unit->IsAlive() && unit->GetMap() == instance && scenario->GetCurrentStep() <= 2)
+                            {
+                                for (unsigned slot = 0; slot < 2; ++slot)
+                                    if (unit->GetGUID() == warriorWindshapers[slot])
+                                        warriorWindDeaths[slot] = true;
+                                if (unit->GetGUID() == rearWindshaper)
+                                    rearWindshaperDefeated = true;
+                            }
+                            UpdateWarriorCryptWinds();
+                            break;
+                        }
                     count_kills++;
                     if (count_kills == 2)
                     {
@@ -473,6 +544,10 @@ public:
         {
             switch (type)
             {
+                case EarthwarderCrypt::ReylarDefeated:
+                    return reylarDefeated;
+                case EarthwarderCrypt::RearWindshaperDefeated:
+                    return rearWindshaperDefeated;
                 case PillikHandoff::Death:
                     return pillikDied;
                 case 1059:
@@ -494,6 +569,10 @@ public:
         {
             switch (type)
             {
+                case EarthwarderCrypt::ReylarActor:
+                    return reylarGUID;
+                case EarthwarderCrypt::RearWindshaperActor:
+                    return rearWindshaper;
                 case PillikHandoff::Actor:
                     return pillikGUID;
                 case PillikHandoff::Recipient:
@@ -562,11 +641,72 @@ public:
         MagnarCombat::State magnarCombat;
         std::set<ObjectGuid> magnarRemovedBosses;
         MagnarCombat::Retired magnarRetiredCombat;
+        void UpdateWarriorCryptWinds()
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 909)
+                return;
+            bool defeated = warriorWindDeaths[0] && warriorWindDeaths[1];
+            bool active = !defeated && scenario->GetCurrentStep() <= 2;
+            uint32 epoch = magnarGuardGeneration;
+            for (unsigned slot = 0; slot < 2; ++slot)
+                if (Creature* source = instance->GetCreature(warriorWindSources[slot]))
+                {
+                    if (!source->IsInWorld() || !source->IsAlive() || source->IsDespawn() ||
+                        source->GetEntry() != 96740 || source->GetDBTableGUIDLow() != 361407 + slot * 2 ||
+                        !source->GetPhases().count(6999))
+                        continue;
+                    if (!active)
+                    {
+                        source->RemoveAurasDueToSpell(190842);
+                        source->RemoveAreaObject(190842);
+                        warriorWindFailures[slot] = false;
+                    }
+                    else if (!source->HasAura(190842) || !source->GetAreaObject(190842))
+                    {
+                        // Repair a lost aura/area as one owned native pair.
+                        source->RemoveAurasDueToSpell(190842);
+                        source->RemoveAreaObject(190842);
+                        SpellCastResult result = source->CastSpell(source, 190842, true);
+                        if (epoch != magnarGuardGeneration)
+                            return;
+                        bool accepted = result == SPELL_CAST_OK && source->HasAura(190842) && source->GetAreaObject(190842);
+                        if (!accepted && !warriorWindFailures[slot])
+                            TC_LOG_WARN("scripts", "Earthwarder crypt: native wind190842 failed for source %u in instance %u (result %u); retained for retry", source->GetDBTableGUIDLow(), instance->GetInstanceId(), uint32(result));
+                        warriorWindFailures[slot] = !accepted;
+                    }
+                }
+            if (defeated)
+                if (GameObject* barrier = instance->GetGameObject(warriorWindBarrier))
+                    if (barrier->GetEntry() == 243541 && barrier->GetDBTableGUIDLow() == 134168 && barrier->GetPhases().count(6999))
+                    {
+                        // Keep the authored visual removal, and release the
+                        // native door collision as well as its legacy mask.
+                        if (barrier->GetPhaseMask() != 4)
+                            barrier->SetPhaseMask(4, true);
+                        if (epoch != magnarGuardGeneration)
+                            return;
+                        barrier = instance->GetGameObject(warriorWindBarrier);
+                        if (barrier && barrier->GetGoState() == GO_STATE_READY)
+                            barrier->SetGoState(GO_STATE_ACTIVE);
+                    }
+            if (epoch != magnarGuardGeneration)
+                return;
+            if (defeated && !warriorWindHandoff && scenario->GetCurrentStep() == 2)
+                if (Creature* companion = instance->GetCreature(magnarCompanionGUID))
+                    if (companion->IsInWorld() && companion->IsAlive() && companion->IsAIEnabled && companion->AI() &&
+                        companion->GetEntry() == 96468 && companion->GetDBTableGUIDLow() == 361306 && companion->GetPhases().count(6999))
+                    {
+                        warriorWindHandoff = true;
+                        companion->AI()->DoAction(1);
+                    }
+        }
         void Update(uint32 diff) override
         {
             if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }
             hunterWindTimer = 500;
             TryAdvanceMagnarGuards();
+            UpdateWarriorCryptWinds();
             auto scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1068)
                 return;
