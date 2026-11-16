@@ -22,7 +22,15 @@ $tethys=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "cfde024ba:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned Tethys source boundary absent'}
 $classStart='class npc_admiral_tethys_scenario : public CreatureScript'
-$surroundings=$tethys.Replace((Block $tethys $classStart),(Block $pinned $classStart))
+# The later scout/boss handoff has a separate whole-class native certificate.
+# Restore exactly those two boundaries; keep checking every other byte here.
+$scoutBoundary=(& git -C $repo show "1f7ffbe97:$path") -join "`n"
+if($LASTEXITCODE){throw 'Pinned scout composition boundary absent'}
+$surroundings=$tethys.Replace('#include "dreadblades_scout.h"','')
+foreach($start in @('class npc_small_events_dreadblades: public CreatureScript','class npc_lord_brinebeard: public CreatureScript')){
+ $surroundings=$surroundings.Replace((Block $surroundings $start),(Block $scoutBoundary $start))
+}
+$surroundings=$surroundings.Replace((Block $surroundings $classStart),(Block $pinned $classStart))
 if(($surroundings -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unreviewed change outside Tethys presentation class'}
 if($Baseline){$tethys=(& git -C $repo show "cfde024ba:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Tethys counterfactual absent'}}
 [IO.File]::WriteAllText("$out/TethysIntro.inc",(Block $tethys 'class npc_admiral_tethys_scenario : public CreatureScript')+';')

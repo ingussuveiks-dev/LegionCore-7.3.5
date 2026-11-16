@@ -10,6 +10,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Item.h"
+#include "dreadblades_scout.h"
 
 namespace DreadbladesAcquisition
 {
@@ -413,9 +414,49 @@ public:
         bool intro;
         bool eventcheck;
         uint32 eventtimer;
+        bool handoffLine = false;
+        bool handoffWarning = false;
+        bool arrivalWarning = false;
+
+        void RequestBrinebeard(Unit* who)
+        {
+            Player* player = who ? who->ToPlayer() : nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (intro || !me->IsAlive() || !me->IsInWorld() || me->IsPreDelete() || me->GetMapId() != 1545 ||
+                me->GetDBTableGUIDLow() != 360404 || !player || !player->IsInWorld() || !player->CanContact() ||
+                !player->IsAlive() || player->isGameMaster() || player->IsBeingTeleported() || player->getClass() != CLASS_ROGUE ||
+                player->GetMap() != me->GetMap() || !me->InSamePhase(player) || !me->InSamePhaseId(player) ||
+                !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me) || !player->canSeeOrDetect(me) ||
+                !me->IsWithinDistInMap(player, 30.0f) || player->GetQuestStatus(40849) != QUEST_STATUS_INCOMPLETE ||
+                player->GetQuestRewardStatus(40849) || !scenario || scenario->GetScenarioId() != 1012 || scenario->GetCurrentStep() != 1)
+                return;
+
+            // Keep the original native arrival event, and require its actual
+            // stage acknowledgement before arming the six-second handoff.
+            intro = true;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48489);
+            scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1012 || scenario->GetCurrentStep() != 2)
+            {
+                intro = false;
+                if (!arrivalWarning)
+                    TC_LOG_WARN("scripts", "Dreadblades scout: native48489 arrival was not acknowledged; retain original arrival source");
+                arrivalWarning = true;
+                return;
+            }
+            Talk(0, player->GetGUID());
+            me->SetFacingToObject(player);
+            eventtimer = 6000;
+            eventcheck = true;
+        }
 
         void MoveInLineOfSight(Unit* who) override
         {
+            if (me->GetEntry() == 102249)
+            {
+                RequestBrinebeard(who);
+                return;
+            }
             if (who->GetTypeId() != TYPEID_PLAYER || !me->IsWithinDistInMap(who, 30.0f))
                 return;
             
@@ -430,20 +471,9 @@ public:
                     delete conversation;
                 return;
             }
-            if (me->GetEntry() != 102249)
-            {
-                uint8 chance = urand(1, 3);
-                if (chance == 3) // random
-                    Talk(0);
-            }
-            else
-            {
-                Talk(0, who->GetGUID());
-                me->SetFacingToObject(who);
-                eventtimer = 6000;
-                eventcheck = true;
-                who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48489);
-            }
+            uint8 chance = urand(1, 3);
+            if (chance == 3) // random
+                Talk(0);
         } 
         
         void UpdateAI(uint32 diff) override
@@ -452,13 +482,49 @@ public:
             {
                 if (eventtimer <= diff)
                 {
-                    eventcheck = false;
-                    Talk(1);
-                    if(Creature* face = me->FindNearestCreature(102256, 50.0f, true))
-                        me->SetFacingToObject(face);
-                    if(Creature* boss = me->FindNearestCreature(102239, 50.0f, true))
-                        boss->AI()->DoAction(1);
-                    me->DespawnOrUnsummon(5000);
+                    Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+                    if (!scenario || scenario->GetScenarioId() != 1012 || scenario->GetCurrentStep() != 2)
+                    {
+                        eventcheck = false;
+                        if (scenario && scenario->GetScenarioId() == 1012 && scenario->GetCurrentStep() > 2)
+                            me->DespawnOrUnsummon(5000);
+                        else
+                            intro = false;
+                        return;
+                    }
+                    if (!handoffLine)
+                    {
+                        handoffLine = true;
+                        Talk(1);
+                        if (Creature* face = me->FindNearestCreature(102256, 50.0f, true))
+                            me->SetFacingToObject(face);
+                    }
+                    Creature* boss = nullptr;
+                    std::list<Creature*> candidates;
+                    GetCreatureListWithEntryInGrid(candidates, me, 102239, 50.0f);
+                    for (Creature* candidate : candidates)
+                        if (candidate->GetDBTableGUIDLow() == 360405 && candidate->IsAlive() && candidate->IsInWorld() &&
+                            !candidate->IsPreDelete() && me->InSamePhase(candidate) && me->InSamePhaseId(candidate) &&
+                            me->CanTargetQuestObject(candidate) && candidate->CanTargetQuestObject(me))
+                        {
+                            boss = candidate;
+                            break;
+                        }
+                    if (boss && boss->IsAIEnabled && boss->AI())
+                    {
+                        if (!boss->AI()->GetData(DreadbladesScout::BrinebeardIntroRequested))
+                            boss->AI()->DoAction(1);
+                        if (boss->AI()->GetData(DreadbladesScout::BrinebeardIntroRequested))
+                        {
+                            eventcheck = false;
+                            me->DespawnOrUnsummon(5000);
+                            return;
+                        }
+                    }
+                    eventtimer = 1000;
+                    if (!handoffWarning)
+                        TC_LOG_WARN("scripts", "Dreadblades scout: original Brinebeard intro not acknowledged; retain same-source handoff retry");
+                    handoffWarning = true;
                 }
                 else
                     eventtimer -= diff;
@@ -490,6 +556,7 @@ public:
         
         bool intro;
         bool outro;
+        bool introRequested = false;
         uint32 eventtimer;
         uint8 eventphase;
         EventMap events;
@@ -522,12 +589,18 @@ public:
         
         void DoAction(const int32 action) override
         {
-            if (action == 1 && !outro)
+            if (action == 1 && !outro && !introRequested)
             {
+                introRequested = true;
                 intro = true;
                 eventtimer = 5000;
                 eventphase = 1;
             }
+        }
+
+        uint32 GetData(uint32 type) const override
+        {
+            return type == DreadbladesScout::BrinebeardIntroRequested && introRequested;
         }
         
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override

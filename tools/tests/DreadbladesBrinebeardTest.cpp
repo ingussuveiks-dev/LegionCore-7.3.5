@@ -2,6 +2,7 @@
 #include <chrono>
 #include <algorithm>
 #include "OwnerHost.inc"
+#include "../../src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/dreadblades_scout.h"
 using int32=int32_t;using uint8=uint8_t;using uint16=uint16_t;using DamageEffectType=uint32;using Milliseconds=std::chrono::milliseconds;
 enum{TYPEID_PLAYER=4,CLASS_ROGUE=4,QUEST_STATUS_INCOMPLETE=3,UNIT_FIELD_FLAGS=1,UNIT_FLAG_IMMUNE_TO_PC=2,REACT_PASSIVE=0,UNIT_STATE_CASTING=1,UNIT_FIELD_BYTES_1=2,REACT_AGGRESSIVE=1,SPELL_CAST_OK=0};
 using SpellCastResult=uint32;inline uint32 warningCount=0;
@@ -24,6 +25,7 @@ struct Conversation{
 struct CreatureAI{
  virtual ~CreatureAI()=default;virtual void Reset(){};virtual void EnterCombat(Unit*){};virtual void MoveInLineOfSight(Unit*){};virtual void UpdateAI(uint32){}
  virtual void JustDied(Unit*){};virtual void DoAction(int32){};virtual void Talk(uint32){};virtual void AttackStart(Unit*){};
+ virtual uint32 GetData(uint32)const{return 0;}
  virtual void DamageTaken(Unit*,uint32&,DamageEffectType){};virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){};
 };
 struct InstanceScript{void OnCreatureDamageTaken(Creature*,Unit*,uint32&){};};
@@ -34,6 +36,7 @@ struct Creature:Unit{
  Creature* trigger=nullptr;Unit* nearest=nullptr;uint32 castResult=0,castCount=0,kills=0;
  std::vector<uint32> summons;std::vector<Creature*> adds;CreatureAI* primary=nullptr;CreatureAI* i_disabledAI=nullptr;
  Creature* ToCreature(){return this;}CreatureAI* AI(){return primary;}InstanceScript* GetInstanceScript(){return nullptr;}
+ bool IsAlive()const{return alive;}
  uint64 GetHealth()const{return health;}uint64 GetHealth(Unit*)const{return targetHealth;}
  uint64 GetMaxHealth(Unit*)const{return targetMaximum;}uint64 CountPctFromMaxHealth(uint32 pct,Unit* u)const{return GetMaxHealth(u)*pct/100;}
  bool HealthBelowPct(uint32 pct)const{return health<maximum*pct/100;}
