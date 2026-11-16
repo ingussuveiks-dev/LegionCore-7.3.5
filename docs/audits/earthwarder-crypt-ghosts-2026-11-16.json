@@ -1,0 +1,12 @@
+{
+    "date":  "2026-11-16",
+    "status":  "DATA_DEPLOYED_USER_GHOST_APPEARANCE_RETEST_PENDING",
+    "scope":  "Four original Warrior crypt NPCs361404/96433 and361408+361410+361411/94813,map1495/6999 only.",
+    "cause":  "All four original actors lack cosmetic ghost aura. Matching native crypt Icebreaker Tombguard94707 already uses165114 Shadowy Ghost Visual; candidate196769 is Armed and is not a ghost effect. Native165114 self dummy aura/visual32651 is purely cosmetic.",
+    "repair":  "Guarded migration2026_11_16_05 appends165114 once to exact four per-spawn addon overrides, inheriting absent template defaults and preserving existing per-spawn fields/auras. No shared template/model/stat/faction/AI/pose edit. Native Creature::LoadCreaturesAddon owns aura application.",
+    "activation":  "Offline InnoDB transaction/native exit0/stderr0; independent fresh-connection committed readback confirms four exact165114 rows/path0/mount0/bytes1=0/bytes2=0/emote0. Initial shell wrapper final absent Get-Process query returned1 after COMMIT; that is not a SQL or runtime test failure. Confirmed actual native SQL success and committed values, retained activation-status.json.",
+    "verification":  "Matching native data/source/visual dependency review and actual SQL activation/readback only. No separate automated/native/runtime/startup tests per active user workflow. Exact rendered tint/transparency and all target actors remain pending client comparison. Reference supplied by user and sampled locally; no unseen full-video claim.",
+    "related":  "Matching crypt encounter binary0356F631 deployed; this cosmetic migration uses existing native aura and adds no C++ registration dependency.",
+    "diagnostics":  "No appended runtime warning/error/assertion during offline operation;canonical Crashes empty and mixed7111 DBErrors unchanged. No user server stopped by agent,config/client assets unchanged.",
+    "evidence":  ".codex/earthwarder-crypt-20261116/native-visuals.json,ghost-activation.tsv,ghost-committed-readback.tsv,activation-status.json; original exports/reference media remain ignored local evidence."
+}
