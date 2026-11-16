@@ -1,0 +1,180 @@
+{
+  "date": "2026-11-16",
+  "batch": 5,
+  "count": 10,
+  "type": "NPC stored speech fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch05.sql",
+  "sql_sha256": "22d2acc401b8f5f47999ceb400ad75f088b136a458597ace2b5d22409cc1980b",
+  "repairs": [
+    {
+      "seq": 41,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104714,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 107149,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 42,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 109571,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 43,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 110357,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 44,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102846,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 112328,
+      "provenance": {
+        "static_artifact_maps": [
+          1513
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 45,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105586,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 108588,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 46,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108097,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 113260,
+      "provenance": {
+        "static_artifact_maps": [
+          1616
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 47,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94902,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 97850,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 48,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 19,
+        "ID": 0
+      },
+      "broadcast": 109904,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 49,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94731,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 96565,
+      "provenance": {
+        "static_artifact_maps": [
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 50,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106639,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 109987,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    }
+  ],
+  "checks": "All100 shared data/native/updater checks passed;see shared audit.10 distinct fields in this batch;not10 whole quests. Actual client/full-chain traversal remains pending."
+}
