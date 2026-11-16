@@ -1273,10 +1273,47 @@ public:
             }
         }
 
+        bool CanAssistDescent(Creature* enemy) const
+        {
+            if (!enemy || enemy->GetEntry() != 96571 || !enemy->IsAlive() ||
+                enemy->GetMap() != me->GetMap() || !enemy->InSamePhase(me) ||
+                me->GetDBTableGUIDLow() != 361306 || !me->GetPhases().count(6999) ||
+                !IsPillikContext() || sScenarioMgr->GetScenario(me->GetInstanceId())->GetCurrentStep() != 0 ||
+                pillikProgress->queued)
+                return false;
+
+            // These are the original three groups on the descent. The same
+            // entry also supplies scripted scenery in Pillik's yard below.
+            switch (enemy->GetDBTableGUIDLow())
+            {
+                case 361313: case 361316:
+                case 361294: case 361303: case 361297:
+                case 361299: case 361305: case 361292: case 361311:
+                    break;
+                default:
+                    return false;
+            }
+
+            auto* route = dynamic_cast<WaypointMovementGenerator<Creature>*>(me->GetMotionMaster()->top());
+            if (!route || route->GetPathId() != 9859004 || route->IsPathComplete())
+                return false;
+            for (auto const& reference : me->GetMap()->GetPlayers())
+                if (IsPillikPlayer(reference.getSource()) && reference.getSource()->IsAlive())
+                    return true;
+            return false;
+        }
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (who->GetTypeId() != TYPEID_PLAYER)
+            {
+                // Native aggro checks keep range, LOS, faction, attackability
+                // and current-victim rules. Chase covers the existing route;
+                // the ordinary evade cleanup resumes it after the battle.
+                if (CanAssistDescent(who->ToCreature()))
+                    ScriptedAI::MoveInLineOfSight(who);
                 return;
+            }
 
             RestoreMagnarChamber();
             if (!_introDone && me->IsWithinDistInMap(who, 20.0f))
