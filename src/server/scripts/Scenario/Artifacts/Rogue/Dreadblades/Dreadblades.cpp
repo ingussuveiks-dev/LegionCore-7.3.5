@@ -692,6 +692,10 @@ public:
         
         bool intro;
         bool outro;
+        ObjectGuid introPlayer;
+        std::shared_ptr<QuestCancellationReceipt const> introReceipt;
+        uint32 introRetry = 0;
+        bool introWarning = false;
         EventMap events;
         
         void Reset() override
@@ -717,25 +721,70 @@ public:
             me->SummonGameObject(254087, -1353.04f, 6307.06f, 8.60f, 1.99f, 0.0f, 0.0f, 0.0f, 0.0f, DAY);
         }
         
-        void MoveInLineOfSight(Unit* who) override
+        bool CanStartIntro(Player* player) const
         {
-            if (who->GetTypeId() != TYPEID_PLAYER || !me->IsWithinDistInMap(who, 50.0f))
+            if (!player || !me->IsAlive() || !me->IsInWorld() || me->IsPreDelete() || me->GetMapId() != 1545 ||
+                !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+                player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->GetMap() != me->GetMap() ||
+                !me->InSamePhase(player) || !me->InSamePhaseId(player) || !me->CanTargetQuestObject(player) ||
+                !player->CanTargetQuestObject(me) || !player->canSeeOrDetect(me) || !me->IsWithinDistInMap(player, 50.0f) ||
+                player->GetQuestRewardStatus(40849) || player->GetQuestStatus(40849) != QUEST_STATUS_INCOMPLETE)
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 1012 && scenario->GetCurrentStep() == 3;
+        }
+
+        void TryIntro()
+        {
+            if (intro || introPlayer.IsEmpty())
                 return;
-            
-            if (intro)
+            Player* player = ObjectAccessor::GetPlayer(*me, introPlayer);
+            if (!CanStartIntro(player) || player->GetQuestCancellationReceipt(40849) != introReceipt)
+            {
+                introPlayer.Clear();
+                introReceipt.reset();
+                introWarning = false;
                 return;
-            
-            intro = true;
+            }
             Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1178, who, NULL, *who))
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1178, player, NULL, *player))
+            {
                 delete conversation;
+                introRetry = 1000;
+                if (!introWarning)
+                    TC_LOG_WARN("scripts", "Dreadblades Eliza intro: native conversation1178 unavailable; retain eligible original-player retry");
+                introWarning = true;
+                return;
+            }
+            if (!CanStartIntro(player) || player->GetQuestCancellationReceipt(40849) != introReceipt)
+            {
+                conversation->Remove();
+                introPlayer.Clear();
+                introReceipt.reset();
+                return;
+            }
+            // Only the published native story consumes this actor's intro.
+            intro = true;
+            introPlayer.Clear();
+            introReceipt.reset();
             if (Creature* trigger = me->FindNearestCreature(102317, 50.0f))
             {
                 trigger->CastSpell(trigger, 202018);
                 trigger->DespawnOrUnsummon(4000);
             }
             me->RemoveAura(202013);
-            who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48538);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48538);
+        }
+
+        void MoveInLineOfSight(Unit* who) override
+        {
+            if (intro || !introPlayer.IsEmpty() || !CanStartIntro(who ? who->ToPlayer() : nullptr))
+                return;
+            Player* player = who->ToPlayer();
+            introPlayer = player->GetGUID();
+            introReceipt = player->GetQuestCancellationReceipt(40849);
+            introRetry = 0;
+            TryIntro();
         }
         
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -750,6 +799,13 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (!intro && !introPlayer.IsEmpty())
+            {
+                if (introRetry <= diff)
+                    TryIntro();
+                else
+                    introRetry -= diff;
+            }
             if (!UpdateVictim())
                 return;
 

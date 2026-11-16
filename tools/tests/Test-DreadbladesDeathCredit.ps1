@@ -11,7 +11,15 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $old=Block $old 'class npc_dread_admiral_eliza:'
  $death=Block (Block $source 'struct npc_dread_admiral_elizaAI : ScriptedAI') 'void JustDied('
  $oldDeath=Block (Block $old 'struct npc_dread_admiral_elizaAI : ScriptedAI') 'void JustDied('
- if(($source.Replace($death,$oldDeath) -replace '\s','') -cne ($old -replace '\s','')){throw 'Unreviewed change outside Eliza death callback'}
+ # The separately native-tested Eliza intro now has its own admission/retry
+ # boundary. Restore only that boundary before checking unchanged combat and
+ # death surroundings; never drop the entire UpdateAI/combat comparison.
+ $surroundings=$source.Replace($death,$oldDeath)
+ foreach($start in @('bool CanStartIntro(Player* player) const','void TryIntro()')){$surroundings=$surroundings.Replace((Block $surroundings $start),'')}
+ $surroundings=$surroundings.Replace((Block $surroundings 'void MoveInLineOfSight(Unit* who) override'),(Block $old 'void MoveInLineOfSight(Unit* who) override'))
+ $surroundings=$surroundings.Replace((Block $surroundings 'if (!intro && !introPlayer.IsEmpty())'),'')
+ $surroundings=$surroundings -replace 'ObjectGuid introPlayer;\s*std::shared_ptr<QuestCancellationReceipt const> introReceipt;\s*uint32 introRetry = 0;\s*bool introWarning = false;',''
+ if(($surroundings -replace '\s','') -cne ($old -replace '\s','')){throw 'Unreviewed change outside separately tested Eliza intro/death callbacks'}
  [IO.File]::WriteAllText("$out/ElizaDeath.inc",$(if($Baseline){$oldDeath}else{$death}))
  $hostSource=Get-Content "$PSScriptRoot/KingslayersDeathCreditTest.cpp" -Raw
  $hostSource=$hostSource.Substring(0,$hostSource.IndexOf('struct Creature;')).Replace('51615','48582')
