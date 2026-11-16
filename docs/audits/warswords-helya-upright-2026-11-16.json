@@ -1,7 +1,8 @@
 {
   "date": "2026-11-16",
   "baseline": "694150fda",
-  "status": "SCOPED_DATA_REPAIR_APPLIED_RESTART_AND_USER_VISUAL_RETEST_PENDING",
+  "status": "USER_RETEST_FAILED_SWIM_ONLY_INSUFFICIENT_SUPERSEDED_BY_FLIGHT_POSE_REPAIR",
+  "followup": "2026-11-16: user screenshot after canonical Helya deployment still shows face-down actor during Stage6 dialogue. Swim0 alone is insufficient: default GroundRun/FlightNone leaves the ground animation tier. See warswords-helya-flight-pose-2026-11-16.json for scoped Ground0/Swim0/Flight1 application and pending restart/client visual retest. Original evidence below is historical, not a successful visual repair claim.",
   "report": "User screenshot of actual Fury Stage6 shows Specter of Helya behind Vigfus face-down in the water; user requests an upright pose with visible face.",
   "investigation": {
     "live_actor": "Single spawn361286/entry99043/map1511/phase7003, display66238, position3578.37/1783.26/-8.34128/orientation3.13469. No movement template99043 or spawn override361286, no creature/template addon, no SmartAI rows or bound script. Original data saved locally; no Character queries or edits.",
