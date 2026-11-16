@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-16",
+  "status": "DEPLOYED_NATIVE_VERIFIED_CLIENT_PENDING",
+  "request": "Continue unfinished artifact gameplay repairs;active Hruthnir/Protection retest remains user-owned.",
+  "scope": "Sharasdal40341/map1600/scenario1066,full lower362063 and upper362093 Erunak102826 AI combat-to-scripted-route handoff. One gameplay repair;no text-only repair count or whole-chain certification.",
+  "cause": "The empty Erunak EnterEvadeMode deliberately avoided false Brute credit and generic home/reset,but also omitted combat/threat cleanup and active chase expiry. Native targeted movement retains an in-world corpse target and returns true when its owner has lost that target,stopping the spline while retaining CHASE above the authored idle-slot waypoint. Both actual spawn contexts reproduce this with the pinned pre-fix body.",
+  "repair": [
+    "Clear actual threat/saved threat/combat/cannot-reach state without generic home,AI Reset,delayed-event deletion or aura removal. Preserve208093 wound/stun and its real-heal requirement,voice/function queues,quest ownership and all native progression.",
+    "Expire only an obsolete active chase and retain/reset the same underlying native waypoint. Controlled distraction/fear remains until native expiry;the lifecycle then removes the obsolete chase. Scripted point motion is retained. A genuinely new EnterCombat cancels the pending cleanup;dead guides are unchanged.",
+    "Instance-owned actual deaths and credits remain unchanged. No teleport,path reinstallation,synthesized arrival,loot/quest/item grant,nearest-player selection or SQL change."
+  ],
+  "evidence": "Matching local CreatureAI::UpdateVictim/_EnterEvadeMode,MotionMaster direct/deferred expiration,Targeted HasLostTarget and native waypoint initializer/reset were traced. Existing local route/spawn records and original two-Brute audit establish roles;no modern core import or new/unseen video claim.",
+  "checks": {
+    "counterfactual": "Pinned34a596281 full actor against native CreatureAI/MotionMaster and controlled actual in-world corpses:both authored spawns retain dead-target chase above their installed waypoint.2 expected-broken controls,not ordinary success.",
+    "native": "18 current full-AI contexts plus18 retained narrative callbacks after final original-library build:deferred/initialized native routes,scripted points,controlled distraction,real wound preservation,new combat while cleanup deferred,duplicate evade,dead guide and actual UpdateAI/SelectVictim entry. Timed spline proof advances the native3000ms waypoint initialization clock and requires an active spline ending at the actual authored first waypoint,not the old chase. Same generator/path preserved;no scenario receipt created.",
+    "native_limits": "Earlier scenario admission and corpse creation are controlled;no actual player/pet/guardian combat or complete path traversal in this new host. Release native,not whole-core ASAN. Both real actor poses and local navigation are used;upper waypoint installation also exercises shared AI recovery,while its natural point is separately preserved.",
+    "retained": "46 original coupled two-Brute/Grash ASAN cases pass,both kill orders/six killers/owner/pet/guardian/group/dead-owner/receipt/retry/admission alternatives as originally modeled. Historical exact source view is certified;these old modeled cases do not execute the new evade body. Current new body is covered by the18 native cases.68 full current native Lady/carry/conversation/finisher/cleanup contexts and actual live cleanup bindings pass separately;no whole-client journey claim.",
+    "source_and_pe": "Exact three source edits and added header certified independently against34a596281,with original living-finale hashes unchanged. Paired current/retained source views compose with pinned provenance from7 prior commits. Staged and canonical selected PE checks find the real Erunak factory/vtable,threat/combat cleanup,MovementExpired and lifecycle narrative/wound dispatch. Required paths are in SCRIPTS:Sharasdal.obj from original CMake Release scripts/game/shared/common inputs;no OutDir substitution.",
+    "iterations": "Resolved fixture-only failures retained:API spelling/cleanup alias compilation;historical source certificates had not modeled8 file amendments from7 deployed commits and now certify their exact Git-proven inverses,with4-file/33 partial-edit/foreign-input controls;PowerShell historical view gained the same certified Erunak inverse. A stricter spline assertion initially omitted the native3000ms initialization delay;the final assertion retains real motion/destination checks after that native clock. Missing-plan import was resolved by sequencing generation before use. Original ASAN host shadowing warnings are explained fixture-local declarations,not production runtime errors.",
+    "evidence": [
+      ".codex/sharasdal-erunak-evade-20261116/baseline-result.log",
+      ".codex/sharasdal-erunak-evade-20261116/native-spline-timed-final.log",
+      ".codex/sharasdal-erunak-evade-20261116/retained-composed.log",
+      ".codex/sharasdal-erunak-evade-20261116/living-final.log",
+      ".codex/sharasdal-erunak-evade-20261116/source-proof.log",
+      ".codex/sharasdal-erunak-evade-20261116/pe-stage.log",
+      ".codex/sharasdal-erunak-evade-20261116/pe-canonical.log"
+    ]
+  },
+  "release": {
+    "world_sha256": "23C151B3608A20ABB1CD76C1472987A9A139837D506A621CA6DA7813ADF79876",
+    "map_sha256": "77728BD980E9718CE669C9F85561C6E92C76463176F71DD746AF1E71EEFA9FEB",
+    "deployment": "Fresh absent-server checks,verified755E61D7 rollback and exact stage/canonical identities. Configuration/certificates/DLLs/bnet preserved. Task-owned canonical PID7620 ready,server shutdown0,exit0,stderr empty,gone. No user server stopped;server left stopped."
+  },
+  "diagnostics": "Successful native/ASAN/source/build/PE/canonical runs have pre/post snapshots and no new crashes,appended DBErrors,warnings,errors or assertions. Canonical Crashes empty. Existing mixed7111-byte DBErrors and earlier unresolved instance-handshake diagnostics preserved without truncation or false resolution. Fixed diagnostic archive/cleanup recorded after the implementation commit.",
+  "remaining": "Actual client must confirm Erunak accompanies the player after fights and upper approach,including healing and repeated combats,then normal Sharasdal finale/pickup/return. Living Lady was already deployed as an explicitly authorized reconstruction;original retail fidelity is still unproven. Hruthnir/Protection and all36 whole acquisition chains remain client-pending;no active Protection gameplay tests were run."
+}

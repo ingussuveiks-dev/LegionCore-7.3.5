@@ -177,17 +177,14 @@ public:
 
         void EnterCombat(Unit* who) override
         {
+            _evadeChasePending = false;
             events.RescheduleEvent(EVENT_1, 4000); // 209912
             events.RescheduleEvent(EVENT_2, 34000); // 209913
             events.RescheduleEvent(EVENT_3, 29000); // 79890
             events.RescheduleEvent(EVENT_4, 10000); // 162074
         }
 
-        void EnterEvadeMode() override
-        {
-            // Retain this guide's scripted movement. Evading is not a Brute
-            // victory; the instance owns the real two-death continuation.
-        }
+        #include "sharasdal_erunak_evade.h"
 
         void OnHealApplied(Unit* /*who*/, uint64 /*amount*/, uint64 /*gain*/) override
         {
@@ -199,6 +196,7 @@ public:
         {
             SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
             // AI-owned intro timers retain the Unit clock while stunned or suspended.
+            CompleteEvadeMovement();
             _functions.Update(diff);
             CompleteLowerEntries(diff);
             CompleteUpperIntro(diff);

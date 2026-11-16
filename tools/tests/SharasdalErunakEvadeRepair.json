@@ -1,0 +1,23 @@
+{
+  "baseline": "34a596281",
+  "path": "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+  "before_sha256": "bc73571d81197ed5e0a9e0cde8120d61d90dc58fe3f36bf0fc6ad6b25ff5b16d",
+  "after_sha256": "7eb1cb2c1b13a681f5bff09dc104d67a256847bfef60d244341339e6c7a0eb6e",
+  "added_header": "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasdal_erunak_evade.h",
+  "header_sha256": "a055c54c8e3243b58edbd3df4ae1cb5d24d1ea98968e0e8639b96e66a3fb896c",
+  "edits": [
+    {
+      "old": "        void EnterEvadeMode() override\n        {\n            // Retain this guide's scripted movement. Evading is not a Brute\n            // victory; the instance owns the real two-death continuation.\n        }",
+      "new": "        #include \"sharasdal_erunak_evade.h\""
+    },
+    {
+      "old": "            events.RescheduleEvent(EVENT_1, 4000); // 209912",
+      "new": "            _evadeChasePending = false;\n            events.RescheduleEvent(EVENT_1, 4000); // 209912"
+    },
+    {
+      "old": "            // AI-owned intro timers retain the Unit clock while stunned or suspended.\n",
+      "new": "            // AI-owned intro timers retain the Unit clock while stunned or suspended.\n            CompleteEvadeMovement();\n"
+    }
+  ],
+  "scope": "Only Erunak combat cleanup and pending obsolete chase;native path/control/wound/narrative/progression retained. No old certificate hashes replaced."
+}
