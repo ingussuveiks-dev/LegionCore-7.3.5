@@ -332,11 +332,17 @@ namespace WarriorPickupReturn
     bool Complete(Player* player, unsigned int scene)
     {
         Mode const* mode = Context(player);
-        if (mode && scene == mode->scene && player->HasSceneStatus(scene, SCENE_COMPLETE) && Earned(player, *mode))
+        if (mode && scene == mode->scene && player->HasSceneStatus(scene, SCENE_COMPLETE))
         {
+            // A real scene may finish while an earlier quest receipt is
+            // missing. Native off-spec storage is still valid: do not fall
+            // through to a force-equip attempt just because departure is
+            // not yet earned. Keep the full departure gate below and in Tick.
+            bool stored = StoredOffSpec(player, *mode);
+            if (!Earned(player, *mode))
+                return stored;
             auto state = Current(player, mode);
             state->sceneAck = true;
-            bool stored = StoredOffSpec(player, *mode);
             if (stored)
                 state->storageAck = true;
             return stored;
