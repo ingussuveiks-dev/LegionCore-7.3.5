@@ -1,0 +1,41 @@
+{
+  "servers": [],
+  "archive": "build-extractors/bin/Release/fixed/artifact-ten-ten-fallback-20261116",
+  "canonical_unchanged": true,
+  "removed_files": 24,
+  "active_crashes": 0,
+  "archive_files": 816,
+  "archive_manifest_sha256": "E4C3DCE2A926FEF2ED497AEDE74CB1F3606FC24441EB9B0899548B732FC7CB80",
+  "deletion_manifest_sha256": "D8EB567ECD61B74327F6D342248B9676E57FD748E2CE87676CC5F3E8ADF83507",
+  "reclaimed_bytes": 1410260138.0,
+  "mixed_db_errors_bytes": 7111,
+  "mixed_db_errors_unchanged": true,
+  "implementation_commits": [
+    "77834e4305351ccd61a7936aeafd9ebf2f803ab4",
+    "fd70f2579e135ebf322efda4b224d7b65740cbeb",
+    "a26f34246fd1b9dd87ff7530e1bb4673b47d914f",
+    "f7f7c4da2f43f9307f946771b5fa2db2d2253fde",
+    "c6fa0c9f0f889fb5741048cad8ac5e297e9c6187",
+    "5070d7a1d5cd7925e4fd72ef9a85010d72947a6b",
+    "0a812db777c2ec0cf70f106df1b78fbb107a4e44",
+    "df7f62f63a20f77ee07e7bcf3d6c6b4fb192f99c",
+    "191112291f1e33559a12378b0032225e02bce5c0",
+    "b8ca7a37939550ceb11238671a2c077ba8ff5a7f"
+  ],
+  "date": "2026-11-16",
+  "status": "100_ARTIFACT_FALLBACK_FIELDS_DEPLOYED_AND_PUSHED_CLIENT_PENDING",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "count": {
+    "batches": 10,
+    "fields_per_batch": 10,
+    "npc_texts": 80,
+    "artifact_menu_options": 20,
+    "gameplay_mechanics_claimed": 0,
+    "whole_quests_certified": 0
+  },
+  "checks": "Final100 full-row/updater readback and guarded shadow regressions pass;actual native paired/live100 loaders/builders/serializers pass;canonical actual updater reaches ready then task-owned shutdown0/exit0. All successful-run diagnostic snapshots have no new crashes or appended errors/warnings. Fixtures are native Release,not whole-core ASAN.",
+  "archive_review": "816 original-byte diagnostic/research files were copied and source/destination SHA256 checked. Includes resolved fixture iterations and discarded research candidates;these are not additional production repairs. Original schema-query mistake was corrected,READ ONLY TEMP DDL bootstrap fixed,and full native live host initializes real PointsOfInterest before menus. No error/check suppressed. No unexplained production crash was moved into fixed.",
+  "removed": "24 completed native test EXE/OBJ/PDB/ILK/MAP/private copied configurations;absolute task-root,ancestor reparse,process and canonical-hash guards applied. Regenerable test outputs only;source,SQL,data,original link libraries,canonical runtime and all personal/character backups preserved.",
+  "retained": "Canonical755E61D7 worldserver,bnet/config/certs/DLLs/extracted data and existing recovery copies;task original-fallback guarded rollback SQL retained privately outside updater. Active mixed7111-byte DBErrors and earlier unresolved handshake reports untouched;no runtime log truncated.",
+  "limits": "Data consistency/fallback corrections only. They preserve normal native Broadcast-selected text packets. Actual client dialogue rendering/voice,original story cue timing and full acquisition chains remain pending. No active Hruthnir/Protection gameplay tests,character reset or item deletion in this batch. Server left stopped;no task-owned background process remains."
+}
