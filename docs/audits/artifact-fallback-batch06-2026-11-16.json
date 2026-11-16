@@ -1,0 +1,183 @@
+{
+  "date": "2026-11-16",
+  "batch": 6,
+  "count": 10,
+  "type": "NPC stored speech fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch06.sql",
+  "sql_sha256": "4b1ba3a396633c54ebb49c9f69845ae51eed56944eecc8aed6559fa90ce0ccac",
+  "repairs": [
+    {
+      "seq": 51,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 7,
+        "ID": 0
+      },
+      "broadcast": 110351,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 52,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 100363,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 102430,
+      "provenance": {
+        "static_artifact_maps": [
+          1526
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 53,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 109481,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 54,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 110362,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 55,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108168,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 113374,
+      "provenance": {
+        "static_artifact_maps": [
+          1616
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 56,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108726,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 115834,
+      "provenance": {
+        "static_artifact_maps": [
+          1514
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 57,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 109575,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 58,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 110361,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 59,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 110308,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 60,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 110977,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    }
+  ],
+  "checks": "All100 shared data/native/updater checks passed;see shared audit.10 distinct fields in this batch;not10 whole quests. Actual client/full-chain traversal remains pending."
+}
