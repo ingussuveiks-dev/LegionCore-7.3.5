@@ -9,6 +9,14 @@
 - Investigate and fix the underlying cause of errors completely. Do not suppress logs, hide error messages, disable checks, or bypass failing behavior merely to make an error disappear from view.
 - Verify that the affected behavior works after the repair and retain useful diagnostics. If the cause or verification remains unresolved, report it explicitly rather than presenting hidden symptoms as a completed fix.
 
+# User-led live gameplay workflow
+
+- User instruction of 2026-11-16: while the user is actively traversing a quest/scenario in the client, prioritize their reported issue through source/data investigation, a focused repair, the necessary build and deployment, then the user's in-game retest. The current active chain is Warrior Fury/Warswords until the user switches chains.
+- For that actively tested flow, do not create or run separate automated, modeled, native, ASAN, PE-verifier, regression or agent-owned startup tests unless the user asks for them. Do not make the user wait for such tests before receiving a repair. This instruction takes precedence over the general and named test requirements elsewhere in this file for the active flow. Existing tests need not be deleted; record which checks were intentionally not run and what the user actually confirmed.
+- Necessary compilation, checking the actual final-link inputs and copied binary identity, source review, and passive inspection of available logs/crashes still apply. Keep this lightweight; it must not become a separate test programme. Preserve diagnostics and distinguish a prepared/deployed repair from one confirmed in game. A user-observed regression result can provide the relevant behavioral check for this workflow; do not claim unseen alternative paths are verified.
+- Continue to respect process ownership and deployment safety: recheck live processes, never stop the user's server, and deploy when it is stopped. Do not demand an additional agent-owned startup before the user starts the server and retests.
+- When the user asks to continue other unfinished artifact quests that they are not currently testing, use the normal automated/native/regression and diagnostic workflow for those independent repairs. Do not let those checks delay delivery of the next focused repair in the user's active flow.
+
 # Mandatory post-test diagnostics and fixed archives
 
 - Before every automated, native, runtime or client-assisted test, record the existing crash files and relevant log lengths/timestamps. After every test, check for new or changed crash reports in the canonical `build-extractors/bin/Release/Crashes` directory and the test's own runtime directory. Inspect the test exit status, captured stdout/stderr, newly appended server warnings/errors/assertions, and newly appended `DBErrors.log` entries. A passing assertion or ready message is not sufficient if the process crashed or logged an unexplained failure.
