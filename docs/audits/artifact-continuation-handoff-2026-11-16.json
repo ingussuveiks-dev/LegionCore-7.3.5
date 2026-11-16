@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-16",
+  "request": "Repair Hruthnir stopping again after hill fights;user leaves until tomorrow and requests continuation of unfinished artifact quests.",
+  "status": "TWO_FOCUSED_REPAIRS_DEPLOYED_PUSHED_CLIENT_PENDING",
+  "repairs": [
+    {
+      "commit": "7d6ac3c6b",
+      "audit": "docs/audits/hruthnir-interrupted-route-resume-2026-11-16.json",
+      "result": "Native Clear resets the uncovered interrupted waypoint instead of leaving it stopped. Build/deployment/source review only under active gameplay policy;user retest pending."
+    },
+    {
+      "commit": "9c2e263a5",
+      "audit": "docs/audits/dreadblades-eliza-intro-2026-11-16.json",
+      "result": "Independent Rogue artifact:eligible original-player actual1178 publication before48538;failed conversation retries and abandoned attempt is rejected.2 expected-broken native controls,26 repaired native contexts,6 recovered native faults,retained death/pickup ASAN/native catalog and owned canonical startup. Client traversal pending."
+    }
+  ],
+  "canonical_world_sha256": "EF1CB53C578E75A501FBF4FC3A319F6B001CAB7881EFE04D0B8E8E16C8F02CF9",
+  "canonical_runtime": "build-extractors/bin/Release",
+  "diagnostics": "Owned independent canonical PID34428 ready/shutdown0/exit0/gone;stderr empty and no new appended warnings/errors/assertions/DBErrors or changed crashes. Canonical Crashes empty;existing mixedDBErrors7111 bytes preserved. Earlier user interval has unresolved instance handshake timeout plus2retry warnings;source evidence kept outside fixed. No active user server stopped and no hidden task process left.",
+  "archive_cleanup": {
+    "root": "build-extractors/bin/Release/fixed/dreadblades-eliza-intro-20261116",
+    "manifest_sha256": "0F3C5063453B9AEF8A27453DF9B06AC09F324CFB1C25EDF0BE305F22809C1BCC",
+    "retained_check_manifest_sha256": "97ECE172BECC9C33F774D9C7FDF62ED16E7D516949B147EDDC5F7A0EFA89C1E9",
+    "archived_files": 255,
+    "deleted_files": 53,
+    "reclaimed_bytes": 1501900825,
+    "removed": "Exact task-owned Eliza native EXE/OBJ/ILK and timestamped symbols/maps/private copied configs;two completed current/superseded final-link stage output sets;retained death/pickup checks' redundant compiler outputs/catalog EXE/OBJ. Original reusable test source and diagnostic records retained. Exact absolute target/reparse/process guards and archive readback hashes verified.",
+    "retained": "Canonical EXE/map/data/config/certs/DLL/bnet;F5218537 rollback for this independent change and0356F631 pre-resume rollback;older crypt stage/rollback retains concrete earlier pending-client checks;Hruthnir source/build/diagnostic evidence and unreviewed handshake/mixedDBErrors remain outside fixed. No personal/character backups or shared original libraries removed."
+  },
+  "tomorrow_client_checks": [
+    "Hruthnir helps all original hill groups and resumes the same route after each fight,including a quick kill;no manual route restart should be needed.",
+    "Actual bottom arrival advances Stage2,real Pillik victory advances Stage3,and native rune door opens.",
+    "Hruthnir enters the crypt;original spectral actors show correctly;both actual front Windshaper deaths remove their own floor wind and barrier.",
+    "Full Protection finale/pickup/manual return and separate Eliza client journey remain open."
+  ],
+  "continuation": "Other unfinished whole artifact chains remain work,not certified by these repairs. Consult current per-issue audits and Git history before selecting the next source defect;older aggregate ledgers have superseded OPEN labels. In particular Fu Zan return and Slaghammer missing actions received marked user-approved functional reconstructions on2026-11-15;do not repeat their older missing-binding finding as an unimplemented repair or claim their authentic retail payload was recovered. Preserve current mixed diagnostic evidence and user ownership of actual client checks."
+}
