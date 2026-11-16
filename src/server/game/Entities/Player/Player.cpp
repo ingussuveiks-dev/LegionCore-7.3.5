@@ -17,6 +17,7 @@
  */
 
 #include "Player.h"
+#include "SkyholdArtifactReturn.h"
 #include "HealingAmount.h"
 #include "AcquisitionScenarioRoute.h"
 #include "QuestRewardDisplay.h"
@@ -21135,7 +21136,7 @@ void Player::KilledMonster(CreatureTemplate const* cInfo, ObjectGuid guid)
 
 namespace SkyholdArtifactReturn
 {
-    bool CanCredit(Player* player, Quest const* quest)
+    bool CanCredit(Player* player, Quest const* quest, bool recoverFuryEntry = false)
     {
         uint32 item;
         uint32 acquisition;
@@ -21161,6 +21162,11 @@ namespace SkyholdArtifactReturn
                 hasReturn = true;
                 continue;
             }
+            // Only a real, owned Fury acquisition back in Skyhold can prove
+            // the earlier journey when a resumed attempt lacks its entry row.
+            // The ordinary arrival-credit gate remains strict below.
+            if (recoverFuryEntry && quest->GetQuestId() == 40043 && objective.ObjectID == 98032)
+                continue;
             if (objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL)
                 continue;
             if (uint32(objective.ObjectID) == acquisition)
@@ -21170,6 +21176,18 @@ namespace SkyholdArtifactReturn
         }
         return hasAcquisition && hasReturn;
     }
+}
+
+bool SkyholdArtifactReturn::HasPendingFuryReturn(Player* player)
+{
+    if (!player || !player->IsAlive() || player->isGameMaster() || player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE ||
+        (player->GetQuestObjectiveData(40043, 103739) >= 1 && player->GetQuestObjectiveData(40043, 98032) >= 1))
+        return false;
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(40043);
+    if (!quest || !CanCredit(player, quest, true))
+        return false;
+    // Match the native per-recipient quest loop's raid admission too.
+    return !player->GetGroup() || !player->GetGroup()->isRaidGroup() || quest->IsAllowedInRaid(player->GetMap()->GetDifficultyID());
 }
 
 void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::Empty*/)
@@ -21190,6 +21208,18 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
                 guild->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD, killed->GetCreatureType(), addKillCount, 0, killed, this);
         }
         AddKillCreature(real_entry, addKillCount, false);
+    }
+
+    if (real_entry == 103739 && SkyholdArtifactReturn::HasPendingFuryReturn(this) && GetQuestObjectiveData(40043, 98032) < 1)
+    {
+        // A completed acquisition and actual Skyhold arrival supersede a
+        // missing old entry milestone. Use native credit before the outer
+        // quest iteration, then revalidate every ordinary arrival condition.
+        KilledMonsterCredit(98032);
+        if (GetQuestObjectiveData(40043, 98032) >= 1)
+            TC_LOG_INFO("quest", "Fury return: recovered missing entry milestone from owned acquisition at actual Skyhold arrival for player %u", GetGUIDLow());
+        else
+            TC_LOG_WARN("quest", "Fury return: native entry recovery was not acknowledged for player %u; return remains gated", GetGUIDLow());
     }
 
     m_achievementMgr->StartTimedAchievement(CRITERIA_TIMED_TYPE_CREATURE, real_entry);   // MUST BE CALLED FIRST

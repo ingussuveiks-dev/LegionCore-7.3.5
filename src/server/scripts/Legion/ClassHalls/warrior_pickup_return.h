@@ -3,6 +3,7 @@
 #include "AreaTrigger.h"
 #include "QuestData.h"
 #include "DB2Stores.h"
+#include "SkyholdArtifactReturn.h"
 #include "../../Scenario/Artifacts/Warrior/Warswords/warswords_intro.h"
 #include <atomic>
 #include <map>
@@ -328,6 +329,24 @@ namespace WarriorPickupReturn
             }
             if (!warnedSpawn) { TC_LOG_WARN("scripts.ai", "Warrior pickup return: owned Val'kyr unavailable; retrying without transfer or credit"); warnedSpawn = true; }
         }
+
+        void TickArrival(Player* player, uint32 diff)
+        {
+            if (mode != &fury || instance != player->GetInstanceId() || !attempt || attempt->load() ||
+                attempt != player->GetQuestCancellationReceipt(mode->quest) || !SkyholdArtifactReturn::HasPendingFuryReturn(player))
+                return;
+            if (retry > diff) { retry -= diff; return; }
+            retry = 1000;
+            // The old93823 intro receiver has its own phase and50yd radius.
+            // An earned return must also acknowledge a loaded player who has
+            // already moved onward to Odyn, or relogged after the real landing.
+            player->KilledMonsterCredit(103739);
+            if (player->GetQuestObjectiveData(mode->quest, 103739) < 1 && !warnedSpawn)
+            {
+                warnedSpawn = true;
+                TC_LOG_WARN("scripts.ai", "Fury return: native Skyhold arrival credit was not acknowledged; retaining the owned quest attempt for retry");
+            }
+        }
     };
     std::mutex statesMutex;
     std::map<ObjectGuid, std::shared_ptr<State>> states;
@@ -377,6 +396,12 @@ public:
     void OnMapChanged(Player* player) override { Forget(player); }
     void OnUpdate(Player* player, uint32 diff) override
     {
+        if (SkyholdArtifactReturn::HasPendingFuryReturn(player))
+        {
+            auto state = WarriorPickupReturn::Current(player, &WarriorPickupReturn::fury);
+            state->TickArrival(player, diff);
+            return;
+        }
         auto mode = WarriorPickupReturn::Context(player);
         if (!mode) { Forget(player); return; }
         auto state = WarriorPickupReturn::Current(player, mode);
