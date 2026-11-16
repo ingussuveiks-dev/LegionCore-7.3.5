@@ -10,6 +10,7 @@ import functools
 import hashlib
 import json
 import subprocess
+from artifact_recent_source_scope import normalize as normalize_recent_player
 
 ROOT = Path(__file__).resolve().parents[2]
 NAMES = ('FiveTen20261114Repairs.json', 'NextFifty20261114Repairs.json',
@@ -30,7 +31,7 @@ def _edits(plan):
 @functools.lru_cache(None)
 def verify():
     for path in sorted(PATHS):
-        source = (ROOT / path).read_text(encoding='utf-8-sig')
+        source = normalize_recent_player(path, (ROOT / path).read_text(encoding='utf-8-sig'))
         for plan in reversed(PLANS):
             if path not in plan['files']:
                 continue
@@ -51,6 +52,7 @@ def verify():
 
 
 def normalize(path, source):
+    source = normalize_recent_player(path, source)
     if path not in PATHS:
         return source
     verify()

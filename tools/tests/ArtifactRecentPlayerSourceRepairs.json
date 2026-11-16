@@ -1,0 +1,86 @@
+{
+  "path": "src/server/game/Entities/Player/Player.cpp",
+  "scope": "Test-source provenance only:exact four already deployed Nov16 Player amendments. No gameplay execution or new repair count. Historical command and healing expected hashes stay unchanged.",
+  "plans": [
+    {
+      "commit": "7c8aa7b44",
+      "parent": "b4f7c61ae5cf9a809e90141f3cbf7b2ab0854b05",
+      "before_sha256": "183121cb0298988380bb2a1de53ddab12497144937e291bc0b64cb58b252e6a4",
+      "after_sha256": "8dd847b147470556fa30ef1d10b2b2a71f92299af570426449a987463e66bbb0",
+      "edits": [
+        {
+          "old": "        {\n            if (Item* parent = GetItemByGuid(childItem->GetGuidValue(ITEM_FIELD_CREATOR)))\n            {\n                InventoryResult res = CanUseItem(parent, false);\n                if (res == EQUIP_ERR_OK)\n                {\n                    parent->SetChildItem(childItem->GetGUID());\n                    childItem->CopyArtifactDataFromParent(parent);\n                    if (childItem->IsEquipped())\n                        SetVisibleItemSlot(childItem->GetSlot(), childItem);\n",
+          "new": "        {\n            if (Item* parent = GetItemByGuid(childItem->GetGuidValue(ITEM_FIELD_CREATOR)))\n            {\n                // This is the loaded inventory relationship, independent of\n                // whether the current specialization can equip the parent.\n                // Preserve it for a legitimate pair stored off-spec on login.\n                parent->SetChildItem(childItem->GetGUID());\n                InventoryResult res = CanUseItem(parent, false);\n                if (res == EQUIP_ERR_OK)\n                {\n                    childItem->CopyArtifactDataFromParent(parent);\n                    if (childItem->IsEquipped())\n                        SetVisibleItemSlot(childItem->GetSlot(), childItem);\n"
+        },
+        {
+          "old": "                        }\n                        else\n                        {\n                            RemoveItem(childItem->GetBagSlot(), childItem->GetSlot(), true);\n                            childItem->RemoveFromWorld();\n                            childItem->SetState(ITEM_REMOVED, this);\n",
+          "new": "                        }\n                        else\n                        {\n                            parent->SetChildItem(ObjectGuid::Empty);\n                            RemoveItem(childItem->GetBagSlot(), childItem->GetSlot(), true);\n                            childItem->RemoveFromWorld();\n                            childItem->SetState(ITEM_REMOVED, this);\n"
+        }
+      ]
+    },
+    {
+      "commit": "aad4e8e81",
+      "parent": "b185fb52840de842684d693b58c59d42c07db7aa",
+      "before_sha256": "8dd847b147470556fa30ef1d10b2b2a71f92299af570426449a987463e66bbb0",
+      "after_sha256": "80e5e6bd285d9e7f7b06739ade87d0d2b0d5d12c6f44c38be2c819379ec2e2d7",
+      "edits": [
+        {
+          "old": " */\n\n#include \"Player.h\"\n#include \"HealingAmount.h\"\n#include \"AcquisitionScenarioRoute.h\"\n#include \"QuestRewardDisplay.h\"\n",
+          "new": " */\n\n#include \"Player.h\"\n#include \"SkyholdArtifactReturn.h\"\n#include \"HealingAmount.h\"\n#include \"AcquisitionScenarioRoute.h\"\n#include \"QuestRewardDisplay.h\"\n"
+        },
+        {
+          "old": "\nnamespace SkyholdArtifactReturn\n{\n    bool CanCredit(Player* player, Quest const* quest)\n    {\n        uint32 item;\n        uint32 acquisition;\n",
+          "new": "\nnamespace SkyholdArtifactReturn\n{\n    bool CanCredit(Player* player, Quest const* quest, bool recoverFuryEntry = false)\n    {\n        uint32 item;\n        uint32 acquisition;\n"
+        },
+        {
+          "old": "                hasReturn = true;\n                continue;\n            }\n            if (objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL)\n                continue;\n            if (uint32(objective.ObjectID) == acquisition)\n",
+          "new": "                hasReturn = true;\n                continue;\n            }\n            // Only a real, owned Fury acquisition back in Skyhold can prove\n            // the earlier journey when a resumed attempt lacks its entry row.\n            // The ordinary arrival-credit gate remains strict below.\n            if (recoverFuryEntry && quest->GetQuestId() == 40043 && objective.ObjectID == 98032)\n                continue;\n            if (objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL)\n                continue;\n            if (uint32(objective.ObjectID) == acquisition)\n"
+        },
+        {
+          "old": "        }\n        return hasAcquisition && hasReturn;\n    }\n}\n\nvoid Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::Empty*/)\n",
+          "new": "        }\n        return hasAcquisition && hasReturn;\n    }\n}\n\nbool SkyholdArtifactReturn::HasPendingFuryReturn(Player* player)\n{\n    if (!player || !player->IsAlive() || player->isGameMaster() || player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE ||\n        (player->GetQuestObjectiveData(40043, 103739) >= 1 && player->GetQuestObjectiveData(40043, 98032) >= 1))\n        return false;\n    Quest const* quest = sQuestDataStore->GetQuestTemplate(40043);\n    if (!quest || !CanCredit(player, quest, true))\n        return false;\n    // Match the native per-recipient quest loop's raid admission too.\n    return !player->GetGroup() || !player->GetGroup()->isRaidGroup() || quest->IsAllowedInRaid(player->GetMap()->GetDifficultyID());\n}\n\nvoid Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::Empty*/)\n"
+        },
+        {
+          "old": "                guild->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD, killed->GetCreatureType(), addKillCount, 0, killed, this);\n        }\n        AddKillCreature(real_entry, addKillCount, false);\n    }\n\n    m_achievementMgr->StartTimedAchievement(CRITERIA_TIMED_TYPE_CREATURE, real_entry);   // MUST BE CALLED FIRST\n",
+          "new": "                guild->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD, killed->GetCreatureType(), addKillCount, 0, killed, this);\n        }\n        AddKillCreature(real_entry, addKillCount, false);\n    }\n\n    if (real_entry == 103739 && SkyholdArtifactReturn::HasPendingFuryReturn(this) && GetQuestObjectiveData(40043, 98032) < 1)\n    {\n        // A completed acquisition and actual Skyhold arrival supersede a\n        // missing old entry milestone. Use native credit before the outer\n        // quest iteration, then revalidate every ordinary arrival condition.\n        KilledMonsterCredit(98032);\n        if (GetQuestObjectiveData(40043, 98032) >= 1)\n            TC_LOG_INFO(\"quest\", \"Fury return: recovered missing entry milestone from owned acquisition at actual Skyhold arrival for player %u\", GetGUIDLow());\n        else\n            TC_LOG_WARN(\"quest\", \"Fury return: native entry recovery was not acknowledged for player %u; return remains gated\", GetGUIDLow());\n    }\n\n    m_achievementMgr->StartTimedAchievement(CRITERIA_TIMED_TYPE_CREATURE, real_entry);   // MUST BE CALLED FIRST\n"
+        }
+      ]
+    },
+    {
+      "commit": "39eae5f4f",
+      "parent": "aad4e8e8121df33b4acc505f5451e4b20c19fbfb",
+      "before_sha256": "80e5e6bd285d9e7f7b06739ade87d0d2b0d5d12c6f44c38be2c819379ec2e2d7",
+      "after_sha256": "abf73ed44563f333a96f8022c674503a42b8903e8cc604c1607c149bd007f823",
+      "edits": [
+        {
+          "old": "\n    if (udata.BuildPacket(&packet))\n        GetSession()->SendPacket(&packet);\n}\n\nvoid Player::UpdateCustomField()\n",
+          "new": "\n    if (udata.BuildPacket(&packet))\n        GetSession()->SendPacket(&packet);\n\n}\n\nvoid Player::UpdateCustomField()\n"
+        },
+        {
+          "old": "    }\n    if (udata.BuildPacket(&packet))\n        GetSession()->SendPacket(&packet);\n}\n\nvoid Player::UpdateAvailableQuestLines()\n",
+          "new": "    }\n    if (udata.BuildPacket(&packet))\n        GetSession()->SendPacket(&packet);\n\n    // Quest-log changes do not refresh the client's cached overhead markers.\n    // Publish current statuses after the same quest/phase/world-object update.\n    SendQuestGiverStatusMultiple();\n}\n\nvoid Player::UpdateAvailableQuestLines()\n"
+        }
+      ]
+    },
+    {
+      "commit": "726dbeaf2",
+      "parent": "83305119c50ed49e2d100ad181c8dc30adf85fd6",
+      "before_sha256": "abf73ed44563f333a96f8022c674503a42b8903e8cc604c1607c149bd007f823",
+      "after_sha256": "dc2ee7018f2b46cc35c4fd1a59a59caf6e59c3ab8196a9b413cceee904861b10",
+      "edits": [
+        {
+          "old": "    if (!playerChoice)\n        return;\n\n    // Calydus and Emmarel offer only eligible, unfinished acquisition routes.\n    // Other choice-condition data has not received this content audit.\n    if ((choiceId == 245 || choiceId == 240) && !sConditionMgr->IsObjectMeetToConditions(this,\n        sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))\n        return;\n\n",
+          "new": "    if (!playerChoice)\n        return;\n\n    // Odyn, Calydus and Emmarel offer only eligible, unfinished acquisition routes.\n    // Other choice-condition data has not received this content audit.\n    if ((choiceId == 236 || choiceId == 245 || choiceId == 240) && !sConditionMgr->IsObjectMeetToConditions(this,\n        sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))\n        return;\n\n"
+        },
+        {
+          "old": "    {\n        auto const& playerChoiceResponseTemplate = playerChoice->Responses[i];\n\n        if ((choiceId == 245 || choiceId == 240) && !sConditionMgr->IsObjectMeetToConditions(this,\n            sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))\n            continue;\n\n",
+          "new": "    {\n        auto const& playerChoiceResponseTemplate = playerChoice->Responses[i];\n\n        if ((choiceId == 236 || choiceId == 245 || choiceId == 240) && !sConditionMgr->IsObjectMeetToConditions(this,\n            sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))\n            continue;\n\n"
+        },
+        {
+          "old": "        }\n    }\n\n    // A low-level Hunter may retry an existing selection, but have no new\n    // eligible route yet. Never display an empty artifact selection frame.\n    if (choiceId == 240 && displayPlayerChoice.Responses.empty())\n        return;\n    SendDirectMessage(displayPlayerChoice.Write());\n}\n",
+          "new": "        }\n    }\n\n    // A retry or completed collection may have no remaining eligible route.\n    // Never display an empty Warrior or Hunter artifact selection frame.\n    if ((choiceId == 236 || choiceId == 240) && displayPlayerChoice.Responses.empty())\n        return;\n    SendDirectMessage(displayPlayerChoice.Write());\n}\n"
+        }
+      ]
+    }
+  ]
+}

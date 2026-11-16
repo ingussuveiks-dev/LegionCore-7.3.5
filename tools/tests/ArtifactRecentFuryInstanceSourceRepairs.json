@@ -1,0 +1,46 @@
+{
+  "path": "src/server/scripts/Scenario/Artifacts/Warrior/Warswords/instance_warswords.cpp",
+  "scope": "Test source provenance only,existing Helya presentation amendment;no gameplay test or new repair.",
+  "plans": [
+    {
+      "commit": "2ee4d1ad4",
+      "parent": "87ae2b0ce08ef9b6662a41f84b02801deb3a4612",
+      "before_sha256": "6caa92f0e8ba0566a2425e6139b0cd94c6a9214c00916949edd66a8bac632724",
+      "after_sha256": "2868bde12ac4768b658b140925db61325e9d46cc2e53af8f140a73c48936f4fe",
+      "edits": [
+        {
+          "old": "\n#include \"warswords_waves.h\"\n#include \"warswords_arrival.h\"\n\nclass instance_warswords : public InstanceMapScript\n{\n",
+          "new": "\n#include \"warswords_waves.h\"\n#include \"warswords_arrival.h\"\n#include \"warswords_intro.h\"\n\nclass instance_warswords : public InstanceMapScript\n{\n"
+        },
+        {
+          "old": "        return new instance_warswords_InstanceMapScript(map);\n    }\n\n    struct instance_warswords_InstanceMapScript : public InstanceScript\n    {\n        instance_warswords_InstanceMapScript(InstanceMap* map) : InstanceScript(map), waves(map) {}\n\n        std::map<uint32, ObjectGuid> objects;\n        WarswordsWaves::State waves;\n        std::array<bool, 4> destroyedRunestones{};\n        bool myscenario;\n        WorldLocation graveyard;\n        std::shared_ptr<uint8> sceneLifetime = std::make_shared<uint8>();\n",
+          "new": "        return new instance_warswords_InstanceMapScript(map);\n    }\n\n    struct instance_warswords_InstanceMapScript : public InstanceScript, public WarswordsIntro::Viewers\n    {\n        instance_warswords_InstanceMapScript(InstanceMap* map) : InstanceScript(map), waves(map) {}\n\n        std::map<uint32, ObjectGuid> objects;\n        WarswordsWaves::State waves;\n        std::array<bool, 4> destroyedRunestones{};\n        bool helyaVisible = false;\n        bool myscenario;\n        WorldLocation graveyard;\n        std::shared_ptr<uint8> sceneLifetime = std::make_shared<uint8>();\n"
+        },
+        {
+          "old": "            sceneLifetime = std::make_shared<uint8>();\n            waves.Reset();\n            destroyedRunestones.fill(false);\n            myscenario = false;\n        }\n\n",
+          "new": "            sceneLifetime = std::make_shared<uint8>();\n            waves.Reset();\n            destroyedRunestones.fill(false);\n            helyaVisible = false;\n            finished.clear();\n            helya = {};\n            myscenario = false;\n        }\n\n"
+        },
+        {
+          "old": "\n        void OnPlayerLeave(Player* player) override\n        {\n            WarswordsArrivalRecovery::Forget(player);\n        }\n\n        uint32 GetData(uint32 type) const override\n        {\n            if (type >= 134130 && type <= 134133)\n                return destroyedRunestones[type - 134130];\n            return 0;\n",
+          "new": "\n        void OnPlayerLeave(Player* player) override\n        {\n            // Retire only the actual departing owner, not group members still\n            // finishing their own pickup. Logout/ordinary leave is not an exit.\n            if (player && player->IsBeingTeleportedFar() && player->GetTeleportDest().GetMapId() == 1479 &&\n                player->GetItemByEntry(128908))\n                WarswordsIntro::Retire(player);\n            WarswordsArrivalRecovery::Forget(player);\n        }\n\n        uint32 GetData(uint32 type) const override\n        {\n            if (type == WarswordsIntro::HelyaVisible)\n                return helyaVisible;\n            if (type >= 134130 && type <= 134133)\n                return destroyedRunestones[type - 134130];\n            return 0;\n"
+        },
+        {
+          "old": "\n        void SetData(uint32 type,uint32 value) override\n        {\n            if (type >= 134130 && type <= 134133)\n            {\n                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n",
+          "new": "\n        void SetData(uint32 type,uint32 value) override\n        {\n            if (type == WarswordsIntro::HelyaVisible)\n            {\n                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n                if (value > 1 || !scenario || scenario->GetScenarioId() != 944 ||\n                    (value && scenario->GetCurrentStep() != 5))\n                    return;\n                helyaVisible = value != 0;\n                auto actor = objects.find(99043);\n                if (actor != objects.end())\n                    if (Creature* creature = instance->GetCreature(actor->second))\n                        creature->UpdateObjectVisibility();\n                return;\n            }\n            if (type >= 134130 && type <= 134133)\n            {\n                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n"
+        },
+        {
+          "old": "            if (newStep == 0)\n                if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))\n                    if (scenario->GetScenarioId() == 944)\n                        destroyedRunestones.fill(false); // A new native attempt, not a GO reload.\n            for (uint32 entry : {98007u, 98602u})\n            {\n                auto actor = objects.find(entry);\n                if (actor != objects.end())\n",
+          "new": "            if (newStep == 0)\n                if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))\n                    if (scenario->GetScenarioId() == 944)\n                    {\n                        destroyedRunestones.fill(false); // A new native attempt, not a GO reload.\n                        helyaVisible = false;\n                        finished.clear();\n                    }\n            for (uint32 entry : {98007u, 98602u, 99043u})\n            {\n                auto actor = objects.find(entry);\n                if (actor != objects.end())\n"
+        },
+        {
+          "old": "\n        void OnCreatureCreate(Creature* creature) override\n        {\n            if (creature->GetEntry() == 98007 || creature->GetEntry() == 98602)\n                objects[creature->GetEntry()] = creature->GetGUID();\n\n        }\n",
+          "new": "\n        void OnCreatureCreate(Creature* creature) override\n        {\n            if (creature->GetEntry() == 99043 && creature->GetDBTableGUIDLow() == 361286)\n                helya = creature->GetGUID();\n            if (creature->GetEntry() == 98007 || creature->GetEntry() == 98602 || creature->GetEntry() == 99043)\n                objects[creature->GetEntry()] = creature->GetGUID();\n\n        }\n"
+        },
+        {
+          "old": "        void OnCreatureRemove(Creature* creature) override\n        {\n            InstanceScript::OnCreatureRemove(creature);\n            auto actor = objects.find(creature->GetEntry());\n            if ((creature->GetEntry() == 98007 || creature->GetEntry() == 98602) && actor != objects.end() && actor->second == creature->GetGUID())\n                objects.erase(actor);\n        }\n\n",
+          "new": "        void OnCreatureRemove(Creature* creature) override\n        {\n            InstanceScript::OnCreatureRemove(creature);\n            if (helya == creature->GetGUID())\n                helya = {};\n            auto actor = objects.find(creature->GetEntry());\n            if ((creature->GetEntry() == 98007 || creature->GetEntry() == 98602 || creature->GetEntry() == 99043) && actor != objects.end() && actor->second == creature->GetGUID())\n                objects.erase(actor);\n        }\n\n"
+        }
+      ]
+    }
+  ]
+}

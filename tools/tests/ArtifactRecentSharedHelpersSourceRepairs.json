@@ -1,0 +1,18 @@
+{
+  "path": "src/server/game/AI/SmartScripts/SmartScript.cpp",
+  "scope": "Test source provenance only;existing Nov15 lifetime ownership amendment. No production change or new fix count.",
+  "plans": [
+    {
+      "commit": "cc4eb0ea7",
+      "parent": "aba0c7235f2bb0f901e13b3a96ec45c3b8581439",
+      "before_sha256": "76f173b9d683de85bc3966bf332cc535fcb9be2fb1d81155cf5575a49a4e0e6e",
+      "after_sha256": "1b0ebe4371b0e998a1a3018e2add66089d8fffa0463e25a18020586256ce7130",
+      "edits": [
+        {
+          "old": "            me->SetReactState(ReactStates(e.action.react.state));\n\n            if (uint32 delay = e.action.react.returnStateTimer)\n                me->AddDelayedEvent(delay, [this, saveState]() -> void { if (me) me->SetReactState(saveState); });\n\n            if (me->isInCombat() && e.action.react.stopAttack)\n                me->AttackStop();\n",
+          "new": "            me->SetReactState(ReactStates(e.action.react.state));\n\n            if (uint32 delay = e.action.react.returnStateTimer)\n                me->AddDelayedEvent(delay, [actor = me, saveState]() -> void { if (actor) actor->SetReactState(saveState); });\n\n            if (me->isInCombat() && e.action.react.stopAttack)\n                me->AttackStop();\n"
+        }
+      ]
+    }
+  ]
+}

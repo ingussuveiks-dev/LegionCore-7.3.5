@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-16",
+  "status": "RETAINED_SOURCE_PROVENANCE_REPAIRED",
+  "scope": "Test infrastructure only;8 exact file amendments from7 already deployed commits across4 files. No new production change,quest repair count or active Warrior gameplay test.",
+  "cause": "Older global command/healing source certificates expected pre-Nov15/16 versions. Unmodeled later Player changes,Fury bonfire/Helya presentation and shared SmartScript delayed-helper lifetime changes caused the independently requested Sharasdal Brute test to refuse before compilation. The refusal was valid provenance detection,not evidence that those deployed gameplay repairs were broken.",
+  "repair": "Add complete before/after SHA256,unique inverse hunks and pinned Git parent for each existing amendment. Compose these certified source inverses before historical command/Fury certificates. Preserve every historical expected hash and all assertions. Actual current source is independently checked;foreign/partial supplied edits remain visible and cannot become the expected old source.",
+  "checks": "Test-ArtifactRecentSourceScope.py:4 exact full-file inverses/idempotent replay,foreign whole-file mutations and33 partial-edit controls. Test-SharasdalBrutes.ps1 subsequently passes its original46 ASAN coupled cases and full composed source/healing checks. Models and native/controller boundaries remain as documented by that original test. No Warrior behavior was executed.",
+  "diagnostics": "All failed attempts and passing source/retained runs have pre/post crash/log snapshots;no new runtime crash or appended DBErrors/warnings/errors/assertions. First missing-plan import was a fixture orchestration ordering error;generation completed before rerun. Initial source refusals are retained and resolved by exact matching provenance. No log/check suppression.",
+  "evidence": ".codex/sharasdal-erunak-evade-20261116/source-proof.log and retained-composed.log;reviewed archive/cleanup follows focused implementation commits."
+}

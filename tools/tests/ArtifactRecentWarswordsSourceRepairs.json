@@ -1,0 +1,70 @@
+{
+  "path": "src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp",
+  "scope": "Test-source provenance only;two existing Nov16 Fury amendments. No active gameplay execution,new behavior or repair count.",
+  "plans": [
+    {
+      "commit": "819d6ddf9",
+      "parent": "577e7de928dff7c6061548fc9e88f633dc47f0f6",
+      "before_sha256": "1c857566b5090f8d9c0451f77da1dbeb0cd392099d17a2b7001e31b2beb42165",
+      "after_sha256": "df33c6bd481f157cff522bf4d015b5a899eaf056b31b1099f5a636c4863f3f86",
+      "edits": [
+        {
+          "old": "    {\n        go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) { }\n        bool igniting = false;\n\n        void Observe(Player* player, char const* path, bool completing) const\n        {\n",
+          "new": "    {\n        go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) { }\n        bool igniting = false;\n        bool ownsInactiveFlag = false;\n\n        void SyncInteraction()\n        {\n            if (!IsBonfire())\n                return;\n            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());\n            if (!scenario || scenario->GetScenarioId() != 944)\n                return;\n            if (scenario->GetCurrentStep() > 0)\n            {\n                if (!go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE))\n                {\n                    go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);\n                    ownsInactiveFlag = true;\n                }\n            }\n            else if (ownsInactiveFlag)\n            {\n                // A reset to the first step restores this spawn's authored\n                // READY state. Never remove an unrelated pre-existing flag.\n                go->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);\n                go->SetGoState(GO_STATE_READY);\n                ownsInactiveFlag = false;\n            }\n        }\n\n        void Reset() override { SyncInteraction(); }\n        void UpdateAI(uint32 /*diff*/) override { SyncInteraction(); }\n\n        void Observe(Player* player, char const* path, bool completing) const\n        {\n"
+        },
+        {
+          "old": "            // Only actual progress acknowledgement lights the object and\n            // removes the authored nearby fog. A failed cast changes neither.\n            go->SetGoState(GO_STATE_ACTIVE);\n            std::list<GameObject*> fog;\n            go->GetGameObjectListWithEntryInGrid(fog, 244751, 45.0f);\n            for (GameObject* object : fog)\n",
+          "new": "            // Only actual progress acknowledgement lights the object and\n            // removes the authored nearby fog. A failed cast changes neither.\n            go->SetGoState(GO_STATE_ACTIVE);\n            SyncInteraction();\n            std::list<GameObject*> fog;\n            go->GetGameObjectListWithEntryInGrid(fog, 244751, 45.0f);\n            for (GameObject* object : fog)\n"
+        }
+      ]
+    },
+    {
+      "commit": "2ee4d1ad4",
+      "parent": "87ae2b0ce08ef9b6662a41f84b02801deb3a4612",
+      "before_sha256": "df33c6bd481f157cff522bf4d015b5a899eaf056b31b1099f5a636c4863f3f86",
+      "after_sha256": "a50949a6aa87d7e7c3bfa390f207cd1272c06c8970f25c950d9cbe420d842498",
+      "edits": [
+        {
+          "old": "#include \"ObjectAccessor.h\"\n#include \"Scenario.h\"\n#include \"ScenarioMgr.h\"\n#include <algorithm>\n#include <memory>\n#include <typeinfo>\n\n// 245188\nclass go_mystic_bonfire : public GameObjectScript\n",
+          "new": "#include \"ObjectAccessor.h\"\n#include \"Scenario.h\"\n#include \"ScenarioMgr.h\"\n#include \"PassiveAI.h\"\n#include \"warswords_intro.h\"\n#include <algorithm>\n#include <memory>\n#include <typeinfo>\n\nclass WarswordsHelyaConversation final : public Conversation\n{\npublic:\n    bool HasHelyaLine() const\n    {\n        ConversationDynamicFieldLines const* line = GetLine(1);\n        return line && line->id == 2067 && line->unk2 == 1 && line->textId;\n    }\n\n    bool HelyaLineStarted() const\n    {\n        auto started = playing.find(GetCasterGUID());\n        // textId carries the published line's start offset in this 7.3.5\n        // layout. Anchor to actual viewer admission, not factory creation.\n        return IsInWorld() && !IsQuestObjectExpired() && HasHelyaLine() &&\n            started != playing.end() && getMSTime() - started->second >= GetLine(1)->textId;\n    }\n};\n\nclass npc_warswords_helya : public CreatureScript\n{\npublic:\n    npc_warswords_helya() : CreatureScript(\"npc_warswords_helya\") { }\n\n    struct AI : NullCreatureAI\n    {\n        explicit AI(Creature* creature) : NullCreatureAI(creature) { }\n\n        bool CanBeVisibleFor(WorldObject const* seer) const override\n        {\n            if (me->GetEntry() != 99043 || me->GetDBTableGUIDLow() != 361286 || me->GetMapId() != 1511)\n                return true;\n            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());\n            if (!scenario || scenario->GetScenarioId() != 944)\n                return false;\n            if (auto const* viewers = dynamic_cast<WarswordsIntro::Viewers const*>(me->GetInstanceScript()))\n                if (seer && viewers->finished.count(seer->GetGUID()))\n                    return false;\n            uint32 step = scenario->GetCurrentStep();\n            // Later-step re-entry has already passed the introduction.\n            return (step >= 6 && step <= 7) ||\n                (step == 5 && me->GetInstanceScript() && me->GetInstanceScript()->GetData(WarswordsIntro::HelyaVisible));\n        }\n    };\n\n    CreatureAI* GetAI(Creature* creature) const override { return new AI(creature); }\n};\n\n// 245188\nclass go_mystic_bonfire : public GameObjectScript\n"
+        },
+        {
+          "old": "        ~npc_vigfus_bladewind_lastAI() override\n        {\n            introLifetime.reset();\n            RemoveIntroConversation();\n        }\n\n",
+          "new": "        ~npc_vigfus_bladewind_lastAI() override\n        {\n            introLifetime.reset();\n            if (introPending)\n                SetHelyaVisible(false);\n            RemoveIntroConversation();\n        }\n\n"
+        },
+        {
+          "old": "        uint32 introVisualRetryTimer = 0;\n        bool introVisualWarned = false;\n        ObjectGuid introConversation = {};\n        std::shared_ptr<bool> introLifetime = std::make_shared<bool>(false);\n        bool introBlessingWaiting = false;\n        ObjectGuid introBlessingPlayer = {};\n",
+          "new": "        uint32 introVisualRetryTimer = 0;\n        bool introVisualWarned = false;\n        ObjectGuid introConversation = {};\n        ObjectGuid introAppearanceHelya = {};\n        std::shared_ptr<bool> introLifetime = std::make_shared<bool>(false);\n        bool introBlessingWaiting = false;\n        ObjectGuid introBlessingPlayer = {};\n"
+        },
+        {
+          "old": "\n        void Reset() override\n        {\n            ++introGeneration;\n            if (introPending)\n                introDone = false;\n",
+          "new": "\n        void Reset() override\n        {\n            if (introPending || !introDone)\n                SetHelyaVisible(false);\n            introAppearanceHelya = {};\n            ++introGeneration;\n            if (introPending)\n                introDone = false;\n"
+        },
+        {
+          "old": "\n        bool StartIntroConversation(Player* player, uint32 generation)\n        {\n            Conversation* conversation = new Conversation;\n            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 843, player, nullptr, *player))\n            {\n                delete conversation;\n                return false;\n            }\n            if (generation != introGeneration || !introPending || !IsIntroTarget(player, 40.0f))\n            {\n                conversation->Remove();\n                return false;\n",
+          "new": "\n        bool StartIntroConversation(Player* player, uint32 generation)\n        {\n            WarswordsHelyaConversation* conversation = new WarswordsHelyaConversation;\n            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 843, player, nullptr, *player))\n            {\n                delete conversation;\n                return false;\n            }\n            if (generation != introGeneration || !introPending || !IsIntroTarget(player, 40.0f) || !conversation->HasHelyaLine())\n            {\n                conversation->Remove();\n                return false;\n"
+        },
+        {
+          "old": "            return true;\n        }\n\n        bool IsIntroHelya(Creature* helya) const\n        {\n            return helya && helya->GetEntry() == 99043 && helya->IsInWorld() && !helya->IsPreDelete() && helya->IsAlive() &&\n",
+          "new": "            return true;\n        }\n\n        void SetHelyaVisible(bool visible)\n        {\n            if (me->GetEntry() == 98602 && me->GetMapId() == 1511)\n                if (InstanceScript* script = me->GetInstanceScript())\n                    script->SetData(WarswordsIntro::HelyaVisible, visible ? 1 : 0);\n        }\n\n        void UpdateIntroAppearance()\n        {\n            if (!introPending || !introAppearanceHelya)\n                return;\n            auto* conversation = dynamic_cast<WarswordsHelyaConversation*>(ObjectAccessor::GetConversation(*me, introConversation));\n            Player* player = conversation ? ObjectAccessor::GetPlayer(*me, conversation->GetCasterGUID()) : nullptr;\n            if (!conversation || !conversation->IsInWorld() || conversation->IsQuestObjectExpired() ||\n                !IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, introAppearanceHelya)))\n            {\n                CancelIntro(introGeneration);\n                return;\n            }\n            if (conversation->HelyaLineStarted())\n            {\n                SetHelyaVisible(true);\n                introAppearanceHelya = {};\n            }\n        }\n\n        bool IsIntroHelya(Creature* helya) const\n        {\n            return helya && helya->GetEntry() == 99043 && helya->IsInWorld() && !helya->IsPreDelete() && helya->IsAlive() &&\n"
+        },
+        {
+          "old": "            if (generation != introGeneration || !introPending)\n                return;\n            introDone = false;\n            introPending = false;\n            introBlessingWaiting = false;\n            introBlessingPlayer = {};\n",
+          "new": "            if (generation != introGeneration || !introPending)\n                return;\n            introDone = false;\n            SetHelyaVisible(false);\n            introAppearanceHelya = {};\n            introPending = false;\n            introBlessingWaiting = false;\n            introBlessingPlayer = {};\n"
+        },
+        {
+          "old": "            }\n            if (generation != introGeneration || !introPending)\n                return;\n            std::weak_ptr<bool> lifetime = introLifetime;\n            me->AddDelayedEvent(24000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void\n            {\n",
+          "new": "            }\n            if (generation != introGeneration || !introPending)\n                return;\n            introAppearanceHelya = helyaGuid;\n            std::weak_ptr<bool> lifetime = introLifetime;\n            me->AddDelayedEvent(24000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void\n            {\n"
+        },
+        {
+          "old": "\n        void UpdateIntro(uint32 diff)\n        {\n            if (introDone)\n            {\n                UpdateBlessing();\n",
+          "new": "\n        void UpdateIntro(uint32 diff)\n        {\n            UpdateIntroAppearance();\n            if (introDone)\n            {\n                UpdateBlessing();\n"
+        },
+        {
+          "old": "\n    new npc_vigfus_bladewind();\n    new npc_vigfus_bladewind_last();\n\n    new go_art_warswords();\n    new scene_warswords_pickup();\n",
+          "new": "\n    new npc_vigfus_bladewind();\n    new npc_vigfus_bladewind_last();\n    new npc_warswords_helya();\n\n    new go_art_warswords();\n    new scene_warswords_pickup();\n"
+        }
+      ]
+    }
+  ]
+}
