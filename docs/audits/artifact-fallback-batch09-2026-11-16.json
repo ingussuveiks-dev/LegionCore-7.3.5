@@ -1,0 +1,238 @@
+{
+  "date": "2026-11-16",
+  "batch": 9,
+  "count": 10,
+  "type": "artifact-related stored menu fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch09.sql",
+  "sql_sha256": "67a3562c7c61da950ceab5c237b170eba6d4817f641126acfd719e5bfcdb0a17",
+  "repairs": [
+    {
+      "seq": 81,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 20175,
+        "OptionID": 0
+      },
+      "broadcast": 118599,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 97111,
+            "menu": 20175,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 82,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19130,
+        "OptionID": 0
+      },
+      "broadcast": 103322,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 100438,
+            "menu": 19130,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 83,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19169,
+        "OptionID": 0
+      },
+      "broadcast": 103322,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101441,
+            "menu": 19169,
+            "script": ""
+          },
+          {
+            "entry": 109788,
+            "menu": 19169,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 84,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 20432,
+        "OptionID": 5
+      },
+      "broadcast": 103322,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 102700,
+            "menu": 20432,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 85,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 20432,
+        "OptionID": 6
+      },
+      "broadcast": 103322,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 102700,
+            "menu": 20432,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 86,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19326,
+        "OptionID": 0
+      },
+      "broadcast": 106081,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101097,
+            "menu": 19326,
+            "script": ""
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19326,
+          "option": 0,
+          "quest": 43254
+        }
+      }
+    },
+    {
+      "seq": 87,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19044,
+        "OptionID": 0
+      },
+      "broadcast": 102658,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 90369,
+            "menu": 19044,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 88,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19157,
+        "OptionID": 0
+      },
+      "broadcast": 102658,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101314,
+            "menu": 19157,
+            "script": ""
+          },
+          {
+            "entry": 110564,
+            "menu": 19157,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 89,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19214,
+        "OptionID": 0
+      },
+      "broadcast": 102658,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 99247,
+            "menu": 19214,
+            "script": ""
+          },
+          {
+            "entry": 99254,
+            "menu": 19214,
+            "script": ""
+          },
+          {
+            "entry": 108572,
+            "menu": 19214,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 90,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19069,
+        "OptionID": 0
+      },
+      "broadcast": 115825,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 108726,
+            "menu": 19069,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    }
+  ],
+  "checks": "All100 shared data/native/updater checks passed;see shared audit.10 distinct fields in this batch;not10 whole quests. Actual client/full-chain traversal remains pending."
+}
