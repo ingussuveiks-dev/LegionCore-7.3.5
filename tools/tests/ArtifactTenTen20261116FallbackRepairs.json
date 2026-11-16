@@ -1,0 +1,4430 @@
+{
+  "date": "2026-11-16",
+  "baseline": "00e782955",
+  "scope": "Only artifact acquisition actors and artifact-specific gossip options:80 stored English creature_text fallbacks and20 OptionText fallbacks in10 cohorts of10. Data alignment with their existing native26972/Hotfix Broadcast records;not100 gameplay mechanics or whole quests.",
+  "source": "Effective native BroadcastText default English;both gender variants resolve to the same target text. Existing Broadcast IDs/action/progression unchanged. Literal script-format tokens preserved;no translation/invented prose.",
+  "previous_plans": [
+    "tools/tests/TenThirty20261115TextRepairs.json"
+  ],
+  "scope_manifest_sha256": "9d90fe93b49489a4406fa588fb3386511f367f30a941295bd8f5b8a946cea8c0",
+  "repairs": [
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 103144,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 105781,
+      "before_hex": "4D79206D656E20626567676564206D6520746F2077616C6B20617761792E204920726566757365642E204D7920707269646520776F756C64206265206D7920646F776E66616C6C2E2E2E20616E64207468656972732E20546865206576696C20737469727265642C20756E6C65617368696E672064656174682075706F6E2075732E2057697468206D79206C617374206272656174682C20492064726F7665206D7920626C6164652C205374726F6D6B61722C20696E746F20746865206265617374277320736B756C6C2E",
+      "after_hex": "4D79206D656E20626567676564206D6520746F2077616C6B20617761792E204920726566757365642E204D7920707269646520776F756C64206265206D7920646F776E66616C6C2E2E2E20616E64207468656972732E20546865206576696C20737469727265642C20756E6C65617368696E672064656174682075706F6E2075732E2057697468206D79206C617374206272656174682C20492064726F7665206D7920626C6164652C205374726F6D276B61722C20696E746F20746865206265617374277320736B756C6C2E",
+      "after_text": "My men begged me to walk away. I refused. My pride would be my downfall... and theirs. The evil stirred, unleashing death upon us. With my last breath, I drove my blade, Strom'kar, into the beast's skull.",
+      "before_text": "My men begged me to walk away. I refused. My pride would be my downfall... and theirs. The evil stirred, unleashing death upon us. With my last breath, I drove my blade, Stromkar, into the beast's skull.",
+      "similarity": 0.9975429975429976,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 1,
+      "batch": 1,
+      "values": {
+        "CreatureID": 103144,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "My men begged me to walk away. I refused. My pride would be my downfall... and theirs. The evil stirred, unleashing death upon us. With my last breath, I drove my blade, Stromkar, into the beast's skull.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 105781,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Торадин to 1037"
+      },
+      "other_fingerprint": "92230d05cf96d0f70931b112c5bb0e2e9f3768fb3073b8dd06450a1d2a064af5",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 103144,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 105782,
+      "before_hex": "466F72206D616E7920616765732C207468652073776F726420686173206B657074207468652062656173742066726F6D20726973696E6720616761696E2E20427574206E6F77206974207374697273206F6E6365206D6F72652C20736F2049206D7573742061736B20796F752064656C766520696E746F2074686520646570746873206F662074686520746F6D6220616E642066696E6973682077686174204920737461727465642E20492077696C6C20676F207769746820796F752C20746F206F6666657220776861742061696420492063616E2E",
+      "after_hex": "466F72206D616E7920616765732C207468652073776F726420686173206B657074207468652062656173742066726F6D20726973696E6720616761696E2E20427574206E6F77206974207374697273206F6E6365206D6F72652C20736F2049206D7573742061736B20796F7520746F2064656C766520696E746F2074686520646570746873206F662074686520746F6D6220616E642066696E6973682077686174204920737461727465642E20492077696C6C20676F207769746820796F752C20746F206F6666657220776861742061696420492063616E2E",
+      "after_text": "For many ages, the sword has kept the beast from rising again. But now it stirs once more, so I must ask you to delve into the depths of the tomb and finish what I started. I will go with you, to offer what aid I can.",
+      "before_text": "For many ages, the sword has kept the beast from rising again. But now it stirs once more, so I must ask you delve into the depths of the tomb and finish what I started. I will go with you, to offer what aid I can.",
+      "similarity": 0.9930394431554525,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 2,
+      "batch": 1,
+      "values": {
+        "CreatureID": 103144,
+        "GroupID": 3,
+        "ID": 0,
+        "Text": "For many ages, the sword has kept the beast from rising again. But now it stirs once more, so I must ask you delve into the depths of the tomb and finish what I started. I will go with you, to offer what aid I can.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 105782,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Торадин to 1037"
+      },
+      "other_fingerprint": "6e5d2752733a961d8c21cdf611c19c437cd12d7902257d6611fc0b6c71caa292",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101386,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 107950,
+      "before_hex": "466F6F6C697368206D6F7274616C732120536F6F6E2C207468697320706C6163652077696C6C2062656C6F6E6720746F20746865206D617374657221",
+      "after_hex": "466F6F6C697368206D6F7274616C732120536F6F6E207468697320706C6163652077696C6C2062656C6F6E6720746F20746865206D617374657221",
+      "after_text": "Foolish mortals! Soon this place will belong to the master!",
+      "before_text": "Foolish mortals! Soon, this place will belong to the master!",
+      "similarity": 0.9915966386554622,
+      "provenance": {
+        "static_artifact_maps": [
+          1536
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 3,
+      "batch": 1,
+      "values": {
+        "CreatureID": 101386,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Foolish mortals! Soon, this place will belong to the master!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 107950,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Осквернитель из племени Гнилого Копыта to Player"
+      },
+      "other_fingerprint": "d1f902787f471f7d971e12dd37192632714386fde86cc9b48f3d8ab15ff2a241",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 110556,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 117588,
+      "before_hex": "536C61696E2E2E2E20627920616E206C6F77626F726E2E2E2E20686F772062656E65617468206D652E2E2E",
+      "after_hex": "536C61696E2E2E2E2062792061206C6F77626F726E2E2E2E20686F772062656E65617468206D652E2E2E",
+      "after_text": "Slain... by a lowborn... how beneath me...",
+      "before_text": "Slain... by an lowborn... how beneath me...",
+      "similarity": 0.9882352941176471,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      },
+      "seq": 4,
+      "batch": 1,
+      "values": {
+        "CreatureID": 110556,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "Slain... by an lowborn... how beneath me...",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 66423,
+        "BroadcastTextID": 117588,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Athrikus Narassin to Phantomflame Infernal"
+      },
+      "other_fingerprint": "c34a7cf34c21c22b652873defd5d485837026dea1a74cdbd7062f4ae7eaa0b4c",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94159,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 109229,
+      "before_hex": "536F6D657468696E672773206F66662061626F75742074686973206865726520627265772E2E2E",
+      "after_hex": "536F6D657468696E2773206F66662061626F75742074686973206865726520627265772E2E2E",
+      "after_text": "Somethin's off about this here brew...",
+      "before_text": "Something's off about this here brew...",
+      "similarity": 0.987012987012987,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 5,
+      "batch": 1,
+      "values": {
+        "CreatureID": 94159,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Something's off about this here brew...",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109229,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Адмирал флота Тетис to Player"
+      },
+      "other_fingerprint": "8a7b75b409859632b9159c80bc707fbabeff27307500d1c8dcc21703e920480e",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105333,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 108107,
+      "before_hex": "556E74696C207468656E206F757220627573696E65737320697320636F6D706C6574652E",
+      "after_hex": "556E74696C207468656E2C206F757220627573696E65737320697320636F6D706C6574652E",
+      "after_text": "Until then, our business is complete.",
+      "before_text": "Until then our business is complete.",
+      "similarity": 0.9863013698630136,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1502
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 6,
+      "batch": 1,
+      "values": {
+        "CreatureID": 105333,
+        "GroupID": 3,
+        "ID": 0,
+        "Text": "Until then our business is complete.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 108107,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Вал'зуун to Player"
+      },
+      "other_fingerprint": "c73a99ed280533933d99b87460070e5e421f63d21a164b6b3b88b64770c49d8b",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "broadcast": 97278,
+      "before_hex": "4D6565742054616C64617468202D206F6E65206F6620746865206D6F737420706F77657266756C20657265646172207765277665206576657220656E636F756E74657265642E2049276D207375726520796F752074776F2077696C6C206265206661737420667269656E64732E",
+      "after_hex": "4D6565742054616C646174682C206F6E65206F6620746865206D6F737420706F77657266756C20657265646172207765277665206576657220656E636F756E74657265642E2049276D207375726520796F752074776F2077696C6C206265206661737420667269656E64732E",
+      "after_text": "Meet Taldath, one of the most powerful eredar we've ever encountered. I'm sure you two will be fast friends.",
+      "before_text": "Meet Taldath - one of the most powerful eredar we've ever encountered. I'm sure you two will be fast friends.",
+      "similarity": 0.9861751152073732,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 7,
+      "batch": 1,
+      "values": {
+        "CreatureID": 96313,
+        "GroupID": 5,
+        "ID": 0,
+        "Text": "Meet Taldath - one of the most powerful eredar we've ever encountered. I'm sure you two will be fast friends.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 57564,
+        "BroadcastTextID": 97278,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Тюремщик Альтурас to Player"
+      },
+      "other_fingerprint": "7e37769486bb88a878a7fcb533d6b4b31ebd2e0547c9cdafbee595f531c18406",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101513,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 104812,
+      "before_hex": "5468656E206974277320736574746C65642E20436F6E67726174756C6174696F6E732C2024702E2056616E436C656566206973206F6E65206F66206F75722062657374202D20617320796F75277665207365656E20666972737468616E642E",
+      "after_hex": "5468656E206974277320736574746C65642E20436F6E67726174756C6174696F6E732C2024702E2056616E436C656566206973206F6E65206F66206F757220626573742C20617320796F75277665207365656E20666972737468616E642E",
+      "after_text": "Then it's settled. Congratulations, $p. VanCleef is one of our best, as you've seen firsthand.",
+      "before_text": "Then it's settled. Congratulations, $p. VanCleef is one of our best - as you've seen firsthand.",
+      "similarity": 0.9841269841269841,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 8,
+      "batch": 1,
+      "values": {
+        "CreatureID": 101513,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "Then it's settled. Congratulations, $p. VanCleef is one of our best - as you've seen firsthand.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 104812,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Лорд Джорах Черный Ворон to Ванесса ван Клиф"
+      },
+      "other_fingerprint": "a90a345b46b8f68f5b74f20ae0c9e91f5fcc7c1a9ed887b9d3d491e6895fe6d4",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104385,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 107516,
+      "before_hex": "5665727920676F6F642C20246E2E2054686520737069726974206F66207468652062656172207472756C79206477656C6C732077697468696E20796F7521",
+      "after_hex": "5665727920676F6F642C20246E212054686520737069726974206F66207468652062656172207472756C79206477656C6C732077697468696E20796F7521",
+      "after_text": "Very good, $n! The spirit of the bear truly dwells within you!",
+      "before_text": "Very good, $n. The spirit of the bear truly dwells within you!",
+      "similarity": 0.9838709677419355,
+      "provenance": {
+        "static_artifact_maps": [
+          571
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 9,
+      "batch": 1,
+      "values": {
+        "CreatureID": 104385,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "Very good, $n. The spirit of the bear truly dwells within you!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 107516,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Урсол to Player"
+      },
+      "other_fingerprint": "7faf7f022973573fb1b0ec53f2fbbdabe4a05d8bdd44a99eb806cad51aa03f1d",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "broadcast": 109572,
+      "before_hex": "546869732063616E6E6F74207374616E64212044657374726F79207468652061626F6D696E6174696F6E7321",
+      "after_hex": "546869732063616E6E6F74207374616E64212044657374726F792074686573652061626F6D696E6174696F6E7321",
+      "after_text": "This cannot stand! Destroy these abominations!",
+      "before_text": "This cannot stand! Destroy the abominations!",
+      "similarity": 0.9777777777777777,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 10,
+      "batch": 1,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 5,
+        "ID": 0,
+        "Text": "This cannot stand! Destroy the abominations!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109572,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "48e1d13b5707fb21d01077eae590dbbdcfc8c0cbac22422a6fd685d9b88d96c4",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105333,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 108105,
+      "before_hex": "416B6161726920697320696E20746869732076657279206369747920617320776520737065616B202D20737079696E6720666F7220686572206D6173746572732E",
+      "after_hex": "416B6161726920697320696E20746869732076657279206369747920617320776520737065616B2C20737079696E6720666F7220686572206D6173746572732E",
+      "after_text": "Akaari is in this very city as we speak, spying for her masters.",
+      "before_text": "Akaari is in this very city as we speak - spying for her masters.",
+      "similarity": 0.9767441860465116,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1502
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 11,
+      "batch": 2,
+      "values": {
+        "CreatureID": 105333,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Akaari is in this very city as we speak - spying for her masters.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 108105,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Вал'зуун to Player"
+      },
+      "other_fingerprint": "cdc01a382e16d213aa8ec26080ee7d7336efc54b485f0ff7be1ee9df088e067e",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 98002,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 106398,
+      "before_hex": "2463742C206F757220667269656E647320696E20746865204B6972696E20546F7220686176652063726561746564206F6E65206F6620746865697220617263616E6520706F7274616C7320746F2070726F7669646520656173792061636365737320746F2044616C6172616E2E2053686F756C6420796F752068617665206E656564206F6620697420796F752063616E2066696E6420697420646F776E20746865207061746820736F757468206F6620686572652E",
+      "after_hex": "2463742C206F757220667269656E647320696E20746865204B6972696E20546F7220686176652063726561746564206F6E65206F6620746865697220617263616E6520706F7274616C7320746F2070726F7669646520656173792061636365737320746F2044616C6172616E2E2053686F756C6420796F752068617665206E656564206F6620697420796F752063616E2066696E6420697420616C6F6E67207468652070617468206E6F727468206F6620686572652E",
+      "after_text": "$ct, our friends in the Kirin Tor have created one of their arcane portals to provide easy access to Dalaran. Should you have need of it you can find it along the path north of here.",
+      "before_text": "$ct, our friends in the Kirin Tor have created one of their arcane portals to provide easy access to Dalaran. Should you have need of it you can find it down the path south of here.",
+      "similarity": 0.9752066115702479,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 12,
+      "batch": 2,
+      "values": {
+        "CreatureID": 98002,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "$ct, our friends in the Kirin Tor have created one of their arcane portals to provide easy access to Dalaran. Should you have need of it you can find it down the path south of here.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 106398,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Повелитель небес Омнурон to Player"
+      },
+      "other_fingerprint": "c902ed1fe37b15e0cc123b6cd63e8e2928da0ee9b5d5c8cac06b74eaae3c8fa3",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108776,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 114622,
+      "before_hex": "496620546972696F6E206973207374696C6C20616C6976652C2077652077696C6C20736176652068696D206F722064696520747279696E672E",
+      "after_hex": "496620546972696F6E206973207374696C6C20616C6976652C2077652077696C6C20736176652068696D2E2E2E206F722064696520747279696E672E",
+      "after_text": "If Tirion is still alive, we will save him... or die trying.",
+      "before_text": "If Tirion is still alive, we will save him or die trying.",
+      "similarity": 0.9743589743589743,
+      "provenance": {
+        "static_artifact_maps": [
+          0
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 13,
+      "batch": 2,
+      "values": {
+        "CreatureID": 108776,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "If Tirion is still alive, we will save him or die trying.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 114622,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Лорд Максвелл Тиросс to Player"
+      },
+      "other_fingerprint": "125cc6cdd56d82dea4fd7e5a86252353578119bc8c391e68bc9ad361ffbb4f84",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94731,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 96566,
+      "before_hex": "566172656469732077696C6C2068756E7420646F776E206576657279206F6E65206F6620796F75722064697367757374696E6720696C6B202D207069747920796F7520776F6E27742062652061726F756E6420746F207769746E6573732069742E",
+      "after_hex": "566172656469732077696C6C2068756E7420646F776E206576657279206F6E65206F6620796F75722064697367757374696E6720696C6B2E205069747920796F7520776F6E27742062652061726F756E6420746F207769746E6573732069742E",
+      "after_text": "Varedis will hunt down every one of your disgusting ilk. Pity you won't be around to witness it.",
+      "before_text": "Varedis will hunt down every one of your disgusting ilk - pity you won't be around to witness it.",
+      "similarity": 0.9740932642487047,
+      "provenance": {
+        "static_artifact_maps": [
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 14,
+      "batch": 2,
+      "values": {
+        "CreatureID": 94731,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "Varedis will hunt down every one of your disgusting ilk - pity you won't be around to witness it.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 96566,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Талдат Разрушитель to 0"
+      },
+      "other_fingerprint": "18a32cb978cfaa7fd539e231ee89289db8c714636319b21c3391390953fba680",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106811,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 110913,
+      "before_hex": "46697265207468652067756E732120436F76657220746865207061746820696E2048656C6C666972652120446F6E2774206C65742074686174205761726C6F636B207468726F75676821",
+      "after_hex": "46697265207468652067756E732120436F76657220746865207061746820696E2068656C6C666972652120446F6E2774206C65742074686174207761726C6F636B207468726F75676821",
+      "after_text": "Fire the guns! Cover the path in hellfire! Don't let that warlock through!",
+      "before_text": "Fire the guns! Cover the path in Hellfire! Don't let that Warlock through!",
+      "similarity": 0.972972972972973,
+      "provenance": {
+        "static_artifact_maps": [
+          1498
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 15,
+      "batch": 2,
+      "values": {
+        "CreatureID": 106811,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Fire the guns! Cover the path in Hellfire! Don't let that Warlock through!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110913,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Mephistroth to Дикий бес"
+      },
+      "other_fingerprint": "d347c9e06bf8b17859b4a911b05388f3eefdffd7b3a76f3a1e7d5d4b9062ad6a",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 110556,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 117568,
+      "before_hex": "55682E2E2E206772656174206D617374657221205768696368206F6620757320697320746F207769656C642074686520736365707465723F",
+      "after_hex": "55682E2E2E206772656174206D61737465723F205768696368206F6620757320697320746F207769656C642074686520536365707465723F",
+      "after_text": "Uh... great master? Which of us is to wield the Scepter?",
+      "before_text": "Uh... great master! Which of us is to wield the scepter?",
+      "similarity": 0.9642857142857143,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      },
+      "seq": 16,
+      "batch": 2,
+      "values": {
+        "CreatureID": 110556,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Uh... great master! Which of us is to wield the scepter?",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 66428,
+        "BroadcastTextID": 117568,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Athrikus Narassin to Player"
+      },
+      "other_fingerprint": "a5db97ef03c8db15916a90b183bfd8c663f94a91f35ba4e7b5b2633ca4914c1c",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 17,
+        "ID": 0
+      },
+      "broadcast": 109897,
+      "before_hex": "57656C6C20646F6E652065766572796F6E652C206C6574732E2E2E2077616974207768617420697320746861743F",
+      "after_hex": "57656C6C20646F6E652065766572796F6E652C206C657427732E2E2E20576169742C207768617420697320746861743F",
+      "after_text": "Well done everyone, let's... Wait, what is that?",
+      "before_text": "Well done everyone, lets... wait what is that?",
+      "similarity": 0.9574468085106383,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 17,
+      "batch": 2,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 17,
+        "ID": 0,
+        "Text": "Well done everyone, lets... wait what is that?",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109897,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Flesh Spawn"
+      },
+      "other_fingerprint": "c8b82713959d102cdbe059469f96098b67b8552ef629015720ae458c8db418f1",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101362,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 103685,
+      "before_hex": "56696C6520626561737473206F6620746865206E696768746D6172652C20796F752077696C6C206E657665722074616B65206D7920636C61777321",
+      "after_hex": "56696C6520626561737473206F6620746865204E696768746D6172652120596F752077696C6C206E657665722074616B65206D7920636C61777321",
+      "after_text": "Vile beasts of the Nightmare! You will never take my claws!",
+      "before_text": "Vile beasts of the nightmare, you will never take my claws!",
+      "similarity": 0.9491525423728814,
+      "provenance": {
+        "static_artifact_maps": [
+          1536
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 18,
+      "batch": 2,
+      "values": {
+        "CreatureID": 101362,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Vile beasts of the nightmare, you will never take my claws!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 103685,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Дух Урсока to 0"
+      },
+      "other_fingerprint": "d93d78c61379461b384d2c5533c772f20fba6d94b965229868c116733e078c97",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 97857,
+      "before_hex": "52656D656D6265722C2064656D6F6E2068756E746572202D20796F752077657265206E6576657220686572652E",
+      "after_hex": "52656D656D6265722C2064656D6F6E2068756E7465722E2E2E20796F752077657265206E6576657220686572652E",
+      "after_text": "Remember, demon hunter... you were never here.",
+      "before_text": "Remember, demon hunter - you were never here.",
+      "similarity": 0.945054945054945,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 19,
+      "batch": 2,
+      "values": {
+        "CreatureID": 96313,
+        "GroupID": 6,
+        "ID": 0,
+        "Text": "Remember, demon hunter - you were never here.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 1,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 97857,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Тюремщик Альтурас to Player"
+      },
+      "other_fingerprint": "e91e022994a8eeac7b9530d88c8e4e9f99ac3dd30ab03b88dc850b23be581219",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 97859,
+      "before_hex": "466F6C6C6F77206D652E20492077696C6C206F70656E207468652063656C6C20666F7220796F752E",
+      "after_hex": "466F6C6C6F77206D652E2049207368616C6C206F70656E207468652063656C6C20666F7220796F752E",
+      "after_text": "Follow me. I shall open the cell for you.",
+      "before_text": "Follow me. I will open the cell for you.",
+      "similarity": 0.9382716049382716,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 20,
+      "batch": 2,
+      "values": {
+        "CreatureID": 96313,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "Follow me. I will open the cell for you.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 25,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 97859,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Тюремщик Альтурас to Player"
+      },
+      "other_fingerprint": "66e51c3aff2f6ceba6a3037d13c0576dcc757a38350713845dcb98dd03f9e08a",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 107593,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 112478,
+      "before_hex": "416E6F7468657220616E6E6F79616E63653F212049276D20676F696E6720746F20656E6A6F7920736565696E67207468697320776F726C64206275726E21",
+      "after_hex": "416E6F7468657220616E6E6F79616E63653F212049276D20676F696E6720746F20656E6A6F79207761746368696E67207468697320776F726C64206275726E21",
+      "after_text": "Another annoyance?! I'm going to enjoy watching this world burn!",
+      "before_text": "Another annoyance?! I'm going to enjoy seeing this world burn!",
+      "similarity": 0.9365079365079365,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 21,
+      "batch": 3,
+      "values": {
+        "CreatureID": 107593,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Another annoyance?! I'm going to enjoy seeing this world burn!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 112478,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Algromon to Player"
+      },
+      "other_fingerprint": "7156c387e026fe930a01a4477d4ca00465b6584140d67bf813dfa6bec3724dda",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 110556,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 117582,
+      "before_hex": "536F2C2077652061726520746F20626520666F657320616674657220616C6C2E20506974792C20796F7520776F756C642068617665206D61646520616E20657863656C6C656E742073657276616E7421",
+      "after_hex": "4974207365656D732077652061726520746F20626520666F657320616674657220616C6C2E20506974792C20796F7520776F756C642068617665206D61646520616E20657863656C6C656E742073657276616E7421",
+      "after_text": "It seems we are to be foes after all. Pity, you would have made an excellent servant!",
+      "before_text": "So, we are to be foes after all. Pity, you would have made an excellent servant!",
+      "similarity": 0.9333333333333333,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      },
+      "seq": 22,
+      "batch": 3,
+      "values": {
+        "CreatureID": 110556,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "So, we are to be foes after all. Pity, you would have made an excellent servant!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 66430,
+        "BroadcastTextID": 117582,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Athrikus Narassin to Player"
+      },
+      "other_fingerprint": "668c08598ccd9fc461b119c82f746d683188dbd6acf08fad23b3d9c601ae9176",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101513,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 104699,
+      "before_hex": "486561722C20686561722E20492764206C696B6520746F2070726F706F7365206120746F6173742E",
+      "after_hex": "486561722120486561722120492764206C696B6520746F2070726F706F7365206120746F6173742E",
+      "after_text": "Hear! Hear! I'd like to propose a toast.",
+      "before_text": "Hear, hear. I'd like to propose a toast.",
+      "similarity": 0.925,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 23,
+      "batch": 3,
+      "values": {
+        "CreatureID": 101513,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Hear, hear. I'd like to propose a toast.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 104699,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Лорд Джорах Черный Ворон to Player"
+      },
+      "other_fingerprint": "d282b8630cf822c3a26ba49eb97170f12b8879ebea3c6e2a78a249ba1803f613",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102700,
+        "GroupID": 12,
+        "ID": 0
+      },
+      "broadcast": 112317,
+      "before_hex": "536F20417272657869732077617320616D6275736865642062792074686973206572656461722C2042616C61616475723F202048652069732070726F6261626C7920696E20706F7373657373696F6E206F6620746865207374616666206E6F77207468656E2E2E2E",
+      "after_hex": "536F20417272657869732077617320616D6275736865642062792074686973206572656461722C2042616C61616475723F20205468656E2068652069732070726F6261626C7920696E20706F7373657373696F6E206F66207468652073746166662E2E2E",
+      "after_text": "So Arrexis was ambushed by this eredar, Balaadur?  Then he is probably in possession of the staff...",
+      "before_text": "So Arrexis was ambushed by this eredar, Balaadur?  He is probably in possession of the staff now then...",
+      "similarity": 0.9215686274509803,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1513
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 24,
+      "batch": 3,
+      "values": {
+        "CreatureID": 102700,
+        "GroupID": 12,
+        "ID": 0,
+        "Text": "So Arrexis was ambushed by this eredar, Balaadur?  He is probably in possession of the staff now then...",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 1,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 112317,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Мерил Буря Скверны to Player"
+      },
+      "other_fingerprint": "4a0b81621fa731e3f7d7bf344f959a843d566b4fe221133ac29eaa835b868ef8",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 8,
+        "ID": 0
+      },
+      "broadcast": 109893,
+      "before_hex": "576174636820796F757273656C7665732C206D656E21204C6574277320636C65616E73652074686973206368616D62657221",
+      "after_hex": "576174636820796F757273656C76657321204C657420757320636C65616E73652074686973206368616D62657221",
+      "after_text": "Watch yourselves! Let us cleanse this chamber!",
+      "before_text": "Watch yourselves, men! Let's cleanse this chamber!",
+      "similarity": 0.9166666666666666,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 25,
+      "batch": 3,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 8,
+        "ID": 0,
+        "Text": "Watch yourselves, men! Let's cleanse this chamber!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109893,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "84d5435eadeb39a5f48931ac4cc5655de517f45c5aa97ece958178f636641ad9",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94731,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 96568,
+      "before_hex": "5665726D696E21204D79206C6F7264207769656C647320706F776572206265796F6E6420796F757220636F6D70726568656E73696F6E202D2068652077696C6C20626520796F757220656E6421",
+      "after_hex": "5665726D696E21204D79206C6F7264207769656C647320706F776572206265796F6E6420796F757220636F6D70726568656E73696F6E212048652077696C6C20656E6420796F7521",
+      "after_text": "Vermin! My lord wields power beyond your comprehension! He will end you!",
+      "before_text": "Vermin! My lord wields power beyond your comprehension - he will be your end!",
+      "similarity": 0.912751677852349,
+      "provenance": {
+        "static_artifact_maps": [
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 26,
+      "batch": 3,
+      "values": {
+        "CreatureID": 94731,
+        "GroupID": 3,
+        "ID": 0,
+        "Text": "Vermin! My lord wields power beyond your comprehension - he will be your end!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 96568,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Талдат Разрушитель to 0"
+      },
+      "other_fingerprint": "09e9350b305014f7a492a5a9258f1b7910290ff46979bb004aac643a33aa38ca",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94731,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 97867,
+      "before_hex": "24703F2120596F752064617265207374616E64206265666F7265206D6520616674657220736F206D616E79206F6620796F75722064697367757374696E6720696C6B20686176652066616C6C656E3F2052656C65617365206D65206E6F7720616E642049206D61792079657420737061726520796F752E",
+      "after_hex": "24703F2120596F7520776F756C64207374616E64206265666F7265206D6520616674657220736F206D616E79206F6620796F7572206B696E20686176652066616C6C656E3F2052656C65617365206D65206E6F7720616E642049206D61792079657420737061726520796F752E",
+      "after_text": "$p?! You would stand before me after so many of your kin have fallen? Release me now and I may yet spare you.",
+      "before_text": "$p?! You dare stand before me after so many of your disgusting ilk have fallen? Release me now and I may yet spare you.",
+      "similarity": 0.9122807017543859,
+      "provenance": {
+        "static_artifact_maps": [
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 27,
+      "batch": 3,
+      "values": {
+        "CreatureID": 94731,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "$p?! You dare stand before me after so many of your disgusting ilk have fallen? Release me now and I may yet spare you.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 1,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 97867,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Талдат Разрушитель to Player"
+      },
+      "other_fingerprint": "5fe93c09b3cf55fd0c632b5e25d51a19f04f653dead6dfb318e749b2a10b431d",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104241,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 103777,
+      "before_hex": "246E2C204920706C61636520796F752061726520696E20636861726765206F66207468652067726F76652773206566666F72747320686572652E2049206D7573742074726176656C20746F2074686520736F75746820616E64207365656B206F75742043656E61726975732E204974206973206F6E6C792077697468206869732061696420746861742077652077696C6C2062652061626C6520746F2073746F7020746865204C6567696F6E2E",
+      "after_hex": "246E2C204920706C61636520796F7520696E20636861726765206F66207468652067726F76652773206566666F72747320686572652E2049206D7573742074726176656C20746F2074686520736F75746820616E64207365656B206F75742043656E61726975732E204F6E6C79207769746820686973206169642077696C6C2077652073746F7020746865204C6567696F6E2E",
+      "after_text": "$n, I place you in charge of the grove's efforts here. I must travel to the south and seek out Cenarius. Only with his aid will we stop the Legion.",
+      "before_text": "$n, I place you are in charge of the grove's efforts here. I must travel to the south and seek out Cenarius. It is only with his aid that we will be able to stop the Legion.",
+      "similarity": 0.90625,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 28,
+      "batch": 3,
+      "values": {
+        "CreatureID": 104241,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "$n, I place you are in charge of the grove's efforts here. I must travel to the south and seek out Cenarius. It is only with his aid that we will be able to stop the Legion.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 103777,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Малфурион Ярость Бури to Player"
+      },
+      "other_fingerprint": "6e60450596f6b7e94cacf137ebf8645fa7706cecdad4b99c2f97c3574e7dabc9",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 98002,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 106399,
+      "before_hex": "5468652024637420686173206D616465206F7572207061746820636C65617221204E6F772C20776520737472696B652120466F7220417A65726F746821",
+      "after_hex": "2463742C20796F752068617665206D616465206F7572207061746820636C65617221204E6F772C20776520737472696B652120466F7220417A65726F746821",
+      "after_text": "$ct, you have made our path clear! Now, we strike! For Azeroth!",
+      "before_text": "The $ct has made our path clear! Now, we strike! For Azeroth!",
+      "similarity": 0.9032258064516129,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 29,
+      "batch": 3,
+      "values": {
+        "CreatureID": 98002,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "The $ct has made our path clear! Now, we strike! For Azeroth!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 106399,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Повелитель небес Омнурон to Player"
+      },
+      "other_fingerprint": "ac38cc9820f0057bfe3152d8f286285ea33cd17636c80545f91fb8a326855c46",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 8,
+        "ID": 0
+      },
+      "broadcast": 110311,
+      "before_hex": "457863656C6C656E742C20616E64206E6F2074696D6520746F2077617374652C206C65742773206D6F766521",
+      "after_hex": "457863656C6C656E742C20616E642077697468206E6F2074696D6520746F2077617374652E204C65742773206D6F766521",
+      "after_text": "Excellent, and with no time to waste. Let's move!",
+      "before_text": "Excellent, and no time to waste, let's move!",
+      "similarity": 0.9032258064516129,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 30,
+      "batch": 3,
+      "values": {
+        "CreatureID": 106676,
+        "GroupID": 8,
+        "ID": 0,
+        "Text": "Excellent, and no time to waste, let's move!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110311,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 1092"
+      },
+      "other_fingerprint": "ae4ebfa5fff1862e402eae53d0d977f3412ce7d82d63122f88a9479fe87fbeac",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101513,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 104822,
+      "before_hex": "56616E436C6565662C2074686520556E63726F776E6564207374696C6C206861766520757365206F6620796F752E20596F75206861766520612063686F696365202D206C69766520616E6420776F726B206173206F6E65206F662024702773206167656E74732E2E2E206F722064696520776865726520796F75207374616E642E",
+      "after_hex": "56616E436C6565662C2074686520556E63726F776E6564207374696C6C206861766520612075736520666F7220796F752E20596F75206861766520612063686F6963652E2E2E206C69766520616E642073657276652061732024702773206167656E742E2E2E206F722064696520776865726520796F75207374616E642E",
+      "after_text": "VanCleef, the Uncrowned still have a use for you. You have a choice... live and serve as $p's agent... or die where you stand.",
+      "before_text": "VanCleef, the Uncrowned still have use of you. You have a choice - live and work as one of $p's agents... or die where you stand.",
+      "similarity": 0.9019607843137255,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 31,
+      "batch": 4,
+      "values": {
+        "CreatureID": 101513,
+        "GroupID": 3,
+        "ID": 0,
+        "Text": "VanCleef, the Uncrowned still have use of you. You have a choice - live and work as one of $p's agents... or die where you stand.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 104822,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Лорд Джорах Черный Ворон to Ванесса ван Клиф"
+      },
+      "other_fingerprint": "ffae6ab3d32cc3af4dfb533bd263dc41539f0c50d911130d1e92647e21d1bb9a",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104385,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 107154,
+      "before_hex": "4265666F726520796F752061776169747320796F7572206E65787420747269616C2E2044656665617420616C6C206F6620746865207370697269747320616E6420796F752077696C6C20686176652070726F76656E20796F7520706F73736573732074686520636F7572616765206F6620746865206265617221",
+      "after_hex": "4265666F726520796F752061776169747320796F7572206E65787420747269616C2E2044656665617420746865207370697269747320616E642070726F766520796F7520706F73736573732074686520636F7572616765206F6620746865206265617221",
+      "after_text": "Before you awaits your next trial. Defeat the spirits and prove you possess the courage of the bear!",
+      "before_text": "Before you awaits your next trial. Defeat all of the spirits and you will have proven you possess the courage of the bear!",
+      "similarity": 0.9009009009009009,
+      "provenance": {
+        "static_artifact_maps": [
+          571
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 32,
+      "batch": 4,
+      "values": {
+        "CreatureID": 104385,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Before you awaits your next trial. Defeat all of the spirits and you will have proven you possess the courage of the bear!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 107154,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Урсол to Player"
+      },
+      "other_fingerprint": "071489433478fa932e4380dd30f056cf43defc4a47c8a7fcf086e60cae3b04eb",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102655,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 105027,
+      "before_hex": "4F7665722068657265212049207468696E6B20796F752077696C6C206C696B6520746865206368616E676573207765277665206D61646521",
+      "after_hex": "4F7665722068657265212049207468696E6B20796F752077696C6C20617070726F7665206F6620746865206368616E676573207765277665206D61646521",
+      "after_text": "Over here! I think you will approve of the changes we've made!",
+      "before_text": "Over here! I think you will like the changes we've made!",
+      "similarity": 0.8983050847457628,
+      "provenance": {
+        "static_artifact_maps": [
+          1512
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 33,
+      "batch": 4,
+      "values": {
+        "CreatureID": 102655,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Over here! I think you will like the changes we've made!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 105027,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Алонсий Фаол to Player"
+      },
+      "other_fingerprint": "a3fdc184e90d07b4f0ce3c62e22f351b4a15af570334c55fda5ef7d069b78bd4",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106652,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 110991,
+      "before_hex": "456E6A6F79207468697320766963746F7279207768696C6520796F752063616E2C205761726C6F636B2E20546869732069736E2774206F766572206265747765656E2075733B20697420686173206F6E6C79206A75737420626567756E21",
+      "after_hex": "456E6A6F7920796F757220766963746F7279207768696C6520796F752063616E2C207761726C6F636B2E20546869732069736E2774206F766572206265747765656E2075732E20497420686173206F6E6C7920626567756E21",
+      "after_text": "Enjoy your victory while you can, warlock. This isn't over between us. It has only begun!",
+      "before_text": "Enjoy this victory while you can, Warlock. This isn't over between us; it has only just begun!",
+      "similarity": 0.8961748633879781,
+      "provenance": {
+        "static_artifact_maps": [
+          1498
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 34,
+      "batch": 4,
+      "values": {
+        "CreatureID": 106652,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Enjoy this victory while you can, Warlock. This isn't over between us; it has only just begun!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110991,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Mephistroth to 0"
+      },
+      "other_fingerprint": "26f6e90d5577b74fa8cdb0ca56e53867fb3e4238cfe5076b8a878f279480688a",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105333,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 108103,
+      "before_hex": "4974207365656D732066617465206973206F6E20796F757220736964652C20726F6775652E",
+      "after_hex": "4974207365656D732066617465206973206F6E20796F757220736964652E",
+      "after_text": "It seems fate is on your side.",
+      "before_text": "It seems fate is on your side, rogue.",
+      "similarity": 0.8955223880597015,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1502
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 35,
+      "batch": 4,
+      "values": {
+        "CreatureID": 105333,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "It seems fate is on your side, rogue.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 108103,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Вал'зуун to Player"
+      },
+      "other_fingerprint": "3c42d0b50bfc4e4dda4920a2f00e01919a321463f9366d72643386e19e18fe3e",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 97848,
+      "before_hex": "596F75206D617920656E7465722074686520686F6C642C2062757420492077696C6C206E6F7420707574206D792067756172647327206C69766573206174207269736B20666F7220796F757220276D697373696F6E272E204973207468617420636C6561723F",
+      "after_hex": "596F75206D617920656E7465722074686520686F6C642C2062757420492077696C6C206E6F742070757420746865206C69766573206F66206D7920677561726473206174207269736B20666F7220796F7572206D697373696F6E2E204973207468617420636C6561723F",
+      "after_text": "You may enter the hold, but I will not put the lives of my guards at risk for your mission. Is that clear?",
+      "before_text": "You may enter the hold, but I will not put my guards' lives at risk for your 'mission'. Is that clear?",
+      "similarity": 0.8942307692307693,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 36,
+      "batch": 4,
+      "values": {
+        "CreatureID": 96313,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "You may enter the hold, but I will not put my guards' lives at risk for your 'mission'. Is that clear?",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 1,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 97848,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Тюремщик Альтурас to Player"
+      },
+      "other_fingerprint": "fb059050f3cd30131714854464a96b3f38accf819c234e391494fd893d8dc521",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102700,
+        "GroupID": 13,
+        "ID": 0
+      },
+      "broadcast": 112327,
+      "before_hex": "4C6574207573207265637265617465204172726578697327732072697475616C21204966207765207374617274207468652072697475616C20617420616E20696E766173696F6E20706F696E742C20746861742077696C6C20617474726163742042616C6161647572277320617474656E74696F6E2E2048652077696C6C206C696B656C7920616D627573682075732C206275742077652077696C6C2062652072656164792E",
+      "after_hex": "4C6574207573207265637265617465204172726578697327732072697475616C2120436F6E64756374696E67207468652072697475616C20617420616E20696E766173696F6E20706F696E742077696C6C20617474726163742042616C6161647572277320617474656E74696F6E2E2048652077696C6C206C696B656C792074727920616E20616D627573682C206275742077652077696C6C2062652072656164792E",
+      "after_text": "Let us recreate Arrexis's ritual! Conducting the ritual at an invasion point will attract Balaadur's attention. He will likely try an ambush, but we will be ready.",
+      "before_text": "Let us recreate Arrexis's ritual! If we start the ritual at an invasion point, that will attract Balaadur's attention. He will likely ambush us, but we will be ready.",
+      "similarity": 0.8936170212765957,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1513
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 37,
+      "batch": 4,
+      "values": {
+        "CreatureID": 102700,
+        "GroupID": 13,
+        "ID": 0,
+        "Text": "Let us recreate Arrexis's ritual! If we start the ritual at an invasion point, that will attract Balaadur's attention. He will likely ambush us, but we will be ready.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 1,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 112327,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Мерил Буря Скверны to Player"
+      },
+      "other_fingerprint": "f89a4fcccf1c91300f7871d10286b0b437226d1863ec20345ad1a8a9c997644f",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106337,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 111582,
+      "before_hex": "4D792062726F746865722073706F6B65206F66206120647261676F6E2063616C6C6564204C616E69676F73612061742057796D726573742054656D706C652E2053746172742077697468206865722E20492077696C6C2070726570617265206120737472696B6520666F72636520666F722074686520746F6D622E",
+      "after_hex": "4D792062726F746865722073706F6B65206F66206120647261676F6E2063616C6C6564204C616E69676F7361206174205779726D726573742054656D706C652E205365656B20686572206F7574207768696C6520492070726570617265206120737472696B6520666F72636520666F722074686520746F6D622E",
+      "after_text": "My brother spoke of a dragon called Lanigosa at Wyrmrest Temple. Seek her out while I prepare a strike force for the tomb.",
+      "before_text": "My brother spoke of a dragon called Lanigosa at Wymrest Temple. Start with her. I will prepare a strike force for the tomb.",
+      "similarity": 0.8816326530612245,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 38,
+      "batch": 4,
+      "values": {
+        "CreatureID": 106337,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "My brother spoke of a dragon called Lanigosa at Wymrest Temple. Start with her. I will prepare a strike force for the tomb.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 111582,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "4de7d9c9863427ba46a4b0c406f61026946595014d95979cfaffab54cd41a5d2",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104385,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 107141,
+      "before_hex": "54686520666972737420747269616C2077696C6C2072657665616C20796F7572206D696768742E20596F752077696C6C206661636520746865207374726F6E67657374206F66206D7920666F6C6C6F7765727320696E20636F6D6261742E2053686F77206D65207468617420796F7520706F73736573732074686520737472656E677468206F6620746865206265617221",
+      "after_hex": "54686520666972737420747269616C2077696C6C207465737420796F7572206D6967687420616761696E737420746865207374726F6E67657374206F66206D7920666F6C6C6F776572732E2053686F77206D65207468617420796F7520706F73736573732074686520737472656E677468206F6620746865206265617221",
+      "after_text": "The first trial will test your might against the strongest of my followers. Show me that you possess the strength of the bear!",
+      "before_text": "The first trial will reveal your might. You will face the strongest of my followers in combat. Show me that you possess the strength of the bear!",
+      "similarity": 0.8634686346863468,
+      "provenance": {
+        "static_artifact_maps": [
+          571
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 39,
+      "batch": 4,
+      "values": {
+        "CreatureID": 104385,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "The first trial will reveal your might. You will face the strongest of my followers in combat. Show me that you possess the strength of the bear!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 107141,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Урсол to Player"
+      },
+      "other_fingerprint": "039fdccacd1f5f6839bb8202812ee3d8096e2ae2bb24fbbdd956399f859aade6",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94836,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 97084,
+      "before_hex": "4265686F6C642074686520706F776572206F66207468652044656365697665722E204265686F6C64207468652066756C6C20706F776572206F66207468652064656D6F6E2077697468696E21",
+      "after_hex": "4265686F6C6420746865206D69676874206F662074686520446563656976657221204265686F6C642074686520676C6F7279206F66207468652064656D6F6E2077697468696E21",
+      "after_text": "Behold the might of the Deceiver! Behold the glory of the demon within!",
+      "before_text": "Behold the power of the Deceiver. Behold the full power of the demon within!",
+      "similarity": 0.8571428571428571,
+      "provenance": {
+        "static_artifact_maps": [
+          1498
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 40,
+      "batch": 4,
+      "values": {
+        "CreatureID": 94836,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Behold the power of the Deceiver. Behold the full power of the demon within!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 52027,
+        "BroadcastTextID": 97084,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Варедис Оскверненная Душа to 0"
+      },
+      "other_fingerprint": "9714e46d2c1fc9739f0245365a77ada254ce90128567c020ed7bd9a55e536b5d",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104714,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 107149,
+      "before_hex": "5468617420637265617475726520756E776F72746879206F6620796F752C206772656174205572736F6C21204920637275736820697420696E20796F7572206E616D6521",
+      "after_hex": "5468617420637265617475726520756E776F72746879206F66206772656174205572736F6C21204920637275736820697421",
+      "after_text": "That creature unworthy of great Ursol! I crush it!",
+      "before_text": "That creature unworthy of you, great Ursol! I crush it in your name!",
+      "similarity": 0.847457627118644,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      },
+      "seq": 41,
+      "batch": 5,
+      "values": {
+        "CreatureID": 104714,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "That creature unworthy of you, great Ursol! I crush it in your name!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 107149,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Древний герой to Player"
+      },
+      "other_fingerprint": "40bacd35171424cca028755c21fd39a88430f78efebb1bef62e9d7fd6481ceb2",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 109571,
+      "before_hex": "4265686F6C642074686520546F6D62206F66205479722C206275696C7420627920746865206D69676874792E2E2E207761697421205768617420666F756C206D6F6E7374657273206172652074686573653F21",
+      "after_hex": "4265686F6C642074686520546F6D62206F66205479722C206275696C7420627920746865206D69676874792E2E2E207761697421205468657365206D6F6E73746572732064617265206265666F756C2074686520746F6D623F21",
+      "after_text": "Behold the Tomb of Tyr, built by the mighty... wait! These monsters dare befoul the tomb?!",
+      "before_text": "Behold the Tomb of Tyr, built by the mighty... wait! What foul monsters are these?!",
+      "similarity": 0.8439306358381503,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 42,
+      "batch": 5,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "Behold the Tomb of Tyr, built by the mighty... wait! What foul monsters are these?!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109571,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "6a84c619d02d99cbb10223507b816fcb969921937688dcd57ef4404e8d44c2d9",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 110357,
+      "before_hex": "45766572797468696E6720697320696E20706C6163652C20492063616E20636F6D706C657465207468652072697475616C212045766572796F6E652C20646566656E64207468652074756E6E656C21",
+      "after_hex": "45766572797468696E6720697320696E20706C61636520666F72206D6520746F20636F6D706C657465207468652072697475616C2120416C6C206F6620796F752C20646566656E64207468652074756E6E656C21",
+      "after_text": "Everything is in place for me to complete the ritual! All of you, defend the tunnel!",
+      "before_text": "Everything is in place, I can complete the ritual! Everyone, defend the tunnel!",
+      "similarity": 0.8343558282208589,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 43,
+      "batch": 5,
+      "values": {
+        "CreatureID": 106777,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Everything is in place, I can complete the ritual! Everyone, defend the tunnel!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110357,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 0"
+      },
+      "other_fingerprint": "3c83aa9465f89f6348ad3088494b82f2fd6f2564597464b2b975286585606148",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102846,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 112328,
+      "before_hex": "54686174206A757374206D6967687420776F726B2E2057652077696C6C206E65656420696E666F726D6174696F6E206F6E20746869732072697475616C20616E642074686520706F77657220746F2070756C6C206974206F66662E204C65742075732067657420746F2069742E",
+      "after_hex": "54686174206A757374206D6967687420776F726B2E205765206E656564207468652064657461696C73206F6620746869732072697475616C2C2061732077656C6C2061732074686520706F77657220746F2070756C6C206974206F66662E204C65742075732067657420746F2069742E",
+      "after_text": "That just might work. We need the details of this ritual, as well as the power to pull it off. Let us get to it.",
+      "before_text": "That just might work. We will need information on this ritual and the power to pull it off. Let us get to it.",
+      "similarity": 0.8235294117647058,
+      "provenance": {
+        "static_artifact_maps": [
+          1513
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 44,
+      "batch": 5,
+      "values": {
+        "CreatureID": 102846,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "That just might work. We will need information on this ritual and the power to pull it off. Let us get to it.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 112328,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Алоди to Player"
+      },
+      "other_fingerprint": "89dff5b36287eb338b4333d9f7d3f218b77b11146608a5a5fa76ea064fcdaf40",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105586,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 108588,
+      "before_hex": "49202E2E2E2049206E65656420736F6D652061697221",
+      "after_hex": "492E2E2E2049206E6565642066726573682061697221",
+      "after_text": "I... I need fresh air!",
+      "before_text": "I ... I need some air!",
+      "similarity": 0.8181818181818182,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      },
+      "seq": 45,
+      "batch": 5,
+      "values": {
+        "CreatureID": 105586,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "I ... I need some air!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 62424,
+        "BroadcastTextID": 108588,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Защитник Баррем to Player"
+      },
+      "other_fingerprint": "b8353b9a550f24ddffef4f11b651f48a6f6441ea1fed5a1d5c2840f2cde38173",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108097,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 113260,
+      "before_hex": "596F7527766520646F6E652069742C20492063616E206665656C20617263616E65206C6576656C7320726973696E6720696E2074686520617265612E205468652064656D6F6E7320686176652070756C6C6564206261636B2074656D706F726172696C792061732077656C6C2C2049207468696E6B207468657920696E74656E6420746F207265616C6C792068697420757320686172642E",
+      "after_hex": "596F7527766520646F6E652069742120492063616E206665656C20617263616E65206C6576656C7320726973696E6720696E2074686520617265612E205468652064656D6F6E7320686176652070756C6C6564206261636B20666F7220746865206D6F6D656E742E20492764207761676572207468657920706C616E20746F2068697420757320686172642E",
+      "after_text": "You've done it! I can feel arcane levels rising in the area. The demons have pulled back for the moment. I'd wager they plan to hit us hard.",
+      "before_text": "You've done it, I can feel arcane levels rising in the area. The demons have pulled back temporarily as well, I think they intend to really hit us hard.",
+      "similarity": 0.8013698630136986,
+      "provenance": {
+        "static_artifact_maps": [
+          1616
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 46,
+      "batch": 5,
+      "values": {
+        "CreatureID": 108097,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "You've done it, I can feel arcane levels rising in the area. The demons have pulled back temporarily as well, I think they intend to really hit us hard.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 113260,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Мерил Буря Скверны to Player"
+      },
+      "other_fingerprint": "d0d00ffac490ac0d390cb54a102c77cd62543d66d43ba529a181011971bfcbbd",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94902,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 97850,
+      "before_hex": "4372797374616C2C2057617264656E2E",
+      "after_hex": "4173206372797374616C2C2077617264656E2E",
+      "after_text": "As crystal, warden.",
+      "before_text": "Crystal, Warden.",
+      "similarity": 0.8,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 47,
+      "batch": 5,
+      "values": {
+        "CreatureID": 94902,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Crystal, Warden.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 1,
+        "Duration": 0,
+        "Sound": 57447,
+        "BroadcastTextID": 97850,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Кайн Ярость Солнца to Player"
+      },
+      "other_fingerprint": "0d516394f6cc2e565eaeef61187e4cf8a744f1c4612e884dabfcb187339b34e7",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 19,
+        "ID": 0
+      },
+      "broadcast": 109904,
+      "before_hex": "536F6D657468696E672069732077726F6E672E204F6E65206F662074686520737061726B732069736E277420776F726B696E672120426C61737421",
+      "after_hex": "536F6D657468696E672069732077726F6E672E204F6E65206F6620746865206F7468657220537061726B732069736E2774206865726521",
+      "after_text": "Something is wrong. One of the other Sparks isn't here!",
+      "before_text": "Something is wrong. One of the sparks isn't working! Blast!",
+      "similarity": 0.7894736842105263,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 48,
+      "batch": 5,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 19,
+        "ID": 0,
+        "Text": "Something is wrong. One of the sparks isn't working! Blast!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109904,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Г'норц Безумный"
+      },
+      "other_fingerprint": "6f4c5fa4277ec8295801a95ec3886c80c8601a80b82fd92ddedc2eef3a4bb088",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94731,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 96565,
+      "before_hex": "464F4F4C2120596F752064617265207374616E6420616761696E7374206D6520616C6F6E653F21",
+      "after_hex": "464F4F4C2120596F7520646172652066616365206D6520616C6F6E653F21",
+      "after_text": "FOOL! You dare face me alone?!",
+      "before_text": "FOOL! You dare stand against me alone?!",
+      "similarity": 0.782608695652174,
+      "provenance": {
+        "static_artifact_maps": [
+          1494
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 49,
+      "batch": 5,
+      "values": {
+        "CreatureID": 94731,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "FOOL! You dare stand against me alone?!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 25,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 96565,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Талдат Разрушитель to Player"
+      },
+      "other_fingerprint": "5d749f54ed0bc474a3b62dcd9c03a741bdb03aba2925b8c3427c267a649b6e51",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106639,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 109987,
+      "before_hex": "566572792077656C6C2E204F6E636520776520636C65617220616E20617265612C207265696E666F7263656D656E74732077696C6C207365637572652069742E20446F776E20776520676F2E",
+      "after_hex": "4F6E636520776520636C65617220616E20617265612C207265696E666F7263656D656E74732077696C6C207365637572652069742E204F6E776172642070616C6164696E7321",
+      "after_text": "Once we clear an area, reinforcements will secure it. Onward paladins!",
+      "before_text": "Very well. Once we clear an area, reinforcements will secure it. Down we go.",
+      "similarity": 0.7671232876712328,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 50,
+      "batch": 5,
+      "values": {
+        "CreatureID": 106639,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Very well. Once we clear an area, reinforcements will secure it. Down we go.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109987,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "8900b1136854fe8d0c2b10c98e333ee33df1657110cdfc76725448c53400f72c",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 7,
+        "ID": 0
+      },
+      "broadcast": 110351,
+      "before_hex": "536F6D657468696E6720697320636F6D696E672066726F6D2074686520766F69642C20736F6D657468696E67206269672E205765206E65656420746F206D6F7665206E6F7721",
+      "after_hex": "41206461726B2070726573656E636520656D65726765732066726F6D2074686520766F69642E2E2E20736F6D657468696E672062696721205765206E65656420746F206D6F7665206E6F7721",
+      "after_text": "A dark presence emerges from the void... something big! We need to move now!",
+      "before_text": "Something is coming from the void, something big. We need to move now!",
+      "similarity": 0.726027397260274,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 51,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106676,
+        "GroupID": 7,
+        "ID": 0,
+        "Text": "Something is coming from the void, something big. We need to move now!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110351,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "057f1b461a7baf1de954314c0c68bbb8cc1f6448a797bf07e7b8940e705e5132",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 100363,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 102430,
+      "before_hex": "4920646566656174656420746865206B72616B656E2E2049206B696C6C656420746865206769616E74732E20596F75206172652061206A65726B21",
+      "after_hex": "4920686176652062657374656420746865206B72616B656E2E2049206861766520736C61696E206769616E74732E20596F7520617265206E6F7468696E6721",
+      "after_text": "I have bested the kraken. I have slain giants. You are nothing!",
+      "before_text": "I defeated the kraken. I killed the giants. You are a jerk!",
+      "similarity": 0.6721311475409836,
+      "provenance": {
+        "static_artifact_maps": [
+          1526
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 52,
+      "batch": 6,
+      "values": {
+        "CreatureID": 100363,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "I defeated the kraken. I killed the giants. You are a jerk!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 102430,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Сигурд Убийца Великанов to Player"
+      },
+      "other_fingerprint": "7ef921ea7a951269b0eb7144fa130d3fd90d76f6a96d2298096d8be5e15aea17",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 109481,
+      "before_hex": "57652077696C6C2074616B65206120736D616C6C207465616D20746F206C65616420746865207761792E20416964207573206173206265737420796F752063616E2E204C6574206D65206B6E6F77207768656E20796F75206172652072656164792E",
+      "after_hex": "596F7520616E642049207368616C6C206C656164206120736D616C6C207465616D20696E2066697273742E204C6574206D65206B6E6F77207768656E20796F75206172652072656164792E",
+      "after_text": "You and I shall lead a small team in first. Let me know when you are ready.",
+      "before_text": "We will take a small team to lead the way. Aid us as best you can. Let me know when you are ready.",
+      "similarity": 0.6473988439306358,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 53,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "We will take a small team to lead the way. Aid us as best you can. Let me know when you are ready.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109481,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "5fdad9d528486e8fc99c00600d2b175a827b5a39cb1249f4d09969436e9e3a68",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 110362,
+      "before_hex": "497420697320646F6E652E20517569636B6C792C2024702C2074616B65207570207468652068616D6D657221205468652072697475616C2077696C6C2063617573652074686520656E7469726520746F6D6220746F20636F6C6C617073652061732061206661696C7361666521",
+      "after_hex": "497420697320646F6E652E20517569636B6C792C2024702C2074616B65207570207468652068616D6D65722120496E20736F20646F696E672C20796F752077696C6C20656E737572652054797227732072656D61696E73206172652070726F74656374656420666F7220616C6C2074696D6521",
+      "after_text": "It is done. Quickly, $p, take up the hammer! In so doing, you will ensure Tyr's remains are protected for all time!",
+      "before_text": "It is done. Quickly, $p, take up the hammer! The ritual will cause the entire tomb to collapse as a failsafe!",
+      "similarity": 0.625,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 54,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106777,
+        "GroupID": 3,
+        "ID": 0,
+        "Text": "It is done. Quickly, $p, take up the hammer! The ritual will cause the entire tomb to collapse as a failsafe!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110362,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 0"
+      },
+      "other_fingerprint": "45d5862ea6f6d779e32a70bd9e01b52eec89d96c346d834459114d50e19f3597",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108168,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 113374,
+      "before_hex": "596F7520686176652074686520737472656E677468206F6620616E20617263686D6167652C2062757420492068617665206120666577206D6F726520747269636B7320746F2073686F7720796F752E2E2E",
+      "after_hex": "596F7520706F737365737320746865206D69676874206F6620616E20617263686D61676521204275742049276D206E6F74206F7574206F6620747269636B73207965742E2E2E",
+      "after_text": "You possess the might of an archmage! But I'm not out of tricks yet...",
+      "before_text": "You have the strength of an archmage, but I have a few more tricks to show you...",
+      "similarity": 0.6225165562913907,
+      "provenance": {
+        "static_artifact_maps": [
+          1616
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 55,
+      "batch": 6,
+      "values": {
+        "CreatureID": 108168,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "You have the strength of an archmage, but I have a few more tricks to show you...",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 113374,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Balaadur to 0"
+      },
+      "other_fingerprint": "2ff7d33f7775cc57a6e64fce5c33139de57f946391fe8005ec44d655c9d0f687",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108726,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 115834,
+      "before_hex": "4920686561722074686569722073746570732E20446F206E6F742072656C617821",
+      "after_hex": "49206865617220746865697220666F6F74737465707320636F6D696E672E20446F6E2774206C657420646F776E20796F757220677561726421",
+      "after_text": "I hear their footsteps coming. Don't let down your guard!",
+      "before_text": "I hear their steps. Do not relax!",
+      "similarity": 0.6222222222222222,
+      "provenance": {
+        "static_artifact_maps": [
+          1514
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 56,
+      "batch": 6,
+      "values": {
+        "CreatureID": 108726,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "I hear their steps. Do not relax!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 66724,
+        "BroadcastTextID": 115834,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Чэнь Буйный Портер to Player"
+      },
+      "other_fingerprint": "c84a1b08d4d5e026a85043661d5a15931fc286bc9a6d83f37a14e914cfc1c1a4",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 109575,
+      "before_hex": "4974207061696E73206D6520746F207365652074686973206465737472756374696F6E2C20492068617665206E65766572207365656E206265796F6E6420746865736520646F6F727320756E74696C206E6F772E205468652053696C7665722048616E6420697320696E2074686572652C206C657420757320676F2E",
+      "after_hex": "4974207061696E73206D6520746F207365652073756368206465737472756374696F6E20746872656174656E207468652072657374696E6720706C616365206F66207468652053696C7665722048616E642E",
+      "after_text": "It pains me to see such destruction threaten the resting place of the Silver Hand.",
+      "before_text": "It pains me to see this destruction, I have never seen beyond these doors until now. The Silver Hand is in there, let us go.",
+      "similarity": 0.6019417475728155,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 57,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 6,
+        "ID": 0,
+        "Text": "It pains me to see this destruction, I have never seen beyond these doors until now. The Silver Hand is in there, let us go.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109575,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Flesh Spawn"
+      },
+      "other_fingerprint": "7229e9c6f63102e2bac062d6d95e2d57c8febcfb8b21dd9ae732a223d6b0374e",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 110361,
+      "before_hex": "416C6D6F73742074686572652E2E2E206A757374206120666577206D6F7265206D6F6D656E747321",
+      "after_hex": "4A757374206120666577206D6F7265206D6F6D656E7473212053746179207374726F6E6721",
+      "after_text": "Just a few more moments! Stay strong!",
+      "before_text": "Almost there... just a few more moments!",
+      "similarity": 0.5974025974025974,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 58,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106777,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "Almost there... just a few more moments!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110361,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 0"
+      },
+      "other_fingerprint": "013eba97566044908408290c7ba6a0733577b70af7d75a0bd72be2fc2bb7416e",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 110308,
+      "before_hex": "4E4F21205468657920617265206A7573742E2E2E20676F6E652120596F752077696C6C2062652072656D656D62657265642E",
+      "after_hex": "4E4F212054686579206172652E2E2E20676F6E6521",
+      "after_text": "NO! They are... gone!",
+      "before_text": "NO! They are just... gone! You will be remembered.",
+      "similarity": 0.5915492957746479,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 59,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106676,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "NO! They are just... gone! You will be remembered.",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110308,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Ужасная аберрация"
+      },
+      "other_fingerprint": "f5c2ce2c986c1032c294b4bae389005910b4232ca7bab3b76a6b2d78677e8011",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 110977,
+      "before_hex": "596F75207769656C64207468652048616E642077656C6C2049207468696E6B2E2052657475726E20746F205479726F7375732C2068652077696C6C2077616E7420746F2068656172206F66206F757220737563636573732E20492077696C6C2073656520796F7520616761696E2E",
+      "after_hex": "492063616E207468696E6B206F66206E6F206F6E652062657474657220746F20686F6C64207468652053696C7665722048616E642C207769656C642069742077656C6C2E2052657475726E20746F205479726F73757320616E642074656C6C2068696D206F66206F757220737563636573732E2057652077696C6C206D65657420616761696E2E",
+      "after_text": "I can think of no one better to hold the Silver Hand, wield it well. Return to Tyrosus and tell him of our success. We will meet again.",
+      "before_text": "You wield the Hand well I think. Return to Tyrosus, he will want to hear of our success. I will see you again.",
+      "similarity": 0.5795918367346938,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 60,
+      "batch": 6,
+      "values": {
+        "CreatureID": 106777,
+        "GroupID": 6,
+        "ID": 0,
+        "Text": "You wield the Hand well I think. Return to Tyrosus, he will want to hear of our success. I will see you again.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110977,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 0"
+      },
+      "other_fingerprint": "89c4ce29ac973dc2aaa9f43bdc253bf3ea40a1fc5b56baa2fbdb2c906a4ac8dd",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 20,
+        "ID": 0
+      },
+      "broadcast": 109905,
+      "before_hex": "4974206D7573742068617665206265656E2074616B656E2C2070657268617073206279206F6E65206F6620746865206372617A6564206D6F6E73746572732E2049742063616E206F6E6C792062652062656C6F7720616E64207765206E6565642069742E205768656E6576657220796F75206172652072656164792C206368616D70696F6E2E",
+      "after_hex": "576169742C20492063616E2073656E73652069742062656C6F772C2070726F6261626C792074616B656E206279206F6E65206F662074686F7365206D6F6E73746572732E205765206D7573742068617665206974212057652077696C6C20626567696E2074686520736561726368207768656E20796F75206172652072656164792C206368616D70696F6E2E",
+      "after_text": "Wait, I can sense it below, probably taken by one of those monsters. We must have it! We will begin the search when you are ready, champion.",
+      "before_text": "It must have been taken, perhaps by one of the crazed monsters. It can only be below and we need it. Whenever you are ready, champion.",
+      "similarity": 0.5693430656934306,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 61,
+      "batch": 7,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 20,
+        "ID": 0,
+        "Text": "It must have been taken, perhaps by one of the crazed monsters. It can only be below and we need it. Whenever you are ready, champion.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109905,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 106624"
+      },
+      "other_fingerprint": "88628158694bb6ede037b29ad118a589e72b05387f426871b9014579765c2189",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102655,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 105153,
+      "before_hex": "492764206C696B6520746F20696E74726F6475636520796F7520746F2043616C6961204D656E657468696C2E205965732074686174204D656E657468696C2E2053686520686173206265656E20616E20696E6372656469626C652068656C702074686573652070617374206665772079656172732E20492764206C696B6520666F722068657220746F20776F726B20666F7220796F752C2068656C70696E67207468652068656C706C6573732C2074616B696E6720796F757220776F726420746F2074686520776F726C642C20616C6C20746861742E",
+      "after_hex": "492764206C696B6520746F20696E74726F6475636520796F7520746F2043616C6961204D656E657468696C2E2E2E207965732C2074686174204D656E657468696C2E2053686520686173206265656E20612067726561742068656C702074686573652070617374206665772079656172732E20492764206C696B652068657220746F2061737369737420796F752C2068656C70696E67207468652068656C706C6573732C20636F6E766579696E6720796F757220776F726420746F2074686520776F726C642C20616C6C20746861742E",
+      "after_text": "I'd like to introduce you to Calia Menethil... yes, that Menethil. She has been a great help these past few years. I'd like her to assist you, helping the helpless, conveying your word to the world, all that.",
+      "before_text": "I'd like to introduce you to Calia Menethil. Yes that Menethil. She has been an incredible help these past few years. I'd like for her to work for you, helping the helpless, taking your word to the world, all that.",
+      "similarity": 0.5639810426540285,
+      "provenance": {
+        "static_artifact_maps": [
+          1512
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 62,
+      "batch": 7,
+      "values": {
+        "CreatureID": 102655,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "I'd like to introduce you to Calia Menethil. Yes that Menethil. She has been an incredible help these past few years. I'd like for her to work for you, helping the helpless, taking your word to the world, all that.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 105153,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Алонсий Фаол to Player"
+      },
+      "other_fingerprint": "faa43376913062cc4650567c4dcbc892d17b84ca83351fdd5bf14ecb2eb12f2c",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106337,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 109411,
+      "before_hex": "492077696C6C2070726570617265206F757220666F7263657320666F7220746865206A6F75726E657920746F20546972697366616C2E20596F752063616E206D616B6520796F757220776179207468657265207468726F7567682074686520706F7274616C20746F2044616C6172616E204372617465722E",
+      "after_hex": "596F752063616E206D616B6520796F757220776179207468657265207468726F7567682074686520706F7274616C20746F2044616C6172616E204372617465722E20492077696C6C206D65657420796F752074686572652077697468206164646974696F6E616C20666F726365732E",
+      "after_text": "You can make your way there through the portal to Dalaran Crater. I will meet you there with additional forces.",
+      "before_text": "I will prepare our forces for the journey to Tirisfal. You can make your way there through the portal to Dalaran Crater.",
+      "similarity": 0.5627705627705628,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 63,
+      "batch": 7,
+      "values": {
+        "CreatureID": 106337,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "I will prepare our forces for the journey to Tirisfal. You can make your way there through the portal to Dalaran Crater.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109411,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "d773fcc17d1bc07a0b31862c3487d44b1f6e17dc92c47923f58bae4d7e4ff831",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102655,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 106260,
+      "before_hex": "412067726561742073746172742120576527766520617272616E676564207769746820746865204B6972696E20546F722061207065726D616E656E742070617373616765206261636B20746F2044616C6172616E2E205768656E20796F75206E65656420746F2072657475726E2074686572652077696C6C206265206120706F7274616C20696E2044616C6172616E2E20476F6F64206C75636B21",
+      "after_hex": "412066696E652073746172742120546865204B6972696E20546F72206861766520676976656E2075732061207065726D616E656E7420706F7274616C20746F2044616C6172616E2C2061732077656C6C206173206F6E6520746861742077696C6C206272696E6720796F752066726F6D207468652063697479206261636B20746F204E65746865726C696768742E20476F6F64206C75636B21",
+      "after_text": "A fine start! The Kirin Tor have given us a permanent portal to Dalaran, as well as one that will bring you from the city back to Netherlight. Good luck!",
+      "before_text": "A great start! We've arranged with the Kirin Tor a permanent passage back to Dalaran. When you need to return there will be a portal in Dalaran. Good luck!",
+      "similarity": 0.5454545454545454,
+      "provenance": {
+        "static_artifact_maps": [
+          1512
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 64,
+      "batch": 7,
+      "values": {
+        "CreatureID": 102655,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "A great start! We've arranged with the Kirin Tor a permanent passage back to Dalaran. When you need to return there will be a portal in Dalaran. Good luck!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 106260,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Алонсий Фаол to Player"
+      },
+      "other_fingerprint": "b24bb93f2c7968d8092d7436ce8e304e67634aaa894b0530d7cfacb19a018c00",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 109480,
+      "before_hex": "5468652068616D6D6572206973206E6F74206661722066726F6D2074686520656E7472616E6365206275742077652077696C6C206E65656420746F20626520717569636B2E204576656E207769746820746865205477696C6967687427732048616D6D657220676F6E6520492063616E2073656E7365206576696C20636F6D696E672066726F6D2074686520746F6D622E",
+      "after_hex": "492077696C6C20636F6D706C657465207468652072697475616C20746F2072656C65617365207468652048616D6D657220616E6420636F6C6C617073652074686520746F6D622C20627574207765206D75737420626520717569636B2E20492063616E2073656E7365206576696C20656D616E6174696E672066726F6D2074686520746F6D622E",
+      "after_text": "I will complete the ritual to release the Hammer and collapse the tomb, but we must be quick. I can sense evil emanating from the tomb.",
+      "before_text": "The hammer is not far from the entrance but we will need to be quick. Even with the Twilight's Hammer gone I can sense evil coming from the tomb.",
+      "similarity": 0.5214285714285715,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 65,
+      "batch": 7,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "The hammer is not far from the entrance but we will need to be quick. Even with the Twilight's Hammer gone I can sense evil coming from the tomb.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109480,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "0002bc51a3ff075df771620db3a1217ab6b2b86626a6e269d2f104c11bf87c05",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 7,
+        "ID": 0
+      },
+      "broadcast": 109839,
+      "before_hex": "4C6F6F6B2061626F766520796F7521204F7572207361637265642061727469666163742069732074686572652C206A757374206265796F6E6420726561636821204265666F726520776520626567696E206C657420757320636C6561722074686520726F6F6D2E204C6574206D65206B6E6F77207768656E20796F75206172652072656164792E",
+      "after_hex": "4C6F6F6B2074686572652120546865207361637265642068616D6D657227732077617264732072656D61696E207374726F6E6721204669727374207765206D757374207075726765207468697320696E666573746174696F6E2E204C6574206D65206B6E6F77207768656E20796F75206172652072656164792E",
+      "after_text": "Look there! The sacred hammer's wards remain strong! First we must purge this infestation. Let me know when you are ready.",
+      "before_text": "Look above you! Our sacred artifact is there, just beyond reach! Before we begin let us clear the room. Let me know when you are ready.",
+      "similarity": 0.5136186770428015,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 66,
+      "batch": 7,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 7,
+        "ID": 0,
+        "Text": "Look above you! Our sacred artifact is there, just beyond reach! Before we begin let us clear the room. Let me know when you are ready.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109839,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "1082dc1d143c50b8f45f8dda200c36fc878f864358966763197286cbae8c261d",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 110310,
+      "before_hex": "4F7572206D656E2061726520646F776E212048656C70207468656D2C20492077696C6C20636F76657220796F7521",
+      "after_hex": "5765206861766520776F756E6465642120416964207468656D207768696C65204920636F76657220796F7521",
+      "after_text": "We have wounded! Aid them while I cover you!",
+      "before_text": "Our men are down! Help them, I will cover you!",
+      "similarity": 0.5111111111111111,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 67,
+      "batch": 7,
+      "values": {
+        "CreatureID": 106676,
+        "GroupID": 6,
+        "ID": 0,
+        "Text": "Our men are down! Help them, I will cover you!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110310,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "c7bbe31acba23770175431b05bfed0c82c8ec309a8f7a3f15d4532a73e0bb886",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 18,
+        "ID": 0
+      },
+      "broadcast": 109903,
+      "before_hex": "4174206C6173742077652063616E20626567696E2E204E6F772077652077696C6C206E65656420746F206D6F766520717569636B6C79206F6E6365207468652072697475616C20697320636F6D706C6574652C2069742077696C6C20636C6F7365207468697320746F6D62207065726D616E656E746C79206F6E6365207468652068616D6D657220697320696E206F757220706F7373657373696F6E2E",
+      "after_hex": "4174206C6173742077652063616E20626567696E21204166746572207468652072697475616C20697320636F6D706C65746520616E642077652068617665207468652068616D6D65722C2074686520636F6D706C65782077696C6C20636F6C6C617073652C207365616C696E672054797227732072657374696E6720706C61636520666F72657665722E",
+      "after_text": "At last we can begin! After the ritual is complete and we have the hammer, the complex will collapse, sealing Tyr's resting place forever.",
+      "before_text": "At last we can begin. Now we will need to move quickly once the ritual is complete, it will close this tomb permanently once the hammer is in our possession.",
+      "similarity": 0.5084745762711864,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 68,
+      "batch": 7,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 18,
+        "ID": 0,
+        "Text": "At last we can begin. Now we will need to move quickly once the ritual is complete, it will close this tomb permanently once the hammer is in our possession.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109903,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Г'норц Безумный"
+      },
+      "other_fingerprint": "05a20f44ac3888c8dac2e06599c8d8b4a70ed4f6a2ead8c6572d4ff695b4073d",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101539,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 104626,
+      "before_hex": "49206F776520796F7520246E2E20492074686F75676874207468617420657465726E616C2070656163652068616420636F6D6520666F72206D652E",
+      "after_hex": "4920737570706F73652049206F776520796F75206F6E652C20246E2E204920616C6D6F737420686164206D792066696E616C2064656174682074686572652E",
+      "after_text": "I suppose I owe you one, $n. I almost had my final death there.",
+      "before_text": "I owe you $n. I thought that eternal peace had come for me.",
+      "similarity": 0.47540983606557374,
+      "provenance": {
+        "static_artifact_maps": [
+          1489
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 69,
+      "batch": 7,
+      "values": {
+        "CreatureID": 101539,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "I owe you $n. I thought that eternal peace had come for me.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 104626,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Барон Раздор to Player"
+      },
+      "other_fingerprint": "ec03b4cd42125550c94710001c9ca91be2cbe9e81bfcceda9ec6c25b564cca09",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102846,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 112335,
+      "before_hex": "596F752077696C6C206E65656420746F20737065616B20746F20746865206D616E61676572206174207468652042616E6B206F662044616C6172616E20746F206761696E206163636573732E204920686176652063617374206120736967696C206F6E20796F7520746861742073686F756C64206769766520796F75207065726D697373696F6E2E20416C736F207468657265206D69676874207374696C6C20626520706572736F6E616C20776172647320757020696E736964652E20546865792073686F756C646E2774206861726D20796F7520627574206265206361726566756C2E",
+      "after_hex": "537065616B20746F207468652062616E6B206D616E616765722E2054686520736967696C2049206A757374206761766520796F752073686F756C64206772616E74206163636573732E205468657265206D6179207374696C6C206265207761726473206775617264696E6720746865207661756C742C20736F206265206361726566756C2E",
+      "after_text": "Speak to the bank manager. The sigil I just gave you should grant access. There may still be wards guarding the vault, so be careful.",
+      "before_text": "You will need to speak to the manager at the Bank of Dalaran to gain access. I have cast a sigil on you that should give you permission. Also there might still be personal wards up inside. They shouldn't harm you but be careful.",
+      "similarity": 0.46537396121883656,
+      "provenance": {
+        "static_artifact_maps": [
+          1513
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 70,
+      "batch": 7,
+      "values": {
+        "CreatureID": 102846,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "You will need to speak to the manager at the Bank of Dalaran to gain access. I have cast a sigil on you that should give you permission. Also there might still be personal wards up inside. They shouldn't harm you but be careful.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 112335,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Алоди to Player"
+      },
+      "other_fingerprint": "8cd26a6df404afecff845497bd944746f3a76e68400cee6d7cbdfadf501fed97",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 109479,
+      "before_hex": "41682C20746865726520796F75206172652E205765277665207365637572656420746865206172656120616E6420666F756E642074686520626F64696573206F66206F757220627265746872656E2E",
+      "after_hex": "41682C20746865726520796F75206172652E20546865206172656120776173207365637572656420617420677265617420636F73742E20546869732063616E6E6F7420636F6E74696E75652C207765206D757374207265747269657665207468652053696C7665722048616E6420616E642064657374726F792074686520656E7472616E636520746F2074686520746F6D622E",
+      "after_text": "Ah, there you are. The area was secured at great cost. This cannot continue, we must retrieve the Silver Hand and destroy the entrance to the tomb.",
+      "before_text": "Ah, there you are. We've secured the area and found the bodies of our brethren.",
+      "similarity": 0.46017699115044247,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 71,
+      "batch": 8,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "Ah, there you are. We've secured the area and found the bodies of our brethren.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109479,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "2a45ab1094f2fc53f96e88e2642e7c4c5b1fe9342d82d22c0bdb0636c5981468",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102200,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 104521,
+      "before_hex": "49202E2E2E207374696C6C202E2E2E2077696C6C20726973652E",
+      "after_hex": "492077696C6C20726964652E2E2E20616761696E2E2E2E",
+      "after_text": "I will ride... again...",
+      "before_text": "I ... still ... will rise.",
+      "similarity": 0.4489795918367347,
+      "provenance": {
+        "static_artifact_maps": [
+          1533
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 72,
+      "batch": 8,
+      "values": {
+        "CreatureID": 102200,
+        "GroupID": 6,
+        "ID": 0,
+        "Text": "I ... still ... will rise.",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 104521,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Ариден to Player"
+      },
+      "other_fingerprint": "f0d8079b554d4993db8b452400c7099509c528472db03bc5fe40b48ea985d8e4",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101513,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "broadcast": 104813,
+      "before_hex": "596F75722066617468657220776F756C642068617665206265656E206469736170706F696E74656420696E20796F752C2056616E65737361",
+      "after_hex": "4920747275737420796F752077696C6C206265207472756520746F20796F757220776F72642C2056616E657373612E20492764206861746520746F20696D6167696E6520796F757220666174686572206265696E67206469736170706F696E74656420696E20796F752E",
+      "after_text": "I trust you will be true to your word, Vanessa. I'd hate to imagine your father being disappointed in you.",
+      "before_text": "Your father would have been disappointed in you, Vanessa",
+      "similarity": 0.41975308641975306,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 73,
+      "batch": 8,
+      "values": {
+        "CreatureID": 101513,
+        "GroupID": 5,
+        "ID": 0,
+        "Text": "Your father would have been disappointed in you, Vanessa",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 104813,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Лорд Джорах Черный Ворон to Ванесса ван Клиф"
+      },
+      "other_fingerprint": "224617af3339a7e46f9e087589450a635e5e5b17b79623e9ba6945d73b8b4593",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 98007,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 100366,
+      "before_hex": "4920616D207468652067726561746573742068656C61727961722077617272696F722120596F752077696C6C2064696521204465616C207769746820697421",
+      "after_hex": "4920616D20746865206368616D70696F6E206F66207468652068656C61726A6172212044696520616E642061636365707420796F7572206661746521",
+      "after_text": "I am the champion of the helarjar! Die and accept your fate!",
+      "before_text": "I am the greatest helaryar warrior! You will die! Deal with it!",
+      "similarity": 0.4065040650406504,
+      "provenance": {
+        "static_artifact_maps": [
+          1511
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 74,
+      "batch": 8,
+      "values": {
+        "CreatureID": 98007,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "I am the greatest helaryar warrior! You will die! Deal with it!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 100366,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Вигфус Вихрь Клинков to 0"
+      },
+      "other_fingerprint": "21c5edb44ca472e9be390d5a63cd5eae4c80ee6a95f90dafd74e5f9f4d045633",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 109570,
+      "before_hex": "57652077696C6C206861766520746F207377696D2061206C6974746C652C2062757420697420776F6E27742074616B65206C6F6E672E",
+      "after_hex": "4A7573742061206272696566207377696D20616E64207765276C6C2072656163682074686520746F6D622E",
+      "after_text": "Just a brief swim and we'll reach the tomb.",
+      "before_text": "We will have to swim a little, but it won't take long.",
+      "similarity": 0.35051546391752575,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 75,
+      "batch": 8,
+      "values": {
+        "CreatureID": 106429,
+        "GroupID": 3,
+        "ID": 0,
+        "Text": "We will have to swim a little, but it won't take long.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 109570,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Player"
+      },
+      "other_fingerprint": "79548ca903d405fe6e2b796f84cde58f72d77b1d4f213bb3e50705d6f2cd30e4",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 100222,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 106427,
+      "before_hex": "492077696C6C206E6F742062652073746F7070656420627920736F6D6520666F67206D6167696321204F7572207472696265277320677265617465737420776561706F6E20616E6420677265617465737420656E656D79206172652062757420612066657720737472696465732066726F6D20757321",
+      "after_hex": "4F7572207472696265277320677265617465737420776561706F6E20616E642069747320616E6369656E7420656E656D792061726520627574206120666577207374726964657320617761792120492077696C6C206E6F742062652073746F7070656420627920736F6D6520666F756C20666F67206D6167696321",
+      "after_text": "Our tribe's greatest weapon and its ancient enemy are but a few strides away! I will not be stopped by some foul fog magic!",
+      "before_text": "I will not be stopped by some fog magic! Our tribe's greatest weapon and greatest enemy are but a few strides from us!",
+      "similarity": 0.33195020746887965,
+      "provenance": {
+        "static_artifact_maps": [
+          1511
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 76,
+      "batch": 8,
+      "values": {
+        "CreatureID": 100222,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "I will not be stopped by some fog magic! Our tribe's greatest weapon and greatest enemy are but a few strides from us!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 106427,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Вухо Крутогор to Player"
+      },
+      "other_fingerprint": "a0d191079e0be0da64bd8f01850c10b3f2296161402ea6e3ab6ac839210b4a5d",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 100363,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 102431,
+      "before_hex": "4920676976652075702E2E2E",
+      "after_hex": "492E2E2E207969656C642E2E2E",
+      "after_text": "I... yield...",
+      "before_text": "I give up...",
+      "similarity": 0.32,
+      "provenance": {
+        "static_artifact_maps": [
+          1526
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 77,
+      "batch": 8,
+      "values": {
+        "CreatureID": 100363,
+        "GroupID": 2,
+        "ID": 0,
+        "Text": "I give up...",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 102431,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Сигурд Убийца Великанов to Player"
+      },
+      "other_fingerprint": "7da192e2e7c7da090c79d7b0827e15734e942528636794c0ffa40525a1d90956",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106777,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 110360,
+      "before_hex": "486F6C6421204920616D206E6F742079657420646F6E6521",
+      "after_hex": "54686174207468696E6720697320746F6F20706F77657266756C2120466F637573206F6E2073746179696E6720616C69766520616E64206B6565702069742061742062617921",
+      "after_text": "That thing is too powerful! Focus on staying alive and keep it at bay!",
+      "before_text": "Hold! I am not yet done!",
+      "similarity": 0.2765957446808511,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 78,
+      "batch": 8,
+      "values": {
+        "CreatureID": 106777,
+        "GroupID": 1,
+        "ID": 0,
+        "Text": "Hold! I am not yet done!",
+        "Type": 14,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110360,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to 0"
+      },
+      "other_fingerprint": "d64dff3c4d6d869c901fa49a4a3c95eabd2134292404b1e7ce71c986e9781da3",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106676,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 110306,
+      "before_hex": "576527766520646F6E652069742C2049276C6C20676574207468652070696563652120546865206D6F6E73746572277320646561746820686173206D61646520746865206172656120756E737461626C6520736F6D65686F772E",
+      "after_hex": "546865206C617374206F66206D792062726F746865727320616E6420736973746572732E204920616D20616C6C20746861742072656D61696E73206F66207468652054797227732047756172642E",
+      "after_text": "The last of my brothers and sisters. I am all that remains of the Tyr's Guard.",
+      "before_text": "We've done it, I'll get the piece! The monster's death has made the area unstable somehow.",
+      "similarity": 0.27380952380952384,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      },
+      "seq": 79,
+      "batch": 8,
+      "values": {
+        "CreatureID": 106676,
+        "GroupID": 4,
+        "ID": 0,
+        "Text": "We've done it, I'll get the piece! The monster's death has made the area unstable somehow.",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 110306,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Травар to Ужасная аберрация"
+      },
+      "other_fingerprint": "c14b776d17173533fb8ee91a6bbde4e55ed6216045582a94eb75d19eb31ef8aa",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 97072,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 98801,
+      "before_hex": "492070757420736F206D75636820737472656E67746820616E64206865616C746820696E207468697320666F7267652C20616E64206174206C6561737420736F6D656F6E6520776F756C6420736179207468616E6B20796F7520666F7220616C6C20746869732074696D6521204E6F21",
+      "after_hex": "4920776F726B20616C6C20746869732074696D6520746F20696D70726F76652074686520666F7267657320616E6420646F20492067657420612073696E676C6520776F7264206F66207468616E6B733F204E6F21",
+      "after_text": "I work all this time to improve the forges and do I get a single word of thanks? No!",
+      "before_text": "I put so much strength and health in this forge, and at least someone would say thank you for all this time! No!",
+      "similarity": 0.23469387755102042,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      },
+      "seq": 80,
+      "batch": 8,
+      "values": {
+        "CreatureID": 97072,
+        "GroupID": 0,
+        "ID": 0,
+        "Text": "I put so much strength and health in this forge, and at least someone would say thank you for all this time! No!",
+        "Type": 12,
+        "Language": 0,
+        "Probability": 100,
+        "Emote": 0,
+        "Duration": 0,
+        "Sound": 0,
+        "BroadcastTextID": 98801,
+        "MinTimer": 0,
+        "MaxTimer": 0,
+        "SpellID": 0,
+        "comment": "Главный кузнец крепости Корвий to 0"
+      },
+      "other_fingerprint": "7fed982121572db613daf5b6ffc3d09214afd30c9b909edb14e0c562ccc8fd4c",
+      "shape": {
+        "group_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 20175,
+        "OptionID": 0
+      },
+      "broadcast": 118599,
+      "before_hex": "4C6574277320636F6E74696E7565207265736561726368696E67206D792061727469666163742E",
+      "after_hex": "4C6574277320636F6E74696E7565207265736561726368206F6E206D792061727469666163742E",
+      "after_text": "Let's continue research on my artifact.",
+      "before_text": "Let's continue researching my artifact.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 97111,
+            "menu": 20175,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 81,
+      "batch": 9,
+      "values": {
+        "MenuID": 20175,
+        "OptionID": 0,
+        "OptionNpc": 28,
+        "OptionText": "Let's continue researching my artifact.",
+        "OptionBroadcastTextID": 118599,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "c41b7bc8d5b0ddf19902aec2f9e13bbbf7f9bc2bc6bd5079034b91cde36f0a3d",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19130,
+        "OptionID": 0
+      },
+      "broadcast": 103322,
+      "before_hex": "492068617665206368616E676564206D79206D696E642E204C6574206D652063686F6F7365206120646966666572656E742061727469666163742E",
+      "after_hex": "49277665206368616E676564206D79206D696E642E204C6574206D65207069636B206120646966666572656E742061727469666163742E",
+      "after_text": "I've changed my mind. Let me pick a different artifact.",
+      "before_text": "I have changed my mind. Let me choose a different artifact.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 100438,
+            "menu": 19130,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 82,
+      "batch": 9,
+      "values": {
+        "MenuID": 19130,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I have changed my mind. Let me choose a different artifact.",
+        "OptionBroadcastTextID": 103322,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "905807862f6fe8770941837ce424639de322d510e7b4045cce91edc954d0abaa",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19169,
+        "OptionID": 0
+      },
+      "broadcast": 103322,
+      "before_hex": "492068617665206368616E676564206D79206D696E642E204C6574206D652063686F6F7365206120646966666572656E742061727469666163742E",
+      "after_hex": "49277665206368616E676564206D79206D696E642E204C6574206D65207069636B206120646966666572656E742061727469666163742E",
+      "after_text": "I've changed my mind. Let me pick a different artifact.",
+      "before_text": "I have changed my mind. Let me choose a different artifact.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101441,
+            "menu": 19169,
+            "script": ""
+          },
+          {
+            "entry": 109788,
+            "menu": 19169,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 83,
+      "batch": 9,
+      "values": {
+        "MenuID": 19169,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I have changed my mind. Let me choose a different artifact.",
+        "OptionBroadcastTextID": 103322,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "872de4ebef7c03a2a48897ed79a79fe0b6aede3b18fafba26f72affa53d4decb",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 20432,
+        "OptionID": 5
+      },
+      "broadcast": 103322,
+      "before_hex": "492068617665206368616E676564206D79206D696E642E204C6574206D652063686F6F7365206120646966666572656E742061727469666163742E",
+      "after_hex": "49277665206368616E676564206D79206D696E642E204C6574206D65207069636B206120646966666572656E742061727469666163742E",
+      "after_text": "I've changed my mind. Let me pick a different artifact.",
+      "before_text": "I have changed my mind. Let me choose a different artifact.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 102700,
+            "menu": 20432,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 84,
+      "batch": 9,
+      "values": {
+        "MenuID": 20432,
+        "OptionID": 5,
+        "OptionNpc": 0,
+        "OptionText": "I have changed my mind. Let me choose a different artifact.",
+        "OptionBroadcastTextID": 103322,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "076a638155ada88d5db9a7fdccfc36253e5d8da0ce05365b2cbe0c2f8923e822",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 20432,
+        "OptionID": 6
+      },
+      "broadcast": 103322,
+      "before_hex": "492068617665206368616E676564206D79206D696E642E204C6574206D652063686F6F7365206120646966666572656E742061727469666163742E",
+      "after_hex": "49277665206368616E676564206D79206D696E642E204C6574206D65207069636B206120646966666572656E742061727469666163742E",
+      "after_text": "I've changed my mind. Let me pick a different artifact.",
+      "before_text": "I have changed my mind. Let me choose a different artifact.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 102700,
+            "menu": 20432,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 85,
+      "batch": 9,
+      "values": {
+        "MenuID": 20432,
+        "OptionID": 6,
+        "OptionNpc": 0,
+        "OptionText": "I have changed my mind. Let me choose a different artifact.",
+        "OptionBroadcastTextID": 103322,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "0f0ec0e6cef2b0724a221520e0d84c6e2c1a9be03f1b27a9fb0b2b30da558c4b",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19326,
+        "OptionID": 0
+      },
+      "broadcast": 106081,
+      "before_hex": "492077616E7420746F2073656C65637420616E2061727469666163742E",
+      "after_hex": "4C6574206D652073656C656374206D792061727469666163742E",
+      "after_text": "Let me select my artifact.",
+      "before_text": "I want to select an artifact.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101097,
+            "menu": 19326,
+            "script": ""
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19326,
+          "option": 0,
+          "quest": 43254
+        }
+      },
+      "seq": 86,
+      "batch": 9,
+      "values": {
+        "MenuID": 19326,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I want to select an artifact.",
+        "OptionBroadcastTextID": 106081,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "c4353e1dff5e4f65b08c86b38d6d15b18e50e37baaef36213a0fc84bacafde28",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19044,
+        "OptionID": 0
+      },
+      "broadcast": 102658,
+      "before_hex": "492077616E7420746F206F6E636520616761696E2072656672657368206D79206D656D6F72792061626F7574207768617420776561706F6E732077652063616E20646F2E",
+      "after_hex": "4920776F756C64206C696B6520746F2072657669657720776561706F6E73207765206D69676874207075727375652E",
+      "after_text": "I would like to review weapons we might pursue.",
+      "before_text": "I want to once again refresh my memory about what weapons we can do.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 90369,
+            "menu": 19044,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 87,
+      "batch": 9,
+      "values": {
+        "MenuID": 19044,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I want to once again refresh my memory about what weapons we can do.",
+        "OptionBroadcastTextID": 102658,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "12975ef04eb5d121b8ff97e76ba29723c0f6f1ebac82d44ef50d47d6a493c99b",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19157,
+        "OptionID": 0
+      },
+      "broadcast": 102658,
+      "before_hex": "492077616E7420746F206F6E636520616761696E2072656672657368206D79206D656D6F72792061626F7574207768617420776561706F6E732077652063616E20646F2E",
+      "after_hex": "4920776F756C64206C696B6520746F2072657669657720776561706F6E73207765206D69676874207075727375652E",
+      "after_text": "I would like to review weapons we might pursue.",
+      "before_text": "I want to once again refresh my memory about what weapons we can do.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101314,
+            "menu": 19157,
+            "script": ""
+          },
+          {
+            "entry": 110564,
+            "menu": 19157,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 88,
+      "batch": 9,
+      "values": {
+        "MenuID": 19157,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I want to once again refresh my memory about what weapons we can do.",
+        "OptionBroadcastTextID": 102658,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "d9160e0a2e1cb42ae992171cc9d10b203d71cc20f4b06d725b0df84a57945764",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19214,
+        "OptionID": 0
+      },
+      "broadcast": 102658,
+      "before_hex": "492077616E7420746F206F6E636520616761696E2072656672657368206D79206D656D6F72792061626F7574207768617420776561706F6E732077652063616E20646F2E",
+      "after_hex": "4920776F756C64206C696B6520746F2072657669657720776561706F6E73207765206D69676874207075727375652E",
+      "after_text": "I would like to review weapons we might pursue.",
+      "before_text": "I want to once again refresh my memory about what weapons we can do.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 99247,
+            "menu": 19214,
+            "script": ""
+          },
+          {
+            "entry": 99254,
+            "menu": 19214,
+            "script": ""
+          },
+          {
+            "entry": 108572,
+            "menu": 19214,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 89,
+      "batch": 9,
+      "values": {
+        "MenuID": 19214,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I want to once again refresh my memory about what weapons we can do.",
+        "OptionBroadcastTextID": 102658,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "7c6a8d910af3c0daf17630526f79a9239cffca76e925466f37cfd333739feb21",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19069,
+        "OptionID": 0
+      },
+      "broadcast": 115825,
+      "before_hex": "4C6574277320737461727420636F6F6B696E6720686F6E657921",
+      "after_hex": "4C657427732073746172742062726577696E6721",
+      "after_text": "Let's start brewing!",
+      "before_text": "Let's start cooking honey!",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 108726,
+            "menu": 19069,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 90,
+      "batch": 9,
+      "values": {
+        "MenuID": 19069,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "Let's start cooking honey!",
+        "OptionBroadcastTextID": 115825,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "287275c98bb8606cb057894b397f3109e37d9478233a3e3bac4307b90cb14da4",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19509,
+        "OptionID": 0
+      },
+      "broadcast": 108481,
+      "before_hex": "492077696C6C2070726F7465637420796F752C2047726173682C20492070726F6D6973652E20427265616B207468652077617920696E7369646521",
+      "after_hex": "492070726F6D69736520746F2070726F7465637420796F752C2047726173682E20536D61736820796F75722077617920696E7369646521",
+      "after_text": "I promise to protect you, Grash. Smash your way inside!",
+      "before_text": "I will protect you, Grash, I promise. Break the way inside!",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 105298,
+            "menu": 19509,
+            "script": "npc_grash"
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 91,
+      "batch": 10,
+      "values": {
+        "MenuID": 19509,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I will protect you, Grash, I promise. Break the way inside!",
+        "OptionBroadcastTextID": 108481,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "6eaca8ae39e7997a2acc07d2e643e17b920c699f6f0f098480c58bc60fb6f115",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 18834,
+        "OptionID": 0
+      },
+      "broadcast": 106816,
+      "before_hex": "49206E65656420796F757220626C657373696E67207769746820776869636820492063616E20656E7465722074686520456D6572616C6420447265616D2E",
+      "after_hex": "49206E65656420796F757220626C657373696E6720736F20746861742049206D617920656E7465722074686520456D6572616C6420447265616D2E",
+      "after_text": "I need your blessing so that I may enter the Emerald Dream.",
+      "before_text": "I need your blessing with which I can enter the Emerald Dream.",
+      "provenance": {
+        "actors": [],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 18834,
+          "option": 0,
+          "quest": 41422
+        }
+      },
+      "seq": 92,
+      "batch": 10,
+      "values": {
+        "MenuID": 18834,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I need your blessing with which I can enter the Emerald Dream.",
+        "OptionBroadcastTextID": 106816,
+        "ActionMenuID": 19400,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "da3aec7f960a528e843746abdd4da631e86c8055d981cbc811519bd1bf00c759",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19331,
+        "OptionID": 0
+      },
+      "broadcast": 77067,
+      "before_hex": "476574206F7574206F66206865726521",
+      "after_hex": "4C6574277320676574206F7574206F66206865726521",
+      "after_text": "Let's get out of here!",
+      "before_text": "Get out of here!",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 100397,
+            "menu": 19331,
+            "script": ""
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19331,
+          "option": 0,
+          "quest": 40419
+        }
+      },
+      "seq": 93,
+      "batch": 10,
+      "values": {
+        "MenuID": 19331,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "Get out of here!",
+        "OptionBroadcastTextID": 77067,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "f2d5b805c0720bd15abe5eb045213f950740f971011825c6fbafca3888a8ba4e",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19303,
+        "OptionID": 0
+      },
+      "broadcast": 105839,
+      "before_hex": "5468657265206973206E6F2074696D6520746F206578706C61696E2E204C657420757320696E2C2067756172642E",
+      "after_hex": "54686572652773206E6F2074696D6520746F206578706C61696E2E204C657420757320696E736964652074686520686F6C642C2077617264656E2E",
+      "after_text": "There's no time to explain. Let us inside the hold, warden.",
+      "before_text": "There is no time to explain. Let us in, guard.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 96313,
+            "menu": 19303,
+            "script": ""
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19303,
+          "option": 0,
+          "quest": 39051
+        }
+      },
+      "seq": 94,
+      "batch": 10,
+      "values": {
+        "MenuID": 19303,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "There is no time to explain. Let us in, guard.",
+        "OptionBroadcastTextID": 105839,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "ae702764aa2a342e43f57dbc4eeed336b5791982cd1839d3a7284e203ce9475d",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19302,
+        "OptionID": 0
+      },
+      "broadcast": 105836,
+      "before_hex": "492077616E7420746F2067657420746F206B6E6F7720796F75206265747465722E",
+      "after_hex": "492077616E7420746F206B6E6F77206D6F72652061626F757420796F752E",
+      "after_text": "I want to know more about you.",
+      "before_text": "I want to get to know you better.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 103144,
+            "menu": 19302,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 95,
+      "batch": 10,
+      "values": {
+        "MenuID": 19302,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "I want to get to know you better.",
+        "OptionBroadcastTextID": 105836,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "3549c8acc889c6cc8cb7f933764cc6bcb1ef30ab879f899f68fabced27693992",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19302,
+        "OptionID": 2
+      },
+      "broadcast": 105855,
+      "before_hex": "54656C6C206D652061626F757420746869732073776F72642C20776869636820646F6573206E6F7420616C6C6F7720746865206D6F6E7374657220746F20636F6D6520746F206C6966652E",
+      "after_hex": "54656C6C206D652061626F757420796F75722073776F72642074686174206B6565707320746865206D6F6E7374657220646561642E",
+      "after_text": "Tell me about your sword that keeps the monster dead.",
+      "before_text": "Tell me about this sword, which does not allow the monster to come to life.",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 103144,
+            "menu": 19302,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 96,
+      "batch": 10,
+      "values": {
+        "MenuID": 19302,
+        "OptionID": 2,
+        "OptionNpc": 0,
+        "OptionText": "Tell me about this sword, which does not allow the monster to come to life.",
+        "OptionBroadcastTextID": 105855,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "ce40e0675dfbc4ff94998c161325bc32fddce728d65e3664bd3ce6b5fcf53eeb",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19199,
+        "OptionID": 0
+      },
+      "broadcast": 104107,
+      "before_hex": "497420616C6C2068617070656E65642073756464656E6C792E205768657265206172652077653F205768617427732068617070656E696E673F",
+      "after_hex": "546869732077617320736F7274206F662073756464656E2C207768657265206172652077653F2057686174277320676F696E67206F6E3F",
+      "after_text": "This was sort of sudden, where are we? What's going on?",
+      "before_text": "It all happened suddenly. Where are we? What's happening?",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101430,
+            "menu": 19199,
+            "script": "npc_slaghammer_handoff"
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 97,
+      "batch": 10,
+      "values": {
+        "MenuID": 19199,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "It all happened suddenly. Where are we? What's happening?",
+        "OptionBroadcastTextID": 104107,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "ec7d34a13a2776b11aa8ccdb779a3ffb6c5eacb803887606f242e5b985e0fd28",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19199,
+        "OptionID": 1
+      },
+      "broadcast": 104111,
+      "before_hex": "4461726B20446561636F6E3F2057686F2069732074686973206E6577206C65616465723F",
+      "after_hex": "54686520536861646F7720446561636F6E3F2057686F2069732074686973206E6577206C65616465723F",
+      "after_text": "The Shadow Deacon? Who is this new leader?",
+      "before_text": "Dark Deacon? Who is this new leader?",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101430,
+            "menu": 19199,
+            "script": "npc_slaghammer_handoff"
+          }
+        ],
+        "quest_condition": null
+      },
+      "seq": 98,
+      "batch": 10,
+      "values": {
+        "MenuID": 19199,
+        "OptionID": 1,
+        "OptionNpc": 0,
+        "OptionText": "Dark Deacon? Who is this new leader?",
+        "OptionBroadcastTextID": 104111,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "152bec6fca8c01695419c6e2cf2bc9a050b3358f3ed7bf04ce20bd3dd9cf1811",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19254,
+        "OptionID": 2
+      },
+      "broadcast": 115072,
+      "before_hex": "43616E20796F7520666C79206D6520746F205469616E204D6F6E6173746572793F",
+      "after_hex": "43616E20796F7520666C79206D6520746F205469616E204D6F6E6173746572793F2049206E65656420746F20737065616B20746F20746865204D6F6E6B6579204B696E672E",
+      "after_text": "Can you fly me to Tian Monastery? I need to speak to the Monkey King.",
+      "before_text": "Can you fly me to Tian Monastery?",
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101880,
+            "menu": 19254,
+            "script": "npc_sheilun_return_guide"
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19254,
+          "option": 2,
+          "quest": 42762
+        }
+      },
+      "seq": 99,
+      "batch": 10,
+      "values": {
+        "MenuID": 19254,
+        "OptionID": 2,
+        "OptionNpc": 0,
+        "OptionText": "Can you fly me to Tian Monastery?",
+        "OptionBroadcastTextID": 115072,
+        "ActionMenuID": 0,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "a8e4383d74a549eb1c7d9a75114c5ccd5dc33cb45ed15fe4d005118e0c03485e",
+      "shape": {
+        "key_rows": 1
+      }
+    },
+    {
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19059,
+        "OptionID": 0
+      },
+      "broadcast": 102037,
+      "before_hex": "5468697320706F7765722077696C6C2073657276652074686520666967687420616761696E737420746865204C6567696F6E2E20446F20796F75207468696E6B2074686973206973206E6F74206120676F6F6420676F616C3F",
+      "after_hex": "54686520706F77657220776F756C6420736572766520746F2064656665617420746865204C6567696F6E2E20596F7520636F6E7369646572207468617420616E206576696C20676F616C3F",
+      "after_text": "The power would serve to defeat the Legion. You consider that an evil goal?",
+      "before_text": "This power will serve the fight against the Legion. Do you think this is not a good goal?",
+      "provenance": {
+        "actors": [],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19059,
+          "option": 0,
+          "quest": 40495
+        }
+      },
+      "seq": 100,
+      "batch": 10,
+      "values": {
+        "MenuID": 19059,
+        "OptionID": 0,
+        "OptionNpc": 0,
+        "OptionText": "This power will serve the fight against the Legion. Do you think this is not a good goal?",
+        "OptionBroadcastTextID": 102037,
+        "ActionMenuID": 19061,
+        "ActionPoiID": 0,
+        "BoxCoded": 0,
+        "BoxMoney": 0,
+        "BoxText": "",
+        "BoxBroadcastTextID": 0,
+        "VerifiedBuild": 0
+      },
+      "other_fingerprint": "8f5c96be5b73d14befaeb568b8794d6ab754eca9355642269e39da6c4bf7ea42",
+      "shape": {
+        "key_rows": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "date": "2026-11-16",
+  "batch": 1,
+  "count": 10,
+  "type": "NPC stored speech fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch01.sql",
+  "sql_sha256": "b5eff57c3fb9d573dca92b6125ab8be33a44ee600b69c3bcba9f180c7efc2dc7",
+  "repairs": [
+    {
+      "seq": 1,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 103144,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 105781,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 2,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 103144,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 105782,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 3,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101386,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 107950,
+      "provenance": {
+        "static_artifact_maps": [
+          1536
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 4,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 110556,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 117588,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 5,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94159,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 109229,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 6,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105333,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 108107,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1502
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 7,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "broadcast": 97278,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 8,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101513,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 104812,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 9,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104385,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 107516,
+      "provenance": {
+        "static_artifact_maps": [
+          571
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 10,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 5,
+        "ID": 0
+      },
+      "broadcast": 109572,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    }
+  ],
+  "status": "DEPLOYED_DATA_AND_NATIVE_VERIFIED_CLIENT_PENDING",
+  "request": "10 groups of10;user explicitly permits data/text repairs and restricts scope to artifact quests.",
+  "scope": "100 distinct stored fallback fields:80 NPC speech texts and20 artifact-related menu options. This is data consistency work,not100 gameplay mechanics,100 quests or36 whole-chain certifications. Active Protection/Hruthnir gameplay behavior was not changed or tested.",
+  "cause": "Stored English fallback prose had drifted from the effective default English of its existing Legion7.3.5/build26972 BroadcastText assignment. Some differences are punctuation/names;others are paraphrases or mistranslations. We align stored fallbacks to that existing assignment,without inventing text or changing Broadcast IDs. This does not independently prove each original Broadcast assignment or the timing of its story cue.",
+  "sources": "Local runtime BroadcastText.db2 plus effective Hotfix overlay and native DB2Manager. Artifact actor/menu scope traced through local route quest references and exported map actors;20 menus individually scoped in the plan. No external implementation or unseen video claimed.",
+  "preserved": "All non-target columns,voices,language,emotes,probabilities,timers,spell IDs,Broadcast IDs,menu actions,POIs,boxes,costs,conditions and quest progression. Both default gender variants resolve to each selected target. Gossip Broadcast condition must be0. No equipment/item grant,combat scaling,pet credit,faction/group eligibility,abandon/retry or completion change.",
+  "migration": "Each ten-row transaction accepts only exact known old/new bytes and SHA256 fingerprints of every other column. Speech also requires singleton groups. Drift causes an explicit45000 refusal and no writes;replay is idempotent. Shadow DML is always READ ONLY and verified temporary in the native host.",
+  "checks": {
+    "data": "Test-ArtifactFallbackData.ps1:10 actual-schema installs and replays,38 explicit foreign-text/metadata/missing/extra-speech-group refusal cases with unchanged full-row signatures. Previous147 speech rows,legacy101430/101899 and unselected sibling menu rows remain controls. Final live readback checks all100 full rows and all10 RELEASED updater SHA1 receipts.",
+    "native_paired": "Test-ArtifactFallbackNative.ps1:actual CreatureTextMgr and GossipDataStore loaders,exact extracted production CreatureTextBuilder,actual GossipMenu::AddMenuItem and native Chat/Gossip serializers before/after on connection-local TEMP tables.80 speech/20 menu checks across locale slots,speech genders,forced Broadcast-absent speech and actual LOCALE_none menu fallback. Normal Broadcast-selected packets byte-identical and normalized packet metadata unchanged.",
+    "native_live": "-VerifyLiveData repeats100 native after-state checks against actual read-only World/Hotfix pools. Native Release fixture,not whole-core ASAN. Source,DB2,SQL and actual original CMake Release link-library hashes recorded. No Character/Login connection,socket,AI startup,quest credit or save in the fixtures.",
+    "canonical": "Task-owned canonical worldserver PID13292 reached fresh ready after actual updater applied10 files;server shutdown0,exit0,stderr empty,process gone. Fresh process checks before promotion/start;no user server stopped. Protected configurations/certificates/DLLs unchanged.",
+    "iterations": "Resolved fixture-only iterations retained:MariaDB TEMP DDL requires READ WRITE,so bootstrap now restores READ ONLY before every DML;native include/string-chunk compiler corrections;live menu host initially omitted native PointsOfInterest initialization and emitted POI errors. LoadPointsOfInterest now runs before the menu loader,and the repaired full live run has no appended errors. The failed run is not counted as a pass;no production checks/logs suppressed.",
+    "evidence": [
+      ".codex/ten-ten-native-fallback-20261116/artifact-data-before-final.log",
+      ".codex/ten-ten-native-fallback-20261116/data-live-final.log",
+      ".codex/ten-ten-native-fallback-20261116/native-before.log",
+      ".codex/ten-ten-native-fallback-20261116/native-live-fixed.log",
+      ".codex/ten-ten-native-fallback-20261116/native-paired-final.log",
+      ".codex/ten-ten-native-fallback-20261116/canonical-result.log"
+    ],
+    "limits": "No authenticated client rendering,voice playback,actual failed/missing Broadcast client condition,complete quest traversal or correctness of unseen story variants claimed. Active Protection/Hruthnir traversal remains user-pending;no separate gameplay/native/scenario tests for that active flow."
+  },
+  "release": {
+    "world_sha256": "755E61D771234AB58DF19F66E32082732478DB2B7C06CE40290D3FF5C198EA86",
+    "production_cpp_changed": false,
+    "build": "SQL-only;canonical EXE unchanged. Native test hosts compile against original generated Release includes/libraries without OutDir overrides."
+  },
+  "diagnostics": "Successful data,native and canonical runs have pre/post crash/log snapshots,exit/stdout/stderr review,and no new crashes,DBErrors,warnings,errors or assertions. Existing canonical7111-byte mixed DBErrors and prior instance-handshake timeout/retry diagnostics remain unresolved and untouched. The fixture-only POI run is explicitly resolved by prerequisite initialization and a clean live rerun;not a production data repair.",
+  "cleanup": "Reviewed diagnostic archive and temporary-host cleanup are recorded in the closeout audit after implementation commits. No personal/character data or credentials committed."
+}
