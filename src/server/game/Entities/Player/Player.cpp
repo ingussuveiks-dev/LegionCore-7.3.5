@@ -30487,6 +30487,7 @@ void Player::UpdateTriggerVisibility()
 
     if (udata.BuildPacket(&packet))
         GetSession()->SendPacket(&packet);
+
 }
 
 void Player::UpdateCustomField()
@@ -32042,6 +32043,10 @@ void Player::UpdateForQuestWorldObjects()
     }
     if (udata.BuildPacket(&packet))
         GetSession()->SendPacket(&packet);
+
+    // Quest-log changes do not refresh the client's cached overhead markers.
+    // Publish current statuses after the same quest/phase/world-object update.
+    SendQuestGiverStatusMultiple();
 }
 
 void Player::UpdateAvailableQuestLines()
