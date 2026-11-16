@@ -1077,11 +1077,12 @@ public:
             if (!_EnterEvadeMode() || companion->AI() != this || !companion->IsInWorld())
                 return;
             events.Reset();
-            // MovePath occupies the idle slot. The defeated enemy's active
-            // chase must end before the authored escort can run underneath it.
+            // MovePath occupies the idle slot. End the active chase AND reset
+            // the uncovered generator so its interrupted spline resumes at
+            // the current waypoint. Clear(false) leaves that spline stopped.
             // Keep the story queues and receipts: the generic evade Reset/home
             // would discard the pending handoff instead of continuing it.
-            me->GetMotionMaster()->Clear(false);
+            me->GetMotionMaster()->Clear();
             if (companion->AI() != this || !companion->IsInWorld())
                 return;
 
