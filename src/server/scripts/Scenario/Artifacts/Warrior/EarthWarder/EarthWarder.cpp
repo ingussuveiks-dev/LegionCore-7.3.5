@@ -1017,6 +1017,18 @@ public:
 
         void EnterEvadeMode() override
         {
+            Creature* companion = me;
+            if (!_EnterEvadeMode() || companion->AI() != this || !companion->IsInWorld())
+                return;
+            events.Reset();
+            // MovePath occupies the idle slot. The defeated enemy's active
+            // chase must end before the authored escort can run underneath it.
+            // Keep the story queues and receipts: the generic evade Reset/home
+            // would discard the pending handoff instead of continuing it.
+            me->GetMotionMaster()->Clear(false);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
+
             if (firstfighting) // start
             {
                 firstfighting = false;
