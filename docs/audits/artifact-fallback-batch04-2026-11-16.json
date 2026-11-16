@@ -1,0 +1,186 @@
+{
+  "date": "2026-11-16",
+  "batch": 4,
+  "count": 10,
+  "type": "NPC stored speech fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch04.sql",
+  "sql_sha256": "eb364b0763e7babc6f81c30a379c3f2f70692105caa63d1a62fc0d79965ab2d8",
+  "repairs": [
+    {
+      "seq": 31,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101513,
+        "GroupID": 3,
+        "ID": 0
+      },
+      "broadcast": 104822,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 32,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104385,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 107154,
+      "provenance": {
+        "static_artifact_maps": [
+          571
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 33,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102655,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 105027,
+      "provenance": {
+        "static_artifact_maps": [
+          1512
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 34,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106652,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 110991,
+      "provenance": {
+        "static_artifact_maps": [
+          1498
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 35,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105333,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 108103,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1502
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 36,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 97848,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 37,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 102700,
+        "GroupID": 13,
+        "ID": 0
+      },
+      "broadcast": 112327,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1513
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 38,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106337,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 111582,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 39,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 104385,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 107141,
+      "provenance": {
+        "static_artifact_maps": [
+          571
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 40,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94836,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 97084,
+      "provenance": {
+        "static_artifact_maps": [
+          1498
+        ],
+        "direct_quest_actor": false
+      }
+    }
+  ],
+  "checks": "All100 shared data/native/updater checks passed;see shared audit.10 distinct fields in this batch;not10 whole quests. Actual client/full-chain traversal remains pending."
+}
