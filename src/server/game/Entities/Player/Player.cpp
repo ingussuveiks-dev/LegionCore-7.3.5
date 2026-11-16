@@ -24105,10 +24105,13 @@ void Player::_LoadInventory(PreparedQueryResult result, PreparedQueryResult arti
         {
             if (Item* parent = GetItemByGuid(childItem->GetGuidValue(ITEM_FIELD_CREATOR)))
             {
+                // This is the loaded inventory relationship, independent of
+                // whether the current specialization can equip the parent.
+                // Preserve it for a legitimate pair stored off-spec on login.
+                parent->SetChildItem(childItem->GetGUID());
                 InventoryResult res = CanUseItem(parent, false);
                 if (res == EQUIP_ERR_OK)
                 {
-                    parent->SetChildItem(childItem->GetGUID());
                     childItem->CopyArtifactDataFromParent(parent);
                     if (childItem->IsEquipped())
                         SetVisibleItemSlot(childItem->GetSlot(), childItem);
@@ -24126,6 +24129,7 @@ void Player::_LoadInventory(PreparedQueryResult result, PreparedQueryResult arti
                         }
                         else
                         {
+                            parent->SetChildItem(ObjectGuid::Empty);
                             RemoveItem(childItem->GetBagSlot(), childItem->GetSlot(), true);
                             childItem->RemoveFromWorld();
                             childItem->SetState(ITEM_REMOVED, this);
