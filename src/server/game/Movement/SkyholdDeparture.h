@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-// Aerylia's matching 7.3.5 destination jumps and their native arrival spells.
+// Skyhold's matching 7.3.5 destination jumps and their native arrival spells.
 // Ulduar218015 is a direct teleport, not one of these jumps.
 namespace SkyholdDeparture
 {
@@ -10,6 +10,7 @@ namespace SkyholdDeparture
     {
         switch (jump)
         {
+            case 191216: return 187803; // Hruthnir: Protection artifact scenario
             case 191473: return 191474;
             case 193334: return 193335;
             case 203921: return 203920;
