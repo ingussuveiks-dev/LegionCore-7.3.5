@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-16",
+  "baseline": "577e7de92",
+  "status": "SOURCE_ASAN_NATIVE_AND_STAGED_RELEASE_VERIFIED_DEPLOYMENT_DEFERRED_BY_USER_CLIENT_PENDING",
+  "report": "User confirmed fresh Stage1 has no restored artifact/finale and actual bonfire ignition advances to Stage2 with enemies. Consumed Mysterious Bonfire still displays an interaction hand. Earlier successful ignition/criteria fixes are not counted again.",
+  "cause": "Existing completed-use admission prevents repeat progression, but successful ignition sets only GO_STATE_ACTIVE. It never sets the native client/server GO_FLAG_NOT_SELECTABLE flag, and the AI has no later-step interaction synchronization.",
+  "repair": "Only actual entry245188/map1511/DB spawn134117 in scenario944: after native47272 acknowledgement advances the first step, set native GAMEOBJECT_FIELD_FLAGS NOT_SELECTABLE0x10. Reset/UpdateAI also synchronize a late-loaded object against actual instance progress. On a return to step0, remove only an inactive flag this AI added and restore the spawn's authored READY1. Never clear a pre-existing inactive flag or unrelated flag bits.",
+  "scope": "Full Warswords.cpp reverses exactly to pinned577e7de92 after removing the30 added lines. Native198513/Lock2474, actual post-CanOpenLock dispatch, completed-hit eligibility, once-only/reentrant credit and original fog cleanup remain unchanged. No SQL/core/header/base ABI, item/quest grant, HP threshold, teleport or timer changes. This affects one consumed object, not combat/pet/group credit.",
+  "tests": {
+    "source": "tools/tests/prepare_bonfire_retirement.py certifies the entire production-file reversal and extracts the complete actual bonfire class plus Spell::EffectOpenLock dispatch. Whole new helper SHA256 8742d842b2003718d459f1f869e7256cf5c6c85fd81b1b54be2371a31a38d783.",
+    "asan": {
+      "counterfactual": "build-extractors/runtime-test/warswords-bonfire-retirement/20261116-092506-977",
+      "repaired": "build-extractors/runtime-test/warswords-bonfire-retirement/20261116-092511-178",
+      "result": "Pinned old AI completes the criterion/step but remains selectable: expected exit1 and exact stderr completed bonfire remains selectable, not an ordinary passing gameplay test. Repaired63 contexts exit0/stderr0 under ASAN. Includes original48 native-dispatch/eligibility/reentrancy/failed-cast contexts plus15 post-ack, no-ack, later-step, owned reset, authored flags, foreign spawn/map/scenario and missing-scenario contexts. Endpoints controlled; not full-core ASAN or client rendering. Model step7 is an adversarial numeric value, not an actual scenario step."
+    },
+    "native": {
+      "counterfactual": ".codex/bonfire-retirement-native-20261116/baseline-20261116-092953-103",
+      "repaired_after_library_build": ".codex/bonfire-retirement-native-20261116/fixed-20261116-093627-242",
+      "result": "Actual Player, Spell198513/Lock2474, GO flag API, Scenario944/criteria45849/event47272, Update and Reset: Human+Orc times8 cases=16. Real successful ignition, duplicate Use, late-load steps1and6, interrupted real nontriggered cast, pre-authored flags, foreign spawn, owned-only READY reset and missing scenario. Aliased extracted outer class prevents COMDAT selecting repaired scripts.lib during the pinned old-source counterfactual. Read-only bootstrap, no persistent Character writes. Native Release libraries, not native-core ASAN. Input source/library and probe hashes recorded locally."
+    },
+    "retained_native_interaction": ".codex/bonfire-interaction-20261113/fixed-20261116-093647-529:28 actual native interaction cases pass against current scripts.lib, preserving real completed cast/report-use, original scope, blocked-model LOS/native exemption, interrupted cast and ordinary Opening contrast. Controlled clock/setup, not captured client packets or whole-scenario traversal.",
+    "linked_release": "tools/tests/verify_warswords_bonfire_retirement_release.py passes against staged593BAA PE with matching map. Retains existing actual opening/bonfire/Vigfus/scenario checks, then verifies scoped native flag setting, owned-only READY reset and actual factory-selected Reset/UpdateAI virtual slots (MSVC folded bodies), post-credit step acknowledgement and absence of progression grants in synchronization."
+  },
+  "resolved_fixture_error": {
+    "evidence": ".codex/bonfire-retirement-native-20261116/baseline-20261116-092758-648",
+    "finding": "Initial native fixture requested SetCurrentStep7. Actual scenario has7 steps indexed0..6; native Scenario correctly logged two invalid-step errors. Mandatory diagnostics rejected that run despite passing fixture assertions. Corrected the fixture's final-step case to6; preserved original diagnostics, then reran both pinned baseline16 and repaired16 clean. No production check or logging suppressed."
+  },
+  "release": {
+    "stage": ".codex/bonfire-retirement-20261116-091857-838-release",
+    "world_sha256": "593BAADE9152653DFCAE97F27D71DEB9E7C895816A9C769CC4979AE12F9108EC",
+    "build": "Original scripts.vcxproj compiled Warswords.cpp into original scripts.lib; actual original final-link dependencies produced separate world/bnet EXE/map pairs, without global OutDir override. Canonical EXEs/maps unchanged before/after build.",
+    "canonical_world_sha256": "BF90EFFB0F226EF45872C14A9F6342C1F19BF8C538C5659EB6097CE44110CDE4",
+    "canonical_bnet_sha256": "027B3755E6FCB4069FDCA7755C33A1804E4B0347E36F86170FCC09B28F9C9BCB",
+    "deployment": "DEFERRED: immediately rechecked live processes before shutdown request. User explicitly chose to continue playing. No user/unknown server stopped; canonical worldserver remains the previous version. Bnet has no affected implementation and remains untouched. Recheck worldserver before later promotion, then verify canonical PE/Scepter and owned canonical startup with complete post-test diagnostics."
+  },
+  "post_test": "All final ASAN/native/build/staged-PE snapshots and .codex/bonfire-retirement-20261116-091857-838/final-integrity: no new/changed canonical or own crash, appended DBErrors or unexplained server warnings/errors/assertions. User-session tails since baseline: Server18784 characters/Bnet1265/DBErrors0, zero diagnostics; final native compile logs no compiler/fatal diagnostics. Every protected canonical binary/map/config/certificate/DLL and both protected evidence hashes unchanged. Explicitly excluded and preserved initial invalid-step fixture failure described above. Canonical Crashes empty. No task-owned hidden world/bnet server launched or left running.",
+  "preserved": {
+    "mixed_dberrors_bytes": 7111,
+    "mixed_dberrors_sha256": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+    "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+    "result": "Mixed active DBErrors not truncated or archived wholesale as fixed. Original protected Slaghammer executable/cache not executed, overwritten, deleted or archived as fixed. Defender boundaries retained. Shared-read hashes used for active user log; initial sharing-violation partial snapshot remains alongside complete replacement."
+  },
+  "cleanup": "DEFERRED with concrete purposes: retain staged world EXE/map for authorized future promotion, native/ASAN outputs and original-byte diagnostics for post-promotion verification/archive. After canonical repaired deployment/startup succeeds, hash archive reviewed resolved evidence to ignored Release/fixed, remove exact redundant task artifacts using validated non-reparse paths and record reclaimed bytes. Never delete shared libraries, runtime assets, protected original probe, mixed log or character backups. No automatic user-server shutdown or active log rotation.",
+  "remaining": "Actual client disappearance of hand/click interaction is pending deployment and retest. Successful Stage2 transition is user-observed, not proof of cursor behavior or Fury finale/return/all36 complete chains. Existing original LINK2/Slaghammer fidelity questions and other audits stay open. Previous300-request count remains16 deployed repairs; this is one new source repair awaiting deployment, not63/16/28 new bugs or a claim that the300 request is finished."
+}

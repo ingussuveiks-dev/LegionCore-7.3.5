@@ -27,6 +27,35 @@ public:
     {
         go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) { }
         bool igniting = false;
+        bool ownsInactiveFlag = false;
+
+        void SyncInteraction()
+        {
+            if (!IsBonfire())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944)
+                return;
+            if (scenario->GetCurrentStep() > 0)
+            {
+                if (!go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE))
+                {
+                    go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                    ownsInactiveFlag = true;
+                }
+            }
+            else if (ownsInactiveFlag)
+            {
+                // A reset to the first step restores this spawn's authored
+                // READY state. Never remove an unrelated pre-existing flag.
+                go->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                go->SetGoState(GO_STATE_READY);
+                ownsInactiveFlag = false;
+            }
+        }
+
+        void Reset() override { SyncInteraction(); }
+        void UpdateAI(uint32 /*diff*/) override { SyncInteraction(); }
 
         void Observe(Player* player, char const* path, bool completing) const
         {
@@ -104,6 +133,7 @@ public:
             // Only actual progress acknowledgement lights the object and
             // removes the authored nearby fog. A failed cast changes neither.
             go->SetGoState(GO_STATE_ACTIVE);
+            SyncInteraction();
             std::list<GameObject*> fog;
             go->GetGameObjectListWithEntryInGrid(fog, 244751, 45.0f);
             for (GameObject* object : fog)

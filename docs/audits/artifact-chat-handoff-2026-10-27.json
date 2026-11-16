@@ -11705,5 +11705,15 @@
       "original_slaghammer_sha256": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
       "result": "Unchanged7111-byte mixed DBErrors and protected original Slaghammer EXE/cache. No original execution/overwrite/deletion/fixed archive,no log suppression/truncation,Defender/quarantine boundaries retained. Prior bnet history limitation remains in previous closeout; no new loss because current tests snapshot first."
     }
+  },
+  "latest_warswords_bonfire_retirement_2026_11_16": {
+    "audit": "docs/audits/warswords-bonfire-retirement-2026-11-16.json",
+    "status": "SOURCE_ASAN_NATIVE_STAGED_PE_VERIFIED_DEPLOYMENT_DEFERRED_USER_CONTINUES_PLAYING",
+    "result": "Actual fresh Stage1/no restored weapons or finale and bonfire->Stage2 observed by user. Consumed bonfire still offers interaction; scoped NOT_SELECTABLE synchronization repaired and verified.63 ASAN+16 real native retirement+28 retained native interaction cases, with pinned old-source counterfactuals; actual matching staged PE/map checked. No client cursor proof yet.",
+    "stage_world_sha256": "593BAADE9152653DFCAE97F27D71DEB9E7C895816A9C769CC4979AE12F9108EC",
+    "canonical_world_sha256": "BF90EFFB0F226EF45872C14A9F6342C1F19BF8C538C5659EB6097CE44110CDE4",
+    "deployment": "User explicitly chose to continue playing after fresh process check; do not stop user servers. Keep staged binary and evidence for next offline promotion, canonical PE/Scepter/startup, client retest and hash-verified archive/cleanup. No hidden world/bnet server launched.",
+    "diagnostics": "Final tests no new crashes/appended DBErrors/unexplained server diagnostics. Initial native fixture invalid step7 was rejected by diagnostics; corrected to actual final index6 and rerun clean, original evidence preserved. Mixed7111-byte DBErrors and original protected Slaghammer unchanged.",
+    "counting": "16 prior deployed repairs;1 new source fix pending rollout. Do not recount prior ignition fix or cases;300 request/all36 complete client chains remain unfinished."
   }
 }
