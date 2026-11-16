@@ -1,0 +1,226 @@
+{
+  "date": "2026-11-16",
+  "batch": 10,
+  "count": 10,
+  "type": "artifact-related stored menu fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch10.sql",
+  "sql_sha256": "6cd1700ef165ffd68de04d29e46d109596ec232cb35e2d45a958a244b0d2cb78",
+  "repairs": [
+    {
+      "seq": 91,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19509,
+        "OptionID": 0
+      },
+      "broadcast": 108481,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 105298,
+            "menu": 19509,
+            "script": "npc_grash"
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 92,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 18834,
+        "OptionID": 0
+      },
+      "broadcast": 106816,
+      "provenance": {
+        "actors": [],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 18834,
+          "option": 0,
+          "quest": 41422
+        }
+      }
+    },
+    {
+      "seq": 93,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19331,
+        "OptionID": 0
+      },
+      "broadcast": 77067,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 100397,
+            "menu": 19331,
+            "script": ""
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19331,
+          "option": 0,
+          "quest": 40419
+        }
+      }
+    },
+    {
+      "seq": 94,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19303,
+        "OptionID": 0
+      },
+      "broadcast": 105839,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 96313,
+            "menu": 19303,
+            "script": ""
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19303,
+          "option": 0,
+          "quest": 39051
+        }
+      }
+    },
+    {
+      "seq": 95,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19302,
+        "OptionID": 0
+      },
+      "broadcast": 105836,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 103144,
+            "menu": 19302,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 96,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19302,
+        "OptionID": 2
+      },
+      "broadcast": 105855,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 103144,
+            "menu": 19302,
+            "script": ""
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 97,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19199,
+        "OptionID": 0
+      },
+      "broadcast": 104107,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101430,
+            "menu": 19199,
+            "script": "npc_slaghammer_handoff"
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 98,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19199,
+        "OptionID": 1
+      },
+      "broadcast": 104111,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101430,
+            "menu": 19199,
+            "script": "npc_slaghammer_handoff"
+          }
+        ],
+        "quest_condition": null
+      }
+    },
+    {
+      "seq": 99,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19254,
+        "OptionID": 2
+      },
+      "broadcast": 115072,
+      "provenance": {
+        "actors": [
+          {
+            "entry": 101880,
+            "menu": 19254,
+            "script": "npc_sheilun_return_guide"
+          }
+        ],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19254,
+          "option": 2,
+          "quest": 42762
+        }
+      }
+    },
+    {
+      "seq": 100,
+      "table": "gossip_menu_option",
+      "field": "OptionText",
+      "key": {
+        "MenuID": 19059,
+        "OptionID": 0
+      },
+      "broadcast": 102037,
+      "provenance": {
+        "actors": [],
+        "quest_condition": {
+          "kind": "quest-condition",
+          "menu": 19059,
+          "option": 0,
+          "quest": 40495
+        }
+      }
+    }
+  ],
+  "checks": "All100 shared data/native/updater checks passed;see shared audit.10 distinct fields in this batch;not10 whole quests. Actual client/full-chain traversal remains pending."
+}
