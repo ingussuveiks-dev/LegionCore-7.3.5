@@ -11721,5 +11721,14 @@
     "status": "DATA_APPLIED_NEXT_RESTART_ACTIVATION_AND_USER_VISUAL_RETEST_PENDING",
     "result": "Reported actual Stage6 face-down Helya. Native default Swim=true admits swimming pose at water spawn; applied only361286/99043/1511 Swim0 via guarded native per-spawn override. Coordinates/model/scale/dialogue/blessing/combat unchanged. Source and local same-model data support repair; rendered face/height not yet user-confirmed.",
     "workflow": "Active Fury user-led testing: no automated/native/ASAN/PE/startup test or new fixture. Application readback exit0/stderr0; user servers left running. Next worldserver restart loads movement override; earlier bonfire binary still staged until offline promotion. No whole-chain or new test-case count claim."
+  },
+  "latest_warswords_helya_appearance_2026_11_16": {
+    "audit": "docs/audits/warswords-helya-appearance-2026-11-16.json",
+    "status": "WORLD_AND_MATCHING_SQL_DEPLOYED_USER_STARTUP_AND_CLIENT_TEST_PENDING",
+    "sequence": "User-specified Vigfus call->Helya appears->Helya text. Exact original-caster native conversation843/2067 published offset12150 controls instance visibility receipt; earlier stages/first line hidden, later pickup/return admitted. No arbitrary appearance delay, credit or shared7003 edit.",
+    "stage_world_sha256": "96DE2AFD676EFBCB0E195890BB8C1067B5D11B08C4B0C405A0203ECDFDF2085E",
+    "deployment": "Fresh checks found both user servers stopped; canonical latest world EXE/map/PDB promoted and matching Helya ScriptName SQL activated/read back. Swim0 already present. Earlier bonfire fix included in this deployed world. No process stopped/launched; user starts/retests. Canonical bnet unchanged.",
+    "verification": "Source/data review and necessary original Release compile/link only; no separate tests per active-Fury instruction. No visual or whole-chain success claimed. Existing model/native counts not reused; prior full-file source certificates need contextual refresh if standalone tests requested later.",
+    "cleanup_sequence": "Native849 final speech ends at17800ms of owner publication (excluding documented5000ms removal grace); finish receipt hides actor for that owner only, not other unfinished group members. Actual far teleport to1479 supplies fallback retirement; logout/failed transfer does not. Other dialogue/exit admission remains unchanged."
   }
 }

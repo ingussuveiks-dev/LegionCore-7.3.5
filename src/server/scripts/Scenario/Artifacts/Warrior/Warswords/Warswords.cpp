@@ -13,9 +13,59 @@
 #include "ObjectAccessor.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "PassiveAI.h"
+#include "warswords_intro.h"
 #include <algorithm>
 #include <memory>
 #include <typeinfo>
+
+class WarswordsHelyaConversation final : public Conversation
+{
+public:
+    bool HasHelyaLine() const
+    {
+        ConversationDynamicFieldLines const* line = GetLine(1);
+        return line && line->id == 2067 && line->unk2 == 1 && line->textId;
+    }
+
+    bool HelyaLineStarted() const
+    {
+        auto started = playing.find(GetCasterGUID());
+        // textId carries the published line's start offset in this 7.3.5
+        // layout. Anchor to actual viewer admission, not factory creation.
+        return IsInWorld() && !IsQuestObjectExpired() && HasHelyaLine() &&
+            started != playing.end() && getMSTime() - started->second >= GetLine(1)->textId;
+    }
+};
+
+class npc_warswords_helya : public CreatureScript
+{
+public:
+    npc_warswords_helya() : CreatureScript("npc_warswords_helya") { }
+
+    struct AI : NullCreatureAI
+    {
+        explicit AI(Creature* creature) : NullCreatureAI(creature) { }
+
+        bool CanBeVisibleFor(WorldObject const* seer) const override
+        {
+            if (me->GetEntry() != 99043 || me->GetDBTableGUIDLow() != 361286 || me->GetMapId() != 1511)
+                return true;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944)
+                return false;
+            if (auto const* viewers = dynamic_cast<WarswordsIntro::Viewers const*>(me->GetInstanceScript()))
+                if (seer && viewers->finished.count(seer->GetGUID()))
+                    return false;
+            uint32 step = scenario->GetCurrentStep();
+            // Later-step re-entry has already passed the introduction.
+            return (step >= 6 && step <= 7) ||
+                (step == 5 && me->GetInstanceScript() && me->GetInstanceScript()->GetData(WarswordsIntro::HelyaVisible));
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new AI(creature); }
+};
 
 // 245188
 class go_mystic_bonfire : public GameObjectScript
@@ -586,6 +636,8 @@ public:
         ~npc_vigfus_bladewind_lastAI() override
         {
             introLifetime.reset();
+            if (introPending)
+                SetHelyaVisible(false);
             RemoveIntroConversation();
         }
 
@@ -606,6 +658,7 @@ public:
         uint32 introVisualRetryTimer = 0;
         bool introVisualWarned = false;
         ObjectGuid introConversation = {};
+        ObjectGuid introAppearanceHelya = {};
         std::shared_ptr<bool> introLifetime = std::make_shared<bool>(false);
         bool introBlessingWaiting = false;
         ObjectGuid introBlessingPlayer = {};
@@ -627,6 +680,9 @@ public:
 
         void Reset() override
         {
+            if (introPending || !introDone)
+                SetHelyaVisible(false);
+            introAppearanceHelya = {};
             ++introGeneration;
             if (introPending)
                 introDone = false;
@@ -818,19 +874,45 @@ public:
 
         bool StartIntroConversation(Player* player, uint32 generation)
         {
-            Conversation* conversation = new Conversation;
+            WarswordsHelyaConversation* conversation = new WarswordsHelyaConversation;
             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 843, player, nullptr, *player))
             {
                 delete conversation;
                 return false;
             }
-            if (generation != introGeneration || !introPending || !IsIntroTarget(player, 40.0f))
+            if (generation != introGeneration || !introPending || !IsIntroTarget(player, 40.0f) || !conversation->HasHelyaLine())
             {
                 conversation->Remove();
                 return false;
             }
             introConversation = conversation->GetGUID();
             return true;
+        }
+
+        void SetHelyaVisible(bool visible)
+        {
+            if (me->GetEntry() == 98602 && me->GetMapId() == 1511)
+                if (InstanceScript* script = me->GetInstanceScript())
+                    script->SetData(WarswordsIntro::HelyaVisible, visible ? 1 : 0);
+        }
+
+        void UpdateIntroAppearance()
+        {
+            if (!introPending || !introAppearanceHelya)
+                return;
+            auto* conversation = dynamic_cast<WarswordsHelyaConversation*>(ObjectAccessor::GetConversation(*me, introConversation));
+            Player* player = conversation ? ObjectAccessor::GetPlayer(*me, conversation->GetCasterGUID()) : nullptr;
+            if (!conversation || !conversation->IsInWorld() || conversation->IsQuestObjectExpired() ||
+                !IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, introAppearanceHelya)))
+            {
+                CancelIntro(introGeneration);
+                return;
+            }
+            if (conversation->HelyaLineStarted())
+            {
+                SetHelyaVisible(true);
+                introAppearanceHelya = {};
+            }
         }
 
         bool IsIntroHelya(Creature* helya) const
@@ -844,6 +926,8 @@ public:
             if (generation != introGeneration || !introPending)
                 return;
             introDone = false;
+            SetHelyaVisible(false);
+            introAppearanceHelya = {};
             introPending = false;
             introBlessingWaiting = false;
             introBlessingPlayer = {};
@@ -947,6 +1031,7 @@ public:
             }
             if (generation != introGeneration || !introPending)
                 return;
+            introAppearanceHelya = helyaGuid;
             std::weak_ptr<bool> lifetime = introLifetime;
             me->AddDelayedEvent(24000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void
             {
@@ -982,6 +1067,7 @@ public:
 
         void UpdateIntro(uint32 diff)
         {
+            UpdateIntroAppearance();
             if (introDone)
             {
                 UpdateBlessing();
@@ -1206,6 +1292,7 @@ void AddSC_Warswords()
 
     new npc_vigfus_bladewind();
     new npc_vigfus_bladewind_last();
+    new npc_warswords_helya();
 
     new go_art_warswords();
     new scene_warswords_pickup();

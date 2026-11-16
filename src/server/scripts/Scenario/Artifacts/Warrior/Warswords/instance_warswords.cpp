@@ -35,6 +35,7 @@ namespace WarswordsArrival
 
 #include "warswords_waves.h"
 #include "warswords_arrival.h"
+#include "warswords_intro.h"
 
 class instance_warswords : public InstanceMapScript
 {
@@ -46,13 +47,14 @@ public:
         return new instance_warswords_InstanceMapScript(map);
     }
 
-    struct instance_warswords_InstanceMapScript : public InstanceScript
+    struct instance_warswords_InstanceMapScript : public InstanceScript, public WarswordsIntro::Viewers
     {
         instance_warswords_InstanceMapScript(InstanceMap* map) : InstanceScript(map), waves(map) {}
 
         std::map<uint32, ObjectGuid> objects;
         WarswordsWaves::State waves;
         std::array<bool, 4> destroyedRunestones{};
+        bool helyaVisible = false;
         bool myscenario;
         WorldLocation graveyard;
         std::shared_ptr<uint8> sceneLifetime = std::make_shared<uint8>();
@@ -98,6 +100,9 @@ public:
             sceneLifetime = std::make_shared<uint8>();
             waves.Reset();
             destroyedRunestones.fill(false);
+            helyaVisible = false;
+            finished.clear();
+            helya = {};
             myscenario = false;
         }
 
@@ -108,11 +113,18 @@ public:
 
         void OnPlayerLeave(Player* player) override
         {
+            // Retire only the actual departing owner, not group members still
+            // finishing their own pickup. Logout/ordinary leave is not an exit.
+            if (player && player->IsBeingTeleportedFar() && player->GetTeleportDest().GetMapId() == 1479 &&
+                player->GetItemByEntry(128908))
+                WarswordsIntro::Retire(player);
             WarswordsArrivalRecovery::Forget(player);
         }
 
         uint32 GetData(uint32 type) const override
         {
+            if (type == WarswordsIntro::HelyaVisible)
+                return helyaVisible;
             if (type >= 134130 && type <= 134133)
                 return destroyedRunestones[type - 134130];
             return 0;
@@ -120,6 +132,19 @@ public:
 
         void SetData(uint32 type,uint32 value) override
         {
+            if (type == WarswordsIntro::HelyaVisible)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                if (value > 1 || !scenario || scenario->GetScenarioId() != 944 ||
+                    (value && scenario->GetCurrentStep() != 5))
+                    return;
+                helyaVisible = value != 0;
+                auto actor = objects.find(99043);
+                if (actor != objects.end())
+                    if (Creature* creature = instance->GetCreature(actor->second))
+                        creature->UpdateObjectVisibility();
+                return;
+            }
             if (type >= 134130 && type <= 134133)
             {
                 Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
@@ -140,8 +165,12 @@ public:
             if (newStep == 0)
                 if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
                     if (scenario->GetScenarioId() == 944)
+                    {
                         destroyedRunestones.fill(false); // A new native attempt, not a GO reload.
-            for (uint32 entry : {98007u, 98602u})
+                        helyaVisible = false;
+                        finished.clear();
+                    }
+            for (uint32 entry : {98007u, 98602u, 99043u})
             {
                 auto actor = objects.find(entry);
                 if (actor != objects.end())
@@ -199,7 +228,9 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
-            if (creature->GetEntry() == 98007 || creature->GetEntry() == 98602)
+            if (creature->GetEntry() == 99043 && creature->GetDBTableGUIDLow() == 361286)
+                helya = creature->GetGUID();
+            if (creature->GetEntry() == 98007 || creature->GetEntry() == 98602 || creature->GetEntry() == 99043)
                 objects[creature->GetEntry()] = creature->GetGUID();
 
         }
@@ -207,8 +238,10 @@ public:
         void OnCreatureRemove(Creature* creature) override
         {
             InstanceScript::OnCreatureRemove(creature);
+            if (helya == creature->GetGUID())
+                helya = {};
             auto actor = objects.find(creature->GetEntry());
-            if ((creature->GetEntry() == 98007 || creature->GetEntry() == 98602) && actor != objects.end() && actor->second == creature->GetGUID())
+            if ((creature->GetEntry() == 98007 || creature->GetEntry() == 98602 || creature->GetEntry() == 99043) && actor != objects.end() && actor->second == creature->GetGUID())
                 objects.erase(actor);
         }
 

@@ -3,6 +3,7 @@
 #include "AreaTrigger.h"
 #include "QuestData.h"
 #include "DB2Stores.h"
+#include "../../Scenario/Artifacts/Warrior/Warswords/warswords_intro.h"
 #include <atomic>
 #include <map>
 #include <mutex>
@@ -160,12 +161,22 @@ namespace WarriorPickupReturn
     {
         std::weak_ptr<Publication> publication;
         ObjectGuid owner;
+        bool helyaRetired = false;
         void Update(uint32 diff) override
         {
             // Observe the native per-viewer publication clock. Creation or a
             // guessed pickup timer is not evidence the full clip was admitted.
             auto viewer = playing.find(owner);
             uint32 duration = GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME);
+            // Native Conversation adds 5000ms removal grace after its actor
+            // duration. Hide Helya at the end of her actual final speech849;
+            // retain the full existing publication deadline for exit admission.
+            uint32 speechEnd = duration > 5000 ? duration - 5000 : 0;
+            if (!helyaRetired && IsInWorld() && GetEntry() == 849 && GetMapId() == 1511 && speechEnd &&
+                viewer != playing.end() && getMSTime() - viewer->second >= speechEnd)
+                if (Player* player = ObjectAccessor::GetPlayer(*this, owner))
+                    if (Earned(player, fury) && WarswordsIntro::Retire(player))
+                        helyaRetired = true;
             if (IsInWorld() && duration && viewer != playing.end() && getMSTime() - viewer->second >= duration)
                 if (auto receipt = publication.lock())
                     receipt->finished.store(true, std::memory_order_release);
