@@ -1,0 +1,184 @@
+{
+  "date": "2026-11-16",
+  "batch": 2,
+  "count": 10,
+  "type": "NPC stored speech fallback",
+  "plan": "tools/tests/ArtifactTenTen20261116FallbackRepairs.json",
+  "shared_audit": "docs/audits/artifact-fallback-batch01-2026-11-16.json",
+  "sql": "sql/updates/world/2026_11_16_06_artifact_fallback_batch02.sql",
+  "sql_sha256": "af8e4e673b266d9e7e64152376fe0c5ced8c042e5be76c31dbb9e30d111c3446",
+  "repairs": [
+    {
+      "seq": 11,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 105333,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 108105,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1502
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 12,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 98002,
+        "GroupID": 1,
+        "ID": 0
+      },
+      "broadcast": 106398,
+      "provenance": {
+        "static_artifact_maps": [
+          1220
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 13,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 108776,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 114622,
+      "provenance": {
+        "static_artifact_maps": [
+          0
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 14,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 94731,
+        "GroupID": 2,
+        "ID": 0
+      },
+      "broadcast": 96566,
+      "provenance": {
+        "static_artifact_maps": [
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 15,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106811,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 110913,
+      "provenance": {
+        "static_artifact_maps": [
+          1498
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 16,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 110556,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 117568,
+      "provenance": {
+        "static_artifact_maps": [],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 17,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 106429,
+        "GroupID": 17,
+        "ID": 0
+      },
+      "broadcast": 109897,
+      "provenance": {
+        "static_artifact_maps": [
+          1539
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 18,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 101362,
+        "GroupID": 0,
+        "ID": 0
+      },
+      "broadcast": 103685,
+      "provenance": {
+        "static_artifact_maps": [
+          1536
+        ],
+        "direct_quest_actor": false
+      }
+    },
+    {
+      "seq": 19,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 6,
+        "ID": 0
+      },
+      "broadcast": 97857,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    },
+    {
+      "seq": 20,
+      "table": "creature_text",
+      "field": "Text",
+      "key": {
+        "CreatureID": 96313,
+        "GroupID": 4,
+        "ID": 0
+      },
+      "broadcast": 97859,
+      "provenance": {
+        "static_artifact_maps": [
+          1220,
+          1494
+        ],
+        "direct_quest_actor": true
+      }
+    }
+  ],
+  "checks": "All100 shared data/native/updater checks passed;see shared audit.10 distinct fields in this batch;not10 whole quests. Actual client/full-chain traversal remains pending."
+}
