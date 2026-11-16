@@ -11715,5 +11715,11 @@
     "deployment": "User explicitly chose to continue playing after fresh process check; do not stop user servers. Keep staged binary and evidence for next offline promotion, canonical PE/Scepter/startup, client retest and hash-verified archive/cleanup. No hidden world/bnet server launched.",
     "diagnostics": "Final tests no new crashes/appended DBErrors/unexplained server diagnostics. Initial native fixture invalid step7 was rejected by diagnostics; corrected to actual final index6 and rerun clean, original evidence preserved. Mixed7111-byte DBErrors and original protected Slaghammer unchanged.",
     "counting": "16 prior deployed repairs;1 new source fix pending rollout. Do not recount prior ignition fix or cases;300 request/all36 complete client chains remain unfinished."
+  },
+  "latest_warswords_helya_upright_2026_11_16": {
+    "audit": "docs/audits/warswords-helya-upright-2026-11-16.json",
+    "status": "DATA_APPLIED_NEXT_RESTART_ACTIVATION_AND_USER_VISUAL_RETEST_PENDING",
+    "result": "Reported actual Stage6 face-down Helya. Native default Swim=true admits swimming pose at water spawn; applied only361286/99043/1511 Swim0 via guarded native per-spawn override. Coordinates/model/scale/dialogue/blessing/combat unchanged. Source and local same-model data support repair; rendered face/height not yet user-confirmed.",
+    "workflow": "Active Fury user-led testing: no automated/native/ASAN/PE/startup test or new fixture. Application readback exit0/stderr0; user servers left running. Next worldserver restart loads movement override; earlier bonfire binary still staged until offline promotion. No whole-chain or new test-case count claim."
   }
 }

@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-16",
+  "baseline": "694150fda",
+  "status": "SCOPED_DATA_REPAIR_APPLIED_RESTART_AND_USER_VISUAL_RETEST_PENDING",
+  "report": "User screenshot of actual Fury Stage6 shows Specter of Helya behind Vigfus face-down in the water; user requests an upright pose with visible face.",
+  "investigation": {
+    "live_actor": "Single spawn361286/entry99043/map1511/phase7003, display66238, position3578.37/1783.26/-8.34128/orientation3.13469. No movement template99043 or spawn override361286, no creature/template addon, no SmartAI rows or bound script. Original data saved locally; no Character queries or edits.",
+    "source": "CreatureMovementData defaults Swim=true. Creature::CanSwim uses the spawn override before template data. Creature::UpdateMovementFlags calls SetSwim(CanSwim() && IsInWater()); Unit::SetSwim sends native START_SWIM/STOP_SWIM and toggles MOVEMENTFLAG_SWIMMING. The existing water spawn therefore admits the client's swimming pose. ObjectMgr::LoadCreatureMovementOverrides reads nullable per-spawn fields with template/default fallback at startup.",
+    "matching_model_reference": "Local same-display66238 actors114537/map1648 and115133/map1220 have Swim0 in their movement templates. Their separate Ground/Flight policy is not copied into this scenario.",
+    "assessment": "Missing swimming exclusion is a source/data-supported cause of the reported pose. Actual rendered upright height, face visibility and blessing animation still require the user's client confirmation; no video/original timing fidelity or unseen visuals claimed."
+  },
+  "repair": {
+    "migration": "sql/updates/world/2026_11_16_00_warswords_helya_upright.sql",
+    "scope": "Native creature_movement_override SpawnId361286/Swim0 only. Guard exact original entry/map/phase/model; keep guard on INSERT as well. Upsert preserves all other existing movement columns. No new ScriptName or C++ dependency, model/scale/position/orientation change, blanket entry/core swimming edit, dialogue/195062 channel, Vigfus combat/credit or artifact grant change.",
+    "applied": "Applied to actual runtime-configured MariaDB in a transaction, exit0/stderr0. Application readback:361286 Ground=NULL,Swim=0,Flight=NULL,Rooted=NULL,Random=NULL,InteractionPauseTimer=NULL. Other fields continue native fallback. Existing live worldserver movement cache is not hot-reloaded by this SQL; the next worldserver restart loads it.",
+    "runtime": "No new executable required for this data-only repair. User-owned world12472 and bnet20600 remained running; no process stopped, hidden startup or live runtime EXE replacement. Earlier bonfire executable819d6ddf9 remains staged for the next offline promotion."
+  },
+  "workflow": "Per explicit user instruction and AGENTS user-led live workflow, no automated/model/native/ASAN/PE/regression/startup test or new test fixture created/run for this active Fury fix. Work consists of source inspection, scoped live data reads, migration application/readback, passive diagnostics and user in-game retest after activation.",
+  "diagnostics": "Local evidence .codex/fury-helya-pose-20261116 contains original actor/movement rows, application output/stderr and before/after passive log/crash snapshots. Post-application Server/DBErrors/Bnet tails0 characters, zero new diagnostics; canonical Crashes empty. No active error log truncated, no diagnostic archived as resolved before client confirmation. Mixed DBErrors SHA256 FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 and original Slaghammer B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C unchanged. Canonical world remains BF90EFFB0F226EF45872C14A9F6342C1F19BF8C538C5659EB6097CE44110CDE4.",
+  "remaining": "Restart activation and actual user client check: Helya upright/face above water, correct blessing animation and no observed impact on Fury progression. Current screenshot proves the defect, not the repaired appearance. No additional automated test prerequisite is imposed. All36 full chains and prior unresolved original LINK questions remain outside this repair; no inflated fix/test count."
+}
