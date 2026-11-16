@@ -23,5 +23,16 @@
   },
   "diagnostics": "All probe/retained/startup pre-post snapshots reviewed. No new/changed crashes or appended DBErrors;ordinary runs and final canonical startup have no new server warning/error/assertion. Eight deliberate native factory warnings are separate reviewed fault cases. Canonical Crashes empty;existing mixed7111-byte DBErrors and prior unresolved instance-handshake warnings remain preserved,not certified repaired or cleared.",
   "evidence_cleanup": "Private .codex/dreadblades-tethys-intro-20261116 and timestamped native runs;resolved check evidence hash-archived under canonical fixed/dreadblades-tethys-intro-20261116. Exact deleted paths/bytes/archive hashes and retained client rollback purposes recorded in the subsequent cleanup handoff. No credentials,runtime logs or character data committed.",
+  "cleanup": {
+    "fix_commit": "588bccc97",
+    "archive": "build-extractors/bin/Release/fixed/dreadblades-tethys-intro-20261116",
+    "manifest_sha256": "BA539E78D3012EA68E691CD0DA4E2E39CF9E1DDE121E48C1E0EDFAC8C8DCD9B7",
+    "retained_check_manifest_sha256": "1204B896093561B64973D12CC32DC032D4AD3CE1C80CDAE5DD554010D583F18C",
+    "archived_files": 162,
+    "deleted_files": 28,
+    "reclaimed_bytes": 870689715,
+    "removed": "Task-owned Tethys native EXE/OBJ/ILK,timestamped symbols/maps/private copied configurations,completed final-link stage outputs and redundant Degauz/catalog compiler outputs. Exact absolute non-reparse/process guards and archive hashes/readback verified. Source/reusable tests and original diagnostic evidence remain.",
+    "preserved": "Canonical2D1EBD14 EXE/map/config/certs/DLL/bnet/data;EF1CB53C rollback for this fix and earlier Protection rollback/evidence for pending client checks;original static libraries,private/character backups,mixed7111-byte DBErrors and unresolved instance-handshake reports. No active log truncated. Final world/bnet process counts0,canonical Crashes0 and deployed world hash unchanged."
+  },
   "next": "User's pending Protection traversal remains first client check tomorrow. Tethys initial delay/short walking route,Degauz surrender and summoned helper's1114/1122 voice/movement require real Rogue traversal. Other unfinished whole artifact chains remain open;this focused presentation repair does not certify all36."
 }
