@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED_NATIVE_ASAN_AND_CANONICAL_STARTUP_PASS_CLIENT_PENDING",
+  "cause": "Three story roots linked to ordinary UPDATE_IC timers, which are not LINK events. Native FindLinkedEvent rejected the target; the independently scheduled combat timer was already valid.",
+  "actors": [
+    {
+      "entry": 109357,
+      "name": "Allari the Souleater",
+      "root": 0,
+      "invalid_link": 1
+    },
+    {
+      "entry": 109108,
+      "name": "Caria Felsoul",
+      "root": 6,
+      "invalid_link": 7
+    },
+    {
+      "entry": 109109,
+      "name": "Varedis Felsoul",
+      "root": 6,
+      "invalid_link": 7
+    }
+  ],
+  "repair": "Remove only those three invalid references under exact native actor/root/timer guards. Preserve all introduction actions, conditions, combat timers, spell targets, unrelated fields and native diagnostics.",
+  "migration": "sql/updates/world/2026_11_17_10_niskara_independent_combat_events.sql",
+  "regression": "Test-NiskaraIndependentCombat.ps1 -VerifyLiveData: temporary complete native graphs; apply twice; foreign actor/root/valid LINK target refusal; six before/after extracted native ASAN dispatches preserve independent timer initialization/repeats and all intro actions.",
+  "live_backup": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-offline-sweep-20261117\\niskara-before.sql",
+    "sha256": "501de2fdefdc134311a6040d0b09a6fc74584203c0caef4a4ed7e860fa4d5d7c"
+  },
+  "diagnostics": "Final regression and canonical startup appended no errors/warnings/assertions or crashes. No character records changed.",
+  "limits": [
+    "Actor/cast recipient endpoints are controlled; actual combat, dialogue and complete artifact chains remain client checks."
+  ]
+}
