@@ -1,4 +1,4 @@
-param([string]$DeathTerminalData,[string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/fire-boss-health-data",[switch]$VerifyNativeCatalog,[switch]$VerifyLiveData,[switch]$VerifyReleaseBinary)
+param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/fire-boss-health-data",[string]$DeathTerminalData,[string]$WreathPhaseData,[switch]$VerifyNativeCatalog,[switch]$VerifyLiveData,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/fire-boss-health"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories "$repo/build-extractors/runtime-test/legion-legendary-catalog" -Test {
@@ -39,7 +39,9 @@ $out="$repo/build-extractors/runtime-test/fire-boss-health"
  [IO.File]::WriteAllText("$out/EventConstants.inc","enum SMART_EVENT {$enum}; constexpr uint32 SMART_ACTION_TALK=$action; $extra")
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $data=[IO.Path]::GetFullPath($DataDirectory)
+ if($WreathPhaseData -and !$DeathTerminalData){throw 'Wreath phase requires the retained death-terminal counterfactual'}
  $terminalArg=if($DeathTerminalData){' "'+[IO.Path]::GetFullPath($DeathTerminalData)+'"'}else{''}
+ if($WreathPhaseData){$terminalArg+=' "'+[IO.Path]::GetFullPath($WreathPhaseData)+'"'}
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/FireBossHealthTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif not %errorlevel%==0 exit /b %errorlevel%`n`"$out/test.exe`" `"$data/original.tsv`" `"$data/repaired.tsv`" `"$data/texts.tsv`"$terminalArg`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Fire boss health regression failed'}
  & "$PSScriptRoot/Test-FireBossHealthCasts.ps1" -DataDirectory $data -AddressSanitizer

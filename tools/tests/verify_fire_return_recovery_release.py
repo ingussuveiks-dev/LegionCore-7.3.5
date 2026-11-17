@@ -34,10 +34,17 @@ assert selected[0x130//8]==n['symbol']('?JustDied@SmartAI@@')
 require(factory,'??0SmartAI@@')
 require('?SetData@npc_fire_artifact_aethas@@','?SetData@SmartAI@@','?GetScript@SmartAI@@','?HasEscortState@SmartAI@@')
 require('?Reset@npc_fire_artifact_aethas@@','?Reset@SmartAI@@')
-assert 520 in values(factory),'Selected AI allocation does not include its return lifecycle state'
+# Derive the selected concrete lifecycle layout from its constructor rather
+# than pinning an obsolete SmartAI base size (the native retry state grew it).
+ctor=ins(factory)
+zero_fields=[o for i in ctor if i.mnemonic=='mov' and any(v.type==CS_OP_IMM and v.imm==0 for v in i.operands) for o in i.operands if o.type==CS_OP_MEM and o.mem.disp>0]
+pending=[o.mem.disp for o in zero_fields if o.size==1]
+epoch=[o.mem.disp for o in zero_fields if o.size==4]
+assert len(pending)==len(epoch)==1 and epoch[0]==pending[0]+4
+assert epoch[0]+4 in values(factory),'Concrete return allocation does not end after its lifecycle fields'
 reset=ins('?Reset@npc_fire_artifact_aethas@@')
-assert any(i.mnemonic in {'inc','add'} and any(o.type==CS_OP_MEM and o.size==4 and o.mem.disp==0x204 for o in i.operands) for i in reset),'Reset epoch is not advanced'
-assert any(i.mnemonic=='mov' and any(o.type==CS_OP_MEM and o.size==1 and o.mem.disp==0x200 for o in i.operands) and any(o.type==CS_OP_IMM and o.imm==0 for o in i.operands) for i in reset),'Pending native speech is not cleared on Reset'
+assert any(i.mnemonic in {'inc','add'} and any(o.type==CS_OP_MEM and o.size==4 and o.mem.disp==epoch[0] for o in i.operands) for i in reset),'Reset epoch is not advanced'
+assert any(i.mnemonic=='mov' and any(o.type==CS_OP_MEM and o.size==1 and o.mem.disp==pending[0] for o in i.operands) and any(o.type==CS_OP_IMM and o.imm==0 for o in i.operands) for i in reset),'Pending native speech is not cleared on Reset'
 assert {3,4,7,38,40}<=values('?SetData@npc_fire_artifact_aethas@@')
 earned='?Earned@FireReturnRecovery@@';tick='?Tick@FireReturnRecovery@@';recover='?Recover@npc_fire_artifact_aethas@@'
 require(earned,'?GetScenario@ScenarioMgr@@','?GetScenarioId@Scenario@@','?GetCurrentStep@Scenario@@','?GetAchievementMgr@Scenario@@','?GetCriteriaProgressMap@?$AchievementMgr@VScenario@@@@')

@@ -1,7 +1,8 @@
 #requires -Version 7.0
-param([switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[switch]$VerifyNativeCatalog,[string]$ReleaseDirectory,[string]$TerminalEvents)
+param([switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[switch]$VerifyNativeCatalog,[string]$ReleaseDirectory,[string]$TerminalEvents,[string]$OutputDirectory)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/smart-linked-cast-retry/run-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))"
+if($OutputDirectory){$out=[IO.Path]::GetFullPath($OutputDirectory)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -Test {
  & "$PSScriptRoot/Test-WardstoneLinkedCastData.ps1" -OutputDirectory "$out/data" -VerifyLiveData:$VerifyLiveData
  function Block($s,$a){$i=$s.IndexOf($a);if($i -lt 0){throw "Missing $a"};$j=$s.IndexOf('{',$i)+1;$depth=1;while($depth -and $j -lt $s.Length){if($s[$j] -eq '{'){++$depth};if($s[$j] -eq '}'){--$depth};++$j};if($depth){throw "Unclosed $a"};$s.Substring($i,$j-$i)}

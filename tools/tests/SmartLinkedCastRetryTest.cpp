@@ -22,7 +22,7 @@ uint32 errors=0,warnings=0;
 #define ENSURE_AI(type,ai) (ai)
 struct ObjectGuid{uint32 value=0;static ObjectGuid const Empty;bool IsEmpty()const{return !value;}bool operator==(ObjectGuid b)const{return value==b.value;}bool operator!=(ObjectGuid b)const{return value!=b.value;}bool operator<(ObjectGuid b)const{return value<b.value;}};ObjectGuid const ObjectGuid::Empty{};
 struct SpellInfo{uint32 Id=199728,attributes=0;bool HasAttribute(uint32 mask)const{return (attributes&mask)!=0;}SpellInfo const*GetMisc()const{return this;}struct{uint32 SchoolMask=127;}MiscData;};
-struct SpellMgr{std::map<uint32,SpellInfo>rows{{199728,{199728}},{199770,{199770}},{187027,{187027,SPELL_ATTR0_CASTABLE_WHILE_DEAD}}};SpellInfo const*GetSpellInfo(uint32 id){auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}}spells;auto*sSpellMgr=&spells;
+struct SpellMgr{std::map<uint32,SpellInfo>rows{{199728,{199728}},{199770,{199770}},{187027,{187027,SPELL_ATTR0_CASTABLE_WHILE_DEAD}},{195739,{195739}}};SpellInfo const*GetSpellInfo(uint32 id){auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}}spells;auto*sSpellMgr=&spells;
 struct Unit;using Creature=Unit;using WorldObject=Unit;
 struct SmartScript;
 struct CreatureAI{
@@ -48,6 +48,7 @@ struct SmartScriptHolder{int64 entryOrGuid=101325;uint32 source_type=0,event_id=
 };using SmartAIEventList=std::vector<SmartScriptHolder>;using ObjectList=std::vector<Unit*>;
 bool roll_chance_i(uint32){return true;}uint32 urand(uint32 a,uint32 b){assert(a==b);return a;}
 struct SmartScript{Unit*me=nullptr;GameObject*go=nullptr;ObjectGuid mLastInvoker;SmartAIEventList mEvents,mTimedActionList;uint32 credit=0,baseRequests=0,lastVar0=0,lastVar1=0,lastSpell=0;bool lastBvar=false;Unit*lastUnit=nullptr;GameObject*lastGob=nullptr;
+ std::vector<std::pair<uint32,uint32>> phaseTail;
 #include "RetryState.inc"
  Unit*GetBaseObject(){return me;}Unit*GetLastInvoker(){return me?ObjectAccessor::GetUnit(*me,mLastInvoker):nullptr;}bool IsInPhase(uint32){return true;}bool IsUnit(Unit*u){return u!=nullptr;}void SetPhase(int){}void ResetBaseObject(){}
  ObjectList*GetTargets(SmartScriptHolder const&e,Unit*){assert(e.targetType==SMART_TARGET_SELF);return me?new ObjectList{me}:nullptr;}
@@ -81,11 +82,13 @@ struct CorpseDriver:Unit{uint32 m_deathState=CORPSE;bool IsAIEnabled=true,m_AI_l
 #include "RetryCast.inc"
  case 205:assert(e.parameter==48172);++credit;break;
  case 12:assert(e.parameter==101360);++baseRequests;lastVar0=var0;lastVar1=var1;lastBvar=bvar;lastSpell=spell?spell->Id:0;lastUnit=unit;lastGob=gob;break;
+ case 1:assert(e.entryOrGuid==99615&&e.parameter==6);phaseTail.push_back({1,6});break; // controlled speech endpoint
+ case 45:assert(e.entryOrGuid==99615&&e.parameter==1);phaseTail.push_back({45,1});break; // controlled Gorewing DATA1 endpoint
  default:assert(false);}
 #include "RetryLinkTail.inc"
 #include "RetryInitTimer.inc"
 #include "RetryRecalcTimer.inc"
-bool IsSpellValid(SmartScriptHolder&,uint32 id){return id==199770||id==187027;}
+bool IsSpellValid(SmartScriptHolder&,uint32 id){return id==199770||id==187027||id==195739;}
 bool Validate(SmartScriptHolder&e){switch(e.GetActionType()){
 #include "RetryValidation.inc"
  default:return false;}return true;}
@@ -119,4 +122,5 @@ int main(int argc,char**argv){assert(argc==3||argc==4);auto old=Read(argv[1]),fi
  for(uint32 mode=0;mode<10;++mode){auto e=fixed[1];assert(Validate(e));if(mode==0)e.event.type=SMART_EVENT_SPELLHIT;if(mode==1)e.targetType=SMART_TARGET_VICTIM;if(mode==2)e.source_type=SMART_SCRIPT_TYPE_TIMED_ACTIONLIST;if(mode==3)e.actionType=SMART_ACTION_INVOKER_CAST;if(mode==4)e.actionType=SMART_ACTION_CAST_CUSTOM;if(mode==5)e.action.cast.flags|=SMARTCAST_TRIGGERED;if(mode==6)e.action.cast.flags|=SMARTCAST_RETRY_HEALTH_THRESHOLD;if(mode==7)e.action.cast.flags|=SMARTCAST_INVOKER_PLAYER;if(mode==8)e.source_type=SMART_SCRIPT_TYPE_GAMEOBJECT;if(mode==9)e.event.event_flags=0;assert(!Validate(e));++cases;}
  for(bool deferred:{false,true}){Unit stone;auto s=Setup(stone,fixed);if(deferred)stone.reject[199770]=1;stone.onCast=[&](uint32 id){if(id==199770){auto nested=fixed[1];s.ProcessEvent(nested,&owner);}};Hit(s,&owner);if(deferred)s.UpdateLinkedCastRetries(500);assert(s.credit==1&&s.baseRequests==1&&errors==tailErrors&&!warnings&&s.mLinkedCastAttempts.empty()&&s.mLinkedCastRetries.empty());assert((stone.accepted==std::vector<uint32>{199770,187027}));auto same=fixed[1];s.ProcessEvent(same,&owner);assert(stone.accepted.size()==2&&s.baseRequests==1);++cases;}
  std::cout<<"PASS terminal="<<(argc==4)<<" inherited missing-link diagnostic retained; "<<cases<<" actual native linked-cast retry/validation cases: pinned no-flag stall, independent first/second rejection, once-only root/tail, busy/owner loss, reset/re-entry/expired/dead/replaced actor, finite10-attempt/6s diagnostics and reentrant reset. Spell effects, world, source22/criteria storage and base allocation remain controlled/separately regressed.\n";
+ return 0;
 }

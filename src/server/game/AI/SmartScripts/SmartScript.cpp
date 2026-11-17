@@ -4241,12 +4241,20 @@ void SmartScript::OnUpdate(uint32 const diff)
                 UpdateTimer(i, diff);
                 needCleanup = false;
             }
+            if (mCancelTimedActionList)
+            {
+                needCleanup = true;
+                break;
+            }
         }
 
         isProcessingTimedActionList = false;
     }
     if (needCleanup)
+    {
         mTimedActionList.clear();
+        mCancelTimedActionList = false;
+    }
 
     if (!mRemIDs.empty())
         for (auto& mRemID : mRemIDs)
@@ -4793,4 +4801,25 @@ bool SmartScript::IsInPhase(uint32 p) const
 void SmartScript::SetPhase(uint32 p)
 {
     mEventPhase = p;
+}
+
+void SmartScript::CancelPendingActions()
+{
+    // Explicit encounter teardown only. Ordinary OnReset keeps its historical
+    // behavior. A reentrant request drains the list after the current action,
+    // before another timed row, without invalidating its active iterator.
+    ResetLinkedCastRetries();
+    mCancelTimedActionList = isProcessingTimedActionList;
+    if (!isProcessingTimedActionList)
+        mTimedActionList.clear();
+    mTextTimer = 0;
+    mLastTextID = 0;
+    mTextGUID = ObjectGuid::Empty;
+    mTalkerEntry = 0;
+    mUseTextTimer = false;
+}
+
+bool SmartScript::HasCompletedLinkedCast(int64 scriptEntry, uint32 eventId) const
+{
+    return me && mCompletedLinkedCasts.count(std::make_tuple(me->GetGUID(), scriptEntry, eventId));
 }

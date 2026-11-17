@@ -32,6 +32,8 @@ class SmartScript
         ~SmartScript();
 
         void OnInitialize(WorldObject* obj, AreaTriggerEntry const* at = nullptr);
+        void CancelPendingActions();
+        bool HasCompletedLinkedCast(int64 scriptEntry, uint32 eventId) const;
         void GetScript();
         void FillScript(SmartAIEventList e, WorldObject* obj, AreaTriggerEntry const* at);
 
@@ -134,6 +136,7 @@ class SmartScript
         SmartAIEventList mInstallEvents;
         SmartAIEventList mTimedActionList;
         bool isProcessingTimedActionList;
+        bool mCancelTimedActionList = false;
         Creature* me;
         ObjectGuid meOrigGUID;
         GameObject* go;

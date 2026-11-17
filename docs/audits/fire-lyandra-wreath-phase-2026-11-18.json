@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "The half-health root applied permanent negative stun61204 before ordinary Awaken195739, which has no usable-while-stunned attribute. Failed native CAST aborted TALK6/Gorewing DATA1. Missing LINK22 alone was not the complete phase defect. Native Wreath194360 has school127 immunity and unattackable aura93: simply adding it also clears combat and allows OOC regeneration, while ordinary AttackStart removes aura93 even while stunned.",
+  "sources": [
+    "Local matching26972 FireBossCatalog typed DB2/hotfix output:194360 aura39 school127 plus aura93, permanent duration, ATTR1 dispels negatives;195739 self targets1, speed0, root26 and periodic trigger195738, no stun usability;196347 native immunity-piercing attribute. Existing source13/195739/94164 condition retained: actual SelectImplicitCasterObjectTargets TARGET_UNIT_CASTER sets checkIfValid=false and does not consume area target conditions. Unit::SpellHitResult returns self success before immunity and Spell::DoSpellHitOnUnit excludes self effect immunity; speed0 avoids missile recheck. No shared spell metadata changed.",
+    "Full current13-table schema/data fixture:55 SAI,45 conditions,11 texts,5 templates/5 WDB,3 native spawns, original Gorewing addon and native teleport destinations. Original source19/20/21, real wing98686/370121 source0 and four-row13second TAL, Aethas7s text completion, DATA4 cleanup, death47380/real GO247494 and return sequence traced. Existing native205 eligible owner/group credit preserved.",
+    "Local newer Trinity/history and preserved2024 world reference checked during preceding Fire investigation; no compatible missing22 payload recovered. Do not claim original author intent recovered.",
+    "https://www.youtube.com/watch?v=7ltytVOOAZo Phoenix Gaming2016-12-23,782s: all65 x12second samples of entire video and50 x2second samples506..606 reviewed. Observed half-health protection, Gorewing, Aethas channel, resumed boss, real death/pickup/return context. Sampled visuals, no continuous/audio or exact unseen timing claim."
+  ],
+  "implementation": {
+    "migration": "sql/updates/world/2026_11_18_01_fire_lyandra_wreath_phase.sql",
+    "updater_sha1": "5002995045499AE5AA5428A9331E466BE53B8FDB",
+    "state": "RELEASED",
+    "four_edits": [
+      "99615/0/17.action_param1 61204->194360 before Displacement/Awaken",
+      "99615/0/19.flags64->512 existing bounded linked-self-cast acknowledgement",
+      "99615/0/21.link22->0 preserves final native DATA1",
+      "99615 template ScriptName exact npc_fire_artifact_lyandra SmartAI delegate"
+    ],
+    "lifecycle": "Actual map1480/scenario957/step3/aura194360 scope. Native threat selection including real taunt threat fallback maintains combat without AttackStart removing Wreath. Bind only actual original wing GUID selected through native row21 targets; preserve13second activation, bounded15/30s failed wake retries and finite diagnostic/native evade. Wipe cancels this attempt text/retries/timed list reentrantly, restores original wing AI/flags/respawn with finite locked-AI retries, and removes only this boss actual summoned Aethas. Real death delegates native loot/owner credit; never fabricates wing death/DATA4. Return whitelist updated in both template and corpse paths; foreign script still rejected.",
+    "shared": "Explicit CancelPendingActions and completed-cast receipt query added; default SmartScript OnReset unchanged. Native timed-list loop consumes explicit cancellation after current row before advancing. Older fixture comparisons verify complete13-table successor/RELEASED then reverse exactly four known fields in temporary comparison snapshots only."
+  },
+  "checks": [
+    "Full-schema restricted temporary SQL: exact4 edits/all other columns preserved, repeat idempotence,22 foreign/partial refusals; actual RELEASED/live equality. Old6-table death successor17 and full Fire health/Aethas/return live checks pass through guarded normalization. Generalized helper retains single-edit Guardian full4-table live coverage.",
+    "ASAN production controller plus actual native aura93/CombatStop/Unit attack/Creature victim/SmartAI/regen/Home/transient timed-list code:54 cases, raw Wreath regen and aura-removal counterfactuals paired with repaired player/pet/guardian/taunt cases; normal DATA4 endpoint, wipe/home/retry, finite cast/missing/dead/locked-wing, scope/lease/death/one-hit and reentrant cancellation. World ranking/spell effects/respawn/criteria endpoints controlled, not full-core ASAN.",
+    "ASAN actual native195739 row19 CAST/LINK/512 retry and completed receipt:16 cases, rejection0/1/2/9, owner loss, actual tail exactly once after acceptance, actor death/expiry/replacement/reset/reentry, finite ten-attempt failure and reentrant callbacks. Retained43 Wardstone retry/loader/corpse cases pass. Original expected failures explicitly retained.",
+    "Existing native Fire full sequence extended with phase successor for five invoker kinds:80/20 thresholds, native half actions,7second Aethas,DATA4, real death five requests/loot47380 and Aethas return; one-hit death unchanged. Native Fire health cast rejection/retry checks pass. Extended return host accepts exact new template/corpse ScriptID and still refuses foreign ID, retaining group/phase/lease/path/portal/reentrant bounded recovery.",
+    "Native Nexus Azuregos actual timed-list/default behavior regression passes24 full6-order x four invoker runs and all9 original timed payloads. Existing host stubs updated for already-present native DATA45 AI safety types; no production behavior removed.",
+    "Original game/scripts projects and actual original Release libraries linked separately (no global OutDir override), final MAP confirms original GAME/SCRIPTS inputs. Actual selected PE factory/vtables/UpdateAI/threat/receipt/teardown/rearm/native death/return guards and shared cancellation consumer pass in stage and canonical; native512 PE check passes. Old return PE checker fixed obsolete0x200/520 layout assumption by deriving actual pending/epoch fields and concrete allocation from selected constructor, then checking Reset against them. Failed symbol assumptions resolved to actual Creature and native virtual Reset slot, not waived.",
+    "Canonical matching EXE/MAP promoted before guarded SQL entered updater. Task-owned PID30768 applied migration, ready and graceful exit0. No user process stopped; final process list empty. Mandatory diagnostics: no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions; protected configs/certificates/DLLs preserved."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/lyandra-wreath-20261118",
+    "worldserver_sha256": "e8163a027e6f1255d00b1dd1290fb9fe419ef635deb99ff59c26aac4ed256ef9",
+    "map_sha256": "7a833ba75edbdacb60d9bf114e6dd133ab6c13b441f36f3a231cee76a4df678e",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed unresolved historical log retained unchanged; expected failing host compile/assertion and stale PE assumptions retained paired with passing corrections. Known native float conversion and controlled-host unused-parameter compiler warnings are not server warnings."
+  },
+  "limits": "Actual combat/visual/audio/wing/Aethas/channel timing, client wipe/re-entry/group/faction traversal and full11997/all36 remain client-pending. Permanent unavailable actor/reset failure deliberately emits finite diagnostic and resets without progression; no invented recovery actor or DATA4. Six remaining primary structural edges are independent investigation, not six proven player blockers."
+}

@@ -263,5 +263,9 @@
     "UPDATE gameobject_loot_template SET Chance=1 WHERE Entry=247494;",
     "UPDATE conditions SET ConditionValue1=1 WHERE SourceTypeOrReferenceId=22 AND SourceEntry=99763;",
     "INSERT INTO smart_scripts(entryorguid,source_type,id,event_type,action_type,target_type,comment) VALUES(99615,0,32,61,37,1,'foreign');"
-  ]
+  ],
+  "live_successor": {
+    "context": "FireLyandraPhaseContext.json",
+    "fixture": "FireLyandraPhaseOriginal.json"
+  }
 }

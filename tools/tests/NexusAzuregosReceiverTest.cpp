@@ -19,6 +19,7 @@ constexpr uint32 UNIT_STATE_CASTING=1,CONDITION_NEAR_CREATURE=29,MAX_CONDITION_T
 struct Unit;using Creature=Unit;using Player=Unit;using WorldObject=Unit;
 struct SmartScript;struct SmartScriptHolder;struct Condition;struct GameObject;
 struct SmartAI {SmartScript*script=nullptr;SmartScript*GetScript(){return script;}void SetData(uint32,uint32);void SetScript9(SmartScriptHolder&,uint32,Unit*);void SetCombatMove(bool){assert(false);}};
+using CreatureAI=SmartAI;using GameObjectAI=SmartAI;
 struct Map{uint32 id=1;bool instance=true;Map*ToInstanceMap(){return instance?this:nullptr;}uint32 GetInstanceId(){return id;}}world,otherWorld;
 #ifdef NEXUS_HEALING_TEST
 #include "NexusHealingServices.inc"
@@ -72,13 +73,15 @@ struct Unit {
 #endif
 };
 bool IsCreature(Unit*u){return u&&!u->player;}bool IsGameObject(Unit*){return false;}bool IsUnit(Unit*u){return u!=nullptr;}
-struct SmartGameObjectAI;struct GameObject{SmartGameObjectAI*AI(){return nullptr;}SpellCastResult CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};
+struct GameObject{GameObjectAI*AI(){return nullptr;}SpellCastResult CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};
 #ifndef NEXUS_EXIT_TEST
 struct SpellInfo{};
 #endif
 #define TC_LOG_DEBUG(...) ((void)0)
 uint32 scriptErrors=0;
 #define TC_LOG_ERROR(...) (++scriptErrors)
+#define TC_LOG_WARN(...) (++scriptErrors)
+#define SI64FMTD "%lld"
 #define ENSURE_AI(type,ai) (ai)
 uint32 urand(uint32 a,uint32 b){assert(a==b);return a;}bool roll_chance_i(uint32){return true;}
 namespace Trinity {
@@ -130,7 +133,7 @@ struct SmartScript {
  void UpdateLinkedCastRetries(uint32){}
  void ResetLinkedCastRetries(){}
 
- Unit*me=nullptr;GameObject*go=nullptr;Unit*mLastInvoker=nullptr;SmartAIEventList mEvents,mTimedActionList;bool isProcessingTimedActionList=false;uint32 listStarts=0;
+ Unit*me=nullptr;GameObject*go=nullptr;Unit*mLastInvoker=nullptr;SmartAIEventList mEvents,mTimedActionList;bool isProcessingTimedActionList=false,mCancelTimedActionList=false;uint32 listStarts=0;
  Unit*GetBaseObject(){return me;}Unit*GetLastInvoker(){return mLastInvoker;}bool IsInPhase(uint32){return true;}bool IsSmart(Unit*u){return u&&u->ai.script;}bool IsSmartGO(GameObject*){return false;}
  ObjectList*GetTargets(SmartScriptHolder const&e,Unit*){auto*l=new ObjectList;if(e.targetType==1)l->push_back(me);else if(e.targetType==19){for(auto u:grid)if(!u->player&&u->alive&&u->entry==e.payload&&me->IsWithinDistInMap(u,50)){l->push_back(u);break;}}
 #ifdef NEXUS_EXIT_TEST

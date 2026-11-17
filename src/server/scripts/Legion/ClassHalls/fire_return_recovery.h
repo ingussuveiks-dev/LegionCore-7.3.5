@@ -51,7 +51,8 @@ bool Near(float value, float expected) { return std::fabs(value - expected) < 0.
 bool NativeSummon(SmartScriptHolder& summon)
 {
     CreatureTemplate const* boss = sObjectMgr->GetCreatureTemplate(99615);
-    if (!boss || boss->ScriptID || boss->AIName != "SmartAI")
+    uint32 lyandra = sObjectMgr->GetScriptId("npc_fire_artifact_lyandra");
+    if (!boss || (boss->ScriptID && (!lyandra || boss->ScriptID != lyandra)) || boss->AIName != "SmartAI")
         return false;
     uint32 found = 0;
     for (auto const& row : sSmartScriptMgr->GetScript(99615, SMART_SCRIPT_TYPE_CREATURE))
@@ -140,6 +141,8 @@ bool NativeActor(Creature* actor, bool smart)
     if (!actor || actor->GetCreatureTemplate()->AIName != (smart ? "SmartAI" : ""))
         return false;
     uint32 scriptId = actor->GetEntry() == 99763 ? sObjectMgr->GetScriptId("npc_fire_artifact_aethas") : 0;
+    if (actor->GetEntry() == 99615 && actor->GetScriptId())
+        scriptId = sObjectMgr->GetScriptId("npc_fire_artifact_lyandra");
     if (actor->GetScriptId() != scriptId || (actor->GetEntry() == 99763 && !scriptId))
         return false;
     return !actor->GetDBTableGUIDLow() || sSmartScriptMgr->GetScript(-int32(actor->GetDBTableGUIDLow()), SMART_SCRIPT_TYPE_CREATURE).empty();

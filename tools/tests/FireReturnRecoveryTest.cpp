@@ -22,7 +22,7 @@ enum {CONDITION_MAPID=22,CONDITION_SCENARION_STEP=44,CONDITION_SOURCE_TYPE_SMART
 enum TempSummonType{TEMPSUMMON_MANUAL_DESPAWN=8};using ReactStates=uint32;
 unsigned warnings=0,nativeErrors=0;
 #define TC_LOG_DEBUG(...) ((void)0)
-#define TC_LOG_ERROR(category,format,...) (++nativeErrors,std::printf("UNRESOLVED native " format "\n",__VA_ARGS__))
+#define TC_LOG_ERROR(category,format,...) (++nativeErrors,std::printf("COUNTERFACTUAL historical native " format "\n",__VA_ARGS__))
 #define TC_LOG_WARN(category,format,...) (++warnings,std::printf("COUNTERFACTUAL expected diagnostic: " format "\n",__VA_ARGS__))
 #define CAST_AI(type,value) dynamic_cast<type*>(value)
 struct Unit;using Creature=Unit;using Player=Unit;using WorldObject=Unit;struct CreatureAI;struct SmartAI;
@@ -76,7 +76,7 @@ struct SmartScriptHolder{
  uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetScriptType()const{return source_type;}uint32 GetTargetType()const{return targetType;}
 };
 struct ScriptMgr{std::map<int32,std::vector<SmartScriptHolder>> rows;std::vector<SmartScriptHolder> GetScript(int32 entry,uint32 type){assert(type==0);return rows[entry];}} scriptManager;auto sSmartScriptMgr=&scriptManager;
-struct ObjectMgr{std::map<uint32,CreatureTemplate> templates;uint32 GetScriptId(std::string const& name){assert(name=="npc_fire_artifact_aethas");return 9001;}CreatureTemplate const* GetCreatureTemplate(uint32 entry){return &templates.at(entry);}} objectManager;auto sObjectMgr=&objectManager;
+struct ObjectMgr{std::map<uint32,CreatureTemplate> templates;uint32 GetScriptId(std::string const& name){if(name=="npc_fire_artifact_lyandra")return 9002;assert(name=="npc_fire_artifact_aethas");return 9001;}CreatureTemplate const* GetCreatureTemplate(uint32 entry){return &templates.at(entry);}} objectManager;auto sObjectMgr=&objectManager;
 struct SpellInfo{};struct GameObject{};using ObjectList=std::list<WorldObject*>;
 struct Call{uint32 entry,action,parameter;};std::vector<Call> calls;
 std::function<void(Creature*,SmartScriptHolder const&)> actionObserver;
@@ -153,6 +153,7 @@ int main(int argc,char** argv){
  // The unchanged death graph requests blade/GO/credit, not the half-health NPC.
  ResetWorld();{scenarioManager.scenario.step=3;scenarioManager.scenario.achievements.progress.clear();Player cause;auto boss=Corpse();SmartScript original;original.me=boss;original.mEvents=scriptManager.rows[99615];original.ProcessEventsFor(SMART_EVENT_DEATH,&cause);assert(!Actor(99763)&&!Actor(99861)&&Actor(103696)&&nativeErrors==1);}
  ResetWorld();{Player player;Corpse();Healthy(script,player);assert(lastSource==99763);} // accepted native death proof; owner credit dispatch is separately regressed
+ ResetWorld();{Player player;objectManager.templates[99615].ScriptID=9002;Corpse();Healthy(script,player);assert(lastSource==99763);} // exact registered Wreath delegate retains native return authority
  ResetWorld();{Player player;Healthy(script,player);assert(attempts[99763]==1);} // earned re-entry after corpse disappeared
  ResetWorld();{Player player;unsigned reentered=0;actionObserver=[&](Creature* actor,SmartScriptHolder const& row){if(actor->entry==99763&&row.event_id==4){++reentered;actor->AI()->SetData(3,3);}};Healthy(script,player);assert(reentered==1&&Count(28,0)==1&&Count(1,0)==1);} // actual runOnce is set before a reentrant aura-removal callback
  ResetWorld();{Player player;objectManager.templates[99615].ScriptID=42;script.OnUpdate(&player,1);assert(warnings==1&&!attempts[99763]);objectManager.templates[99615].ScriptID=0;script.OnMapChanged(&player);warnings=0;Healthy(script,player);} // custom boss template cannot borrow native summon data
@@ -174,5 +175,5 @@ int main(int argc,char** argv){
  ResetWorld();{Player player;script.OnUpdate(&player,1);auto old=Actor(99763);script.OnMapChanged(&player);player.runtime=&otherMap;player.instance=43;scenarioManager.instance=43;instanceMap.id=43;script.OnUpdate(&player,1);assert(attempts[99763]==2&&actors.back().get()!=old&&actors.back()->runtime==&otherMap);Arrive(actors.back().get());script.OnUpdate(&player,500);assert(attempts[99861]==1&&!warnings);}
  FireReturnRecovery::Update(nullptr,1);
  std::cout<<"PASS extracted recovery/registered wrapper/derived AI with actual Smart conditions/event/LINK/WP_START/StartPath/data3/waypoint handlers: missing original one-hit actor vs native recovery, earned proof guards, source/re-entry/group/phase, spawn/AI/path/portal failures, actual-arrival gate, no duplicate speech/story or portal, bounded timeout and logout/map reset. Death credit storage, world creation/movement/effects remain controlled endpoints; actual owner credit and client traversal are separate.\n";
- std::cout<<"UNRESOLVED original99615 death LINK32 remains observed in its baseline; unknown22/32 were not replaced. Injected timeout/native-data mismatch diagnostics were expected counterfactuals paired with recovery; no production runtime error is hidden.\n";
+ std::cout<<"COUNTERFACTUAL pinned original99615 death LINK32 remains observed in its baseline; released death/phase successors are verified separately by full-context data and native lifecycle checks. Injected timeout/native-data mismatch diagnostics were expected counterfactuals paired with recovery; no production runtime error is hidden.\n";
 }
