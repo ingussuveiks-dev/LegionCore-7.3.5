@@ -1181,7 +1181,16 @@ public:
             {
                 if (id == 6)
                 {
+                    auto previous = pillikProgress;
                     QueuePillikHandoff();
+                    // A resumed waypoint may report this endpoint again.
+                    // QueuePillikHandoff creates a new receipt only once per
+                    // encounter epoch; do not replay its speech/attack cue.
+                    if (pillikProgress == previous)
+                    {
+                        TryPillikEntry();
+                        return;
+                    }
                     Talk(18);
                     _presentationFunctions.AddDelayedEvent(5000, [this, weak = std::weak_ptr<PillikProgress>(pillikProgress)]() -> void
                     {

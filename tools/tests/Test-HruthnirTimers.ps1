@@ -25,6 +25,13 @@ void UpdateLifecycle(uint32 diff) override {
 if((Shape $life) -cne (Shape $expectedLife)){throw 'Native ALIVE/CORPSE clock changed'}
 function TimerMethods([string]$selected){
  $movement=WithoutColdRoutePrefix (Block $selected 'void MovementInform(')
+ if($movement.Contains('auto previous = pillikProgress;')){
+  # This historical fixture compares the six authored clock bodies. The
+  # endpoint receipt admission now rejects duplicate arrivals in production;
+  # removing that prefix here does not certify its new client behavior.
+  $movement=$movement.Replace((Block $movement 'if (pillikProgress == previous)'), '')
+  $movement=$movement.Replace('auto previous = pillikProgress;', '')
+ }
  foreach($case in @('case 6:','case 7:')){$movement=$movement.Replace((Block $movement $case),'')}
  $evade=Block $selected 'void EnterEvadeMode('
  $evade=$evade.Replace((Block $evade 'if (secondfighting)'), '')
