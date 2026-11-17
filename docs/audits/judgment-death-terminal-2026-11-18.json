@@ -26,5 +26,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed unresolved historical log preserved. Failed old host compile/assertion retained with corrected pass; no new production runtime failure hidden."
   },
-  "limits": "Real summoned actors combat/target availability,freeze/heal/VFX/audio,channeler death movement and complete client1065/1101 chains remain separate. Controlled request host is not full spell/creature/world engine; actual native grouping/range rules remain unchanged. Three primary structural edges remain."
+  "limits": "Real summoned actors combat/target availability,freeze/heal/VFX/audio,channeler death movement and complete client1065/1101 chains remain separate. Controlled request host is not full spell/creature/world engine; actual native grouping/range rules remain unchanged. Three primary structural edges remain.",
+  "fix_commit": "fdf3d7250",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-judgment-death-terminal",
+    "manifest_sha256": "2ec80e0d28cb06b1a99c2f07848f1bd3190dc2a7a439557ef34ef98d73904b9f",
+    "verified_captures": 137,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 9,
+    "deferred_bytes": 31898915,
+    "reason": "Temporary cleanup remains deferred after prior automatic review blocked the same deletion with blocked by policy. Exact no-reparse targets/hashes validated; no workaround or claimed deletion. Canonical assets, sources, protected configuration and mixed historical log preserved; no servers running."
+  }
 }
