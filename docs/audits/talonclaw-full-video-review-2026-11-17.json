@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-17",
+  "status": "RESEARCH COMPLETE; missing Wardstone101325 LINK4 remains OPEN",
+  "scope": "Independent Hunter Survival follow-up after deployed Tirisfal repair9f50daf0a. No Talonclaw code, live SQL, character or server mutation. This is not another completed gameplay repair.",
+  "source_order": "Matching native/local implementation and prior local Trinity/GitHub investigation retained in wardstone-missing-tail-research-2026-10-30.json; this follow-up uses the user-authorized gameplay evidence and rechecks the matching native implementation.",
+  "video": {
+    "url": "https://www.youtube.com/watch?v=aAzrSVxEElk",
+    "title": "The Spear in the Shadow WoW Survival Hunter Artifact Scenario",
+    "author": "ZaFrostPet",
+    "upload_date": "20160827",
+    "duration_seconds": 1363,
+    "local_sha256": "c91a64ecfe43eef7a7cb9a9603f5966739553aa981ad0cc0dc74717654cfdb2e",
+    "actually_reviewed": "All170 frames sampled at8-second intervals across the full1363-second video, shown in11 contact sheets00..10, plus final1362s frame. Video has audio, but no continuous playback or audio review was performed. Labels are approximate (about +/-4s); brief actions between samples are not verified.",
+    "observed_sequence_approx_seconds": [
+      "0..40 acceptance/eagle boarding/flight;48..80 arrival and companion dialogue",
+      "104..220 traps and Mist Warder;220..232 first lightning/ward activation and transition to three more wards",
+      "312..320,492..500,648..660 subsequent ward activations",
+      "736..784 companion dialogue and harpoon traversal;808..824 ambush cinematic;832..912 shades/fights",
+      "928..1100 mist trap and pursuit;1104..1160 companion deaths/final approach",
+      "1160..1224 Dakarr combat;1232..1256 weapon pickup/outro;1256..1280 spirit dialogue/exit",
+      "1288..1312 loading/return;1352..1362 Dalaran turn-in and On Eagles' Wings offer"
+    ],
+    "ward_observation": "After activation lightning the stone disappears while a base remains. Existing native199770/199823 lightning and instant-kill, corpse-castable187027 invisible transform and101360 base summon already represent this visible sequence. Sampling does not identify any additional LINK4 action or prove precise visual timing."
+  },
+  "matching_native": {
+    "quest": 40385,
+    "map": 1511,
+    "scenario": 973,
+    "phase": 5599,
+    "stones": [
+      375208,
+      375234,
+      375236,
+      375237
+    ],
+    "respawn_seconds": 7200,
+    "graph": "101325/0 root SPELLHIT199728 once ->205 event48172 ->199770 cast512 ->187027 cast512 ->SUMMON101360 manual/no timeout -> missing4. All four original rows and unknown tail preserved.",
+    "effects": "Native199770/199823 lightning and instant-kill effect2/source13 mask4 scoped to actual101325.187027 transform to invisible17286 remains castable while dead. Base101360 has native199739 visual; no invented despawn/credit/channel.",
+    "progression": "Existing source17/18/22 admission44 rules retained. Native event48172 credits first stage973/order3 amount0 normalized1, then order4 amount3; scenario starting-tree snapshot prevents double credit across the transition. Existing bounded linked-cast512 retry/corpse continuation retained.",
+    "unresolved": "Footage and surviving data do not establish the missing tail payload. No speculative no-op, log suppression, node deletion, arbitrary despawn or extra credit was added. Dakarr100376 missing0->10 is not resolved by this visual survey."
+  },
+  "checks": [
+    "Test-TalonclawWardstoneData.ps1 -VerifyLiveData PASS: full-schema TEMP migration/live equality,44 predicates,22 customized/partial refusals, preservation of graph/target masks/template/click data.",
+    "Test-TalonclawWardstone.ps1 -VerifyNativeCatalog PASS:81 ASAN actual native admission/event/once/owner/scenario cases; matching26972 typed catalog. Cast/summon/world endpoints controlled; expected unresolved LINK4 remains visible.",
+    "Test-SmartLinkedCastRetry.ps1 -VerifyLiveData -VerifyReleaseBinary PASS:43 ASAN cases,11-table TEMP context/idempotence/20 refusals,11 native PE calls and corpse dispatch against canonical8F19.",
+    "Expected SQL permission/custom-data refusals are intentional negative fixtures, not production errors. Temporary read-user cleanup completed. All wrappers completed with no new/changed crashes, appended DBErrors, unexplained server warnings/errors/assertions; overall command exit0."
+  ],
+  "diagnostics_cleanup": {
+    "captures": 122,
+    "removed_files": 8,
+    "reclaimed_bytes": 37426052,
+    "manifest_sha256": "574250E92701D718DD09BB36FB91E224917CBE350715973D7A02E732CF389D83",
+    "canonical_exe_sha256": "8F1944BC96D35BDE51D16C38DB00C30A3709FDAB296E41795C72DD5C15E69BA5",
+    "DBErrors_sha256": "8224A39BFBC9A6B195EDB71425191FFA9EEE4CA43762AF643430C5556A5D0C91",
+    "no_new_crashes": true,
+    "no_servers_running": true,
+    "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\talonclaw-video-20261117",
+    "evidence_policy": "122 fresh diagnostic/data captures copied and SHA256 compared outside fixed because LINK4 is still unresolved. Successful task-generated8 binaries/objects/PDBs removed only from exact validated temporary roots; reparse ancestors rejected and active processes rechecked. Cleanup initially refused due UTC/local cutoff comparison; corrected before any deletion. A null summary of reclaimed bytes was corrected from the preserved per-file manifest; removal list/hashes unchanged.",
+    "preserved": "Canonical binaries/map/configuration/certificates/DLLs, source/build libraries, extracted data, all video/evidence, existing rollback copies and mixed7839-byte DBErrors unchanged. Active Crashes empty; no server launched or left running in this follow-up.",
+    "canonical_startup": "Already verified for this same8F19 binary during Tirisfal deployment; no binary/data changes here and no additional startup claimed."
+  },
+  "limits": "All11 remaining primary script edges stay open after the separate Tirisfal repair. Native endpoint tests and sampled footage do not certify all36 client quest chains, actual timing, combat, re-entry, equipment, camera/audio or multiplayer behavior."
+}
