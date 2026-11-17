@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_DATA_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "Judgment Flame104520 native death root5 already requests49808,Azuregos104902 DATA4,two106710 Stalkers and one106711 Channeler. Final summon row9 references absent LINK10. Channeler real death has its own native DATA2/106747 and DATA5/104902 route handoff; no missing10 service is needed for this transition.",
+  "sources": [
+    "Matching current8-table full schema fixture:84 SAI,4 conditions,21 texts,8 templates/WDB,52 spawns,2 GO templates and7 waypoints across boss,both Azuregos variants,channeler/stalkers,106569 and scoped bunny45396/return104546. Native summon coordinates and all shared scenario gates preserved.",
+    "Typed26972 JudgmentFlameCatalog:49808 belongs to1065/order2/tree47112/47113 and1101/order2/tree47990/47991. Native209725 Diffusion,209822 Conversation1952,209745 Replenishing Flames,207074 Frozen Solid,209308 Netherblade and209315 Void Consumption retained. Existing row1 is event4 AGGRO despite old90percent comment; no modern/misread health behavior substituted.",
+    "Traced native death205,LINK,summon12 and data45 consumers; original channeler death->Azuregos path10674701->speech/49809/return104546, protected actual shared portal receipt and failed-cast independence. Current local matching graph resolves deliberate terminal behavior; original unknown10 intent is not claimed recovered and no invisible payload invented."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_18_04_judgment_death_terminal.sql",
+    "updater_sha1": "66CB834979F73C647BB5622761D5AEF1842B0E4C",
+    "state": "RELEASED",
+    "edit": "Exactly104520/source0/id9.link10->0 under full8-table original/applied guards. Retain native49808/Azuregos4/two stalkers/channeler,actual channeler death handoff,speech/routes/portals. No new item/health/quest/progress grant or diagnostic suppression."
+  },
+  "checks": [
+    "Actual-schema restricted TEMP replay: exact one independent field edit,idempotence,14 foreign/missing/partial refusals and actual RELEASED/live equality.",
+    "ASAN29 actual native event/health/once/LINK/data cases: aggro and50/25 native requests,original five real death requests once for player/pet/guardian/NPC/null and one-hit,source condition/expired refusal. Channeler native DATA2/5 and Azuregos DATA4/conversation/follow thenDATA5/route request preserved. Initial host wrongly expected channeler repeated DEATH callback suppression although its authored flags0; corrected to prove original repeat semantics, did not change production flags or invent a once gate. The boss real-death root retains its actual flag1. World/cast/spawn/criteria/motion endpoints controlled.",
+    "Retained ASAN Test-BilaalPortal:both1065/1101 routes,42 denials,actual endpoint and earned receipt,exactly-once/reentry/create-insert retry/phase-before-insert/map lifetime/reentrant cleanup. Existing native CAST host first failed compilation because newer512 interface methods were absent from its old stub; added assert-failing adapters since this portal has no opt-in and reran all existing counterfactual/failed-cast/native receipt checks. No branch bypassed or production portal logic changed.",
+    "Shared native owner/criteria resolver and selected actual canonical PE passed in immediately preceding Amassing repair on the same unchanged E8163A02 binary. No additional205 implementation changed here.",
+    "Canonical task-owned PID23208 ready/graceful exit0, updater applied guarded04. No new/changed crash,appended DBErrors or unexplained server warning/error/assertion; configs/certificates protected,no user process stopped or owned server left running."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/judgment-terminal-20261118",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed unresolved historical log preserved. Failed old host compile/assertion retained with corrected pass; no new production runtime failure hidden."
+  },
+  "limits": "Real summoned actors combat/target availability,freeze/heal/VFX/audio,channeler death movement and complete client1065/1101 chains remain separate. Controlled request host is not full spell/creature/world engine; actual native grouping/range rules remain unchanged. Three primary structural edges remain."
+}

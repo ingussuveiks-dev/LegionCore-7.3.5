@@ -28,6 +28,11 @@ struct SmartScriptHolder{
 using ConditionList=int;struct ConditionSourceInfo{ConditionSourceInfo(WorldObject*,WorldObject*){}};
 struct Conditions{bool allow=true;bool IsObjectMeetingSmartEventConditions(uint32,uint32,uint32,Unit*,WorldObject*){return allow;}int GetConditionsForSmartEvent(uint32,uint32,uint32){return 0;}bool IsObjectMeetToConditions(ConditionSourceInfo&,ConditionList){return allow;}}conditions;auto*sConditionMgr=&conditions;
 struct SmartScript{
+ // This retained portal route has no linked-cast opt-in. Reject accidental
+ // use rather than inventing a retry receipt in its controlled host.
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
  Unit*me=nullptr;GameObject*go=nullptr;std::vector<SmartScriptHolder>mEvents;uint32 path=104546,oldPortalAttempts=0,conversation=0;bool nullTargets=false;
  WorldObject*GetBaseObject(){return me;}bool IsInPhase(uint32){return true;}bool IsUnit(WorldObject*o){return o->IsUnit();}uint32 GetPathId(){return path;}void RecalcTimer(SmartScriptHolder&,uint32 a,uint32 b){assert(a==500&&b==500);}
  ObjectList*GetTargets(SmartScriptHolder&e,Unit*){if(nullTargets)return nullptr;auto l=new ObjectList;switch(e.GetTargetType()){
