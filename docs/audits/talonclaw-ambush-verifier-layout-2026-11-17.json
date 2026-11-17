@@ -5,11 +5,20 @@
   "change": "Derive the single this-relative R9 provenance address from the actual post hook. Require constructor zero initialization inside the allocation returned intoRDI and both pre-hook read/write accesses to the same DWORD. Retain native guard dependencies, vtable slots, arithmetic, registration and separate final-Dakarr/Prustaga factory checks. No assertion disabled and no production C++/SQL change in this focused fix.",
   "checks": [
     "Three unittest methods cover two valid original/current layouts and seven negative mismatched/missing/nonzero/out-of-allocation/ambiguous-field snippets. Actual Capstone instructions are decoded; expected failures stay failures.",
-    "Full inherited native PE dependency chain and repaired verifier pass against canonical8F19, confirming actual field0x258. The earlier64-case compiled damage regression passed before the stale PE assertion; integrated rerun belongs to the separate pending Dakarr opening repair.",
+    "Full inherited native PE dependency chain and repaired verifier pass against canonical8F19/actual0x258. The integrated64-case native damage/data/PE suite subsequently passed in the separate opening repair, followed by actual canonical ready/graceful0.",
     "Mandatory before/after diagnostics for initial failure, layout inspection and passing verifier: no new/changed crashes, appended DBErrors or unexplained server warning/error/assertion. The failed verifier output is retained and not called a successful run."
   ],
   "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\dakarr-repair-20261117",
   "runtime": "No binary rebuild/deployment, server start or user process stop. Canonical EXE remains8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5. Pending opening SQL remains outside live updater.",
-  "cleanup": "Current task-owned damage/catalog outputs retained for the outstanding opening-data regression and deployment. Archive resolved verifier evidence and remove redundant compiled outputs together with that repair after final checks; no mixed active log cleared.",
-  "limits": "This verifies installed guard/provenance code, not full client Talonclaw playback, party credit, all artifact chains or the unknown original LINK10 payload."
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-dakarr-opening",
+    "manifest_sha256": "c341cd5c73bc35dbb9116e258bd1cb7e7659fd7a90a0bb0ff17b565fd7233752",
+    "verified_captures": 116,
+    "post_cleanup_manifest_sha256": "7eccca042ac179ec48b7d48465e83881b2468ab814c4c34bcd9fb9ae8e4fb3f3",
+    "removed_files": 4,
+    "reclaimed_bytes": 1209504,
+    "policy": "Exact temporary targets/reparse ancestry/process state checked. Canonical/runtime data,source libraries,extracted assets,recent pre-wardsD6F4 and pre-LiLi44A6 rollback pairs preserved. No active mixed log cleared or new crash. Full client still pending."
+  },
+  "limits": "This verifies installed guard/provenance code, not full client Talonclaw playback, party credit, all artifact chains or the unknown original LINK10 payload.",
+  "fix_commit": "cca59cdd1"
 }

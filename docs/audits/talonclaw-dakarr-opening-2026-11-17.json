@@ -29,5 +29,14 @@
   },
   "limits": "Original LINK10 author intent/payload remains unrecovered. This corrects invalid data after the self-contained native announcement; it does not add/prove retail leap choreography, exact visual/audio/camera timing, missing-target recovery, group/faction/re-entry/client combat or whole40385/all36. Other nine primary edges remain open, not nine demonstrated blockers.",
   "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\dakarr-repair-20261117",
-  "cleanup": "After focused commit, archive reviewed diagnostics with verified hashes and remove redundant compiled damage/catalog outputs. Mixed7839-byte active history stays unchanged; current rollback pairs/runtime assets remain protected."
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-dakarr-opening",
+    "manifest_sha256": "c341cd5c73bc35dbb9116e258bd1cb7e7659fd7a90a0bb0ff17b565fd7233752",
+    "verified_captures": 116,
+    "post_cleanup_manifest_sha256": "7eccca042ac179ec48b7d48465e83881b2468ab814c4c34bcd9fb9ae8e4fb3f3",
+    "removed_files": 4,
+    "reclaimed_bytes": 1209504,
+    "policy": "Exact temporary targets/reparse ancestry/process state checked. Canonical/runtime data,source libraries,extracted assets,recent pre-wardsD6F4 and pre-LiLi44A6 rollback pairs preserved. No active mixed log cleared or new crash. Full client still pending."
+  },
+  "fix_commit": "169669cf4f0145d22d0502dfb712d66aed3952c8"
 }
