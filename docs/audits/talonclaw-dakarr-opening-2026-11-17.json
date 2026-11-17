@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED: inherited JUST_SUMMONED dangling reference corrected; full client traversal remains pending",
+  "scope": "Earlier ambush Dakarr100376 only; final lair99480, all health/callback/credit paths and existing damage protection retained.",
+  "cause": "Root0/54/TALK0 references absent LINK10. All nine other rows are independent combat/health callbacks or their valid tails. Bounded source/dependency trace finds no original tenth LINK payload; do not confuse a missing reference with proof of an observed player blockage.",
+  "functional_basis": [
+    "Native SmartAI::IsSummonedBy dispatches54; root0 already emits the103937 monster-emote announcing the reveal. It has no source22 gate or later TEXT_OVER receiver. Creature::InitializeReactState selects native aggressive behavior for this actual non-trigger/non-critter actor; SmartAI::MoveInLineOfSight retains ordinary hostile target acquisition and existing attack guards. No added forced target/combat or cast.",
+    "Typed26972 catalog confirms Object Placement Visual197485 is infinite self dummy aura4, not a root/invulnerability/scripted-reaction controller. Planting Trap197489 has3s cast/dummy/event47663/script effect; trap100367 removes its placement visual, runs the10s timed native100376 summon and separately removes player198883.200348 is ordinary victim damage; no aura/script callback establishes a missing continuation.",
+    "Phoenix Gaming https://www.youtube.com/watch?v=Ovnnw4R9m6o: additional84 one-second visual samples over498..540 and568..610, all six contact sheets viewed after the earlier complete67-sample survey. First reveal/emote and combat around508..515, living retreat/companions around515..530, next encounter/reveal around577..584, second retreat and Apata scene around585..603. No continuous/audio review; approximate timestamps. Existing blue placement/trap visual and normal target combat are visible; original hidden LINK10 is not recovered from pixels.",
+    "Actual matching Preservation2024 world archive (SHA256cf681e1fb2e7443daab2a5db04f4efa2fc53cc485ea8de6b6ec3d60d569c2696) streamed through7-Zip without re-extracting a237MB SQL file. Exactly ten100376 rows retain0->10 and have no id10. The older29-field schema is reference only, not copied into current31-field data. Prior bounded local Trinity/source history supplied no alternate implementation."
+  ],
+  "change": {
+    "migration": "sql\\updates\\world\\2026_11_17_16_talonclaw_dakarr_opening.sql",
+    "updater_sha1": "1958688f3a9df71b65e75d8316d3ebf8e925bdf8",
+    "state": "RELEASED",
+    "edit": "Exactly100376/source0/id0.link10->0 after complete eleven-table original/applied SHA256 guards. Existing TALK text/recipient/range/timer/repeat, all ten action rows,56 scoped scripts,12 predicates,trap summon/placement/cast behavior,18 text rows,callbacks,70/60 protection,scaling and other actor bindings preserved."
+  },
+  "checks": [
+    "Generic Test-SmartTerminalData uses pinned pre-edit real-schema fixtures for11 tables: repeat/idempotence, exact intended one-field difference, all-field preservation and20 foreign/partial refusals. Uses permission-restricted TEMP-only reader; actual live equality and RELEASED LF hash verified after deployment.",
+    "Test-TalonclawAmbushDamage -VerifyReleaseBinary passes integrated actual native64 damage/scaling/attacker-kind matrices,20 custom migration refusals, unchanged ten SmartAI/three conditions, matching13-stage metadata and actual canonical PE dependency chain. Player/pet/guardian/NPC are Unit attackers in controlled health/scenario services; no actual party/client traversal claim.",
+    "Initial integration hit a stale0x200 PE assertion, separately repaired in cca59cdd1 (audit talonclaw-ambush-verifier-layout-2026-11-17.json); counterfactual mismatch tests and actual allocated0x258 pre/post provenance pass. Original failure and both final suites retained.",
+    "Own canonical PID32640 applied16, ready and graceful exit0. Mandatory before/after native/data/PE/startup diagnostics show no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Protected configuration/certificates unchanged; no user server stopped or task process left running."
+  ],
+  "deployment": {
+    "worldserver_sha256": "8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5",
+    "binary_change": "None; data uses existing linked SmartAI delegate",
+    "DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "DBErrors_bytes": 7839
+  },
+  "limits": "Original LINK10 author intent/payload remains unrecovered. This corrects invalid data after the self-contained native announcement; it does not add/prove retail leap choreography, exact visual/audio/camera timing, missing-target recovery, group/faction/re-entry/client combat or whole40385/all36. Other nine primary edges remain open, not nine demonstrated blockers.",
+  "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\dakarr-repair-20261117",
+  "cleanup": "After focused commit, archive reviewed diagnostics with verified hashes and remove redundant compiled damage/catalog outputs. Mixed7839-byte active history stays unchanged; current rollback pairs/runtime assets remain protected."
+}

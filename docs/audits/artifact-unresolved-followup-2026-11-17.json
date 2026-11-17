@@ -154,5 +154,10 @@
     "current_remaining_primary_edges": 10,
     "state": "Inherited dangling101325/source0/id3->4 corrected to deliberate terminal after existing base summon; all four native operations preserved. Original fifth payload remains unrecovered; this graph repair is distinct from full client certification. Other ten primary edges still open.",
     "source": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wardstone-cause-20261117\\remaining-primary.tsv"
+  },
+  "followup_2026_11_17_dakarr_opening": {
+    "audit": "talonclaw-dakarr-opening-2026-11-17.json",
+    "current_remaining_primary_edges": 9,
+    "state": "Self-contained native JUST_SUMMONED announcement now terminates normally. Other combat/health/callback paths retained. Original unknown10 and client presentation remain distinct from the corrected data reference."
   }
 }
