@@ -1,0 +1,510 @@
+{
+  "date": "2026-11-17",
+  "status": "REQUESTED_OFFLINE_SWEEP_COMPLETE_WITH_OPEN_EVIDENCE_AND_CLIENT_LIMITS",
+  "request": "User is away from the client and authorized remaining offline artifact checks; normal requested native/regression/diagnostic workflow applies.",
+  "route_identity": {
+    "routes": 36,
+    "native_race_class_pairs": 149,
+    "shop_artifact_offers": 0,
+    "identity_negative_controls": 144,
+    "repair": "Resolve identities through matching26972 effect249 targets and typed artifact/spec metadata; removed Shop products cannot be the identity source. Ambiguous or missing identities fail explicitly.",
+    "automated_loot_link_admission_findings": 0,
+    "actor_link_review": [
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "scene_only_pickup_candidates": 0
+  },
+  "map_review": {
+    "maps": 28,
+    "static_spawn_counts": {
+      "0": 5183,
+      "1": 1719
+    },
+    "owner_contexts": 2168,
+    "timed_owner_contexts": 97,
+    "invalid_primary_link_candidates_before": 19,
+    "after": 16,
+    "remaining_candidates": [
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 100438,
+        "owner_script_entry": 100438,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1514
+        ],
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 103151,
+        "owner_script_entry": 103151,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1539
+        ],
+        "entry": 103151,
+        "event": 1,
+        "link": 2,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 108168,
+        "owner_script_entry": 108168,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1616
+        ],
+        "entry": 108168,
+        "event": 7,
+        "link": 8,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 99615,
+        "owner_script_entry": 99615,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1480
+        ],
+        "entry": 99615,
+        "event": 21,
+        "link": 22,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 99615,
+        "owner_script_entry": 99615,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1480
+        ],
+        "entry": 99615,
+        "event": 31,
+        "link": 32,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 102693,
+        "owner_script_entry": 102693,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1539
+        ],
+        "entry": 102693,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 100475,
+        "owner_script_entry": 100475,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1514
+        ],
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 100475,
+        "owner_script_entry": 100475,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1514
+        ],
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 101325,
+        "owner_script_entry": 101325,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [
+          1511
+        ],
+        "entry": 101325,
+        "event": 3,
+        "link": 4,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 1,
+        "owner_entry": 247566,
+        "owner_script_entry": 247566,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [],
+        "entry": 247566,
+        "event": 0,
+        "link": 1,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 1,
+        "owner_entry": 251878,
+        "owner_script_entry": 251878,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [],
+        "entry": 251878,
+        "event": 4,
+        "link": 5,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 104520,
+        "owner_script_entry": 104520,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [],
+        "entry": 104520,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 100376,
+        "owner_script_entry": 100376,
+        "timed_list": null,
+        "execution": "cpp_delegation_review",
+        "maps": [],
+        "entry": 100376,
+        "event": 0,
+        "link": 10,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 106613,
+        "owner_script_entry": 106613,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [],
+        "entry": 106613,
+        "event": 1,
+        "link": 2,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 106925,
+        "owner_script_entry": 106925,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [],
+        "entry": 106925,
+        "event": 1,
+        "link": 2,
+        "reason": "missing_target"
+      },
+      {
+        "kind": "invalid_primary_link",
+        "owner_source": 0,
+        "owner_entry": 101384,
+        "owner_script_entry": 101384,
+        "timed_list": null,
+        "execution": "native_smart",
+        "maps": [],
+        "entry": 101384,
+        "event": 0,
+        "link": 1,
+        "reason": "missing_target"
+      }
+    ],
+    "runtime_recipient_candidates": [
+      {
+        "reason": "recipient_runtime_resolution_required",
+        "owner_source": 0,
+        "owner_entry": 92447,
+        "owner_script_entry": 92447,
+        "timed_list": null,
+        "event": 4,
+        "action": 87,
+        "target_type": 7
+      },
+      {
+        "reason": "recipient_runtime_resolution_required",
+        "owner_source": 0,
+        "owner_entry": 92450,
+        "owner_script_entry": 92450,
+        "timed_list": null,
+        "event": 5,
+        "action": 87,
+        "target_type": 7
+      },
+      {
+        "reason": "recipient_runtime_resolution_required",
+        "owner_source": 0,
+        "owner_entry": 92445,
+        "owner_script_entry": 92445,
+        "timed_list": null,
+        "event": 4,
+        "action": 87,
+        "target_type": 7
+      }
+    ],
+    "nested_self_replacement_candidates": [
+      {
+        "reason": "native_SetScript9_rejects_self_replacement_during_timed_iteration",
+        "owner_source": 0,
+        "owner_entry": 54638,
+        "owner_script_entry": 54638,
+        "timed_list": 5463804,
+        "event": 0,
+        "action": 87,
+        "target_type": 1
+      },
+      {
+        "reason": "native_SetScript9_rejects_self_replacement_during_timed_iteration",
+        "owner_source": 0,
+        "owner_entry": 54638,
+        "owner_script_entry": 54638,
+        "timed_list": 5463805,
+        "event": 0,
+        "action": 87,
+        "target_type": 1
+      }
+    ],
+    "interpretation": "Broad static candidates include shared and unrelated campaign actors plus C++ delegation. No automatic deletion. Direct100475 LINK7/8 and100438 LINK10 original payloads remain unresolved; prior Li Li/Slaghammer audits retain bounded local/external research and implementation limits. These are not sixteen proven artifact blockers."
+  },
+  "repairs": [
+    "docs/audits/niskara-independent-combat-events-2026-11-17.json",
+    "docs/audits/artifact-inventory-phase-2026-11-17.json"
+  ],
+  "regressions": {
+    "core_groups": [
+      {
+        "Name": "ArtifactSmartLinks",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "ArtifactAcquisitionData",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "ArtifactAcquisition",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "DalaranAllClassOffers",
+        "Status": "PASS_AFTER_HARNESS_UPDATE",
+        "Error": null,
+        "Retest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-offline-sweep-20261117\\recheck-DalaranAllClassOffers.log"
+      },
+      {
+        "Name": "ScenarioResume",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "ScenarioResumeData",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "ScriptPetCredit",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "ArtifactTierProgression",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "ArtifactDeletion",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "DarkRidersStageLifecycle",
+        "Status": "PASS_AFTER_HARNESS_UPDATE",
+        "Error": null,
+        "Retest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-offline-sweep-20261117\\recheck-DarkRidersStageLifecycle.log"
+      },
+      {
+        "Name": "DreadbladesDeathCredit",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "DevourerDeathCredit",
+        "Status": "PASS_AFTER_HARNESS_UPDATE",
+        "Error": null,
+        "Retest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-offline-sweep-20261117\\recheck-DevourerDeathCredit.log"
+      },
+      {
+        "Name": "KingslayersDeathCredit",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "AshbringerPickupCompletion",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "BloodArtifactLoot",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "FrostArtifactLoot",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "FireArtifactLoot",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "FeralArtifactLoot",
+        "Status": "PASS",
+        "Error": null
+      },
+      {
+        "Name": "MonkArtifactLoot",
+        "Status": "PASS",
+        "Error": null
+      }
+    ],
+    "final_checks": [
+      "Test-ArtifactAcquisitionInventory.ps1",
+      "Test-ArtifactInventoryPhase.ps1 -VerifyLiveData -VerifyReleaseBinary",
+      "Test-NiskaraIndependentCombat.ps1 -VerifyLiveData",
+      "Test-ScepterLogin.ps1 -VerifyReleaseBinary",
+      "test_artifact_route_identity.py against fresh final world snapshot"
+    ],
+    "harness_updates": [
+      "ArtifactOnboardingTest current actual marker/recovery endpoints, preserving all36/149 admission checks.",
+      "Revil cleanup native controlled-unit set and ordinary TempSummon filter; production unchanged.",
+      "Devourer certificate uses the exact reviewed Git inverse for the inventory policy, then retains historical source/death checks; policy is exercised separately."
+    ],
+    "scope": "19 broad groups ran against the prior906F binary before the focused Player notification change; relevant inventory/phase and Scepter checks reran against final60B binary. Compilation, native controlled endpoints and selected linked PE paths do not certify client presentation or full36 sequences."
+  },
+  "fresh_evidence": {
+    "root": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-offline-sweep-20261117",
+    "routes_sha256": "75f314023d66a53b3184099ba5b1f5986c93d7f6807214c70d56796fd07813d5",
+    "map_links_sha256": "6d8658bece85dfa3e41e195c84a853dbc7eaff75f28e313a6516b89eb50e5db0",
+    "native_items_sha256": "3a0eebacd3cc5a65afdf6152661d2031b0a25c400a57cae15ed4f6b90d727812",
+    "world_hashes": {
+      "quest_template": "6853d2fb05a7244dc15f456576354d0c0be03e3cde721dca5930f400997a096d",
+      "quest_template_addon": "4efc7df988801c0b6bff15ec722d016643487720a7f0280949d5e203f34867cf",
+      "quest_template_locale": "1099ff7ccb95489f368b15701015a3af2ba224c0b6e845ddc1b4bda04bd6b1e9",
+      "quest_objectives": "722ad85a4f49c22f4a32627acedca573d48c7ffafa569fda972f2a6b7d61e7bc",
+      "creature_queststarter": "83094e3408149410683565b728796031e8fdde43a952b5331e31066a737923aa",
+      "creature_questender": "83c141158cd991ce5e235aeefbca25e5db3bea5888f900900bf0b754a7d1a37f",
+      "gameobject_queststarter": "57a3c7d00849324f3ba87bebb89307d9272d0d15b6a054bb96cff07368b1d6cd",
+      "gameobject_questender": "3ed812f2d8b1913a9a793d08a42530d8bf05c3b12a552dff02f39b47ab96eab6",
+      "battlepay_product_item": "16fb9142299093214bf773ce80756f71f5a3b6417c0861578f19a3caf39f4a7c",
+      "scenario_data": "029b440657e2f8147980bf2f5bbb4f734079193b17735523f0f8dfa4738f6f9c",
+      "playerchoice_response": "bcf63893a9de369bbae50f24cd313ce2dcfbfeaf5eb8304a6a28416bc9ce847a",
+      "playerchoice_response_reward": "73a4b131cf67c9e06211b3be5e501ec06dae6487018d0e7953cb160c71e9c36f",
+      "creature_template": "cbca8a71f52954c9ce0bb480a275adaf405b4432b97339e71a50841e760e78b9",
+      "gameobject_template": "a3ba2d873b176683f59100ac47bf129bf4fb90d54fd696cd8b2b4082e96d1fdf",
+      "gameobject_loot_template": "355d7c5c39361a31465bbb18704dd2718e12c63f908da64e5a061130e1e12286",
+      "smart_scripts": "2ede986fbfe51a60944fe46fd106b1bcde28032b6f8b29fdbd841ae71d092f9d",
+      "conditions": "c96119287fbb3be8b3344e8dfc37f3f499cfa533aece45d326e21a4b2d2b995d"
+    }
+  },
+  "canonical": {
+    "exe_sha256": "60b8837cb9430b952167b39a4846bebeaf96dbceae7cbabbda0b9453009e1d96",
+    "map_sha256": "cd80a65899893262949b7086084bb3013f4816a2dd918a3f0de266456660f25d",
+    "startup": "Task-owned ready/graceful exit0; zero new crashes or unexplained appended diagnostics; all owned servers stopped."
+  },
+  "open": [
+    "Actual client traversal, visual/audio/vehicle/pet presentation, off-spec Hunter exit, group/faction/reconnect alternatives not reached by these hosts.",
+    "Original missing Monk/Slaghammer LINK payloads and broad shared-map candidates retain their existing open audits; no speculative replacement.",
+    "Older mixed7401-byte DBErrors history remains unresolved and untouched."
+  ],
+  "cleanup": "Recorded after verified fixed archive and exact-target cleanup in artifact-offline-cleanup-2026-11-17.json",
+  "fixed_archive": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-artifact-offline-sweep",
+    "manifest_sha256": "e42cfa3cc57a58892a0c4de9931492257782a5a10ed7d6246eeaa211ae7bc7a7",
+    "resolved_phase_diagnostics": "Only repaired438-byte slice archived; mixed active7839-byte log and all unrelated diagnostics untouched."
+  },
+  "fix_commits": {
+    "niskara": "677b04366",
+    "phase": "5a0571e59dd62264ad948ed0591f714daa1a1d5f",
+    "fixtures": "1ead1b9c3"
+  }
+}

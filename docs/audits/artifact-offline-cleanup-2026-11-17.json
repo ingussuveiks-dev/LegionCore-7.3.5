@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-17",
+  "status": "COMPLETE",
+  "removed_files": 245,
+  "reclaimed_bytes": 4898897731.0,
+  "manifest": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-artifact-offline-sweep/deletion-manifest.json",
+    "sha256": "6ADCE5D99ADBB9CCA977006F56D6C20A78899E16AD1F23B70FDB45017DBF9EB8"
+  },
+  "protected": "Canonical EXEs/maps/configuration/certificates/DLLs and extracted assets unchanged; logs and crash inventory unchanged; no running user/unknown server touched.",
+  "retained": [
+    "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-offline-sweep-20261117/rollback-before-phase-fix",
+    "Previous recent rollback copies and personal/database backups",
+    "Fresh final read-only world/native exports for outstanding static candidate investigation",
+    "Regression sources, fixtures, captured diagnostics, fixed evidence and hashes"
+  ],
+  "deferred": "Older mixed canonical7839-byte DBErrors remains untouched;7401 older bytes unresolved. No temporary test server is needed for an outstanding reproduction. Fresh data exports are retained for unresolved static candidate review.",
+  "executable_sha256": "60B8837CB9430B952167B39A4846BEBEAF96DBCEAE7CBABBDA0B9453009E1D96"
+}

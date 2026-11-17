@@ -95,8 +95,8 @@
       ]
     },
     {
-      "commit": "ebonchill-inventory-phase-2026-11-17",
-      "parent": "87b93eea8c8b56f75dca8db6d94a5a701629d316",
+      "commit": "5a0571e59dd62264ad948ed0591f714daa1a1d5f",
+      "parent": "677b04366e14dc7557a04459a6a0b65db9747475",
       "before_sha256": "846982ce81bb9949683bc57770815a2db2f5c0a033421e213752d38f4514fbee",
       "after_sha256": "32fe6aa4a9613bc6f9862cf8a42c943aa2a63d62919d04e4713efba38c04183c",
       "edits": [

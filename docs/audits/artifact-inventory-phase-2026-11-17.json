@@ -35,5 +35,15 @@
   },
   "limits": [
     "Actual client phase/visibility, off-spec Vereesa departure and all36 complete gameplay chains are pending. No personal character/quest state changed."
-  ]
+  ],
+  "fixed_archive": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-artifact-offline-sweep",
+    "manifest_sha256": "e42cfa3cc57a58892a0c4de9931492257782a5a10ed7d6246eeaa211ae7bc7a7",
+    "resolved_phase_diagnostics": "Only repaired438-byte slice archived; mixed active7839-byte log and all unrelated diagnostics untouched."
+  },
+  "fix_commits": {
+    "niskara": "677b04366",
+    "phase": "5a0571e59dd62264ad948ed0591f714daa1a1d5f",
+    "fixtures": "1ead1b9c3"
+  }
 }
