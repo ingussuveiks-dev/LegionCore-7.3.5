@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-17",
+  "status": "OPEN_NO_PRODUCTION_MUTATION",
+  "scope": "Shared1539 EffectsBunny103151 missing LINK2; independent follow-up after delivered Li Li repair. User authorized footage-based functional reconstruction, but visible behavior must identify an actual missing responsibility.",
+  "video": {
+    "url": "https://www.youtube.com/watch?v=kyQCNiG9NUw",
+    "title": "World of Warcraft Quest - Blade in Twilight",
+    "author": "Game Guides Channel / Boxofbeer",
+    "date": "2017-03-31",
+    "duration_seconds": 685.033,
+    "review": "Current turn visually reviewed all11 existing contact sheets:171 samples every4s from0 through680 plus newly extracted final684s frame. No uninterrupted playback; downloaded file has no audio stream. Relevant full sequence reviewed through arrival, betrayal, guard fight, wards/ritual, boss, weapon, return and final quest dialogue.",
+    "observations": [
+      "212..220 betrayal/guard encounter;236guard defeat;240..260 companion dialogue, door264.",
+      "Ward/cultist combat from~268; initial purple beams and gold spheres visible. Killing nearby ritualists removes their corruption; golden electrical arcs persist through later fights (~336..420), rather than disappearing immediately after the ritual.",
+      "351..368 amassed darkness;372 onward passage opens and travel/combat continues. Final encounter480..600; weapon pickup~604..616; final purge~624..636; Dalaran return660, turn-in/follow-up dialogue672..684.",
+      "Footage establishes visible persistence, but not exact periodic destination selection, missing SmartAI payload, shared-instance reset/re-entry/group or every actor/channel identity."
+    ]
+  },
+  "native": {
+    "actors": "Seven static103151/map1539/phase5739, original faction35/invisible trigger and template aura202925.369686 also has204345.104583 native death credit thenDATA1/1 to nearest103151. Four original SmartAI rows remain intact.",
+    "spells": [
+      "202925 Dampened: infinite dummy aura, related202981 Dampened. This is not proof of a light-sphere visual and must not be blindly re-added after cleansing.",
+      "202014 Cosmetic - Holy Wards: infinite self aura23,1000ms native202015 trigger.202015 same cosmetic name, dummy effect3, destination106=TARGET_DEST_CHANNEL_CASTER. There is no native damage effect here.",
+      "63048 Cosmetic - Loot Sparkles: infinite dummy; retained original just-summoned branch, not a cleanse replacement.",
+      "203313 Mind Flay;206895 Ephemeral. Native effect/duration/name readback through actual typed DB2 with read-only Hotfix database."
+    ],
+    "core": "SelectImplicitChannelTargets requires an actual current channel for106; a separate destination-selection branch also handles106/default. Need trace the real triggered-aura cast path, visual receipt and original caster context before changing it. No unconditional custom damage/quest credit, fabricated channel or expiry introduced."
+  },
+  "checks": "TirisfalWardCatalog compiled against original Release libraries, exits0. Before/after diagnostics show no new/changed crash or appended DBErrors/warnings/errors/assertions. Metadata and full raw actor graph saved locally. This is source/data research, not a passing actual ward-combat regression.",
+  "decision": "Do not terminate missing LINK2 or remove diagnostics merely because the preceding cosmetic cast exists. Do not infer damage from lightning art or expire the infinite visual against footage. Exact additional responsibility and client visual behavior remain unresolved; existing mixed103151 errors retained.",
+  "evidence": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-video-reconstruction-20261117",
+  "hashes": {
+    "wards-catalog.tsv": "6f3842d3f546824f2f69412588db1674be3f0408adca5fbdcdb8c679102a7963",
+    "tirisfal-wards-current.tsv": "bb76c89179c57daa32156317b683a73d882ba1ed9ce433949d58b79d0856f72e",
+    "wards-catalog.log": "72594a1c0e7c8a51c1f964d0c74b8eb9ea7a23b2cc075720832b1aef73e2cb31",
+    "tirisfal-final-684.jpg": "d6741170a4ed6c0687772991adbd1ff155422772641d9194177c70eaee7bc763"
+  },
+  "cleanup": "Regenerable metadata probe EXE/OBJ removed with Li Li temporary outputs after capturing successful metadata. Source and unresolved research evidence remain outside fixed archives. Canonical Li Li D6F4 binary/data unchanged."
+}
