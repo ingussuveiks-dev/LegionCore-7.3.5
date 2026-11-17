@@ -1,0 +1,197 @@
+{
+  "batch": 2,
+  "unit_count": 10,
+  "limits": "One unique native selection,World quest row or typed objective record per item;multiple invariants in a record do not add to count. Structural review,not500 fixes/client paths.",
+  "records": [
+    {
+      "sequence": 11,
+      "batch": 2,
+      "kind": "choice",
+      "key": 570,
+      "artifact_items": [
+        128476
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 12,
+      "batch": 2,
+      "kind": "choice",
+      "key": 532,
+      "artifact_items": [
+        128825
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 13,
+      "batch": 2,
+      "kind": "choice",
+      "key": 533,
+      "artifact_items": [
+        128827
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 14,
+      "batch": 2,
+      "kind": "choice",
+      "key": 534,
+      "artifact_items": [
+        128868
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 15,
+      "batch": 2,
+      "kind": "choice",
+      "key": 541,
+      "artifact_items": [
+        128402
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 16,
+      "batch": 2,
+      "kind": "choice",
+      "key": 542,
+      "artifact_items": [
+        128292
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 17,
+      "batch": 2,
+      "kind": "choice",
+      "key": 543,
+      "artifact_items": [
+        128403
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 18,
+      "batch": 2,
+      "kind": "choice",
+      "key": 587,
+      "artifact_items": [
+        128819
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 19,
+      "batch": 2,
+      "kind": "choice",
+      "key": 588,
+      "artifact_items": [
+        128935
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 20,
+      "batch": 2,
+      "kind": "choice",
+      "key": 589,
+      "artifact_items": [
+        128911
+      ],
+      "checks": [
+        "unique_native_response",
+        "unique_reward",
+        "native_chosen_quest_effect16",
+        "native_sparse_item_and_specialization_class",
+        "chosen_and_start_quests_present"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    }
+  ]
+}

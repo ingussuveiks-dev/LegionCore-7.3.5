@@ -1,0 +1,207 @@
+{
+  "batch": 37,
+  "unit_count": 10,
+  "limits": "One unique native selection,World quest row or typed objective record per item;multiple invariants in a record do not add to count. Structural review,not500 fixes/client paths.",
+  "records": [
+    {
+      "sequence": 361,
+      "batch": 37,
+      "kind": "objective",
+      "key": 286343,
+      "artifact_items": [
+        128910
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 362,
+      "batch": 37,
+      "kind": "objective",
+      "key": 284133,
+      "artifact_items": [
+        128823
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 363,
+      "batch": 37,
+      "kind": "objective",
+      "key": 283323,
+      "artifact_items": [
+        128866
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 364,
+      "batch": 37,
+      "kind": "objective",
+      "key": 284747,
+      "artifact_items": [
+        120978
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 365,
+      "batch": 37,
+      "kind": "objective",
+      "key": 283877,
+      "artifact_items": [
+        128861
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 366,
+      "batch": 37,
+      "kind": "objective",
+      "key": 281644,
+      "artifact_items": [
+        128808
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 367,
+      "batch": 37,
+      "kind": "objective",
+      "key": 281321,
+      "artifact_items": [
+        128826
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 368,
+      "batch": 37,
+      "kind": "objective",
+      "key": 284415,
+      "artifact_items": [
+        128870
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_sparse_item_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 369,
+      "batch": 37,
+      "kind": "objective",
+      "key": 281424,
+      "artifact_items": [
+        128872
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 370,
+      "batch": 37,
+      "kind": "objective",
+      "key": 283093,
+      "artifact_items": [
+        128476
+      ],
+      "checks": [
+        "objective_present",
+        "existing_parent_quest",
+        "native_objective_type",
+        "native_nonnegative_counter_storage",
+        "native_creature_target",
+        "nonnegative_objective_amount"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    }
+  ]
+}

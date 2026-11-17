@@ -1,0 +1,208 @@
+{
+  "batch": 9,
+  "unit_count": 10,
+  "limits": "One unique native selection,World quest row or typed objective record per item;multiple invariants in a record do not add to count. Structural review,not500 fixes/client paths.",
+  "records": [
+    {
+      "sequence": 81,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40740,
+      "artifact_items": [
+        128402
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_6",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 82,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40783,
+      "artifact_items": [
+        128858
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_11",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 83,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40784,
+      "artifact_items": [
+        128858
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_11",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 84,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40785,
+      "artifact_items": [
+        128858
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_11",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 85,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40793,
+      "artifact_items": [
+        128937,
+        128938
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_10",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 86,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40819,
+      "artifact_items": [
+        127829
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_12",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 87,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40821,
+      "artifact_items": [
+        128942
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_9",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 88,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40834,
+      "artifact_items": [
+        128858
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_11",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 89,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40835,
+      "artifact_items": [
+        128858
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_11",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    },
+    {
+      "sequence": 90,
+      "batch": 9,
+      "kind": "quest",
+      "key": 40837,
+      "artifact_items": [
+        128858
+      ],
+      "checks": [
+        "quest_row_present",
+        "existing_PrevQuestID",
+        "existing_NextQuestID",
+        "existing_RewardNextQuest",
+        "class_admission_11",
+        "nonempty_native_race_admission"
+      ],
+      "status": "PASS",
+      "issues": [],
+      "notes": []
+    }
+  ]
+}

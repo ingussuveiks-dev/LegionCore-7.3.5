@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-17",
+  "count": 500,
+  "batches": 50,
+  "unit_types": {
+    "choice": 35,
+    "quest": 187,
+    "objective": 278
+  },
+  "statuses": {
+    "PASS": 500
+  },
+  "new_fixes": 0,
+  "hashes": {
+    "plan": "8caf5a9d64eccb6a524e84e48398f51e1f0d4d91f5baa7a75a80076a421d6b2a",
+    "items": "924707bb9a84a7502352ce7b7349048412b3c9af2842fa8818e13e2b36f98c02",
+    "quest_template": "6853d2fb05a7244dc15f456576354d0c0be03e3cde721dca5930f400997a096d",
+    "quest_template_addon": "4efc7df988801c0b6bff15ec722d016643487720a7f0280949d5e203f34867cf",
+    "quest_objectives": "f783b9a636f549c3149b627b0e9d79aa6e0defe0f2d3ebe67ad12fb3f340ede3",
+    "creature_template": "cbca8a71f52954c9ce0bb480a275adaf405b4432b97339e71a50841e760e78b9",
+    "creature_template_wdb": "2142bd6d21cad9807ade066814863ec250cdeffa6cab18ddd58f806495b58d5a",
+    "gameobject_template": "a3ba2d873b176683f59100ac47bf129bf4fb90d54fd696cd8b2b4082e96d1fdf",
+    "playerchoice_response": "bcf63893a9de369bbae50f24cd313ce2dcfbfeaf5eb8304a6a28416bc9ce847a",
+    "playerchoice_response_reward": "73a4b131cf67c9e06211b3be5e501ec06dae6487018d0e7953cb160c71e9c36f"
+  },
+  "native_hashes": {
+    "CriteriaTree": "10568e9752f38f16492e94dd569e77293a1e4a6c07ee6c0fe33b60d7a4bddc05",
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db"
+  },
+  "scope_exclusion": "Artifact items excluded from review: 128289",
+  "limits": "One unique native selection,World quest row or typed objective record per item;multiple invariants in a record do not add to count. Structural review,not500 fixes/client paths.",
+  "review_findings": []
+}

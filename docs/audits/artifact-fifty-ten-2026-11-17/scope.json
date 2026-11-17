@@ -1,0 +1,4528 @@
+[
+  {
+    "sequence": 1,
+    "batch": 1,
+    "kind": "choice",
+    "key": 491,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 2,
+    "batch": 1,
+    "kind": "choice",
+    "key": 493,
+    "artifact_items": [
+      128908
+    ]
+  },
+  {
+    "sequence": 3,
+    "batch": 1,
+    "kind": "choice",
+    "key": 488,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 4,
+    "batch": 1,
+    "kind": "choice",
+    "key": 489,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 5,
+    "batch": 1,
+    "kind": "choice",
+    "key": 490,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 6,
+    "batch": 1,
+    "kind": "choice",
+    "key": 504,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 7,
+    "batch": 1,
+    "kind": "choice",
+    "key": 505,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 8,
+    "batch": 1,
+    "kind": "choice",
+    "key": 506,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 9,
+    "batch": 1,
+    "kind": "choice",
+    "key": 568,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 10,
+    "batch": 1,
+    "kind": "choice",
+    "key": 569,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 11,
+    "batch": 2,
+    "kind": "choice",
+    "key": 570,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 12,
+    "batch": 2,
+    "kind": "choice",
+    "key": 532,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 13,
+    "batch": 2,
+    "kind": "choice",
+    "key": 533,
+    "artifact_items": [
+      128827
+    ]
+  },
+  {
+    "sequence": 14,
+    "batch": 2,
+    "kind": "choice",
+    "key": 534,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 15,
+    "batch": 2,
+    "kind": "choice",
+    "key": 541,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 16,
+    "batch": 2,
+    "kind": "choice",
+    "key": 542,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 17,
+    "batch": 2,
+    "kind": "choice",
+    "key": 543,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 18,
+    "batch": 2,
+    "kind": "choice",
+    "key": 587,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 19,
+    "batch": 2,
+    "kind": "choice",
+    "key": 588,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 20,
+    "batch": 2,
+    "kind": "choice",
+    "key": 589,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 21,
+    "batch": 3,
+    "kind": "choice",
+    "key": 584,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 22,
+    "batch": 3,
+    "kind": "choice",
+    "key": 585,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 23,
+    "batch": 3,
+    "kind": "choice",
+    "key": 586,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 24,
+    "batch": 3,
+    "kind": "choice",
+    "key": 523,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 25,
+    "batch": 3,
+    "kind": "choice",
+    "key": 524,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 26,
+    "batch": 3,
+    "kind": "choice",
+    "key": 525,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 27,
+    "batch": 3,
+    "kind": "choice",
+    "key": 511,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 28,
+    "batch": 3,
+    "kind": "choice",
+    "key": 512,
+    "artifact_items": [
+      128937
+    ]
+  },
+  {
+    "sequence": 29,
+    "batch": 3,
+    "kind": "choice",
+    "key": 513,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 30,
+    "batch": 3,
+    "kind": "choice",
+    "key": 529,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 31,
+    "batch": 4,
+    "kind": "choice",
+    "key": 530,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 32,
+    "batch": 4,
+    "kind": "choice",
+    "key": 531,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 33,
+    "batch": 4,
+    "kind": "choice",
+    "key": 545,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 34,
+    "batch": 4,
+    "kind": "choice",
+    "key": 546,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 35,
+    "batch": 4,
+    "kind": "choice",
+    "key": 547,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 36,
+    "batch": 4,
+    "kind": "quest",
+    "key": 11997,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 37,
+    "batch": 4,
+    "kind": "quest",
+    "key": 38376,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 38,
+    "batch": 4,
+    "kind": "quest",
+    "key": 38990,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 39,
+    "batch": 4,
+    "kind": "quest",
+    "key": 39051,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 40,
+    "batch": 4,
+    "kind": "quest",
+    "key": 39192,
+    "artifact_items": [
+      128908,
+      128910
+    ]
+  },
+  {
+    "sequence": 41,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39247,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 42,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39427,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 43,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39530,
+    "artifact_items": [
+      128908,
+      128910
+    ]
+  },
+  {
+    "sequence": 44,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39757,
+    "artifact_items": [
+      128292,
+      128402
+    ]
+  },
+  {
+    "sequence": 45,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39761,
+    "artifact_items": [
+      128292,
+      128402
+    ]
+  },
+  {
+    "sequence": 46,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39771,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 47,
+    "batch": 5,
+    "kind": "quest",
+    "key": 39832,
+    "artifact_items": [
+      128292,
+      128402
+    ]
+  },
+  {
+    "sequence": 48,
+    "batch": 5,
+    "kind": "quest",
+    "key": 40043,
+    "artifact_items": [
+      128908
+    ]
+  },
+  {
+    "sequence": 49,
+    "batch": 5,
+    "kind": "quest",
+    "key": 40224,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 50,
+    "batch": 5,
+    "kind": "quest",
+    "key": 40225,
+    "artifact_items": [
+      128819,
+      128911,
+      128935
+    ]
+  },
+  {
+    "sequence": 51,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40247,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 52,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40249,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 53,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40267,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 54,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40270,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 55,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40341,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 56,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40385,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 57,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40392,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 58,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40400,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 59,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40402,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 60,
+    "batch": 6,
+    "kind": "quest",
+    "key": 40403,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 61,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40419,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 62,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40495,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 63,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40569,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 64,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40570,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 65,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40588,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 66,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40604,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 67,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40606,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 68,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40611,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 69,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40623,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 70,
+    "batch": 7,
+    "kind": "quest",
+    "key": 40633,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 71,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40634,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 72,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40647,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 73,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40649,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 74,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40651,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 75,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40652,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 76,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40653,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 77,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40698,
+    "artifact_items": [
+      128937,
+      128938
+    ]
+  },
+  {
+    "sequence": 78,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40710,
+    "artifact_items": [
+      128827
+    ]
+  },
+  {
+    "sequence": 79,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40712,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 80,
+    "batch": 8,
+    "kind": "quest",
+    "key": 40731,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 81,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40740,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 82,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40783,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 83,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40784,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 84,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40785,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 85,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40793,
+    "artifact_items": [
+      128937,
+      128938
+    ]
+  },
+  {
+    "sequence": 86,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40819,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 87,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40821,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 88,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40834,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 89,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40835,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 90,
+    "batch": 9,
+    "kind": "quest",
+    "key": 40837,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 91,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40838,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 92,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40847,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 93,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40849,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 94,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40900,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 95,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40930,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 96,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40931,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 97,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40932,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 98,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40933,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 99,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40934,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 100,
+    "batch": 10,
+    "kind": "quest",
+    "key": 40935,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 101,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40938,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 102,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40950,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 103,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40952,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 104,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40953,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 105,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40954,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 106,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40955,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 107,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40986,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 108,
+    "batch": 11,
+    "kind": "quest",
+    "key": 40987,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 109,
+    "batch": 11,
+    "kind": "quest",
+    "key": 41003,
+    "artifact_items": [
+      128937
+    ]
+  },
+  {
+    "sequence": 110,
+    "batch": 11,
+    "kind": "quest",
+    "key": 41015,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 111,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41017,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 112,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41105,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 113,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41112,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 114,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41113,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 115,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41114,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 116,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41119,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 117,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41120,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 118,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41121,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 119,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41125,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 120,
+    "batch": 12,
+    "kind": "quest",
+    "key": 41155,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 121,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41156,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 122,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41255,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 123,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41332,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 124,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41422,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 125,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41436,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 126,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41449,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 127,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41468,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 128,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41540,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 129,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41541,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 130,
+    "batch": 13,
+    "kind": "quest",
+    "key": 41542,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 131,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41574,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 132,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41625,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 133,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41626,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 134,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41627,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 135,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41628,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 136,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41629,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 137,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41630,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 138,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41631,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 139,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41632,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 140,
+    "batch": 14,
+    "kind": "quest",
+    "key": 41689,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 141,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41690,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 142,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41782,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 143,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41783,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 144,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41790,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 145,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41791,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 146,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41792,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 147,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41803,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 148,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41804,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 149,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41806,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 150,
+    "batch": 15,
+    "kind": "quest",
+    "key": 41807,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 151,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41863,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 152,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41918,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 153,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41919,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 154,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41920,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 155,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41921,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 156,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41922,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 157,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41924,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 158,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41957,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 159,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41966,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 160,
+    "batch": 16,
+    "kind": "quest",
+    "key": 41967,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 161,
+    "batch": 17,
+    "kind": "quest",
+    "key": 41993,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 162,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42000,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 163,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42001,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 164,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42002,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 165,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42005,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 166,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42006,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 167,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42007,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 168,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42008,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 169,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42009,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 170,
+    "batch": 17,
+    "kind": "quest",
+    "key": 42010,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 171,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42011,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 172,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42017,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 173,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42074,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 174,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42120,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 175,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42125,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 176,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42128,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 177,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42158,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 178,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42168,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 179,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42185,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 180,
+    "batch": 18,
+    "kind": "quest",
+    "key": 42231,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 181,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42377,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 182,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42428,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 183,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42430,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 184,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42438,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 185,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42439,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 186,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42440,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 187,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42452,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 188,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42455,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 189,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42476,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 190,
+    "batch": 19,
+    "kind": "quest",
+    "key": 42477,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 191,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42479,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 192,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42501,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 193,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42502,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 194,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42503,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 195,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42504,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 196,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42539,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 197,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42568,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 198,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42627,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 199,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42762,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 200,
+    "batch": 20,
+    "kind": "quest",
+    "key": 42765,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 201,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42766,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 202,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42767,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 203,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42768,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 204,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42770,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 205,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42771,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 206,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42772,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 207,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42773,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 208,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42774,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 209,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42868,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 210,
+    "batch": 21,
+    "kind": "quest",
+    "key": 42932,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 211,
+    "batch": 22,
+    "kind": "quest",
+    "key": 42933,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 212,
+    "batch": 22,
+    "kind": "quest",
+    "key": 42935,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 213,
+    "batch": 22,
+    "kind": "quest",
+    "key": 42936,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 214,
+    "batch": 22,
+    "kind": "quest",
+    "key": 42937,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 215,
+    "batch": 22,
+    "kind": "quest",
+    "key": 42957,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 216,
+    "batch": 22,
+    "kind": "quest",
+    "key": 43100,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 217,
+    "batch": 22,
+    "kind": "quest",
+    "key": 43153,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 218,
+    "batch": 22,
+    "kind": "quest",
+    "key": 43254,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 219,
+    "batch": 22,
+    "kind": "quest",
+    "key": 43334,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 220,
+    "batch": 22,
+    "kind": "quest",
+    "key": 43338,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 221,
+    "batch": 23,
+    "kind": "quest",
+    "key": 43644,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 222,
+    "batch": 23,
+    "kind": "quest",
+    "key": 43645,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 223,
+    "batch": 23,
+    "kind": "objective",
+    "key": 279817,
+    "artifact_items": [
+      128908,
+      128910
+    ]
+  },
+  {
+    "sequence": 224,
+    "batch": 23,
+    "kind": "objective",
+    "key": 280193,
+    "artifact_items": [
+      128908
+    ]
+  },
+  {
+    "sequence": 225,
+    "batch": 23,
+    "kind": "objective",
+    "key": 283687,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 226,
+    "batch": 23,
+    "kind": "objective",
+    "key": 284704,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 227,
+    "batch": 23,
+    "kind": "objective",
+    "key": 284728,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 228,
+    "batch": 23,
+    "kind": "objective",
+    "key": 282921,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 229,
+    "batch": 23,
+    "kind": "objective",
+    "key": 280793,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 230,
+    "batch": 23,
+    "kind": "objective",
+    "key": 280808,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 231,
+    "batch": 24,
+    "kind": "objective",
+    "key": 284332,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 232,
+    "batch": 24,
+    "kind": "objective",
+    "key": 281316,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 233,
+    "batch": 24,
+    "kind": "objective",
+    "key": 283128,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 234,
+    "batch": 24,
+    "kind": "objective",
+    "key": 286597,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 235,
+    "batch": 24,
+    "kind": "objective",
+    "key": 281671,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 236,
+    "batch": 24,
+    "kind": "objective",
+    "key": 282680,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 237,
+    "batch": 24,
+    "kind": "objective",
+    "key": 279910,
+    "artifact_items": [
+      128292,
+      128402
+    ]
+  },
+  {
+    "sequence": 238,
+    "batch": 24,
+    "kind": "objective",
+    "key": 278748,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 239,
+    "batch": 24,
+    "kind": "objective",
+    "key": 281408,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 240,
+    "batch": 24,
+    "kind": "objective",
+    "key": 280432,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 241,
+    "batch": 25,
+    "kind": "objective",
+    "key": 285368,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 242,
+    "batch": 25,
+    "kind": "objective",
+    "key": 285600,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 243,
+    "batch": 25,
+    "kind": "objective",
+    "key": 281879,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 244,
+    "batch": 25,
+    "kind": "objective",
+    "key": 280554,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 245,
+    "batch": 25,
+    "kind": "objective",
+    "key": 284271,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 246,
+    "batch": 25,
+    "kind": "objective",
+    "key": 280950,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 247,
+    "batch": 25,
+    "kind": "objective",
+    "key": 283779,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 248,
+    "batch": 25,
+    "kind": "objective",
+    "key": 285060,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 249,
+    "batch": 25,
+    "kind": "objective",
+    "key": 281075,
+    "artifact_items": [
+      128937,
+      128938
+    ]
+  },
+  {
+    "sequence": 250,
+    "batch": 25,
+    "kind": "objective",
+    "key": 281594,
+    "artifact_items": [
+      128937
+    ]
+  },
+  {
+    "sequence": 251,
+    "batch": 26,
+    "kind": "objective",
+    "key": 281029,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 252,
+    "batch": 26,
+    "kind": "objective",
+    "key": 281285,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 253,
+    "batch": 26,
+    "kind": "objective",
+    "key": 281130,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 254,
+    "batch": 26,
+    "kind": "objective",
+    "key": 282800,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 255,
+    "batch": 26,
+    "kind": "objective",
+    "key": 282367,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 256,
+    "batch": 26,
+    "kind": "objective",
+    "key": 279111,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 257,
+    "batch": 26,
+    "kind": "objective",
+    "key": 280513,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 258,
+    "batch": 26,
+    "kind": "objective",
+    "key": 281862,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 259,
+    "batch": 26,
+    "kind": "objective",
+    "key": 280194,
+    "artifact_items": [
+      128908
+    ]
+  },
+  {
+    "sequence": 260,
+    "batch": 26,
+    "kind": "objective",
+    "key": 283693,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 261,
+    "batch": 27,
+    "kind": "objective",
+    "key": 284705,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 262,
+    "batch": 27,
+    "kind": "objective",
+    "key": 277769,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 263,
+    "batch": 27,
+    "kind": "objective",
+    "key": 283875,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 264,
+    "batch": 27,
+    "kind": "objective",
+    "key": 280794,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 265,
+    "batch": 27,
+    "kind": "objective",
+    "key": 281309,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 266,
+    "batch": 27,
+    "kind": "objective",
+    "key": 284353,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 267,
+    "batch": 27,
+    "kind": "objective",
+    "key": 281423,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 268,
+    "batch": 27,
+    "kind": "objective",
+    "key": 283167,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 269,
+    "batch": 27,
+    "kind": "objective",
+    "key": 283251,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 270,
+    "batch": 27,
+    "kind": "objective",
+    "key": 281106,
+    "artifact_items": [
+      128827
+    ]
+  },
+  {
+    "sequence": 271,
+    "batch": 28,
+    "kind": "objective",
+    "key": 282681,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 272,
+    "batch": 28,
+    "kind": "objective",
+    "key": 281143,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 273,
+    "batch": 28,
+    "kind": "objective",
+    "key": 278946,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 274,
+    "batch": 28,
+    "kind": "objective",
+    "key": 281402,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 275,
+    "batch": 28,
+    "kind": "objective",
+    "key": 280433,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 276,
+    "batch": 28,
+    "kind": "objective",
+    "key": 285369,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 277,
+    "batch": 28,
+    "kind": "objective",
+    "key": 280438,
+    "artifact_items": [
+      128819,
+      128911,
+      128935
+    ]
+  },
+  {
+    "sequence": 278,
+    "batch": 28,
+    "kind": "objective",
+    "key": 281906,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 279,
+    "batch": 28,
+    "kind": "objective",
+    "key": 280555,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 280,
+    "batch": 28,
+    "kind": "objective",
+    "key": 284272,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 281,
+    "batch": 29,
+    "kind": "objective",
+    "key": 280951,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 282,
+    "batch": 29,
+    "kind": "objective",
+    "key": 283780,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 283,
+    "batch": 29,
+    "kind": "objective",
+    "key": 285075,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 284,
+    "batch": 29,
+    "kind": "objective",
+    "key": 284719,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 285,
+    "batch": 29,
+    "kind": "objective",
+    "key": 281598,
+    "artifact_items": [
+      128937
+    ]
+  },
+  {
+    "sequence": 286,
+    "batch": 29,
+    "kind": "objective",
+    "key": 281005,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 287,
+    "batch": 29,
+    "kind": "objective",
+    "key": 281198,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 288,
+    "batch": 29,
+    "kind": "objective",
+    "key": 284218,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 289,
+    "batch": 29,
+    "kind": "objective",
+    "key": 282808,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 290,
+    "batch": 29,
+    "kind": "objective",
+    "key": 282702,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 291,
+    "batch": 30,
+    "kind": "objective",
+    "key": 281891,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 292,
+    "batch": 30,
+    "kind": "objective",
+    "key": 282861,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 293,
+    "batch": 30,
+    "kind": "objective",
+    "key": 281863,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 294,
+    "batch": 30,
+    "kind": "objective",
+    "key": 282124,
+    "artifact_items": [
+      128908
+    ]
+  },
+  {
+    "sequence": 295,
+    "batch": 30,
+    "kind": "objective",
+    "key": 283715,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 296,
+    "batch": 30,
+    "kind": "objective",
+    "key": 284706,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 297,
+    "batch": 30,
+    "kind": "objective",
+    "key": 278247,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 298,
+    "batch": 30,
+    "kind": "objective",
+    "key": 282920,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 299,
+    "batch": 30,
+    "kind": "objective",
+    "key": 281622,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 300,
+    "batch": 30,
+    "kind": "objective",
+    "key": 281310,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 301,
+    "batch": 31,
+    "kind": "objective",
+    "key": 284360,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 302,
+    "batch": 31,
+    "kind": "objective",
+    "key": 281315,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 303,
+    "batch": 31,
+    "kind": "objective",
+    "key": 283179,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 304,
+    "batch": 31,
+    "kind": "objective",
+    "key": 283291,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 305,
+    "batch": 31,
+    "kind": "objective",
+    "key": 281107,
+    "artifact_items": [
+      128827
+    ]
+  },
+  {
+    "sequence": 306,
+    "batch": 31,
+    "kind": "objective",
+    "key": 282682,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 307,
+    "batch": 31,
+    "kind": "objective",
+    "key": 281145,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 308,
+    "batch": 31,
+    "kind": "objective",
+    "key": 279691,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 309,
+    "batch": 31,
+    "kind": "objective",
+    "key": 281403,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 310,
+    "batch": 31,
+    "kind": "objective",
+    "key": 280434,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 311,
+    "batch": 32,
+    "kind": "objective",
+    "key": 285370,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 312,
+    "batch": 32,
+    "kind": "objective",
+    "key": 280439,
+    "artifact_items": [
+      128819,
+      128911,
+      128935
+    ]
+  },
+  {
+    "sequence": 313,
+    "batch": 32,
+    "kind": "objective",
+    "key": 283341,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 314,
+    "batch": 32,
+    "kind": "objective",
+    "key": 280558,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 315,
+    "batch": 32,
+    "kind": "objective",
+    "key": 284273,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 316,
+    "batch": 32,
+    "kind": "objective",
+    "key": 281257,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 317,
+    "batch": 32,
+    "kind": "objective",
+    "key": 283790,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 318,
+    "batch": 32,
+    "kind": "objective",
+    "key": 285076,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 319,
+    "batch": 32,
+    "kind": "objective",
+    "key": 284720,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 320,
+    "batch": 32,
+    "kind": "objective",
+    "key": 281599,
+    "artifact_items": [
+      128937
+    ]
+  },
+  {
+    "sequence": 321,
+    "batch": 33,
+    "kind": "objective",
+    "key": 281006,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 322,
+    "batch": 33,
+    "kind": "objective",
+    "key": 281200,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 323,
+    "batch": 33,
+    "kind": "objective",
+    "key": 282128,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 324,
+    "batch": 33,
+    "kind": "objective",
+    "key": 284086,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 325,
+    "batch": 33,
+    "kind": "objective",
+    "key": 282368,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 326,
+    "batch": 33,
+    "kind": "objective",
+    "key": 279107,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 327,
+    "batch": 33,
+    "kind": "objective",
+    "key": 282977,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 328,
+    "batch": 33,
+    "kind": "objective",
+    "key": 282354,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 329,
+    "batch": 33,
+    "kind": "objective",
+    "key": 283930,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 330,
+    "batch": 33,
+    "kind": "objective",
+    "key": 283322,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 331,
+    "batch": 34,
+    "kind": "objective",
+    "key": 284726,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 332,
+    "batch": 34,
+    "kind": "objective",
+    "key": 283796,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 333,
+    "batch": 34,
+    "kind": "objective",
+    "key": 281623,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 334,
+    "batch": 34,
+    "kind": "objective",
+    "key": 281311,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 335,
+    "batch": 34,
+    "kind": "objective",
+    "key": 284408,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 336,
+    "batch": 34,
+    "kind": "objective",
+    "key": 281374,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 337,
+    "batch": 34,
+    "kind": "objective",
+    "key": 283057,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 338,
+    "batch": 34,
+    "kind": "objective",
+    "key": 283292,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 339,
+    "batch": 34,
+    "kind": "objective",
+    "key": 281356,
+    "artifact_items": [
+      128827
+    ]
+  },
+  {
+    "sequence": 340,
+    "batch": 34,
+    "kind": "objective",
+    "key": 286155,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 341,
+    "batch": 35,
+    "kind": "objective",
+    "key": 281146,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 342,
+    "batch": 35,
+    "kind": "objective",
+    "key": 279705,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 343,
+    "batch": 35,
+    "kind": "objective",
+    "key": 281404,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 344,
+    "batch": 35,
+    "kind": "objective",
+    "key": 284943,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 345,
+    "batch": 35,
+    "kind": "objective",
+    "key": 286765,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 346,
+    "batch": 35,
+    "kind": "objective",
+    "key": 283383,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 347,
+    "batch": 35,
+    "kind": "objective",
+    "key": 283342,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 348,
+    "batch": 35,
+    "kind": "objective",
+    "key": 280563,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 349,
+    "batch": 35,
+    "kind": "objective",
+    "key": 284274,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 350,
+    "batch": 35,
+    "kind": "objective",
+    "key": 280825,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 351,
+    "batch": 36,
+    "kind": "objective",
+    "key": 283818,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 352,
+    "batch": 36,
+    "kind": "objective",
+    "key": 285077,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 353,
+    "batch": 36,
+    "kind": "objective",
+    "key": 284721,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 354,
+    "batch": 36,
+    "kind": "objective",
+    "key": 281007,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 355,
+    "batch": 36,
+    "kind": "objective",
+    "key": 281202,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 356,
+    "batch": 36,
+    "kind": "objective",
+    "key": 282142,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 357,
+    "batch": 36,
+    "kind": "objective",
+    "key": 281105,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 358,
+    "batch": 36,
+    "kind": "objective",
+    "key": 282419,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 359,
+    "batch": 36,
+    "kind": "objective",
+    "key": 279376,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 360,
+    "batch": 36,
+    "kind": "objective",
+    "key": 280512,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 361,
+    "batch": 37,
+    "kind": "objective",
+    "key": 286343,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 362,
+    "batch": 37,
+    "kind": "objective",
+    "key": 284133,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 363,
+    "batch": 37,
+    "kind": "objective",
+    "key": 283323,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 364,
+    "batch": 37,
+    "kind": "objective",
+    "key": 284747,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 365,
+    "batch": 37,
+    "kind": "objective",
+    "key": 283877,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 366,
+    "batch": 37,
+    "kind": "objective",
+    "key": 281644,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 367,
+    "batch": 37,
+    "kind": "objective",
+    "key": 281321,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 368,
+    "batch": 37,
+    "kind": "objective",
+    "key": 284415,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 369,
+    "batch": 37,
+    "kind": "objective",
+    "key": 281424,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 370,
+    "batch": 37,
+    "kind": "objective",
+    "key": 283093,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 371,
+    "batch": 38,
+    "kind": "objective",
+    "key": 283476,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 372,
+    "batch": 38,
+    "kind": "objective",
+    "key": 281419,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 373,
+    "batch": 38,
+    "kind": "objective",
+    "key": 281420,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 374,
+    "batch": 38,
+    "kind": "objective",
+    "key": 281611,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 375,
+    "batch": 38,
+    "kind": "objective",
+    "key": 281612,
+    "artifact_items": [
+      128292
+    ]
+  },
+  {
+    "sequence": 376,
+    "batch": 38,
+    "kind": "objective",
+    "key": 281405,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 377,
+    "batch": 38,
+    "kind": "objective",
+    "key": 284944,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 378,
+    "batch": 38,
+    "kind": "objective",
+    "key": 279919,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 379,
+    "batch": 38,
+    "kind": "objective",
+    "key": 283384,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 380,
+    "batch": 38,
+    "kind": "objective",
+    "key": 283343,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 381,
+    "batch": 39,
+    "kind": "objective",
+    "key": 280564,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 382,
+    "batch": 39,
+    "kind": "objective",
+    "key": 284275,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 383,
+    "batch": 39,
+    "kind": "objective",
+    "key": 280922,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 384,
+    "batch": 39,
+    "kind": "objective",
+    "key": 283827,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 385,
+    "batch": 39,
+    "kind": "objective",
+    "key": 285046,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 386,
+    "batch": 39,
+    "kind": "objective",
+    "key": 284846,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 387,
+    "batch": 39,
+    "kind": "objective",
+    "key": 281022,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 388,
+    "batch": 39,
+    "kind": "objective",
+    "key": 281281,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 389,
+    "batch": 39,
+    "kind": "objective",
+    "key": 282259,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 390,
+    "batch": 39,
+    "kind": "objective",
+    "key": 281151,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 391,
+    "batch": 40,
+    "kind": "objective",
+    "key": 282660,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 392,
+    "batch": 40,
+    "kind": "objective",
+    "key": 279752,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 393,
+    "batch": 40,
+    "kind": "objective",
+    "key": 280514,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 394,
+    "batch": 40,
+    "kind": "objective",
+    "key": 286344,
+    "artifact_items": [
+      128910
+    ]
+  },
+  {
+    "sequence": 395,
+    "batch": 40,
+    "kind": "objective",
+    "key": 284134,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 396,
+    "batch": 40,
+    "kind": "objective",
+    "key": 283331,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 397,
+    "batch": 40,
+    "kind": "objective",
+    "key": 284748,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 398,
+    "batch": 40,
+    "kind": "objective",
+    "key": 283878,
+    "artifact_items": [
+      128861
+    ]
+  },
+  {
+    "sequence": 399,
+    "batch": 40,
+    "kind": "objective",
+    "key": 281689,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 400,
+    "batch": 40,
+    "kind": "objective",
+    "key": 281568,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 401,
+    "batch": 41,
+    "kind": "objective",
+    "key": 284490,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 402,
+    "batch": 41,
+    "kind": "objective",
+    "key": 281425,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 403,
+    "batch": 41,
+    "kind": "objective",
+    "key": 283094,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 404,
+    "batch": 41,
+    "kind": "objective",
+    "key": 283507,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 405,
+    "batch": 41,
+    "kind": "objective",
+    "key": 281421,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 406,
+    "batch": 41,
+    "kind": "objective",
+    "key": 281422,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 407,
+    "batch": 41,
+    "kind": "objective",
+    "key": 281614,
+    "artifact_items": [
+      128402
+    ]
+  },
+  {
+    "sequence": 408,
+    "batch": 41,
+    "kind": "objective",
+    "key": 282803,
+    "artifact_items": [
+      128292,
+      128402
+    ]
+  },
+  {
+    "sequence": 409,
+    "batch": 41,
+    "kind": "objective",
+    "key": 281406,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 410,
+    "batch": 41,
+    "kind": "objective",
+    "key": 285018,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 411,
+    "batch": 42,
+    "kind": "objective",
+    "key": 281188,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 412,
+    "batch": 42,
+    "kind": "objective",
+    "key": 283385,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 413,
+    "batch": 42,
+    "kind": "objective",
+    "key": 286156,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 414,
+    "batch": 42,
+    "kind": "objective",
+    "key": 286687,
+    "artifact_items": [
+      128820
+    ]
+  },
+  {
+    "sequence": 415,
+    "batch": 42,
+    "kind": "objective",
+    "key": 284311,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 416,
+    "batch": 42,
+    "kind": "objective",
+    "key": 280935,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 417,
+    "batch": 42,
+    "kind": "objective",
+    "key": 283718,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 418,
+    "batch": 42,
+    "kind": "objective",
+    "key": 285054,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 419,
+    "batch": 42,
+    "kind": "objective",
+    "key": 284717,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 420,
+    "batch": 42,
+    "kind": "objective",
+    "key": 281539,
+    "artifact_items": [
+      128940
+    ]
+  },
+  {
+    "sequence": 421,
+    "batch": 43,
+    "kind": "objective",
+    "key": 281282,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 422,
+    "batch": 43,
+    "kind": "objective",
+    "key": 282326,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 423,
+    "batch": 43,
+    "kind": "objective",
+    "key": 281219,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 424,
+    "batch": 43,
+    "kind": "objective",
+    "key": 282701,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 425,
+    "batch": 43,
+    "kind": "objective",
+    "key": 281890,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 426,
+    "batch": 43,
+    "kind": "objective",
+    "key": 282862,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 427,
+    "batch": 43,
+    "kind": "objective",
+    "key": 284135,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 428,
+    "batch": 43,
+    "kind": "objective",
+    "key": 283334,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 429,
+    "batch": 43,
+    "kind": "objective",
+    "key": 284756,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 430,
+    "batch": 43,
+    "kind": "objective",
+    "key": 282143,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 431,
+    "batch": 44,
+    "kind": "objective",
+    "key": 281569,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 432,
+    "batch": 44,
+    "kind": "objective",
+    "key": 284636,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 433,
+    "batch": 44,
+    "kind": "objective",
+    "key": 281442,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 434,
+    "batch": 44,
+    "kind": "objective",
+    "key": 283144,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 435,
+    "batch": 44,
+    "kind": "objective",
+    "key": 283536,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 436,
+    "batch": 44,
+    "kind": "objective",
+    "key": 281633,
+    "artifact_items": [
+      128827,
+      128868
+    ]
+  },
+  {
+    "sequence": 437,
+    "batch": 44,
+    "kind": "objective",
+    "key": 282760,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 438,
+    "batch": 44,
+    "kind": "objective",
+    "key": 281407,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 439,
+    "batch": 44,
+    "kind": "objective",
+    "key": 285019,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 440,
+    "batch": 44,
+    "kind": "objective",
+    "key": 281189,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 441,
+    "batch": 45,
+    "kind": "objective",
+    "key": 285594,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 442,
+    "batch": 45,
+    "kind": "objective",
+    "key": 281881,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 443,
+    "batch": 45,
+    "kind": "objective",
+    "key": 284358,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 444,
+    "batch": 45,
+    "kind": "objective",
+    "key": 280939,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 445,
+    "batch": 45,
+    "kind": "objective",
+    "key": 283826,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 446,
+    "batch": 45,
+    "kind": "objective",
+    "key": 285059,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 447,
+    "batch": 45,
+    "kind": "objective",
+    "key": 284718,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 448,
+    "batch": 45,
+    "kind": "objective",
+    "key": 281283,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 449,
+    "batch": 45,
+    "kind": "objective",
+    "key": 284195,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 450,
+    "batch": 45,
+    "kind": "objective",
+    "key": 282801,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 451,
+    "batch": 46,
+    "kind": "objective",
+    "key": 282704,
+    "artifact_items": [
+      128306
+    ]
+  },
+  {
+    "sequence": 452,
+    "batch": 46,
+    "kind": "objective",
+    "key": 281892,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 453,
+    "batch": 46,
+    "kind": "objective",
+    "key": 282863,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 454,
+    "batch": 46,
+    "kind": "objective",
+    "key": 284163,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 455,
+    "batch": 46,
+    "kind": "objective",
+    "key": 283335,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 456,
+    "batch": 46,
+    "kind": "objective",
+    "key": 284757,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 457,
+    "batch": 46,
+    "kind": "objective",
+    "key": 285409,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 458,
+    "batch": 46,
+    "kind": "objective",
+    "key": 281574,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 459,
+    "batch": 46,
+    "kind": "objective",
+    "key": 284637,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 460,
+    "batch": 46,
+    "kind": "objective",
+    "key": 281567,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 461,
+    "batch": 47,
+    "kind": "objective",
+    "key": 283145,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 462,
+    "batch": 47,
+    "kind": "objective",
+    "key": 283560,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 463,
+    "batch": 47,
+    "kind": "objective",
+    "key": 282765,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 464,
+    "batch": 47,
+    "kind": "objective",
+    "key": 281411,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 465,
+    "batch": 47,
+    "kind": "objective",
+    "key": 285121,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 466,
+    "batch": 47,
+    "kind": "objective",
+    "key": 285371,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 467,
+    "batch": 47,
+    "kind": "objective",
+    "key": 285599,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 468,
+    "batch": 47,
+    "kind": "objective",
+    "key": 281957,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 469,
+    "batch": 47,
+    "kind": "objective",
+    "key": 284359,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 470,
+    "batch": 47,
+    "kind": "objective",
+    "key": 280949,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 471,
+    "batch": 48,
+    "kind": "objective",
+    "key": 283895,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 472,
+    "batch": 48,
+    "kind": "objective",
+    "key": 285061,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 473,
+    "batch": 48,
+    "kind": "objective",
+    "key": 284852,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 474,
+    "batch": 48,
+    "kind": "objective",
+    "key": 281284,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 475,
+    "batch": 48,
+    "kind": "objective",
+    "key": 284220,
+    "artifact_items": [
+      128860
+    ]
+  },
+  {
+    "sequence": 476,
+    "batch": 48,
+    "kind": "objective",
+    "key": 282802,
+    "artifact_items": [
+      128821
+    ]
+  },
+  {
+    "sequence": 477,
+    "batch": 48,
+    "kind": "objective",
+    "key": 281893,
+    "artifact_items": [
+      127829
+    ]
+  },
+  {
+    "sequence": 478,
+    "batch": 48,
+    "kind": "objective",
+    "key": 282864,
+    "artifact_items": [
+      128832
+    ]
+  },
+  {
+    "sequence": 479,
+    "batch": 48,
+    "kind": "objective",
+    "key": 284164,
+    "artifact_items": [
+      128823
+    ]
+  },
+  {
+    "sequence": 480,
+    "batch": 48,
+    "kind": "objective",
+    "key": 283388,
+    "artifact_items": [
+      128866
+    ]
+  },
+  {
+    "sequence": 481,
+    "batch": 49,
+    "kind": "objective",
+    "key": 284758,
+    "artifact_items": [
+      120978
+    ]
+  },
+  {
+    "sequence": 482,
+    "batch": 49,
+    "kind": "objective",
+    "key": 285410,
+    "artifact_items": [
+      128808
+    ]
+  },
+  {
+    "sequence": 483,
+    "batch": 49,
+    "kind": "objective",
+    "key": 281978,
+    "artifact_items": [
+      128826
+    ]
+  },
+  {
+    "sequence": 484,
+    "batch": 49,
+    "kind": "objective",
+    "key": 284641,
+    "artifact_items": [
+      128870
+    ]
+  },
+  {
+    "sequence": 485,
+    "batch": 49,
+    "kind": "objective",
+    "key": 282008,
+    "artifact_items": [
+      128872
+    ]
+  },
+  {
+    "sequence": 486,
+    "batch": 49,
+    "kind": "objective",
+    "key": 283146,
+    "artifact_items": [
+      128476
+    ]
+  },
+  {
+    "sequence": 487,
+    "batch": 49,
+    "kind": "objective",
+    "key": 283561,
+    "artifact_items": [
+      128825
+    ]
+  },
+  {
+    "sequence": 488,
+    "batch": 49,
+    "kind": "objective",
+    "key": 282766,
+    "artifact_items": [
+      128868
+    ]
+  },
+  {
+    "sequence": 489,
+    "batch": 49,
+    "kind": "objective",
+    "key": 281412,
+    "artifact_items": [
+      128403
+    ]
+  },
+  {
+    "sequence": 490,
+    "batch": 49,
+    "kind": "objective",
+    "key": 285122,
+    "artifact_items": [
+      128819
+    ]
+  },
+  {
+    "sequence": 491,
+    "batch": 50,
+    "kind": "objective",
+    "key": 285393,
+    "artifact_items": [
+      128935
+    ]
+  },
+  {
+    "sequence": 492,
+    "batch": 50,
+    "kind": "objective",
+    "key": 285601,
+    "artifact_items": [
+      128911
+    ]
+  },
+  {
+    "sequence": 493,
+    "batch": 50,
+    "kind": "objective",
+    "key": 283338,
+    "artifact_items": [
+      127857
+    ]
+  },
+  {
+    "sequence": 494,
+    "batch": 50,
+    "kind": "objective",
+    "key": 284369,
+    "artifact_items": [
+      128862
+    ]
+  },
+  {
+    "sequence": 495,
+    "batch": 50,
+    "kind": "objective",
+    "key": 280956,
+    "artifact_items": [
+      128942
+    ]
+  },
+  {
+    "sequence": 496,
+    "batch": 50,
+    "kind": "objective",
+    "key": 283900,
+    "artifact_items": [
+      128943
+    ]
+  },
+  {
+    "sequence": 497,
+    "batch": 50,
+    "kind": "objective",
+    "key": 285062,
+    "artifact_items": [
+      128941
+    ]
+  },
+  {
+    "sequence": 498,
+    "batch": 50,
+    "kind": "objective",
+    "key": 284920,
+    "artifact_items": [
+      128938
+    ]
+  },
+  {
+    "sequence": 499,
+    "batch": 50,
+    "kind": "objective",
+    "key": 281291,
+    "artifact_items": [
+      128858
+    ]
+  },
+  {
+    "sequence": 500,
+    "batch": 50,
+    "kind": "objective",
+    "key": 284222,
+    "artifact_items": [
+      128860
+    ]
+  }
+]

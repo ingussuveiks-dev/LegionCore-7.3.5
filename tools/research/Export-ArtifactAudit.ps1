@@ -1,4 +1,4 @@
-param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/artifact-audit/world")
+param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/artifact-audit/world",[switch]$IncludeCreatureDefinitions)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out=[IO.Path]::GetFullPath($OutputDirectory)
@@ -49,6 +49,9 @@ try {
  foreach($table in @('creature_queststarter','creature_questender','gameobject_queststarter','gameobject_questender')){Export-Table $table 'id,quest'}
  Export-Table 'scenario_data' 'ScenarioID,MapID,DifficultyID,Team,Class,LfgDungeonID'
  Export-Table 'creature_template' 'entry,AIName,ScriptName,npcflag,unit_flags,faction'
+ # Native credit-only definitions can lack a server override row. Keep the
+ # original20-table export compatible,and opt in to the full loader union.
+ if($IncludeCreatureDefinitions){Export-Table 'creature_template_wdb' 'entry,Name1,Type'}
  Export-Table 'gameobject_template' 'entry,type,Data0,Data1,Data2,Data3,Data4,Data5,AIName,ScriptName'
  Export-Table 'gameobject_loot_template' 'Entry,Item,Currency,Reference,Chance,QuestRequired,LootMode,GroupId,MinCount,MaxCount'
  Export-Table 'spell_script_names' 'spell_id,ScriptName'

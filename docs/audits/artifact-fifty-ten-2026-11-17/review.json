@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-17",
+  "status": "FIFTY_TEN_STRUCTURAL_REVIEW_COMPLETE_NOT_500_REPAIRS",
+  "counts": {
+    "batches": 50,
+    "unique_records": 500,
+    "choices": 35,
+    "quests": 187,
+    "objectives": 278,
+    "new_confirmed_gameplay_fixes": 0
+  },
+  "scope": "Artifact quests only, including data/text eligibility for investigation. Active Protection artifact128289 excluded from independent automated review; its three focused repairs are separately deployed and client-pending.",
+  "meaning": "PASS means the listed structural invariants passed against the captured local data and current native readers. It does not establish authored objective intent, combat, ownership, groups, pets, one-hit kills, retries, re-entry, audio, visuals, whole chains or client traversal. This is500 unique records, not500 quests or500 repaired mechanics. All36 acquisition lines are not certified.",
+  "inputs": "Fresh MariaDB World export with opt-in creature_template_wdb union; native ItemSparse/Artifact/ChrSpecialization through actual DB2Storage; native SpellEffect/CriteriaTree through the existing matching-data reader. No character rows or credentials included.",
+  "checks": [
+    "Fresh independent catalog:36 routes,149 native race/class pairs,zero automated loot/link/admission findings;three known actor LINK review candidates remain.",
+    "Actual sparse native item probe:62 selected artifact/quest item IDs.",
+    "500 unique planned records in50 cohorts of10:each cohort JSON lists exact rules and result.",
+    "Existing Test-ArtifactExportPublication.ps1 passed accepted/rejected/truncated output and input-handle cases. Full21-table opt-in export was parsed and checked;default20-table behavior retained.",
+    "Diagnostic wrapper pre/post on independent export/native/reader/review operations:no changed crashes,appended DBErrors or new server warnings/errors/assertions. No worldserver startup or active Protection automated test run."
+  ],
+  "review_corrections": [
+    {
+      "records": 26,
+      "reason": "Creature targets exist in creature_template_wdb,which ObjectMgr loads into the template store before optional server overrides. Original override-only audit was too strict;no invented creature rows added."
+    },
+    {
+      "records": 11,
+      "reason": "Zero Amount is accepted by the native loader and HasQuestObjectiveComplete counter>=Amount. No matching IDs for these11 records in the reviewed local QuestObjective.db2 (3448 rows,SHA2562175fe75a6da3adbe3ba64050da8f0b8a558a433a39505c5bee17c42429e4143). Authored count/real behavior remains unresolved;structural legality is not proof of correct gameplay. No0->1 data rewrite made."
+    }
+  ],
+  "open_actor_links": [
+    {
+      "entry": 100438,
+      "event": "reward45440,row9",
+      "missing_link": 10,
+      "limit": "Later shared campaign callback;original payload unrecovered. Not automatically an artifact acquisition blocker."
+    },
+    {
+      "entry": 100475,
+      "event": "accept40633,row1",
+      "missing_link": 7,
+      "limit": "Existing Windwalker dialogue continues through authored TEXT_OVER/data callbacks;missing original payload unrecovered."
+    },
+    {
+      "entry": 100475,
+      "event": "TEXT_OVER2,row6",
+      "missing_link": 8,
+      "limit": "Existing talk3 gives kite hint;missing original payload unrecovered. No invented teleport/credit."
+    }
+  ],
+  "reproduce": [
+    "Export-ArtifactAudit.ps1 -OutputDirectory <world> -IncludeCreatureDefinitions",
+    "audit_artifact_routes.py --world <world> --items <native-items.tsv> --output <routes.json> --date 2026-11-17",
+    "prepare_artifact_fifty_ten.py --routes <routes.json> --output <plan> --exclude-item 128289",
+    "Read-LegionLegendaryCatalog.ps1 -SourceFile ArtifactReviewItemsCatalog.cpp -ProbeName ArtifactReviewItemsCatalog -OutputFile <native-items.tsv>;set LEGION_ARTIFACT_REVIEW_ITEMS to <plan>/native-item-queries.txt locally",
+    "audit_artifact_fifty_ten.py --plan <plan>/case-plan.json --world <world> --items <native-items.tsv> --creature-wdb <world>/creature_template_wdb.jsonl --output <results>",
+    "Wrap independent checks in Invoke-WithRuntimeDiagnostics.ps1;inspect native process exit/stdout/stderr and appended diagnostics."
+  ],
+  "source_hashes": {
+    "tools/research/Export-ArtifactAudit.ps1": "ebd26a4111465b4b120f804ca82e1c7c8d27b5d8d372cfb5b702c898c871ba38",
+    "tools/research/ArtifactReviewItemsCatalog.cpp": "3649b3486db43976803445f9681163433df2b9bf72c95f850cca5bf23bd139a6",
+    "tools/research/prepare_artifact_fifty_ten.py": "f9fbba111bf2f326494f47585ccd3d54a55d5d1e5808293850a50cfc5625cc07",
+    "tools/research/audit_artifact_fifty_ten.py": "93d0874eb928e03eecdcb21aec1100698203143d9e9cd7b5f419dc50f5fd8935"
+  },
+  "runtime": "Canonical deployed Protection worldserver AF613D308B41F8828A4A1A68266EA6F704ABAB1F0C4B9CDFDBB0541FABED5A20. This review changes no live gameplay data,characters or server binary.",
+  "unresolved_diagnostics": "Existing mixed DBErrors.log7111 bytes retained;old handshake warnings and Protection client-pending evidence remain outside fixed. No log truncation or user process stop.",
+  "video": "See protection-video-comparison-2026-11-17.json:entire public729s timeline sampled every5s,door sequence more densely;not continuous full audiovisual playback.",
+  "cleanup": "Independent diagnostic archive and uniquely owned sparse probe cleanup recorded in separate closeout after this commit. Raw public World snapshots kept locally for reproducibility."
+}
