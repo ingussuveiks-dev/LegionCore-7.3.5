@@ -13,6 +13,7 @@ void AddSC_ritual_ruination();
 void AddSC_dreadscar_followup();
 void AddSC_commanders_valor();
 void AddSC_artifact_acquisition();
+void AddSC_titanstrike_fusion();
 void AddSC_dark_riders_artifact();
 void AddSC_dark_whispers_artifact();
 void AddSC_stormheim_rounds();
@@ -279,6 +280,7 @@ void AddLegionScripts()
     AddSC_dreadscar_followup();
     AddSC_commanders_valor();
     AddSC_artifact_acquisition();
+    AddSC_titanstrike_fusion();
     AddSC_dark_riders_artifact();
     AddSC_dark_whispers_artifact();
     AddSC_stormheim_rounds();

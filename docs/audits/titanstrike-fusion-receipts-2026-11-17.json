@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-17",
+  "request": "Continue unresolved artifact follow-up findings without the client.",
+  "status": "DEPLOYED_ASAN_SQL_LIVE_PE_CANONICAL_STARTUP_PASS_CLIENT_PENDING",
+  "quest": {
+    "id": 42158,
+    "title": "The Creator's Workshop",
+    "preceding": 41574,
+    "scope": "Titanstrike follow-up on map1579; distinct from XR9-47 workshop map1495/scenario1068. Prior user BM acquisition/upgrade confirmation is preserved and is not proof of this rapid-panel alternative."
+  },
+  "cause": [
+    "Core106613 and bunny106925 DATA1/1 schedule native SmartAI despawn: hidden on next update, still alive/in-world for five seconds. CONDITION_NEAR_CREATURE29 uses alive/distance, not visibility.",
+    "Each panel249765/249773 immediately signals its own core, then conditionally sends DATA1/1 to Mimiron106558 if the other core is absent. Four tested rapid gaps leave both conditional sends rejected; later removal emits no new panel event. A six-second slow baseline succeeds. Reinteraction/client recovery is not claimed impossible.",
+    "Both core despawn actions also refer to nonexistent LINK2. The legitimate continuation is the original panel-to-Mimiron action, not a fabricated action on the despawning core."
+  ],
+  "repair": [
+    "Scoped SmartAI subclasses retain all native gossip, summons, core casts/despawn timing, Mimiron self-spell211456 and timed lists. Bind the actual original-summoner child GUIDs for the accepted quest42158/menu19589 experiment.",
+    "Only actual DATA1/1 on both current bound children authorizes the existing panel handoff; reject a missing/foreign/stale/dead child and consume the receiver once. Native Reset and a genuine new gossip attempt clear the state. Unrelated actor/map/data paths delegate normally.",
+    "Two exact source22 panel predicates authenticate the receiver readiness through the original base-GameObject target. Three guarded actor bindings select the linked subclasses. End the two completed core despawn edges at0; generic missing-LINK diagnostics remain unchanged. No player credit, weapon, teleport, respec or missing-core grant."
+  ],
+  "migration": "sql/updates/world/2026_11_17_12_titanstrike_fusion_receipts.sql",
+  "guard": "Six complete native SmartScript graph fingerprints, original three quest/panel conditions, native SmartAI bindings and both type10 panel bindings. Normalize only the exact installed replacement for idempotent replay. Refuse an existing foreign node or action/timer/link/actor/condition/quest/panel drift atomically even with mysql --force.",
+  "tests": [
+    "Test-TitanstrikeFusion: four identified expected-broken rapid-panel baselines, one slow positive baseline and eight actual repaired class/condition sequences across both orders and0/100/1000/6000ms gaps. Native SmartAI SetDespawnTime/StartDespawn/UpdateDespawn and nearest-selector bodies extracted verbatim. World/cast/route endpoints controlled.",
+    "Actual production Mimiron/Core/Condition classes: original base delegation, genuine current child identity, duplicate signals, missing spawn, foreign owner, stale/reset/retry, dead owner, inactive quest, wrong panel/map and unrelated-script fallback controls; MSVC AddressSanitizer clean.",
+    "Test-TitanstrikeFusionData -VerifyLiveData: full actual-schema four-table/all-field comparison, migration twice, eight foreign-scope refusals. Fixtures use TEMP tables only; the final live comparison is a scoped read.",
+    "Linked PE verifier: real Legion loader registration, actual two native SmartAI SetData bridges, two-receipt readiness and registered condition. Original final-link scripts.lib path, compiled titanstrike_fusion.obj and canonical copy hashes checked.",
+    "Final task-owned canonical PID30996: ready, graceful shutdown/exit0, stdout/stderr reviewed, no new crashes or appended DBErrors/errors/warnings/assertions; no owned server left."
+  ],
+  "deployed": {
+    "exe_sha256": "44a6bb611d239e9832f701624e9ec0ec2e8523c4b71cdd280afe97fe88e58a3e",
+    "map_sha256": "55e2f4cfde32e40cc356cc6783f72452c2c2634f68f0763e2cbe0da2163568fe",
+    "previous_exe": "60b8837cb9430b952167b39a4846bebeaf96dbceae7cbabbda0b9453009e1d96"
+  },
+  "evidence": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-unresolved-20261117",
+  "limits": [
+    "This is a functional correction of the authenticated handoff; no original missing core LINK2 payload was recovered or invented.",
+    "No actual client experiment, dialogue/audio/camera, all42158/whole36 chain, all cast failures or abandonment/save/re-entry timing certified. Failed/missing child cannot authorize progression; physical retry/re-entry remains a client check.",
+    "Native quest/group/pet/guardian combat credit is untouched; this friendly core interaction adds no direct progression dispatch."
+  ]
+}
