@@ -1,0 +1,26 @@
+{
+  "archive": "build-extractors/bin/Release/fixed/tuure-opening-20261117",
+  "active_crashes": 0,
+  "archive_manifest_sha256": "C4A1819E904784ABAEB84FE2CD23747AFB2CE015E434F0A14BE24D804B987875",
+  "implementation_commits": [
+    "e9b3ce00bae057b1c425977264cdc19f9a6fe9ed"
+  ],
+  "canonical_unchanged": true,
+  "removed_files": 36,
+  "archive_files": 209,
+  "mixed_db_errors_unchanged": true,
+  "servers": [],
+  "reclaimed_bytes": 1197816911.0,
+  "mixed_db_errors_bytes": 7111,
+  "deletion_manifest_sha256": "D19CEFFFBB39BB2F8C792C3D6EA1173F240EA559EF9BDEFE36B6CE1667771484",
+  "date": "2026-11-17",
+  "status": "DEPLOYED_PUSHED_DIAGNOSTICS_ARCHIVED_CLIENT_PENDING",
+  "gameplay_fix_commit": "e9b3ce00bae057b1c425977264cdc19f9a6fe9ed",
+  "shared_audit": "docs/audits/tuure-route-opening-2026-11-17.json",
+  "archive_review": "209 original-byte task diagnostics archived with source/destination SHA256 equality and source drift checks. Two expected-broken controls and four deliberate recovered exhaustion warnings remain identified. Resolved pinned-header fixture compile and local PE dependency-path setup failures remain with passing repairs. Mixed canonical DBErrors and historical handshake evidence were not archived as fixed or truncated.",
+  "removed": "36 task-owned regenerated EXE/OBJ/PDB/MAP/private copied configurations removed after resolved absolute task-root/ancestor reparse-point/process checks. Retained test roots limited to new outputs after2026-11-17T04:30 local;shared catalog removal limited to the two uniquely rebuilt TuureRouteOpeningNative and TuureRouteMiddleNative EXE/OBJ pairs. Reclaimed1197816911 bytes. Regression source,reusable tools,original final-link libraries and canonical assets preserved.",
+  "retained": "OriginalB1EF8DD4 EXE/map rollback-before-resume kept for this pending client check. Older23C151B3 recovery remains associated with the earlier2007 client-pending issue. Final73F9E20F worldserver and4986910D map remain unchanged;runtime configuration/certs/DLLs/bnet preserved. No hidden/task-owned process remains.",
+  "checks": "Two pinned expected-broken native controls;20 repaired native opening contexts;four recovered native faults;20 retained native middle-dialogue cases;retained modeled ASAN firstfight/route/cage/captain matrices;exact source amendment composition;original final-link input identity;staged/canonical complete selected PE chain;task-owned canonical ready/shutdown0/exit0/empty stderr. Ordinary post-test diagnostics clean. Native hosts are Release with controlled earlier victory/waypoint prerequisites,not whole-core ASAN or full client traversal.",
+  "remaining": "Actual client opening/middle dialogue visibility,audio,timing,full route and final pickup/return remain pending. Active Hruthnir/Protection not changed/tested. Existing mixed7111-byte DBErrors and historical handshake timeout/retry findings remain unresolved and preserved. No all36/full artifact-chain verification claim.",
+  "next_independent_review": "Local source/data reviewed optional first-victory2009:one-shot unchecked publication in BeginUnlock,with native player-placeholder and two creature roles. Separate source lead only;real failure/recovery,earned unlock timing and original recipient binding still require a dedicated reproduction before counting another defect or repair."
+}
