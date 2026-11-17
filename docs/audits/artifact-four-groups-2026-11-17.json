@@ -1,0 +1,180 @@
+{
+  "date": "2026-11-17",
+  "status": "FOUR_GROUPS_REVIEWED_EIGHT_DATA_COUNTS_DEPLOYED_THREE_TEST_ADAPTERS_REPAIRED_OPEN_GAMEPLAY_REMAINS",
+  "request": "Review Monk dialogue/travel,zero-count objectives,pet/guardian/retry credit,and manual pickup/return/turn-in in that order.",
+  "order": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "groups": [
+    {
+      "number": 1,
+      "subject": "Monk dialogue and travel",
+      "result": "Existing kite and actor phase repairs passed current checks;original missing actions remain unrecovered,no invented movement/credit.",
+      "checks": [
+        "Test-MonkKiteTravel.ps1 -AddressSanitizer -VerifyNativeCatalog:actual click/SmartAI/personal90 dispatch plus native spell catalog;rejected click/cast,class/map/quest/lease/owner/contact/death/pet/group isolation,delayed stale effects,failed transfer and new-click retry.",
+        "Test-LiliPhaseData.ps1 -VerifyLiveData:full-row TEMP original/replay/seven context refusals;read-only deployed guard/updater equality.",
+        "Test-LiliPhaseNative.ps1 -VerifyLiveData:actual parsed phases/native accumulation/nearest selector;52 profile/repeat groups plus range/mask/dead/remote controls. No dialogue or quest dispatch in that native fixture."
+      ],
+      "open": [
+        "LiLi100475 row1->7,row6->8 original payloads not recovered;existing kite travel remains intact.",
+        "Ponshu100438 row9->10 belongs to later45440 campaign,not newly proven artifact acquisition block.",
+        "Full shared dialogue retry/concurrent-player voice,walking/crane boarding/departure/client flight remain unverified."
+      ],
+      "sources": "Current World graph/scope,matching26972 native catalog and prior bounded donor/TrinityCore/history/GitHub/video research reconciled. No new retail action payload recovered or new claim of continuous video playback."
+    },
+    {
+      "number": 2,
+      "subject": "Zero-count objectives",
+      "result": "187 independent route quests contain12 zero Amount rows,including one omitted from the earlier278-objective subset. Original local TDB735/25549 has1 for every12. Eight nonblocking row counts restored transactionally;four required sources remain open.",
+      "repair_commit": "07b0fbb31",
+      "audit": "artifact-nonblocking-objective-counts-2026-11-17.json",
+      "checks": [
+        "Original SQL schema/row parser compared all12 exact IDs against both original TDB735 and base LegionCore2024 data. Local QuestObjective.db2 lacks those IDs and is not treated as authoritative absence.",
+        "Test-ArtifactNonblockingCounts.ps1:full12-column TEMP equality across all six quests,exact8 update/replay,eight drift/missing refusals,actual read-only live Amount1 after updater. All other rows and required/hidden/optional flags preserved."
+      ],
+      "open": "Mandatory280438/280439 (Shaman40225),281419 (Priest40938),285316 (Paladin42771) remain0 pending real connected progression. Native credit spells exist for the first pair,butno authored current cast source recovered;the latter marker/actor source is missing. Current static spawns absent for all4 IDs does not prove no runtime summon. No arbitrary acceptance credit or new mandatory blocker introduced."
+    },
+    {
+      "number": 3,
+      "subject": "Pet/guardian last hits,repeat events and recovery",
+      "result": "Shared credit resolver/current selected scenario cases pass;one stale FuZan fixture interface repaired,no new production killer-credit defect established.",
+      "checks": [
+        "Test-ScriptPetCredit.ps1 -AddressSanitizer -VerifyReleaseBinary:actual SmartAI credit/criteria/invoker-cast/owner resolver and canonical ProcessAction/caster bridge,missing/charmed/guardian owners,dedup,ordinary spell isolation and delayed revalidation.",
+        "Test-FuZanDefense.ps1:26 controlled dispatch/instance cases,weighted100 defense/four8-actor waves/player-pet-guardian-ally-null endpoints,authored timer/path/reply order,repeat/missing/reset boundaries and explicit no-current-AI warning/fresh retry.",
+        "Test-SilverHandAberrationCredit.ps1 -VerifyReleaseBinary:actual owner resolver/shared scenario bridge,24 invalid contexts,faction labels,NPC/missing/ineligible owner fallback,reentrant/repeat/reset,100yd boundary;counter/geometry/list endpoints controlled.",
+        "Test-SilverHandAberrationTransition.ps1 -VerifyReleaseBinary:85 extracted final-scaled damage/half-health/one-hit/lethal cap/epoch/lifecycle cases and selected canonical dispatch.",
+        "Test-DevourerDeathCredit.ps1 -AddressSanitizer -VerifyNativeCatalog:16 real owner/in-map/Scenario-tree repeated/reentrant/death-presentation controls,failed conversation and four-door cleanup.",
+        "Test-DelayedKillCredit.ps1:complete production queue/native alias dispatch,50ms corpse loss,live reward mark,cancel,eligible group/dead corpse,once-only and missing catalog controls."
+      ],
+      "repair_commit": "1d56ff738",
+      "audit": "fuzan-defense-fixture-refresh-2026-11-17.json",
+      "limits": "Source review includes killer-independent Vengeance instance criteria and owner-resolving direct Rogue/Monk/Paladin callbacks. These controlled/native checks do not certify every combat/group/pet path in all36 chains."
+    },
+    {
+      "number": 4,
+      "subject": "Manual pickup,real acquisition,return and turn-in",
+      "result": "Selected live data/native handlers pass real-storage and ownership gates/retries/return markers;two stale test interfaces repaired,no new production automatic pickup/return grant defect established.",
+      "checks": [
+        "Test-ArtifactAcquisitionData.ps1:8 exact loot links/native GetLootId,old migration/replay,6 retained SmartAI roots and2 current C++ handlers/4 bindings,settings/custom/unrelated preservation,no early gossip credit/broken links.",
+        "Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary:ten current non-Warrior pickup admissions,owned replay/native completion callback and canonical Hunter tuples.",
+        "Test-MonkArtifactLoot.ps1 -VerifyLiveData -AddressSanitizer:full-schema guarded loot data/native condition/ElseGroup/cached-slot/SmartAI/owned interaction across both actual Monk quests/maps/scenarios.",
+        "Test-DreadbladesPickup.ps1 -AddressSanitizer -VerifyNativeCatalog:actual native loot storage/consumption/release/completed-state,pair identity,real-death admission,full bag/storage/equip/cast retry,missing actors/stale claimant cleanup,no early/double item grants.",
+        "Test-AlunethPickupData.ps1 -VerifyLive -AddressSanitizer:480 native source4/ElseGroup/cached-slot cases,source17 admission,ten TEMP tables/replay/sixteen context refusals/live equality.",
+        "Test-LightsWrathPickup.ps1 -AddressSanitizer -VerifyNativeCatalog:both Priest/Mage full current handlers and native scene/loot/force-equip/deferred teleport controls,status/admission/9s timing/skip/expiry/reaccept/reset/map/GUID/cast retry and accepted-only49875.",
+        "Test-SheilunAcquisitionNative.ps1 -VerifyLiveData:10 source cases,8 actual two-map boarding/spline/transfer/cancel cases,completed-outro rejoin and2 before-logout memory-save cases;actual Release core/storage/map/vehicle/script readers,read-only DB and TEMP empty artifact XP,not full-core ASAN or actual saved character/client traversal.",
+        "Test-SharasdalReturnAdmission.ps1:eleven TEMP tables/replay/twenty refusals plus63 actual native condition/ElseGroup/source18/Quest.ObjectID-to-storage/visibility/spellclick/serialized-flag cases,both faction labels,real prior pickup+bank ownership,incomplete/complete,rejects premature/abandoned/rewarded/pet/foreign context.",
+        "Test-QuestTurnInMarkers.ps1:native NPC/GO status with changed acceptance conditions,explicit visibility,start/next/repeatable/level/script gates retained."
+      ],
+      "fixture_commits": [
+        "048a2929e",
+        "43c5297a9"
+      ],
+      "limits": "Manual-storage and cast/equip scheduling boundaries are distinguished. Controlled single-staff fixture does not test linked-child scheduling or real ItemSparse inventory type. No automatic give/complete/item removal or personal-character reset performed. Actual client UI/VFX/camera/flight/full36 lines remain unverified."
+    }
+  ],
+  "native_zero_sources": [
+    {
+      "path": ".codex\\TDB735\\TDB_full_735.00_2018_02_19\\TDB_world_735.00_2018_02_19.sql",
+      "sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+      "selected_rows": 12
+    },
+    {
+      "path": "sql\\base\\LegionCore_full_735.26972_2024_10_23\\LegionCore_world_735.26972_2024_10_23.sql",
+      "sha256": "0265cc795b6507f8918162293e7c905143cdb2ef227ee72179bb43bcf889f68c",
+      "selected_rows": 12
+    }
+  ],
+  "zero_rows": [
+    {
+      "objective": 280438,
+      "quest": 40225,
+      "original_amount": 1,
+      "result": "REQUIRED_SOURCE_UNRESOLVED_RETAINED_0"
+    },
+    {
+      "objective": 280439,
+      "quest": 40225,
+      "original_amount": 1,
+      "result": "REQUIRED_SOURCE_UNRESOLVED_RETAINED_0"
+    },
+    {
+      "objective": 281419,
+      "quest": 40938,
+      "original_amount": 1,
+      "result": "REQUIRED_SOURCE_UNRESOLVED_RETAINED_0"
+    },
+    {
+      "objective": 282680,
+      "quest": 41626,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 282681,
+      "quest": 41626,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 282682,
+      "quest": 41626,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 283341,
+      "quest": 42006,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 283342,
+      "quest": 42006,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 283343,
+      "quest": 42006,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 284274,
+      "quest": 42452,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 284275,
+      "quest": 42452,
+      "original_amount": 1,
+      "result": "RESTORED_NONBLOCKING_1"
+    },
+    {
+      "objective": 285316,
+      "quest": 42771,
+      "original_amount": 1,
+      "result": "REQUIRED_SOURCE_UNRESOLVED_RETAINED_0"
+    }
+  ],
+  "scope_disclosure": "No active Protection modeled/native/ASAN gameplay test created or run. Existing SilverHand VerifyReleaseBinary invokes a shared completion verifier that also incidentally inspected Vigfus native owner/death callback in the binary;recorded as read-only nested PE scope,not Protection gameplay verification. Canonical startup PID8032 was solely the independent nonblocking SQL promotion/loader check. Prior Protection user retest remains pending.",
+  "failed_checks": "Three real stale-fixture failures retained,investigated and paired with passing repairs:FuZan typed-AI diagnostic interfaces;legacy8-root assumption after known two C++ replacements;single-staff current door/linked-child declarations. No passing assertion substituted for their failed exit. Existing compiler shadowing/conversion/unused warnings retained,not runtime-server warnings.",
+  "diagnostics": "Every independent data/native/ASAN/runtime/client-free run had pre/post canonical+own crash/log snapshots. All final runs exit0/captured output,stderr/EOF checked. No new/changed crash or appended DBErrors/server warnings/errors/assertions. Mixed DBErrors7111 bytes and old handshake unresolved;no log truncated. Owned server8032 ready/graceful shutdown0/exit0/gone;no user server stopped/no hidden server left.",
+  "production": "Only8 objective Amount fields changed;canonical EXE remainsAF613D308B41F8828A4A1A68266EA6F704ABAB1F0C4B9CDFDBB0541FABED5A20. No production C++ changed during these four groups;three fixture repairs require no new world binary.",
+  "cleanup": {
+    "Retained": "Reusable regression sources/tools and generated review inputs/manifests retained;raw unresolved Monk/required-zero/source captures remain outside fixed. Original Protection rollback/video/handshake evidence untouched. No logs truncated.",
+    "WorldSHA256": "AF613D308B41F8828A4A1A68266EA6F704ABAB1F0C4B9CDFDBB0541FABED5A20",
+    "ArchiveFiles": 433,
+    "ArchiveManifestSHA256": "DBBF5DBB4850DAA679178658E8C85F5A3F6FC0E42B6D1305C5F64767435569BC",
+    "Servers": [],
+    "Archive": "build-extractors/bin/Release/fixed/artifact-four-groups-20261117",
+    "ProtectedUnchanged": true,
+    "DBErrorsLength": 7111,
+    "ReclaimedBytes": 943026600.0
+  },
+  "final_limit": "All four requested groups were investigated and available checks completed. This does not close the listed missing original actions/four required sources or certify all36 full gameplay chains. Eight count corrections and three test repairs are not11 repaired quests."
+}

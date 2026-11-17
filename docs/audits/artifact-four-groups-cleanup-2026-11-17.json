@@ -1,0 +1,398 @@
+{
+  "Retained": "Reusable regression sources/tools and generated review inputs/manifests retained;raw unresolved Monk/required-zero/source captures remain outside fixed. Original Protection rollback/video/handshake evidence untouched. No logs truncated.",
+  "WorldSHA256": "AF613D308B41F8828A4A1A68266EA6F704ABAB1F0C4B9CDFDBB0541FABED5A20",
+  "ArchiveFiles": 433,
+  "ArchiveManifestSHA256": "DBBF5DBB4850DAA679178658E8C85F5A3F6FC0E42B6D1305C5F64767435569BC",
+  "Servers": [],
+  "Archive": "build-extractors/bin/Release/fixed/artifact-four-groups-20261117",
+  "ProtectedUnchanged": true,
+  "Removed": [
+    {
+      "Length": 1455104,
+      "Path": ".codex\\artifact-four-groups-20261117\\sharasdal-return\\test.exe",
+      "SHA256": "5CD1BC7A883BD660958C752CE4329532FBE5F01B55BC18C84C1DCCF569B9960A"
+    },
+    {
+      "Length": 2191645,
+      "Path": ".codex\\artifact-four-groups-20261117\\sharasdal-return\\test.obj",
+      "SHA256": "ED2F5C9F6FF4FD5013CE706DC24BB0CAB9E8C93A8C3555B77805B1B9D1A0C3FF"
+    },
+    {
+      "Length": 12464128,
+      "Path": ".codex\\artifact-four-groups-20261117\\sharasdal-return\\test.pdb",
+      "SHA256": "C614C4E636DECD46F6D4274197B763D639F9BD04D0062D7A94564954C2AAC7B8"
+    },
+    {
+      "Length": 31996416,
+      "Path": ".codex\\artifact-four-groups-20261117\\sheilun-native\\probe.exe",
+      "SHA256": "F880BC06A4203DE530A04506A892EEA90FE35E1108027A716D3F6E14EA4E72BD"
+    },
+    {
+      "Length": 198629704,
+      "Path": ".codex\\artifact-four-groups-20261117\\sheilun-native\\probe.ilk",
+      "SHA256": "6140BDE8BA0AB72898469B4BEB79ED417A1C6BFC4088EAD45078088251FCBC5A"
+    },
+    {
+      "Length": 97225438,
+      "Path": ".codex\\artifact-four-groups-20261117\\sheilun-native\\probe.map",
+      "SHA256": "9D155370479C61A04986F4756BC10F39A4F153C5250FF0B7580E22070FC703B2"
+    },
+    {
+      "Length": 4705529,
+      "Path": ".codex\\artifact-four-groups-20261117\\sheilun-native\\probe.obj",
+      "SHA256": "B05998AD8459905E90A55C6AA67403202A5DF0BAB8EFB425CCA7FDF8EDA3046A"
+    },
+    {
+      "Length": 29224960,
+      "Path": ".codex\\artifact-four-groups-20261117\\sheilun-native\\probe.pdb",
+      "SHA256": "117E30D318419A07D56034F02B9D1BA34C358F4614FFBB505DE0D8B57249A852"
+    },
+    {
+      "Length": 119457,
+      "Path": ".codex\\artifact-four-groups-20261117\\sheilun-native\\run-20261117-114126\\worldserver.conf",
+      "SHA256": "AB284092CEEBF775B9A567507645E5E5C423578C9B8E175A9BFC0DD04267E7EF"
+    },
+    {
+      "Length": 302592,
+      "Path": ".codex\\artifact-four-groups-20261117\\turnin-markers\\test.exe",
+      "SHA256": "91845EFB24DEF4251C5ACCAA567CD8786355CF81E508CC4BEF934B08B98C5EF3"
+    },
+    {
+      "Length": 584392,
+      "Path": ".codex\\artifact-four-groups-20261117\\turnin-markers\\test.obj",
+      "SHA256": "94C5A062A121C0F6A3CCAB8C79F0C4FF6A4891D3DA31013E0F1D1E2F6797AC9F"
+    },
+    {
+      "Length": 1354240,
+      "Path": "build-extractors\\runtime-test\\aluneth-pickup-data\\test.exe",
+      "SHA256": "0BA851769D9FC5C3583675FF3897C79D71467EE60C3A729F9E5124517AA778F9"
+    },
+    {
+      "Length": 1562560,
+      "Path": "build-extractors\\runtime-test\\aluneth-pickup-data\\test.obj",
+      "SHA256": "F9E803DEC8237BA0F4B00BAB8D22DE4C840CA5E035C3CEF39CB7DFFA79455DBA"
+    },
+    {
+      "Length": 11808768,
+      "Path": "build-extractors\\runtime-test\\aluneth-pickup-data\\test.pdb",
+      "SHA256": "25E48D48391B8926FE5C58DAC5FFBF2966F1D1B8795141D8B9B87DF03E771407"
+    },
+    {
+      "Length": 561152,
+      "Path": "build-extractors\\runtime-test\\aluneth-pickup-data\\vc140.pdb",
+      "SHA256": "237FDAE4C8188E5306CA8AC39917C3EF7B6F4C313BD56AD0BBD3DA36D439CF96"
+    },
+    {
+      "Length": 331264,
+      "Path": "build-extractors\\runtime-test\\artifact-acquisition\\data-test.exe",
+      "SHA256": "9C39C0BA390AC082A3E39A51A98D0951D163D70F95C546F80EC7DF3ECEBB4C29"
+    },
+    {
+      "Length": 456900,
+      "Path": "build-extractors\\runtime-test\\artifact-acquisition\\data-test.obj",
+      "SHA256": "8D80926F9A394DF176C5E24CC42D81AA936E6D2D00DB6D6E5149B68E0F2A5FF5"
+    },
+    {
+      "Length": 322048,
+      "Path": "build-extractors\\runtime-test\\artifact-acquisition\\test.exe",
+      "SHA256": "518BB7C90C808021884F77964420A5096AA23628FFDA145089DF699DFA8A6BB6"
+    },
+    {
+      "Length": 327350,
+      "Path": "build-extractors\\runtime-test\\artifact-acquisition\\test.obj",
+      "SHA256": "EC508C3C6A444A9AD2E7FF24B43649A2EED1F1BFA64A11B9672C514E1EC7EEEB"
+    },
+    {
+      "Length": 569344,
+      "Path": "build-extractors\\runtime-test\\delayed-kill-credit\\20261117-113442-172\\compiler.pdb",
+      "SHA256": "6152FFAEA05FBBF8CCAD26F33493AD02FA9AB64638ADA550584CE5494E2EDD52"
+    },
+    {
+      "Length": 187904,
+      "Path": "build-extractors\\runtime-test\\delayed-kill-credit\\20261117-113442-172\\test.exe",
+      "SHA256": "AF9F52FF104580DBF6CE0267ED79B84803DD9B6E4E888E57367DBDD22A9B6414"
+    },
+    {
+      "Length": 809811,
+      "Path": "build-extractors\\runtime-test\\delayed-kill-credit\\20261117-113442-172\\test.obj",
+      "SHA256": "92389803679724999A18D52CDB4F10243EBE426AFBA56457B798D74ACFFC58E6"
+    },
+    {
+      "Length": 1568768,
+      "Path": "build-extractors\\runtime-test\\delayed-kill-credit\\20261117-113442-172\\test.pdb",
+      "SHA256": "B588E5338196F184D036B73A60882A1B8ADB2591E48893161C8BE517139D2DC1"
+    },
+    {
+      "Length": 1297920,
+      "Path": "build-extractors\\runtime-test\\devourer-death-credit\\test.exe",
+      "SHA256": "097A3CBA0197B2E5E5B76C892B9ED0CFCF1412B6EF09CE1462491D5C98B596A1"
+    },
+    {
+      "Length": 1428264,
+      "Path": "build-extractors\\runtime-test\\devourer-death-credit\\test.obj",
+      "SHA256": "0525051DC19C054304EB097CF96F96D082A62A9B20AC5435A2AB8A0064534D6D"
+    },
+    {
+      "Length": 12095488,
+      "Path": "build-extractors\\runtime-test\\devourer-death-credit\\test.pdb",
+      "SHA256": "83F3011CE1E626A959BD7C7A4478A61537E55B5E4738AC72277C3415C3F494A5"
+    },
+    {
+      "Length": 1255424,
+      "Path": "build-extractors\\runtime-test\\dreadblades-pickup\\test.exe",
+      "SHA256": "D5133C0535BD83B331AE818877B73399E833D7C3580ABE0DB27999CB03BDB2C3"
+    },
+    {
+      "Length": 1157575,
+      "Path": "build-extractors\\runtime-test\\dreadblades-pickup\\test.obj",
+      "SHA256": "7C179E078CBE2937739DFD52551517603D1E9BFA58517D12CE66C29CC37BEF78"
+    },
+    {
+      "Length": 12062720,
+      "Path": "build-extractors\\runtime-test\\dreadblades-pickup\\test.pdb",
+      "SHA256": "BA5B112FA9CA7FE22126766F0DA75CBF83303EDF9609D8462F91C1399A954C4C"
+    },
+    {
+      "Length": 1482752,
+      "Path": "build-extractors\\runtime-test\\fuzan-defense\\test.exe",
+      "SHA256": "CEC60E934AAB84B021A3A6CBA202D2728ACE40F68DC1DE8397921D3EF50A6FEF"
+    },
+    {
+      "Length": 2074844,
+      "Path": "build-extractors\\runtime-test\\fuzan-defense\\test.obj",
+      "SHA256": "5F701EA12CD337F440C24E04B319187680997D6E1967FA0328938FFA0F1AB83B"
+    },
+    {
+      "Length": 12496896,
+      "Path": "build-extractors\\runtime-test\\fuzan-defense\\test.pdb",
+      "SHA256": "537E47B4354AD26E306A9A72FC9827BFE2F4B846303F03AFB850693877A28C3C"
+    },
+    {
+      "Length": 646656,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\DevourerCombatCatalog.exe",
+      "SHA256": "79D164484D4FE06CA66A24789340CF752CFF95D9C13F8A4C868F02607E9BE791"
+    },
+    {
+      "Length": 309248,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\DevourerCombatCatalog.obj",
+      "SHA256": "B28DCBF20168C4C48BF74B2D97ADC8839B1326A43F91658C1135176F7FA9F5B1"
+    },
+    {
+      "Length": 668160,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\DreadbladesPickupCatalog.exe",
+      "SHA256": "21950DCE3FC9D9BDF644C991E20B26F18CA59397CF28CDC237C01577A9FC443D"
+    },
+    {
+      "Length": 457651,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\DreadbladesPickupCatalog.obj",
+      "SHA256": "3E8058FE9B7E8459DB31F7B64F51403AEBF6AC9E4110A458C3E977021335839C"
+    },
+    {
+      "Length": 649216,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\FuZanDefenseCatalog.exe",
+      "SHA256": "05C41E44042B09F01EB7088E1A4EC9D3FA2DBCB1260D957683A9B1E857E243BC"
+    },
+    {
+      "Length": 384595,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\FuZanDefenseCatalog.obj",
+      "SHA256": "A73364DB1B49EE5FB07475E983DC2C16DEC8556B1E4DC0F04B67105E0D66A853"
+    },
+    {
+      "Length": 694272,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\LightsWrathCatalog.exe",
+      "SHA256": "87EB9872CEB83904DDCDAFD672B42E9571A2323F916C54F1DDEE095C2CF19304"
+    },
+    {
+      "Length": 610221,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\LightsWrathCatalog.obj",
+      "SHA256": "EE2036C73939BFECB9BE8191961003D5BEAF6A31BB49531A6AA9012E244BCB54"
+    },
+    {
+      "Length": 653824,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\MonkTravelCatalog.exe",
+      "SHA256": "F3B4481F397A84093FA14FD1A49BECEDE3B61604DFBC3EAD86C2AA36422075D8"
+    },
+    {
+      "Length": 423778,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\MonkTravelCatalog.obj",
+      "SHA256": "49135C067AE8D118F8662F1C448092F258117368A548A7535DE6C34068DEC32A"
+    },
+    {
+      "Length": 8169472,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\SilverHandPickupCatalog.exe",
+      "SHA256": "1C0D3AB4F9F67D7D020183712969D28128C05F95E9F2207E3340C17A305AB880"
+    },
+    {
+      "Length": 1457703,
+      "Path": "build-extractors\\runtime-test\\legion-legendary-catalog\\SilverHandPickupCatalog.obj",
+      "SHA256": "F86F25668D8788067A4AA49CD7FC26E5BBA406D7A2175FDDE3F53BEC649C1150"
+    },
+    {
+      "Length": 1800192,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\aluneth.exe",
+      "SHA256": "D62C7E70E88BDB542CFCA4EA4AD06B9943ED39B9F71D726885528D206F4404A0"
+    },
+    {
+      "Length": 3636493,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\aluneth.obj",
+      "SHA256": "742ABAC7F292198CFFF5697D7C27AECCB7824E3C3D227CE2FE5EB70089A9E891"
+    },
+    {
+      "Length": 13086720,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\aluneth.pdb",
+      "SHA256": "11C7DEA3482531248DCFDAA8D958C53A5884C8D00D4DFBCAA43BE4791ECA32E4"
+    },
+    {
+      "Length": 1800192,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\priest.exe",
+      "SHA256": "956C3CB8B6F735938F36FE2F7A5A7B71D90EC5E09D968C5922D858DF27D6EE1E"
+    },
+    {
+      "Length": 3636489,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\priest.obj",
+      "SHA256": "1D785C0251AB00A07BC5BECFB493C7A4046D475DFF458C689902F29CB9F8754D"
+    },
+    {
+      "Length": 13078528,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\priest.pdb",
+      "SHA256": "2BE9D2403BA6823B54B63327445F0415DEFF5C62A188EF7561B2C584F932FC50"
+    },
+    {
+      "Length": 905216,
+      "Path": "build-extractors\\runtime-test\\lights-wrath-pickup\\vc140.pdb",
+      "SHA256": "553C2C0CCD1250E90B249C9DA30ED5745D023CE0FCAB4720C38BB78AB0D8E62D"
+    },
+    {
+      "Length": 31548416,
+      "Path": "build-extractors\\runtime-test\\lili-phase-native\\20261117-111821-964\\probe.exe",
+      "SHA256": "6673D878586529EC2306265987FDBC91F0EF58200E85707300E5C16079967999"
+    },
+    {
+      "Length": 195944833,
+      "Path": "build-extractors\\runtime-test\\lili-phase-native\\20261117-111821-964\\probe.ilk",
+      "SHA256": "EC4E8F124E0C9191E79F182FD728653BFD50CFE9D1B7381BE55CA104B6ADEAE8"
+    },
+    {
+      "Length": 95981335,
+      "Path": "build-extractors\\runtime-test\\lili-phase-native\\20261117-111821-964\\probe.map",
+      "SHA256": "485259BE10276B6BA479F361946230CB954342863945A44382ABA4B0C49BE987"
+    },
+    {
+      "Length": 1710826,
+      "Path": "build-extractors\\runtime-test\\lili-phase-native\\20261117-111821-964\\probe.obj",
+      "SHA256": "C0C570506052C9EFB67D290C6CC24090E2A073A8616FE4E3CD08B59366BD17ED"
+    },
+    {
+      "Length": 28536832,
+      "Path": "build-extractors\\runtime-test\\lili-phase-native\\20261117-111821-964\\probe.pdb",
+      "SHA256": "1BA3F28E4E3A7595595E48CE4381C52A1A8C6ADF4968B757B8776D7528144E57"
+    },
+    {
+      "Length": 119453,
+      "Path": "build-extractors\\runtime-test\\lili-phase-native\\20261117-111821-964\\worldserver.conf",
+      "SHA256": "E21DAE992B84118477A9FB49B1D34561C1AE9ACFB4A863FFA385632F37953960"
+    },
+    {
+      "Length": 1449984,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\gossip.exe",
+      "SHA256": "BF80F11ACE5DFD8DA100B94509EF02842A01F24C7EA720FD335A657916B19DBC"
+    },
+    {
+      "Length": 2031603,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\gossip.obj",
+      "SHA256": "022FC24D71FEC0AE1E62013905EDC373124A3D92F06B2CA7115FD9F5F0D1DC15"
+    },
+    {
+      "Length": 12431360,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\gossip.pdb",
+      "SHA256": "74E6ADE67A3D947BAA14D165AC9ECA4C0A6327AD9197E527BE5954A88518A6CF"
+    },
+    {
+      "Length": 1449984,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\loot.exe",
+      "SHA256": "E673428FC1DB721D2DCB40DF3E07E7AE24A785018270220F0FFC7669FF1E15AE"
+    },
+    {
+      "Length": 2031603,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\loot.obj",
+      "SHA256": "4E7EB067EFAB8F6EF878EAA355AF2676EE7C303A9B3DD84D3D47197302747C58"
+    },
+    {
+      "Length": 12431360,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\loot.pdb",
+      "SHA256": "E726C52084FAAC107E76FE617FF1B8A16D10D9A81BBE6CE11102BC7725DD1E0B"
+    },
+    {
+      "Length": 1449984,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\root.exe",
+      "SHA256": "FBB8D7974318B638476F36ADA8F1945B494E8AE29E8B55337D2E0DB5E41F95C9"
+    },
+    {
+      "Length": 2031603,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\root.obj",
+      "SHA256": "6FFB108A6AEA3DE03CBD10A4BA1605953222ACF81057C231623939689D62D1AD"
+    },
+    {
+      "Length": 12431360,
+      "Path": "build-extractors\\runtime-test\\monk-artifact-loot\\root.pdb",
+      "SHA256": "B8491B5CB1F702952B182BA4915D3D3332BDD2960F6681333DCEB937ACDDD586"
+    },
+    {
+      "Length": 1176064,
+      "Path": "build-extractors\\runtime-test\\monk-kite-travel\\test.exe",
+      "SHA256": "814003D3AC2AF82B7B7488B20722121B1253E08AA01D91EEF8ED611C1EBAE888"
+    },
+    {
+      "Length": 722872,
+      "Path": "build-extractors\\runtime-test\\monk-kite-travel\\test.obj",
+      "SHA256": "89E1C3039CE3F262FDB64B9C3B20C10F164B6226106CBBD9D91DA02CF368B59A"
+    },
+    {
+      "Length": 11767808,
+      "Path": "build-extractors\\runtime-test\\monk-kite-travel\\test.pdb",
+      "SHA256": "4A67D992D0421FFF79706AFC0358AF13E5DC0F8E127C3FAB919A07365A14BA59"
+    },
+    {
+      "Length": 1453056,
+      "Path": "build-extractors\\runtime-test\\script-pet-credit\\test.exe",
+      "SHA256": "576CA2AFDE814E4CEB243440053CF88524795954613049AC7733191F4CB78C0A"
+    },
+    {
+      "Length": 1905642,
+      "Path": "build-extractors\\runtime-test\\script-pet-credit\\test.obj",
+      "SHA256": "6FDFDE6FA1A63E93A1E07B92FF26EA38E8AE7C10EB0E94763A59B377E4F673A8"
+    },
+    {
+      "Length": 12177408,
+      "Path": "build-extractors\\runtime-test\\script-pet-credit\\test.pdb",
+      "SHA256": "2E1F81E6F7B9106E5FF109A3F356ADD1F012A1877AEFA4761A8AD09ACC88B362"
+    },
+    {
+      "Length": 284672,
+      "Path": "build-extractors\\runtime-test\\silver-hand-aberration-credit\\test.exe",
+      "SHA256": "1FAD8AE48C8B60EF5C4E3B6F6B055C3344D62665B4018A20D5B20050C9D3DBCC"
+    },
+    {
+      "Length": 226884,
+      "Path": "build-extractors\\runtime-test\\silver-hand-aberration-credit\\test.obj",
+      "SHA256": "F17471FD5EA0E0EE105AB50F45419305293CDDBE7C3202CDACA556062B20692F"
+    },
+    {
+      "Length": 1300992,
+      "Path": "build-extractors\\runtime-test\\silver-hand-aberration-transition\\test.exe",
+      "SHA256": "1799C1BC51F952C0A6B61C74A44471B2C86F50D4F086C4AA52ACE142CC2184DF"
+    },
+    {
+      "Length": 1310843,
+      "Path": "build-extractors\\runtime-test\\silver-hand-aberration-transition\\test.obj",
+      "SHA256": "1EB090E08EF99580DC0C03663F2035694AA71C6B2E0F0E821CEEB06C326D756E"
+    },
+    {
+      "Length": 11939840,
+      "Path": "build-extractors\\runtime-test\\silver-hand-aberration-transition\\test.pdb",
+      "SHA256": "D28A60B59F61F3944E8838D29B9A6A6D381C8DED48D21BFCD470C0E97BC558E4"
+    }
+  ],
+  "DBErrorsLength": 7111,
+  "ReclaimedBytes": 943026600.0
+}
