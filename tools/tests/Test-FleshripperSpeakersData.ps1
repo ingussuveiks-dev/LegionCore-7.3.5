@@ -65,7 +65,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_09_fleshr
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_09_fleshripper_speakers.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Fleshripper speaker wave migration/hash differs'}
   $expectedRows=$rows;$expectedTag='first'
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Fleshripper speaker regression $table"}}
+  $fullLive=Query (Snapshot 'live');$fullLive=& "$PSScriptRoot/Convert-VerifiedBloodPickupTerminal.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Fleshripper speaker regression $table"}}
  }
  'PASS full-schema TEMP Fleshripper: exactly two TALK self targets, unchanged native thresholds/credit/loot/return/full6table context; idempotence/live equality and15 custom/partial refusals'
 }

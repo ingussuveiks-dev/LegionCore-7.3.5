@@ -72,7 +72,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_07_blood_
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_07_blood_real_loot.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Blood loot wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Blood loot regression $table"}}
+  $fullLive=Query (Snapshot 'live');$fullLive=& "$PSScriptRoot/Convert-VerifiedBloodPickupTerminal.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Blood loot regression $table"}}
  }
  'PASS full-schema TEMP Blood: only Data1 plus42 exact predicates; unchanged native scene action/loot/unknownLINK1; idempotence,18 custom-partial refusals/live equality'
 }

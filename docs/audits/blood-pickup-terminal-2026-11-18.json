@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_DATA_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "Maw of the Damned GO247566 native SmartGameObjectAI loot-state3 root0 already queues ordinary invoker-cast200152; its terminal link1 has no target row. The actual spell supplies native1168 scene/root/101478 and48184 services. Real128402 loot,scene completion200134 and return are separate guarded paths; no missing1 item or progression service is evidenced.",
+  "sources": [
+    "Full matching current11-table fixture:44 SAI,104 conditions,13 texts,3 templates/WDB,one static actor,2 GO/one actual128402 loot row,scene1168 package1532/flags21/scene_blood_artifact_equipment and complete->200134 callback,spell binding scope. Source22/source4/source17 all retained with real quest40740/map1489/scenario940 stages9..10.",
+    "Typed FleshripperSpeakersCatalog confirms actual200152 Maw of the Damned:1168 scene aura430,root26,real effect90/101478 and native later credit; original48788 at940/8 and two actual boss broadcasts retained. Actual SmartGameObjectAI state callback,70 state comparison,ordinary85 delayed200ms cast/player-credit bridge and default native LINK tail reviewed; link0 ends the complete request.",
+    "Full Fleshripper death/real chest/205/Minerva/return sequence and shared native scene/force-equip consumers traced. Fixture review initially appeared to show a changed Minerva id25 because a dictionary collapsed two original same-ID roots; multiset/full-schema replay confirms both native DATA7/TALK10 and WP3/10256102/follow roots coexist unchanged. No invented Minerva normalization or production edit made."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_18_06_blood_pickup_terminal.sql",
+    "updater_sha1": "20E781452F4936697356FA06257694F97884F5B2",
+    "state": "RELEASED",
+    "edit": "Exactly247566/source1/id0.link1->0 with complete11-table original/applied guards. Preserve state3/flags0/85/200152/target7 and native delayed cast semantics,real loot/scene/storage/return. No forced reward,item,quest or synthetic callback; diagnostics remain enabled."
+  },
+  "checks": [
+    "Restricted temporary full-schema replay:exact one independent field edit,idempotence,13 foreign/missing/partial refusals and actual RELEASED/live identity. Older Blood loot/Fleshripper/five-scene-start fixtures first verify complete11-table current successor then reconstruct only this one comparison link; live tables untouched and all other differences still checked.",
+    "Test-BloodArtifactLoot -VerifyLiveData -AddressSanitizer:actual native loot selector/condition/ElseGroup/cached slots and owned SmartAI state-root admission for real40740/1489/940/9..10; wrongclass/quest/early/abandoned/rewarded/bank/cache controls retained. World/storage/render endpoints remain separate.",
+    "Test-BloodSceneEquip -VerifyLiveData -AddressSanitizer:actual registered guard plus native lifecycle/packet handlers,complete/native flag21 cancel once,forged/stale/replaced/unknown/reentrant callbacks,15 late-invalid cases,65 stage-status matrices,inventory/bank/quest/context and failed-cast/new-scene retry. Native force-equip/cast/world endpoints controlled,no synthetic item/credit.",
+    "Retained native Fleshripper full combat/health/death/205/chest/return requests with five invoker kinds,one-hit/repeats/missing actor and typed metadata pass. Full current protected6-table live equality and five artifact scene-start140 predicates/16 refusal checks pass. Actual native85 caster/owner/delayed revalidation and canonical helper PE were already checked on unchanged E8163A02 in the preceding Amassing repair.",
+    "Fresh Test-ArtifactAcquisitionInventory:36 typed native artifacts,74 same-class off-spec combinations,18 native pairs; real same-spec equip versus carried off-spec storage,owner/bank/missing/full bags and metadata guards,seven scoped gates and genuine bow pickup/selection separation.55 native effect249 records/39 items with paired-item/error/repeat guards and UTF8/BOM catalog variants pass; temporary native inventory/recovery migration idempotence retains return requirements. Controlled endpoint/native checks remain distinct from actual client items/UI.",
+    "Canonical task-owned PID10272 ready/graceful exit0;guarded06 applied,no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions. Configs/certificates preserved,no user process stopped or owned process left running."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/blood-terminal-20261118",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed historical unresolved log preserved. Retained native host reports known int64-to-int32 key-conversion compiler warnings; no unexplained runtime warning/error."
+  },
+  "limits": "Original missing1 author intent is unrecovered. No new native host for a one-field terminator: existing actual condition/lifecycle/caster/loot regressions plus full-row guarded delta cover the affected behavior. Actual play of full940,real loot/equipment/scene/render/group/faction/re-entry/return still requires client traversal. Twinblades is the remaining primary structural pickup edge."
+}
