@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-17",
+  "status": "OLD_TEST_BUILDS_REMOVED_SMALL_LINKER_REMAINDER_DEFERRED",
+  "authorization": "User explicitly requests inspecting old unnecessary tests and deleting their testservers to reclaim space. Scope is obsolete generated executables/symbols/compiler products,not regression source,shared assets,private/character/database backups or active user runtime.",
+  "inventory": "Read-only inventory of40353 directories in.codex,isolated runtime-test/verify roots,legacy compiles and configure-check roots found2193 generated-binary candidates totaling90019046152 bytes. Three reparse links in Helheim extracted-data workspace were skipped. No path outside intended workspace traversed for deletion.",
+  "selection": "205 reviewed obsolete output groups,excluding74 protected current-day/open/crash/backup/reference/dependency workspaces. Retain current-day work except the explicitly redundant deployed conversation stage. Entire personal/private backup directories,all real crash-report contexts,legacy compiles with crash evidence,reference/vendor tools,all DLLs and extracted data preserved. Compiler signatures checked for EXE,COFF OBJ/static LIB,MSVC PDB and linker MAP;one empty map excluded. No tracked file selected. Original4 final-link libraries outside disposable roots were SHA256 protected.",
+  "diagnostic_review": "Passive scan identified1655 critical diagnostic paths overall. Only22 belong to selected old output groups;every one matched an actual byte-identical issue-specific file under existing fixed archives after direct SHA256 verification. Their original logs and archived copies were independently rechecked after cleanup and retained. No unexplained diagnostic was declared fixed merely for cleanup. All26 inventory crash/diagnostic paths remain with original lengths;no report moved/truncated. Current-day/explicitly open/raw-crash workspaces retain their binaries and symbols.",
+  "deleted": {
+    "bnetserver_executables": 64,
+    "other_test_executables": 269,
+    "incremental_link_files": 1,
+    "deletion_manifest_sha256": "3CAFF19FCA7ACABDA49564C14C3F78F23FD85C2E2722AD3A85C83491B2226E10",
+    "groups": 205,
+    "pdb_symbols": 532,
+    "linker_maps": 400,
+    "worldserver_executables": 84,
+    "objects": 21,
+    "skipped": 0,
+    "isolated_test_libraries": 10,
+    "logical_bytes": 57522885713,
+    "files": 1381,
+    "plan_sha256": "CC25F6A5811CDE9AF5272A7DA2DCB5F5F871DB1918983D227CFF50DB15BC6047"
+  },
+  "disk": {
+    "note": "Logical removed bytes and actual free-space increase recorded separately;no assumption of identical allocation or absence of other disk activity.",
+    "before_free_bytes": 103247982592,
+    "observed_free_increase_bytes": 56980606976,
+    "after_free_bytes": 160228589568
+  },
+  "safety": "Reviewed plan hashed before use;all absolute targets validated inside.codex or isolated build-extractors runtime-test/verify roots. Every ancestor/file reparse flag checked;fresh process inspection for each encountered output group;per-file size/mtime checked before native PowerShell Remove-Item -LiteralPath. No recursive directory deletion,cmd/batch destructive composition,ACL/quarantine bypass,server stop,build or database writes. All1381 removed targets independently confirmed absent. Canonical binaries/maps/configurations/certificates/DLLs and4 required original build-library hashes unchanged. User-owned canonical bnet29292/world20560 remain at same paths;MSBuild reusable nodes left untouched.",
+  "preserved": "Regression source/reusable tools,all diagnostic originals and fixed archives,private/character/database backups,extracted assets,current-day outputs and latest known-good719B74D1 rollback-before-handler preserved. Test runners may rebuild their removed generated products when next requested. Cleanup does not certify global gameplay or the pending conversation-line client notification.",
+  "deferred": "Supplementary inline command to remove6 remaining generated linker rsp/cmd/empty-log files and their now-binary-free conversation-line-started-20261117-release directory was rejected before execution with blocked by policy. Only10868 bytes remain there;no executable,map or PDB remains in that stage. No retry through another deletion mechanism. General1381-file reviewed cleanup completed successfully and is distinct from this rejected command.",
+  "preparation": "First deletion-script preflight parsed an automatically DateTime-converted JSON cutoff through local culture and failed before creating its deletion journal or deleting a file. Replaced with explicit invariant ISO+02:00 cutoff matching the reviewed plan,then executed mutation once. Existing archive failures preserved as counterfactual/diagnostic history,not counted as fresh tests.",
+  "post_diagnostics": "Server15748954->15811991 appended bytes contain0 WARN/ERROR/FATAL/assertions;DBErrors7111 unchanged/mixed old unresolved;Bnet2290->3472 with0 failures;canonical Crashes empty. User runtime left running,logs not cleared or rotated. No automated/native/ASAN/PE/regression/client test or agent startup run for this filesystem cleanup.",
+  "evidence": ".codex/cleanup-old-testservers-20261117:read-only inventory,reviewed plan,critical archive matches,durable deletion journal,protected hashes and before/after disk/diagnostic state. Full local inventories and runtime log slices remain ignored/uncommitted.",
+  "archive": "build-extractors/bin/Release/fixed/2026-11-17-old-testservers-cleanup preserves10 cleanup metadata/manifests with verified SHA256;manifest D1741BFBA82796B3AB5ECA5F95C6B2783FC3C6A7D7DF5A96E79F3AA7E02B5F2D. Only cleanup metadata copied,no unexplained error moved into fixed."
+}
