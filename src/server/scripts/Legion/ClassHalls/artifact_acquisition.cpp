@@ -34,13 +34,22 @@
 
 namespace MarksmanshipInquisitor
 {
+bool HasNativeUnlock(Creature* actor)
+{
+    SmartAI* ai = actor ? dynamic_cast<SmartAI*>(actor->AI()) : nullptr;
+    return ai && ai->GetScript()->HasRunEvent(1, SMART_EVENT_DATA_SET);
+}
+
 bool Ready(Creature* actor)
 {
-    if (!actor || actor->GetEntry() != 101269 || actor->GetMapId() != 1489 ||
-        actor->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC))
+    if (!actor || actor->GetEntry() != 101269 || actor->GetMapId() != 1489 || !HasNativeUnlock(actor))
         return false;
     Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
-    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 5;
+    // Unit::setDeathState -> CombatStop -> ClearInCombat restores the DB
+    // immunity before JustDied. The real DATA1/1 receipt survives that cleanup;
+    // a corpse's restored flag must not erase its admitted encounter history.
+    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 5 &&
+        (!actor->IsAlive() || !actor->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC));
 }
 
 bool EligibleRecipient(Creature* actor, Player* player)
@@ -159,6 +168,9 @@ struct npc_marksmanship_qormaladon : SmartAI
 
     void JustDied(Unit* killer) override
     {
+        TC_LOG_INFO("scripts", "Qormaladon: native death in instance %u, unlock receipt %u, unit flags %u, killer entry %u",
+            me->GetInstanceId(), uint32(MarksmanshipInquisitor::HasNativeUnlock(me)),
+            me->GetUInt32Value(UNIT_FIELD_FLAGS), killer ? killer->GetEntry() : 0);
         SmartAI::JustDied(killer);
         MarksmanshipInquisitor::RecoverDeathCredit(me, killer);
     }
