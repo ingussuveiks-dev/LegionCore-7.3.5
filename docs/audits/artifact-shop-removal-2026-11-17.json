@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-17",
+  "issue": "Remove all 36 artifact acquisition weapons from BattlePay",
+  "implementation": "Guarded, idempotent migration 2026_11_17_08 removes the original products 111..146 and their item/shop rows. It preserves display metadata, other products, native items, quests and owned inventory.",
+  "verification": {
+    "native_catalog": "Actual 7.3.5 ItemSparse/Artifact typed-reader export: 36 matching parent-weapon offers; SHA256 D0B5C0606B61D858AB705FCFE72A682C98DE2E41B022AB70A09EC8DCC9CC36F0",
+    "database": "Applied successfully. Products/items/shop entries changed from 1362/1361/1362 to 1326/1325/1326; all 36 retired IDs absent. Sorted unrelated rows in each table are byte-identical before/after.",
+    "runtime": "User issued .battlepay reload; actual server log at 16:03:55 and 16:04:07 loaded 1326 products and 1326 shop entries.",
+    "remaining_weapons_group": "Products 32..35 are four Arsenal appearance unlocks, including Warglaives of Azzinoth; retained intentionally. No actual artifact weapons remain in these offers.",
+    "purchase": "No purchase attempted. Source review confirms retired IDs are rejected before debit.",
+    "diagnostics": "No new Shop loader failure or crash. DBErrors.log stayed 7401 bytes, Crashes empty. Mixed Server.log retains earlier connection timeouts and the independently investigated Thas'dorah off-spec equip warning; these were not cleared.",
+    "tests": "Live SQL readback, unrelated-row comparison and user-triggered native cache reload; no separate modeled or startup test."
+  },
+  "local_evidence": ".codex/shop-remove-artifacts-20261117/ (catalog-only rollback dumps with hashes, snapshots and diagnostic offsets; ignored)",
+  "limitations": "Client catalogue rendering/cache remains distinct from successful server reload. No whole artifact chain is certified by this catalogue change."
+}
