@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-17",
+  "status": "FRESH_36_ROUTE_IDENTITY_AND_CURRENT_PRODUCTION_HOSTS_PASS",
+  "cause": "Removed artifact Shop offers broke route discovery. Three retained production hosts also lagged behind reviewed onboarding, controlled-unit set and inventory source amendments.",
+  "repair": [
+    "Resolve real artifact identities from native26972 effect249 targets plus typed ItemSparse/Artifact/spec metadata, independently of optional Shop products; reject ambiguity/missing identities.",
+    "Update controlled onboarding marker/completion endpoints, native controlled-unit set/TempSummon model, and the exact committed inventory source inverse before existing Devourer certificates. No game behavior changed by these harness updates."
+  ],
+  "checks": [
+    "Fresh36 unique parents and149 race/class pairs, zero Shop artifact offers,144 real-catalog identity/dummy/missing/ambiguity controls.",
+    "DalaranAllClassOffers with fresh audit; DarkRidersStageLifecycle with linked binary; DevourerDeathCredit ASAN all PASS after fixture updates; unchanged historical checks retained."
+  ],
+  "diagnostics": "No new crashes or appended server warnings/errors/assertions/DBErrors during these tests.",
+  "limits": "Controlled native endpoints and structural identity checks do not certify complete36 client chains."
+}

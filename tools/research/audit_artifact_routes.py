@@ -17,6 +17,20 @@ from artifact_smart_links import invalid_links
 CLASSES = dict(WARRIOR=1,PALADIN=2,HUNTER=3,ROGUE=4,PRIEST=5,DEATH_KNIGHT=6,
                SHAMAN=7,MAGE=8,WARLOCK=9,MONK=10,DRUID=11,DEMON_HUNTER=12)
 
+
+def resolve_artifact(catalog, native_equip_items, class_id, title):
+    """Identify a real native equip target, independently of optional store offers."""
+    def normalized(value):
+        return re.sub(r'[^a-z0-9]', '', value.lower().replace('the ', '').replace('chosen', '').replace('artifact', '').strip())
+    candidates = [item for item in sorted(native_equip_items) if item in catalog and
+                  int(catalog[item]['ClassID']) == class_id and
+                  (normalized(catalog[item]['Specialization']).startswith(normalized(title)) or
+                   normalized(catalog[item]['Name']).startswith(normalized(title)))]
+    if len(candidates) != 1:
+        raise ValueError(f'Expected one native artifact for class {class_id}, choice {title!r}; found {candidates}')
+    return candidates[0]
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--world',type=Path,required=True)
@@ -48,6 +62,7 @@ def main():
     data=Data(Path('build-extractors/bin/Release/dbc/enUS'),Path('__native_only__'))
     effects=collections.defaultdict(list)
     for r in data.rows('SpellEffect').values():effects[r['SpellID']].append(r)
+    native_equip_items={effect['EffectMiscValue1'] for rows in effects.values() for effect in rows if effect['Effect']==249}
     pairs=data.rows('CharBaseInfo').values()
     native_pairs=sorted({(r['RaceID'],r['ClassID']) for r in pairs})
     native_lines=collections.defaultdict(list)
@@ -76,12 +91,10 @@ def main():
     pickup_review_findings=[]
     for route in routes:
         title=q[route['chosen']].get('LogTitle','')
-        def normalized(value):return re.sub(r'[^a-z0-9]','',value.lower().replace('the ','').replace('chosen','').replace('artifact','').strip())
-        candidates=[i for i in shop if int(catalog[i]['ClassID'])==route['class_id'] and
-                    (normalized(catalog[i]['Specialization']).startswith(normalized(title)) or
-                     normalized(catalog[i]['Name']).startswith(normalized(title)))]
-        assert len(candidates)==1,(route,title,candidates)
-        item=candidates[0];route.update(item=item,name=catalog[item]['Name'],specialization=catalog[item]['Specialization'])
+        item=resolve_artifact(catalog,native_equip_items,route['class_id'],title)
+        route.update(item=item,name=catalog[item]['Name'],specialization=catalog[item]['Specialization'],
+                     identity_source='native SpellEffect249 target and typed ItemSparse/Artifact/ChrSpecialization',
+                     shop_offer_present=item in shop)
         chain=[];v=route['start']
         while v and v not in chain and len(chain)<32:
             if v not in q:

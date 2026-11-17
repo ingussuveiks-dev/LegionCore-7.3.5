@@ -4,13 +4,16 @@
 #include <map>
 #include <iostream>
 #include <functional>
+#include <set>
 using uint32=uint32_t;using uint8=uint8_t;using ObjectGuid=uint32;
 using GuidList=std::list<ObjectGuid>;
+using GuidSet=std::set<ObjectGuid>;
 constexpr uint32 UNIT_FIELD_CREATED_BY_SPELL=0,AURA_EFFECT_HANDLE_REAL=1,AURA_EFFECT_HANDLE_REAPPLY=0x08;
-struct Creature;struct AuraApplication;struct Unit {
- using ControlList=std::list<ObjectGuid>;ControlList m_Controlled;uint32 guid=1,created=0;bool world=true;
+struct Creature;using TempSummon=Creature;struct AuraApplication;struct Unit {
+ using ControlList=GuidSet;ControlList m_Controlled;uint32 guid=1,created=0;bool world=true;
  virtual ~Unit()=default;virtual Creature* ToCreature(){return nullptr;}virtual Creature* ToTempSummon(){return nullptr;}
  bool IsInWorld(){return world;}uint32 GetUInt32Value(uint32){return created;}void RemoveAllMinionsByFilter(uint32,uint8);
+ ObjectGuid GetGUID(){return guid;}
  std::function<void()> summon;uint32 summonCalls=0;
  void RemoveGameObject(uint32 spell,bool){assert(spell==199625);}
  void CastSpell(Unit* target,uint32 id,bool triggered){assert(target==this&&id==199625&&triggered);++summonCalls;if(summon)summon();}
@@ -54,7 +57,7 @@ int main(){
   follower.guid=10;follower.created=199625;primary.guid=11;primary.entry=1860;primary.created=697;
   foreign.guid=12;foreign.owner=2;foreign.created=199625;wrongSpell.guid=13;wrongSpell.created=99;
   map.creatures={{10,&follower},{11,&primary},{12,&foreign},{13,&wrongSpell}};
-  p.m_Controlled={11};if(indexed)p.m_Controlled.push_back(10);
+  p.m_Controlled={11};if(indexed)p.m_Controlled.insert(10);
   p.followers={10,11,12,13,999}; // Include stale index, foreign actor and demon controls.
   DarkRidersRevil::RetireFollower(&p);
   assert(!p.controller&&!follower.world&&follower.despawns==1);

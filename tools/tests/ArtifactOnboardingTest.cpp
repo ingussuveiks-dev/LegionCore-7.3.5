@@ -8,15 +8,39 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <utility>
 using uint32=uint32_t;using uint8=uint8_t;using int32=int32_t;using uint64=uint64_t;
 constexpr int INVALIDREASON_DONT_HAVE_REQ=1,INVALIDREASON_QUEST_FAILED_WRONG_RACE=2;
-enum {CLASS_WARRIOR=1,CLASS_PALADIN,CLASS_HUNTER,CLASS_ROGUE,CLASS_PRIEST,CLASS_DEATH_KNIGHT,CLASS_SHAMAN,CLASS_MAGE,CLASS_WARLOCK,CLASS_MONK,CLASS_DRUID,CLASS_DEMON_HUNTER,QUEST_STATUS_NONE=0};
+enum {CLASS_WARRIOR=1,CLASS_PALADIN,CLASS_HUNTER,CLASS_ROGUE,CLASS_PRIEST,CLASS_DEATH_KNIGHT,CLASS_SHAMAN,CLASS_MAGE,CLASS_WARLOCK,CLASS_MONK,CLASS_DRUID,CLASS_DEMON_HUNTER,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3};
+using QuestStatus=uint32;
+enum class QuestGiverStatus {None,Quest};
+enum class GossipOptionNpc {None};
+enum {UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_GOSSIP=1,UNIT_NPC_FLAG_QUESTGIVER=2,CONDITION_SOURCE_TYPE_PLAYER_CHOICE=32,CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS=33};
+struct Creature;
+struct Object {virtual ~Object()=default;virtual Creature* ToCreature(){return nullptr;}};
+struct Creature:Object {
+ uint32 entry=107317,flags=3;struct {uint32 GossipMenuId=20227;} info;
+ Creature* ToCreature()override{return this;}uint32 GetEntry(){return entry;}auto GetCreatureTemplate(){return &info;}
+ bool HasFlag64(uint32,uint64 mask){return (flags&mask)!=0;}
+};
+struct Conditions {bool allowed=true;};
+struct MenuItem {uint32 OptionIndex=0;GossipOptionNpc OptionNpc=GossipOptionNpc::None;::Conditions Conditions;};
+struct GossipData {std::multimap<uint32,MenuItem> rows{{20227,{}}};auto GetGossipMenuItemsMapBounds(uint32 id){return rows.equal_range(id);}} gossipData;
+auto sGossipDataStore=&gossipData;
+struct ConditionServices {
+ std::map<uint32,bool> allowed;
+ template<class T>bool IsObjectMeetToConditions(T*,Creature*,Conditions const& c){return c.allowed;}
+ template<class P>bool IsObjectMeetToConditions(P*,Conditions const& c){return c.allowed;}
+ Conditions GetConditionsForNotGroupedEntry(uint32,uint32 id){return {allowed.count(id)?allowed[id]:true};}
+} conditionServices;auto sConditionMgr=&conditionServices;
+struct Choice {struct Response {uint32 ResponseId;};std::vector<Response> Responses{{504},{505},{506}};};
+struct ChoiceServices {Choice choice;bool present=true;Choice*GetPlayerChoice(uint32 id){assert(id==240);return present?&choice:nullptr;}} choiceServices;auto sObjectMgr=&choiceServices;
 struct Quest{uint32 id=0;int32 AllowableClasses=0;uint64 AllowableRaces=uint64(-1);};
 struct Store{std::map<uint32,Quest> quests;bool missing=false;Quest const* GetQuestTemplate(uint32 q){if(missing)return nullptr;return &(quests[q]=Quest{q});}}store;
 auto sQuestDataStore=&store;
 struct Player
 {
- uint32 cls=9,level=103,race=2;bool canTake=true,bagSpace=true,shopOwned=false;
+ uint32 cls=9,level=103,race=2;bool canTake=true,bagSpace=true,shopOwned=false,completable=false;
  std::map<uint32,uint32> statuses;std::set<uint32> chosen;std::vector<uint32> credits,added;
  uint32 getClass(){return cls;}uint32 getLevel(){return level;}
  bool IsQuestRewarded(uint32 q){return chosen.count(q)!=0;}
@@ -27,8 +51,11 @@ struct Player
 #include "QuestMasks.inc"
  bool CanTakeQuest(Quest const* q,bool){return canTake&&SatisfyQuestClass(q,false)&&SatisfyQuestRace(q,false);}bool CanAddQuest(Quest const*,bool){return bagSpace;}
  void AddQuest(Quest const* q,void*){added.push_back(q->id);statuses[q->id]=3;}
+ bool CanCompleteQuest(uint32 q){return completable&&statuses[q]==QUEST_STATUS_INCOMPLETE;}
+ void CompleteQuest(uint32 q){assert(CanCompleteQuest(q));statuses[q]=1;}
+ void AddQuestAndCheckCompletion(Quest const* q,void* giver){AddQuest(q,giver);if(CanCompleteQuest(q->id))CompleteQuest(q->id);}
 };
-struct PlayerScript{explicit PlayerScript(char const*){}virtual void OnLogin(Player*){}virtual void OnPlayerChoiceResponse(Player*,uint32,uint32){}};
+struct PlayerScript{explicit PlayerScript(char const*){}virtual void OnLogin(Player*){}virtual void OnPlayerChoiceResponse(Player*,uint32,uint32){}virtual QuestGiverStatus GetAdditionalQuestDialogStatus(Player*,Object*){return QuestGiverStatus::None;}};
 #include "Onboarding.inc"
 int main(int argc,char**argv)
 {
@@ -46,6 +73,8 @@ int main(int argc,char**argv)
  class_hall_artifact_onboarding script;uint32 cases=0;
  for(auto const& route:ArtifactRoutes)
  {
+  {Player objectiveFree;objectiveFree.cls=route.ClassId;objectiveFree.completable=true;script.OnPlayerChoiceResponse(&objectiveFree,route.ChoiceId,route.ResponseId);assert(objectiveFree.statuses[route.QuestId]==1&&objectiveFree.added.size()==1);}
+  {Player recover;recover.cls=route.ClassId;recover.completable=true;recover.statuses[route.QuestId]=QUEST_STATUS_INCOMPLETE;script.OnPlayerChoiceResponse(&recover,route.ChoiceId,route.ResponseId);assert(recover.statuses[route.QuestId]==1&&recover.added.empty());}
   for(auto pair:pairs)if(pair.second==route.ClassId)
   {
    for(bool owned:{false,true})
@@ -79,5 +108,6 @@ int main(int argc,char**argv)
   store.missing=false;Player wrong;wrong.cls=route.ClassId;
   script.OnPlayerChoiceResponse(&wrong,route.ChoiceId,999999);assert(wrong.added.empty()&&wrong.credits.empty());
  }
- std::cout<<"PASS: all36 production artifact choices, "<<cases<<" native race/class and owned/unowned cases, "<<maskCases<<" native quest race/class admission cases; login/retry, class/level/admission/quest-log and repeat guards\n";
+ {Player hunter;hunter.cls=CLASS_HUNTER;hunter.chosen.insert(40618);Creature emmarel;conditionServices.allowed={{504,false},{505,false},{506,true}};assert(script.GetAdditionalQuestDialogStatus(&hunter,&emmarel)==QuestGiverStatus::Quest);conditionServices.allowed[506]=false;assert(script.GetAdditionalQuestDialogStatus(&hunter,&emmarel)==QuestGiverStatus::None);conditionServices.allowed[506]=true;emmarel.flags=1;assert(script.GetAdditionalQuestDialogStatus(&hunter,&emmarel)==QuestGiverStatus::None);emmarel.flags=3;emmarel.entry=1;assert(script.GetAdditionalQuestDialogStatus(&hunter,&emmarel)==QuestGiverStatus::None);}
+ std::cout<<"PASS: all36 production artifact choices, "<<cases<<" native race/class and owned/unowned cases, "<<maskCases<<" native quest race/class admission cases; completion/recovery,login/retry,class/level/admission/quest-log/repeat guards and remaining-third-weapon marker\n";
 }

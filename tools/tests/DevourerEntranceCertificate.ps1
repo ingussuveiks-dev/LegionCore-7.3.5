@@ -1,6 +1,8 @@
 # The entrance delta has its own full-class native/ASAN coverage. Preserve the
 # original death/rotation/Reset and earlier independent capture certificates.
 function Restore-DevourerEntranceBoundary([string]$source){
+ . "$PSScriptRoot/ArtifactInventorySourceBoundary.ps1"
+ $source=Restore-ArtifactInventorySource $source 'src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp'
  . "$PSScriptRoot/DevourerDeathVoiceCertificate.ps1"
  $source=Restore-DevourerDeathVoiceBoundary $source
  $old=(& git -C $repo show '698d34495:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
