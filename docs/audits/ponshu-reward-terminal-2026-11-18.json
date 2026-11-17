@@ -25,5 +25,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed historical unresolved errors retained unchanged; current native/compiler diagnostics clean."
   },
-  "limits": "Original unknown10 payload not claimed recovered. Actual119664/Ponshu range/phase availability at reward, group playback/audio and complete later45440 campaign remain client checks. Quest reward callback duplication is not turned into a new once-only gate; native quest reward admission owns that boundary. Five primary structural edges remain for independent investigation."
+  "limits": "Original unknown10 payload not claimed recovered. Actual119664/Ponshu range/phase availability at reward, group playback/audio and complete later45440 campaign remain client checks. Quest reward callback duplication is not turned into a new once-only gate; native quest reward admission owns that boundary. Five primary structural edges remain for independent investigation.",
+  "fix_commit": "1adc888d6",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-ponshu-reward-terminal",
+    "manifest_sha256": "54ba5d85a1bf83f499256a011be7e2edc8d6df62eb11da81ece97ff95b56c0ae",
+    "verified_captures": 133,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 5,
+    "deferred_bytes": 16044065,
+    "reason": "Temporary removal remains deferred after prior automatic review blocked the same cleanup with blocked by policy. Exact no-reparse paths/hashes inspected, no alternate deletion method. Canonical E8163A02/runtime dependencies and mixed historical log protected; no servers running."
+  }
 }
