@@ -28,5 +28,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed historical unresolved log retained unchanged. Resolved evidence archive/temporary cleanup tracked separately; no unknown diagnostic relabeled fixed."
   },
-  "limits": "Opening attack request is complete and now ends deliberately. Original LINK1 author intent remains unrecovered; no invisible fifth payload invented. Missing-Lea recovery/combat target selection beyond native services, exact client movement/aggro/audio/visuals, real party/faction/retry traversal and whole40647/all36 remain separate. Seven primary structural edges remain, not seven proven player blockers."
+  "limits": "Opening attack request is complete and now ends deliberately. Original LINK1 author intent remains unrecovered; no invisible fifth payload invented. Missing-Lea recovery/combat target selection beyond native services, exact client movement/aggro/audio/visuals, real party/faction/retry traversal and whole40647/all36 remain separate. Seven primary structural edges remain, not seven proven player blockers.",
+  "fix_commit": "850f66bce",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-guardian-sludge-attack-terminal",
+    "manifest_sha256": "77c9ca15d698181fee23fb82bc42e1417c0ccda824941f503700279dd06080e8",
+    "verified_captures": 371,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 8,
+    "deferred_bytes": 35509435,
+    "reason": "Same temporary-file cleanup remains deferred after the immediately preceding Fire cleanup was automatically rejected with blocked by policy (6b681a71d); no alternate deletion used and no claim these8 files were deleted. Exact inspected paths/hashes retained in local manifest. Post-archive full live/updater/native-context readback passes; all canonical/runtime assets and mixed historical diagnostics protected."
+  }
 }
