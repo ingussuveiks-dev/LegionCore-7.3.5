@@ -115,10 +115,16 @@ class TC_GAME_API Conversation : public WorldObject, public GridObject<Conversat
         ConversationDynamicFieldLines const* GetLine(uint8 index) const;
         void SetLine(ConversationDynamicFieldLines const* lineInfo, uint8 index, bool createIfMissing = false);
 
+        // Only accept a published viewer's first notification for an authored
+        // line. This is a line-start receipt, not a clip-completion receipt.
+        bool NotifyLineStarted(Player* player, uint32 lineId);
+
     protected:
         // Scripts may bind an authored creature slot to an exact source actor.
         // The ordinary resolver deliberately continues to require a living NPC.
         virtual Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher);
+
+        virtual void OnLineStarted(uint32 /*lineId*/, Player* /*player*/) { }
 
         Unit* _caster;
         uint32 _spellId;
@@ -126,6 +132,7 @@ class TC_GAME_API Conversation : public WorldObject, public GridObject<Conversat
         ObjectGuid casterGUID;
 
         std::map<ObjectGuid, uint32> playing;
+        std::map<ObjectGuid, std::set<uint32>> _startedLines;
         uint32 _createdAt = 0;
         bool _npcCaster = false;
 };

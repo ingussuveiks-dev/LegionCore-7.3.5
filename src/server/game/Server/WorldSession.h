@@ -378,6 +378,7 @@ namespace WorldPackets
         class TwitterConnect;
         class TwitterDisconnect;
         class ResetChallengeModeCheat;
+        class ConversationLineStarted;
     }
 
     namespace Movement
@@ -1286,6 +1287,7 @@ class TC_GAME_API WorldSession
         void HandleRequestCemeteryList(WorldPackets::Misc::RequestCemeteryList& packet);
         void HandleChoiceResponse(WorldPackets::Misc::ChoiceResponse& packet);
         void HandleCloseInteraction(WorldPackets::Misc::CloseInteraction& packet);
+        void HandleConversationLineStarted(WorldPackets::Misc::ConversationLineStarted& packet);
 
         void HandleInspect(WorldPackets::Inspect::Inspect& packet);
 

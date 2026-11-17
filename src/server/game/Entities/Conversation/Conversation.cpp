@@ -419,6 +419,39 @@ void Conversation::SetLine(ConversationDynamicFieldLines const* lineInfo, uint8 
     SetDynamicStructuredValue(CONVERSATION_DYNAMIC_FIELD_LINES, index, lineInfo);
 }
 
+bool Conversation::NotifyLineStarted(Player* player, uint32 lineId)
+{
+    if (!player || !player->IsInWorld() || !player->CanContact() || player->IsBeingTeleported() ||
+        !IsInWorld() || IsQuestObjectExpired() || player->GetMap() != GetMap() ||
+        !InSamePhase(player) || !player->HaveAtClient(this))
+        return false;
+
+    // Do not call CanNeverSee2 here: it can create a new playback admission.
+    // Only the real publication may establish that viewer and its deadline.
+    auto viewer = playing.find(player->GetGUID());
+    if (viewer == playing.end() ||
+        getMSTime() - viewer->second > GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME))
+        return false;
+
+    bool publishedLine = false;
+    for (ConversationDynamicFieldLines const& line : GetLines())
+        if (line.id == lineId && line.id)
+        {
+            publishedLine = true;
+            break;
+        }
+    if (!publishedLine)
+        return false;
+
+    // The receipt set is bounded by actual viewers and authored line IDs.
+    // Duplicate/reordered packets cannot replay a script's line-start hook.
+    if (!_startedLines[player->GetGUID()].insert(lineId).second)
+        return false;
+
+    OnLineStarted(lineId, player);
+    return true;
+}
+
 Creature* Conversation::FindCreatureActor(uint32 /*index*/, uint32 entry, WorldObject* searcher)
 {
     return searcher->FindNearestCreature(entry, searcher->GetVisibilityRange());

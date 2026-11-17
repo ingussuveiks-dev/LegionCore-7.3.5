@@ -868,3 +868,10 @@ WorldPacket const* WorldPackets::Misc::ContributionResponse::Write()
 
     return &_worldPacket;
 }
+
+void WorldPackets::Misc::ConversationLineStarted::Read()
+{
+    // Legion 7.3.5: packed 128-bit GUID, then the published line ID.
+    _worldPacket >> ConversationGUID;
+    _worldPacket >> LineID;
+}

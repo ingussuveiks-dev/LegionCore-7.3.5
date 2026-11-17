@@ -21,6 +21,7 @@
 #include "CharacterPackets.h"
 #include "Chat.h"
 #include "ContributionMgr.h"
+#include "Conversation.h"
 #include "ConditionMgr.h"
 #include "Corpse.h"
 #include "InstancePackets.h"
@@ -733,6 +734,26 @@ void WorldSession::HandleRequestConsumptionConversionInfo(WorldPackets::Misc::Re
 void WorldSession::HandleContributionGetState(WorldPackets::Misc::ContributionGetState& packet)
 {
     sContributionMgr.ContributionGetState(GetPlayer(), packet.ContributionID, packet.ContributionGUID);
+}
+
+void WorldSession::HandleConversationLineStarted(WorldPackets::Misc::ConversationLineStarted& packet)
+{
+    Player* player = GetPlayer();
+    if (!player || !player->IsInWorld() || !packet.ConversationGUID.IsConversation())
+        return;
+
+    // Resolve on the sender's current map, never by client-supplied entry alone.
+    Conversation* conversation = ObjectAccessor::GetConversation(*player, packet.ConversationGUID);
+    if (!conversation)
+    {
+        TC_LOG_DEBUG("network", "Conversation line start: expired or unknown conversation %s, line %u",
+            packet.ConversationGUID.ToString().c_str(), packet.LineID);
+        return;
+    }
+
+    bool accepted = conversation->NotifyLineStarted(player, packet.LineID);
+    TC_LOG_DEBUG("network", "Conversation line start: conversation %s, line %u, accepted %u",
+        packet.ConversationGUID.ToString().c_str(), packet.LineID, uint32(accepted));
 }
 
 void WorldSession::HandleContributionCollectorContribute(WorldPackets::Misc::ContributionCollectorContribute& packet)
