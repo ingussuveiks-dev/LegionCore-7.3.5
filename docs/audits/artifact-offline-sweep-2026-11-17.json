@@ -506,5 +506,6 @@
     "niskara": "677b04366",
     "phase": "5a0571e59dd62264ad948ed0591f714daa1a1d5f",
     "fixtures": "1ead1b9c3"
-  }
+  },
+  "unresolved_followup_2026_11_17": "See artifact-unresolved-followup-2026-11-17.json: two core edges and a real rapid-panel handoff repaired;14 original missing-edge candidates remain, with source/client limits preserved."
 }

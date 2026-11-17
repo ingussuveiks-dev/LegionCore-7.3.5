@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-17",
+  "status": "COMPLETE",
+  "fix_commit": "6f1009869",
+  "removed_files": 17,
+  "reclaimed_bytes": 665711021.0,
+  "manifest": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-titanstrike-fusion/deletion-manifest.json",
+    "sha256": "D35452723F6A4246767E53F9016AF08C2DF9459EA63D54E8C6BD9A28E348C846"
+  },
+  "protected": "Canonical binaries/maps/configs/DLLs/certificates/extracted assets and logs/crash inventory unchanged. No user/unknown server or quarantined file touched.",
+  "retained": [
+    "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-unresolved-20261117/rollback-before-fusion",
+    "Original protected Slaghammer diagnostic/cache; all unresolved source evidence and mixed7839-byte DBErrors",
+    "Regression sources/tools/fixtures, native source/final-link hashes and verified fixed captures"
+  ],
+  "limits": "Cleanup does not close14 remaining original-edge payloads or actual client checks. No redundant test server/executable required for an outstanding reproduction remains.",
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-titanstrike-fusion\\final-verification-manifest.json",
+    "sha256": "74aa397dd7af3467f55186a5aebbd3ba3dd0f7b29cee6229f4c42617b6a886b9",
+    "result": "Canonical44A6 executable/map identities, stopped process state, unchanged mixed diagnostics, exact source provenance and RELEASED updater12 normalized SHA1 verified. No new runtime diagnostics."
+  },
+  "cleanup_audit": "titanstrike-fusion-cleanup-2026-11-17.json"
+}

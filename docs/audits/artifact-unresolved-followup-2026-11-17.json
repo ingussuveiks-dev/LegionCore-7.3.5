@@ -1,0 +1,141 @@
+{
+  "date": "2026-11-17",
+  "status": "ONE_FUNCTIONAL_HANDOFF_AND_TWO_INVALID_CORE_EDGES_REPAIRED_ORIGINAL_PAYLOADS_STILL_OPEN",
+  "completed": "titanstrike-fusion-receipts-2026-11-17.json",
+  "current_live_invalid_primary_edges": {
+    "before": 16,
+    "after": 14,
+    "records": [
+      {
+        "entry": 99615,
+        "source_type": 0,
+        "event": 21,
+        "link": 22
+      },
+      {
+        "entry": 99615,
+        "source_type": 0,
+        "event": 31,
+        "link": 32
+      },
+      {
+        "entry": 100376,
+        "source_type": 0,
+        "event": 0,
+        "link": 10
+      },
+      {
+        "entry": 100438,
+        "source_type": 0,
+        "event": 9,
+        "link": 10
+      },
+      {
+        "entry": 100475,
+        "source_type": 0,
+        "event": 1,
+        "link": 7
+      },
+      {
+        "entry": 100475,
+        "source_type": 0,
+        "event": 6,
+        "link": 8
+      },
+      {
+        "entry": 101325,
+        "source_type": 0,
+        "event": 3,
+        "link": 4
+      },
+      {
+        "entry": 101384,
+        "source_type": 0,
+        "event": 0,
+        "link": 1
+      },
+      {
+        "entry": 102693,
+        "source_type": 0,
+        "event": 6,
+        "link": 8
+      },
+      {
+        "entry": 103151,
+        "source_type": 0,
+        "event": 1,
+        "link": 2
+      },
+      {
+        "entry": 104520,
+        "source_type": 0,
+        "event": 9,
+        "link": 10
+      },
+      {
+        "entry": 108168,
+        "source_type": 0,
+        "event": 7,
+        "link": 8
+      },
+      {
+        "entry": 247566,
+        "source_type": 1,
+        "event": 0,
+        "link": 1
+      },
+      {
+        "entry": 251878,
+        "source_type": 1,
+        "event": 4,
+        "link": 5
+      }
+    ]
+  },
+  "source_research": [
+    "Reviewed all16 original candidates against actual native graphs, matching7.3.5 data/core and prior bounded research. Fresh local Trinity/Destiny/LegionPlayerBot source hits do not supply LiLi7/8, Ponshu10 or EffectsBunny2 payloads; unrelated numeric spell/item matches excluded.",
+    "LiLi100475 has zero native waypoint rows and no source9 list100475..100481; do not invent a walk/cleanup callback. Existing repaired father phase and prior full-sequence sampled-footage limits remain documented in lili-phase-closeout-2026-11-15.json.",
+    "Existing shared-link2-followup-2026-11-13.json and wardstone-missing-tail-research-2026-10-30.json retain matching-data, pinned donor, Trinity-history and bounded GitHub research. New indexed GitHub numeric/name queries provided no accepted primary implementation; no unrelated search hit used as evidence.",
+    "The three unresolved target7 random-list recipients92445/92447/92450 belong to later Paladin quest43490 Aponi's Trail. Native87 supports only SmartAI creature/GO recipients, and six authored lists contain3047..3052 conversations; one admission row is also attached to absent event3 of92450. This needs a separate full death/cast/admission review; blindly retargeting to self would also strand a corpse-owned timed list. No quest/item/log shortcut applied.",
+    "Nested timed replacements5463804/05 are existing native target-self scheduling and are not missing LINK payloads; remain behavioral candidates, not proven artifact blockers."
+  ],
+  "rechecked_inherited_fixes": [
+    "SlaghammerLink2Data -VerifyLiveData: original full fields and eight guarded drift controls pass. SlaghammerLink2Native:18 real native contexts across Human/BloodElf, player/pet/guardian/ally kills and original death handoff pass with no new diagnostics; authentic original missing action remains unproven. Protected original Nov6 diagnostic/cache never executed or modified.",
+    "WarriorPickupReturnData -VerifyLiveData and51 MSVC ASAN source/controller cases pass; final real canonical loader accepts the source26/custom11869 action1 predicates without new diagnostics. Historical Nov6 loader timing/cause is not newly proven, so the mixed log remains intact."
+  ],
+  "legacy_log": {
+    "bytes": 7839,
+    "sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "classified_lines": {
+      "missing-link 101430->2": 5,
+      "missing-link 103151->2": 42,
+      "areatrigger11869 action1": 2,
+      "missing-link 102177->2": 1,
+      "missing-link 109704->6": 1,
+      "phase32 rejection": 3
+    },
+    "policy": "Preserve the complete mixed active log. Repaired phase slice already has its earlier hash archive; only specifically resolved Slaghammer missing-node lines may be copied with offsets/hashes after the passing native regression. EffectsBunny103151 remains unresolved."
+  },
+  "open": [
+    "LiLi100475 LINK7/8, later-campaign Ponshu100438 LINK10, shared EffectsBunny103151 LINK2, Wardstone101325 LINK4 and other listed missing payloads remain unmodified; missing rows do not establish the intended behavior.",
+    "Actual client checks, including the new experiment and prior Vereesa/Ebonchill checks, cannot be completed while the client is unavailable.",
+    "User was asked asynchronously whether LiLi or Tirisfal has an actual observed stuck step; no answer inferred from elapsed time."
+  ],
+  "diagnostics": "Every final native/data/PE/startup check has before/after diagnostics and no new crashes/unexplained appended errors. Test-only initial PE leaf-bound and live-snapshot scope mistakes were repaired and rerun; no production failure hidden.",
+  "cleanup": "Recorded separately after focused implementation commit and verified fixed archive.",
+  "fix_commit": "6f100986944e3a5326c6559dc8d3be806a1f312b",
+  "fixed_archive": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-titanstrike-fusion",
+    "manifest_sha256": "e1f3ae746f9cb57051ebc9495d9fc89c4350eaec3931c9673a709436487faa77",
+    "verified_capture_files": 163,
+    "resolved_slaghammer_slices": 5,
+    "mixed_log_untouched": true
+  },
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-titanstrike-fusion\\final-verification-manifest.json",
+    "sha256": "74aa397dd7af3467f55186a5aebbd3ba3dd0f7b29cee6229f4c42617b6a886b9",
+    "result": "Canonical44A6 executable/map identities, stopped process state, unchanged mixed diagnostics, exact source provenance and RELEASED updater12 normalized SHA1 verified. No new runtime diagnostics."
+  },
+  "cleanup_audit": "titanstrike-fusion-cleanup-2026-11-17.json",
+  "rollback_note": "The retained stable60B executable must be paired with the captured pre12 bindings/conditions/links before recovery; never promote that executable alone over code-coupled data12."
+}

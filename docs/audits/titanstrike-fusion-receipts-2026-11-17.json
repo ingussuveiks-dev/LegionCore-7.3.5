@@ -37,5 +37,21 @@
     "This is a functional correction of the authenticated handoff; no original missing core LINK2 payload was recovered or invented.",
     "No actual client experiment, dialogue/audio/camera, all42158/whole36 chain, all cast failures or abandonment/save/re-entry timing certified. Failed/missing child cannot authorize progression; physical retry/re-entry remains a client check.",
     "Native quest/group/pet/guardian combat credit is untouched; this friendly core interaction adds no direct progression dispatch."
-  ]
+  ],
+  "fix_commit": "6f100986944e3a5326c6559dc8d3be806a1f312b",
+  "fixed_archive": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-titanstrike-fusion",
+    "manifest_sha256": "e1f3ae746f9cb57051ebc9495d9fc89c4350eaec3931c9673a709436487faa77",
+    "verified_capture_files": 163,
+    "resolved_slaghammer_slices": 5,
+    "mixed_log_untouched": true
+  },
+  "native_sequence_review": "Only two actual SmartAI producers send Mimiron DATA1/1: the two original panels. Native211354/211256/211420/211456 have0ms cast time and duration0; no five-second channel dependency introduced. Native cast/timed-list failure handling is retained; full failure/re-entry/client behavior remains explicitly unverified.",
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-titanstrike-fusion\\final-verification-manifest.json",
+    "sha256": "74aa397dd7af3467f55186a5aebbd3ba3dd0f7b29cee6229f4c42617b6a886b9",
+    "result": "Canonical44A6 executable/map identities, stopped process state, unchanged mixed diagnostics, exact source provenance and RELEASED updater12 normalized SHA1 verified. No new runtime diagnostics."
+  },
+  "cleanup_audit": "titanstrike-fusion-cleanup-2026-11-17.json",
+  "rollback_note": "The retained stable60B executable must be paired with the captured pre12 bindings/conditions/links before recovery; never promote that executable alone over code-coupled data12."
 }
