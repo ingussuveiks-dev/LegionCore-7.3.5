@@ -63,5 +63,18 @@
     "action": "Entire mixed active log retained unchanged; no unresolved crash/log moved into fixed."
   },
   "local_evidence": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-video-reconstruction-20261117",
-  "cleanup": "Recorded in follow-up audit after hash-verified archive and removal of redundant task outputs."
+  "cleanup": "25 redundant temporary files removed,398203218 bytes reclaimed; stable44A6 rollback, source/tools/media and unresolved diagnostics retained.",
+  "fix_commit": "a9bc59d6b5b6e658ab3415ab8300bb89237abb61",
+  "fixed_archive": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-lili-departure",
+    "manifest_sha256": "209daad4e8b7ff53e6aa8dab1bdd645b2b756c4c8e43de924e1f718517114477",
+    "verified_capture_files": 257
+  },
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-lili-departure\\post-cleanup-manifest.json",
+    "sha256": "f21b587b2e3b9d5c79fc64fd073cfa5d5654d287abafa7ad389655054e4f582d",
+    "result": "Canonical D6F4 executable/map, source input identities, stopped process state, unchanged mixed diagnostic/crash inventory, native bindings and RELEASED updater13 verified."
+  },
+  "cleanup_audit": "lili-departure-cleanup-2026-11-17.json",
+  "rollback_note": "Retained stable44A6 pre-LiLi EXE/map. Recovery must be offline and paired with pre13 template ScriptNames and links7/8; code-coupled updater13 must not reapply over the old executable. No rollback performed."
 }

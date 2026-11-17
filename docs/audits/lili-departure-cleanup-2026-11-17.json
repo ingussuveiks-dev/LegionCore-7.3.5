@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-17",
+  "status": "COMPLETE",
+  "fix_commit": "a9bc59d6b5b6e658ab3415ab8300bb89237abb61",
+  "removed_files": 25,
+  "reclaimed_bytes": 398203218.0,
+  "manifest": {
+    "sha256": "B24A0BE64E300403F68FC3C49C30B5B4CF26E3E8DAFFC0D9319A5A2DEB900083",
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-lili-departure/deletion-manifest.json"
+  },
+  "retained": [
+    "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-video-reconstruction-20261117/rollback-before-lili (verified stable44A6 executable/map; pair with pre13 bindings/links before recovery)",
+    "Canonical runtime, original final-link libraries, all source/regression tools and verified fixed captures",
+    "Video sources/frames, unresolved Tirisfal metadata/diagnostics and unchanged mixed7839-byte active DBErrors"
+  ],
+  "removed_old_rollback": "Superseded pre-fusion60B EXE/map; stable pre-LiLi44A6 copy retained",
+  "limits": "No user/unknown server, shared assets/configuration, character/database backup or security-quarantined file removed. No client/whole36 completion claim.",
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-lili-departure\\post-cleanup-manifest.json",
+    "sha256": "f21b587b2e3b9d5c79fc64fd073cfa5d5654d287abafa7ad389655054e4f582d",
+    "result": "Canonical D6F4 executable/map, source input identities, stopped process state, unchanged mixed diagnostic/crash inventory, native bindings and RELEASED updater13 verified."
+  },
+  "cleanup_audit": "lili-departure-cleanup-2026-11-17.json",
+  "rollback_note": "Retained stable44A6 pre-LiLi EXE/map. Recovery must be offline and paired with pre13 template ScriptNames and links7/8; code-coupled updater13 must not reapply over the old executable. No rollback performed."
+}
