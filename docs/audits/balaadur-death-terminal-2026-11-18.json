@@ -26,5 +26,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed historical unresolved entries retained unchanged; explicit original missing8 baseline preserved with passing successor."
   },
-  "limits": "Unknown original8 intent is unrecovered. Actual client combat,party/faction visibility/credit,weapon appearance/equipment/storage/scene/return and full1122/42479 remain separate. Controlled request and actual native data checks do not certify a whole scenario. Two primary pickup structural edges remain."
+  "limits": "Unknown original8 intent is unrecovered. Actual client combat,party/faction visibility/credit,weapon appearance/equipment/storage/scene/return and full1122/42479 remain separate. Controlled request and actual native data checks do not certify a whole scenario. Two primary pickup structural edges remain.",
+  "fix_commit": "a1441bffc",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-balaadur-death-terminal-final",
+    "manifest_sha256": "a148996d2dd469f3f8b90d9f2b6e91b92541dfe3db7ccc611920b421941bbfa6",
+    "verified_captures": 181,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 7,
+    "deferred_bytes": 17438588,
+    "reason": "Temporary removal remains deferred after prior automatic review blocked the same cleanup with blocked by policy. Exact no-reparse paths/hashes checked; no alternate deletion method. Canonical assets/config and mixed historical log protected; no servers running. Initial archive referenced nonexistent artifact-acquisition-data directory; corrected to actual artifact-acquisition and verified final manifest. Incomplete initial archive and failed transcript retained, not represented as complete."
+  }
 }
