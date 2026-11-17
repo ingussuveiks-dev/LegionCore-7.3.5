@@ -4,6 +4,9 @@
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
+#include "MovementPackets.h"
+#include "SpellAuraDefines.h"
+#include "SpellInfo.h"
 #include <cstdlib>
 #include <iostream>
 #include <set>
@@ -25,6 +28,13 @@ int main(int argc,char** argv)
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!properties.Load(argv[1],0)) return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();properties.LoadFromDB();
     std::set<uint32> selected{202014,202015,202925,204345,206895,203313,202981,63048};
+    for(auto spell:spells)
+    {
+        std::string name=spell->Name->Str[0];
+        if(name.find("Holy Ward")!=std::string::npos||name.find("Dampened")!=std::string::npos||name.find("Dampening")!=std::string::npos)
+            selected.insert(spell->ID);
+    }
+    for(uint32 id=202010;id<=202030;++id)selected.insert(id);
     std::set<uint32> seen;
     while(seen.size()!=selected.size())
     {
@@ -41,4 +51,9 @@ int main(int argc,char** argv)
         for(auto m:misc)if(m->SpellID==id){auto duration=durations.LookupEntry(m->DurationIndex);std::cout<<"MISC\t"<<id<<'\t'<<unsigned(m->DifficultyID)<<'\t'<<(duration?duration->Duration:0)<<'\n';}
     }
     HotfixDatabase.Close();
+    SpellImplicitTargetInfo destination(TARGET_DEST_CHANNEL_CASTER);
+    if(destination.GetSelectionCategory()!=TARGET_SELECT_CATEGORY_DEFAULT ||
+        destination.GetReferenceType()!=TARGET_REFERENCE_TYPE_DEST ||
+        destination.GetObjectType()!=TARGET_OBJECT_TYPE_DEST)return 6;
+    std::cout<<"DESTINATION106\tDEFAULT\tDEST\tDEST\n";
 }

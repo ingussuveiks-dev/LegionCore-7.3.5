@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED_FUNCTIONAL_RECONSTRUCTION_NATIVE_ENDPOINTS_CHECKED_CLIENT_PENDING",
+  "request": "User authorized footage-based reconstruction and then explicitly asked to continue the remaining cases.",
+  "cause": "103151 DATA1/1 removed native auras and requested202014, then linked to nonexistent2. The original run-once graph could not acknowledge/retry a rejected application. Current original LINK2 bytes remain unknown; a whole functional receiver now replaces the broken two-action path rather than inserting an arbitrary terminal node or disabling diagnostics.",
+  "behavior": [
+    "Scoped map1539 ward DATA1/1 removes native auras once, requests ordinary202014, confirms only actual aura presence, retries once/second for at most10s and reports an explicit exhausted failure. Repeated events while pending/confirmed do not duplicate the cosmetic. A new legitimate request may retry a failed attempt.",
+    "Native202014 infinite1s periodic202015 and its original spell visual/destination remain intact; no invented lightning damage, channel, progression, item, teleport, actor summon or automatic scenario credit.",
+    "Native104583 death205/92/49041, owner/pet/guardian resolution, legitimate group/faction behavior, nearest-ward DATA1/1 and combat remain byte-for-byte unchanged. Existing GetScriptCreditPlayer resolves the eligible owner for native action205; this cosmetic receiver never changes its credited target.",
+    "Independent103151 just-summoned3->4 UNAURA/63048 sparkle remains native SmartAI. Template/addon, seven native spawns/phases and source22 context unchanged. Reset delegates to SmartAI; pending work stops for death, world/map departure or expired quest-object ownership. Native respawn reloads addon; no player quest scope is cancelled."
+  ],
+  "new_native_finding": "In this exact core SpellImplicitTargetInfo106 is DEFAULT/DEST/DEST, not CHANNEL selection. Actual SelectImplicitDestDestTargets picks explicit self/default caster destination; native periodic trigger casts on the aura owner. No extra channeled spell is needed. This resolves the routing uncertainty in the earlier video-only audit.",
+  "video": {
+    "url": "https://www.youtube.com/watch?v=kyQCNiG9NUw",
+    "reference": "tirisfal-wards-video-review-2026-11-17.json",
+    "scope": "Earlier complete relevant visual review retained:1714-second samples0..680 plus684s final frame of685s clip, no audio stream/continuous playback. Cultist deaths cleanse corruption; native cosmetic persists through later fights. Exact original LINK2 and all retail visual timings are not recovered."
+  },
+  "checks": [
+    "23 MSVC ASAN cases using actual production WardAI and actual native destination-selection prefix: all seven spawn IDs, duplicate/rejected/deferred/failed requests, actual aura receipt, bounded exhaustion/retry, reset/dead/world/map/expired cleanup, base delegation and destination106 self/fallback. World/cast services controlled, not a full native world/client traversal.",
+    "Typed26972 DB2/read-only Hotfix catalog confirms202014 aura23/1000ms/202015/infinite duration,202015 cosmetic dummy/106, distinct Dampened and sparkle spells; compiled real SpellImplicitTargetInfo106 category assertion passes.",
+    "Test-TirisfalWardsData -VerifyLiveData: complete actual-schema five-table/all-field preservation, migration twice, six exact foreign-node/summoned/ritualist/template/addon/phase refusals and final live equality. Mutation tests use TEMP tables; pinned original two-row fixture allows the same refusal tests after live promotion.",
+    "Original final-link scripts.lib path/new tirisfal_wards.obj; staged/canonical PE proves loader, native remove-aura/application/actual receipt/retry/reset/SmartAI call paths. Existing Li Li PE preservation also passes.",
+    "Own canonical PID31052 ready, graceful shutdown/exit0; captured stdout/stderr and appended server diagnostics checked; no new crash, DBErrors, warnings/errors/assertions. No owned/user server left running."
+  ],
+  "deployment": {
+    "exe_sha256": "8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5",
+    "map_sha256": "e5d1912bcd0e9d59a759e5f8a7ed306798013e43a243882b58ede6e3e36bedff",
+    "migration": "sql/updates/world/2026_11_17_14_tirisfal_ward_cleanse.sql",
+    "guard": "Full original receiver/summoned/ritualist graphs plus native templates/addon/spawn phases and absent actor predicates; paired pre/post binding states, idempotent replay; pending SQL promoted only after matching EXE."
+  },
+  "limits": [
+    "Functional reconstruction, not recovered original LINK2 or all client/retail behavior. Actual seven-cultist/ward visuals, group clients, corpse/failed cast presentation, save/re-entry and full shared artifact chains remain client checks.",
+    "11 other listed primary edges remain open after Li Li7/8 and this shared ward path; continue separately. Mixed7839-byte active DBErrors retained until every remaining cause is reviewed."
+  ],
+  "evidence": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wards-reconstruction-20261117",
+  "diagnostics": {
+    "DBErrors_bytes": 7839,
+    "DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "mixed_log_action": "unchanged; resolved ward lines may be copied with offsets/hashes after commit, never truncate mixed history"
+  },
+  "implementation_iterations": "Test endpoint declaration/include failures occurred before a native run; fixed and rerun. The post-promotion SQL refusal fixture originally depended on removed live rows; replaced with pinned original TEMP receiver, then all full comparisons/refusals/live checks passed. No production runtime failure hidden.",
+  "cleanup": "Completed in follow-up after focused implementation commit and verified fixed archive."
+}
