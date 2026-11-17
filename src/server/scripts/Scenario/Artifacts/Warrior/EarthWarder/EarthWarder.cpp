@@ -20,6 +20,7 @@
 #include "magnar_combat.h"
 #include "hruthnir_pillik.h"
 #include "earthwarder_crypt.h"
+#include "earthwarder_winds.h"
 #include <memory>
 #include <set>
 #include <array>
@@ -2344,4 +2345,5 @@ void AddSC_EarthWarder()
     new npc_magnar_icebreaker();
     new go_art_earthwarder();
     new scene_earthwarder_pickup();
+    new spell_earthwarder_spirit_winds();
 };
