@@ -17,14 +17,15 @@ using uint32=uint32_t;using uint64=uint64_t;using uint8=uint8_t;using ReactState
 #include "ConditionTargetConstants.inc"
 struct Unit;struct Creature;struct Player;struct GameObject;struct SmartScript;struct World;
 using WorldObject=Unit;
-struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid const Empty;void Clear(){unit=nullptr;}};
+struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid const Empty;void Clear(){unit=nullptr;}std::string ToString()const{return unit?"fixture-unit":"empty";}};
 ObjectGuid const ObjectGuid::Empty{};
 struct FakeAI {
- SmartScript* script=nullptr;unsigned attempts=0,started=0;uint32 path=0,mEscortQuestID=999,despawn=999;bool fail=false;
+ SmartScript* script=nullptr;unsigned attempts=0,started=0,received=0;uint32 path=0,mEscortQuestID=999,despawn=999;bool fail=false;
  bool StartPath(bool run,uint32 entry,bool repeat,Unit* invoker){assert(run&&!repeat&&!invoker);++attempts;path=entry;if(fail)return false;++started;return true;}
  void SetDespawnTime(uint32 value){despawn=value;}void SetData(uint32,uint32);
 };
-struct Unit {bool player=false,creature=false;Creature* ToCreature();Player* ToPlayer();GameObject* ToGameObject();ObjectGuid GetGUID(){return {this};}};
+using CreatureAI=FakeAI;using GameObjectAI=FakeAI;
+struct Unit {bool player=false,creature=false;virtual ~Unit()=default;virtual uint32 GetEntry()const{return 0;}Creature* ToCreature();Player* ToPlayer();GameObject* ToGameObject();ObjectGuid GetGUID(){return {this};}};
 struct Player:Unit {Player(){player=true;}};
 struct Creature:Unit {
  uint32 entry;bool combat=false,expired=false,IsAIEnabled=true;Unit* victim=nullptr;FakeAI ai;ReactStates reaction=9;
@@ -119,6 +120,11 @@ struct SmartScript {
 #define CAST_AI(type,ai) (ai)
 #define TC_LOG_ERROR(...) ++errors
 #define TC_LOG_DEBUG(...) ((void)0)
+// Capture the real action's warning endpoint instead of erasing its branch.
+// This fixture does not model printf formatting or gameobject receivers.
+#define SI64FMTD "%lld"
+static std::vector<std::string> warnings;
+template<class... Args> void TC_LOG_WARN(char const*,char const* format,Args...){warnings.emplace_back(format);}
 #include "FindLinkedEvent.inc"
 #include "EventDispatch.inc"
 #include "EventPrefix.inc"
@@ -143,7 +149,7 @@ struct SmartScript {
 #include "LinkTail.inc"
 void SmartScript::Update(uint32 diff){for(auto& e:mEvents)if(e.type==SMART_EVENT_UPDATE)ProcessEvent(e);
 #include "TextTimer.inc"
-void FakeAI::SetData(uint32 id,uint32 value){if(script)script->ProcessEventsFor(SMART_EVENT_DATA_SET,nullptr,id,value);}
+void FakeAI::SetData(uint32 id,uint32 value){++received;if(script)script->ProcessEventsFor(SMART_EVENT_DATA_SET,nullptr,id,value);}
 bool Conditions::IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo,ConditionList const& list){
  for(auto c:list){uint32 ConditionTarget=c.target;
 #include "ConditionObjectGuard.inc"
@@ -219,5 +225,13 @@ int main(int argc,char** argv){
   // A new instance has no inherited raw death count or one-shot speech state.
   World retry(rows,false);assert(!retry.Complete());Waves(retry,&player);Dialogue(retry,false);++passed;
  }
- std::printf("%s %u Fu Zan native-dispatch/instance cases: weighted100 defense, four8-actor waves, authored speech/path/52981/52590/Korithis reply, repeated callbacks and player/pet/guardian/ally/null endpoints. Native chat/search/spawn/path/credit services controlled; no client traversal.\n",baseline?"EXPECTED_BROKEN":"PASS",passed);
+ assert(warnings.empty());
+ if(!baseline){
+  World receiver(rows,false);SmartScriptHolder action;action.actionType=45;action.targetType=19;action.targetEntry=109391;action.action.setData={99,99};
+  receiver.yulon.IsAIEnabled=false;receiver.demon->ProcessAction(action);
+  assert(receiver.yulon.ai.received==0&&warnings.size()==1&&warnings[0].find("no current AI")!=std::string::npos);
+  receiver.yulon.IsAIEnabled=true;receiver.demon->ProcessAction(action);
+  assert(receiver.yulon.ai.received==1&&warnings.size()==1);++passed;
+ }
+ std::printf("%s %u Fu Zan native-dispatch/instance cases: weighted100 defense, four8-actor waves, authored speech/path/52981/52590/Korithis reply, repeated callbacks and player/pet/guardian/ally/null endpoints;missing-AI warning/no replay and restored-AI fresh dispatch. Native chat/search/spawn/path/credit services controlled; no client traversal.\n",baseline?"EXPECTED_BROKEN":"PASS",passed);
 }
