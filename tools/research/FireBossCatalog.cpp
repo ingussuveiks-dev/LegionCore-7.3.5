@@ -28,13 +28,14 @@ int main(int argc,char** argv)
     uint32 aethasSummons=0;
     for(auto e:effects)if(e->Effect==28&&e->EffectMiscValue[0]==99763){++aethasSummons;std::cout<<"AETHAS_SUMMON_PRODUCER\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\n';}
     std::cout<<"AETHAS_SUMMON_PRODUCER_COUNT\t"<<aethasSummons<<'\n';
-    std::set<uint32> pending{196327,196262,195739,196381,196347,196561,196520,198623,101381,196244,223908,196604},seen;
+    std::set<uint32> pending{61204,196327,196262,195739,196381,196347,196561,196520,198623,101381,196244,223908,196604},seen;
+    for(auto spell:spells)if(spell->Name&&spell->Name->Str[0]&&std::string(spell->Name->Str[0])=="Wreath of Flames")pending.insert(spell->ID);
     while(!pending.empty()){
         uint32 id=*pending.begin();pending.erase(pending.begin());if(!seen.insert(id).second)continue;if(seen.size()>80)return 5;
         auto s=spells.LookupEntry(id);if(!s){std::cout<<"MISSING\t"<<id<<'\n';continue;}
         std::cout<<"SPELL\t"<<id<<'\t'<<s->Name->Str[0]<<'\n';
         for(auto e:effects)if(e->SpellID==id){std::cout<<"EFFECT\t"<<id<<'\t'<<e->DifficultyID<<'\t'<<e->EffectIndex<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectMiscValue[1]<<'\t'<<e->EffectTriggerSpell<<'\t'<<e->ImplicitTarget[0]<<'\t'<<e->ImplicitTarget[1]<<'\t'<<e->EffectAuraPeriod<<'\n';if(e->EffectTriggerSpell)pending.insert(e->EffectTriggerSpell);}
-        for(auto m:misc)if(m->SpellID==id){auto d=durations.LookupEntry(m->DurationIndex);auto t=times.LookupEntry(m->CastingTimeIndex);std::cout<<"MISC\t"<<id<<'\t'<<unsigned(m->DifficultyID)<<'\t'<<(d?d->Duration:0)<<'\t'<<(t?t->Base:0)<<'\n';}
+        for(auto m:misc)if(m->SpellID==id){auto d=durations.LookupEntry(m->DurationIndex);auto t=times.LookupEntry(m->CastingTimeIndex);std::cout<<"MISC\t"<<id<<'\t'<<unsigned(m->DifficultyID)<<'\t'<<(d?d->Duration:0)<<'\t'<<(t?t->Base:0)<<'\n';std::cout<<"ATTR\t"<<id;for(auto a:m->Attributes)std::cout<<'\t'<<uint32(a);std::cout<<'\n';}
     }
     for(auto c:criteria)if(c->Type==92&&(c->Asset==47380))
         for(auto t:trees)if(t->CriteriaID==c->ID)

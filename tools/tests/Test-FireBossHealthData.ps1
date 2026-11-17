@@ -68,6 +68,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_15_fire_b
   if($live -notcontains '1'){throw 'Live Fire boss health wave migration/hash differs'}
   $expectedRows=$rows;$expectedTag='first'
   $fullLive=Query (Snapshot 'live')
+  $fullLive=& "$PSScriptRoot/Convert-VerifiedFireBossDeath.ps1" -Rows $fullLive
   # The later focused intro repair intentionally adds two99763 predicates.
   # Validate its complete protected scope and released hash before excluding
   # only that separately checked actor's source22 rows from this older baseline.

@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-17",
+  "status": "DEATH_TERMINAL_DEPLOYED_NATIVE_AND_LIVE_DATA_PASS_HALF_HEALTH_SEPARATELY_OPEN",
+  "cause": "Lyandra99615/source0 death27->28->29->30->31 already requests death speech, genuine103696 carrier, native Aethas DATA3/3, actual247494 loot object and native47380 scenario event. Row31 then requests absent LINK32. The shared native205 handler already resolves eligible player owners from pet/guardian invokers; no additional owner-credit patch is needed.",
+  "sources": [
+    "Matching26972 typed FireBossCatalog confirms native47380->scenario957/order3/tree45964/leaf45965 and original death/return broadcasts. Full six-table live source/conditions/templates/text/loot context is pinned in FireBossDeathOriginal.json.",
+    "Primary preserved26972 world2024 SQL streamed from the verified cf681e1f compressed archive:35 scoped rows (31 source0+4 source9), same31->32 and21->22, neither missing target exists. No schema/API from the old29-field reference was copied.",
+    "Local newer Trinity bounded name/ID search gives no compatible Lyandra implementation; prior source-history investigations remain references only.",
+    "https://www.youtube.com/watch?v=7ltytVOOAZo Phoenix Gaming, quest11997, uploaded2016-12-23,782seconds. Reviewed all65 12second samples across the entire video, plus all50 2second samples506..606s. Observed half-health displacement/Gorewing/Aethas, resumed Lyandra combat, death~589..593s followed by actual weapon/return and later Dalaran context. Sampled visual review only, no continuous playback/audio or unobserved frame timing claim. Original LINK32 payload remains unrecovered; this is an explicit valid terminal after the complete existing native death services.",
+    "Existing fire_return_recovery.h requires the real47380 victory leaf and real nearby original boss/corpse before native23 Aethas recovery; the corpse and row23 are deliberately preserved. Actual inventory/pickup and return prerequisites remain unchanged."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_17_17_fire_boss_death_terminal.sql",
+    "edit": "Exactly99615/source0/id31.link32->0, after complete six-table original/applied SHA256 guards.55 scoped SmartAI rows,44 conditions,11 text rows,5 actor templates and genuine loot schema preserved. Reject custom or partly repaired inputs, including an actual foreign32 row.",
+    "binary": "Data-only; existing canonical8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5 and MAPe5d1912bcd0e9d59a759e5f8a7ed306798013e43a243882b58ede6e3e36bedff unchanged. Existing final-link/selected Fire retry PE checks pass."
+  },
+  "checks": [
+    "Test-SmartTerminalData: actual MariaDB full-schema TEMP replay; independent expected one-field difference, all-field preservation, idempotence,17 refusal cases and live RELEASED LF hash. Persistent DML is denied to the temporary reader. First fixture mutation missed required comment (ERROR1364); corrected test setup, retained failed evidence and passing replay. No persistent rows were affected.",
+    "Test-FireBossHealth -DeathTerminalData -VerifyNativeCatalog -VerifyReleaseBinary: native timer/event/LINK/TALK/TEXT_OVER/threshold/once paths plus original counterfactual and actual successor. Five invoker kinds including pet/guardian, thresholds80/20, skipped thresholds, casting delay, native7s Aethas, DATA4 aura cleanup, five unchanged death/loot/credit requests, repeated death and one-hit death. New successor never looks up32; independent missing22 remains explicitly observed. Spell/spawn/world/criteria endpoints controlled.",
+    "First optional argv construction inserted literal backticks, producing a test fixture-read assertion. Corrected quoting; native ASAN/PE/catalog suite passes. Failed output and paired passing output retained. This was a test wrapper failure, not a production server crash.",
+    "Post-deployment Test-FireBossHealth -VerifyLiveData and Test-FireReturnRecovery -VerifyLiveData pass. Historical data regressions accept only the independently verified full six-table successor and RELEASED hash before normalizing exactly31.link for their pinned older counterfactual; no guards were disabled. Actual recovery host retains earned/source/phase/group/re-entry, missing actor/AI/path/portal,30s timeout, logout/map reset and real-arrival guards.",
+    "Canonical task-owned PID21100 applied17, became ready, graceful shutdown0. All mandatory before/after diagnostic captures: no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Configs/certificates unchanged, no user server stopped and no task server left running."
+  ],
+  "separate_half_health_finding": {
+    "status": "OPEN_DO_NOT_DEPLOY_RAW_AURA_OR_ZERO21",
+    "native": "61204 is permanent stun only. Actual Wreath of Flames194360 has indefinite school immunity aura39/mask127 and unattackable aura93; no world linked spell/script/SmartAI producer was found. Native196347 Spellbind ATTR0=536870912 (0x20000000) pierces school immunity; target25 is unrestricted unit. Native196381 also carries that immunity-piercing attribute. Gorewing DATA4 already removes all boss auras.",
+    "counterexample": "Adding full194360 alone is unsafe in this core: native HandleModUnattackable calls CombatStop; Creature99615 has RegenHealth=1, and ordinary out-of-combat regeneration adds maxHealth/1.2 per tick. Native Attack can remove aura93 when combat reacquires, even with the existing stun. Reset/wipe/re-entry/target lifetime and Aethas admission therefore require a complete scoped phase repair, not an invented terminal or untested raw aura. No such production change has been made or claimed verified."
+  },
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/lyandra-investigation-20261117",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "mixed_log": "Unchanged; unrelated unresolved historical entries remain visible, never truncated or relabeled fixed."
+  },
+  "remaining": "Eight primary structural edges remain, not eight proven player blockers:99615/21->22,100438/9->10(later45440 campaign),101384/0->1,102693/6->8,104520/9->10,108168/7->8,247566/0->1,251878/4->5. Exact client combat,visual/audio/camera,party/faction,retry traversal and all36 whole chains remain separate."
+}

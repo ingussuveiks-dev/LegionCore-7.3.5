@@ -67,7 +67,8 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_17_fire_r
  }
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_17_fire_return_recovery.sql' AND hash='$hash' AND state='RELEASED';";if($live -notcontains '1'){throw 'Live Fire return migration/hash differs'}
-  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live native Fire return differs $table"}}
+  $live=Query (Snapshot 'live');$live=& "$PSScriptRoot/Convert-VerifiedFireBossDeath.ps1" -Rows $live
+  foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live native Fire return differs $table"}}
  }
  'PASS full6table Fire return: exactly99763 ScriptName binding, native boss/actor SmartAI/events/intro scope/waypoint/portal/click/destination unchanged, idempotence/19 custom-partial refusals/live equality; binary/native lifetime recovery verified separately'
 }

@@ -115,7 +115,7 @@ static void Thresholds(std::vector<SmartScriptHolder> const& rows,Unit* cause){
  auto inactive=Script(rows,99615,cause);Init(inactive);inactive.actor.health=10;inactive.actor.combat=false;TickPhoenix(inactive,100);assert(Phoenix(inactive)==0);inactive.actor.combat=true;TickPhoenix(inactive,100);assert(Phoenix(inactive)==2);
  auto retry=Script(rows,99615,cause);Init(retry);retry.actor.health=80;TickPhoenix(retry,100);assert(Phoenix(retry)==1); // actual new instance/reset, not erasing live once flags
 }
-static void Sequence(std::vector<SmartScriptHolder> const& rows,Unit* cause){
+static void Sequence(std::vector<SmartScriptHolder> const& rows,Unit* cause,bool deathTerminal=false){
  auto s=Script(rows,99615,cause);s.ProcessEventsFor(SMART_EVENT_AGGRO,cause);assert(s.calls.size()==1&&s.calls.back().parameter==4);s.Update(6000);assert(s.calls.size()==1);s.Update(1);assert(s.calls.size()==2&&s.calls.back().parameter==5);
  s.actor.health=80;s.ProcessEventsFor(SMART_EVENT_HEALTH_PCT,cause);assert(Phoenix(s)==1);
  auto start=s.calls.size();s.actor.health=50;s.ProcessEventsFor(SMART_EVENT_HEALTH_PCT,cause);
@@ -123,10 +123,10 @@ static void Sequence(std::vector<SmartScriptHolder> const& rows,Unit* cause){
  s.Update(6999);assert(s.calls.size()==start+5);s.Update(1);assert(s.calls.size()==start+5);s.Update(1);assert(s.calls.size()==start+6&&s.calls.back().action==12&&s.calls.back().parameter==99763);
  start=s.calls.size();s.ProcessEventsFor(SMART_EVENT_DATA_SET,cause,4,4);assert(s.calls.size()==start+3&&s.calls[start].parameter==7&&s.calls[start+1].action==28&&s.calls[start+2].action==45&&s.calls[start+2].parameter==2);
  s.actor.health=20;s.ProcessEventsFor(SMART_EVENT_HEALTH_PCT,cause);assert(Phoenix(s)==2);
- start=s.calls.size();s.ProcessEventsFor(SMART_EVENT_DEATH,cause);assert(s.calls.size()==start+5&&s.errors==2);uint32 deathActions[]={1,12,45,50,205},deathParams[]={8,103696,3,247494,92};for(unsigned i=0;i<5;++i)assert(s.calls[start+i].action==deathActions[i]&&s.calls[start+i].parameter==deathParams[i]);
- s.ProcessEventsFor(SMART_EVENT_DEATH,cause);assert(s.calls.size()==start+5&&s.errors==2);
- auto one=Script(rows,99615,cause);one.ProcessEventsFor(SMART_EVENT_DEATH,cause);assert(one.calls.size()==5&&one.errors==1&&Phoenix(one)==0);assert(std::none_of(one.calls.begin(),one.calls.end(),[](Call const& c){return c.action==12&&c.parameter==99763;}));
- // These two original missing links are detected, not repaired or suppressed.
+ start=s.calls.size();s.ProcessEventsFor(SMART_EVENT_DEATH,cause);assert(s.calls.size()==start+5&&s.errors==(deathTerminal?1u:2u));uint32 deathActions[]={1,12,45,50,205},deathParams[]={8,103696,3,247494,92};for(unsigned i=0;i<5;++i)assert(s.calls[start+i].action==deathActions[i]&&s.calls[start+i].parameter==deathParams[i]);
+ s.ProcessEventsFor(SMART_EVENT_DEATH,cause);assert(s.calls.size()==start+5&&s.errors==(deathTerminal?1u:2u));
+ auto one=Script(rows,99615,cause);one.ProcessEventsFor(SMART_EVENT_DEATH,cause);assert(one.calls.size()==5&&one.errors==(deathTerminal?0u:1u)&&Phoenix(one)==0);assert(std::none_of(one.calls.begin(),one.calls.end(),[](Call const& c){return c.action==12&&c.parameter==99763;}));
+ // Historical input retains both diagnostics; the successor terminates death31 only.
  // One-hit death also does not request the half-health-only return actor.
 }
 static void Aethas(std::vector<SmartScriptHolder> const& rows){
@@ -136,11 +136,12 @@ static void Aethas(std::vector<SmartScriptHolder> const& rows){
  start=s.calls.size();s.ProcessEventsFor(SMART_EVENT_WAYPOINT_REACHED,&player,2,99763);assert(s.calls.size()==start);s.ProcessEventsFor(SMART_EVENT_WAYPOINT_REACHED,&player,1,99763);assert(s.calls.size()==start+4&&s.calls[start].parameter==1&&s.calls[start+1].parameter==223908&&s.calls[start+2].parameter==99861&&s.calls[start+3].parameter==196520&&!s.errors);
 }
 int main(int argc,char** argv){
- _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==4);Texts(argv[3]);auto original=Read(argv[1],99615),repaired=Read(argv[2],99615);assert(original.size()==31&&repaired.size()==31);
+ _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==4||argc==5);Texts(argv[3]);auto original=Read(argv[1],99615),repaired=Read(argv[2],99615);assert(original.size()==31&&repaired.size()==31);
  Player player;Creature pet,guardian,npc;pet.entry=90001;guardian.entry=90002;npc.entry=90003;
  {auto baseline=Script(original,99615,&player);Init(baseline);TickPhoenix(baseline,100);assert(baseline.actor.health==100&&Phoenix(baseline)==2&&!baseline.errors);} // actual timer0..80/0..20ms baseline
  for(Unit* cause:{static_cast<Unit*>(&player),static_cast<Unit*>(&pet),static_cast<Unit*>(&guardian),static_cast<Unit*>(&npc),static_cast<Unit*>(nullptr)}){Thresholds(repaired,cause);Sequence(repaired,cause);}
  Aethas(Read(argv[2],99763));
+ if(argc==5){auto terminal=Read(argv[4],99615);assert(terminal.size()==31);for(Unit* cause:{static_cast<Unit*>(&player),static_cast<Unit*>(&pet),static_cast<Unit*>(&guardian),static_cast<Unit*>(&npc),static_cast<Unit*>(nullptr)}){Thresholds(terminal,cause);Sequence(terminal,cause,true);}Aethas(Read(argv[4],99763));std::puts("PASS death-terminal successor: unchanged five native death/loot/47380 requests exactly once for five invoker kinds, no missing32 lookup; one-hit invokes native death without half-health; independent missing22 remains explicit.");}
  std::puts("PASS actual native timer/event/health/once/casting delay: original two premature196327 casts at100pct vs repaired80/20pct, skipped thresholds, combat/repeat/fresh-instance cases. Full original boss aggro/half-health/7s Aethas/data4/death/loot/205 and Aethas return requests retained for five invoker kinds. Spell/spawn/motion/credit endpoints controlled.");
- std::puts("UNRESOLVED preserved99615 links21->22 and31->32 trigger native missing-link diagnostics in the observed request sequence. One-hit death before half-health does not request99763, so return/re-entry recovery remains OPEN. This is not full Fire/client certification.");
+ std::puts("COUNTERFACTUAL historical input triggers both missing22/32 diagnostics and lacks a half-health-only99763 request on one-hit death. Successor death termination is checked above when supplied; actual return recovery is owned by Test-FireReturnRecovery. Missing22 and full Fire/client certification remain OPEN.");
 }
