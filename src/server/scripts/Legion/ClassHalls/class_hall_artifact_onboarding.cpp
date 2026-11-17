@@ -140,12 +140,22 @@ namespace
 
     void StartArtifactQuest(Player* player, uint32 questId)
     {
-        if (player->GetQuestStatus(questId) != QUEST_STATUS_NONE)
+        QuestStatus const status = player->GetQuestStatus(questId);
+        if (status == QUEST_STATUS_INCOMPLETE)
+        {
+            // Recover selections accepted before the normal completion check
+            // was used. Native objectives, timers and event gates still apply.
+            if (player->CanCompleteQuest(questId))
+                player->CompleteQuest(questId);
+            return;
+        }
+
+        if (status != QUEST_STATUS_NONE)
             return;
 
         if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
             if (player->CanTakeQuest(quest, false) && player->CanAddQuest(quest, false))
-                player->AddQuest(quest, nullptr);
+                player->AddQuestAndCheckCompletion(quest, nullptr);
     }
 }
 
