@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-17",
+  "status": "OPEN: bounded next-issue investigation; no gameplay repair",
+  "scope": "Earlier ambush Dakarr100376, distinct from final lair boss99480. User asked what is next after the Wardstone repair.",
+  "live_findings": [
+    "Ten source0 rows. Missing0->10 is JUST_SUMMONED54/TALK group0 to nearest Player50; text103937 announces the mist revealing Dakarr in the trap.",
+    "Separate health75/60 branches retain Wuho/Apata callbacks,47640 credit and native hide/removal. Existing npc_talonclaw_ambush_dakarr delegates SmartAI and protects target-relative70/60 thresholds after scaling. None changed.",
+    "Trap100367 accepts197489, removes197485, runs timed list100367, emits companion callbacks and stalker summons; its timed list creates100376 after10s. Dakarr100376 also has addon197485, hostile faction14, zero unit flags and the existing damage delegate."
+  ],
+  "native_catalog": [
+    "Actual matching26972 DB2/read-only Hotfix:197485 Object Placement Visual is infinite aura4/dummy on self; this alone is not evidence of root, invulnerability or AI reaction changes.",
+    "197489 Planting Trap has3000ms cast, dummy target25, event47663 and script effect77.",
+    "200348 Vicious Assault is ordinary victim-target damage with zero native cast time."
+  ],
+  "interpretation": "Missing10 belongs to the appearance/emote path. Do not infer extra death/credit or blindly apply the Wardstone terminal decision: opening attack/reaction and placement-visual cleanup still need tracing against both complete trap sequences. Native metadata alone does not establish the missing payload.",
+  "checks": "One typed catalog probe under before/after canonical/probe diagnostics completed with exit0, no new/changed crash, appended DBErrors or unexplained server diagnostic. Source/data reads otherwise; no client test, server startup, production C++ change or SQL mutation. Prior64-case damage tests were read, not rerun or represented as new evidence.",
+  "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\dakarr-investigation-20261117",
+  "remaining_primary_edges": 10,
+  "next": "Trace just-summoned/attack acquisition and placement visual through both distinct trap encounters before choosing functional reconstruction or graph correction.",
+  "cleanup": {
+    "removed_files": 2,
+    "reclaimed_bytes": 1100020,
+    "manifest": "C:/wamp64/www/LegionCore-7.3.5/.codex/dakarr-investigation-20261117/deletion-manifest.json",
+    "manifest_sha256": "9BCB1E2E33D843FDD85D47DE0299FC78782634A007E7F01059B99B00125A7327",
+    "evidence_policy": "Unresolved route evidence remains outside fixed. Reusable source retained; redundant metadata probe EXE/OBJ removed after literal path/ancestor/process checks. Canonical runtime and mixed diagnostic history unchanged."
+  }
+}
