@@ -24,6 +24,7 @@ constexpr uint32 CLASS_MAGE=8,CLASS_PRIEST=5,QUEST_STATUS_NONE=0,QUEST_STATUS_IN
 constexpr uint32 EFFECT_0=0,EFFECT_1=1,EFFECT_2=2,EFFECT_ALL=255,SPELL_EFFECT_ANY=0,SPELL_AURA_MOD_ROOT=26,SPELL_AURA_ACTIVATE_SCENE=430;
 constexpr uint32 SPELL_EFFECT_FORCE_EQUIP_ITEM=249,SPELL_EFFECT_TELEPORT_L=252;
 constexpr uint32 GO_READY=1,GO_JUST_DEACTIVATED=3,GAMEOBJECT_FIELD_FLAGS=0,GO_FLAG_NOT_SELECTABLE=16,GO_FLAG_IN_USE=1;
+constexpr uint32 GAMEOBJECT_TYPE_DOOR=0;
 constexpr uint32 INVENTORY_SLOT_BAG_0=255,EQUIPMENT_SLOT_MAINHAND=15,NULL_SLOT=255,NULL_BAG=255,GAMEOBJECT_TYPE_FISHINGNODE=17;
 constexpr uint32 SPELL_EFFECT_HANDLE_HIT_TARGET=1,SPELL_EFFECT_HANDLE_HIT=2,TARGET_FLAG_UNIT_MASK=1,TARGET_FLAG_GAMEOBJECT_MASK=2,PHASE_UPDATE_FLAG_ZONE_UPDATE=1;
 using CriteriaTypes=uint32;constexpr uint32 CRITERIA_TYPE_OWN_ITEM=36,CRITERIA_TYPE_SCRIPT_EVENT=46,CRITERIA_TYPE_SCRIPT_EVENT_2=92;
@@ -65,7 +66,7 @@ struct Unit:WorldObject{std::map<std::pair<uint32,ObjectGuid>,std::shared_ptr<Au
  virtual SpellCastResult CastSpell(Unit*,uint32,bool){assert(false);return SPELL_FAILED_BAD_TARGETS;}ZoneScript* GetZoneScript(){return nullptr;}InstanceScript* GetInstanceScript(){return nullptr;}};
 struct ItemTemplate{uint32 GetArtifactID()const{return 1;}uint32 GetInventoryType()const{return 13;}};
 constexpr uint32 INVTYPE_2HWEAPON=17;
-struct Item{ItemTemplate const*GetTemplate()const{static ItemTemplate t;return &t;}uint32 entry=TestItem;uint16 pos=0xFF20;ObjectGuid child=ObjectGuid::Empty;bool IsEquipped()const{return pos==0xFF0F;}uint16 GetPos()const{return pos;}ObjectGuid GetChildItem()const{return child;}};
+struct Item{ItemTemplate const*GetTemplate()const{static ItemTemplate t;return &t;}uint32 entry=TestItem;uint16 pos=0xFF20;ObjectGuid child=ObjectGuid::Empty;bool IsEquipped()const{return pos==0xFF0F;}uint16 GetPos()const{return pos;}uint8 GetBagSlot()const{return uint8(pos>>8);}uint8 GetSlot()const{return uint8(pos);}ObjectGuid GetChildItem()const{return child;}};
 struct QuestStatusData{uint32 Status=3;std::shared_ptr<uint8>ScriptLifetime;};
 struct ProgressCounter{uint64 Counter=0;};
 struct Scenario{uint32 id=TestScenario,step=6;std::map<uint32,ProgressCounter>counters{{TestControl,{1}},{TestControl2,{1}},{TestControl3,{1}}};uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}
@@ -100,6 +101,9 @@ struct Player:Unit{
  Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32>const&,std::vector<uint32>const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);if(!storage)return nullptr;owned=true;return &staff;}
  void SendEquipError(InventoryResult,void*,void*,uint32){++errors;}void SendEquipError(InventoryResult,Item*){++errors;}
  InventoryResult CanEquipItem(uint32,uint16&dest,Item*,bool,bool notLoading,bool mailOffhand){assert(notLoading&&!mailOffhand);dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){return EQUIP_ERR_OK;}
+ // Both reviewed staffs are single items. Compile the unchanged native pair
+ // branch,but fail if this fixture unexpectedly claims to exercise it.
+ void EquipChildItem(uint8,uint8,Item*){assert(false&&"Linked child is outside the single-staff fixture");}
  void SwapItem(uint16 source,uint16 dest,bool mailOffhand){assert(!mailOffhand);if(!swapBlocked){old.pos=source;staff.pos=dest;mainhand=&staff;}if(onEquip){auto f=onEquip;f();}}
  void StoreLootItem(Loot*loot){LootItem*item=&loot->item;void*qitem=nullptr;
 #include "StoreInventory.inc"
