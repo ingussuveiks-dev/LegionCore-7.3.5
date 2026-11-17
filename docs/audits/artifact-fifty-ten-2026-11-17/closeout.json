@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-17",
+  "implementation_and_review_commit": "dd521927c",
+  "status": "INDEPENDENT_STRUCTURAL_REVIEW_ARCHIVED_NO_GAMEPLAY_CERTIFICATION",
+  "archive": "build-extractors/bin/Release/fixed/artifact-fifty-ten-20261117",
+  "archive_files": 125,
+  "archive_manifest_sha256": "73C09E91D38C16C30A25DE29E52A9A7C0141E197FD4DFB5BA9581082CC772B27",
+  "archive_meaning": "Byte-preserving,hash-verified independent passing audit/native-reader/export-publication diagnostics. No gameplay crash was resolved by this500-record review. Original initial37 overstrict review evidence and unrecovered Monk payloads remain locally visible;active Protection and unresolved handshake evidence remain outside fixed.",
+  "removed": [
+    {
+      "path": "build-extractors/runtime-test/legion-legendary-catalog/ArtifactReviewItemsCatalog.exe",
+      "bytes": 181248,
+      "sha256": "D99786E14E7D03451CD9652CABC9A11D791274782FEB32ACB9C00F5357C14120"
+    },
+    {
+      "path": "build-extractors/runtime-test/legion-legendary-catalog/ArtifactReviewItemsCatalog.obj",
+      "bytes": 191722,
+      "sha256": "98C973BAD1FF780E5E774AA8AA8A2998335EF37AD37679AECFA23DE9DDB4D121"
+    }
+  ],
+  "reclaimed_bytes": 372970,
+  "cleanup_guards": "Fresh absent worldserver/bnetserver/probe process checks before copy and deletion;exact absolute workspace targets;all ancestors checked for reparse points;only the two uniquely owned redundant probe files deleted. No recursion against shared runtime or libraries. Preserved native reader source,queries,final World snapshots and test tools.",
+  "canonical_world_sha256": "AF613D308B41F8828A4A1A68266EA6F704ABAB1F0C4B9CDFDBB0541FABED5A20",
+  "runtime_preservation": "World/bnet binaries,map,configs,certificates and DLL hashes unchanged. DBErrors7111 bytes unchanged by hash,Server/DBErrors lengths and timestamps unchanged throughout archival;Crashes empty before/after. No active log truncated. No owned server launched or user process stopped;servers remain stopped.",
+  "checks": "Independent native sparse read,data export,500 structural records and actual exporter publication regression passed with diagnostic wrappers. No new/changed crash or appended DBErrors/server warnings/errors/assertions. This audit did not mutate live gameplay data or require a new server binary/startup.",
+  "remaining": "Protection three focused repairs deployed in earlier separate commits,client retest pending (Pillik repeat,wind direction/per-side cleanup,airborne orbs,Heroic Throw gate/combat exit and full completion). Ordinary storm damage failure not proven repaired. Three Monk missing original LINK payloads and authored intent of11 zero-count objectives remain unverified. Old handshake warnings unresolved. Full36 client acquisition chains remain unverified."
+}
