@@ -38,5 +38,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed unresolved historical log retained unchanged; expected failing host compile/assertion and stale PE assumptions retained paired with passing corrections. Known native float conversion and controlled-host unused-parameter compiler warnings are not server warnings."
   },
-  "limits": "Actual combat/visual/audio/wing/Aethas/channel timing, client wipe/re-entry/group/faction traversal and full11997/all36 remain client-pending. Permanent unavailable actor/reset failure deliberately emits finite diagnostic and resets without progression; no invented recovery actor or DATA4. Six remaining primary structural edges are independent investigation, not six proven player blockers."
+  "limits": "Actual combat/visual/audio/wing/Aethas/channel timing, client wipe/re-entry/group/faction traversal and full11997/all36 remain client-pending. Permanent unavailable actor/reset failure deliberately emits finite diagnostic and resets without progression; no invented recovery actor or DATA4. Six remaining primary structural edges are independent investigation, not six proven player blockers.",
+  "fix_commit": "c024a5157",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-fire-lyandra-wreath-phase-final",
+    "manifest_sha256": "efd8eb41c14d7a41f636e35aa0ef8fe2034ad23ebcaff7ca51c2ab41638b065c",
+    "verified_captures": 722,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 27,
+    "deferred_bytes": 285412167,
+    "reason": "Temporary deletion remains deferred after prior automatic review blocked the same cleanup action with blocked by policy (6b681a71d); no alternate removal method or claimed deletion. Exact validated no-reparse paths/hashes are retained. Current rollback8F19 plus prephase world context remains necessary. Two incomplete archive attempts encountered a still-open capture output file; corrected final archive excludes its active output, verified every source/destination hash and retained both incomplete directories/evidence without declaring them complete. Mixed historical log/configs/canonical protected."
+  }
 }
