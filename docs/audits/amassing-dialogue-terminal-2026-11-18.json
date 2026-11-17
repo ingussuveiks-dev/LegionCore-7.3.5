@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "Amassing Darkness102693 aggro casts native Armageddon202995, starts its25second native TAL102693 and speaks TALK1/10000ms. That final TALK6 references absent8. Initialization/removal of33555200/Tyrus DATA1 and real death48994/successor101897 are independent complete roots; no missing progression action is established at8.",
+  "sources": [
+    "Full matching current9-table source fixture:33 SAI,10 conditions,9 texts,4 templates/WDB,22 actor spawns,ward GO251349 and spell binding/destination scope. Preserves the real991/5 source22 guard on initial update, Slaghammer101899 actual owner/finale predicates and native successor101897/ward cleanup.",
+    "Typed26972 AmassingDarknessCatalog confirms202995 Armageddon25s/periodic203006->203007,203014 Armageddon/native damage and knockback, actual48994 at scenario991/order5/tree46784/46785; original dialogue105084/105085 and all companion native texts retained. Existing201321 scene1182 preserved.",
+    "Native SmartAI event/TALK/10s text timer/LINK and SetScript9/InitTimer/UpdateTimer reviewed, plus native death205 player/owner helper and successor101897 death->ward/Tyrus2->owned finale. Current local matching data resolves the complete terminal call; no modern/video action or original author intent invented."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_18_03_amassing_dialogue_terminal.sql",
+    "updater_sha1": "7E0F8E937D3B0551F02C7C8F52080CB4DE1E1AE9",
+    "state": "RELEASED",
+    "edit": "Exactly102693/source0/id6.link8->0 under full9-table original/applied guards. Preserve all speech/timing/targets/casts/native TAL, init flags/data, independent death/owner credit/successor/ward/finale. No direct health/item/quest/progress grant or log suppression."
+  },
+  "checks": [
+    "Restricted temporary SQL actual schema: exact one independent edit, idempotence,14 foreign/missing/partial context refusals, actual RELEASED hash/live equality.",
+    "ASAN26 native event/TALK/text/LINK/SetScript9/UpdateTimer cases: five invoker kinds x player-in-range endpoint variants; original init/flag/Tyrus1, actual aggro native25s timed203014 request, busy-cast clock and repeat protection, native death205+101897 independent and one-hit death; source condition/expired rejection. Historical missing8 counterfactual paired with deliberate terminal successor. Spell effects/world targets/criteria/summon endpoints controlled.",
+    "Retained Test-SlaghammerFinaleNative -VerifyLiveData:46 actual owner-only native1182/1551 publication and5s shared ward/barrier/hide/removal contexts, group/pet/foreign/retake/death/missing actor guards. Existing actual release/native libraries consumed; not full-core ASAN. No change to that shared actor.",
+    "Test-ScriptPetCredit -AddressSanitizer -VerifyReleaseBinary passes actual native SmartAI credit/criteria/caster/eligible owner resolution, missing/charmed/guardian owners,dedup and delayed revalidation; canonical actual ProcessAction calls checked. First invocation did not have an outer diagnostic wrapper; repeated under mandatory before/after canonical/runtime diagnostics, final no new/changed crashes or unexplained appended errors.",
+    "Canonical unchanged E8163A02 task-owned PID31008 ready/graceful exit0, migration applied before data load; no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Config/cert protected, no user process stopped or owned server left running."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/amassing-terminal-20261118",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed historical unresolved entries preserved unchanged. Expected old missing8 behavior belongs only to explicit counterfactual host."
+  },
+  "limits": "Original missing8 payload not recovered; no invisible ability synthesized. Real combat/movement/Armageddon visuals/voice, actual group/faction/client retry and full40710/991 remain client checks. Controlled request host does not establish whole spell engine or whole-chain gameplay. Four primary structural edges remain for independent investigation."
+}
