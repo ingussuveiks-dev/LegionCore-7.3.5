@@ -362,6 +362,15 @@ void CreatureTextMgr::SendSound(Creature* source, uint32 soundKitID, ChatMsg msg
 
 void CreatureTextMgr::SendNonChatPacket(WorldObject* source, WorldPacket const* data, ChatMsg msgType, ObjectGuid whisperGuid, TextRange range, Team team, bool gmOnly) const
 {
+    if (range == TEXT_RANGE_PERSONAL)
+    {
+        Player* player = ObjectAccessor::FindPlayer(whisperGuid);
+        if (source && player && player->GetSession() && !player->GetSession()->PlayerLoading() &&
+            !player->GetSession()->PlayerLogout() && source->IsInMap(player) && player->canSeeOrDetect(source))
+            player->SendDirectMessage(data);
+        return;
+    }
+
     switch (msgType)
     {
     case CHAT_MSG_MONSTER_PARTY:

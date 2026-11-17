@@ -94,6 +94,14 @@ void CreatureTextMgr::SendChatPacket(WorldObject* source, Builder const& builder
 
     CreatureTextLocalizer<Builder> localizer(builder, msgType);
 
+    if (range == TEXT_RANGE_PERSONAL)
+    {
+        Player const* player = whisperTarget ? whisperTarget->ToPlayer() : nullptr;
+        if (player && source->IsInMap(player) && player->canSeeOrDetect(source))
+            localizer(player);
+        return;
+    }
+
     switch (msgType)
     {
         case CHAT_MSG_MONSTER_PARTY:

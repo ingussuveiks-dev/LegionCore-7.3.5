@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED_SERVER_CHECKED_CLIENT_PRESENTATION_PENDING",
+  "request": "User explicitly asked to review gameplay footage and reconstruct intended behavior for unresolved artifact cases. This supersedes earlier research-only deferral for unknown original Li Li LINK7/8 bytes.",
+  "cause": "Li Li100475 accepted40633 and delivered native indoor dialogue but its missing LINK7/8 had no movement/crane continuation. A shared nearest-father handoff also cannot isolate concurrent personal scenes.",
+  "behavior": [
+    "Accept40633 starts one private Li Li/father pair per actual player and accepted quest-object scope. Public originals are hidden only for that owner; unrelated40569 gossip/base SmartAI delegates unchanged.",
+    "Native text0..4/father0..2, SAY/emote presentation, localized BroadcastText and sounds61994..62001 retained. Added native103341/62001 last reply. Explicit personal text range routes chat and sound only to the actual same-map visible recipient; ordinary ranges unchanged.",
+    "Two grounded movement arrivals lead outside; the existing static kite102531 is not duplicated. Native crane100972/properties3545/vehicle4518/seat16169 is personal, quest-scoped, on its real summoner list, bounded40s. The actual landing and correct Li Li seat0 PassengerBoarded are required before departure; players/foreign actors are rejected.",
+    "No item, objective, quest completion, player transfer, specialization or group combat credit is manufactured. Existing202475 real kite click and202481 transfer remain native; required100571 Ramkahen receipt and optional102531 remain separate.",
+    "Duplicate clicks reuse the current scene; failed spawn/path/landing/boarding, stale attempt, abandonment, death, logout/map exit and expiry clean owned actors and restore originals. Old generation cannot unhide a replacement. Never cancel the whole quest scope because it may own the real player kite."
+  ],
+  "evidence": [
+    {
+      "url": "https://www.youtube.com/watch?v=Qigkf1SFr-0",
+      "title": "Off To Adventure! WoW Monk Order Hall",
+      "author": "WoW Quests",
+      "date": "2016-08-26",
+      "duration_seconds": 103,
+      "review": "All103 sampled1fps visual frames over entire clip, nine sheets. No continuous playback or audio review. Accept~7, father dialogue9..43, departure44..55, kite~60, Uldum~67, palace/receipt~88, turn-in~96. Player leaves before full crane feeding/boarding; this clip alone does not establish that phase."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=2_k19VCoq2I",
+      "title": "[Quest40633] - Off To Adventure! (Narration)",
+      "author": "Phoenix Gaming / Aurleis",
+      "date": "2016-12-25",
+      "duration_seconds": 176,
+      "review": "All176 sampled1fps visual frames over entire clip,15 sheets including outro. No continuous playback/audio review. Accept15, first line17, father23, LiLi30, father39..47, Yay49, walk50..57, kite60..65, fish71..76, last reply77..83, crane moves away78..83, kite85, Uldum92, palace107, turn-in115.360p does not clearly establish exact seat animation or spline; do not claim otherwise."
+    },
+    {
+      "url": "https://warcraft.wiki.gg/wiki/Off_To_Adventure%21",
+      "review": "Secondary notes corroborate feeding/boarding narrative; native7.3.5 vehicle/text/summon metadata and existing core control the implementation."
+    },
+    {
+      "url": "https://github.com/HavenWoW/BFA-HavenCore/blob/403d04827b341ec18afcb878e371151de850b2e9/src/server/scripts/BrokenIsles/ClassHalls/class_hall_monk.cpp",
+      "review": "Different BFA core, reference only for two ground poses. Did not copy unsafe delayed raw-pointer ownership, duplicate kite or incomplete crane sequence. Ground poses validated against actual7.3.5 VMap/GridMap/navmesh."
+    }
+  ],
+  "checks": [
+    "Test-LiliAdventure:27 production namespace/controller cases extracted verbatim, MSVC ASAN; exact nine-line order, movement/landing/seat receipts, two concurrent owners, foreign/player passenger rejection, all cleanup/retry generations and native SmartAI fallback. World/path/vehicle endpoint services are controlled, not a whole native world traversal.",
+    "PersonalCreatureTextTest:9 actual new chat/sound branch cases plus normal-range continuation, session/loading/logout/map/visibility/null/foreign recipient controls. Original SAY type is retained. Packet/session endpoints controlled.",
+    "Test-LiliAdventureData -VerifyLiveData: actual MariaDB schema TEMP shadow tables, fresh migration twice, graph/father/vehicle/text refusal without writes, live bindings/link/text/objective readback. No character database writes.",
+    "LiliAdventureCatalog: actual7.3.5 typed DB2 and read-only hotfix; native personal3545/guardian3706 distinction, vehicle4518/seat16169, broadcast103325..103341 and real voice IDs. No matching scene package was found;198932 is native event47891/taxi discovery652, not a Scene spell, and is not invented as a replacement.",
+    "LiliAdventureGeometry: all4 ground anchors within0.083 yards of actual map floor; body LOS across both walking segments; native navmesh connected both endpoints; crane landing/ascent clear. This is extracted-data geometry, not actual spline/client traversal.",
+    "Test-MonkKiteTravel -AddressSanitizer -VerifyNativeCatalog and Test-LiliPhaseData -VerifyLiveData pass; optional personal credit/real-hit transfer guards and existing father phase preserved.",
+    "Actual original game.lib/scripts.lib inputs, new lili_adventure.obj registration and canonical EXE/map identity checked. verify_lili_adventure_release proves loader/acceptance/scope/summon/native boarding/ascent/personal text/cleanup call paths in final PE.",
+    "Final task-owned canonical PID10368: ready, graceful shutdown/exit0, captured stdout/stderr and appended diagnostics reviewed; no new crash, DBErrors, unexplained warning/error/assertion. No server left running."
+  ],
+  "deployed": {
+    "exe_sha256": "d6f4db71b07826f08e5c56fa3022cf14dad09ccac17cfdcd48e45d2804a70a4d",
+    "map_sha256": "d236e6425a9e3d5da5b899b3909c20832bdef99cd71ade69113305e464550052",
+    "migration": "sql/updates/world/2026_11_17_13_lili_personal_departure.sql",
+    "original_libraries": "build-extractors/src/server/game/Release/game.lib and src/server/scripts/Release/scripts.lib; no global OutDir override"
+  },
+  "limits": [
+    "Functional reconstruction authorized by user, not recovered original SmartAI LINK7/8 bytes. Approximate dialogue pauses, feeding gesture and crane ascent reconstructed from footage and geometry; exact retail spline, timing and boarding animation unproven.",
+    "Actual fresh acceptance, rendering, voices, facing/movement, late/relog retry, two live clients, real vehicle boarding and Uldum traversal remain client checks. Compilation/ASAN/data/PE/startup do not certify full40633 or all36 artifact chains.",
+    "Latest Tirisfal sampled video review confirms cleansed ward lightning can persist into later fights, but has not established shared103151 missing LINK2 semantics. Do not clear that mixed diagnostic or terminate its link merely to silence it. Other listed missing actions remain open."
+  ],
+  "legacy_diagnostics": {
+    "DBErrors_bytes": 7839,
+    "DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "action": "Entire mixed active log retained unchanged; no unresolved crash/log moved into fixed."
+  },
+  "local_evidence": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\artifact-video-reconstruction-20261117",
+  "cleanup": "Recorded in follow-up audit after hash-verified archive and removal of redundant task outputs."
+}
