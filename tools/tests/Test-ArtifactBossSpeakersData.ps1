@@ -63,7 +63,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_29_24_artifa
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_29_24_artifact_boss_speakers.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Artifact boss speaker wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Artifact boss speaker regression $table"}}
+  $fullLive=Query (Snapshot 'live');$fullLive=& "$PSScriptRoot/Convert-VerifiedBalaadurDeath.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Artifact boss speaker regression $table"}}
  }
  'PASS full-schema TEMP Farthing/Balaadur speaker replay/idempotence: only six TALK target fields; original delays/texts/casts/summons/criteria/finale/weapon/native loot and unknownBalaadurLINK8 retained; seventeen custom-state refusals'
 }

@@ -1,4 +1,4 @@
-param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/artifact-boss-speakers-data",[switch]$VerifyNativeCatalog)
+param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/artifact-boss-speakers-data",[string]$DeathTerminalData,[switch]$VerifyNativeCatalog)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/artifact-boss-speakers"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories "$repo/build-extractors/runtime-test/legion-legendary-catalog" -Test {
@@ -33,7 +33,8 @@ $out="$repo/build-extractors/runtime-test/artifact-boss-speakers"
  [IO.File]::WriteAllText("$out/EventConstants.inc","enum SMART_EVENT {$enum}; constexpr uint32 SMART_ACTION_TALK=$action; $extra")
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $data=[IO.Path]::GetFullPath($DataDirectory)
- [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/ArtifactBossSpeakersTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$data/original.tsv`" `"$data/repaired.tsv`" `"$data/texts.tsv`"`nexit /b %errorlevel%`n")
+ $terminalArg=if($DeathTerminalData){' "'+[IO.Path]::GetFullPath($DeathTerminalData)+'"'}else{''}
+ [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/ArtifactBossSpeakersTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$data/original.tsv`" `"$data/repaired.tsv`" `"$data/texts.tsv`"$terminalArg`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Native artifact boss speaker regression failed'}
  if($VerifyNativeCatalog){$old=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ArtifactBossSpeakersCatalog.cpp -ProbeName ArtifactBossSpeakersCatalog -OutputFile "$out/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$old}
   $native=Get-Content "$out/native.tsv"

@@ -109,7 +109,7 @@ static void Farthing(std::vector<SmartScriptHolder> const& rows,Unit* victim,boo
  count=s.calls.size();s.ProcessEventsFor(SMART_EVENT_AGGRO,victim);s.ProcessEventsFor(SMART_EVENT_HEALTH_PCT,victim);s.ProcessEventsFor(SMART_EVENT_TEXT_OVER,victim,2,101148);s.ProcessEventsFor(SMART_EVENT_TEXT_OVER,victim,3,101148);assert(s.calls.size()==count&&!s.errors);
 }
 int main(int argc,char** argv){
- if(argc!=4)return 1;Texts(argv[3]);auto farOld=Read(argv[1],101148),farFixed=Read(argv[2],101148),bOld=Read(argv[1],108168),bFixed=Read(argv[2],108168);assert(farOld.size()==34&&farFixed.size()==34&&bOld.size()==7&&bFixed.size()==7);
+ if(argc!=4&&argc!=5)return 1;Texts(argv[3]);auto farOld=Read(argv[1],101148),farFixed=Read(argv[2],101148),bOld=Read(argv[1],108168),bFixed=Read(argv[2],108168);assert(farOld.size()==34&&farFixed.size()==34&&bOld.size()==7&&bFixed.size()==7);
  Player player;Creature pet,guardian,npc;pet.entry=9001;guardian.entry=9002;npc.entry=9003;
  for(Unit* victim:{static_cast<Unit*>(&player),static_cast<Unit*>(&pet),static_cast<Unit*>(&guardian),static_cast<Unit*>(&npc),static_cast<Unit*>(nullptr)}){
   Farthing(farOld,victim,false);Farthing(farFixed,victim,true);
@@ -127,4 +127,6 @@ int main(int argc,char** argv){
  }conditions.allow=true;
  chat.requests.clear();auto removed=Script(farFixed,101148,&pet);removed.actor.health=70;removed.ProcessEventsFor(SMART_EVENT_HEALTH_PCT,&pet);auto count=removed.calls.size();removed.me=nullptr;removed.Update(5001);assert(removed.calls.size()==count);
  std::puts("PASS native Farthing/Balaadur TALK/SELF/VICTIM/INVOKER/event+LINK/text timer and actual CreatureTextMgr entry/group admission: original pet speaker yields no text and stalls Farthing; repaired own aggro +2/5000ms->3/7000ms->4, Balaadur aggro/50-percent, player/pet/guardian/NPC/no victim, repeats/invalid/removed actor. Original15 shadow requests and Balaadur death chest/NPC/criterion+knownmissingLINK8 retained. Text packet/render/cast/summon/progression endpoints not client traversal proof.");
+ if(argc==5){auto terminal=Read(argv[4],108168);assert(terminal.size()==7);unsigned cases=0;for(Unit*victim:{static_cast<Unit*>(&player),static_cast<Unit*>(&pet),static_cast<Unit*>(&guardian),static_cast<Unit*>(&npc),static_cast<Unit*>(nullptr)})for(bool oneHit:{false,true}){auto s=Script(terminal,108168,victim);if(!oneHit){s.ProcessEventsFor(SMART_EVENT_AGGRO,victim);s.actor.health=50;s.ProcessEventsFor(SMART_EVENT_HEALTH_PCT,victim);}auto start=s.calls.size();s.ProcessEventsFor(SMART_EVENT_DEATH,victim);assert(s.calls.size()==start+3&&!s.errors&&s.calls[start].action==50&&s.calls[start].parameter==251049&&s.calls[start+1].action==12&&s.calls[start+1].parameter==108202&&s.calls[start+2].action==205&&s.calls[start+2].parameter==92);s.ProcessEventsFor(SMART_EVENT_DEATH,victim);assert(s.calls.size()==start+3&&!s.errors);++cases;}std::printf("PASS %u Balaadur terminal successor cases: independent real death chest251049/NPC108202/native51391 once across player/pet/guardian/NPC/null and one-hit, no missing8 lookup; original combat/dialogue remains checked above. Actual spawned loot/criteria/client separate.\n",cases);}
+
 }

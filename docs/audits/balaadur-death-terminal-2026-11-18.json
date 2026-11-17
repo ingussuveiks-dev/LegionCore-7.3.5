@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "Balaadur108168 native real death has independent GO251049/NPC108202 requests and event7 native205/51391, which then references absent8. Native Ebonchill pickup/214775 and manual real loot are separate; no missing8 grant is needed or invented.",
+  "sources": [
+    "Full matching current8-table context:51 SAI,85 source22/loot conditions,7 texts,4 templates/WDB,2 spawns,2 GO and2 loot rows across Balaadur/Ebonchill and protected unrelated Farthing route. Current original contains earlier six native speaker-target fixes and native113374 fallback.",
+    "Typed ArtifactBossSpeakersCatalog confirms actual51391 at1122/order4/tree48469/48470, native six speech IDs/sounds and unchanged Farthing48421 metadata. Local actual GetLootId resolves251049 to real128862; existing owned/manual acquisition source is class Mage/quest42479.",
+    "Native205 eligible Player/owner resolver and independent50/12 death requests traced. Existing matching local graph fully specifies the complete terminal criterion request; no missing author payload or modern/video ability claimed."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_18_05_balaadur_death_terminal.sql",
+    "updater_sha1": "9E2DA4489EBBF138D43C9ED9DF907EDE612A2B78",
+    "state": "RELEASED",
+    "edit": "Exactly108168/source0/id7.link8->0 with complete8-table original/applied guards. Preserve real-death51391 target7/eligible owner,independent chest/NPC,ordinary casts/health/dialogue and real pickup. No artificial item/quest/health/progress grant or log suppression."
+  },
+  "checks": [
+    "Restricted actual-schema TEMP replay/live:exact one independent field edit,idempotence,12 foreign/missing/partial refusals and actual RELEASED equality.",
+    "Extended retained ASAN ArtifactBossSpeakers native event/TALK/CreatureTextMgr/LINK fixture:original pet-silent counterfactuals,real5s/7s Farthing speech,15 shadow requests,own Balaadur aggro/50percent across five victim kinds and invalid/removed actor controls still pass. New10 terminal cases retain independent real death chest/NPC/criterion once across player/pet/guardian/NPC/null and one-hit,without missing8. World/spawn/criteria/packets controlled.",
+    "Old speaker full6-table live fixture normalization first verifies entire actual8-table05 successor/RELEASED,then restores only link8 and the exact one later113374 Text in its comparison snapshot. Current native fallbackbatch06 F1918AD3DE765A4161CFFFF9A76CEB23D5700FF0 RELEASED agrees; no live text or data reverted and no other drift skipped.",
+    "Test-ArtifactAcquisitionData passes actual eight real loot rows/GetLootId,repeat migration,six guarded native completed-loot roots and unchanged handlers/no early credit. Existing all36 real inventory/spec/owner regressions and immediately preceding native/PE owner-credit pass remain distinct from client traversal; no shared205 or inventory implementation changed here.",
+    "Canonical E8163A02 task-owned PID11100 ready/graceful exit0,guarded05 applied; no new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. Configs/certificates protected,no user process stopped or owned process left running."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/balaadur-terminal-20261118",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed historical unresolved entries retained unchanged; explicit original missing8 baseline preserved with passing successor."
+  },
+  "limits": "Unknown original8 intent is unrecovered. Actual client combat,party/faction visibility/credit,weapon appearance/equipment/storage/scene/return and full1122/42479 remain separate. Controlled request and actual native data checks do not certify a whole scenario. Two primary pickup structural edges remain."
+}
