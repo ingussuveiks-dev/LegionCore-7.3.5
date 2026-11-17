@@ -148,5 +148,11 @@
     "current_remaining_primary_edges": 11,
     "state": "Whole ward cleanse receiver functionally reconstructed and deployed; original unknown tail/client rendering remain distinct. Li Li7/8 and ward2 no longer active missing edges. Other11 still open; not eleven proven player blockers.",
     "source": "Current native bounded graph readback .codex/wards-reconstruction-20261117/missing-after.tsv"
+  },
+  "followup_2026_11_17_wardstone_terminal": {
+    "audit": "talonclaw-wardstone-terminal-2026-11-17.json",
+    "current_remaining_primary_edges": 10,
+    "state": "Inherited dangling101325/source0/id3->4 corrected to deliberate terminal after existing base summon; all four native operations preserved. Original fifth payload remains unrecovered; this graph repair is distinct from full client certification. Other ten primary edges still open.",
+    "source": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wardstone-cause-20261117\\remaining-primary.tsv"
   }
 }

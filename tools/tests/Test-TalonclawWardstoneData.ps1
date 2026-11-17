@@ -94,6 +94,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_01_talonc
   $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){$expected=Signature $rows "first-$table"
    if($table -eq 'smart_scripts' -and $speakersApplied){$expected=[string]::Join("`n",[string[]]@($expected.Split("`n")|ForEach-Object {$f=$_.Split("`t");if($f[0] -eq '100207' -and $f[1] -eq '0' -and [int]$f[2] -in @(4,5)){$f[21]='1'};$f -join "`t"}))}
    if($table -eq 'smart_scripts' -and $retryApplied){$expected=[string]::Join("`n",[string[]]@($expected.Split("`n")|ForEach-Object {$f=$_.Split("`t");if($f[0] -eq '101325' -and $f[1] -eq '0' -and [int]$f[2] -in @(1,2)){$f[16]='512'};$f -join "`t"}))}
+   if($table -eq 'smart_scripts' -and (Test-Path "$repo/sql/updates/world/2026_11_17_15_talonclaw_wardstone_terminal.sql")){$expected=[string]::Join("`n",[string[]]@($expected.Split("`n")|ForEach-Object {$f=$_.Split("`t");if($f[0] -eq '101325' -and $f[1] -eq '0' -and $f[2] -eq '3'){$f[3]='0'};$f -join "`t"}))}
    if((Signature $fullLive "live-$table") -cne $expected){throw "Live differs from Talonclaw Wardstone regression $table"}
   }
  }

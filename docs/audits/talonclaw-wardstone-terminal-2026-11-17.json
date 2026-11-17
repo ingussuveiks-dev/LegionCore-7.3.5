@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED: inherited invalid terminal reference repaired; original fifth payload remains unrecovered, actual client traversal pending",
+  "problem": "101325/source0/id3 already summons the native Runic Wardstone Base101360, then refers to absent LINK4. The loader/dispatcher correctly reports that invalid reference. Earlier research treated every absent edge as a potentially missing gameplay action; that uncertainty must not be confused with an observed player blockage.",
+  "decision_basis": [
+    "The complete relevant sampled ZaFrostPet sequence and four more densely reviewed Phoenix activations establish credit before the later lightning/stun, disappearance and a remaining base; no additional required gameplay operation was identified. See talonclaw-full-video-review-2026-11-17.json and talonclaw-alternate-video-review-2026-11-17.json for exact viewing/audio/partial-media limits.",
+    "Native26972 and live dependency trace put all those functions inside the four existing actions: accepted199728 hit ->205/type92/event48172 -> ordinary199770/199823 lightning/damage/4s stun/stone-only instant kill -> corpse-allowed187027 invisible transform ->101360 manual/no-timeout base summon with native199739 addon. The second stage needs three distinct event48172 receipts. No event/data route from the base to another actor or criterion was found in the bounded reference queries; the base has no AIName, ScriptName or SmartScript rows, no click flag, no static spawn.",
+    "Neither the matching Preservation2024 public world database nor the latest reviewed Titans base contains a fifth101325 action. Both independently retain the exact same four-action prefix and invalid3->4. This is inherited source data, not evidence that a local migration deleted an action. These sources can share ancestry; do not claim independent retail packet captures.",
+    "Functional decision: explicitly end this fully described chain after its real base summon. This repairs invalid graph data while retaining every known operation, all diagnostics and the native handlers. It does not fabricate a fifth action or claim original author intent/byte recovery. Internal behavior not evidenced by the surviving sources remains a limit."
+  ],
+  "new_sources": [
+    {
+      "source": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/releases/tag/LegionCore735.24101",
+      "asset": "LegionCore_full_735.26972_2024_10_23.7z",
+      "bytes": 33262376,
+      "sha256": "cf681e1fb2e7443daab2a5db04f4efa2fc53cc485ea8de6b6ec3d60d569c2696",
+      "world_sql_sha256": "0265cc795b6507f8918162293e7c905143cdb2ef227ee72179bb43bcf889f68c",
+      "world_sql_bytes": 237409451,
+      "result": "Exactly four101325 SmartScript rows0..3 with3->4; no101360 SmartScript rows. Older29-field schema is reference only, not copied into the current31-field table."
+    },
+    {
+      "source": "https://github.com/Titans-Project/LegionCore-Reforged/blob/a6afde36c705516d7d9bf3d359d43890e2709f50/sql/base/world/world_database_05.sql",
+      "git_blob": "8dc44ebd792488051b34cee5f817cb197edf3117",
+      "bytes": 48984430,
+      "result": "Downloaded actual raw bytes and verified Git blob identity; same four rows0..3/invalid3->4. Existing2026 local opt-in512 is separate and retained."
+    },
+    {
+      "source": "https://github.com/pac374/AshamaneCore-Legion735/blob/969358561109c388d6b11c8c50a1871b2bdd7085/src/server/scripts/BrokenIsles/ClassHalls/class_hall_hunter.cpp",
+      "result": "Actual Hunter source read; only empty class-hall registration, no matching stone/base/cast handler. Not a solution port."
+    }
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_17_15_talonclaw_wardstone_terminal.sql",
+    "updater_sha1": "B91A243A51142287F0A8056A3E4337F9491EBF76",
+    "state": "RELEASED",
+    "edit": "Exactly101325/source0/id3.link4->0 after complete eleven-table/all-field pre/applied context fingerprints; idempotent. Four action rows, native casts/512 flags/credit/base parameters,44 admission predicates, death masks, Mist Warder speech/scaling/templates/addons/spawns remain byte/field-equivalent. No C++ core or production script change."
+  },
+  "checks": [
+    "Test-WardstoneTerminalData -VerifyLiveData: complete real-schema11-table TEMP fixtures from pinned pre35 data plus exactly its two512 flags; repeated migration/idempotence, one field change and24 foreign/partial/context refusals, no persistent mutation permission, final full-field live equality and actual RELEASED hash. Refusals include altered/missing/foreign terminal, base script/aura, root/credit/target/stage/click/phase/scaling and Warder nodes.",
+    "81 actual native admission/criteria/once matrices plus first1 and then3 distinct receipts run for historical and terminal variants under MSVC ASAN. This older fixture verifies512 then normalizes only its cast adapter flags back to0 to isolate admission; actual512/corpse behavior is exercised unchanged in the separate suite. Cast/criteria-storage/base allocation endpoints remain controlled.",
+    "43 actual native linked-cast/retry/corpse/validation cases run for inherited and terminal graphs under MSVC ASAN. Terminal graph uses actual exported512 rows, maintains the same accepted199770/187027/base/credit counts and finite failure diagnostics. An explicit inherited missing-tail run still logs exactly one error; unrelated missing-link and queue-overflow diagnostics were not disabled. World/spell effects/summon endpoints remain controlled; no base allocation failure recovery was added.",
+    "Matching26972 typed catalog and canonical8F19 PE checks pass; no EXE changed or rebuild needed. Legacy admission22 refusal/44 predicate and retry20 refusal/full11-table live preservation checks pass after verifying the successor exact updater identity and sole terminal difference.",
+    "Own canonical worldserver PID32212 applied updater15, reached ready, gracefully shut down/exit0; captured stdout/stderr, new crashes and appended DBErrors/server warning/error/assertion diagnostics reviewed. No new crash, DBErrors or unexplained appended warning/error/assertion. Configs/certificates unchanged. No user/unknown server stopped or task server left running."
+  ],
+  "test_iterations": "Initial standalone ASAN terminal invocation failed without useful output; moved into the MSVC runtime environment. The older admission adapter then correctly rejected an unsupported512 path; split its isolated admission flags from the separate actual retry/corpse suite. A terminal retry assertion still expected the historical missing-link diagnostic in one busy case; corrected that specific expectation while retaining explicit inherited/overflow diagnostics. Final repaired suites pass. Failed captures are preserved; no production crash or log entry was hidden.",
+  "deployment": {
+    "worldserver_sha256": "8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5",
+    "map_sha256": "e5d1912bcd0e9d59a759e5f8a7ed306798013e43a243882b58ede6e3e36bedff",
+    "DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "DBErrors_bytes": 7839,
+    "migration_pre_smart_hash": "2be394ba92fb8936f218f9ff867183c7996d6d4769486bb667cc6b1c5839e5bd",
+    "migration_post_smart_hash": "10c33e82ac29affa19c3de3db715f4ecbb468843c68def03d9b60fbd8413fd53"
+  },
+  "remaining": {
+    "primary_edges": 10,
+    "source": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wardstone-cause-20261117\\remaining-primary.tsv",
+    "limits": "Data reference repair, not recovery of an unknown original fifth row or proof of whole client gameplay. Actual four click casts/charging/lightning/stun/base presentation, subsequent Apata/harpoon flow, group/faction/abandon/re-entry and whole40385 remain client checks. Existing native cast retry still reports exhausted casts; base allocation remains the existing endpoint. Other ten primary edges remain open, not ten proven player blockers."
+  },
+  "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wardstone-cause-20261117",
+  "cleanup": "Prepared next after focused fix commit: preserve resolved diagnostic evidence with verified hashes, retain source archive/selected research and existing rollback copies, remove redundant compiled tests and regenerable extracted public SQL. Mixed active DBErrors remains unchanged; no reviewed101325 missing-tail slice is present there."
+}

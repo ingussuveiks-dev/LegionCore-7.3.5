@@ -1,5 +1,5 @@
 #requires -Version 7.0
-param([switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[switch]$VerifyNativeCatalog,[string]$ReleaseDirectory)
+param([switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[switch]$VerifyNativeCatalog,[string]$ReleaseDirectory,[string]$TerminalEvents)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/smart-linked-cast-retry/run-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -Test {
@@ -46,6 +46,10 @@ $out="$repo/build-extractors/runtime-test/smart-linked-cast-retry/run-$([DateTim
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/SmartLinkedCastRetryTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/data/original-events.tsv`" `"$out/data/events.tsv`"`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual native linked-cast retry regression failed'}
+ if($TerminalEvents){
+  [IO.File]::WriteAllText("$out/run-terminal.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`n`"$out/test.exe`" `"$out/data/original-events.tsv`" `"$out/data/events.tsv`" `"$([IO.Path]::GetFullPath($TerminalEvents))`"`nexit /b %errorlevel%`n")
+  & "$out/run-terminal.cmd";if($LASTEXITCODE){throw "Actual native terminal linked-cast regression failed: $LASTEXITCODE"}
+ }
  if($VerifyNativeCatalog){$prior=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile TalonclawWardstoneCatalog.cpp -ProbeName TalonclawWardstoneCatalog -OutputFile "$out/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$prior};$native=[IO.File]::ReadAllLines("$out/native.tsv");foreach($id in @(187027,199770)){$attr=@($native|Where-Object{$_ -like "ATTR`t$id`t*"});if($attr.Count -ne 1){throw 'Native cast attributes missing'};$allowed=([uint32]$attr[0].Split("`t")[2] -band [Convert]::ToUInt32($dead.Groups[1].Value.Substring(2),16)) -ne 0;if($allowed -ne ($id -eq 187027)){throw 'Native corpse-caster admission differs'}};if($native -cnotcontains "MISC`t199823`t0`t4000`t0"){throw 'Native lightning duration/cast identity differs'}}
  if($VerifyReleaseBinary){if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"};$prior=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_smart_linked_cast_retry_release.py" $ReleaseDirectory;if($LASTEXITCODE){throw 'Actual linked-cast retry PE failed'}}finally{$env:PYTHONPATH=$prior}}
 }

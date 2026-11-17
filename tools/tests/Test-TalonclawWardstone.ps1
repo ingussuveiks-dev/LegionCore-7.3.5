@@ -1,4 +1,4 @@
-param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/talonclaw-wardstone-data",[switch]$VerifyNativeCatalog)
+param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/talonclaw-wardstone-data",[switch]$VerifyNativeCatalog,[string]$TerminalEvents)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-wardstone"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories "$repo/build-extractors/runtime-test/legion-legendary-catalog" -Test {
@@ -42,6 +42,10 @@ $out="$repo/build-extractors/runtime-test/talonclaw-wardstone"
  $data=[IO.Path]::GetFullPath($DataDirectory)
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/TalonclawWardstoneTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$data`"`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Wardstone admission/once replay failed'}
+ if($TerminalEvents){
+  [IO.File]::WriteAllText("$out/run-terminal.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`n`"$out/test.exe`" `"$data`" `"$([IO.Path]::GetFullPath($TerminalEvents))`"`nexit /b %errorlevel%`n")
+  & "$out/run-terminal.cmd";if($LASTEXITCODE){throw "Native Wardstone terminal admission/once replay failed: $LASTEXITCODE"}
+ }
  if($VerifyNativeCatalog){$old=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile TalonclawWardstoneCatalog.cpp -ProbeName TalonclawWardstoneCatalog -OutputFile "$out/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$old}
   $native=Get-Content "$out/native.tsv";foreach($line in @("EFFECT`t199728`t0`t0`t3`t0`t0`t0`t0`t25`t0`t0","MISC`t199728`t0`t0`t4000","WARDSTONE_AMOUNT`t3`t0`t46484","WARDSTONE_AMOUNT`t4`t3`t46187","SCENARIO_EVENT`t48069`t973`t2`t46184`t46185","EFFECT`t199823`t0`t2`t1`t0`t0`t0`t0`t87`t8`t0")){if($native -notcontains $line){throw "Native Wardstone payload differs $line"}}
   'PASS matching26972 real target25/dummy/4000ms Taking, native amount0->one receipt versus3, MistWarder48069 and original Wardstone-only instant-kill effect'
