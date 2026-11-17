@@ -39,6 +39,7 @@ void RearmRouteMiddle()
 void OnPlayerEnter(Player* player) override
 {
     InstanceScript::OnPlayerEnter(player);
+    if (player && player->GetGUID() == victoryStoryOwner && !victoryStoryAttempt.expired()) RearmVictoryStory();
     if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired())
     {
         RearmRouteMiddle();

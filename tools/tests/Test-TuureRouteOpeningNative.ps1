@@ -44,6 +44,7 @@ $group=$project.Project.ItemDefinitionGroup|Where-Object Condition -like '*Relea
 $libs=$group.Link.AdditionalDependencies.Split(';')|Where-Object {$_ -and $_ -notlike '%*'}|ForEach-Object {if($_ -like '..*'){[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $_))}else{$_}}
 $inputs+=@($libs|Where-Object {Test-Path -LiteralPath $_})
 $inputs+="$repo/src/server/scripts/Scenario/Artifacts/Priest/Tuure/tuure_route_opening.h"
+$inputs+=@(Get-ChildItem "$repo/src/server/scripts/Scenario/Artifacts/Priest/Tuure" -Filter "tuure_*.h" -File | ForEach-Object {$_.FullName})
 $inputs+=@("$out/TuurePolicy.inc","$out/TuureInstance.inc","$repo/tools/tests/SlaghammerCompanionNative.cpp","$repo/tools/tests/AltheaIntroNative.cpp","$repo/src/server/scripts/Scenario/Artifacts/Priest/Tuure/Tuure.h")
 # Reusable MSBuild workers can remain idle after completion. Certify the actual
 # source and final-link library bytes before/after the sequential native run.

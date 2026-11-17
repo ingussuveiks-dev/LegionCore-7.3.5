@@ -44,7 +44,10 @@ for prefix in ('?Eligible@TuureFirstFight@@', '?UpdateAchievementCriteria@Player
     assert n['symbol'](prefix) in n['calls'](methods['Update']), prefix
 assert n['symbol']('?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@') in n['calls']('?Recipient@TuureFirstFight@@')
 assert {106134, 106137, 106253} <= values('?Recipient@TuureFirstFight@@')
-assert 2009 in values(methods['BeginUnlock'])
+story = '?CompleteVictoryStory@' + scope
+assert {2009, 41993, 1000, 30} <= values(story)
+assert n['symbol'](story) in n['calls'](methods['BeginUnlock'])
+assert n['symbol'](story) in n['calls'](methods['Update'])
 assert n['symbol'](methods['GetBoros']) in n['calls'](methods['BeginUnlock'])
 for method, slot in (('?Kill@Unit@@', 0x28), ('?Update@InstanceMap@@', 0xe8)):
     body = instructions(method)

@@ -46,6 +46,7 @@ public:
         bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;
         #include "tuure_route_middle.h"
         #include "tuure_route_opening.h"
+        #include "tuure_victory_story.h"
 
         bool HasRouteProgress(uint32 tree)
         {
@@ -528,6 +529,7 @@ public:
 
         void CancelFirstFight()
         {
+            ResetVictoryStory();
             firstFight = FirstFight::Waiting;
             defeatedGuid.Clear();
             recipientGuid.Clear();
@@ -559,11 +561,14 @@ public:
         void BeginUnlock()
         {
             firstFight = FirstFight::Unlocking;
+            victoryStoryOwner = recipientGuid;
+            victoryStoryAttempt = questAttempt;
+            victoryStoryPending = !victoryStoryAttempt.expired() && !victoryStoryOwner.IsEmpty();
             questAttempt.reset();
             unlockDelay = 16000;
             // Resolve after criteria callbacks; never retain a borrowed actor.
-            if (Creature* speaker = GetBoros())
-                speaker->CreateConversation(2009);
+            if (GetBoros())
+                CompleteVictoryStory(0);
             else
                 TC_LOG_WARN("scripts", "Tuure first fight: conversation actor106134 disappeared after native50562; retain earned unlock");
         }
@@ -575,6 +580,8 @@ public:
             if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||
                 (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();
             if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) RearmRouteTaunt();
+            if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||
+                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmVictoryStory();
             if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)
                 borosGuid = creature->GetGUID();
             else if (creature->GetEntry() == 106221 && creature->GetDBTableGUIDLow() == 361429)
@@ -728,6 +735,7 @@ public:
             UpdateRoute(diff);
             UpdateEarnedCageActors();
             UpdateCaptain(diff);
+            CompleteVictoryStory(diff);
             if (firstFight == FirstFight::Waiting || firstFight == FirstFight::Done) return;
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1085 || delivering) return;

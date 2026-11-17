@@ -1,0 +1,45 @@
+{
+  "baseline": "927571015",
+  "files": [
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp",
+      "before_sha256": "69acef1347268c5751cfc97780d574a2eb495aa6f743a7c17ad58117986a76c4",
+      "after_sha256": "d2b2da83db003758f3ab25011848329b34dae7e9803a7e6ec077f6c896eb7f50",
+      "edits": [
+        {
+          "old": "        #include \"tuure_route_middle.h\"\n        #include \"tuure_route_opening.h\"\n\n        bool HasRouteProgress(uint32 tree)\n",
+          "new": "        #include \"tuure_route_middle.h\"\n        #include \"tuure_route_opening.h\"\n        #include \"tuure_victory_story.h\"\n\n        bool HasRouteProgress(uint32 tree)\n"
+        },
+        {
+          "old": "        void CancelFirstFight()\n        {\n            firstFight = FirstFight::Waiting;\n            defeatedGuid.Clear();\n",
+          "new": "        void CancelFirstFight()\n        {\n            ResetVictoryStory();\n            firstFight = FirstFight::Waiting;\n            defeatedGuid.Clear();\n"
+        },
+        {
+          "old": "        {\n            firstFight = FirstFight::Unlocking;\n            questAttempt.reset();\n            unlockDelay = 16000;\n            // Resolve after criteria callbacks; never retain a borrowed actor.\n            if (Creature* speaker = GetBoros())\n                speaker->CreateConversation(2009);\n            else\n                TC_LOG_WARN(\"scripts\", \"Tuure first fight: conversation actor106134 disappeared after native50562; retain earned unlock\");\n",
+          "new": "        {\n            firstFight = FirstFight::Unlocking;\n            victoryStoryOwner = recipientGuid;\n            victoryStoryAttempt = questAttempt;\n            victoryStoryPending = !victoryStoryAttempt.expired() && !victoryStoryOwner.IsEmpty();\n            questAttempt.reset();\n            unlockDelay = 16000;\n            // Resolve after criteria callbacks; never retain a borrowed actor.\n            if (GetBoros())\n                CompleteVictoryStory(0);\n            else\n                TC_LOG_WARN(\"scripts\", \"Tuure first fight: conversation actor106134 disappeared after native50562; retain earned unlock\");\n"
+        },
+        {
+          "old": "                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) RearmRouteTaunt();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)\n                borosGuid = creature->GetGUID();\n",
+          "new": "                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) RearmRouteTaunt();\n            if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||\n                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmVictoryStory();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)\n                borosGuid = creature->GetGUID();\n"
+        },
+        {
+          "old": "            UpdateEarnedCageActors();\n            UpdateCaptain(diff);\n            if (firstFight == FirstFight::Waiting || firstFight == FirstFight::Done) return;\n            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n",
+          "new": "            UpdateEarnedCageActors();\n            UpdateCaptain(diff);\n            CompleteVictoryStory(diff);\n            if (firstFight == FirstFight::Waiting || firstFight == FirstFight::Done) return;\n            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/tuure_route_middle.h",
+      "before_sha256": "e83b8d05e7ac884df4d3fbe75002f1aea9e5fd97b8c37264b417e760b7963f53",
+      "after_sha256": "8c859c905eafc5988761933bcb4f599ae82b0469e0f55782195d4474acfc039a",
+      "edits": [
+        {
+          "old": "{\n    InstanceScript::OnPlayerEnter(player);\n    if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired())\n    {\n",
+          "new": "{\n    InstanceScript::OnPlayerEnter(player);\n    if (player && player->GetGUID() == victoryStoryOwner && !victoryStoryAttempt.expired()) RearmVictoryStory();\n    if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired())\n    {\n"
+        }
+      ]
+    }
+  ],
+  "header": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/tuure_victory_story.h",
+  "header_sha256": "83e896ca6b72237c47a03557d0e4be3ce46324c6548de95ceb5a9be4e49973ff"
+}
