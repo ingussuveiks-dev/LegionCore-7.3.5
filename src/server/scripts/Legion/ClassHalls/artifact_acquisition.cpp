@@ -43,6 +43,42 @@ bool Ready(Creature* actor)
     return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 5;
 }
 
+bool EligibleRecipient(Creature* actor, Player* player)
+{
+    return actor && player && player->IsInWorld() && player->CanContact() &&
+        !player->IsBeingTeleported() && player->getClass() == CLASS_HUNTER &&
+        !player->GetQuestRewardStatus(40419) &&
+        (player->GetQuestStatus(40419) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(40419) == QUEST_STATUS_COMPLETE) &&
+        actor->GetMap() == player->GetMap() && actor->InSamePhase(player) &&
+        actor->IsWithinDistInMap(player, 60.0f);
+}
+
+void RecoverDeathCredit(Creature* actor, Unit* killer)
+{
+    // Native DEATH actions keep the real killer and cleanup. Only recover a
+    // missing event after that real, admitted death, using native loot ownership.
+    if (!actor || actor->IsAlive() || !Ready(actor) ||
+        !sConditionMgr->IsObjectMeetingSmartEventConditions(101269, 10, SMART_SCRIPT_TYPE_CREATURE, killer, actor))
+        return;
+    Player* player = actor->GetLootRecipient();
+    if (!EligibleRecipient(actor, player))
+        player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+    if (!EligibleRecipient(actor, player))
+    {
+        TC_LOG_WARN("scripts", "Qormaladon: admitted death has no eligible credit recipient in instance %u (killer entry %u)",
+            actor->GetInstanceId(), killer ? killer->GetEntry() : 0);
+        return;
+    }
+    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49654, 0, 0, killer, true);
+    if (Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId()))
+    {
+        if (scenario->GetCurrentStep() == 6)
+            TC_LOG_INFO("entities.player", "Qormaladon: recovered admitted death credit for player %u", player->GetGUIDLow());
+        else
+            TC_LOG_ERROR("scripts", "Qormaladon: admitted death event did not advance instance %u", actor->GetInstanceId());
+    }
+}
+
 struct Gate
 {
     bool held = false;
@@ -97,6 +133,34 @@ struct npc_marksmanship_qormaladon : SmartAI
             damage = 0;
         else
             SmartAI::DamageTaken(attacker, damage, type);
+    }
+
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+    {
+        if (!damage || !me->IsAlive() || !MarksmanshipInquisitor::Ready(me))
+            return;
+        // Stop at each authored threshold until its actual SmartAI event has
+        // run. A lethal player/pet hit must not skip both native eye waves.
+        uint32 threshold = !GetScript()->HasRunEvent(3, SMART_EVENT_HEALTH_PCT) ? 80 :
+            (!GetScript()->HasRunEvent(6, SMART_EVENT_HEALTH_PCT) ? 40 : 0);
+        if (!threshold)
+            return;
+        uint64 const health = me->GetHealth(attacker);
+        uint64 const floor = std::max<uint64>(1, me->CountPctFromMaxHealth(threshold, attacker));
+        uint64 const allowed = health > floor ? health - floor : 0;
+        if (damage > allowed)
+        {
+            damage = uint32(allowed);
+            if (allowed)
+                TC_LOG_INFO("scripts", "Qormaladon: retained native %u percent eye threshold before lethal damage in instance %u",
+                    threshold, me->GetInstanceId());
+        }
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        SmartAI::JustDied(killer);
+        MarksmanshipInquisitor::RecoverDeathCredit(me, killer);
     }
 };
 
