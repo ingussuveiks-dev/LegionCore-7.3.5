@@ -93,6 +93,22 @@
           "new": "                        result |= QuestGiverStatus::Trivial;\n                }\n                else\n                    result |= QuestGiverStatus::Future;\n            }\n        }\n    }\n\n    result |= sScriptMgr->GetAdditionalQuestDialogStatus(this, questgiver);\n    return result;\n}\n\n/*********************************************************/\n/***                   LOAD SYSTEM                     ***/\n/*********************************************************/\n\nvoid Player::Initialize(ObjectGuid::LowType guid)\n"
         }
       ]
+    },
+    {
+      "commit": "ebonchill-inventory-phase-2026-11-17",
+      "parent": "87b93eea8c8b56f75dca8db6d94a5a701629d316",
+      "before_sha256": "846982ce81bb9949683bc57770815a2db2f5c0a033421e213752d38f4514fbee",
+      "after_sha256": "32fe6aa4a9613bc6f9862cf8a42c943aa2a63d62919d04e4713efba38c04183c",
+      "edits": [
+        {
+          "old": "        }\n    }\n    else\n        AreaExploredOrEventHappens(questId);\n}\n\nvoid Player::ItemAddedQuestCheck(uint32 entry, uint32 count)\n{\n    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)\n    {\n        uint32 questid = GetQuestSlotQuestId(i);\n        if (questid == 0)\n            continue;\n\n        Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);\n        if (!qInfo || !qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER))\n",
+          "new": "        }\n    }\n    else\n        AreaExploredOrEventHappens(questId);\n}\n\nvoid Player::ItemAddedQuestCheck(uint32 entry, uint32 count)\n{\n    // Carried off-spec artifacts can satisfy acquisition phase conditions.\n    // Recalculate after the inventory mutation, just as equipment changes do.\n    if (IsInWorld() && count)\n        if (ItemTemplate const* item = sObjectMgr->GetItemTemplate(entry))\n            if (item->GetArtifactID())\n            {\n                PhaseUpdateData update;\n                update.AddConditionType(CONDITION_ITEM_EQUIPPED);\n                GetPhaseMgr().NotifyConditionChanged(update);\n            }\n\n    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)\n    {\n        uint32 questid = GetQuestSlotQuestId(i);\n        if (questid == 0)\n            continue;\n\n        Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);\n        if (!qInfo || !qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER))\n"
+        },
+        {
+          "old": "    AddDelayedEvent(100, [=, this]() -> void\n    {\n        UpdateForQuestWorldObjects();\n    });\n}\n\nvoid Player::ItemRemovedQuestCheck(uint32 entry, uint32 count)\n{\n    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)\n    {\n        uint32 questid = GetQuestSlotQuestId(i);\n        if (!questid)\n            continue;\n        Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);\n        if (!qInfo || !qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER))\n            continue;\n",
+          "new": "    AddDelayedEvent(100, [=, this]() -> void\n    {\n        UpdateForQuestWorldObjects();\n    });\n}\n\nvoid Player::ItemRemovedQuestCheck(uint32 entry, uint32 count)\n{\n    // Include destruction and inventory-to-bank moves. Keep this before the\n    // deliver-quest early return so losing the artifact always refreshes phases.\n    if (IsInWorld() && count)\n        if (ItemTemplate const* item = sObjectMgr->GetItemTemplate(entry))\n            if (item->GetArtifactID())\n            {\n                PhaseUpdateData update;\n                update.AddConditionType(CONDITION_ITEM_EQUIPPED);\n                GetPhaseMgr().NotifyConditionChanged(update);\n            }\n\n    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)\n    {\n        uint32 questid = GetQuestSlotQuestId(i);\n        if (!questid)\n            continue;\n        Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);\n        if (!qInfo || !qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER))\n            continue;\n"
+        }
+      ]
     }
   ]
 }

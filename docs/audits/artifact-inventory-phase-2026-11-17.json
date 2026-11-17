@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED_NATIVE_ASAN_LIVE_DATA_LINKED_PE_CANONICAL_STARTUP_PASS_CLIENT_PENDING",
+  "cause": "Our migration09 used condition32 for three Ebonchill phase predicates. The real PhaseMgr whitelist rejects that type, so the initial canonical startup appended three errors. Earlier controlled inventory checks had not exercised this loader admission.",
+  "repair": [
+    "Migration11 restores the original equipped-item3 branches and adds three explicit alternative branches: not-equipped3 AND genuine owned carried off-spec script AND not-Frost spec55 AND the original active/rewarded/complete42429 predicate. All types are supported by the unchanged native whitelist. Native negation precedes the script result.",
+    "Artifact-only item add/remove notifications subscribe to existing ITEM_EQUIPPED phase changes before deliver-quest early returns. Equipment, specialization and quest changes retain native notifications. No general condition whitelist expansion, forced phase, credit, item or specialization grants."
+  ],
+  "migration": "sql/updates/world/2026_11_17_11_ebonchill_inventory_phase.sql",
+  "coverage": [
+    "Test-ArtifactInventoryPhase.ps1 -VerifyLiveData -VerifyReleaseBinary: exact guarded migration twice and foreign/missing branch refusal, 72 extracted native ASAN phase/notification cases, owner/count, all original quest states, current/other spec, equipped/bag/bank/missing transitions, actual Condition negation/script conjunction and PhaseMgr whitelist. World/inventory endpoints controlled.",
+    "All36 inventory policy rerun: 36 parents,74 same-class alternate spec combinations,18 linked parent/child pairs and55 actual native249 effects.",
+    "Actual final-link GAME:Player.obj; verifier checks four world/count/item/ArtifactID bypasses, ITEM_EQUIPPED bit8 and notification before actual quest-template reads in both methods. Canonical Scepter login regression and binary presence pass."
+  ],
+  "deployed_exe_sha256": "60b8837cb9430b952167b39a4846bebeaf96dbceae7cbabbda0b9453009e1d96",
+  "deployed_map_sha256": "cd80a65899893262949b7086084bb3013f4816a2dd918a3f0de266456660f25d",
+  "startup": {
+    "initial": "Ready and graceful exit0, but FAILED diagnostics: three phase32 rejection errors; not a successful test.",
+    "repaired": "Task-owned canonical PID35380: ready, graceful exit0, zero appended DBErrors/errors/warnings/assertions, no crashes; no agent-owned server left.",
+    "applied_updates": [
+      "2026_11_17_08",
+      "2026_11_17_09",
+      "2026_11_17_10",
+      "2026_11_17_11"
+    ]
+  },
+  "diagnostics": {
+    "resolved_new_DBErrors_range": [
+      7401,
+      7839
+    ],
+    "resolved_bytes": 438,
+    "mixed_old_DBErrors_bytes": 7401,
+    "policy": "Archive only the repaired slice with hashes; retain the mixed active log unchanged. Older diagnostics are unresolved and are not certified by this startup."
+  },
+  "limits": [
+    "Actual client phase/visibility, off-spec Vereesa departure and all36 complete gameplay chains are pending. No personal character/quest state changed."
+  ]
+}

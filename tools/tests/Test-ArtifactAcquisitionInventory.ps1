@@ -45,6 +45,9 @@ function Block([string]$source,[string]$name) {
  $sql=@"
 CREATE TEMPORARY TABLE inventory_saved_conditions LIKE conditions;
 INSERT INTO inventory_saved_conditions SELECT * FROM conditions;
+-- Replay migration09 against its original six-row phase scope. Migration11
+-- has a separate actual loader/admission/notification regression.
+DELETE FROM inventory_saved_conditions WHERE SourceTypeOrReferenceId=23 AND SourceGroup=7502 AND SourceEntry=1201 AND SourceId=0 AND ElseGroup IN(3,4,5);
 CREATE TEMPORARY TABLE conditions LIKE inventory_saved_conditions;
 INSERT INTO conditions SELECT * FROM inventory_saved_conditions;
 $migration

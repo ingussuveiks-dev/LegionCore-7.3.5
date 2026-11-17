@@ -21035,6 +21035,17 @@ void Player::GroupEventHappens(uint32 questId, WorldObject const* pEventObject)
 
 void Player::ItemAddedQuestCheck(uint32 entry, uint32 count)
 {
+    // Carried off-spec artifacts can satisfy acquisition phase conditions.
+    // Recalculate after the inventory mutation, just as equipment changes do.
+    if (IsInWorld() && count)
+        if (ItemTemplate const* item = sObjectMgr->GetItemTemplate(entry))
+            if (item->GetArtifactID())
+            {
+                PhaseUpdateData update;
+                update.AddConditionType(CONDITION_ITEM_EQUIPPED);
+                GetPhaseMgr().NotifyConditionChanged(update);
+            }
+
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
         uint32 questid = GetQuestSlotQuestId(i);
@@ -21080,6 +21091,17 @@ void Player::ItemAddedQuestCheck(uint32 entry, uint32 count)
 
 void Player::ItemRemovedQuestCheck(uint32 entry, uint32 count)
 {
+    // Include destruction and inventory-to-bank moves. Keep this before the
+    // deliver-quest early return so losing the artifact always refreshes phases.
+    if (IsInWorld() && count)
+        if (ItemTemplate const* item = sObjectMgr->GetItemTemplate(entry))
+            if (item->GetArtifactID())
+            {
+                PhaseUpdateData update;
+                update.AddConditionType(CONDITION_ITEM_EQUIPPED);
+                GetPhaseMgr().NotifyConditionChanged(update);
+            }
+
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
         uint32 questid = GetQuestSlotQuestId(i);

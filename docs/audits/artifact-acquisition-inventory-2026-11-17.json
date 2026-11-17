@@ -602,5 +602,6 @@
     "path": "build-extractors/bin/Release/fixed/2026-11-17-artifact-inventory/",
     "manifest_sha256": "3B52EC552D98BF515DC963F9204A94553FD2EFEC16FF66ED82CC25987BDCC146",
     "scope": "Hash-verified resolved host/build/test evidence only. No mixed canonical log declared fixed, truncated or removed; no crash present to remove. Actual user startup/client verification remains pending."
-  }
+  },
+  "phase_loader_followup": "The subsequent requested offline canonical startup exposed three rejected Ebonchill phase32 predicates. Repaired by migration11 and artifact inventory notifications; see artifact-inventory-phase-2026-11-17.json. The first policy host result alone did not prove phase loader acceptance."
 }
