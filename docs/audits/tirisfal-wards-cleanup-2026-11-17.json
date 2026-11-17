@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-17",
+  "status": "COMPLETE",
+  "fix_commit": "9f50daf0a81f2fb05a21f42cd9aa60012ec8e7fe",
+  "removed_files": 11,
+  "reclaimed_bytes": 202020214.0,
+  "manifest": {
+    "sha256": "831F8FBC152727A41D794771F30B23904FE915D62B3D3FF97817BE95E6E2F11D",
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-tirisfal-wards/deletion-manifest.json"
+  },
+  "retained": [
+    "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wards-reconstruction-20261117/rollback-before-wards (verified stableD6F4 executable/map; pair with pre14 bindings/receiver before recovery)",
+    "Canonical runtime, original final-link libraries, all source/regression tools and verified fixed captures",
+    "Video sources/frames, unresolved Tirisfal metadata/diagnostics and unchanged mixed7839-byte active DBErrors"
+  ],
+  "removed_old_rollback": "None; stable pre-LiLi44A6 and pre-wardsD6F4 retained for still-unconfirmed client recovery",
+  "limits": "No user/unknown server, shared assets/configuration, character/database backup or security-quarantined file removed. No client/whole36 completion claim.",
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-tirisfal-wards\\post-cleanup-manifest.json",
+    "sha256": "e0157bf0d2f7fb896e62d9157bdb0a3d15943e2281a11ca172142d48161dfae1",
+    "result": "Canonical8F19 executable/map and source identities, stopped process state, unchanged mixed diagnostics/empty Crashes, native receiver/summoned branch and RELEASED updater14 verified."
+  },
+  "cleanup_audit": "tirisfal-wards-cleanup-2026-11-17.json",
+  "rollback_note": "Retain pre-wardsD6F4 (pair with pre14 ScriptName and pinned0/1 receiver); pre-LiLi44A6 retained independently for pending Li Li client recovery. Any rollback is offline and must coordinate the corresponding code-coupled updater. None performed."
+}

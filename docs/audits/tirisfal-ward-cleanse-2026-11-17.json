@@ -39,5 +39,19 @@
     "mixed_log_action": "unchanged; resolved ward lines may be copied with offsets/hashes after commit, never truncate mixed history"
   },
   "implementation_iterations": "Test endpoint declaration/include failures occurred before a native run; fixed and rerun. The post-promotion SQL refusal fixture originally depended on removed live rows; replaced with pinned original TEMP receiver, then all full comparisons/refusals/live checks passed. No production runtime failure hidden.",
-  "cleanup": "Completed in follow-up after focused implementation commit and verified fixed archive."
+  "cleanup": "11 redundant temporary outputs removed;202020214 bytes reclaimed. Canonical/shared data, two specifically needed recent rollback copies, sources/tools and diagnostics preserved.",
+  "fix_commit": "9f50daf0a81f2fb05a21f42cd9aa60012ec8e7fe",
+  "fixed_archive": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-tirisfal-wards",
+    "manifest_sha256": "31441007a56bb6d0b343f183d09cfbd5fa91ee32ba2cce147364e6da818b0a47",
+    "verified_capture_files": 111,
+    "resolved_ward_slices": 42
+  },
+  "post_cleanup_verification": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-tirisfal-wards\\post-cleanup-manifest.json",
+    "sha256": "e0157bf0d2f7fb896e62d9157bdb0a3d15943e2281a11ca172142d48161dfae1",
+    "result": "Canonical8F19 executable/map and source identities, stopped process state, unchanged mixed diagnostics/empty Crashes, native receiver/summoned branch and RELEASED updater14 verified."
+  },
+  "cleanup_audit": "tirisfal-wards-cleanup-2026-11-17.json",
+  "rollback_note": "Retain pre-wardsD6F4 (pair with pre14 ScriptName and pinned0/1 receiver); pre-LiLi44A6 retained independently for pending Li Li client recovery. Any rollback is offline and must coordinate the corresponding code-coupled updater. None performed."
 }
