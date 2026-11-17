@@ -1,7 +1,7 @@
 {
   "date": "2026-11-18",
   "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
-  "cause": "Amassing Darkness102693 aggro casts native Armageddon202995, starts its25second native TAL102693 and speaks TALK1/10000ms. That final TALK6 references absent8. Initialization/removal of33555200/Tyrus DATA1 and real death48994/successor101897 are independent complete roots; no missing progression action is established at8.",
+  "cause": "Amassing Darkness102693 aggro casts native Armageddon202995, starts its25second native TAL102693 and speaks TALK1/10000ms. That final row6 TALK references absent8. Initialization/removal of33555200/Tyrus DATA1 and real death48994/successor101897 are independent complete roots; no missing progression action is established at8.",
   "sources": [
     "Full matching current9-table source fixture:33 SAI,10 conditions,9 texts,4 templates/WDB,22 actor spawns,ward GO251349 and spell binding/destination scope. Preserves the real991/5 source22 guard on initial update, Slaghammer101899 actual owner/finale predicates and native successor101897/ward cleanup.",
     "Typed26972 AmassingDarknessCatalog confirms202995 Armageddon25s/periodic203006->203007,203014 Armageddon/native damage and knockback, actual48994 at scenario991/order5/tree46784/46785; original dialogue105084/105085 and all companion native texts retained. Existing201321 scene1182 preserved.",
@@ -26,5 +26,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed historical unresolved entries preserved unchanged. Expected old missing8 behavior belongs only to explicit counterfactual host."
   },
-  "limits": "Original missing8 payload not recovered; no invisible ability synthesized. Real combat/movement/Armageddon visuals/voice, actual group/faction/client retry and full40710/991 remain client checks. Controlled request host does not establish whole spell engine or whole-chain gameplay. Four primary structural edges remain for independent investigation."
+  "limits": "Original missing8 payload not recovered; no invisible ability synthesized. Real combat/movement/Armageddon visuals/voice, actual group/faction/client retry and full40710/991 remain client checks. Controlled request host does not establish whole spell engine or whole-chain gameplay. Four primary structural edges remain for independent investigation.",
+  "fix_commit": "bfd2d505f",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-amassing-dialogue-terminal",
+    "manifest_sha256": "b44b354a7d804913413dd88b52cf08fc2b874ecf3def37ac113f69417b4f6a58",
+    "verified_captures": 155,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 12,
+    "deferred_bytes": 219659448,
+    "reason": "Removal remains deferred after prior automatic review rejected the same temporary cleanup with blocked by policy. Exact no-reparse paths/hashes inspected; no alternate deletion. Canonical/runtime dependencies, regression sources and mixed historical log preserved; no servers running."
+  }
 }
