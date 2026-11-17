@@ -12,7 +12,9 @@
   "change": {
     "migration": "sql/updates/world/2026_11_17_17_fire_boss_death_terminal.sql",
     "edit": "Exactly99615/source0/id31.link32->0, after complete six-table original/applied SHA256 guards.55 scoped SmartAI rows,44 conditions,11 text rows,5 actor templates and genuine loot schema preserved. Reject custom or partly repaired inputs, including an actual foreign32 row.",
-    "binary": "Data-only; existing canonical8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5 and MAPe5d1912bcd0e9d59a759e5f8a7ed306798013e43a243882b58ede6e3e36bedff unchanged. Existing final-link/selected Fire retry PE checks pass."
+    "binary": "Data-only; existing canonical8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5 and MAPe5d1912bcd0e9d59a759e5f8a7ed306798013e43a243882b58ede6e3e36bedff unchanged. Existing final-link/selected Fire retry PE checks pass.",
+    "updater_sha1": "891CDD6EDA882FB064985FB4FA103DC5B0F69AA0",
+    "updater_state": "RELEASED"
   },
   "checks": [
     "Test-SmartTerminalData: actual MariaDB full-schema TEMP replay; independent expected one-field difference, all-field preservation, idempotence,17 refusal cases and live RELEASED LF hash. Persistent DML is denied to the temporary reader. First fixture mutation missed required comment (ERROR1364); corrected test setup, retained failed evidence and passing replay. No persistent rows were affected.",
@@ -32,5 +34,17 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "mixed_log": "Unchanged; unrelated unresolved historical entries remain visible, never truncated or relabeled fixed."
   },
-  "remaining": "Eight primary structural edges remain, not eight proven player blockers:99615/21->22,100438/9->10(later45440 campaign),101384/0->1,102693/6->8,104520/9->10,108168/7->8,247566/0->1,251878/4->5. Exact client combat,visual/audio/camera,party/faction,retry traversal and all36 whole chains remain separate."
+  "remaining": "Eight primary structural edges remain, not eight proven player blockers:99615/21->22,100438/9->10(later45440 campaign),101384/0->1,102693/6->8,104520/9->10,108168/7->8,247566/0->1,251878/4->5. Exact client combat,visual/audio/camera,party/faction,retry traversal and all36 whole chains remain separate.",
+  "fix_commit": "1270bea46",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-fire-boss-death-terminal",
+    "manifest_sha256": "4ace14d2201845519cff2ec0cb5409a8f95acf50e649703816593f56141ba058",
+    "verified_captures": 452,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 12,
+    "deferred_bytes": 51312347,
+    "reason": "Automatic approval review rejected both the combined exact-file cleanup and a smaller literal PowerShell deletion with blocked by policy; no specific reason supplied. No workaround or alternate deletion attempted. All12 inspected temporary outputs remain, with exact paths/hashes in the ignored local manifest.",
+    "preserved": "Canonical8F19/configs/certificates/shared assets/source libraries/paired rollback copies and original phase footage/research retained. Mixed7839byte DBErrors unchanged; no active crash or running server."
+  }
 }
