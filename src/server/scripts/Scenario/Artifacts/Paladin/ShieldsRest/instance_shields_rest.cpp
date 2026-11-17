@@ -656,7 +656,19 @@ public:
                         source->GetEntry() != 96740 || source->GetDBTableGUIDLow() != 361407 + slot * 2 ||
                         !source->GetPhases().count(6999))
                         continue;
-                    if (!active)
+                    // The native190842 vector points down the corridor
+                    // (-2.54187,-14.7831). The two imported source facings
+                    // instead point sideways at the guards. Its area/visual
+                    // takes the caster orientation when it is created.
+                    constexpr float corridorFacing = 4.54211f;
+                    float facingDelta = std::abs(source->GetOrientation() - corridorFacing);
+                    if (facingDelta > 0.01f && facingDelta < float(M_PI * 2) - 0.01f)
+                    {
+                        source->SetFacingTo(corridorFacing);
+                        source->RemoveAurasDueToSpell(190842);
+                        source->RemoveAreaObject(190842);
+                    }
+                    if (!active || warriorWindDeaths[slot])
                     {
                         source->RemoveAurasDueToSpell(190842);
                         source->RemoveAreaObject(190842);
