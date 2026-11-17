@@ -74,7 +74,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_27_guardi
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_27_guardian_wave_source_anchor.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Guardian wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Guardian regression $table"}}
+  $fullLive=Query (Snapshot 'live');$fullLive=& "$PSScriptRoot/Convert-VerifiedGuardianSludgeAttack.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Guardian regression $table"}}
  }
  'PASS full-schema TEMP Guardian source anchors: exactly23 target fields and9 real-Unit invoker guards; repeat/custom refusals/all other4-table fields preserved. No live writes by regression.'
 }

@@ -87,7 +87,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_29_22_guardi
     $normalize+="UPDATE conditions SET ConditionTarget=0 WHERE ConditionTypeOrReference=29 AND ConditionTarget=1 AND SourceEntry IN(101384,101388,101389);DELETE FROM conditions WHERE ConditionTypeOrReference=32 AND ConditionTarget=0 AND ConditionValue1=24 AND Comment='Guardian wave: retain real Unit death invoker admission';"
    }
   }
-  $fullLive=Query ($normalize+(Snapshot 'live'));foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Guardian regression $table"}}
+  $fullLive=Query ($normalize+(Snapshot 'live'));$fullLive=& "$PSScriptRoot/Convert-VerifiedGuardianSludgeAttack.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Guardian regression $table"}}
  }
  'PASS full-schema TEMP Guardian wave death replay/idempotence: five malformed calls and four missing own-species guards only; independent DEATH roots/descending criteria/last-living and990 stage guards, all waves/spells/helpers/finale/unknown sludge link retained; twenty-one custom/partial-state refusals'
 }

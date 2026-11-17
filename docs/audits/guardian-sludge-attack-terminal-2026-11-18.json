@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "Blightborn Sludge101384 JUST_SUMMONED54 already performs native ATTACK_START49 on nearby living Lea101742. Its link1 points to no row. Wave deaths and criteria are independent event6 roots with their previously repaired source22 scenario/last-living/real-Unit guards; there is no missing progress service in this opening attack request.",
+  "sources": [
+    "Full matching current four-table source109 SmartAI rows,61 conditions,9 text rows and7 actor templates pinned in GuardianSludgeAttackOriginal.json. Traced actual Lea101742 initial and01/02/03 wave lists, source29/32/44 condition consumers, native49/closest-creature19/SmartAI combat and independent208568/death205 paths. Existing guardian-wave-death-integrity-2026-10-29.json and guardian-wave-source-anchor-2026-10-30.json retain the full native990 wave/helper/finale trace.",
+    "Typed matching26972 DruidAcquisitionCatalog read-only hotfix/DB2 confirms scenario990 wave48106..09 at orders2..5 and later48146/50171. Bounded local newer Trinity name/ID search supplied no compatible alternate implementation; prior history remains a reference only.",
+    "Primary preserved26972 world2024 archive cf681e1f streamed without extracting another237MB copy: five101384 rows, same just-summoned49->missing1. Older29-field schema not copied into current31-field data; no original LINK1 payload is claimed recovered.",
+    "https://www.youtube.com/watch?v=lnJfNUUWPHc Game Guides Channel, uploaded2016-10-10,942s. Reviewed all63 15second samples from full video and all35 2second samples334..404s around ritual/first wave. Visible approach, Lea ritual, Sludge/Shadowstalker waves, later defender waves, Malithar, real pickup/exit/quest context. Sampled visual review, no continuous/audio or unseen timing claim. Video is corroboration of the defense encounter, not proof of an unknown database payload."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_17_18_guardian_sludge_attack_terminal.sql",
+    "updater_sha1": "9793311839DF62D0EBD474A8A1036F155B6350C1",
+    "state": "RELEASED",
+    "edit": "Exactly101384/source0/id0.link1->0 after complete four-table original/applied SHA256 guards. Retain action49/target19/101742/default100yard radius, chance/once/54, all independent death actions/owner credit, original waves/spells/scenario/condition/source anchors/text/template fields. Refuse foreign or partial context including an actual custom1 row. No new quest/item/kill/health grant or log suppression."
+  },
+  "checks": [
+    "Test-SmartTerminalData uses actual MariaDB schema with TEMP-only permission-restricted reader: exact independent expected field edit, full-row preservation, idempotence,17 foreign/partial refusals and actual RELEASED hash/live equality. One initial negative test addressed absent list10174200 and therefore changed nothing; corrected it to real10174201/id0, retained failed and passing evidence.",
+    "Extended existing GuardianWaveDeath native ASAN host with production JUST_SUMMONED/LINK/closest-creature/action49 sections:100 old/repaired cases across10 actor situations and5 summoner kinds. Same original Lea attack request, absent/dead/wrong entry/range/map/phase/private-scope refusal, default100yard range, duplicate event and fresh-instance retry. AttackStart/movement/world services controlled; no progression granted. Initial compile exposed the optional function was not called (C4505); wired invocation and verified explicit100-case output, retaining both captures.",
+    "Retained native1644 full wave kill permutations with player/pet/guardian, cast rejection and stage timing; independent death/last-living/owner/phase/range semantics. Test-GuardianWaveSourceAnchor passes54 expected old premature-credit cases paired with54 repaired checks and1644 full permutations. Matching typed catalog passes. Actual new JUST_SUMMONED behavior is separate from controlled death/scenario endpoints and client traversal.",
+    "Older live wave regression initially detected a later legitimate Ursoc fallback punctuation/case correction. Traced exact101362/group0/ID0 Text to artifact_fallback_batch02, verified live RELEASED SHA1 60ED500FBD67F628019B8DC14F00F11D8D3A25FA against file. Compatibility helper first verifies the full actual four-table18 successor and updater, then reconstructs exactly root.link and this single Text field for older pinned fixture comparison. No live text was reverted and no guard/check was skipped; final old/new live regressions pass.",
+    "Canonical task-owned PID34064 applied18, ready and graceful exit0. Mandatory before/after captures show no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Configs/certificates/canonical8F19 unchanged; no user server stopped or owned server left running."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/sludge-investigation-20261117",
+    "worldserver_sha256": "8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed historical unresolved log retained unchanged. Resolved evidence archive/temporary cleanup tracked separately; no unknown diagnostic relabeled fixed."
+  },
+  "limits": "Opening attack request is complete and now ends deliberately. Original LINK1 author intent remains unrecovered; no invisible fifth payload invented. Missing-Lea recovery/combat target selection beyond native services, exact client movement/aggro/audio/visuals, real party/faction/retry traversal and whole40647/all36 remain separate. Seven primary structural edges remain, not seven proven player blockers."
+}

@@ -25,12 +25,13 @@ using InstanceMap=Map;
 struct ScenarioMgr {bool available=true;Scenario* GetScenario(uint32 id){return available&&id==1?&scenario:nullptr;}} scenarioMgr;auto sScenarioMgr=&scenarioMgr;
 struct Unit;using Creature=Unit;using Player=Unit;using WorldObject=Unit;
 std::vector<Unit*> arena;bool failCast=false,advance=true,failSummon=false;uint32 criterionCalls=0,criterionAsset=0;Unit* criterionRecipient=nullptr;Unit* criterionInvoker=nullptr;
-struct FakeAI {void SetCombatMove(bool){}void AttackStart(Unit*){assert(false);}};
+struct FakeAI {bool allowAttack=false;uint32 attacks=0;Unit* target=nullptr;void SetCombatMove(bool){}void AttackStart(Unit* u){assert(allowAttack);++attacks;target=u;}};
 struct Unit {
- bool player=false,alive=true,expired=false,world=true,m_IsInKillingProcess=false;uint32 entry=0,phase=1;float x=0;Unit* owner=nullptr;Map* map=&origin;FakeAI ai;
+ bool player=false,alive=true,expired=false,world=true,m_IsInKillingProcess=false,scoped=false;uint32 entry=0,phase=1,scope=1;float x=0;Unit* owner=nullptr;Map* map=&origin;FakeAI ai;
  std::vector<uint32> spawnRequests;Unit* SummonCreature(uint32 id,float,float,float,float,TempSummonType type,uint32 duration){assert(type==8&&!duration);spawnRequests.push_back(id);return failSummon?nullptr:this;}
  void GetPosition(float& a,float& b){a=x;b=0;}float GetPositionZ(){return 0;}
  Unit* ToPlayer(){return player?this:nullptr;}Unit* ToUnit(){return this;}Unit* GetCharmerOrOwnerPlayerOrPlayerItself(){return player?this:owner&&owner->player?owner:nullptr;}
+ Unit* ToCreature(){return player?nullptr:this;}bool HasQuestObjectScope()const{return scoped;}bool CanTargetQuestObject(Unit* u)const{return u&&scope==u->scope;}
  Unit* GetGUID(){return this;}bool IsUnit()const{return true;}bool IsAlive()const{return alive;}bool isDead(bool)const{return !alive;}bool IsQuestObjectExpired()const{return expired;}bool isInCombat()const{return false;}
  bool isType(uint32 mask)const{return (mask & (player?0x19u:0x9u))!=0;}
  bool InInstance()const{return map->instance;}Map* GetMap(){return map;}uint32 GetEntry()const{return entry;}
@@ -87,7 +88,7 @@ struct SmartScriptHolder {
  uint32 entryOrGuid=0,source_type=0,event_id=0,link=0,type=0,actionType=0,targetType=0,parameter=0,second=0;bool active=true,runOnce=false;
  struct {uint32 event_flags=0,event_phase_mask=0,event_chance=100;} event;
  struct {struct {uint32 creature=0,type=0,duration=0,attackInvoker=0,phaseByTarget=0;} summonCreature;struct {uint32 spell=0,flags=0;} cast;struct {uint32 type=0,misc1=0,misc2=0,misc3=0;} achievementCriteria;} action;
- struct {float x=0,y=0,z=0,o=0;struct {uint32 dist=0;} playerDistance;} target;
+ struct {float x=0,y=0,z=0,o=0;struct {uint32 dist=0;} playerDistance;struct {uint32 entry=0,dist=0,dead=0;}closest;} target;
  uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetScriptType()const{return source_type;}uint32 GetTargetType()const{return targetType;}
 };
 bool roll_chance_i(uint32){return true;}
@@ -101,9 +102,11 @@ struct SmartScript {
 
  std::vector<SmartScriptHolder> mEvents;Unit* me=nullptr;GameObject* go=nullptr;Unit* mLastInvoker=nullptr;unsigned errors=0,retries=0;std::vector<std::pair<uint32,uint32>> data;
  Unit* GetBaseObject(){return me;}Unit* GetLastInvoker(){return mLastInvoker;}bool IsInPhase(uint32)const{return true;}void RecalcTimer(SmartScriptHolder&,uint32 lo,uint32 hi){assert(lo==500&&hi==500);++retries;}
+ ObjectList* GetWorldObjectsInDist(float){return new ObjectList(arena.begin(),arena.end());}
  ObjectList* GetTargets(SmartScriptHolder const& e,Unit*){auto l=new ObjectList();switch(e.GetTargetType()){
  case 1:if(me)l->push_back(me);break;
 #include "PlayerTarget.inc"
+#include "CreatureTarget.inc"
  default:assert(false);
  }if(l->empty()){delete l;return nullptr;}return l;}
  SmartScriptHolder FindLinkedEvent(uint32);
@@ -126,6 +129,7 @@ struct SmartScript {
  switch(e.GetActionType()){
 #include "CastAction.inc"
 #include "CreditAction.inc"
+#include "AttackAction.inc"
  case 12:{assert(e.targetType==8);
 #include "PositionSummon.inc"
  break;}
@@ -144,12 +148,30 @@ void Kill(Unit* victim,Unit* killer,SmartScript& script){
  victim->m_IsInKillingProcess=true;victim->alive=false;SmartAI ai{&script,victim};ai.JustDied(killer);victim->m_IsInKillingProcess=false;
 }
 static std::vector<std::vector<std::string>> Read(char const* path){std::ifstream file(path);assert(file);std::string line;std::vector<std::vector<std::string>> out;while(std::getline(file,line)){std::stringstream stream(line);std::string cell;std::vector<std::string> row;while(std::getline(stream,cell,'\t'))row.push_back(cell);if(!line.empty()&&line.back()=='\t')row.push_back("");out.push_back(row);}return out;}
-static std::vector<SmartScriptHolder> Actions(char const* path){std::vector<SmartScriptHolder> out;for(auto const& f:Read(path)){assert(f.size()==31);auto n=[&](size_t i){return uint32(std::stoul(f[i]));};SmartScriptHolder e;e.entryOrGuid=n(0);e.source_type=n(1);e.event_id=n(2);e.link=n(3);e.type=n(5);e.event.event_phase_mask=n(6);e.event.event_chance=n(7);e.event.event_flags=n(8);e.actionType=n(14);e.parameter=n(15);e.second=n(16);e.action.summonCreature={n(15),n(16),n(17),n(18),n(19)};e.target.x=std::stof(f[26]);e.target.y=std::stof(f[27]);e.target.z=std::stof(f[28]);e.target.o=std::stof(f[29]);e.action.cast={n(15),n(16)};e.action.achievementCriteria={n(15),n(16),n(17),n(18)};e.targetType=n(21);e.target.playerDistance={n(22)};out.push_back(e);}return out;}
+static std::vector<SmartScriptHolder> Actions(char const* path){std::vector<SmartScriptHolder> out;for(auto const& f:Read(path)){assert(f.size()==31);auto n=[&](size_t i){return uint32(std::stoul(f[i]));};SmartScriptHolder e;e.entryOrGuid=n(0);e.source_type=n(1);e.event_id=n(2);e.link=n(3);e.type=n(5);e.event.event_phase_mask=n(6);e.event.event_chance=n(7);e.event.event_flags=n(8);e.actionType=n(14);e.parameter=n(15);e.second=n(16);e.action.summonCreature={n(15),n(16),n(17),n(18),n(19)};e.target.x=std::stof(f[26]);e.target.y=std::stof(f[27]);e.target.z=std::stof(f[28]);e.target.o=std::stof(f[29]);e.action.cast={n(15),n(16)};e.action.achievementCriteria={n(15),n(16),n(17),n(18)};e.targetType=n(21);e.target.playerDistance={n(22)};e.target.closest={n(22),n(23),n(24)};out.push_back(e);}return out;}
 static std::vector<Rule> Rules(char const* path){std::vector<Rule> out;for(auto const& f:Read(path)){assert(f.size()==14);auto n=[&](size_t i){return uint32(std::stoul(f[i]));};if(n(2)!=101384&&n(2)!=101388&&n(2)!=101389)continue;Rule r;r.entry=n(2);r.group=n(1);r.ElseGroup=n(4);r.ConditionType=n(5);r.targetIndex=n(6);r.ConditionValue1=n(7);r.ConditionValue2=n(8);r.NegativeCondition=n(10)!=0;out.push_back(r);}return out;}
 static SmartScript Script(std::vector<SmartScriptHolder> const& rows,Unit& actor){SmartScript s;s.me=&actor;for(auto const& e:rows)if(e.entryOrGuid==actor.entry&&!e.source_type)s.mEvents.push_back(e);return s;}
 static void Reset(uint32 step){scenario={990,step};scenarioMgr.available=true;origin.instance=true;origin.id=1;other.id=2;arena.clear();criterionCalls=criterionAsset=0;criterionRecipient=criterionInvoker=nullptr;failCast=false;failSummon=false;advance=true;}
+static void SludgeAttack(std::vector<SmartScriptHolder> const& before,std::vector<SmartScriptHolder> const& after){
+ uint32 runs=0;
+ for(unsigned phase=0;phase<2;++phase)for(unsigned mode=0;mode<10;++mode)for(unsigned invoker=0;invoker<5;++invoker){
+  Reset(2);conditionMgr.rules.clear();Unit player;player.player=true;Unit pet;pet.owner=&player;Unit guardian=pet,npc;
+  Unit* cause=invoker==0?&player:invoker==1?&pet:invoker==2?&guardian:invoker==3?&npc:nullptr;
+  Unit mob;mob.entry=101384;mob.ai.allowAttack=true;Unit lea;lea.entry=101742;lea.x=20;Unit foreign=lea;foreign.x=1;foreign.scope=2;
+  arena={&player,&mob};bool expected=mode==0||mode==7||mode==9;
+  if(mode!=1)arena.push_back(&lea);
+  if(mode==2)lea.alive=false;if(mode==3)lea.phase=2;if(mode==4)lea.map=&other;if(mode==5)lea.x=101;if(mode==6)lea.entry=101741;
+  if(mode==7){mob.scoped=true;arena.push_back(&foreign);}if(mode==8){mob.scoped=true;lea.scope=2;}if(mode==9)lea.x=99;
+  auto s=Script(phase?after:before,mob);s.ProcessEventsFor(SMART_EVENT_JUST_SUMMONED,cause);
+  assert(mob.ai.attacks==unsigned(expected));if(expected)assert(mob.ai.target==&lea);
+  assert(s.errors==(phase?0u:1u)&&!criterionCalls&&mob.spawnRequests.empty()&&s.data.empty());
+  s.ProcessEventsFor(SMART_EVENT_JUST_SUMMONED,cause);assert(mob.ai.attacks==unsigned(expected)&&s.errors==(phase?0u:1u));
+  auto fresh=Script(phase?after:before,mob);fresh.ProcessEventsFor(SMART_EVENT_JUST_SUMMONED,cause);assert(mob.ai.attacks==2*unsigned(expected));++runs;
+ }
+ std::printf("PASS %u actual native JUST_SUMMONED/LINK/closest-creature/action49 cases: original missing1 counterfactual vs valid terminal; same Lea request, absent/dead/wrong entry/range/map/phase/private-scope actor refusal, default100yard range, repeated event and fresh-instance retry, five summoner kinds. AttackStart/world movement endpoint controlled; no progression granted.\n",runs);
+}
 int main(int argc,char** argv){
- if(argc!=5)return 1;auto old=Actions(argv[1]),fixed=Actions(argv[2]);auto oldRules=Rules(argv[3]),fixedRules=Rules(argv[4]);assert(fixedRules.size()==oldRules.size()+4);
+ if(argc!=5&&argc!=6)return 1;auto old=Actions(argv[1]),fixed=Actions(argv[2]);auto oldRules=Rules(argv[3]),fixedRules=Rules(argv[4]);assert(fixedRules.size()==oldRules.size()+4);if(argc==6)SludgeAttack(fixed,Actions(argv[5]));
  uint32 runs=0;
  for(uint32 step=2;step<=5;++step){uint32 list=step==2?101742:10174198+step;std::vector<uint32> wave;for(auto const& e:fixed)if(e.source_type==9&&e.entryOrGuid==list&&e.actionType==12)wave.push_back(e.parameter);assert(!wave.empty());std::sort(wave.begin(),wave.end());
   do{for(uint32 killerType=0;killerType<3;++killerType)for(bool rejectCast:{false,true})for(bool synchronous:{false,true}){

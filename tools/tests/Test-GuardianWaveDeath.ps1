@@ -1,4 +1,4 @@
-param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/guardian-wave-death-data",[switch]$VerifyNativeCatalog)
+param([string]$DataDirectory="$PSScriptRoot/../../build-extractors/runtime-test/guardian-wave-death-data",[switch]$VerifyNativeCatalog,[string]$SludgeTerminalData)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/guardian-wave-death"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories "$repo/build-extractors/runtime-test/legion-legendary-catalog" -Test {
@@ -16,6 +16,8 @@ $out="$repo/build-extractors/runtime-test/guardian-wave-death"
  'CreditAction'=@('        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:','        case SMART_ACTION_SUMMON_CONVERSATION:')
  'CreditOwner'=@('Player* GetScriptCreditPlayer(','Unit* GetScriptCreditCaster(')
  'PlayerTarget'=@('        case SMART_TARGET_CLOSEST_PLAYER:','        case SMART_TARGET_OWNER_OR_SUMMONER:')
+ 'CreatureTarget'=@('        case SMART_TARGET_CLOSEST_CREATURE:','        case SMART_TARGET_CLOSEST_GAMEOBJECT:')
+ 'AttackAction'=@('        case SMART_ACTION_ATTACK_START:','        case SMART_ACTION_SUMMON_CREATURE:')
  }
  $all='';foreach($name in $sections.Keys){$v=Section $s $sections[$name][0] $sections[$name][1];[IO.File]::WriteAllText("$out/$name.inc",$v);$all+=$v}
  $summon=Section $s '        case SMART_ACTION_SUMMON_CREATURE:' '        case SMART_ACTION_SUMMON_GO:'
@@ -47,7 +49,8 @@ $out="$repo/build-extractors/runtime-test/guardian-wave-death"
  $decl="enum SMART_EVENT : uint32 {$enum};`n";foreach($name in @($names|Where-Object {$_ -notin $eventNames})){$m=[regex]::Match($header,"\b$name\s*=\s*([^,`r`n]+)");if(!$m.Success){throw "Missing constant $name"};$decl+="constexpr uint32 $name=$($m.Groups[1].Value -replace '//.*','');`n"};[IO.File]::WriteAllText("$out/Constants.inc",$decl)
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $data=[IO.Path]::GetFullPath($DataDirectory)
- [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/GuardianWaveDeathTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$data/original.tsv`" `"$data/repaired.tsv`" `"$data/original-conditions.tsv`" `"$data/conditions.tsv`"`nexit /b %errorlevel%`n")
+ $terminalArg=if($SludgeTerminalData){' "'+[IO.Path]::GetFullPath($SludgeTerminalData)+'"'}else{''}
+ [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/GuardianWaveDeathTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$data/original.tsv`" `"$data/repaired.tsv`" `"$data/original-conditions.tsv`" `"$data/conditions.tsv`"$terminalArg`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Guardian wave death regression failed'}
  if($VerifyNativeCatalog){$old=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile DruidAcquisitionCatalog.cpp -ProbeName DruidAcquisitionCatalog -OutputFile "$out/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$old}
   $native=Get-Content "$out/native.tsv";foreach($pair in @(@(48106,2),@(48107,3),@(48108,4),@(48109,5))){if(!@($native|Where-Object {$_ -like "CRITERION`t990`t$($pair[1])`t92`t$($pair[0])`t1"}).Count){throw "Native990 wave metadata differs $pair"}}
