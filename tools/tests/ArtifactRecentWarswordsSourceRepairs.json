@@ -67,8 +67,8 @@
       ]
     },
     {
-      "commit": "artifact-acquisition-inventory-2026-11-17",
-      "parent": "d3725887732085afdf358f058d514fad9312c70c",
+      "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+      "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
       "before_sha256": "a50949a6aa87d7e7c3bfa390f207cd1272c06c8970f25c950d9cbe420d842498",
       "after_sha256": "3bef84f15c1b45b0a623f63b671ee9d654bd6324dd499e0df5b373c6b721847b",
       "edits": [

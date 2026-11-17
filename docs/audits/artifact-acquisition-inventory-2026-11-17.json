@@ -595,5 +595,12 @@
     "retained": "Regression sources, reusable tools, diagnostic offsets/logs, native TSV exports, build libraries, matching recent rollback. Exact absolute targets and descendants checked against reparse points; no running test process; canonical/configuration hashes rechecked unchanged. Ignored manifests under .codex/artifact-offspec-inventory-20261117."
   },
   "local_evidence": ".codex/artifact-offspec-inventory-20261117/ and build-extractors/runtime-test/{artifact-acquisition-inventory,marksmanship-recovery-source,...}/ diagnostics; no credentials or character data committed.",
-  "remaining": "User starts canonical server and retests existing Hunter genuine pickup/Vereesa selection and real departure while BM gear remains equipped. Matching-spec native equip, each of all36 entire client acquisitions, visuals/audio, native scheduling/group behavior, reconnect/bank/faction variants and canonical startup are not certified by the shared helper/controller regressions. New user runtime diagnostics must be inspected after the retest; mixed historical logs remain separately unresolved."
+  "remaining": "User starts canonical server and retests existing Hunter genuine pickup/Vereesa selection and real departure while BM gear remains equipped. Matching-spec native equip, each of all36 entire client acquisitions, visuals/audio, native scheduling/group behavior, reconnect/bank/faction variants and canonical startup are not certified by the shared helper/controller regressions. New user runtime diagnostics must be inspected after the retest; mixed historical logs remain separately unresolved.",
+  "implementation_commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+  "source_provenance": "All retained historical source checks also verified the actual Git after-image of each declared amendment; inventory-policy records now name the real implementation commit and its actual parent.",
+  "resolved_test_evidence_archive": {
+    "path": "build-extractors/bin/Release/fixed/2026-11-17-artifact-inventory/",
+    "manifest_sha256": "3B52EC552D98BF515DC963F9204A94553FD2EFEC16FF66ED82CC25987BDCC146",
+    "scope": "Hash-verified resolved host/build/test evidence only. No mixed canonical log declared fixed, truncated or removed; no crash present to remove. Actual user startup/client verification remains pending."
+  }
 }

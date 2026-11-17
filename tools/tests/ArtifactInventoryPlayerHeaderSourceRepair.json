@@ -3,8 +3,8 @@
   "scope": "Exact inventory-policy signature amendment against its Git parent; historical full-file checks remain unchanged.",
   "plans": [
     {
-      "commit": "artifact-acquisition-inventory-2026-11-17",
-      "parent": "d3725887732085afdf358f058d514fad9312c70c",
+      "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+      "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
       "before_sha256": "231c8a0bb49ad716bc8d1e36ffb4b536be8e67c677e7bb4ce2c4fc43c86be39b",
       "after_sha256": "ff2a23faa327801b38297bee0f8b9a1bb335cb17fe5790f10d800b99e39dd52c",
       "edits": [

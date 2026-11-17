@@ -4,8 +4,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "2d13eeeb0fd535eb497d689f6f637034b0f2d8a197ca16c397d9644724c0d28a",
         "after_sha256": "6a68796694c56cbcaade0cb5b523637acdf638d28980f1ad9c6c3ada709dad5a",
         "edits": [
@@ -26,8 +26,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "c3409e9a05125b55dd82b7a4d4b6ce7cc98a5a824fb36d7ab4db1b82d75f4a4a",
         "after_sha256": "2f327b899fb2361dcb294fbd894d85ad4ea0a59b05a1dd1aee2dfe7170fd77de",
         "edits": [
@@ -48,8 +48,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "e334f76dd542fde1a2c9448134f08d53c4700d18203b4a890e294668b18c3781",
         "after_sha256": "225fde2491fcaabc0b28550e0ea550125f0cd1808a4f40b1d6bffaa6b88e7a92",
         "edits": [
@@ -110,8 +110,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "eb0954b03cc6afdd0e7c5037276566017611d8a21adfa9fd479038d520168125",
         "after_sha256": "e1277258a4a187119ba1d126f143edf0ee29f4af1449c88020716471c7911070",
         "edits": [
@@ -132,8 +132,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "ba6b417a4364b65ec670e58b1ab3f5498f0abc26d3b008fe94553c1ee0d68c62",
         "after_sha256": "c0fe7f05d93d27dbb5dba2b5980f90afdba2200db83b4737d37bc62d1d21f483",
         "edits": [
@@ -154,8 +154,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "0efc5e2f47aa1a2e9dfdeee93526acda3cc7806ffde60f86e8cfa475f0b5321b",
         "after_sha256": "efc77e232603d4d96894b1b0ae6f798acea7ada212d066ee002130924e3f0582",
         "edits": [
@@ -188,8 +188,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "ce27ebae6a41948a7f064207c7c8c22d0c18b8dab0b48ef5b0155f5ee3370f12",
         "after_sha256": "ef12fe7dbea30bd082255f75cd0de009a0a3a9f97c16fd9a16735dd405b0e188",
         "edits": [
@@ -210,8 +210,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "7ea796fe68489b9a148b8ab0335b385d3cb47824fc8411337f89ef1d53da8ae7",
         "after_sha256": "ca9e7cac4e48db677a7c7f2c0c1d44b3b3dcb6f610b42cb00b1791001ffb1867",
         "edits": [
@@ -232,8 +232,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "107ce6a700aeb48c1a161c17c211d8865c7c67485c82cdc05149e06f4c1dc411",
         "after_sha256": "6d395a61d77af9cf387d490d235519b65f20685e38fe644552c1b86304c9c7c7",
         "edits": [
@@ -254,8 +254,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "0f139b2270c7f193291a990e55cbbd4d189086419269e1d62cf80bdbedeee764",
         "after_sha256": "48e95132344802828213d21081ed57d73561c5c9e0a397d295f749b92fd39b7f",
         "edits": [
@@ -276,8 +276,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "479d56a0b4ec041d42bfd9219b8c678e0c0cb74c039fb7498041180e186134f2",
         "after_sha256": "b977c5a3f6449c7a75481e6cf1f27dc386448bf0f39a450c44bb47cd2055d7f6",
         "edits": [
@@ -298,8 +298,8 @@
     "scope": "Complete reviewed inventory-policy amendment, exact inverse against pinned Git parent; historical payloads/hashes remain unchanged.",
     "plans": [
       {
-        "commit": "artifact-acquisition-inventory-2026-11-17",
-        "parent": "d3725887732085afdf358f058d514fad9312c70c",
+        "commit": "7dd542683fa31c32cc033a36358c9428db1ccdc4",
+        "parent": "4649c5e574c252d7ae49e29b5e7d33150cdf20e3",
         "before_sha256": "59bd939ebab23dff73470f0168772413672706ee454040fd99e1d65ca0780187",
         "after_sha256": "3eb7e81a07567e246e659879b6e13ebc946a113b55adb415862d7ba493c73ce3",
         "edits": [
