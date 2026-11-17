@@ -45,8 +45,9 @@ for entry in instructions(factory):
 assert len(tables) == 1, 'Ambush factory does not install the actual post-scaling override'
 assert struct.unpack_from('<Q', native['binary'], tables[0] + 0xa0)[0] == native['symbol'](before), 'Factory omits provenance capture before native damage'
 assert native['symbol']('??0SmartAI@@') in native['calls'](factory), 'Factory does not construct native SmartAI'
-assert any(entry.mnemonic == 'mov' and entry.op_str == 'dword ptr [rdi + 0x200], 0' for entry in instructions(factory)), 'New actor retains stale encounter state'
-assert any(entry.mnemonic == 'lea' and entry.op_str == 'r9, [rcx + 0x200]' for entry in instructions(wrapper)), 'Post hook reads another provenance field'
+layout = runpy.run_path(str(Path(__file__).with_name('ambush_release_layout.py')))
+field = layout['check_provenance_layout'](instructions(factory), instructions(wrapper), instructions(before))
+print(f'PASS: actual allocated actor initializes and both hooks bind provenance field0x{field:x}')
 assert native['symbol'](factory) != native['symbol']('?GetAI@?$GenericCreatureScript@Unpc_talonclaw_dakarr@@@@'), 'Earlier and final Dakarr factories collided'
 assert b'npc_talonclaw_ambush_dakarr' in native['binary'], 'Ambush registry name absent'
 print('PASS: canonical factory installs both ambush overrides, delegates native SmartAI damage, retains encounter provenance and applies target-relative70/60 floors after normalization; final Dakarr and Prustaga factories remain separate')
