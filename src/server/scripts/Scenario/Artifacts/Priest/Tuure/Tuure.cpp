@@ -9,6 +9,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Item.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "Spell.h"
 #include "SpellScript.h"
 #include "ObjectAccessor.h"
@@ -992,8 +993,7 @@ namespace TuureAcquisition
 
     bool Equipped(Player* player)
     {
-        Item* weapon = player->GetItemByEntry(128825);
-        return weapon && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon;
+        return ArtifactAcquisitionInventory::Ready(player, 128825);
     }
 }
 

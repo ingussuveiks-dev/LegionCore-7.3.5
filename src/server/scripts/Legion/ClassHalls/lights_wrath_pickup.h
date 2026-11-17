@@ -1,4 +1,5 @@
 #pragma once
+#include "ArtifactAcquisitionInventory.h"
 
 namespace LightsWrathPickup
 {
@@ -94,8 +95,7 @@ namespace LightsWrathPickup
 
     bool Equipped(Player* player, uint32 item)
     {
-        Item* staff = player ? player->GetItemByEntry(item) : nullptr;
-        return staff && staff == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+        return ArtifactAcquisitionInventory::Ready(player, item);
     }
 
     thread_local std::weak_ptr<Claim> castRequest;

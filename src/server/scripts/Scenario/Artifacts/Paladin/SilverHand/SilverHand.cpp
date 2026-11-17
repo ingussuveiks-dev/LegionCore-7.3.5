@@ -3,6 +3,7 @@
 */
 
 #include "ScriptMgr.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
@@ -1677,7 +1678,7 @@ namespace SilverHandAcquisition
             !player->HasSceneStatus(1267, SCENE_COMPLETE))
             return false;
         Item* weapon = player->GetItemByEntry(128823);
-        if (!weapon || player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+        if (!weapon || !ArtifactAcquisitionInventory::Ready(player, 128823))
             return false;
         Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
         return scenario && scenario->GetScenarioId() == 1092 && scenario->IsCompleted(false);
@@ -1726,7 +1727,7 @@ public:
         if (!scenario)
             return;
         if (scenario->IsCompleted(false) && player->HasSceneStatus(1267, SCENE_COMPLETE) &&
-            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon)
+            ArtifactAcquisitionInventory::Ready(player, 128823))
             return;
         SpellCastResult result = player->CastSpell(player, 211838, true);
         if (result != SPELL_CAST_OK)
@@ -1767,7 +1768,7 @@ namespace SilverHandCollapse
         if (!scenario || scenario->GetScenarioId() != 1092 || !scenario->IsCompleted(false))
             return true;
         Item* weapon = player->GetItemByEntry(128823);
-        if (!weapon || player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+        if (!weapon || !ArtifactAcquisitionInventory::Ready(player, 128823))
             return true;
         SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(211867);
         if (!destination || destination->target_mapId != 1539)
@@ -1809,7 +1810,7 @@ namespace SilverHandPresentation
         Item* weapon = player->GetItemByEntry(128823);
         if (!weapon)
             return true;
-        if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+        if (!ArtifactAcquisitionInventory::Ready(player, 128823))
         {
             uint16 destination;
             InventoryResult result = player->CanEquipItem(NULL_SLOT, destination, weapon, true);
@@ -1820,7 +1821,7 @@ namespace SilverHandPresentation
             }
             if (destination != weapon->GetPos())
                 player->SwapItem(weapon->GetPos(), destination);
-            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+            if (!ArtifactAcquisitionInventory::Ready(player, 128823))
             {
                 TC_LOG_WARN("scripts", "Silver Hand pickup: native swap did not equip existing 128823 for player %u; presentation credit retained", player->GetGUIDLow());
                 return true;

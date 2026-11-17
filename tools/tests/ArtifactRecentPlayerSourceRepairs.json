@@ -1,6 +1,6 @@
 {
   "path": "src/server/game/Entities/Player/Player.cpp",
-  "scope": "Test-source provenance only:exact four already deployed Nov16 Player amendments. No gameplay execution or new repair count. Historical command and healing expected hashes stay unchanged.",
+  "scope": "Exact source provenance only: retain all existing historical checks and declare complete subsequent Git amendments plus the reviewed inventory-policy amendment against its pinned Git parent. No gameplay certification or additional production changes.",
   "plans": [
     {
       "commit": "7c8aa7b44",
@@ -79,6 +79,18 @@
         {
           "old": "        }\n    }\n\n    // A low-level Hunter may retry an existing selection, but have no new\n    // eligible route yet. Never display an empty artifact selection frame.\n    if (choiceId == 240 && displayPlayerChoice.Responses.empty())\n        return;\n    SendDirectMessage(displayPlayerChoice.Write());\n}\n",
           "new": "        }\n    }\n\n    // A retry or completed collection may have no remaining eligible route.\n    // Never display an empty Warrior or Hunter artifact selection frame.\n    if ((choiceId == 236 || choiceId == 240) && displayPlayerChoice.Responses.empty())\n        return;\n    SendDirectMessage(displayPlayerChoice.Write());\n}\n"
+        }
+      ]
+    },
+    {
+      "commit": "dd9e54c3d59a7fb599ca8ea0e86b664f6a603c27",
+      "parent": "7bc6e3c9f10d4db50f77be0dd9387d25b735dac3",
+      "before_sha256": "dc2ee7018f2b46cc35c4fd1a59a59caf6e59c3ab8196a9b413cceee904861b10",
+      "after_sha256": "846982ce81bb9949683bc57770815a2db2f5c0a033421e213752d38f4514fbee",
+      "edits": [
+        {
+          "old": "                        result |= QuestGiverStatus::Trivial;\n                }\n                else\n                    result |= QuestGiverStatus::Future;\n            }\n        }\n    }\n\n    return result;\n}\n\n/*********************************************************/\n/***                   LOAD SYSTEM                     ***/\n/*********************************************************/\n\nvoid Player::Initialize(ObjectGuid::LowType guid)\n",
+          "new": "                        result |= QuestGiverStatus::Trivial;\n                }\n                else\n                    result |= QuestGiverStatus::Future;\n            }\n        }\n    }\n\n    result |= sScriptMgr->GetAdditionalQuestDialogStatus(this, questgiver);\n    return result;\n}\n\n/*********************************************************/\n/***                   LOAD SYSTEM                     ***/\n/*********************************************************/\n\nvoid Player::Initialize(ObjectGuid::LowType guid)\n"
         }
       ]
     }

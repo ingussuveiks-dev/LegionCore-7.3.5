@@ -1,3 +1,4 @@
+#include "ArtifactInventoryOutcomeHost.h"
 // Actual force-equip/paired preflight/movement methods; inventory services controlled.
 #include <cassert>
 #include <cstdint>

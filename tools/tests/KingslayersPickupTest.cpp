@@ -1,3 +1,4 @@
+#include "ArtifactInventoryOutcomeHost.h"
 #include <cassert>
 #include <cstdint>
 #include <functional>

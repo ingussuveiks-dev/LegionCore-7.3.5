@@ -1,6 +1,6 @@
 {
   "path": "src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp",
-  "scope": "Test-source provenance only;two existing Nov16 Fury amendments. No active gameplay execution,new behavior or repair count.",
+  "scope": "Exact source provenance only: retain all existing historical checks and declare complete subsequent Git amendments plus the reviewed inventory-policy amendment against its pinned Git parent. No gameplay certification or additional production changes.",
   "plans": [
     {
       "commit": "819d6ddf9",
@@ -63,6 +63,22 @@
         {
           "old": "\n    new npc_vigfus_bladewind();\n    new npc_vigfus_bladewind_last();\n\n    new go_art_warswords();\n    new scene_warswords_pickup();\n",
           "new": "\n    new npc_vigfus_bladewind();\n    new npc_vigfus_bladewind_last();\n    new npc_warswords_helya();\n\n    new go_art_warswords();\n    new scene_warswords_pickup();\n"
+        }
+      ]
+    },
+    {
+      "commit": "artifact-acquisition-inventory-2026-11-17",
+      "parent": "d3725887732085afdf358f058d514fad9312c70c",
+      "before_sha256": "a50949a6aa87d7e7c3bfa390f207cd1272c06c8970f25c950d9cbe420d842498",
+      "after_sha256": "3bef84f15c1b45b0a623f63b671ee9d654bd6324dd499e0df5b373c6b721847b",
+      "edits": [
+        {
+          "old": "/*\n    Warrior: Warswords\n*/\n\n#include \"ScriptMgr.h\"\n#include \"SpellMgr.h\"\n#include \"SpellInfo.h\"\n#include \"ScriptedCreature.h\"\n#include \"CreatureTextMgr.h\"\n#include \"GameObjectAI.h\"\n#include \"Conversation.h\"\n#include \"Item.h\"\n#include \"ObjectAccessor.h\"\n",
+          "new": "/*\n    Warrior: Warswords\n*/\n\n#include \"ScriptMgr.h\"\n#include \"ArtifactAcquisitionInventory.h\"\n#include \"SpellMgr.h\"\n#include \"SpellInfo.h\"\n#include \"ScriptedCreature.h\"\n#include \"CreatureTextMgr.h\"\n#include \"GameObjectAI.h\"\n#include \"Conversation.h\"\n#include \"Item.h\"\n#include \"ObjectAccessor.h\"\n"
+        },
+        {
+          "old": "        if (WarriorPickupReturn::Complete(player, 1218))\n            return true;\n        SpellCastResult result = player->CastSpell(player, 194201, true);\n        if (result != SPELL_CAST_OK)\n        {\n            TC_LOG_WARN(\"scripts\", \"Warswords pickup: native equip 194201 failed with result %u for player %u; existing items retained\", uint32(result), player->GetGUIDLow());\n            return true;\n        }\n        Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);\n        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);\n        if (!weapon || weapon->GetEntry() != 128908 || !child || child->GetEntry() != 134553 || weapon->GetChildItem() != child->GetGUID())\n            TC_LOG_WARN(\"scripts\", \"Warswords pickup: native equip 194201 accepted but parent/child is not equipped for player %u; retain native inventory errors\", player->GetGUIDLow());\n        return true;\n    }\n}\n\nclass scene_warswords_pickup : public SceneTriggerScript\n{\npublic:\n",
+          "new": "        if (WarriorPickupReturn::Complete(player, 1218))\n            return true;\n        SpellCastResult result = player->CastSpell(player, 194201, true);\n        if (result != SPELL_CAST_OK)\n        {\n            TC_LOG_WARN(\"scripts\", \"Warswords pickup: native equip 194201 failed with result %u for player %u; existing items retained\", uint32(result), player->GetGUIDLow());\n            return true;\n        }\n        if (!ArtifactAcquisitionInventory::Ready(player, 128908, EQUIPMENT_SLOT_MAINHAND, 134553, EQUIPMENT_SLOT_OFFHAND))\n            TC_LOG_WARN(\"scripts\", \"Warswords pickup: native equip 194201 accepted but parent/child is not equipped for player %u; retain native inventory errors\", player->GetGUIDLow());\n        return true;\n    }\n}\n\nclass scene_warswords_pickup : public SceneTriggerScript\n{\npublic:\n"
         }
       ]
     }

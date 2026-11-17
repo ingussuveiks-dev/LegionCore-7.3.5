@@ -3,6 +3,7 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing native block $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){if($s[$b] -eq '{'){++$depth};if($s[$b] -eq '}'){--$depth};++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  Copy-Item "$repo/src/server/scripts/Legion/ClassHalls/lights_wrath_pickup.h" "$out/Pickup.inc"
+ [IO.File]::WriteAllText("$out/ArtifactAcquisitionInventory.h",'// Inventory dependency controlled by the host and separately tested against native all36 data.')
  $header=Get-Content "$repo/src/server/game/Entities/Player/Player.h" -Raw
  $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw
  $auras=Get-Content "$repo/src/server/game/Spells/Auras/SpellAuraDefines.h" -Raw

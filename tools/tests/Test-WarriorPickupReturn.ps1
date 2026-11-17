@@ -3,9 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 $out="$repo/build-extractors/runtime-test/warrior-pickup-return/$(Get-Date -Format yyyyMMdd-HHmmss-fff)";New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$s,[string]$name){$a=$s.IndexOf($name);if($a -lt 0){throw "Missing $name"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
- Copy-Item "$repo/src/server/scripts/Legion/ClassHalls/warrior_pickup_return.h" "$out/Controller.inc"
+ $controller=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/warrior_pickup_return.h" -Raw
+ [IO.File]::WriteAllText("$out/Controller.inc",$controller.Replace('../../Scenario/Artifacts/Warrior/Warswords/warswords_intro.h','WarswordsIntro.inc'))
+ Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Warswords/warswords_intro.h" "$out/WarswordsIntro.inc"
  Copy-Item "$repo/src/server/game/Entities/Object/QuestObjectScope.h" "$out/QuestObjectScope.inc"
- foreach($headerName in @('AreaTrigger.h','QuestData.h','ObjectGuid.h','DB2Stores.h')){[IO.File]::WriteAllText("$out/$headerName",'// Explicit controlled host endpoint.')}
+ foreach($headerName in @('AreaTrigger.h','QuestData.h','ObjectGuid.h','DB2Stores.h','ArtifactAcquisitionInventory.h','SkyholdArtifactReturn.h','InstanceScript.h','Player.h','Creature.h','Map.h','Scenario.h','ScenarioMgr.h')){[IO.File]::WriteAllText("$out/$headerName",'// Explicit controlled host endpoint.')}
  $flags=Get-Content "$repo/src/server/game/Quests/QuestDef.h" -Raw
  [IO.File]::WriteAllText("$out/QuestObjectiveFlags.inc",(Block $flags 'enum QuestObjectiveFlags')+';')
  $source=Get-Content "$repo/src/server/game/Entities/Conversation/Conversation.cpp" -Raw

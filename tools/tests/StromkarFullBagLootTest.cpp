@@ -1,3 +1,4 @@
+#include "ArtifactInventoryOutcomeHost.h"
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
@@ -79,6 +80,7 @@ struct LootItem {struct Info {uint32 ItemID=128910;ItemRandomEnchantmentId Rando
  ObjectGuid GetGUID(){return objGuid;}
 };
 struct Player {
+ bool preserveOffSpec=false;
  std::map<uint16,Item*> inventory;Collection collection;Collection*_collectionMgr=&collection;Battleground battleground;std::vector<std::function<void()>> delayed;
  bool stunned=false,disarmed=false,combat=false,casting=false,titan=false,dual=false,worldState=true,contact=true,alive=true,teleport=false,rewarded=false;uint32 map=1539,klass=1,questStatus=3,bankCount=0,bagSpace=0,errors=0,notifications=0,questAdds=0,achievementCalls=0,tradeAdds=0,socketUnlocks=0,saves=0,lootHooks=0;InventoryResult useResult=EQUIP_ERR_OK,uniqueResult=EQUIP_ERR_OK,unequipResult=EQUIP_ERR_OK;uint8 equipSlot=EQUIPMENT_SLOT_MAINHAND;
  struct Session {std::string GetTrinityString(uint32 id){assert(id==LANG_NOT_EQUIPPED_ITEM);return "Returned equipment";}void DoLootRelease(ObjectGuid){assert(false);}}session;
@@ -182,6 +184,15 @@ int main(){
   if(invalid==0)p.stunned=true;if(invalid==1)p.disarmed=true;if(invalid==2)p.casting=true;if(invalid==3)p.useResult=EQUIP_ERR_NOT_EQUIPPABLE;if(invalid==4)p.uniqueResult=EQUIP_ERR_CANT_SWAP;if(invalid==5)p.unequipResult=EQUIP_ERR_CANT_SWAP;if(invalid==6)p.bankCount=1;if(invalid==7)allocationFails=true;if(invalid==8)loot.allowed=false;if(invalid==9)loot.row.is_blocked=true;if(invalid==10)p.klass=2;if(invalid==11)p.questStatus=0;if(invalid==12)scenarioState.step=10;if(invalid==13)go.distance=5.1f;if(invalid==14)go.phase=false;if(invalid==15)world.object=nullptr;if(invalid==16)previous.child={999};if(invalid==17)shield.flags|=ITEM_FLAG_CHILD;
   if(invalid==18)p.worldState=false;if(invalid==19)p.contact=false;if(invalid==20)p.alive=false;if(invalid==21)p.teleport=true;if(invalid==22)p.rewarded=true;if(invalid==23)p.map=1;if(invalid==24)go.inWorld=false;if(invalid==25)go.spawned=false;if(invalid==26)go.visible=false;if(invalid==27)go.los=false;if(invalid==28)go.entry=1;if(invalid==29)scenarioMgr.present=false;if(invalid==30)scenarioState.id=1;if(invalid==31)loot.objGuid.go=false;if(invalid==32)loot.objGuid.id=51;if(invalid==33)loot.row.count=2;if(invalid==34)loot.row.item.ItemID=50000;if(invalid==35)p.questStatus=6;if(invalid==36)p.combat=true,p.m_weaponChangeTimer=1;if(invalid==37)previous.flags|=ITEM_FLAG_CHILD;
   p.StoreLootItem(0,&loot);assert(!loot.row.is_looted&&loot.unlootedCount==1&&CharacterDatabase.commits==0&&Item::allocated.empty()&&p.inventory[previous.pos]==&previous&&p.inventory[shield.pos]==&shield);Cleanup();++cases;
+ }
+ for(uint32 capacity:{0u,1u}){
+  Reset();Player p;p.bagSpace=capacity;p.preserveOffSpec=true;GameObject go;world.object=&go;Loot loot;
+  Item previous(50000),shield(50001);previous.pos=0xff0f;shield.pos=0xff10;p.inventory[previous.pos]=&previous;p.inventory[shield.pos]=&shield;
+  p.StoreLootItem(0,&loot);
+  assert(p.GetItemByPos(255,15)==&previous&&p.GetItemByPos(255,16)==&shield&&CharacterDatabase.commits==0);
+  if(!capacity){assert(p.errors==1&&!loot.row.is_looted&&!p.questAdds&&Item::allocated.empty());}
+  else{Item*owned=p.GetItemByEntry(128910);assert(owned&&!owned->IsEquipped()&&loot.row.is_looted&&p.questAdds==1);SpellInfo info;Spell spell{SPELL_EFFECT_HANDLE_HIT_TARGET,0,&p,&info};spell.EffectForceEquipItem(0);assert(p.GetItemByPos(255,15)==&previous&&p.GetItemByPos(255,16)==&shield&&!owned->IsEquipped()&&!p.errors);}
+  Cleanup();++cases;
  }
  std::cout<<"PASS "<<cases<<" native shared-storage differential/full-loot/equipment/metadata/mail-transaction cases; real DB/mail, item-mod effects and client delivery remain separate services.\n";
 }

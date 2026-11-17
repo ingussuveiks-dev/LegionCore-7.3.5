@@ -1,3 +1,4 @@
+#include "ArtifactInventoryOutcomeHost.h"
 #include <algorithm>
 #include <cassert>
 #include <cmath>

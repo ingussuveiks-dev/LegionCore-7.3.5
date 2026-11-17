@@ -3,6 +3,7 @@
 
 #include "Conversation.h"
 #include "Item.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "InstanceScript.h"
 #include "SpellAuraEffects.h"
 
@@ -43,11 +44,9 @@ namespace SharasdalAcquisition
 
     bool Equipped(Player* player, ObjectGuid const& guid)
     {
-        Item* parent = player->GetItemByGuid(guid);
-        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-        return parent && parent->GetEntry() == 128911 &&
-            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == parent &&
-            child && child->GetEntry() == 128934 && parent->GetChildItem() == child->GetGUID();
+        Item* parent = player->GetItemByEntry(128911);
+        return parent && parent->GetGUID() == guid &&
+            ArtifactAcquisitionInventory::Ready(player, 128911, EQUIPMENT_SLOT_MAINHAND, 128934);
     }
 }
 

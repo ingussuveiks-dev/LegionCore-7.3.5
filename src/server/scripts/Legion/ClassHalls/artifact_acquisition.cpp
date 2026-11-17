@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "WorldSession.h"
 #include "Item.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "GameObject.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
@@ -22,6 +23,7 @@
 #include "Map.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "DB2Stores.h"
 #include "SmartAI.h"
 #include "EventObject.h"
 #include "GridNotifiers.h"
@@ -31,6 +33,18 @@
 #include <cmath>
 #include <mutex>
 #include <unordered_map>
+
+class condition_artifact_acquisition_inventory : public ConditionScript
+{
+    uint32 entry;
+public:
+    condition_artifact_acquisition_inventory(char const* name, uint32 item) : ConditionScript(name), entry(item) { }
+    bool OnConditionCheck(Condition* condition, ConditionSourceInfo& sourceInfo) override
+    {
+        WorldObject* object = sourceInfo.mConditionTargets[condition->ConditionTarget];
+        return ArtifactAcquisitionInventory::Ready(object ? object->ToPlayer() : nullptr, entry);
+    }
+};
 
 namespace MarksmanshipInquisitor
 {
@@ -1145,6 +1159,16 @@ struct State
             (!fallback && !player->HasSceneStatus(1169, SCENE_COMPLETE)))
             return;
         finished = true;
+        // An additional artifact may belong to another specialization. Native
+        // CanUseItem correctly rejects equipping it; a real carried claim must
+        // still reach Vereesa without changing specialization or action bars.
+        if (player->GetQuestObjectiveData(40419, 103490) >= 1 &&
+            ArtifactAcquisitionInventory::StoredForOtherSpecialization(player, player->GetItemByEntry(128826)))
+        {
+            TC_LOG_INFO("scripts", "Thas'dorah pickup: actual claimed bow remains carried for another specialization; native claim dialogue for player %u", player->GetGUIDLow());
+            MarksmanshipClaim::Queue(player);
+            return;
+        }
         SpellCastResult result = player->CastSpell(player, 200262, true);
         if (result != SPELL_CAST_OK)
         {
@@ -1395,7 +1419,7 @@ namespace MarksmanshipRecovery
 {
 bool Context(Player* player)
 {
-    if (!player || !player->IsInWorld() || !player->IsAlive() || !player->HasEarnedMarksmanshipReturn())
+    if (!player || !player->IsInWorld() || !player->IsAlive() || !player->HasEarnedMarksmanshipReturn(false))
         return false;
     Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
     return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 0;
@@ -1444,7 +1468,19 @@ public:
     {
         WorldObject* object = sourceInfo.mConditionTargets[0];
         Player* player = object ? object->ToPlayer() : nullptr;
-        return !player || !player->HasEarnedMarksmanshipReturn();
+        return !player || !player->HasEarnedMarksmanshipReturn(false);
+    }
+};
+
+class condition_marksmanship_recovered_interaction : public ConditionScript
+{
+public:
+    condition_marksmanship_recovered_interaction() : ConditionScript("condition_marksmanship_recovered_interaction") { }
+    bool OnConditionCheck(Condition*, ConditionSourceInfo& sourceInfo) override
+    {
+        WorldObject* object = sourceInfo.mConditionTargets[0];
+        return MarksmanshipRecovery::Ready(object ? object->ToPlayer() : nullptr,
+            sourceInfo.mConditionTargets[1] ? sourceInfo.mConditionTargets[1]->ToUnit() : nullptr);
     }
 };
 
@@ -1497,6 +1533,14 @@ public:
             static_cast<SmartAI*>(actor->AI())->GetScript()->HasRunEvent(0, SMART_EVENT_OOC_LOS)))
             return;
         if (native && !actor->IsWithinDistInMap(player, 20.0f)) return;
+        if (!player->HasEarnedMarksmanshipReturn())
+        {
+            // Recover only the earned exit choice. Native gossip59 must still
+            // record the real selection before native205040 can transfer.
+            if (MarksmanshipRecovery::Ready(player, actor))
+                actor->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            return;
+        }
         {
             std::lock_guard<std::mutex> lock(mutex);
             auto found = states.find(player->GetGUID());
@@ -1538,7 +1582,8 @@ bool Current(Player* player, Unit* caster)
         return false;
     Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
     return scenario && scenario->GetScenarioId() == 972 &&
-        ((scenario->GetCurrentStep() == 8 && player->HasItemCount(128826, 1, true)) || MarksmanshipRecovery::Ready(player, caster));
+        ((scenario->GetCurrentStep() == 8 && player->HasItemCount(128826, 1, true)) ||
+            (player->HasEarnedMarksmanshipReturn() && MarksmanshipRecovery::Ready(player, caster)));
 }
 
 struct State
@@ -2018,9 +2063,7 @@ bool Complete(Player* player, SpellScene const* scene, std::string const& trigge
         TC_LOG_WARN("scripts", "Xalatath pickup: native equip 201778 failed with result %u for player %u; no item or progression granted", uint32(result), player->GetGUIDLow());
         return true;
     }
-    Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
-    Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-    if (!weapon || weapon->GetEntry() != 128827 || !child || child->GetEntry() != 133958 || weapon->GetChildItem() != child->GetGUID())
+    if (!ArtifactAcquisitionInventory::Ready(player, 128827, EQUIPMENT_SLOT_MAINHAND, 133958, EQUIPMENT_SLOT_OFFHAND))
         TC_LOG_WARN("scripts", "Xalatath pickup: native equip 201778 accepted but blade/paired item is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
     return true;
 }
@@ -2327,6 +2370,9 @@ public:
             player->getClass() != CLASS_WARRIOR || player->GetMapId() != 1539 ||
             !ArtifactAcquisition::Active(player, 41105) || player->HasItemCount(128910, 1, true))
             return false;
+        // Full bags cannot turn an off-spec storage claim into a forced equip.
+        if (ArtifactAcquisitionInventory::OtherSpecialization(player, sObjectMgr->GetItemTemplate(item)))
+            return false;
         GameObject* object = player->GetMap()->GetGameObject(source);
         if (!object || object->GetEntry() != 247877 || !object->IsInWorld() || !object->isSpawned() ||
             object->GetMap() != player->GetMap() || !player->InSamePhase(object) || !player->canSeeOrDetect(object) ||
@@ -2361,8 +2407,7 @@ bool Complete(Player* player, SpellScene const* scene, std::string const& trigge
         TC_LOG_WARN("scripts", "Stromkar pickup: native equip 206439 failed with result %u for player %u; existing item retained", uint32(result), player->GetGUIDLow());
         return true;
     }
-    Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
-    if (!weapon || weapon->GetEntry() != 128910)
+    if (!ArtifactAcquisitionInventory::Ready(player, 128910, EQUIPMENT_SLOT_MAINHAND))
         TC_LOG_WARN("scripts", "Stromkar pickup: native equip 206439 accepted but blade is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
     return true;
 }
@@ -2448,6 +2493,11 @@ struct npc_stromkar_thoradin : SmartAI
 
 void AddSC_artifact_acquisition()
 {
+    new condition_artifact_acquisition_inventory("condition_artifact_inventory_128910", 128910);
+    new condition_artifact_acquisition_inventory("condition_artifact_inventory_128861", 128861);
+    new condition_artifact_acquisition_inventory("condition_artifact_inventory_128826", 128826);
+    new condition_artifact_acquisition_inventory("condition_artifact_inventory_128808", 128808);
+    new condition_artifact_acquisition_inventory("condition_artifact_inventory_128862", 128862);
     new player_warrior_pickup_return();
     new condition_warrior_pickup_return();
     RegisterCreatureAI(npc_stromkar_illusionist);
@@ -2496,6 +2546,7 @@ void AddSC_artifact_acquisition()
     RegisterAuraScript(spell_marksmanship_presentation);
     RegisterSpellScript(spell_marksmanship_return);
     new condition_marksmanship_recovered_arrival();
+    new condition_marksmanship_recovered_interaction();
     new player_marksmanship_return_recovery();
     new player_talonclaw_return();
     new player_talonclaw_departure();

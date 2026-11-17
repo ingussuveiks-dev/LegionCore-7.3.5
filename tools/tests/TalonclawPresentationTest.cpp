@@ -157,6 +157,16 @@ struct Pickup {
 int main() {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     #ifdef MARKSMANSHIP_PRESENTATION_TEST
+    for (bool claimed : {false,true}) {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup; pickup.player.preserveOffSpec=true;
+        pickup.player.objectives[103490]=claimed?1:0;
+        pickup.Begin(); pickup.Finish(); pickup.Finish();
+        assert(pickup.player.mainhand==&pickup.player.previousWeapon && !pickup.player.swaps && !pickup.player.equipErrors);
+        assert(MarksmanshipClaim::notices.size()==(claimed?1u:0u));
+        assert(pickup.player.credits.empty());
+        assert(pickup.player.casts.size()==(claimed?0u:1u));
+    }
     {
         MarksmanshipClaim::notices.clear();
         Pickup pickup;pickup.Begin();pickup.Finish();pickup.Finish();

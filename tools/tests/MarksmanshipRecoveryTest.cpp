@@ -16,17 +16,19 @@ constexpr int CLASS_HUNTER=3,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST
 enum SpellCastResult {SPELL_CAST_OK=0,SPELL_FAILED_BAD_TARGETS=12};using SpellEffIndex=int;
 unsigned warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
-struct Player;
-struct WorldObject {virtual Player* ToPlayer(){return nullptr;}virtual ~WorldObject()=default;};
+struct Player; struct Unit;
+constexpr uint32 UNIT_FIELD_NPC_FLAGS=0,UNIT_NPC_FLAG_GOSSIP=1;
+struct WorldObject {virtual Player* ToPlayer(){return nullptr;}virtual Unit* ToUnit(){return nullptr;}virtual ~WorldObject()=default;};
 struct Creature;
-struct Unit:WorldObject {virtual Creature* ToCreature(){return nullptr;}bool IsCreature(){return ToCreature()!=nullptr;}virtual uint32 GetEntry(){return 0;}virtual uint32 GetMapId()const{return 0;}virtual uint32 GetInstanceId(){return 0;}virtual bool IsInWorld(){return false;}virtual bool IsAlive(){return false;}};
+struct Unit:WorldObject {Unit* ToUnit()override{return this;}virtual Creature* ToCreature(){return nullptr;}bool IsCreature(){return ToCreature()!=nullptr;}virtual uint32 GetEntry(){return 0;}virtual uint32 GetMapId()const{return 0;}virtual uint32 GetInstanceId(){return 0;}virtual bool IsInWorld(){return false;}virtual bool IsAlive(){return false;}};
 struct Item {ObjectGuid owner=1;uint32 count=1;ObjectGuid GetOwnerGUID()const{return owner;}uint32 GetCount()const{return count;}};
 struct QuestStatusData {std::shared_ptr<uint8> ScriptLifetime;};
 struct Session {bool loading=false;bool PlayerLoading(){return loading;}};
 struct SmartScript {bool consumed=false;bool HasRunEvent(uint32 id,int type){assert(id==0&&type==10);return consumed;}};
 struct SmartAI {SmartScript script;SmartScript*GetScript(){return &script;}};
 struct Creature:Unit {
- uint32 entry=100397,db=370758,scriptId=0,map=1489,instance=42,casts=0;bool world=true,alive=true,phase=true,range=true,combat=false,busy=false,IsAIEnabled=true;
+ uint32 entry=100397,db=370758,scriptId=0,map=1489,instance=42,casts=0,flags=2;bool world=true,alive=true,phase=true,range=true,combat=false,busy=false,IsAIEnabled=true;
+ void SetFlag(uint32 field,uint32 flag){assert(field==UNIT_FIELD_NPC_FLAGS);flags|=flag;}
  struct {std::string AIName="SmartAI";} info;SmartAI ai;SpellCastResult result=SPELL_CAST_OK;std::function<void()> callback;
  Creature*ToCreature()override{return this;}uint32 GetEntry(){return entry;}uint32 GetDBTableGUIDLow(){return db;}uint32 GetScriptId(){return scriptId;}auto GetCreatureTemplate(){return &info;}
  bool IsPreDelete(){return false;}
@@ -42,7 +44,7 @@ struct Player:Unit {
  bool GetQuestRewardStatus(uint32 id)const{assert(id==40419);return rewarded;}int GetQuestStatus(uint32 id)const{assert(id==40419);return status;}
  int GetQuestObjectiveData(uint32 id,uint32 goal)const{assert(id==40419);auto p=goals.find(goal);return p==goals.end()?0:p->second;}
  Item* GetItemByEntry(uint32 id,bool bank)const{assert(id==128826&&bank);return haveItem?const_cast<Item*>(&artifact):nullptr;}
- ObjectGuid GetGUID()const{return guid;}uint32 GetGUIDLow(){return uint32(guid);}bool HasEarnedMarksmanshipReturn()const;
+ ObjectGuid GetGUID()const{return guid;}uint32 GetGUIDLow(){return uint32(guid);}bool HasEarnedMarksmanshipReturn(bool requireSelection=true)const;
  bool IsInWorld(){return world;}bool IsAlive(){return alive;}uint32 GetInstanceId(){return instance;}bool IsBeingTeleported(){return pending;}bool IsBeingTeleportedFar(){return pending;}
  Session* GetSession(){return haveSession?&session:nullptr;}void*GetTransport(){return transport?this:nullptr;}void*GetVehicle(){return vehicle?this:nullptr;}bool isInCombat(){return combat;}
  QuestStatusData*getQuestStatus(uint32 id){assert(id==40419);return &quest;}void AddQuestDelayedEvent(uint32 id,uint32 delay,std::function<void()>){assert(id==40419&&!delay);if(!quest.ScriptLifetime)quest.ScriptLifetime=std::make_shared<uint8>();}
@@ -66,7 +68,7 @@ int main(){unsigned cases=0;
   if(mode==5)p.haveItem=false;if(mode==6)p.artifact.owner=2;if(mode==7)p.artifact.count=0;if(mode==8)p.status=0;if(mode==9)p.rewarded=true;if(mode==10)p.gm=true;if(mode==11)p.cls=1;if(mode==12)p.map=1220;
   bool earned=mode>=13;assert(p.HasEarnedMarksmanshipReturn()==earned);
   if(mode==13)p.world=false;if(mode==14)p.alive=false;if(mode==15)manager.present=false;if(mode==16)manager.value.id=973;if(mode==17)manager.value.step=3;if(mode==18)actor.db=1;if(mode==19)actor.scriptId=1;if(mode==20)actor.info.AIName="custom";if(mode==21)actor.IsAIEnabled=false;if(mode==22)actor.world=false;if(mode==23)actor.alive=false;if(mode==24)actor.map=1220;if(mode==25)actor.instance=43;if(mode==26)actor.phase=false;if(mode==27)actor.range=false;if(mode==28)actor.ai.script.consumed=true;
-  assert(!MarksmanshipRecovery::Ready(&p,&actor));condition_marksmanship_recovered_arrival gate;ConditionSourceInfo source;source.mConditionTargets[0]=&p;assert(gate.OnConditionCheck(nullptr,source)==!earned);++cases;
+  assert(MarksmanshipRecovery::Ready(&p,&actor)==(mode==1));condition_marksmanship_recovered_arrival gate;ConditionSourceInfo source;source.mConditionTargets[0]=&p;assert(gate.OnConditionCheck(nullptr,source)==!(earned||mode==1));++cases;
  }
  for(int status:{3,1})for(bool accepted:{false,true}){manager={};Player p;Creature actor;p.actor=&actor;p.status=status;assert(p.HasEarnedMarksmanshipReturn()&&MarksmanshipRecovery::Ready(&p,&actor));auto before=p.goals;player_marksmanship_return_recovery controller;controller.OnUpdate(&p,999);assert(!actor.casts);controller.OnUpdate(&p,1);assert(actor.casts==1&&!p.pending&&p.goals==before);actor.busy=true;controller.OnUpdate(&p,5000);assert(actor.casts==1);actor.busy=false;
   Spell spell{&p,accepted};MarksmanshipReturn::State state;state.Teleport(&p,&actor,&spell,0);assert(spell.calls==1&&p.pending==accepted&&p.removes==unsigned(accepted)&&state.CreditAllowed(&p,&actor)==accepted&&p.goals==before&&!p.canDelay);++cases;
@@ -75,5 +77,6 @@ int main(){unsigned cases=0;
  {manager={};Player p;Creature actor;p.actor=&actor;player_marksmanship_return_recovery controller;actor.callback=[&]{controller.OnLogout(&p);p.goals[103490]=0;p.quest.ScriptLifetime.reset();};controller.OnUpdate(&p,1000);controller.OnUpdate(&p,5000);assert(actor.casts==1&&!p.pending&&p.goals[102548]==0);++cases;}
  {manager={};Player p;Creature actor;p.actor=&actor;player_marksmanship_return_recovery controller;actor.ai.script.consumed=true;for(unsigned i=0;i<30;++i)controller.OnUpdate(&p,5000);assert(!actor.casts);actor.ai.script.consumed=false;controller.OnUpdate(&p,5000);assert(actor.casts==1);++cases;}
  {manager={};Player p;Creature actor,decoy;p.actor=&actor;p.decoy=&decoy;decoy.db=0;player_marksmanship_return_recovery controller;controller.OnUpdate(&p,1000);assert(actor.casts==1&&!decoy.casts);++cases;}
- assert(cases==67);std::cout<<"PASS recovery67 ASAN:actual earned/context/condition/controller/return state;incomplete+complete,all five receipts and ownership refusals,real-caster/nearer-decoy guards,normal cast request,busy/consumed intro deferral,accepted transfer-only cleanup/credit eligibility,finite retries/reentry/reentrant logout;actor cast/transfer endpoints controlled,no direct item/quest/return grant\n";
+ {manager={};Player p;Creature actor;p.actor=&actor;p.goals[103481]=0;auto before=p.goals;player_marksmanship_return_recovery controller;controller.OnUpdate(&p,1000);assert(actor.flags==3&&!actor.casts&&p.goals==before);condition_marksmanship_recovered_interaction interaction;ConditionSourceInfo source;source.mConditionTargets[0]=&p;source.mConditionTargets[1]=&actor;assert(interaction.OnConditionCheck(nullptr,source));Spell spell{&p,true};MarksmanshipReturn::State state;state.Teleport(&p,&actor,&spell,0);assert(!spell.calls&&!p.pending);p.goals[103481]=1;state.Teleport(&p,&actor,&spell,0);assert(spell.calls==1&&p.pending&&state.CreditAllowed(&p,&actor));++cases;}
+ assert(cases==68);std::cout<<"PASS recovery68 ASAN:actual earned/context/condition/controller/return state;unselected genuine claim recovers only native gossip,retains questgiver flag,does not auto-transfer or grant selection;actual selection admits transfer. Existing receipt/owner/native-actor/retry/cleanup guards retained;controlled endpoints,no direct item/quest/return grant\n";
 }

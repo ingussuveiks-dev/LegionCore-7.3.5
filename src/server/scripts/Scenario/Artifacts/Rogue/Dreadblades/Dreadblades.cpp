@@ -10,6 +10,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Item.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "dreadblades_scout.h"
 
 namespace DreadbladesAcquisition
@@ -35,10 +36,7 @@ namespace DreadbladesAcquisition
 
     bool Equipped(Player* player)
     {
-        Item* weapon = player->GetItemByEntry(128872);
-        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-        return weapon && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon &&
-            child && child->GetEntry() == 134552 && weapon->GetChildItem() == child->GetGUID();
+        return ArtifactAcquisitionInventory::Ready(player, 128872, EQUIPMENT_SLOT_MAINHAND, 134552);
     }
 }
 

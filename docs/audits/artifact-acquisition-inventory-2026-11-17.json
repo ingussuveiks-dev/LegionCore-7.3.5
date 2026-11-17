@@ -1,0 +1,599 @@
+{
+  "date": "2026-11-17",
+  "status": "DEPLOYED_INVENTORY_POLICY_CLIENT_RETEST_PENDING",
+  "request": "All36 acquisitions: equip for the current native specialization; keep a different same-class specialization artifact in carried inventory and accept the genuinely earned acquisition/return.",
+  "root_cause": "Native artifact equip admission correctly rejects specialization mismatch, but effect249 reported this legitimate storage outcome as an equip failure and several scoped presentation/credit/return consumers required the equipped slot. Thas'dorah therefore never queued its actual post-claim dialogue. A restart after pickup but before selecting the exit also fell outside the older selected-transfer recovery.",
+  "implementation": [
+    "Shared inventory outcome checks actual native Artifact/ChrSpecialization metadata, valid same-class current spec, carried owned nonzero parent and legitimate linked child. Matching-spec consumers still verify the actual equipment slots; a cast acceptance alone is not an equipment acknowledgement.",
+    "Native249 retains existing off-spec items and current equipment, while all other native effects and manual CanUseItem admission remain. No item creation, respec, automatic quest/scenario completion, or replacement child grants.",
+    "Scoped consumers accept stored off-spec outcomes only after their unchanged real pickup, attempt, scene/encounter, actor, map/phase and progression guards. Warrior pickup-return already supported storage and its policy was retained.",
+    "Stromkar's special full-bag auto-equip cannot be used for an off-spec storage claim: free a bag slot and retry actual loot; no consumption or credit on failed storage. Native Execute retains its real victory/override/actor/quest/range/stage predicates.",
+    "Eleven exact equipped-only condition rows become registered equipped-or-off-spec inventory scripts. Two additional native Vereesa exit-condition branches require the actual claimed-bow receipts and original actor in entrance-only recovery. Restore gossip while preserving the questgiver flag; do not select it automatically. Native59 records103481, then accepted native205040 performs transfer and102548. Automatic recovery still requires the actual selection."
+  ],
+  "coverage": {
+    "routes": 36,
+    "alternate_same_class_spec_combinations": 74,
+    "native_parent_child_pairs": 18,
+    "native_effect249_records": 55,
+    "native_effect249_distinct_items": 39,
+    "matrix": [
+      {
+        "item": 128910,
+        "name": "Strom'kar, the Warbreaker",
+        "artifact": 36,
+        "spec": 71,
+        "class": 1,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          206439
+        ],
+        "additional_review": "Presentation outcome, genuine native Execute predicates, full-bag off-spec refusal",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128289,
+        "name": "Scale of the Earth-Warder",
+        "artifact": 11,
+        "spec": 73,
+        "class": 1,
+        "inventory_type": 14,
+        "child": 128288,
+        "child_slot": 15,
+        "native_equip_spells": [
+          188074,
+          208562
+        ],
+        "additional_review": "Existing off-spec Warrior return retained; fallback outcome diagnostic",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128908,
+        "name": "Warswords of the Valarjar",
+        "artifact": 35,
+        "spec": 72,
+        "class": 1,
+        "inventory_type": 17,
+        "child": 134553,
+        "child_slot": 16,
+        "native_equip_spells": [
+          194201,
+          208578
+        ],
+        "additional_review": "Existing off-spec Warrior return retained; fallback outcome diagnostic",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128823,
+        "name": "The Silver Hand",
+        "artifact": 48,
+        "spec": 65,
+        "class": 2,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          211842
+        ],
+        "additional_review": "Pickup, collapse and return outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128866,
+        "name": "Truthguard",
+        "artifact": 49,
+        "spec": 66,
+        "class": 2,
+        "inventory_type": 14,
+        "child": 128867,
+        "child_slot": 15,
+        "native_equip_spells": [
+          210133
+        ],
+        "additional_review": "Paired pre-credit/equip outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 120978,
+        "name": "Ashbringer",
+        "artifact": 2,
+        "spec": 70,
+        "class": 2,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          181257,
+          181511
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128861,
+        "name": "Titanstrike",
+        "artifact": 56,
+        "spec": 253,
+        "class": 3,
+        "inventory_type": 26,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          212010,
+          212011
+        ],
+        "additional_review": "Hunter class-hall flight inventory gate",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128808,
+        "name": "Talonclaw",
+        "artifact": 34,
+        "spec": 255,
+        "class": 3,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          197651,
+          208601
+        ],
+        "additional_review": "Hunter class-hall flight inventory gate",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128826,
+        "name": "Thas'dorah, Legacy of the Windrunners",
+        "artifact": 55,
+        "spec": 254,
+        "class": 3,
+        "inventory_type": 15,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          200262
+        ],
+        "additional_review": "Actual claim dialogue and restart-before-selection recovery",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128870,
+        "name": "The Kingslayers",
+        "artifact": 43,
+        "spec": 259,
+        "class": 4,
+        "inventory_type": 21,
+        "child": 128869,
+        "child_slot": 16,
+        "native_equip_spells": [
+          215113
+        ],
+        "additional_review": "Paired pickup/credit outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128872,
+        "name": "The Dreadblades",
+        "artifact": 44,
+        "spec": 260,
+        "class": 4,
+        "inventory_type": 21,
+        "child": 134552,
+        "child_slot": 16,
+        "native_equip_spells": [
+          202182
+        ],
+        "additional_review": "Paired pickup/outro outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128476,
+        "name": "Fangs of the Devourer",
+        "artifact": 17,
+        "spec": 261,
+        "class": 4,
+        "inventory_type": 21,
+        "child": 128479,
+        "child_slot": 16,
+        "native_equip_spells": [
+          209818
+        ],
+        "additional_review": "Paired pickup/outro outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128825,
+        "name": "T'uure, Beacon of the Naaru",
+        "artifact": 45,
+        "spec": 257,
+        "class": 5,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          210734
+        ],
+        "additional_review": "Tuure acquisition/exit outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128827,
+        "name": "Xal'atath, Blade of the Black Empire",
+        "artifact": 47,
+        "spec": 258,
+        "class": 5,
+        "inventory_type": 21,
+        "child": 133958,
+        "child_slot": 16,
+        "native_equip_spells": [
+          201778,
+          205774
+        ],
+        "additional_review": "Paired presentation outcome diagnostic",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128868,
+        "name": "Light's Wrath",
+        "artifact": 46,
+        "spec": 256,
+        "class": 5,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          208011
+        ],
+        "additional_review": "Nexus pickup/exit outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128402,
+        "name": "Maw of the Damned",
+        "artifact": 15,
+        "spec": 250,
+        "class": 6,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          200134,
+          205138
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128292,
+        "name": "Blades of the Fallen Prince",
+        "artifact": 12,
+        "spec": 251,
+        "class": 6,
+        "inventory_type": 21,
+        "child": 128293,
+        "child_slot": 16,
+        "native_equip_spells": [
+          186209,
+          197092
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128403,
+        "name": "Apocalypse",
+        "artifact": 16,
+        "spec": 252,
+        "class": 6,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          202618
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128819,
+        "name": "Doomhammer",
+        "artifact": 41,
+        "spec": 263,
+        "class": 7,
+        "inventory_type": 21,
+        "child": 128873,
+        "child_slot": 16,
+        "native_equip_spells": [
+          193747
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128935,
+        "name": "The Fist of Ra-den",
+        "artifact": 40,
+        "spec": 262,
+        "class": 7,
+        "inventory_type": 21,
+        "child": 128936,
+        "child_slot": 16,
+        "native_equip_spells": [
+          199863
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128911,
+        "name": "Sharas'dal, Scepter of Tides",
+        "artifact": 42,
+        "spec": 264,
+        "class": 7,
+        "inventory_type": 21,
+        "child": 128934,
+        "child_slot": 16,
+        "native_equip_spells": [
+          209685
+        ],
+        "additional_review": "Paired acquisition credit and outro outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 127857,
+        "name": "Aluneth",
+        "artifact": 4,
+        "spec": 62,
+        "class": 8,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          211954
+        ],
+        "additional_review": "Nexus pickup/exit outcome",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128820,
+        "name": "Felo'melorn",
+        "artifact": 54,
+        "spec": 63,
+        "class": 8,
+        "inventory_type": 21,
+        "child": 133959,
+        "child_slot": 16,
+        "native_equip_spells": [
+          196020,
+          205152
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128862,
+        "name": "Ebonchill",
+        "artifact": 53,
+        "spec": 64,
+        "class": 8,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          214775
+        ],
+        "additional_review": "Council gossip/phase inventory gates",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128942,
+        "name": "Ulthalesh, the Deadwind Harvester",
+        "artifact": 39,
+        "spec": 265,
+        "class": 9,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          204819
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128943,
+        "name": "Skull of the Man'ari",
+        "artifact": 37,
+        "spec": 266,
+        "class": 9,
+        "inventory_type": 23,
+        "child": 137246,
+        "child_slot": 15,
+        "native_equip_spells": [
+          211764
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128941,
+        "name": "Scepter of Sargeras",
+        "artifact": 38,
+        "spec": 267,
+        "class": 9,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          219839
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128938,
+        "name": "Fu Zan, the Wanderer's Companion",
+        "artifact": 52,
+        "spec": 268,
+        "class": 10,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          217813
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128937,
+        "name": "Sheilun, Staff of the Mists",
+        "artifact": 51,
+        "spec": 270,
+        "class": 10,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          202438
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128940,
+        "name": "Fists of the Heavens",
+        "artifact": 50,
+        "spec": 269,
+        "class": 10,
+        "inventory_type": 21,
+        "child": 133948,
+        "child_slot": 16,
+        "native_equip_spells": [
+          199499,
+          224657
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128858,
+        "name": "Scythe of Elune",
+        "artifact": 59,
+        "spec": 102,
+        "class": 11,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          205387
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128860,
+        "name": "Fangs of Ashamane",
+        "artifact": 58,
+        "spec": 103,
+        "class": 11,
+        "inventory_type": 21,
+        "child": 128859,
+        "child_slot": 16,
+        "native_equip_spells": [
+          214715
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128821,
+        "name": "Claws of Ursoc",
+        "artifact": 57,
+        "spec": 104,
+        "class": 11,
+        "inventory_type": 21,
+        "child": 128822,
+        "child_slot": 16,
+        "native_equip_spells": [
+          199960,
+          208779
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128306,
+        "name": "G'Hanir, the Mother Tree",
+        "artifact": 13,
+        "spec": 105,
+        "class": 11,
+        "inventory_type": 17,
+        "child": 0,
+        "child_slot": 0,
+        "native_equip_spells": [
+          207562
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 127829,
+        "name": "Twinblades of the Deceiver",
+        "artifact": 3,
+        "spec": 577,
+        "class": 12,
+        "inventory_type": 21,
+        "child": 127830,
+        "child_slot": 16,
+        "native_equip_spells": [
+          189523,
+          201010
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      },
+      {
+        "item": 128832,
+        "name": "Aldrachi Warblades",
+        "artifact": 60,
+        "spec": 581,
+        "class": 12,
+        "inventory_type": 21,
+        "child": 128831,
+        "child_slot": 16,
+        "native_equip_spells": [
+          208301
+        ],
+        "additional_review": "No additional equipped-only acquisition/exit gate found in the surveyed local scripts/data; native249 storage policy applies",
+        "proof": "Production inventory policy with matching native metadata; full client chain remains separate"
+      }
+    ]
+  },
+  "checks": [
+    "Test-ArtifactAcquisitionInventory: actual production helper + actual scoped gate bodies, typed native sparse ItemSparse/Artifact/ChrSpecialization/ItemChildEquipment export. Same-spec equipment, all74 off-spec combinations,18 pairs, wrong owner/class/spec/metadata, missing/bank/zero-count/corrupt child and real bow receipt/selection distinction pass under ASAN.",
+    "Test-ArtifactForceEquip: extracted actual249 handler on55 matching native records, empty/occupied/already-equipped inventory, child preflight, native denials, repeats and off-spec no-swap/no-error dispatch; UTF8/BOM variants pass. Inventory services are controlled endpoints.",
+    "Migration09 applied twice in session-local shadow:11 exact inventory gates,2 recovered exit branches, original12 native exit requirements and unrelated conditions retained. Live offline readback confirms11+2 after matching EXE promotion.",
+    "Actual scoped pickup/presentation regressions pass: Dreadblades, Devourer, Kingslayers, Sharasdal76, both Nexus pickups, Truthguard, Silver Hand and Marksmanship including the off-spec genuine-claim branch. Recovery68 ASAN and Warrior51 ASAN pass. These execute production handlers with controlled services, not actual full client traversals.",
+    "Stromkar full-loot/shared-storage/equipment differential96 cases pass, including new off-spec full-bag refusal and available-bag storage with current equipment preserved. Real DB/mail/rendering remain separate.",
+    "Matching native SpellEquippedItems has no extra item-equipment prerequisite rows for206455/206456 or the reviewed scoped equip spells. Source/DB survey found and addressed all artifact-item condition3 rows in the acquisition/return scopes.",
+    "Initial fixture failures were investigated: PowerShell array Item-property projection, Skull of Man'ari held-in-offhand fixture placement and nullable Comment SQL comparison corrected. Old host compile gaps (door constant, published Warrior intro/arrival dependencies) updated; exact historical source certificates now explicitly invert complete declared later amendments rather than weakening the checks. No runtime errors were suppressed."
+  ],
+  "build_deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "906F5F296D00F98F0B234763EB2D4C5F620A1DA2700A6FEFA2BA86962A1277F0",
+    "map_sha256": "57A1040FB84CE4B941D47E0D13ED78621497129ED35FF33C4DB7B378C816E79D",
+    "proof": "Necessary Release x64 game+scripts compilation and separate original-input final link succeeded. Final map identifies PlayerScenario, actual Spell::EffectForceEquipItem and both new condition script classes in their real game/scripts objects. Staged/copied hashes identical; configurations, bnet binaries/maps, DLLs, certificates and extracted data preserved. Fresh process checks were empty before deployment and code-coupled SQL; no user process stopped and no agent server started.",
+    "sql": "2026_11_17_09_artifact_acquisition_inventory.sql staged outside live updater until EXE promoted, then applied/read back offline and moved into world updates. User-start updater tracking/second idempotent application remains pending."
+  },
+  "diagnostics": "Every test group captured pre/post canonical and own-runtime crash/log evidence. Passing final groups: no changed crashes, no appended DBErrors or new server warnings/errors/assertions. Offline deployment kept Server16212927, DBErrors7401 and Bnet3927 unchanged; canonical Crashes empty. Mixed older error logs and original intermittent handshake finding retained, not cleared/archived as resolved. Compiler host warnings are not claimed as clean native runtime verification.",
+  "cleanup": {
+    "stage_bytes_removed": 179810601,
+    "test_artifact_bytes_removed": 111913043,
+    "test_files_removed": 46,
+    "retained": "Regression sources, reusable tools, diagnostic offsets/logs, native TSV exports, build libraries, matching recent rollback. Exact absolute targets and descendants checked against reparse points; no running test process; canonical/configuration hashes rechecked unchanged. Ignored manifests under .codex/artifact-offspec-inventory-20261117."
+  },
+  "local_evidence": ".codex/artifact-offspec-inventory-20261117/ and build-extractors/runtime-test/{artifact-acquisition-inventory,marksmanship-recovery-source,...}/ diagnostics; no credentials or character data committed.",
+  "remaining": "User starts canonical server and retests existing Hunter genuine pickup/Vereesa selection and real departure while BM gear remains equipped. Matching-spec native equip, each of all36 entire client acquisitions, visuals/audio, native scheduling/group behavior, reconnect/bank/faction variants and canonical startup are not certified by the shared helper/controller regressions. New user runtime diagnostics must be inspected after the retest; mixed historical logs remain separately unresolved."
+}

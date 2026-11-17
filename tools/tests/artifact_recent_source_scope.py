@@ -5,8 +5,9 @@ These certify source provenance; they do not execute the active Warrior flow.
 from pathlib import Path
 import functools,hashlib,json,subprocess
 ROOT=Path(__file__).resolve().parents[2]
-NAMES=('ArtifactRecentPlayerSourceRepairs.json','ArtifactRecentWarswordsSourceRepairs.json','ArtifactRecentFuryInstanceSourceRepairs.json','ArtifactRecentSharedHelpersSourceRepairs.json')
+NAMES=('ArtifactRecentPlayerSourceRepairs.json','ArtifactRecentWarswordsSourceRepairs.json','ArtifactRecentFuryInstanceSourceRepairs.json','ArtifactRecentSharedHelpersSourceRepairs.json','ArtifactInventoryPlayerHeaderSourceRepair.json')
 PLANS=[json.loads((ROOT/'tools/tests'/name).read_text()) for name in NAMES]
+PLANS.extend(json.loads((ROOT/'tools/tests/ArtifactInventorySourceRepairs.json').read_text()))
 def sha(s):return hashlib.sha256(s.encode()).hexdigest()
 def inverse(source,plan):
  for edit in reversed(plan['edits']):
@@ -31,4 +32,4 @@ def normalize(path,source):
    for plan in reversed(record['plans']):source=inverse(source,plan)
  return source
 if __name__=='__main__':
- verify();print('PASS exact eight file amendments from seven existing commits;no active Warrior gameplay test')
+ verify();print('PASS exact declared artifact source amendments against pinned Git parents; historical whole-file checks retained; no gameplay certification')

@@ -3,6 +3,7 @@
 */
 
 #include "ScriptMgr.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "ScriptedCreature.h"
 #include "GameObjectAI.h"
 #include "Scenario.h"
@@ -1281,6 +1282,8 @@ namespace TruthguardAcquisition
             TC_LOG_WARN("scripts", "Truthguard pickup: missing or invalid native parent/child for player %u; no progression or replacement item", player->GetGUIDLow());
             return false;
         }
+        if (ArtifactAcquisitionInventory::StoredForOtherSpecialization(player, weapon, 128867))
+            return true;
         if (!weapon->IsEquipped())
         {
             uint16 destination;

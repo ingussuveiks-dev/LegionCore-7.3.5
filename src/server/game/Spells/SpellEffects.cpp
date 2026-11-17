@@ -17,6 +17,7 @@
  */
 
 #include "AccountMgr.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "AreaTrigger.h"
 #include "Battleground.h"
 #include "BattlegroundDeepwindGorge.h"
@@ -9342,6 +9343,12 @@ void Spell::EffectForceEquipItem(SpellEffIndex effIndex)
 
     Item* item = player->GetItemByEntry(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);
     if (!item)
+        return;
+
+    // Acquiring another specialization's artifact is a valid storage outcome.
+    // Keep the real existing item and current gear; manual equip admission and
+    // all other native spell effects (including genuine pickup credit) remain.
+    if (ArtifactAcquisitionInventory::OtherSpecialization(player, item->GetTemplate()))
         return;
 
     // An earlier equip can leave the existing linked artifact child in its

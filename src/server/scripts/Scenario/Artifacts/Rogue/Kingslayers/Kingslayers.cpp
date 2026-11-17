@@ -11,6 +11,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Item.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "TemporarySummon.h"
 #include "MapManager.h"
 #include "ScriptsData.h"
@@ -1790,10 +1791,7 @@ namespace KingslayersAcquisition
 
     bool Equipped(Player* player)
     {
-        Item* parent = player->GetItemByEntry(128870);
-        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-        return parent && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == parent &&
-            child && child->GetEntry() == 128869 && parent->GetChildItem() == child->GetGUID();
+        return ArtifactAcquisitionInventory::Ready(player, 128870, EQUIPMENT_SLOT_MAINHAND, 128869);
     }
 
     Creature* Outro(Player* player, ObjectGuid guid, uint32 instance, uint32 quest, std::weak_ptr<uint8> const& lifetime)

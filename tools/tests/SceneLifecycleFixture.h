@@ -11,10 +11,12 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "ArtifactInventoryOutcomeHost.h"
 using uint32 = uint32_t;
 enum SceneEventStatus { SCENE_NONE, SCENE_LAUNCH, SCENE_TRIGER, SCENE_COMPLETE };
 enum { SPELL_AURA_ACTIVATE_SCENE = 430, PHASE_UPDATE_FLAG_ZONE_UPDATE = 1 };
 #define TC_LOG_DEBUG(...) ((void)0)
+#define TC_LOG_INFO(...) ((void)0)
 struct Position { int GetPosition() const { return 0; } };
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
 enum { INVENTORY_SLOT_BAG_0 = 255, EQUIPMENT_SLOT_MAINHAND = 15, EQUIPMENT_SLOT_OFFHAND = 16, NULL_SLOT = 255, SPELL_EFFECT_HANDLE_HIT_TARGET = 1 };
@@ -313,6 +315,10 @@ struct Player : Unit {
     uint32 GetInstanceId() const { return runtimeInstance; }
     bool GetQuestRewardStatus(uint32 id) const { assert(id == expectedQuest); return rewarded; }
     uint32 GetQuestStatus(uint32 id) const { assert(id == expectedQuest); return quest; }
+    std::map<uint32,uint32> objectives{{103490,1}};
+    uint32 GetQuestObjectiveData(uint32 id,uint32 objective) const {
+        assert(id==expectedQuest); auto found=objectives.find(objective); return found==objectives.end()?0:found->second;
+    }
     bool HasItemCount(uint32 item, uint32 count, bool bank) const {
         assert(item == expectedItem && count == 1); return owned || (bank && bankOwned);
     }

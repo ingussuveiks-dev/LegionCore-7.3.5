@@ -3,6 +3,7 @@
 */
 
 #include "ScriptMgr.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "SpellMgr.h"
 #include "SpellInfo.h"
 #include "ScriptedCreature.h"
@@ -1267,9 +1268,7 @@ namespace WarswordsPresentation
             TC_LOG_WARN("scripts", "Warswords pickup: native equip 194201 failed with result %u for player %u; existing items retained", uint32(result), player->GetGUIDLow());
             return true;
         }
-        Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
-        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-        if (!weapon || weapon->GetEntry() != 128908 || !child || child->GetEntry() != 134553 || weapon->GetChildItem() != child->GetGUID())
+        if (!ArtifactAcquisitionInventory::Ready(player, 128908, EQUIPMENT_SLOT_MAINHAND, 134553, EQUIPMENT_SLOT_OFFHAND))
             TC_LOG_WARN("scripts", "Warswords pickup: native equip 194201 accepted but parent/child is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
         return true;
     }

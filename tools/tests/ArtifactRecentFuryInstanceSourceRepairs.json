@@ -1,6 +1,6 @@
 {
   "path": "src/server/scripts/Scenario/Artifacts/Warrior/Warswords/instance_warswords.cpp",
-  "scope": "Test source provenance only,existing Helya presentation amendment;no gameplay test or new repair.",
+  "scope": "Exact source provenance only: retain all existing historical checks and declare complete subsequent Git amendments plus the reviewed inventory-policy amendment against its pinned Git parent. No gameplay certification or additional production changes.",
   "plans": [
     {
       "commit": "2ee4d1ad4",

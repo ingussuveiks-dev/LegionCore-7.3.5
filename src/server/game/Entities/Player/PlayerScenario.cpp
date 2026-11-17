@@ -210,7 +210,7 @@ bool Player::CanResumeScenarioLogin(uint32 scenarioId) const
         // actual owned artifact and all preceding receipts must survive load.
         if (route->scenario == 972 && !m_scenarioResume.instance && !m_scenarioResume.boot &&
             (GetQuestObjectiveData(40419, 103490) >= 1 || GetQuestStatus(40419) == QUEST_STATUS_COMPLETE) &&
-            !HasEarnedMarksmanshipReturn())
+            !HasEarnedMarksmanshipReturn(false))
             return false;
     }
     return m_scenarioLoginId && m_scenarioLoginId == scenarioId &&
@@ -424,15 +424,20 @@ bool Player::ExitCompletedDarkRidersLogin()
     return true;
 }
 
-bool Player::HasEarnedMarksmanshipReturn() const
+bool Player::HasEarnedMarksmanshipReturn(bool requireSelection) const
 {
     if (GetMapId() != 1489 || getClass() != CLASS_HUNTER || isGameMaster() ||
         GetQuestRewardStatus(40419) ||
         (GetQuestStatus(40419) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(40419) != QUEST_STATUS_COMPLETE))
         return false;
-    for (uint32 objective : {102128u, 103481u, 102129u, 102131u, 103490u})
+    for (uint32 objective : {102128u, 102129u, 102131u, 103490u})
         if (GetQuestObjectiveData(40419, objective) < 1)
             return false;
+    // A genuine pickup may precede a restart before Vereesa's dialogue. That
+    // permits recovering the interaction, never selecting it on the player's
+    // behalf. Automatic retry of the actual transfer still requires103481.
+    if (requireSelection && GetQuestObjectiveData(40419, 103481) < 1)
+        return false;
     // Loading bag items are deliberately invisible to Bag::GetItemCount.
     Item* bow = GetItemByEntry(128826, true);
     return bow && bow->GetOwnerGUID() == GetGUID() && bow->GetCount();

@@ -15,7 +15,7 @@ if($ScopeOnly){'PASS only old GO pickup replaced by scoped acquisition header an
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify repaired Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-acquisition$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 [IO.File]::WriteAllText("$out/Controller.inc",$(if($Baseline){(Block $old 'class go_art_sharasdal :')+';'}else{Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasdal_acquisition.h" -Raw}))
-foreach($name in @('Conversation.h','Item.h','InstanceScript.h','SpellAuraEffects.h')){[IO.File]::WriteAllText("$out/$name",'// Controlled native service boundary, not a linked game header.')}
+foreach($name in @('Conversation.h','Item.h','InstanceScript.h','SpellAuraEffects.h','ArtifactAcquisitionInventory.h')){[IO.File]::WriteAllText("$out/$name",'// Controlled native service boundary, not a linked game header.')}
 $effects=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
 foreach($name in @('ForceEquipItem','SendEvent','KillCredit')){[IO.File]::WriteAllText("$out/$name.inc",(Block $effects "void Spell::Effect$name("))}
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw) 'enum CriteriaTypes')+';')

@@ -30,6 +30,7 @@ struct Player
 {
     std::map<uint16, Item*> inventory;
     Item* artifact = nullptr;
+    bool otherSpecialization = false;
     uint32 expectedEntry = 0, swaps = 0, errors = 0, checks = 0, childChecks = 0;
     uint16 destination = 0xFF0F;
     InventoryResult equipResult = EQUIP_ERR_OK, childResult = EQUIP_ERR_OK, lastError = EQUIP_ERR_OK;
@@ -72,6 +73,13 @@ struct Spell
     SpellInfo* m_spellInfo;
     void EffectForceEquipItem(SpellEffIndex);
 };
+// Metadata classification is exercised with the actual production helper and
+// native all36 data by Test-ArtifactAcquisitionInventory. This host controls
+// that dependency to check the actual249 handler's swap/error dispatch.
+namespace ArtifactAcquisitionInventory
+{
+bool OtherSpecialization(Player* player, ItemTemplate const*) { return player->otherSpecialization; }
+}
 #include "ForceEquip.inc"
 int main(int argc, char** argv)
 {
@@ -148,6 +156,18 @@ int main(int argc, char** argv)
         Spell spell{SPELL_EFFECT_HANDLE_HIT_TARGET, 0, &caster, &info};
         spell.EffectForceEquipItem(0);
         assert(player.swaps == 1 && player.childChecks == 1);
+        Player offspec;
+        Item stored;
+        stored.child.empty=false;
+        offspec.artifact=&stored;
+        offspec.expectedEntry=entry;
+        offspec.otherSpecialization=true;
+        offspec.inventory[stored.position]=&stored;
+        Unit otherCaster{&offspec};
+        Spell otherSpell{SPELL_EFFECT_HANDLE_HIT_TARGET,0,&otherCaster,&info};
+        otherSpell.EffectForceEquipItem(0);
+        otherSpell.EffectForceEquipItem(0);
+        assert(!offspec.swaps && !offspec.errors && !offspec.checks && !offspec.childChecks && !stored.IsEquipped());
     }
     assert(catalog.eof() && count == 55 && entries.size() == 39);
     std::cout << "PASS: 55 native effect249 records; actual production spell handler, swap delegation, paired-item admission, errors and repeat/missing-item guards\n";

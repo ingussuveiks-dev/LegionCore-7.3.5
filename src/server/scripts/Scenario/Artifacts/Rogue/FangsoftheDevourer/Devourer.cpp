@@ -9,6 +9,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Item.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include "CombatAI.h"
@@ -36,10 +37,7 @@ namespace DevourerAcquisition
 
     bool Equipped(Player* player)
     {
-        Item* weapon = player->GetItemByEntry(128476);
-        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-        return weapon && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon &&
-            child && child->GetEntry() == 128479 && weapon->GetChildItem() == child->GetGUID();
+        return ArtifactAcquisitionInventory::Ready(player, 128476, EQUIPMENT_SLOT_MAINHAND, 128479);
     }
 }
 

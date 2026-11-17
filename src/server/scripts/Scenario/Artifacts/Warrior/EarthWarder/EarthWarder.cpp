@@ -3,6 +3,7 @@
 */
 
 #include "ScriptMgr.h"
+#include "ArtifactAcquisitionInventory.h"
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
@@ -2321,9 +2322,7 @@ namespace EarthwarderPresentation
             TC_LOG_WARN("scripts", "Earthwarder pickup: native equip 208562 failed with result %u for player %u; existing items retained", uint32(result), player->GetGUIDLow());
             return true;
         }
-        Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
-        if (!weapon || weapon->GetEntry() != 128289 || !child || child->GetEntry() != 128288 || weapon->GetChildItem() != child->GetGUID())
+        if (!ArtifactAcquisitionInventory::Ready(player, 128289, EQUIPMENT_SLOT_OFFHAND, 128288, EQUIPMENT_SLOT_MAINHAND))
             TC_LOG_WARN("scripts", "Earthwarder pickup: native equip 208562 accepted but parent/child is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
         return true;
     }

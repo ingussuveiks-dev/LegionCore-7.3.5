@@ -1,6 +1,6 @@
 {
   "path": "src/server/game/AI/SmartScripts/SmartScript.cpp",
-  "scope": "Test source provenance only;existing Nov15 lifetime ownership amendment. No production change or new fix count.",
+  "scope": "Exact source provenance only: retain all existing historical checks and declare complete subsequent Git amendments plus the reviewed inventory-policy amendment against its pinned Git parent. No gameplay certification or additional production changes.",
   "plans": [
     {
       "commit": "cc4eb0ea7",
