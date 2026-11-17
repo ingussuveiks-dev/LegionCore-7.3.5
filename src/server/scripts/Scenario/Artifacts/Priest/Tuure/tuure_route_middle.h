@@ -39,7 +39,11 @@ void RearmRouteMiddle()
 void OnPlayerEnter(Player* player) override
 {
     InstanceScript::OnPlayerEnter(player);
-    if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired()) RearmRouteMiddle();
+    if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired())
+    {
+        RearmRouteMiddle();
+        RearmRouteTaunt();
+    }
 }
 
 void CompleteRouteMiddle(uint32 diff)

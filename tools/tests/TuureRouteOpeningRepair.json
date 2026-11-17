@@ -1,0 +1,49 @@
+{
+  "baseline": "824870813",
+  "files": [
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp",
+      "before_sha256": "5bd83de45e2a2d5b36d43242eaea3c6d25664328de3cc1d945431654c4779ae4",
+      "after_sha256": "69acef1347268c5751cfc97780d574a2eb495aa6f743a7c17ad58117986a76c4",
+      "edits": [
+        {
+          "old": "        bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;\n        #include \"tuure_route_middle.h\"\n\n        bool HasRouteProgress(uint32 tree)\n",
+          "new": "        bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;\n        #include \"tuure_route_middle.h\"\n        #include \"tuure_route_opening.h\"\n\n        bool HasRouteProgress(uint32 tree)\n"
+        },
+        {
+          "old": "            routeKillWarning = routeArrivalWarning = routePathWarning = routeOpening = routeMiddle = routeAlliedKill = false;\n            ResetRouteMiddle();\n        }\n\n",
+          "new": "            routeKillWarning = routeArrivalWarning = routePathWarning = routeOpening = routeMiddle = routeAlliedKill = false;\n            ResetRouteMiddle();\n            ResetRouteTaunt();\n        }\n\n"
+        },
+        {
+          "old": "            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n            if (!scenario || scenario->GetScenarioId() != 1085) return;\n            if (scenario->GetCurrentStep() > 2) { routeMiddlePending = false; firstRoute = FirstRoute::Done; return; }\n            Player* player = TuureFirstFight::Find(instance, routeRecipient);\n            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;\n",
+          "new": "            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());\n            if (!scenario || scenario->GetScenarioId() != 1085) return;\n            if (scenario->GetCurrentStep() > 2) { routeTauntPending = routeMiddlePending = false; firstRoute = FirstRoute::Done; return; }\n            Player* player = TuureFirstFight::Find(instance, routeRecipient);\n            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;\n"
+        },
+        {
+          "old": "            }\n            if (defeated && (!defeated->IsInWorld() || defeated->IsPreDelete())) defeated = nullptr;\n            Creature* boros = GetBoros();\n            if (!boros || boros->HasUnitState(UNIT_STATE_STUNNED) || !boros->GetCharmerGUID().IsEmpty()) return;\n            if (firstRoute == FirstRoute::Moving)\n",
+          "new": "            }\n            if (defeated && (!defeated->IsInWorld() || defeated->IsPreDelete())) defeated = nullptr;\n            if (firstRoute == FirstRoute::Moving || firstRoute == FirstRoute::Arrived)\n            {\n                auto attempt = routeAttempt.lock();\n                CompleteRouteTaunt(diff);\n                if (!attempt || routeAttempt.lock() != attempt) return;\n            }\n            Creature* boros = GetBoros(); // optional publication may run callbacks\n            if (!boros || boros->HasUnitState(UNIT_STATE_STUNNED) || !boros->GetCharmerGUID().IsEmpty()) return;\n            if (firstRoute == FirstRoute::Moving)\n"
+        },
+        {
+          "old": "                        sCreatureTextMgr->SendChat(jace, 0);\n                    }\n                if (Creature* speaker = GetBoros()) speaker->CreateConversation(2039);\n            }\n        }\n",
+          "new": "                        sCreatureTextMgr->SendChat(jace, 0);\n                    }\n                routeTauntPending = true;\n                CompleteRouteTaunt(0);\n            }\n        }\n"
+        },
+        {
+          "old": "            if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||\n                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)\n                borosGuid = creature->GetGUID();\n",
+          "new": "            if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||\n                (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) RearmRouteTaunt();\n            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)\n                borosGuid = creature->GetGUID();\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/tuure_route_middle.h",
+      "before_sha256": "40be16ad122eeef81c5a61b7a3f0ad43d81aed7261a2424e3e743d48faa1fbc9",
+      "after_sha256": "e83b8d05e7ac884df4d3fbe75002f1aea9e5fd97b8c37264b417e760b7963f53",
+      "edits": [
+        {
+          "old": "{\n    InstanceScript::OnPlayerEnter(player);\n    if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired()) RearmRouteMiddle();\n}\n\n",
+          "new": "{\n    InstanceScript::OnPlayerEnter(player);\n    if (player && player->GetGUID() == routeRecipient && !routeAttempt.expired())\n    {\n        RearmRouteMiddle();\n        RearmRouteTaunt();\n    }\n}\n\n"
+        }
+      ]
+    }
+  ],
+  "header": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/tuure_route_opening.h",
+  "header_sha256": "4ddab3a70b4cc6071eb0850f6683e1924dfa6058badb6aaaa91bcb64d7e0f4d1"
+}

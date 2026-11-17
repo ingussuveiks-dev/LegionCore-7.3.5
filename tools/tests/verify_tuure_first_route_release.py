@@ -12,7 +12,10 @@ middle = '?CompleteRouteMiddle@' + scope
 assert n['symbol'](record) in n['calls']('?CreatureDies@' + scope)
 assert n['symbol'](update) in n['calls']('?Update@' + scope)
 assert {106221, 361429, 1085, 41993} <= values(record)
-assert {9859002, 47883, 47882, 50831, 106221, 1000, 5000, 2039, 361432} <= values(update)
+assert {9859002, 47883, 47882, 50831, 106221, 1000, 5000, 361432} <= values(update)
+taunt = '?CompleteRouteTaunt@' + scope
+assert n['symbol'](taunt) in n['calls'](update)
+assert {2039, 41993, 1000, 30} <= values(taunt)
 assert n['symbol'](middle) in n['calls'](update)
 assert {2007, 41993, 1000, 30} <= values(middle)
 for prefix in ('?Recipient@TuureFirstFight@@', '?AddQuestDelayedEvent@Player@@', '?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@'):

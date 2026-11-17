@@ -45,6 +45,7 @@ public:
         uint32 routeDelay = 1000, routeRetry = 0;
         bool routeDelivering = false, routeKillWarning = false, routeArrivalWarning = false, routePathWarning = false, routeOpening = false, routeMiddle = false, routeAlliedKill = false;
         #include "tuure_route_middle.h"
+        #include "tuure_route_opening.h"
 
         bool HasRouteProgress(uint32 tree)
         {
@@ -66,6 +67,7 @@ public:
             routeRetry = 0;
             routeKillWarning = routeArrivalWarning = routePathWarning = routeOpening = routeMiddle = routeAlliedKill = false;
             ResetRouteMiddle();
+            ResetRouteTaunt();
         }
 
         void RecordRouteDeath(Creature* creature, Unit* killer)
@@ -99,7 +101,7 @@ public:
             if (firstRoute == FirstRoute::Waiting || firstRoute == FirstRoute::Done || routeDelivering) return;
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1085) return;
-            if (scenario->GetCurrentStep() > 2) { routeMiddlePending = false; firstRoute = FirstRoute::Done; return; }
+            if (scenario->GetCurrentStep() > 2) { routeTauntPending = routeMiddlePending = false; firstRoute = FirstRoute::Done; return; }
             Player* player = TuureFirstFight::Find(instance, routeRecipient);
             QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
             if (routeAttempt.expired() || (player && (!status || status->ScriptLifetime != routeAttempt.lock())))
@@ -115,7 +117,13 @@ public:
                 return;
             }
             if (defeated && (!defeated->IsInWorld() || defeated->IsPreDelete())) defeated = nullptr;
-            Creature* boros = GetBoros();
+            if (firstRoute == FirstRoute::Moving || firstRoute == FirstRoute::Arrived)
+            {
+                auto attempt = routeAttempt.lock();
+                CompleteRouteTaunt(diff);
+                if (!attempt || routeAttempt.lock() != attempt) return;
+            }
+            Creature* boros = GetBoros(); // optional publication may run callbacks
             if (!boros || boros->HasUnitState(UNIT_STATE_STUNNED) || !boros->GetCharmerGUID().IsEmpty()) return;
             if (firstRoute == FirstRoute::Moving)
             {
@@ -222,7 +230,8 @@ public:
                         jace->GetMotionMaster()->MoveFollow(boros, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                         sCreatureTextMgr->SendChat(jace, 0);
                     }
-                if (Creature* speaker = GetBoros()) speaker->CreateConversation(2039);
+                routeTauntPending = true;
+                CompleteRouteTaunt(0);
             }
         }
 
@@ -565,6 +574,7 @@ public:
             InstanceScript::OnCreatureCreate(creature);
             if ((creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) ||
                 (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)) RearmRouteMiddle();
+            if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419) RearmRouteTaunt();
             if (creature->GetEntry() == 106134 && creature->GetDBTableGUIDLow() == 361419)
                 borosGuid = creature->GetGUID();
             else if (creature->GetEntry() == 106221 && creature->GetDBTableGUIDLow() == 361429)

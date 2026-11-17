@@ -11,10 +11,14 @@ def inverse(source):
 @functools.lru_cache(None)
 def verify():
  source=(ROOT/PLAN['path']).read_text(encoding='utf-8-sig')
+ header=(ROOT/PLAN['header']).read_text()
+ if '#include "tuure_route_opening.h"' in source:
+  from tuure_route_opening_scope import verify as opening
+  restored=opening();source=restored[PLAN['path']];header=restored[PLAN['header']]
  old=subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+PLAN['path']]).decode('utf-8-sig').replace('\r\n','\n')
  sha=lambda s:hashlib.sha256(s.encode()).hexdigest()
  assert sha(source)==PLAN['after_sha256'] and sha(old)==PLAN['before_sha256']
- assert sha((ROOT/PLAN['header']).read_text())==PLAN['header_sha256']
+ assert sha(header)==PLAN['header_sha256']
  assert inverse(source)==old,'Other Tuure progression,death,captain,cage or recovery changed'
  return True
 if __name__=='__main__':
