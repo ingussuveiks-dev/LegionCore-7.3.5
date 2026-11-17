@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-17",
+  "status": "Additional video evidence reviewed; Wardstone101325 missing LINK4 still OPEN",
+  "request": "User asked whether another video shows more than the previous ZaFrostPet recording.",
+  "source_order": "Follows local26972/native data and prior Trinity/GitHub research in wardstone-missing-tail-research-2026-10-30.json and the previous full sampled video in talonclaw-full-video-review-2026-11-17.json. This turn is a bounded alternative-footage investigation, not a production repair.",
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=Ovnnw4R9m6o",
+      "title": "[Quest 40385] - The Spear in the Shadow {Survival Artifact Scenario}",
+      "author": "Phoenix Gaming",
+      "upload_date": "20170102",
+      "duration_seconds": 809,
+      "media_sha256": "f54414c11f0b377b98eead59727f01524f090b768a5224fb50ce224f42c24f42",
+      "actually_reviewed": "Complete downloaded360p video surveyed in67 samples at12-second intervals across0..804s, all5 contact sheets viewed, plus808s final frame. All four Wardstone activations reviewed more closely in84 one-second samples:120..148,224..240,254..274,284..304s; all7 detailed contact sheets viewed. No continuous playback or audio/transcript review. Approximate center timestamps, brief between-frame behavior not verified.",
+      "context": "Opening eagle ride/landing and companion conversation, harbor/first ward, three further wards, companion dialogue/harpoon crossing, ambush, two mist/trap pursuits and companion deaths, final Dakarr fight, Talonclaw pickup, Dorro dialogue/portal, return to Dalaran and Trueshot turn-in are present in the sampled sequence. Upload date establishes a release-era recording source, not its exact client build.",
+      "detailed_findings": [
+        "First ward: frozen Warder, stone interaction around132..135s; stage changes to5 around135s while blue charging continues; lightning around138s; stone gone and base remains afterward. Player retreats before the strike.",
+        "Next activations around224..230s and263..269s repeat blue buildup/lightning/disappearance/base pattern. Stage5 counter advances1/3 then2/3. Frozen Warders and their speech are visible before these strikes; their post-strike survival is not established.",
+        "Last activation around289..295s: stage6 appears during charging before lightning. Player remains nearby, then a visible Stunned countdown is3.7s around292.5s,2.8s around293.5s,1.7s around294.5s and0.8s around295.5s, followed by recovery. These are sampled UI readings, not exact server latency measurements."
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=lrckGnb05aE",
+      "title": "The Spear in the Shadow | Legion Survivalist Hunter Artifact Questline",
+      "author": "Blizzplanet",
+      "upload_date": "20151204",
+      "published_duration_seconds": 1644,
+      "local_incomplete_media_sha256": "72492accaab665c0db86d4ac3f7b8516a6228066480dbdf53ade2abe577dc2be",
+      "actually_reviewed": "PARTIAL720p video only:48 twelve-second samples across the decodable first~576s, all3 sheets viewed. The27-minute recording was not fully downloaded or reviewed. Decoder reports partial file/invalid final NAL; its successful process exit is explicitly not proof of a complete media review. No audio stream or continuous playback reviewed.",
+      "finding": "Early alpha recording (2015-12-04). Visible prefix includes the original landing/dialogue/harbor and first two ward activations, with base remaining. It is supporting historical context only; later nodes, full cleanup and exact7.3.5 behavior are unverified.",
+      "download_limit": "Requested136+140 transfer was stopped while still incomplete; a format18 retry was also stopped. Only task-owned yt-dlp processes identified by exact output directory/command were stopped; no server process was touched. The incomplete source is retained locally with explicit partial status for possible recovery, not counted as a second full recording."
+    }
+  ],
+  "comparison_to_native": {
+    "readback": "Existing typed matching26972 output build-extractors/runtime-test/talonclaw-wardstone/native.tsv read without rerunning the probe.199770 Runic Lightning effect32 triggers199823;199823 includes damage, aura12 stun, instant kill and4000ms duration. Source13 instant-kill targeting is confined to actual101325; current corpse-allowed187027 transform and101360 base summon remain as previously verified.",
+    "inference": "Footage now more clearly supports credit before the later lightning/stun, and a roughly four-second stun when the player fails to retreat. Those operations are already represented in the native spells and existing root205 event48172 sequence. The pictures do not identify an additional missing LINK4 action; no new arbitrary cleanup, credit, despawn or zero-link change is justified.",
+    "remaining": "Unknown LINK4 and the independent Dakarr missing0->10 remain open. No reduction of the11 remaining primary edges, and no claim that all36 artifact chains are client-verified."
+  },
+  "operations": {
+    "changes": "Research audit only. No C++/SQL/gameplay/character changes, build, deployment, automated/native/runtime/client test or server startup this turn; prior regressions are not represented as newly run.",
+    "runtime_identity": "Canonical worldserver SHA256 remains8f1944bc96d35bde51d16c38db00c30a3709fdab296e41795c72dd5c15e69ba5; mixed DBErrors remains8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91; active Crashes empty; no yt-dlp/worldserver/bnetserver process left running at final inspection.",
+    "cleanup": "No new test binaries/symbols/servers were created. Video metadata containing signed media URLs remains only in ignored local evidence, not committed. No diagnostic logs cleared or moved into fixed.",
+    "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\talonclaw-alternate-video-20261117"
+  }
+}
