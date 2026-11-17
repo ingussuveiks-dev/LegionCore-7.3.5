@@ -2586,6 +2586,14 @@ void ScriptMgr::OnPlayerChoiceResponse(Player* player, uint32 choiceId, uint32 r
     FOREACH_SCRIPT(PlayerScript)->OnPlayerChoiceResponse(player, choiceId, responseId);
 }
 
+QuestGiverStatus ScriptMgr::GetAdditionalQuestDialogStatus(Player* player, Object* questgiver)
+{
+    QuestGiverStatus result = QuestGiverStatus::None;
+    FOR_SCRIPTS(PlayerScript, itr, end)
+        result |= itr->second->GetAdditionalQuestDialogStatus(player, questgiver);
+    return result;
+}
+
 // Specialize for each script type class like so:
 template class TC_GAME_API ScriptRegistry<AchievementCriteriaScript>;
 template class TC_GAME_API ScriptRegistry<AchievementRewardScript>;

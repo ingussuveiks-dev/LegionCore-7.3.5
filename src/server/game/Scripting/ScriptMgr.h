@@ -754,6 +754,10 @@ class TC_GAME_API PlayerScript : public ScriptObject
         // Logout has begun; called before the final character save. Existing
         // OnLogout retains its later cleanup order. Append to preserve slots.
         virtual void OnBeforeLogout(Player* /*player*/) { }
+
+        // Add service availability to the native quest marker without
+        // replacing quest offers or turn-ins. Append to preserve older slots.
+        virtual QuestGiverStatus GetAdditionalQuestDialogStatus(Player* /*player*/, Object* /*questgiver*/) { return QuestGiverStatus::None; }
 };
 
 class TC_GAME_API SessionScript : public ScriptObject
@@ -1069,6 +1073,7 @@ class TC_GAME_API ScriptMgr
         void OnCreateItem(Player* player, Item* item, uint32 count);
         void OnQuestRewardItem(Player* player, Item* item, uint32 count);
         void OnPlayerChoiceResponse(Player* player, uint32 choiceId, uint32 responseId);
+        QuestGiverStatus GetAdditionalQuestDialogStatus(Player* player, Object* questgiver);
         
         /* SessionScript */
         void OnSessionLogin(WorldSession* session);

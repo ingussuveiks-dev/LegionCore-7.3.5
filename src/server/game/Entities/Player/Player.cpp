@@ -22289,6 +22289,7 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
         }
     }
 
+    result |= sScriptMgr->GetAdditionalQuestDialogStatus(this, questgiver);
     return result;
 }
 

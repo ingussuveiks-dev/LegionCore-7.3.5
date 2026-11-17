@@ -12,6 +12,10 @@
 #include "ScriptMgr.h"
 #include "Player.h"
 #include "QuestData.h"
+#include "ConditionMgr.h"
+#include "Creature.h"
+#include "GossipData.h"
+#include "GossipDef.h"
 
 #include <array>
 
@@ -163,6 +167,41 @@ class class_hall_artifact_onboarding : public PlayerScript
 {
 public:
     class_hall_artifact_onboarding() : PlayerScript("class_hall_artifact_onboarding") { }
+
+    QuestGiverStatus GetAdditionalQuestDialogStatus(Player* player, Object* questgiver) override
+    {
+        if (!player || !questgiver || player->getClass() != CLASS_HUNTER ||
+            player->getLevel() < 98 || !player->IsQuestRewarded(40618))
+            return QuestGiverStatus::None;
+
+        Creature* emmarel = questgiver->ToCreature();
+        if (!emmarel || (emmarel->GetEntry() != 107317 && emmarel->GetEntry() != 107973) ||
+            emmarel->GetCreatureTemplate()->GossipMenuId != 20227 ||
+            !emmarel->HasFlag64(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) ||
+            !emmarel->HasFlag64(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+            return QuestGiverStatus::None;
+
+        // Use the actual review option and the same display/response admission
+        // as the choice frame. Do not infer acquisition from item ownership.
+        bool reviewAvailable = false;
+        auto const bounds = sGossipDataStore->GetGossipMenuItemsMapBounds(20227);
+        for (auto itr = bounds.first; itr != bounds.second; ++itr)
+            if (itr->second.OptionIndex == 0 && itr->second.OptionNpc == GossipOptionNpc::None &&
+                sConditionMgr->IsObjectMeetToConditions(player, emmarel, itr->second.Conditions))
+                reviewAvailable = true;
+
+        auto const* choice = sObjectMgr->GetPlayerChoice(240);
+        if (!reviewAvailable || !choice || !sConditionMgr->IsObjectMeetToConditions(player,
+            sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, 240)))
+            return QuestGiverStatus::None;
+
+        for (auto const& response : choice->Responses)
+            if (sConditionMgr->IsObjectMeetToConditions(player,
+                sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, response.ResponseId)))
+                return QuestGiverStatus::Quest;
+
+        return QuestGiverStatus::None;
+    }
 
     void OnLogin(Player* player) override
     {
