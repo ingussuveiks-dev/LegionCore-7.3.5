@@ -57,5 +57,16 @@
     "limits": "Data reference repair, not recovery of an unknown original fifth row or proof of whole client gameplay. Actual four click casts/charging/lightning/stun/base presentation, subsequent Apata/harpoon flow, group/faction/abandon/re-entry and whole40385 remain client checks. Existing native cast retry still reports exhausted casts; base allocation remains the existing endpoint. Other ten primary edges remain open, not ten proven player blockers."
   },
   "evidence_directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\wardstone-cause-20261117",
-  "cleanup": "Prepared next after focused fix commit: preserve resolved diagnostic evidence with verified hashes, retain source archive/selected research and existing rollback copies, remove redundant compiled tests and regenerable extracted public SQL. Mixed active DBErrors remains unchanged; no reviewed101325 missing-tail slice is present there."
+  "cleanup": {
+    "audit": "talonclaw-wardstone-terminal-cleanup-2026-11-17.json",
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-talonclaw-wardstone-terminal",
+    "archive_manifest_sha256": "cfff04baabcfcc3237d8a7b9403a91e3b48b66dcfc4bc9407413c346dd0f22ff",
+    "verified_capture_files": 442,
+    "removed_files": 13,
+    "reclaimed_bytes": 341230822,
+    "post_cleanup_manifest_sha256": "cb9aaef5de17ceacc5893915ef6c41acabb9a793babe610d63926a5e8c17c149",
+    "mixed_log": "Unchanged7839-byte history; no101325 slice present. No log cleared.",
+    "rollback": "Production EXE unchanged8F19; retain existing two recovery pairs. Pinned pre15 fixture/source hashes preserve the previous terminal4 data. No rollback performed."
+  },
+  "fix_commit": "3ac74693ce5baa8643092d0e55f16dbf8685d6a8"
 }

@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-17",
+  "status": "COMPLETE",
+  "fix_commit": "3ac74693ce5baa8643092d0e55f16dbf8685d6a8",
+  "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-talonclaw-wardstone-terminal",
+  "archive_manifest_sha256": "CFFF04BAABCFCC3237D8A7B9403A91E3B48B66DCFC4BC9407413C346DD0F22FF",
+  "verified_capture_files": 442,
+  "removed_files": 13,
+  "reclaimed_bytes": 341230822,
+  "canonical_runtime_unchanged": true,
+  "mixed_DBErrors_unchanged": true,
+  "active_crashes": 0,
+  "servers_running": 0,
+  "retained": "Recent pre-wardsD6F4/pre-LiLi44A6 rollback pairs, canonical8F19/runtime assets/source libraries, test sources, all captured diagnostics, compressed33MB public reference archive and source identity/selected tuples. No character/database backup or quarantine touched.",
+  "limit": "Cleanup does not verify full client40385 or resolve the other ten primary edges.",
+  "post_cleanup": {
+    "manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-17-talonclaw-wardstone-terminal\\post-cleanup-manifest.json",
+    "sha256": "cb9aaef5de17ceacc5893915ef6c41acabb9a793babe610d63926a5e8c17c149",
+    "result": "PASS; complete context and canonical binary/map unchanged, no new diagnostic/crash, no server left running"
+  }
+}
