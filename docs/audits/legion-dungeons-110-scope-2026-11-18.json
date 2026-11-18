@@ -1,0 +1,556 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "PASS structural/native instance admission; whole gameplay OPEN",
+  "selection": "Expansion6 MAP_INSTANCE with native LFG admission at level110; only actual native MapDifficulty modes. No raids.",
+  "counts": {
+    "maps": 13,
+    "map_mode_pairs": 46,
+    "modes": {
+      "1": 8,
+      "2": 13,
+      "8": 12,
+      "23": 13
+    },
+    "challenge_routes": 13,
+    "challenge_maps": 12,
+    "native_encounters": 63,
+    "world_credit_rows": 66,
+    "lfg_entrances": 24
+  },
+  "maps": [
+    {
+      "id": 1456,
+      "name": "Eye of Azshara",
+      "instance_script": "instance_eye_of_azshara",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        197
+      ],
+      "encounters": [
+        {
+          "id": 1810,
+          "name": "Warlord Parjesh"
+        },
+        {
+          "id": 1811,
+          "name": "Lady Hatecoil"
+        },
+        {
+          "id": 1812,
+          "name": "King Deepbeard"
+        },
+        {
+          "id": 1813,
+          "name": "Serpentrix"
+        },
+        {
+          "id": 1814,
+          "name": "Wrath of Azshara"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1458,
+      "name": "Neltharion's Lair",
+      "instance_script": "instance_neltharions_lair",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        206
+      ],
+      "encounters": [
+        {
+          "id": 1790,
+          "name": "Rokmora"
+        },
+        {
+          "id": 1791,
+          "name": "Ularogg Cragshaper"
+        },
+        {
+          "id": 1792,
+          "name": "Naraxas"
+        },
+        {
+          "id": 1793,
+          "name": "Dargrul the Underking"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1466,
+      "name": "Darkheart Thicket",
+      "instance_script": "instance_darkheart_thicket",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        198
+      ],
+      "encounters": [
+        {
+          "id": 1836,
+          "name": "Archdruid Glaidalis"
+        },
+        {
+          "id": 1837,
+          "name": "Oakheart"
+        },
+        {
+          "id": 1838,
+          "name": "Dresaron"
+        },
+        {
+          "id": 1839,
+          "name": "Shade of Xavius"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1477,
+      "name": "Halls of Valor",
+      "instance_script": "instance_halls_of_valor",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        200
+      ],
+      "encounters": [
+        {
+          "id": 1805,
+          "name": "Hymdall"
+        },
+        {
+          "id": 1806,
+          "name": "Hyrja"
+        },
+        {
+          "id": 1807,
+          "name": "Fenryr"
+        },
+        {
+          "id": 1808,
+          "name": "God-King Skovald"
+        },
+        {
+          "id": 1809,
+          "name": "Odyn"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1492,
+      "name": "Maw of Souls",
+      "instance_script": "instance_maw_of_souls",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        208
+      ],
+      "encounters": [
+        {
+          "id": 1822,
+          "name": "Ymiron, the Fallen King"
+        },
+        {
+          "id": 1823,
+          "name": "Harbaron"
+        },
+        {
+          "id": 1824,
+          "name": "Helya"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1493,
+      "name": "Vault of the Wardens",
+      "instance_script": "instance_vault_of_the_wardens",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        207
+      ],
+      "encounters": [
+        {
+          "id": 1815,
+          "name": "Tirathon Saltheril"
+        },
+        {
+          "id": 1816,
+          "name": "Ash'Golm"
+        },
+        {
+          "id": 1817,
+          "name": "Glazer"
+        },
+        {
+          "id": 1818,
+          "name": "Cordana Felsong"
+        },
+        {
+          "id": 1850,
+          "name": "Inquisitor Tormentorum"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1501,
+      "name": "Black Rook Hold",
+      "instance_script": "instance_black_rook_hold_dungeon",
+      "modes": [
+        1,
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        199
+      ],
+      "encounters": [
+        {
+          "id": 1832,
+          "name": "Amalgam of Souls"
+        },
+        {
+          "id": 1833,
+          "name": "Ilysanna Ravencrest"
+        },
+        {
+          "id": 1834,
+          "name": "Smashspite the Hateful"
+        },
+        {
+          "id": 1835,
+          "name": "Lord Kur'talos Ravencrest"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1516,
+      "name": "The Arcway",
+      "instance_script": "instance_the_arcway",
+      "modes": [
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        209
+      ],
+      "encounters": [
+        {
+          "id": 1825,
+          "name": "Corstilax"
+        },
+        {
+          "id": 1826,
+          "name": "Nal'tira"
+        },
+        {
+          "id": 1827,
+          "name": "Ivanyr"
+        },
+        {
+          "id": 1828,
+          "name": "General Xakal"
+        },
+        {
+          "id": 1829,
+          "name": "Advisor Vandros"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1544,
+      "name": "Assault on Violet Hold",
+      "instance_script": "instance_violet_hold_legion",
+      "modes": [
+        1,
+        2,
+        23
+      ],
+      "challenge_routes": [],
+      "encounters": [
+        {
+          "id": 1845,
+          "name": "Shivermaw"
+        },
+        {
+          "id": 1846,
+          "name": "Mindflayer Kaahrj"
+        },
+        {
+          "id": 1847,
+          "name": "Millificent Manastorm"
+        },
+        {
+          "id": 1848,
+          "name": "Festerface"
+        },
+        {
+          "id": 1851,
+          "name": "Sael'orn"
+        },
+        {
+          "id": 1852,
+          "name": "Anub'esset"
+        },
+        {
+          "id": 1855,
+          "name": "Blood-Princess Thal'ena"
+        },
+        {
+          "id": 1856,
+          "name": "Fel Lord Betrug"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1571,
+      "name": "Court of Stars",
+      "instance_script": "instance_court_of_stars",
+      "modes": [
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        210
+      ],
+      "encounters": [
+        {
+          "id": 1868,
+          "name": "Patrol Captain Gerdo"
+        },
+        {
+          "id": 1869,
+          "name": "Talixae Flamewreath"
+        },
+        {
+          "id": 1870,
+          "name": "Advisor Melandrus"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1651,
+      "name": "Return to Karazhan",
+      "instance_script": "instance_return_to_karazhan",
+      "modes": [
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        227,
+        234
+      ],
+      "encounters": [
+        {
+          "id": 1954,
+          "name": "Maiden of Virtue"
+        },
+        {
+          "id": 1957,
+          "name": "Opera Hall"
+        },
+        {
+          "id": 1959,
+          "name": "Mana Devourer"
+        },
+        {
+          "id": 1960,
+          "name": "Attumen the Huntsman"
+        },
+        {
+          "id": 1961,
+          "name": "Moroes"
+        },
+        {
+          "id": 1964,
+          "name": "The Curator"
+        },
+        {
+          "id": 1965,
+          "name": "Shade of Medivh"
+        },
+        {
+          "id": 2017,
+          "name": "Viz'aduum the Watcher"
+        },
+        {
+          "id": 2031,
+          "name": "Nightbane"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1677,
+      "name": "Cathedral of Eternal Night",
+      "instance_script": "instance_cathedral_of_eternal_night",
+      "modes": [
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        233
+      ],
+      "encounters": [
+        {
+          "id": 2039,
+          "name": "Mephistroth"
+        },
+        {
+          "id": 2053,
+          "name": "Domatrax"
+        },
+        {
+          "id": 2055,
+          "name": "Agronox"
+        },
+        {
+          "id": 2057,
+          "name": "Thrashbite the Scornful"
+        }
+      ],
+      "gameplay": "OPEN"
+    },
+    {
+      "id": 1753,
+      "name": "Seat of the Triumvirate",
+      "instance_script": "instance_seat_of_the_triumvirate",
+      "modes": [
+        2,
+        8,
+        23
+      ],
+      "challenge_routes": [
+        239
+      ],
+      "encounters": [
+        {
+          "id": 2065,
+          "name": "Zuraal the Ascended"
+        },
+        {
+          "id": 2066,
+          "name": "Saprish"
+        },
+        {
+          "id": 2067,
+          "name": "Viceroy Nezhar"
+        },
+        {
+          "id": 2068,
+          "name": "L'ura"
+        }
+      ],
+      "gameplay": "OPEN"
+    }
+  ],
+  "excluded_native_maps": [
+    {
+      "id": 1470,
+      "name": "Legion Dungeon"
+    },
+    {
+      "id": 1499,
+      "name": "oldArtifact - Warrior Fury Acquisition"
+    },
+    {
+      "id": 1535,
+      "name": "Moonglade"
+    },
+    {
+      "id": 1663,
+      "name": "Dungeon Blockout"
+    }
+  ],
+  "preserved_native_limits": [
+    "Violet Hold has no Keystone mode.",
+    "Arcway/Court of Stars/Karazhan/Cathedral/Seat have no native Normal mode admitting110.",
+    "Karazhan has two distinct Keystone routes on one physical map.",
+    "Seat quest47220/achievement12007 access gates were not bypassed.",
+    "Dantalionax99611 retains Latosius AI through native UpdateEntry."
+  ],
+  "remaining": [
+    "Per-encounter/trash mechanics and failed/retry/group paths",
+    "Real combat/scaling/loot in each supported mode",
+    "Full Keystone start/affixes/forces/timer/completion/reward",
+    "Actual client entry, traversal, doors, visuals and reconnect"
+  ],
+  "inputs": [
+    {
+      "file": "native.tsv",
+      "sha256": "0cdbc5478d757b6830acce02dcb6d8f3dde1bd9710a2104104c453c822a1b646"
+    },
+    {
+      "file": "structure.tsv",
+      "sha256": "3ac3a37a277c732e36e4dcc189c7bcb9162cf73af861569253912d69a60a402c"
+    },
+    {
+      "file": "native.tsv",
+      "sha256": "0fbb5dd56e1166715be755922fc4aa5ee5b1ab75bfdabcf543dbf4bd056c1b14"
+    }
+  ],
+  "verification": {
+    "native": "Test-LegionDungeonModesNative.ps1:753 checks across actual13 registered instance factories/46 native modes,fresh boss states/save serialization,real scoped66-row encounter loader,all63 DB2 encounter bindings and13 actual ChallengeMgr start lookups/native map-safe locations/timer ordering. No persistent World/account/character write;empty connection-local shadows only.",
+    "structure": "audit_legion_dungeon_modes.py joins actual catalog,readonly World and native runtime output;24 LFG entrances,all66 credit actors and instance factory names. Dantalionax99611 deliberately retains transformed Latosius AI,not a missing factory.",
+    "diagnostics": "Before/after snapshots for each final probe;zero new/changed crashes,DBErrors or unexplained server warning/error/assertion. Early fixture readonly-DDL/LFG null setup corrected and paired passing native probe archived.",
+    "actual_client": "Not performed;all per-map gameplay labels remain OPEN."
+  },
+  "focused_repairs": [
+    {
+      "issue": "Harbaron Fragment Keystone count and encounter-end orphan effects",
+      "audit": "harbaron-fragment-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PASS_CLIENT_OPEN"
+    }
+  ],
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-18-legion-dungeons",
+    "method": "Exact diagnostic captures copied and source/archive/source SHA256 verified;no mixed active log cleared. Local manifest receives actual fix commits after commit."
+  },
+  "cleanup": {
+    "Retained": "Current rollback-before-harbaron EXE/map;canonical original libs/runtime/data;all regression source;verified fixed diagnostic archives. Older blocked20 files not retried.",
+    "RemovedFiles": 75,
+    "ReclaimedBytes": 2872945793.0
+  }
+}
