@@ -349,7 +349,7 @@ class spell_challengers_burst : public AuraScript
 {
     PrepareAuraScript(spell_challengers_burst);
 
-    void OnTick(AuraEffect const* /*aurEff*/)
+    void OnTick(AuraEffect const* aurEff)
     {
         Unit* target = GetTarget();
         if (!target)
@@ -357,7 +357,7 @@ class spell_challengers_burst : public AuraScript
 
         if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(243237))
         {
-            float bp = spellInfo->GetEffect(EFFECT_0)->BasePoints * target->GetAuraCount(GetId());
+            float bp = spellInfo->GetEffect(EFFECT_0)->BasePoints * aurEff->GetBase()->GetStackAmount();
             target->CastCustomSpell(target, 243237, &bp, NULL, NULL, true);
         }
     }
