@@ -19165,6 +19165,13 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    // Old saved COMPLETE logs can predate the repaired required Dargal count.
+    // The area service reopens these logs, but reward may arrive before its
+    // first update (or at Mehlar outside that area). Require the real counters.
+    if (quest->GetQuestId() == 42771 &&
+        (GetQuestObjectiveData(42771, 108815) < 9 || GetQuestObjectiveData(42771, 110635) < 1))
+        return false;
+
     // not auto complete quest and not completed quest (only cheating case, then ignore without message)
     if (!quest->IsDFQuest() && !quest->IsAutoComplete() && GetQuestStatus(quest->GetQuestId()) != QUEST_STATUS_COMPLETE)
         return false;

@@ -38,7 +38,11 @@ struct Conditions {
  ConditionList GetConditionsForNotGroupedEntry(int source,uint32 id){if(source==19)++acceptReads;auto& data=source==19?accept:show;auto it=data.find(id);return {it==data.end()||it->second};}
  bool IsObjectMeetToConditions(Player*,ConditionList const& values){for(bool allowed:values)if(!allowed)return false;return true;}
 } conditions;auto sConditionMgr=&conditions;
-struct Scripts {Optional<QuestGiverStatus> status;Optional<QuestGiverStatus> GetDialogStatus(Player*,Object*){return status;}} scripts;auto sScriptMgr=&scripts;
+struct Scripts {
+ Optional<QuestGiverStatus> status;QuestGiverStatus additional=QuestGiverStatus::None;
+ Optional<QuestGiverStatus> GetDialogStatus(Player*,Object*){return status;}
+ QuestGiverStatus GetAdditionalQuestDialogStatus(Player*,Object*){return additional;}
+} scripts;auto sScriptMgr=&scripts;
 struct World {int getIntConfig(int){return 5;}} world;auto sWorld=&world;
 struct Player {
  std::map<uint32,int> states;bool canTake=false,canSee=true,levelAllowed=true;
@@ -80,6 +84,9 @@ int main()
  Quest next;next.id=40522;store.quests.emplace(40522,next);store.starts.emplace(100453,40522);conditions.accept[40522]=false;
  assert(player.GetQuestDialogStatus(&giver)==QuestGiverStatus::RewardCompletePOI);
  assert(player.states.at(40518)==QUEST_STATUS_COMPLETE&&player.states.count(40522)==0);
+ scripts.additional=QuestGiverStatus::Quest;
+ assert(player.GetQuestDialogStatus(&giver)==static_cast<QuestGiverStatus>(uint32(QuestGiverStatus::RewardCompletePOI)|uint32(QuestGiverStatus::Quest)));
+ scripts.additional=QuestGiverStatus::None;
  scripts.status=QuestGiverStatus::None;assert(player.GetQuestDialogStatus(&giver)==QuestGiverStatus::None);
  std::cout<<"PASS: native NPC/GO turn-in markers survive changed acceptance; explicit visibility, start/next-quest admission, repeatable auto quests, level and script overrides remain enforced.\n";
  #endif

@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_REWARD_ADMISSION_CLIENT_PENDING",
+  "cause": "CanRewardQuest trusted saved COMPLETE status for monster objectives. An older42771 log completed with Amount0 could be rewarded at Mehlar before the new area service updated, or outside Sorrow Hill. Migration08 and native death credit alone did not cover this saved-status reward path.",
+  "fix": "Only42771 base native CanRewardQuest now requires actual108815>=9 and110635>=1. Existing reward-choice overload and real quest reward packet both call that base gate. It changes no objective/status, grants no item/reward and preserves native daily/weekly/seasonal/rewarded/item/currency/money validation. Native pet/guardian/group credit remains the previously deployed Dargal path.",
+  "checks": {
+    "counterfactual": "Pinned3b74d381e full native CanRewardQuest reproduced24 COMPLETE reward cases ignoring missing required counters; explicitly expected-broken baseline under AddressSanitizer.",
+    "repaired": "41 extracted full native CanRewardQuest cases passed AddressSanitizer: legacy status, both real counters and thresholds, outside-area independence (gate contains no map/area restriction), repeated/msg modes, no progress mutation, auto/DF/status/rewarded limits and unrelated quests/storage/currency/money. Storage and status services are controlled host endpoints, not full core/client login. Matching native9+1 objective records read from the full guarded expected World fixture.",
+    "linked": "Stable source and original game.lib/scripts.lib final link, staged/canonical PE verifies base guard, reward-choice dispatch and actual native Dargal registered hooks; retained Scepter login PE passed.",
+    "retained_marker_fixture": "Retained QuestTurnInMarkers initially failed compilation because dd9e54c3d added GetAdditionalQuestDialogStatus while its old stand-in lacked that service. Stand-in updated with defaultNone and a real additive-marker preservation case; existing repaired and pinned expected-broken marker regressions then passed. No marker production code changed here.",
+    "startup": "Owned canonical PID8332 reached ready, graceful exit0, stderr empty, no appended DBErrors/warnings/errors/assertions or new/changed crashes. No user server stopped and no task-owned hidden server left.",
+    "limitations": "Actual client legacy log/Mehlar turn-in, original encounter balance/presentation and full42771 remain separate client checks. No full native-core ASAN claim."
+  },
+  "release": {
+    "worldserver_sha256": "0C028E0D0C2BB3D45CA1DB0EB11AE827819D62A30FF25CEC656CBA5866BFA61A",
+    "map_sha256": "500A54679A95DDD3A82F62C0487AF746695C13DCBF91CC92BC70A805CE368A1A",
+    "canonical": "build-extractors/bin/Release",
+    "rollback": ".codex/dargal-reward-20261118/rollback-before-reward (D62, same compatible data)",
+    "unchanged": "No SQL or character writes; bnet/config/certificates/DLLs/extracted data retained."
+  },
+  "diagnostics": "All tests wrapped in before/after canonical/own crash and log diagnostics. The pre-existing stale marker fixture failure is paired with passing repaired/baseline results. Mixed active DBErrors7839 bytes/8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 remains unchanged/unresolved, not cleared.",
+  "evidence": [
+    ".codex/dargal-reward-20261118",
+    "build-extractors/runtime-test/dargal-reward"
+  ],
+  "cleanup": "Resolved diagnostics archive follows after focused implementation commit; temporary deletion remains deferred after earlier automatic policy rejection (blocked by policy), no alternate deletion. Zero files removed."
+}
