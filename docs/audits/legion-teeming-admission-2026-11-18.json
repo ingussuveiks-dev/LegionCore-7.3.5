@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_SPAWN_ADMISSION_NATIVE_PE_PASS_TEEMING_CONTENT_OPEN",
+  "source_commit": "dcca4d01d",
+  "fix_commit": "Containing focused commit; exact SHA recorded in local diagnostic manifest after commit",
+  "cause": "Creature::LoadCreatureFromDB checked the marker only in the nonzero-instance branch and only if a scenario existed. Missing scenario admitted marked extras; an artificial Teeming challenge also admitted them in ordinary difficulties.",
+  "fix": "Marked DB spawns now require exact native Keystone difficulty8 and an actual registered scenario with a Challenge carrying Teeming5 before either GUID branch or native Create. Countdown remains valid; no timed-run latch added. Ordinary DB spawns retain original GUID/duplicate/create behavior.",
+  "checks": {
+    "baseline": "16 expected-broken native counterfactual assertions using original d7baf113f game.lib F2CF992F9C30222BDD23398D0E0242A253F103AC5FDC8C342B4419295FBD6E25;not ordinary successful runs. Baseline switch explicitly rejects rebuilt libraries. Captured before production edit.",
+    "native_assertions": 140,
+    "scope": "24 map contexts:normal1,heroic2,mythic23,Keystone8 x no scenario/scenario without challenge/Teeming countdown/nonTeeming challenge/running Teeming/completed Teeming. Controlled completion/run latches. Actual LoadCreatureFromDB(addToMap=false),real ordinary Maw record261982/97043,cache-only marker toggles,ordinary acceptance,DB GUID/entry/map/pose/cache identity. Also absent-to-published retry,removed scenario denial and instance-zero ordinary/marked paths.",
+    "fixture_boundary": "Live World has no original Teeming records. Controlled cache marker on an ordinary record exercises the actual admission function;no persistent DB write,no authentic extra placement claim,no AI publication/combat/pet-kill/loot assertion.",
+    "retained": "443 native lifecycle assertions across13 routes and canonical Scepter login/linked Release identity still pass.",
+    "binary": "verify_legion_teeming_release.py inspects actual final PE packed marker,Keystone8,GetScenario/GetChallenge/HasAffix5 and common false return before native GUID branches/Create. A one-instruction inspector slice offset was corrected against actual disassembly;final inspector passes.",
+    "database": "World/hotfix reads and existing empty connection-local bootstrap tables only;no persistent character/World/schema/updater writes."
+  },
+  "content_gap": {
+    "status": "OPEN_UNRESOLVED",
+    "live": "SELECT map,COUNT(*) FROM creature WHERE isTeemingSpawn<>0 GROUP BY map returned no rows across World.",
+    "base": "Matching repository base SQL408427 creature rows:zero Teeming markers. Cached Titans world01 has408503 creature rows:zero markers.",
+    "limits": "Other cached source files yielded zero parsed creature rows;not evidence that those files contain zero Teeming spawns.",
+    "references": [
+      "Local newer TrinityCore checkout has no located Teeming source/history;not treated as version-compatible implementation.",
+      "Local DestinyCore randomly clones30-percent of nonboss spawns;rejected as unverified matching-placement data.",
+      "Historical MethodDungeonTools aaabf806caac2cc519b692bce68c9ce38e934974 (2018-05-27) MawOfSouls.lua distinguishes Teeming clones and180/150 counts. Addon2D/sublevel coordinates lack authoritative server Z/orientation/respawn data;no fabricated SQL."
+    ],
+    "primary_reference": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/MawOfSouls.lua",
+    "next": "Recover and validate original7.3.5 extra placements/force weights before any spawn migration. Gate fix does not restore missing extra packs."
+  },
+  "new_finding": {
+    "status": "OPEN_FOR_NEXT_SEPARATE_REPAIR",
+    "issue": "Expanded13-route test reaches Cathedral Teeming variant but GetScenarioCriteriaByStep(0) does not return its chosen tree. Preserve failed trace and native runtime until isolated root cause/regression repair."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "d4f2b16701694695c7091ebeab4a59b23fc93ef1cd8d09ec037654acb3bd02df",
+    "worldserver_map_sha256": "4ec48e38f0a95141d767f93557b175cfe48a4886dd90a719dec44bb918dac0b6",
+    "identity": "Built original common/database/game/scripts Release library locations,staged final link without OutDir override;stage/canonical hashes match. Configs/certificates/DLLs/bnet/shared data unchanged.",
+    "rollback": ".codex/legion-teeming-20261118/rollback-before-teeming-repair"
+  },
+  "diagnostics": {
+    "result": "Final gate140/lifecycle443/PE/Scepter/owned startup exit0,no new/changed crashes or appended DBErrors/unexplained warnings/errors/assertions. Canonical Crashes empty,DBErrors0.",
+    "startup": "Owned canonical PID2336 reached fresh ready,server shutdown0,exit0,stderr empty,new DBErrors0;no hidden server remains,no user process stopped.",
+    "fixture_failure": "Initial cleanup touched update fields on a rejected uncreated Creature and crashed in Object::RemoveFlag. Guarded cleanup by actual GetMap;passing baseline16 and current140 paired with that trace.",
+    "preservation": "Gate evidence retained locally for final verified archive;missing content evidence and failed Cathedral criterion trace remain explicitly unresolved. No active log cleared."
+  },
+  "cleanup": {
+    "status": "DEFERRED_CONCRETE_OUTSTANDING_CRITERIA_CHECK",
+    "reason": "Native runtime/stage/source investigation still needed for newly found Teeming criterion regression. Final task cleanup follows that separate repair;canonical runtime/current rollback retained."
+  },
+  "remaining": [
+    "Missing original Teeming extra spawn data unresolved.",
+    "New Cathedral criterion failure awaiting separate repair.",
+    "All13 whole dungeons/63 encounters,actual client extra population/forces/combat/pet/group credit remain OPEN.",
+    "Overflowing exists as legacy/manual support but is absent from this project12-week rotation;only matching spell/proc source inspected,no native heal-absorb regression claimed."
+  ]
+}

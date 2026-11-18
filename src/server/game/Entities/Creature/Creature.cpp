@@ -2275,6 +2275,19 @@ bool Creature::LoadCreatureFromDB(ObjectGuid::LowType guid, Map* map, bool addTo
 
     m_DBTableGuid = guid;
 
+    if (data->isTeemingSpawn)
+    {
+        // Extra packs belong to this instance's Teeming key, including its
+        // countdown. Missing scenario/challenge state must not admit them.
+        if (map->GetDifficultyID() != DIFFICULTY_MYTHIC_KEYSTONE)
+            return false;
+
+        Scenario* progress = sScenarioMgr->GetScenario(map->GetInstanceId());
+        Challenge* challenge = progress ? progress->GetChallenge() : nullptr;
+        if (!challenge || !challenge->HasAffix(Affixes::Teeming))
+            return false;
+    }
+
     if (map->GetInstanceId() == 0)
     {
         if (map->GetCreature(ObjectGuid::Create<HighGuid::Creature>(data->mapid, data->id, guid)))
@@ -2282,19 +2295,6 @@ bool Creature::LoadCreatureFromDB(ObjectGuid::LowType guid, Map* map, bool addTo
     }
     else
     {
-        if (data->isTeemingSpawn)
-        {
-            if (auto progress = sScenarioMgr->GetScenario(map->GetInstanceId()))
-            {
-                auto const& challenge = progress->GetChallenge();
-                if (!challenge)
-                    return false;
-
-                if (!challenge->HasAffix(Affixes::Teeming))
-                    return false;
-            }
-        }
-
         guid = sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate();
     }
 

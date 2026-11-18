@@ -617,6 +617,11 @@
       "issue": "Raging final incoming damage and native evade reset",
       "audit": "legion-raging-damage-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Teeming DB-spawn fail-open admission;missing extra placement data remains OPEN",
+      "audit": "legion-teeming-admission-2026-11-18.json",
+      "status": "DEPLOYED_SPAWN_ADMISSION_NATIVE_PE_PASS_TEEMING_CONTENT_OPEN"
     }
   ],
   "archive": {
@@ -629,8 +634,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "legion-raging-damage-2026-11-18.json",
-    "current_rollback": ".codex/legion-raging-20261118/rollback-before-raging-repair",
+    "superseded_by": "legion-teeming-admission-2026-11-18.json",
+    "current_rollback": ".codex/legion-teeming-20261118/rollback-before-teeming-repair",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -652,7 +657,9 @@
     "explosive_audit": "legion-explosive-native-2026-11-18.json",
     "raging_native_checks": 1493,
     "quaking_native_checks": 225,
-    "quaking_audit": "legion-quaking-native-2026-11-18.json"
+    "quaking_audit": "legion-quaking-native-2026-11-18.json",
+    "teeming_admission_native_checks": 140,
+    "teeming_content": "OPEN:live and matching base contain no marked extra spawns"
   },
   "focused_verifications": [
     {
