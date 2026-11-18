@@ -1,7 +1,7 @@
 {
   "date": "2026-11-18",
   "client_build": 26972,
-  "status": "NATIVE_PE_PASS_STAGED_CUMULATIVE_DEPLOYMENT_PENDING",
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
   "baseline_commit": "aaa08e8ad",
   "cause": "isAnySummons includes UNIT_MASK_VEHICLE. The generic percent-health aura handler therefore rejected a foreign caster for an autonomous native NPC vehicle even with no owner. Bolster209859 applied all four aura effects but its health effect133 did nothing on native97043/vehicle4383; damage scaled while max health stayed35991288.",
   "repair": "Exempt only an autonomous vehicle from the existing owner-only health-aura guard. Exclude all native summon/minion/guardian/pet/totem/puppet/accessory/control/creation type flags, player control, charmer/creator, SUMMONED_BY and DEMON_CREATOR GUID receipts. Retain original self/GetAnyOwner permission checks for owned types and all existing stat/health-percent/removal logic.",
@@ -9,22 +9,32 @@
     "original": "Actual old-library death-affix captures show the native20-percent health aura with effectMask15/amount20 on vehicle4383 while health stays unchanged. The independent native health-owner regression exits1 on the original autonomous-vehicle case. This is an expected broken counterfactual, not an ordinary passing run.",
     "current": "207 native assertions over56 real aura cases, two races: ordinary NPC/NPC vehicle/Pet/Guardian/guardian vehicle; self, real owner and foreign caster; controlled state, controlled charmer GUID and unresolved SUMMONED_BY/CREATED_BY/DEMON_CREATOR receipts. Actual stat modifiers, NPC max health and aura removal checked. Full native pet-resource initialization and actual charm traversal are separate.",
     "integrated": "217 real death-affix checks include actual player/pet/guardian/NPC kills, native two-corpse Bolster health/damage multipliers1.2/1.44 and ordinary combat-exit restoration. Shared exit repair is separate.",
-    "binary": "Staged PE verifies vehicle/type mask, four GUID receipts and player-control guard, original GetAnyOwner/HandleStatModifier calls. Final canonical verification/startup pending.",
+    "binary": "Staged andcanonical PE verifies autonomous vehicle/type mask,four GUID receipt guards,player-control guard andoriginal GetAnyOwner/HandleStatModifier calls. Canonical startup andretained Burden/Necrotic/Scepter checks pass.",
     "database": "Read-only World/hotfix; empty account/character_instance TEMP shadows and selected proc/check/bonus TEMP rows. No persistent database or character change."
   },
   "build": {
     "method": "Original Release game.lib/scripts.lib and original final-link inputs; no global OutDir. Cumulative stage includes independent Bursting and combat-exit repairs.",
     "stage_sha256": "ed463234c3f71f1d890d2e4518646565450d238f6f7608e087759ec643bef8e3",
-    "runtime": "Canonical promotion pending completion of cumulative task."
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "ed463234c3f71f1d890d2e4518646565450d238f6f7608e087759ec643bef8e3",
+    "rollback": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs",
+    "deployment": "Final cumulative EXE/map promoted to canonical Release. Owned PID14444 reached ready and gracefully exited0 with clean diagnostics; protected runtime assets unchanged."
   },
   "diagnostics": {
-    "result": "Final native/PE checks exit0; no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions.",
+    "result": "Final native/PE/canonical startup/retained checks exit0; no new/changed crash reports,DBErrors or unexplained server diagnostics. No hidden server remains.",
     "resolved_findings": "First predicate omitted SUMMONED_BY; actual owner-receipt regression caught that foreign-application gap before deployment. Added SUMMONED_BY/DEMON_CREATOR and creation flags. Fixture initially set only SetOwnerGUID(SUMMONED_BY) for an owned vehicle, whereas native GetAnyOwner resolves CREATED_BY; set both native fields like the real Pet/Guardian fixtures. Controlled fixture uses actual m_ControlledByPlayer, not an unrelated client flag. Failed assertions remain paired with the final207 pass.",
     "compiler": "Existing C4018/C5055 warnings were emitted from unchanged legacy code when the two large core units rebuilt; none points to the edited guards. Build output preserved.",
-    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-death-affixes; final exact archive/cleanup pending."
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-death-affixes:360 exact captures with verified source/archive/source SHA256 manifest. No mixed active log cleared. Redundant runtime/staging/compiler outputs and superseded rollback removed after final checks."
   },
   "remaining": [
     "Actual client combat/vehicle visuals, charm transitions, owner/caster logout, pet health presentation and full dungeon traversal remain OPEN.",
     "This preserves the existing permission rules for owned summons; no broader native owner-resolution rewrite or full-core ASAN is claimed."
-  ]
+  ],
+  "cleanup": {
+    "RemovedFiles": 329,
+    "ReclaimedBytes": 4163933906,
+    "Retained": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 360
+  }
 }

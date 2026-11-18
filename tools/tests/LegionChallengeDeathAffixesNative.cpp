@@ -159,8 +159,8 @@ int main(int argc, char** argv)
                           << " auraOwner=" << bolster->GetOwner()->GetGUID().GetGUIDLow()
                           << " caster=" << bolster->GetCasterGUID().GetGUIDLow()
                           << " stacks=" << unsigned(bolster->GetStackAmount()) << '\n';
-                receiver.UpdateMaxHealth();
-                std::cout << "BOLSTER afterRecalc=" << receiver.GetMaxHealth() << '\n';
+                Check(std::fabs(double(receiver.GetMaxHealth()) / hp - 1.2) < .00001,
+                    "Native first Bolster did not increase NPC-vehicle health");
             }
             killer->Kill(&source);
             Check(owner.GetAuraCount(ChallengerBursting) == (affix == Affixes::Bursting ? 1u : 0u)
@@ -171,8 +171,12 @@ int main(int argc, char** argv)
                 Check(receiver.GetAuraCount(ChallengerBolstering) == 2, "Second real death did not apply a second native Bolster");
                 Check(std::fabs(receiver.GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, TOTAL_PCT) / damageMod - 1.44f) < .0001f,
                     "Native two Bolster damage modifiers differ from matching 20 percent effects");
+                Check(std::fabs(double(receiver.GetMaxHealth()) / hp - 1.44) < .00001,
+                    "Native two Bolster health modifiers differ from matching 20 percent effects");
                 receiver.CombatStop(true);
-                Check(receiver.HasAura(ChallengerBolstering), "Original NPC leave-combat omission changed before its separate repair");
+                Check(!receiver.HasAura(ChallengerBolstering), "Native NPC leave-combat retained Bolster");
+                Check(std::fabs(double(receiver.GetMaxHealth()) / hp - 1.0) < .00001,
+                    "Native Bolster combat-exit cleanup retained extra health");
             }
             if (affix == Affixes::Bursting)
             {
@@ -235,7 +239,7 @@ int main(int argc, char** argv)
 #ifdef CHALLENGE_DEATH_BASELINE
         std::cout << "COUNTERFACTUAL " << checked << " native death-affix checks: distinct Burst auras each multiply all applications' stacks; not ordinary successful gameplay\n";
 #else
-        std::cout << "PASS " << checked << " native death-affix checks: player/pet/guardian/NPC kills, two races, native group area selection, once-only death, per-aura Burst stacks, missing casters and actual periodic expiry. NPC-vehicle Bolster health remains separate pending work; no full client combat claim\n";
+        std::cout << "PASS " << checked << " native death-affix checks: player/pet/guardian/NPC kills, two races, native group area selection, once-only death, NPC-vehicle Bolster health/damage/cleanup, per-aura Burst stacks, missing casters and actual periodic expiry. No full client combat claim\n";
 #endif
         CharacterDatabase.Close(); LoginDatabase.Close(); WorldDatabase.Close(); HotfixDatabase.Close(); MySQL::Library_End();
         return 0;

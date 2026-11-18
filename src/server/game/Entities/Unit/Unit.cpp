@@ -15024,8 +15024,6 @@ void Unit::ClearInCombat()
                     if (owner->GetSpeedRate(UnitMoveType(i)) > GetSpeedRate(UnitMoveType(i)))
                         SetSpeed(UnitMoveType(i), CalculatePct(owner->GetSpeedRate(UnitMoveType(i)), 114.0f), true);
         }
-        else if (!isCharmed())
-            return;
     }
     else
     {

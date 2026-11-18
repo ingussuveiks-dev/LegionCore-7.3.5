@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "baseline_commit": "fed7b729f",
+  "cause": "Unit::ClearInCombat returned early for an ordinary non-pet, non-Hati, non-charmed Creature. That branch bypassed shared pet-combat flag and LEAVE_COMBAT aura interrupt cleanup. Native Bolster209859 explicitly has that interrupt flag, but remained after actual NPC CombatStop.",
+  "repair": "Remove only the premature return. Preserve pet/Hati owner-speed handling, creature immunity/tapped-state restoration, player potion/PvP handling and the existing player-only active-encounter deferral. Ordinary NPCs now reach the common cleanup.",
+  "checks": {
+    "original": "The independent native combat-exit regression exits1 at the first ordinary NPC cleanup assertion with the original core. Actual original death-affix captures also retained Bolster after CombatStop. These are expected broken counterfactuals, not ordinary successful runs.",
+    "current": "50 actual Release-library assertions across10 contexts:ordinary NPC, native NPC vehicle, Pet, Guardian and Player, each with no encounter and with native boss state IN_PROGRESS. Actual CombatStop clears combat, removes only matching interrupt auras, unwinds their health modifier, retains unrelated2479 and remains idempotent. The Player aura remains during active encounter as before.",
+    "integrated": "217 native death-affix assertions cover actual player/pet/guardian/NPC kills in two factions, native grouped Burst recipients, duplicate death suppression, Bolster1.2/1.44 health and damage, combat-exit restoration, missing corpse casters, mixed Burst stacks and native periodic/expiry scheduling. Separate207 health-owner assertions remain passing.",
+    "binary": "Staged/canonical PE verifies ordinary NPC non-pet/non-Hati branch landing on shared flag cleanup and the actual templated LEAVE_COMBAT interrupt call, with player-only encounter deferral. Per-aura Burst stack and autonomous-vehicle ownership predicates checked in the same inspector. Retained Burden/Necrotic PE and Scepter login checks passed.",
+    "database": "Native tests use read-only World/hotfix with scoped connection-local proc/check/bonus TEMP data and empty account/character_instance TEMP shadows. No persistent World/character edits or migration."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "ed463234c3f71f1d890d2e4518646565450d238f6f7608e087759ec643bef8e3",
+    "worldserver_map_sha256": "33860779c4d00c451640c10d988fd7b0f2608ba671097e08162b6e2c91aa69b3",
+    "method": "Original common/database/game/scripts Release targets, actual original final-link inputs and separate staged final link. No global OutDir. Staged/canonical EXE/map identity matches; source/test/library hashes sealed during native runs.",
+    "protected": "Canonical bnetserver,configuration,certificates,DLLs and shared extracted data preserved; protected root identities rechecked.",
+    "rollback": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs"
+  },
+  "diagnostics": {
+    "result": "Final native/PE/startup/retained checks exit0 with no new/changed crash reports, appended DBErrors or unexplained server warning/error/assertion. Active canonical Crashes empty/DBErrors0.",
+    "startup": "Task-owned canonical PID14444 reached fresh ready, accepted server shutdown0 and exited0; stderr empty,new DBErrors0,protected hashes unchanged. No user server stopped; no hidden server remains.",
+    "resolved_fixture_findings": "Expanded death fixture detached corpse casters while retaining persistent Might health auras,then crashed during exception cleanup with no map. Clear source auras before map detachment like ordinary cleanup. The native expiry check was corrected to Unit removing expired auras on next-frame entry. Ownership prototype/fixture receipt issues were corrected and paired with207 strict passing assertions. PE inspector now resolves the actual templated interrupt symbol instead of an absent non-template prefix. Original failed traces/assertions remain preserved.",
+    "compiler": "Rebuilt legacy core units emit existing C4018/C5055 warnings outside changed hunks; output retained, warnings not suppressed. No warning introduced in edited code.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-death-affixes:360 exact captures with verified source/archive/source SHA256 manifest. No mixed active log cleared. Redundant runtime/staging/compiler outputs and superseded rollback removed after final checks.",
+    "archive_policy": "Exact diagnostic bytes with source/archive/source SHA256 verification; credentials/configurations excluded; no mixed active log cleared."
+  },
+  "remaining": [
+    "No game client used. Actual NPC evade/charm behavior, Hati speed/pet portrait, combat visuals and full encounter traversal remain OPEN.",
+    "Native AI/publication,health/specialization/group fixtures are controlled. No five-client play,full63 encounters,whole13 dungeon paths or actual loot opening certified.",
+    "Other affix combinations and whole client gameplay remain separate. No full-core ASAN established for this task."
+  ],
+  "cleanup": {
+    "RemovedFiles": 329,
+    "ReclaimedBytes": 4163933906,
+    "Retained": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 360
+  }
+}

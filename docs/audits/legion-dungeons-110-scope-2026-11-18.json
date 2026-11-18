@@ -587,6 +587,21 @@
       "issue": "Grievous admission, native percent damage and healed-player cleanup",
       "audit": "legion-grievous-affix-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Bursting per-aura stack damage",
+      "audit": "legion-bursting-stacks-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Autonomous NPC-vehicle health auras",
+      "audit": "npc-vehicle-health-aura-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Ordinary NPC combat-exit aura interrupt cleanup",
+      "audit": "npc-combat-exit-auras-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {
@@ -599,8 +614,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "legion-grievous-affix-2026-11-18.json",
-    "current_rollback": ".codex/legion-burden-20261118/rollback-before-burden-repairs",
+    "superseded_by": "npc-combat-exit-auras-2026-11-18.json",
+    "current_rollback": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -612,6 +627,9 @@
     "registered_spell_loaders": 135,
     "actual_client": "NOT_PERFORMED;all per-map gameplay labels remain OPEN",
     "affix_native_checks": 283,
-    "burden_native_checks": 1067
+    "burden_native_checks": 1067,
+    "death_affix_native_checks": 217,
+    "health_ownership_native_checks": 207,
+    "combat_exit_native_checks": 50
   }
 }

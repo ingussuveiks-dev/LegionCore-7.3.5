@@ -1,7 +1,7 @@
 {
   "date": "2026-11-18",
   "client_build": 26972,
-  "status": "NATIVE_PASS_STAGED_CUMULATIVE_DEPLOYMENT_PENDING",
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
   "baseline_commit": "1cc1f5ca3",
   "cause": "Distinct corpse casters create distinct native 240443 auras on each player. Each aura periodic callback multiplied 243237 damage by the total stacks of every same-spell application. Two one-stack auras consequently dealt four 5-percent portions (20 percent) per period instead of two (10 percent).",
   "repair": "Use the currently ticking aura own stack amount for its native self-cast 243237. Preserve actual death/target selection, caster identities, independent native durations, periods, stack limits and default damage dispatch.",
@@ -9,21 +9,31 @@
   "checks": {
     "baseline": "193 pinned native counterfactual checks reproduce20-percent damage from two one-stack auras and30-percent from own stacks2+1. Expected broken behavior,not ordinary successful gameplay.",
     "current": "193 actual-library checks across16 contexts:Bolstering/Bursting xPlayer/Pet/Guardian/unownedNPC killing Unit xHuman/Orc,controlled two-member native group. Real Unit::Kill, duplicate-kill suppression, native player-only area recipients, boss/idle/far Bolster exclusions, 20-percent damage modifiers, per-aura Burst portions10/15 percent, missing corpse casters, real Unit::Update2000ms pulses and4000ms expiry/next-frame removal. Actual full combat/loot/client progression remains separate.",
-    "source": "No new quest/item/scenario credit or killer-specific path. Native Unit::Kill still resolves owner credit; affix death callback remains independent of killer type."
+    "source": "No new quest/item/scenario credit or killer-specific path. Native Unit::Kill still resolves owner credit; affix death callback remains independent of killer type.",
+    "cumulative": "Final217 native death-affix checks retain the193 per-aura/target/kill checks and verify repaired NPC-vehicle health and combat-exit restoration. Independent207 health-owner and50 combat-exit assertions pass; canonical/retained PE and Scepter checks pass."
   },
   "build": {
     "stage": ".codex/legion-death-affixes-20261118-release",
     "intermediate_worldserver_sha256": "544056aa11df3600e313d4d7d38e98870480001033dc1168714548276a782673",
-    "deployment": "Canonical runtime retained until the separate NPC-vehicle health and combat-exit repairs are ready for cumulative promotion."
+    "worldserver_sha256": "ed463234c3f71f1d890d2e4518646565450d238f6f7608e087759ec643bef8e3",
+    "rollback": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs",
+    "deployment": "Final cumulative EXE/map promoted to canonical Release. Owned PID14444 reached ready and gracefully exited0 with clean diagnostics; protected runtime assets unchanged."
   },
   "diagnostics": {
-    "result": "Each run bracketed by canonical/test crash snapshots and appended log inspection. Final native runs have no new/changed crashes,DBErrors or unexplained server diagnostics.",
-    "findings": "Initial native inspection also exposed separate health-aura rejection on actual NPC vehicle97043/4383 and ordinary-NPC combat-exit early return. Those remain visibly pending in their own follow-ups. One expanded fixture detached corpse casters with a still-active Might health aura,then crashed during exception cleanup after ResetMap; remove source auras before native map detachment,as ordinary cleanup does. Native expiry expectations corrected to Unit removing expired auras at next-frame entry. Failed evidence retained and paired repaired passes.",
-    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-death-affixes; final verified archive/cleanup pending cumulative deployment."
+    "result": "Final native/PE/canonical startup/retained checks exit0; no new/changed crash reports,DBErrors or unexplained server diagnostics. No hidden server remains.",
+    "findings": "Initial native inspection exposed autonomous NPC-vehicle health rejection and ordinary-NPC combat-exit early return; both are repaired in separate follow-ups. An expanded fixture detached corpse casters with a persistent Might health aura and crashed during exception cleanup after ResetMap. Clear source auras before map detachment like ordinary cleanup. Native expiry expectations follow next-frame Unit removal. Original failed evidence remains archived and paired with repaired passes.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-death-affixes:360 exact captures with verified source/archive/source SHA256 manifest. No mixed active log cleared. Redundant runtime/staging/compiler outputs and superseded rollback removed after final checks."
   },
   "remaining": [
-    "NPC-vehicle health ownership and ordinary-NPC combat-exit fixes are separate pending work before task handoff.",
+    "NPC-vehicle health and ordinary NPC combat-exit issues are repaired in separate commits/audits. Actual client traversal remains OPEN.",
     "No actual client combat,live five-player play,full63 encounters,whole13 dungeon paths or loot opening verified.",
-    "No full-core ASAN established; actual Release library death/aura dispatch exercised."
-  ]
+    "No full-core ASAN established; actual Release-library death/aura/stat dispatch exercised."
+  ],
+  "cleanup": {
+    "RemovedFiles": 329,
+    "ReclaimedBytes": 4163933906,
+    "Retained": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 360
+  }
 }
