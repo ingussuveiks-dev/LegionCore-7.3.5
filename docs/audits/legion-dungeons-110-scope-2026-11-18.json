@@ -664,9 +664,10 @@
     "quaking_native_checks": 225,
     "quaking_audit": "legion-quaking-native-2026-11-18.json",
     "teeming_admission_native_checks": 140,
-    "teeming_content": "OPEN:live and matching base contain no marked extra spawns",
+    "teeming_content": "PARTIAL:historical222 tagged addon points across13 routes/105 native NPC IDs;live markers0 and original server XYZ/placement receipts OPEN",
     "teeming_criteria_native_checks": 5176,
-    "teeming_criteria_audit": "legion-teeming-criteria-2026-11-18.json"
+    "teeming_criteria_audit": "legion-teeming-criteria-2026-11-18.json",
+    "teeming_github_research": "legion-teeming-github-research-2026-11-18.json"
   },
   "focused_verifications": [
     {

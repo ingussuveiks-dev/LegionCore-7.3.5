@@ -75,7 +75,8 @@
     ],
     "limits": "Only actual parsed creature rows count as checked. Other cached creature_data formats and split dump parts with no parsed creature table are not evidence of absent Teeming data.",
     "reference": "Historical MethodDungeonTools2018-05-27 MawOfSouls.lua distinguishes extra clones but provides addon2D/sublevel coordinates rather than authoritative server XYZ/orientation/respawn. No invented placement/force-weight migration or random NPC duplication.",
-    "primary_reference": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/MawOfSouls.lua"
+    "primary_reference": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/MawOfSouls.lua",
+    "followup_research": "legion-teeming-github-research-2026-11-18.json"
   },
   "remaining": [
     "Actual7.3.5 extra NPC placement data and corresponding native force weights remain unresolved;these two core repairs alone do not restore Teeming extra population.",

@@ -1,0 +1,225 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "PARTIAL_GITHUB_DATA_FOUND_SERVER_PLACEMENTS_OPEN",
+  "request": "Search GitHub for missing Legion7.3.5 Teeming extra spawn data.",
+  "result": {
+    "historical_addon": {
+      "routes": 13,
+      "maps": 12,
+      "teeming_points": 222,
+      "unique_npc_ids": 105
+    },
+    "catalog": "docs/research/legion-teeming-mdt-2018-05-27.json",
+    "catalog_sha256": "294517831b83a885023842265edcb3965de5c58ebf09c6400874aab8cc96f8da",
+    "source_commit": "aaabf806caac2cc519b692bce68c9ce38e934974",
+    "npc_validation": {
+      "catalog_unique_npc_ids": 105,
+      "native_world_template_matches": 105,
+      "missing_templates": [],
+      "live_teeming_markers": 0,
+      "ordinary_spawn_groups": 105,
+      "ordinary_spawns": 1016
+    },
+    "usable_scope": "Historical NPC identity,addon floor/group and2D points.105/105 distinct IDs exist in the actual local World creature_template;1016 ordinary spawns exist for those NPCs on matching maps. This does not identify222 original server GUIDs or prove correct world positions/forces.",
+    "ready_server_sql": "Not found in the reviewed public sources. No migration or production data written.",
+    "catalog_hash_basis": "UTF-8 with LF newlines"
+  },
+  "research": {
+    "repositories_reviewed": 12,
+    "sql_files_reviewed": 4482,
+    "unique_sql_blobs": 4101,
+    "scope": "Recursive untruncated trees,public world/update SQL source archives with Git blob+SHA256 validation;excluded auth/characters/hotfix/localization payloads. Plus one packaged World SQL extracted alone;no upstream executable/script executed.",
+    "repositories": [
+      {
+        "repository": "BoBuRKhaN7475/LegionCore-7.3.5",
+        "tree_or_package_blob_sha": "38042de9e9e7f7ee18b1f52b6afc4d284470b147",
+        "sql_files": 63,
+        "parsed_creature_rows_with_teeming_column": 75,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "dufernst/LegionCore-7.3.5",
+        "tree_or_package_blob_sha": "9222216e0dda0708ae53e6e6f6b07db7d65ba46f",
+        "sql_files": 24,
+        "parsed_creature_rows_with_teeming_column": 26,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "fluxurion/Legioncore_uwow",
+        "tree_or_package_blob_sha": "34eca8ae13d0734d3a0fe9c1b5dd3d1e9a2b68e2",
+        "sql_files": 1817,
+        "parsed_creature_rows_with_teeming_column": 0,
+        "parsed_creature_rows_without_teeming_column": 77292,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 1,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "levrules/legioncore",
+        "tree_or_package_blob_sha": "d90106fd0575fcf345cf24cecc4e64e6b0ab34b2",
+        "sql_files": 457,
+        "parsed_creature_rows_with_teeming_column": 408410,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "ltlqx2022/LegionCore-N",
+        "tree_or_package_blob_sha": "5b65f4f5198d2e5d1b1220ea683cef0d684fdf5d",
+        "sql_files": 18,
+        "parsed_creature_rows_with_teeming_column": 13,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "Motorheadx/LegionCore",
+        "tree_or_package_blob_sha": "c2473e77b41f51304402bdfd21051abaebbb88ec",
+        "sql_files": 76,
+        "parsed_creature_rows_with_teeming_column": 0,
+        "parsed_creature_rows_without_teeming_column": 112,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "nbyaya/LegionCore-7.3.5II",
+        "tree_or_package_blob_sha": "5c38b628400a76027af985fb6de517664a703685",
+        "sql_files": 36,
+        "parsed_creature_rows_with_teeming_column": 29,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "zitengzela/LegionCore-7.3.5V2 [packaged world]",
+        "tree_or_package_blob_sha": "f0ababc3c6924099187ac9f3f7017c73fba5093b",
+        "sql_files": 1,
+        "parsed_creature_rows_with_teeming_column": 407429,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "shorden/LegionCore",
+        "tree_or_package_blob_sha": "f33c5abb6dac2e9c2fef5acb3d2bafa09e831cf6",
+        "sql_files": 5,
+        "parsed_creature_rows_with_teeming_column": 0,
+        "parsed_creature_rows_without_teeming_column": 24921,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "SoulBasementGc/LegionCore",
+        "tree_or_package_blob_sha": "dbf32fd21b2601d741e2e05c34aa4b34283c3ffd",
+        "sql_files": 1374,
+        "parsed_creature_rows_with_teeming_column": 0,
+        "parsed_creature_rows_without_teeming_column": 59051,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 4,
+        "shape_error_samples": 20
+      },
+      {
+        "repository": "The-Legion-Preservation-Project/LegionCore-7.3.5",
+        "tree_or_package_blob_sha": "fed58f79c498521836612acd12009e9fa9e60e31",
+        "sql_files": 87,
+        "parsed_creature_rows_with_teeming_column": 29,
+        "parsed_creature_rows_without_teeming_column": 1,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "Titans-Project/LegionCore-Reforged",
+        "tree_or_package_blob_sha": "63d15719bc593206f0eb294fe2488f39ddc20fa9",
+        "sql_files": 484,
+        "parsed_creature_rows_with_teeming_column": 408921,
+        "parsed_creature_rows_without_teeming_column": 1307,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 26,
+        "shape_error_samples": 0
+      },
+      {
+        "repository": "zitengzela/LegionCore-7.3.5V2",
+        "tree_or_package_blob_sha": "80ad17a234fd4ed462bc9a23e401b70f86f15a0d",
+        "sql_files": 40,
+        "parsed_creature_rows_with_teeming_column": 75,
+        "parsed_creature_rows_without_teeming_column": 0,
+        "marked_rows": 0,
+        "literal_positive_marker_updates": 0,
+        "unsupported_insert_statements": 0,
+        "shape_error_samples": 0
+      }
+    ],
+    "packaged_database": {
+      "path": "sql/base/Legion_Proyect-DB.7z",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0ababc3c6924099187ac9f3f7017c73fba5093b",
+      "size": 102283762,
+      "url": "https://github.com/zitengzela/LegionCore-7.3.5V2/blob/V2/sql/base/Legion_Proyect-DB.7z",
+      "repo": "zitengzela/LegionCore-7.3.5V2",
+      "branch": "V2",
+      "sha256": "6bb034ec09e736deb814d4f511b19d5910722318ed171db5789c4934784a58a9"
+    },
+    "packaged_world": "610821824 bytes,407429 creature rows with isTeemingSpawn;zero marked. Same packaged archive blob exists in zitengzela V2 and BoBuRKhaN7475 V2.",
+    "additional_full_dump": "levrules/legioncore world chunks:408410 typed creature rows,zero marked. Current Titans base+updates:408921 typed rows,zero marked. Prior2020/2024 reviewed dumps remain in earlier audit.",
+    "limits": [
+      "Search is bounded to reviewed public sources,not a claim about every GitHub repository/private database.",
+      "Some historical cores lack the Teeming column. INSERT SELECT/complex legacy forms are recorded as unsupported,not silently counted as verified rows. SoulBasementGc has20 retained shape-error samples and4 unsupported statements;that subset is incomplete.",
+      "No original3D positions/orientation/respawn/path receipts recovered. Addon force totals require separate native metadata reconciliation.",
+      "One addon header has multiline patrol data;revised extraction preserves all222 tagged point headers. Full patrol routes remain in the immutable linked source,not in this point inventory."
+    ]
+  },
+  "primary_sources": [
+    {
+      "purpose": "Historical Legion addon data for13 routes",
+      "url": "https://github.com/Nnoggie/MythicDungeonTools/tree/aaabf806caac2cc519b692bce68c9ce38e934974"
+    },
+    {
+      "purpose": "Additional packaged database,407429 typed creature rows,zero markers",
+      "url": "https://github.com/zitengzela/LegionCore-7.3.5V2/blob/V2/sql/base/Legion_Proyect-DB.7z"
+    },
+    {
+      "purpose": "Additional full World chunks,408410 typed rows,zero markers",
+      "url": "https://github.com/levrules/legioncore/tree/master/sql/updates/world"
+    },
+    {
+      "purpose": "Reviewed2020/2024 public database releases",
+      "url": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/releases"
+    }
+  ],
+  "operations": {
+    "production_changes": "None. Runtime EXE/map/config/data unchanged;no server launched or stopped,no persistent World/character/schema/updater writes. Only readonly World NPC-template/spawn-count queries.",
+    "diagnostics": "Final source parser and readonly catalog query wrapped with runtime snapshots;no new/changed crashes,appended DBErrors or unexplained server diagnostics. Initial query incorrectly assumed creature_template.name;corrected to ID-only after1054. That local CLI query failure was not a server crash.",
+    "verification_boundary": "Research/input validation only;no new native gameplay regression,startup/client traversal or full-core ASAN claimed. Existing deployed8c67ee7c1 remains.",
+    "evidence": ".codex/teeming-github-20261118",
+    "evidence_status": "OPEN source research retained locally;not placed in fixed archives. Private connection-options file removed after query;credentials never recorded in audit/output.",
+    "retained_sources": "Ignored hashed public SQL blobs/package and historical addon originals retained for unresolved data reconciliation;no temporary executable/test server created."
+  },
+  "next": "Reconcile222 addon points with matching7.3.5 world-coordinate transforms,actual floor/model support and existing real spawn placements;then validate phases/paths/forces and extra-only admission before staging any guarded SQL. Actual client traversal remains separate."
+}

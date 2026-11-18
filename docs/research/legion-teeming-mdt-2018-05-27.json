@@ -1,0 +1,2405 @@
+{
+  "schema_version": 1,
+  "status": "RESEARCH_ONLY_PARTIAL_PLACEMENTS_SERVER_XYZ_OPEN",
+  "source_repository": "https://github.com/Nnoggie/MythicDungeonTools",
+  "source_commit": "aaabf806caac2cc519b692bce68c9ce38e934974",
+  "source_commit_date": "2018-05-27T01:22:58Z",
+  "era": "Legion7.3.5;historical addon reference,not a recovered server spawn dump",
+  "coordinate_space": "MDT dungeon image x/y and sublevel;decimal strings preserve original source values. Groups and patrol indicators describe addon presentation.",
+  "missing_server_fields": [
+    "world_x",
+    "world_y",
+    "world_z",
+    "orientation",
+    "spawnMask",
+    "phaseMask/PhaseId",
+    "respawn",
+    "movement/path/formation/AI publication",
+    "original server spawn GUID"
+  ],
+  "force_totals": "Historical addon reference only;not verified against matching native DB2 force criteria and not imported.",
+  "routes": [
+    {
+      "map_id": 1501,
+      "challenge_id": 199,
+      "source_file": "BlackRookHold.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/BlackRookHold.lua",
+      "source_sha256": "2ab30c3f5c7b67d747df01f106ec41c42b8c1de9e54f3248b72dbd440eea4d25",
+      "extra_point_count": 26,
+      "addon_normal_forces": 300,
+      "addon_teeming_forces": 360,
+      "points": [
+        {
+          "npc_id": 98366,
+          "npc_name": "Ghostly Retainer",
+          "source_clone_index": 12,
+          "addon_x": "209.54507885725",
+          "addon_y": "-137.95454467424",
+          "addon_sublevel": 1,
+          "addon_group": 35,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98366,
+          "npc_name": "Ghostly Retainer",
+          "source_clone_index": 13,
+          "addon_x": "347.74311836916",
+          "addon_y": "-147.82117311179",
+          "addon_sublevel": 1,
+          "addon_group": 5,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98366,
+          "npc_name": "Ghostly Retainer",
+          "source_clone_index": 14,
+          "addon_x": "155.88584041655",
+          "addon_y": "-205.45725716437",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98368,
+          "npc_name": "Ghostly Protector",
+          "source_clone_index": 5,
+          "addon_x": "424.30196291791",
+          "addon_y": "-179.0878963561",
+          "addon_sublevel": 1,
+          "addon_group": 6,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98368,
+          "npc_name": "Ghostly Protector",
+          "source_clone_index": 6,
+          "addon_x": "425.21102690901",
+          "addon_y": "-220.90608839297",
+          "addon_sublevel": 1,
+          "addon_group": 6,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98368,
+          "npc_name": "Ghostly Protector",
+          "source_clone_index": 7,
+          "addon_x": "197.72679738124",
+          "addon_y": "-161.69547433509",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98370,
+          "npc_name": "Ghostly Councilor",
+          "source_clone_index": 8,
+          "addon_x": "354.10676137659",
+          "addon_y": "-138.73029911712",
+          "addon_sublevel": 1,
+          "addon_group": 5,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98370,
+          "npc_name": "Ghostly Councilor",
+          "source_clone_index": 9,
+          "addon_x": "151.79493541476",
+          "addon_y": "-196.36638316969",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98243,
+          "npc_name": "Soul-Torn Champion",
+          "source_clone_index": 5,
+          "addon_x": "243.10864006406",
+          "addon_y": "-118.86360741567",
+          "addon_sublevel": 2,
+          "addon_group": 12,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98691,
+          "npc_name": "Risen Scout",
+          "source_clone_index": 7,
+          "addon_x": "325.59963050002",
+          "addon_y": "-179.21529453413",
+          "addon_sublevel": 2,
+          "addon_group": 13,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98275,
+          "npc_name": "Risen Archer",
+          "source_clone_index": 9,
+          "addon_x": "250.38138607653",
+          "addon_y": "-119.77267140677",
+          "addon_sublevel": 2,
+          "addon_group": 12,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98275,
+          "npc_name": "Risen Archer",
+          "source_clone_index": 10,
+          "addon_x": "312.87234448516",
+          "addon_y": "-203.30621205627",
+          "addon_sublevel": 2,
+          "addon_group": 13,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98810,
+          "npc_name": "Wrathguard Bladelord",
+          "source_clone_index": 4,
+          "addon_x": "468.26846693278",
+          "addon_y": "-287.5244329471",
+          "addon_sublevel": 3,
+          "addon_group": 19,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98810,
+          "npc_name": "Wrathguard Bladelord",
+          "source_clone_index": 5,
+          "addon_x": "327.40999034673",
+          "addon_y": "-390.82122511989",
+          "addon_sublevel": 3,
+          "addon_group": 24,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98792,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 12,
+          "addon_x": "465.70730350226",
+          "addon_y": "-345.36922481678",
+          "addon_sublevel": 3,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98792,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 13,
+          "addon_x": "518.43453652995",
+          "addon_y": "-358.09651083164",
+          "addon_sublevel": 3,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98792,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 14,
+          "addon_x": "333.11274764803",
+          "addon_y": "-208.35334429605",
+          "addon_sublevel": 3,
+          "addon_group": 21,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98792,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 15,
+          "addon_x": "309.02184963286",
+          "addon_y": "-216.08062230408",
+          "addon_sublevel": 3,
+          "addon_group": 21,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98792,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 16,
+          "addon_x": "286.94838791594",
+          "addon_y": "-341.90516676018",
+          "addon_sublevel": 3,
+          "addon_group": 22,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98792,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 17,
+          "addon_x": "293.31203092337",
+          "addon_y": "-302.81428373845",
+          "addon_sublevel": 3,
+          "addon_group": 22,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102788,
+          "npc_name": "Felspite Dominator",
+          "source_clone_index": 7,
+          "addon_x": "475.76195545635",
+          "addon_y": "-287.72447536706",
+          "addon_sublevel": 4,
+          "addon_group": 28,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102095,
+          "npc_name": "Risen Lancer",
+          "source_clone_index": 6,
+          "addon_x": "328.8905046709",
+          "addon_y": "-281.90627033604",
+          "addon_sublevel": 5,
+          "addon_group": 30,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102095,
+          "npc_name": "Risen Lancer",
+          "source_clone_index": 7,
+          "addon_x": "338.89052068457",
+          "addon_y": "-254.63355081715",
+          "addon_sublevel": 5,
+          "addon_group": 30,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102095,
+          "npc_name": "Risen Lancer",
+          "source_clone_index": 8,
+          "addon_x": "513.38960404477",
+          "addon_y": "-428.36844351211",
+          "addon_sublevel": 5,
+          "addon_group": 33,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102094,
+          "npc_name": "Risen Swordsman",
+          "source_clone_index": 8,
+          "addon_x": "445.79575265703",
+          "addon_y": "-239.56931610201",
+          "addon_sublevel": 5,
+          "addon_group": 29,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102094,
+          "npc_name": "Risen Swordsman",
+          "source_clone_index": 9,
+          "addon_x": "500.23166848117",
+          "addon_y": "-403.63158608925",
+          "addon_sublevel": 5,
+          "addon_group": 33,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1677,
+      "challenge_id": 233,
+      "source_file": "CathedralOfEternalNight.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/CathedralOfEternalNight.lua",
+      "source_sha256": "cb66f46c0335d250e306fcca428876df97bd11800b5fb91b301e9ee61b89a8b7",
+      "extra_point_count": 19,
+      "addon_normal_forces": 305,
+      "addon_teeming_forces": 335,
+      "points": [
+        {
+          "npc_id": 119952,
+          "npc_name": "Felguard Destroyer",
+          "source_clone_index": 5,
+          "addon_x": "531.01857106576",
+          "addon_y": "-350.21479328006",
+          "addon_sublevel": 1,
+          "addon_group": 5,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 120550,
+          "npc_name": "Wrathguard Invader",
+          "source_clone_index": 10,
+          "addon_x": "537.38221407319",
+          "addon_y": "-347.48752327887",
+          "addon_sublevel": 1,
+          "addon_group": 5,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119923,
+          "npc_name": "Helblaze Soulmender",
+          "source_clone_index": 5,
+          "addon_x": "429.01092048706",
+          "addon_y": "-390.14017734989",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119923,
+          "npc_name": "Helblaze Soulmender",
+          "source_clone_index": 6,
+          "addon_x": "458.53783972484",
+          "addon_y": "-197.82970126443",
+          "addon_sublevel": 1,
+          "addon_group": 9,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118724,
+          "npc_name": "Helblaze Felbringer",
+          "source_clone_index": 7,
+          "addon_x": "454.90146632452",
+          "addon_y": "-162.37516789969",
+          "addon_sublevel": 1,
+          "addon_group": 9,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 120366,
+          "npc_name": "Hellblaze Temptress",
+          "source_clone_index": 11,
+          "addon_x": "440.18634748789",
+          "addon_y": "-249.73487934344",
+          "addon_sublevel": 2,
+          "addon_group": 44,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119978,
+          "npc_name": "Fulminating Lasher",
+          "source_clone_index": 8,
+          "addon_x": "349.71307852387",
+          "addon_y": "-216.69355333025",
+          "addon_sublevel": 2,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119978,
+          "npc_name": "Fulminating Lasher",
+          "source_clone_index": 9,
+          "addon_x": "374.71310176037",
+          "addon_y": "-207.60261982946",
+          "addon_sublevel": 2,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119978,
+          "npc_name": "Fulminating Lasher",
+          "source_clone_index": 10,
+          "addon_x": "414.85096841386",
+          "addon_y": "-282.01332935405",
+          "addon_sublevel": 2,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118703,
+          "npc_name": "Felborne Botanist",
+          "source_clone_index": 16,
+          "addon_x": "450.18636350156",
+          "addon_y": "-248.37124434285",
+          "addon_sublevel": 2,
+          "addon_group": 44,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119977,
+          "npc_name": "Stranglevine Lasher",
+          "source_clone_index": 4,
+          "addon_x": "423.94195945038",
+          "addon_y": "-283.3769253407",
+          "addon_sublevel": 2,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 119977,
+          "npc_name": "Stranglevine Lasher",
+          "source_clone_index": 5,
+          "addon_x": "429.39642142487",
+          "addon_y": "-280.19512334396",
+          "addon_sublevel": 2,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118717,
+          "npc_name": "Helblaze Imp",
+          "source_clone_index": 40,
+          "addon_x": "450.20468022536",
+          "addon_y": "-337.14376280819",
+          "addon_sublevel": 3,
+          "addon_group": 34,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118717,
+          "npc_name": "Helblaze Imp",
+          "source_clone_index": 41,
+          "addon_x": "430.65923659631",
+          "addon_y": "-334.87100504927",
+          "addon_sublevel": 3,
+          "addon_group": 34,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118717,
+          "npc_name": "Helblaze Imp",
+          "source_clone_index": 42,
+          "addon_x": "464.17190176981",
+          "addon_y": "-337.37572567587",
+          "addon_sublevel": 3,
+          "addon_group": 33,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118717,
+          "npc_name": "Helblaze Imp",
+          "source_clone_index": 43,
+          "addon_x": "477.35370027324",
+          "addon_y": "-336.0120711683",
+          "addon_sublevel": 3,
+          "addon_group": 33,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118719,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 13,
+          "addon_x": "441.11376623154",
+          "addon_y": "-317.59829967217",
+          "addon_sublevel": 3,
+          "addon_group": 34,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118719,
+          "npc_name": "Wyrmtongue Scavenger",
+          "source_clone_index": 14,
+          "addon_x": "470.53550576329",
+          "addon_y": "-346.46661917752",
+          "addon_sublevel": 3,
+          "addon_group": 33,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 118713,
+          "npc_name": "Felstrider Orbcaster",
+          "source_clone_index": 2,
+          "addon_x": "401.86435368696",
+          "addon_y": "-184.73353164324",
+          "addon_sublevel": 4,
+          "addon_group": 39,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1571,
+      "challenge_id": 210,
+      "source_file": "CourtOfStars.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/CourtOfStars.lua",
+      "source_sha256": "8c334dca2e8aca201969eee57960efa356801c9eef58126d8d60f345dd9e60ae",
+      "extra_point_count": 12,
+      "addon_normal_forces": 160,
+      "addon_teeming_forces": 192,
+      "points": [
+        {
+          "npc_id": 111563,
+          "npc_name": "Duskwatch Guard",
+          "source_clone_index": 3,
+          "addon_x": "356.56754002112",
+          "addon_y": "-291.91298841391",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 111563,
+          "npc_name": "Duskwatch Guard",
+          "source_clone_index": 17,
+          "addon_x": "284.90941710315",
+          "addon_y": "-174.17310689137",
+          "addon_sublevel": 1,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 104251,
+          "npc_name": "Duskwatch Sentry",
+          "source_clone_index": 2,
+          "addon_x": "346.81151104804",
+          "addon_y": "-308.76980525563",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 104270,
+          "npc_name": "Guardian Construct",
+          "source_clone_index": 4,
+          "addon_x": "373.6591984904",
+          "addon_y": "-314.79249601792",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 104270,
+          "npc_name": "Guardian Construct",
+          "source_clone_index": 7,
+          "addon_x": "266.69743093524",
+          "addon_y": "-267.88281507824",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 104270,
+          "npc_name": "Guardian Construct",
+          "source_clone_index": 13,
+          "addon_x": "501.30951417314",
+          "addon_y": "-289.22136076186",
+          "addon_sublevel": 1,
+          "addon_group": 27,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105705,
+          "npc_name": "Bound Energy",
+          "source_clone_index": 4,
+          "addon_x": "274.00027857746",
+          "addon_y": "-171.90040789968",
+          "addon_sublevel": 1,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 104277,
+          "npc_name": "Legion Hound",
+          "source_clone_index": 3,
+          "addon_x": "424.43681102297",
+          "addon_y": "-267.51234842969",
+          "addon_sublevel": 1,
+          "addon_group": 25,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 104277,
+          "npc_name": "Legion Hound",
+          "source_clone_index": 5,
+          "addon_x": "502.94588757346",
+          "addon_y": "-307.94866525339",
+          "addon_sublevel": 1,
+          "addon_group": 27,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 104300,
+          "npc_name": "Shadow Mistress",
+          "source_clone_index": 3,
+          "addon_x": "418.32394149181",
+          "addon_y": "-305.81300893397",
+          "addon_sublevel": 1,
+          "addon_group": 26,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105715,
+          "npc_name": "Watchful Inquisitor",
+          "source_clone_index": 2,
+          "addon_x": "409.43680650945",
+          "addon_y": "-256.60322941098",
+          "addon_sublevel": 1,
+          "addon_group": 25,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105715,
+          "npc_name": "Watchful Inquisitor",
+          "source_clone_index": 4,
+          "addon_x": "418.32394149181",
+          "addon_y": "-301.72208442521",
+          "addon_sublevel": 1,
+          "addon_group": 26,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1466,
+      "challenge_id": 198,
+      "source_file": "DarkheartThicket.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/DarkheartThicket.lua",
+      "source_sha256": "ada903de2c9198e542c066b76ebfa8be830d8da18824074454520c82e3dd28ac",
+      "extra_point_count": 14,
+      "addon_normal_forces": 280,
+      "addon_teeming_forces": 336,
+      "points": [
+        {
+          "npc_id": 95772,
+          "npc_name": "Frenzied Nightclaw",
+          "source_clone_index": 13,
+          "addon_x": "301.06930664595",
+          "addon_y": "-140.03257873621",
+          "addon_sublevel": 1,
+          "addon_group": 1,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95772,
+          "npc_name": "Frenzied Nightclaw",
+          "source_clone_index": 14,
+          "addon_x": "212.33564276823",
+          "addon_y": "-168.75303116808",
+          "addon_sublevel": 1,
+          "addon_group": 9,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95779,
+          "npc_name": "Festerhide Grizzly",
+          "source_clone_index": 11,
+          "addon_x": "237.28316194242",
+          "addon_y": "-147.95429989909",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95771,
+          "npc_name": "Dreadsoul Ruiner",
+          "source_clone_index": 12,
+          "addon_x": "219.99368898825",
+          "addon_y": "-117.04517183287",
+          "addon_sublevel": 1,
+          "addon_group": 4,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95771,
+          "npc_name": "Dreadsoul Ruiner",
+          "source_clone_index": 13,
+          "addon_x": "217.26637997311",
+          "addon_y": "-134.31789484507",
+          "addon_sublevel": 1,
+          "addon_group": 4,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95771,
+          "npc_name": "Dreadsoul Ruiner",
+          "source_clone_index": 14,
+          "addon_x": "203.63465085303",
+          "addon_y": "-175.12239762952",
+          "addon_sublevel": 1,
+          "addon_group": 9,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99360,
+          "npc_name": "Vilethorn Blossom",
+          "source_clone_index": 15,
+          "addon_x": "225.98036130262",
+          "addon_y": "-427.09824332037",
+          "addon_sublevel": 1,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99360,
+          "npc_name": "Vilethorn Blossom",
+          "source_clone_index": 16,
+          "addon_x": "217.79855129905",
+          "addon_y": "-422.09823531353",
+          "addon_sublevel": 1,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99359,
+          "npc_name": "Rotheart Keeper",
+          "source_clone_index": 4,
+          "addon_x": "260.41812922054",
+          "addon_y": "-445.73757820576",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99359,
+          "npc_name": "Rotheart Keeper",
+          "source_clone_index": 5,
+          "addon_x": "311.35854737553",
+          "addon_y": "-443.86336708433",
+          "addon_sublevel": 1,
+          "addon_group": 20,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 100531,
+          "npc_name": "Bloodtainted Fury",
+          "source_clone_index": 3,
+          "addon_x": "477.43098536334",
+          "addon_y": "-187.41863154537",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 99366,
+          "npc_name": "Taintheart Summoner",
+          "source_clone_index": 5,
+          "addon_x": "492.21017635229",
+          "addon_y": "-356.230171503",
+          "addon_sublevel": 1,
+          "addon_group": 30,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99365,
+          "npc_name": "Taintheart Stalker",
+          "source_clone_index": 6,
+          "addon_x": "618.94189184173",
+          "addon_y": "-448.40892730608",
+          "addon_sublevel": 1,
+          "addon_group": 33,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 100539,
+          "npc_name": "Taintheart Deadeye",
+          "source_clone_index": 4,
+          "addon_x": "519.91830040217",
+          "addon_y": "-367.6025125639",
+          "addon_sublevel": 1,
+          "addon_group": 31,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1456,
+      "challenge_id": 197,
+      "source_file": "EyeOfAzshara.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/EyeOfAzshara.lua",
+      "source_sha256": "0a9850099b2e3cfc99c4251fa1b8fe9579853b848ceb40c83c9da095f27b3ea5",
+      "extra_point_count": 12,
+      "addon_normal_forces": 206,
+      "addon_teeming_forces": 242,
+      "points": [
+        {
+          "npc_id": 91782,
+          "npc_name": "Hatecoil Crusher",
+          "source_clone_index": 3,
+          "addon_x": "436.64439311646",
+          "addon_y": "-425.78237417136",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 95861,
+          "npc_name": "Hatecoil Oracle",
+          "source_clone_index": 5,
+          "addon_x": "408.42002645525",
+          "addon_y": "-470.45451312763",
+          "addon_sublevel": 1,
+          "addon_group": 1,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 100216,
+          "npc_name": "Hatecoil Wrangler",
+          "source_clone_index": 6,
+          "addon_x": "418.81767521829",
+          "addon_y": "-464.64198782103",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 100216,
+          "npc_name": "Hatecoil Wrangler",
+          "source_clone_index": 7,
+          "addon_x": "395.94487785661",
+          "addon_y": "-457.27253025789",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 100216,
+          "npc_name": "Hatecoil Wrangler",
+          "source_clone_index": 8,
+          "addon_x": "439.90785451767",
+          "addon_y": "-402.15089441892",
+          "addon_sublevel": 1,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97173,
+          "npc_name": "Restless Tides",
+          "source_clone_index": 6,
+          "addon_x": "368.57923501715",
+          "addon_y": "-238.36773097118",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97173,
+          "npc_name": "Restless Tides",
+          "source_clone_index": 7,
+          "addon_x": "302.40423124727",
+          "addon_y": "-290.12818408386",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97173,
+          "npc_name": "Restless Tides",
+          "source_clone_index": 8,
+          "addon_x": "317.7972667033",
+          "addon_y": "-329.36204016187",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97173,
+          "npc_name": "Restless Tides",
+          "source_clone_index": 9,
+          "addon_x": "369.98905879438",
+          "addon_y": "-386.13280475852",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 91792,
+          "npc_name": "Stormwake Hydra",
+          "source_clone_index": 4,
+          "addon_x": "455.60312097466",
+          "addon_y": "-212.4607750456",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 91796,
+          "npc_name": "Skrog Wavecrasher",
+          "source_clone_index": 7,
+          "addon_x": "558.07256260101",
+          "addon_y": "-414.09041233876",
+          "addon_sublevel": 1,
+          "addon_group": 50,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 91796,
+          "npc_name": "Skrog Wavecrasher",
+          "source_clone_index": 8,
+          "addon_x": "555.9164636036",
+          "addon_y": "-174.50247541317",
+          "addon_sublevel": 1,
+          "addon_group": 65,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1477,
+      "challenge_id": 200,
+      "source_file": "HallsofValor.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/HallsofValor.lua",
+      "source_sha256": "2890a131869f56da8e61d116e32f2d03814a9d3b8981fa5192e03c5513a2cc06",
+      "extra_point_count": 9,
+      "addon_normal_forces": 126,
+      "addon_teeming_forces": 151,
+      "points": [
+        {
+          "npc_id": 97087,
+          "npc_name": "Valarjar Champion",
+          "source_clone_index": 22,
+          "addon_x": "401.14982523048",
+          "addon_y": "-180.323598819",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95842,
+          "npc_name": "Valarjar Thundercaller",
+          "source_clone_index": 11,
+          "addon_x": "414.49525945835",
+          "addon_y": "-154.81264982295",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95842,
+          "npc_name": "Valarjar Thundercaller",
+          "source_clone_index": 12,
+          "addon_x": "386.76796892996",
+          "addon_y": "-153.90362484579",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95834,
+          "npc_name": "Valarjar Mystic",
+          "source_clone_index": 6,
+          "addon_x": "407.2514407163",
+          "addon_y": "-340.25134419519",
+          "addon_sublevel": 1,
+          "addon_group": 6,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95834,
+          "npc_name": "Valarjar Mystic",
+          "source_clone_index": 7,
+          "addon_x": "412.94243665207",
+          "addon_y": "-329.66946241205",
+          "addon_sublevel": 1,
+          "addon_group": 6,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95834,
+          "npc_name": "Valarjar Mystic",
+          "source_clone_index": 8,
+          "addon_x": "350.88771547377",
+          "addon_y": "-389.48758770472",
+          "addon_sublevel": 1,
+          "addon_group": 13,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96574,
+          "npc_name": "Stormforged Sentinel",
+          "source_clone_index": 5,
+          "addon_x": "400.67370725992",
+          "addon_y": "-270.52242719225",
+          "addon_sublevel": 1,
+          "addon_group": 25,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96664,
+          "npc_name": "Valarjar Runecarver",
+          "source_clone_index": 5,
+          "addon_x": "459.38868707421",
+          "addon_y": "-385.43097982093",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 95832,
+          "npc_name": "Valarjar Shieldmaiden",
+          "source_clone_index": 5,
+          "addon_x": "480.77476338158",
+          "addon_y": "-422.17119004071",
+          "addon_sublevel": 1,
+          "addon_group": 16,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1492,
+      "challenge_id": 208,
+      "source_file": "MawOfSouls.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/MawOfSouls.lua",
+      "source_sha256": "8f5c89b3b3d88c70b44575e7a732cf0269529e93e1bec8dcb2ee4f870b6e7679",
+      "extra_point_count": 12,
+      "addon_normal_forces": 150,
+      "addon_teeming_forces": 180,
+      "points": [
+        {
+          "npc_id": 97043,
+          "npc_name": "Seacursed Slaver",
+          "source_clone_index": 5,
+          "addon_x": "411.89751223048",
+          "addon_y": "-212.27644520532",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97043,
+          "npc_name": "Seacursed Slaver",
+          "source_clone_index": 6,
+          "addon_x": "440.41094558189",
+          "addon_y": "-190.21945724341",
+          "addon_sublevel": 1,
+          "addon_group": 4,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97200,
+          "npc_name": "Seacursed Soulkeeper",
+          "source_clone_index": 6,
+          "addon_x": "340.50978356102",
+          "addon_y": "-295.46113106179",
+          "addon_sublevel": 3,
+          "addon_group": 19,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97200,
+          "npc_name": "Seacursed Soulkeeper",
+          "source_clone_index": 7,
+          "addon_x": "339.80966108776",
+          "addon_y": "-325.16049710421",
+          "addon_sublevel": 3,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99188,
+          "npc_name": "Waterlogged Soul Guard",
+          "source_clone_index": 5,
+          "addon_x": "453.45731998632",
+          "addon_y": "-356.65697726972",
+          "addon_sublevel": 2,
+          "addon_group": 12,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97365,
+          "npc_name": "Seacursed Mistmender",
+          "source_clone_index": 5,
+          "addon_x": "356.74417694121",
+          "addon_y": "-377.71345966306",
+          "addon_sublevel": 2,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97365,
+          "npc_name": "Seacursed Mistmender",
+          "source_clone_index": 6,
+          "addon_x": "464.12454925738",
+          "addon_y": "-297.4266242734",
+          "addon_sublevel": 3,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97365,
+          "npc_name": "Seacursed Mistmender",
+          "source_clone_index": 7,
+          "addon_x": "476.17325868221",
+          "addon_y": "-336.97868011402",
+          "addon_sublevel": 3,
+          "addon_group": 14,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98919,
+          "npc_name": "Seacursed Swiftblade",
+          "source_clone_index": 10,
+          "addon_x": "353.56237494447",
+          "addon_y": "-246.3498310615",
+          "addon_sublevel": 2,
+          "addon_group": 8,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98919,
+          "npc_name": "Seacursed Swiftblade",
+          "source_clone_index": 11,
+          "addon_x": "456.85184225885",
+          "addon_y": "-288.33565274386",
+          "addon_sublevel": 3,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98919,
+          "npc_name": "Seacursed Swiftblade",
+          "source_clone_index": 12,
+          "addon_x": "460.26419017758",
+          "addon_y": "-333.34232661476",
+          "addon_sublevel": 3,
+          "addon_group": 14,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97182,
+          "npc_name": "Night Watch Mariner",
+          "source_clone_index": 3,
+          "addon_x": "525.30782006021",
+          "addon_y": "-312.5136218328",
+          "addon_sublevel": 3,
+          "addon_group": null,
+          "addon_patrol_present": true
+        }
+      ]
+    },
+    {
+      "map_id": 1458,
+      "challenge_id": 206,
+      "source_file": "NeltharionsLair.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/NeltharionsLair.lua",
+      "source_sha256": "51c8a5cf50e7ee8d9a2c476bd1e2ccd874e6ede61668c91e06f7657778337cdd",
+      "extra_point_count": 10,
+      "addon_normal_forces": 220,
+      "addon_teeming_forces": 264,
+      "points": [
+        {
+          "npc_id": 98406,
+          "npc_name": "Embershard Scorpion",
+          "source_clone_index": 2,
+          "addon_x": "701.63511264472",
+          "addon_y": "-255.72748015891",
+          "addon_sublevel": 1,
+          "addon_group": 1,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 91000,
+          "npc_name": "Vileshard Hulk",
+          "source_clone_index": 4,
+          "addon_x": "631.15466291215",
+          "addon_y": "-230.15963713959",
+          "addon_sublevel": 1,
+          "addon_group": 5,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 90997,
+          "npc_name": "Mightstone Breaker",
+          "source_clone_index": 14,
+          "addon_x": "361.19229743848",
+          "addon_y": "-298.58259078741",
+          "addon_sublevel": 1,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 91008,
+          "npc_name": "Rockbound Pelter",
+          "source_clone_index": 10,
+          "addon_x": "422.88744304888",
+          "addon_y": "-378.5110802941",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 91008,
+          "npc_name": "Rockbound Pelter",
+          "source_clone_index": 11,
+          "addon_x": "409.25105402897",
+          "addon_y": "-376.69289379098",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 91008,
+          "npc_name": "Rockbound Pelter",
+          "source_clone_index": 12,
+          "addon_x": "398.22331186957",
+          "addon_y": "-227.78085937953",
+          "addon_sublevel": 1,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 90998,
+          "npc_name": "Blightshard Shaper",
+          "source_clone_index": 8,
+          "addon_x": "390.95060487104",
+          "addon_y": "-219.59906888293",
+          "addon_sublevel": 1,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102404,
+          "npc_name": "Stoneclaw Grubmaster",
+          "source_clone_index": 4,
+          "addon_x": "333.71374331304",
+          "addon_y": "-177.63476347591",
+          "addon_sublevel": 1,
+          "addon_group": 24,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102253,
+          "npc_name": "Understone Demolisher",
+          "source_clone_index": 2,
+          "addon_x": "161.81671847885",
+          "addon_y": "-314.94177286",
+          "addon_sublevel": 1,
+          "addon_group": 34,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 102253,
+          "npc_name": "Understone Demolisher",
+          "source_clone_index": 3,
+          "addon_x": "154.0894599778",
+          "addon_y": "-308.57814935954",
+          "addon_sublevel": 1,
+          "addon_group": 34,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1651,
+      "challenge_id": 227,
+      "source_file": "ReturntoKarazhanLower.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/ReturntoKarazhanLower.lua",
+      "source_sha256": "aaa3d969f9e9ce7c7c730d4c85f9c05ec7607a11818c8bd4defb5a205dd7bb9a",
+      "extra_point_count": 46,
+      "addon_normal_forces": 420,
+      "addon_teeming_forces": 504,
+      "points": [
+        {
+          "npc_id": 114541,
+          "npc_name": "Spectral Patron",
+          "source_clone_index": 19,
+          "addon_x": "353.03761765242",
+          "addon_y": "-155.22728655249",
+          "addon_sublevel": 1,
+          "addon_group": 96,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114541,
+          "npc_name": "Spectral Patron",
+          "source_clone_index": 20,
+          "addon_x": "344.8557686349",
+          "addon_y": "-145.22729004579",
+          "addon_sublevel": 1,
+          "addon_group": 96,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114541,
+          "npc_name": "Spectral Patron",
+          "source_clone_index": 21,
+          "addon_x": "353.94668164352",
+          "addon_y": "-135.68182553465",
+          "addon_sublevel": 1,
+          "addon_group": 96,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114541,
+          "npc_name": "Spectral Patron",
+          "source_clone_index": 59,
+          "addon_x": "345.35966099311",
+          "addon_y": "-189.23519055961",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114542,
+          "npc_name": "Ghostly Philanthropist",
+          "source_clone_index": 10,
+          "addon_x": "340.03859105147",
+          "addon_y": "-182.60577464681",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114542,
+          "npc_name": "Ghostly Philanthropist",
+          "source_clone_index": 11,
+          "addon_x": "353.33339320471",
+          "addon_y": "-147.80470225207",
+          "addon_sublevel": 1,
+          "addon_group": 96,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114542,
+          "npc_name": "Ghostly Philanthropist",
+          "source_clone_index": 12,
+          "addon_x": "353.33339320471",
+          "addon_y": "-141.44107875162",
+          "addon_sublevel": 1,
+          "addon_group": 96,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114542,
+          "npc_name": "Ghostly Philanthropist",
+          "source_clone_index": 13,
+          "addon_x": "361.06069071971",
+          "addon_y": "-134.16835224611",
+          "addon_sublevel": 1,
+          "addon_group": 96,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114542,
+          "npc_name": "Ghostly Philanthropist",
+          "source_clone_index": 14,
+          "addon_x": "204.10709655195",
+          "addon_y": "-206.92441823884",
+          "addon_sublevel": 3,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114542,
+          "npc_name": "Ghostly Philanthropist",
+          "source_clone_index": 15,
+          "addon_x": "208.19802150405",
+          "addon_y": "-176.46991292977",
+          "addon_sublevel": 3,
+          "addon_group": 15,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 116549,
+          "npc_name": "Backup Singer",
+          "source_clone_index": 10,
+          "addon_x": "190.81559593757",
+          "addon_y": "-216.80882330638",
+          "addon_sublevel": 3,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 116549,
+          "npc_name": "Backup Singer",
+          "source_clone_index": 11,
+          "addon_x": "182.633785934",
+          "addon_y": "-205.89976280858",
+          "addon_sublevel": 3,
+          "addon_group": 17,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114544,
+          "npc_name": "Skeletal Usher",
+          "source_clone_index": 10,
+          "addon_x": "348.21653245397",
+          "addon_y": "-195.68532118312",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114544,
+          "npc_name": "Skeletal Usher",
+          "source_clone_index": 11,
+          "addon_x": "648.99973447062",
+          "addon_y": "-361.50004132278",
+          "addon_sublevel": 2,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 114544,
+          "npc_name": "Skeletal Usher",
+          "source_clone_index": 12,
+          "addon_x": "344.01469741187",
+          "addon_y": "-215.59123526022",
+          "addon_sublevel": 3,
+          "addon_group": 97,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114634,
+          "npc_name": "Undying Servant",
+          "source_clone_index": 9,
+          "addon_x": "404.43062235115",
+          "addon_y": "-218.7534464735",
+          "addon_sublevel": 3,
+          "addon_group": 21,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114634,
+          "npc_name": "Undying Servant",
+          "source_clone_index": 10,
+          "addon_x": "403.97607084863",
+          "addon_y": "-225.48071647469",
+          "addon_sublevel": 3,
+          "addon_group": 21,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 18,
+          "addon_x": "634.86002323803",
+          "addon_y": "-239.80266262532",
+          "addon_sublevel": 3,
+          "addon_group": 42,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 19,
+          "addon_x": "647.13271873642",
+          "addon_y": "-222.07538811061",
+          "addon_sublevel": 3,
+          "addon_group": 42,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 20,
+          "addon_x": "335.87167325016",
+          "addon_y": "-286.12220277265",
+          "addon_sublevel": 5,
+          "addon_group": 101,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 21,
+          "addon_x": "344.81907124037",
+          "addon_y": "-289.28009465918",
+          "addon_sublevel": 5,
+          "addon_group": 101,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 22,
+          "addon_x": "344.99962850846",
+          "addon_y": "-476.49996638857",
+          "addon_sublevel": 5,
+          "addon_group": 102,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 23,
+          "addon_x": "344.99962850846",
+          "addon_y": "-494.49999170192",
+          "addon_sublevel": 5,
+          "addon_group": 102,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 24,
+          "addon_x": "348.54159487738",
+          "addon_y": "-447.04544033469",
+          "addon_sublevel": 6,
+          "addon_group": 71,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114636,
+          "npc_name": "Phantom Guardsman",
+          "source_clone_index": 25,
+          "addon_x": "345.35977337367",
+          "addon_y": "-452.95455134657",
+          "addon_sublevel": 6,
+          "addon_group": 71,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114796,
+          "npc_name": "Wholesome Hostess",
+          "source_clone_index": 15,
+          "addon_x": "551.15056743248",
+          "addon_y": "-196.62557419674",
+          "addon_sublevel": 3,
+          "addon_group": 39,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114792,
+          "npc_name": "Virtuous Lady",
+          "source_clone_index": 12,
+          "addon_x": "547.05960390977",
+          "addon_y": "-191.62558569688",
+          "addon_sublevel": 3,
+          "addon_group": 39,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114792,
+          "npc_name": "Virtuous Lady",
+          "source_clone_index": 13,
+          "addon_x": "559.31193018453",
+          "addon_y": "-196.90215176127",
+          "addon_sublevel": 3,
+          "addon_group": 40,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114792,
+          "npc_name": "Virtuous Lady",
+          "source_clone_index": 14,
+          "addon_x": "565.10139111416",
+          "addon_y": "-197.95470710003",
+          "addon_sublevel": 3,
+          "addon_group": 40,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114637,
+          "npc_name": "Spectral Sentry",
+          "source_clone_index": 20,
+          "addon_x": "642.13273023656",
+          "addon_y": "-232.0753846173",
+          "addon_sublevel": 3,
+          "addon_group": 42,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114637,
+          "npc_name": "Spectral Sentry",
+          "source_clone_index": 21,
+          "addon_x": "345.87171692723",
+          "addon_y": "-279.80644158661",
+          "addon_sublevel": 5,
+          "addon_group": 101,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114637,
+          "npc_name": "Spectral Sentry",
+          "source_clone_index": 22,
+          "addon_x": "335.87167325016",
+          "addon_y": "-277.70112762587",
+          "addon_sublevel": 5,
+          "addon_group": 101,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114637,
+          "npc_name": "Spectral Sentry",
+          "source_clone_index": 23,
+          "addon_x": "357.99963010103",
+          "addon_y": "-472.49999891035",
+          "addon_sublevel": 5,
+          "addon_group": 102,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114637,
+          "npc_name": "Spectral Sentry",
+          "source_clone_index": 24,
+          "addon_x": "359.99965675548",
+          "addon_y": "-488.49999756925",
+          "addon_sublevel": 5,
+          "addon_group": 102,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114624,
+          "npc_name": "Arcane Warden",
+          "source_clone_index": 4,
+          "addon_x": "405.50682930917",
+          "addon_y": "-327.88835274568",
+          "addon_sublevel": 4,
+          "addon_group": 98,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114624,
+          "npc_name": "Arcane Warden",
+          "source_clone_index": 5,
+          "addon_x": "408.2341383243",
+          "addon_y": "-295.61560571298",
+          "addon_sublevel": 4,
+          "addon_group": 98,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114624,
+          "npc_name": "Arcane Warden",
+          "source_clone_index": 6,
+          "addon_x": "312.60704850344",
+          "addon_y": "-277.64394510374",
+          "addon_sublevel": 4,
+          "addon_group": 99,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114624,
+          "npc_name": "Arcane Warden",
+          "source_clone_index": 7,
+          "addon_x": "363.05723929787",
+          "addon_y": "-440.78959614011",
+          "addon_sublevel": 4,
+          "addon_group": 100,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114801,
+          "npc_name": "Spectral Apprentice",
+          "source_clone_index": 7,
+          "addon_x": "394.05460694759",
+          "addon_y": "-327.37198587238",
+          "addon_sublevel": 5,
+          "addon_group": 64,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114801,
+          "npc_name": "Spectral Apprentice",
+          "source_clone_index": 8,
+          "addon_x": "401.78186544864",
+          "addon_y": "-321.00832335797",
+          "addon_sublevel": 5,
+          "addon_group": 64,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114801,
+          "npc_name": "Spectral Apprentice",
+          "source_clone_index": 9,
+          "addon_x": "374.39834690511",
+          "addon_y": "-257.80464444771",
+          "addon_sublevel": 5,
+          "addon_group": 63,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114801,
+          "npc_name": "Spectral Apprentice",
+          "source_clone_index": 10,
+          "addon_x": "372.58021872588",
+          "addon_y": "-273.71373418341",
+          "addon_sublevel": 5,
+          "addon_group": 63,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114804,
+          "npc_name": "Spectral Charger",
+          "source_clone_index": 14,
+          "addon_x": "364.72784557708",
+          "addon_y": "-503.86361737811",
+          "addon_sublevel": 6,
+          "addon_group": 78,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114804,
+          "npc_name": "Spectral Charger",
+          "source_clone_index": 15,
+          "addon_x": "369.27332158837",
+          "addon_y": "-497.95452587321",
+          "addon_sublevel": 6,
+          "addon_group": 78,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114627,
+          "npc_name": "Shrieking Terror",
+          "source_clone_index": 1,
+          "addon_x": "472.61093967535",
+          "addon_y": "-320.11423016035",
+          "addon_sublevel": 1,
+          "addon_group": 94,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114627,
+          "npc_name": "Shrieking Terror",
+          "source_clone_index": 2,
+          "addon_x": "496.71148751795",
+          "addon_y": "-299.18760712171",
+          "addon_sublevel": 1,
+          "addon_group": 95,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1651,
+      "challenge_id": 234,
+      "source_file": "ReturntoKarazhanUpper.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/ReturntoKarazhanUpper.lua",
+      "source_sha256": "21cd09aa6583d5bb557db03e8d470370fb943658fb06863c82f6b99e528947f0",
+      "extra_point_count": 14,
+      "addon_normal_forces": 169,
+      "addon_teeming_forces": 202,
+      "points": [
+        {
+          "npc_id": 114627,
+          "npc_name": "Shrieking Terror",
+          "source_clone_index": 2,
+          "addon_x": "474.33527475862",
+          "addon_y": "-127.2404501885",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114627,
+          "npc_name": "Shrieking Terror",
+          "source_clone_index": 3,
+          "addon_x": "349.44567294153",
+          "addon_y": "-333.44203722496",
+          "addon_sublevel": 1,
+          "addon_group": 11,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114627,
+          "npc_name": "Shrieking Terror",
+          "source_clone_index": 4,
+          "addon_x": "335.35473089204",
+          "addon_y": "-349.35114646764",
+          "addon_sublevel": 1,
+          "addon_group": 11,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114334,
+          "npc_name": "Damaged Golem",
+          "source_clone_index": 3,
+          "addon_x": "256.36316305923",
+          "addon_y": "-227.08774103385",
+          "addon_sublevel": 3,
+          "addon_group": 1,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 114334,
+          "npc_name": "Damaged Golem",
+          "source_clone_index": 4,
+          "addon_x": "372.45886686736",
+          "addon_y": "-319.78934580451",
+          "addon_sublevel": 3,
+          "addon_group": 4,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115488,
+          "npc_name": "Infused Pyromancer",
+          "source_clone_index": 4,
+          "addon_x": "192.7267165289",
+          "addon_y": "-228.86141950088",
+          "addon_sublevel": 4,
+          "addon_group": 12,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115488,
+          "npc_name": "Infused Pyromancer",
+          "source_clone_index": 5,
+          "addon_x": "497.17010486843",
+          "addon_y": "-240.86553566596",
+          "addon_sublevel": 6,
+          "addon_group": 13,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115488,
+          "npc_name": "Infused Pyromancer",
+          "source_clone_index": 6,
+          "addon_x": "479.77912390227",
+          "addon_y": "-353.40131807648",
+          "addon_sublevel": 6,
+          "addon_group": 14,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115418,
+          "npc_name": "Spider",
+          "source_clone_index": 3,
+          "addon_x": "464.98593800353",
+          "addon_y": "-449.68591588586",
+          "addon_sublevel": 5,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115831,
+          "npc_name": "Mana Devourer",
+          "source_clone_index": 17,
+          "addon_x": "187.72653133202",
+          "addon_y": "-150.22723855889",
+          "addon_sublevel": 6,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115831,
+          "npc_name": "Mana Devourer",
+          "source_clone_index": 18,
+          "addon_x": "176.81745132725",
+          "addon_y": "-141.59085754582",
+          "addon_sublevel": 6,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115831,
+          "npc_name": "Mana Devourer",
+          "source_clone_index": 19,
+          "addon_x": "188.63563433707",
+          "addon_y": "-134.77266303587",
+          "addon_sublevel": 6,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115831,
+          "npc_name": "Mana Devourer",
+          "source_clone_index": 20,
+          "addon_x": "194.9992773445",
+          "addon_y": "-149.31813555385",
+          "addon_sublevel": 6,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 115831,
+          "npc_name": "Mana Devourer",
+          "source_clone_index": 21,
+          "addon_x": "175.90838733616",
+          "addon_y": "-133.8635795378",
+          "addon_sublevel": 6,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1753,
+      "challenge_id": 239,
+      "source_file": "SeatoftheTriumvirate.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/SeatoftheTriumvirate.lua",
+      "source_sha256": "eef58bad6d90e1b9147ad28509b975c36aa1e4b99513c43c16645c6b44a08934",
+      "extra_point_count": 23,
+      "addon_normal_forces": 275,
+      "addon_teeming_forces": 329,
+      "points": [
+        {
+          "npc_id": 122478,
+          "npc_name": "Void Discharge",
+          "source_clone_index": 74,
+          "addon_x": "370.31786392239",
+          "addon_y": "-165.44536665838",
+          "addon_sublevel": 1,
+          "addon_group": 77,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122478,
+          "npc_name": "Void Discharge",
+          "source_clone_index": 75,
+          "addon_x": "373.04505619123",
+          "addon_y": "-159.08172296131",
+          "addon_sublevel": 1,
+          "addon_group": 77,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 124171,
+          "npc_name": "Shadowguard Subjugator",
+          "source_clone_index": 30,
+          "addon_x": "199.54423015824",
+          "addon_y": "-429.3180320812",
+          "addon_sublevel": 1,
+          "addon_group": 8,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 124171,
+          "npc_name": "Shadowguard Subjugator",
+          "source_clone_index": 31,
+          "addon_x": "189.54421414458",
+          "addon_y": "-427.49982607111",
+          "addon_sublevel": 1,
+          "addon_group": 9,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 124171,
+          "npc_name": "Shadowguard Subjugator",
+          "source_clone_index": 32,
+          "addon_x": "254.23180034435",
+          "addon_y": "-302.29806932098",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 124171,
+          "npc_name": "Shadowguard Subjugator",
+          "source_clone_index": 33,
+          "addon_x": "293.57385763586",
+          "addon_y": "-393.10058817467",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 124171,
+          "npc_name": "Shadowguard Subjugator",
+          "source_clone_index": 34,
+          "addon_x": "372.94627776133",
+          "addon_y": "-244.98048468039",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122322,
+          "npc_name": "Famished Broken",
+          "source_clone_index": 39,
+          "addon_x": "206.3624246682",
+          "addon_y": "-448.42142279644",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122322,
+          "npc_name": "Famished Broken",
+          "source_clone_index": 40,
+          "addon_x": "200.45329414934",
+          "addon_y": "-449.33046728056",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122322,
+          "npc_name": "Famished Broken",
+          "source_clone_index": 41,
+          "addon_x": "197.27151165958",
+          "addon_y": "-445.69415279524",
+          "addon_sublevel": 1,
+          "addon_group": 10,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122413,
+          "npc_name": "Shadowguard Riftstalker",
+          "source_clone_index": 15,
+          "addon_x": "257.14000106514",
+          "addon_y": "-221.76332786626",
+          "addon_sublevel": 1,
+          "addon_group": 76,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122408,
+          "npc_name": "Shadow Stalker",
+          "source_clone_index": 14,
+          "addon_x": "268.9582230889",
+          "addon_y": "-217.21785185497",
+          "addon_sublevel": 1,
+          "addon_group": 76,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122421,
+          "npc_name": "Umbral War-Adept",
+          "source_clone_index": 7,
+          "addon_x": "263.43797015732",
+          "addon_y": "-222.14517614093",
+          "addon_sublevel": 1,
+          "addon_group": 76,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 122403,
+          "npc_name": "Shadowguard Champion",
+          "source_clone_index": 10,
+          "addon_x": "317.70554445976",
+          "addon_y": "-411.06782060894",
+          "addon_sublevel": 1,
+          "addon_group": 75,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122403,
+          "npc_name": "Shadowguard Champion",
+          "source_clone_index": 11,
+          "addon_x": "264.86725956619",
+          "addon_y": "-227.21786786864",
+          "addon_sublevel": 1,
+          "addon_group": 76,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122403,
+          "npc_name": "Shadowguard Champion",
+          "source_clone_index": 12,
+          "addon_x": "248.91083371555",
+          "addon_y": "-183.58577706664",
+          "addon_sublevel": 1,
+          "addon_group": 73,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122404,
+          "npc_name": "Shadowguard Voidbender",
+          "source_clone_index": 17,
+          "addon_x": "254.68639086082",
+          "addon_y": "-289.1162318036",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122404,
+          "npc_name": "Shadowguard Voidbender",
+          "source_clone_index": 19,
+          "addon_x": "303.119322147",
+          "addon_y": "-381.28240516485",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122404,
+          "npc_name": "Shadowguard Voidbender",
+          "source_clone_index": 20,
+          "addon_x": "370.67348123476",
+          "addon_y": "-229.07141617577",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 122401,
+          "npc_name": "Shadowguard Trickster",
+          "source_clone_index": 7,
+          "addon_x": "241.23377863235",
+          "addon_y": "-258.77958390784",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 122401,
+          "npc_name": "Shadowguard Trickster",
+          "source_clone_index": 8,
+          "addon_x": "326.24128582189",
+          "addon_y": "-230.66285760621",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 122401,
+          "npc_name": "Shadowguard Trickster",
+          "source_clone_index": 9,
+          "addon_x": "327.24940878641",
+          "addon_y": "-147.3301129855",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        },
+        {
+          "npc_id": 122401,
+          "npc_name": "Shadowguard Trickster",
+          "source_clone_index": 11,
+          "addon_x": "279.98252411174",
+          "addon_y": "-226.48603068888",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": true
+        }
+      ]
+    },
+    {
+      "map_id": 1516,
+      "challenge_id": 209,
+      "source_file": "TheArcway.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/TheArcway.lua",
+      "source_sha256": "121772165770d76751ef8595b96f839d3ef6398cdfe021ddca49773dcdd7f083",
+      "extra_point_count": 14,
+      "addon_normal_forces": 392,
+      "addon_teeming_forces": 466,
+      "points": [
+        {
+          "npc_id": 98425,
+          "npc_name": "Unstable Amalgamation",
+          "source_clone_index": 8,
+          "addon_x": "403.26369039058",
+          "addon_y": "-144.91358574685",
+          "addon_sublevel": 1,
+          "addon_group": 1,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105952,
+          "npc_name": "Withered Manawraith",
+          "source_clone_index": 14,
+          "addon_x": "405.67645219801",
+          "addon_y": "-399.29657150525",
+          "addon_sublevel": 1,
+          "addon_group": 22,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98733,
+          "npc_name": "Withered Fiend",
+          "source_clone_index": 42,
+          "addon_x": "356.69509584199",
+          "addon_y": "-329.51389941196",
+          "addon_sublevel": 1,
+          "addon_group": 19,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98733,
+          "npc_name": "Withered Fiend",
+          "source_clone_index": 43,
+          "addon_x": "345.78601583722",
+          "addon_y": "-339.51387641168",
+          "addon_sublevel": 1,
+          "addon_group": 19,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 106059,
+          "npc_name": "Warp Shade",
+          "source_clone_index": 11,
+          "addon_x": "210.37886166784",
+          "addon_y": "-402.3699115151",
+          "addon_sublevel": 1,
+          "addon_group": 13,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 106059,
+          "npc_name": "Warp Shade",
+          "source_clone_index": 12,
+          "addon_x": "190.37881013353",
+          "addon_y": "-381.00626399415",
+          "addon_sublevel": 1,
+          "addon_group": 14,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98756,
+          "npc_name": "Arcane Anomaly",
+          "source_clone_index": 8,
+          "addon_x": "282.14437891513",
+          "addon_y": "-345.01415290813",
+          "addon_sublevel": 1,
+          "addon_group": null,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98756,
+          "npc_name": "Arcane Anomaly",
+          "source_clone_index": 9,
+          "addon_x": "252.72544315243",
+          "addon_y": "-355.89286334599",
+          "addon_sublevel": 1,
+          "addon_group": 47,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105915,
+          "npc_name": "Nightborne Reclaimer",
+          "source_clone_index": 4,
+          "addon_x": "335.00768839593",
+          "addon_y": "-405.72023018853",
+          "addon_sublevel": 1,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105915,
+          "npc_name": "Nightborne Reclaimer",
+          "source_clone_index": 5,
+          "addon_x": "342.18950989965",
+          "addon_y": "-406.17480119803",
+          "addon_sublevel": 1,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105617,
+          "npc_name": "Eredar Chaosbringer",
+          "source_clone_index": 19,
+          "addon_x": "484.69460298094",
+          "addon_y": "-207.06715495472",
+          "addon_sublevel": 1,
+          "addon_group": 42,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105617,
+          "npc_name": "Eredar Chaosbringer",
+          "source_clone_index": 20,
+          "addon_x": "484.69460298094",
+          "addon_y": "-193.88533694431",
+          "addon_sublevel": 1,
+          "addon_group": 42,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105651,
+          "npc_name": "Dreadborne Seer",
+          "source_clone_index": 5,
+          "addon_x": "607.06557212752",
+          "addon_y": "-276.55429663756",
+          "addon_sublevel": 1,
+          "addon_group": 41,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 105682,
+          "npc_name": "Felguard Destroyer",
+          "source_clone_index": 3,
+          "addon_x": "606.82048968677",
+          "addon_y": "-156.45891102154",
+          "addon_sublevel": 1,
+          "addon_group": 39,
+          "addon_patrol_present": false
+        }
+      ]
+    },
+    {
+      "map_id": 1493,
+      "challenge_id": 207,
+      "source_file": "VaultoftheWardens.lua",
+      "source_url": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/VaultoftheWardens.lua",
+      "source_sha256": "9c72c8f5c7a51eda05fc84a4a0e4f973e05d86b35dd804594706ef6cdcec06f6",
+      "extra_point_count": 11,
+      "addon_normal_forces": 210,
+      "addon_teeming_forces": 252,
+      "points": [
+        {
+          "npc_id": 98926,
+          "npc_name": "Shadow Hunter",
+          "source_clone_index": 6,
+          "addon_x": "466.55658108302",
+          "addon_y": "-474.50292229169",
+          "addon_sublevel": 1,
+          "addon_group": 4,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98926,
+          "npc_name": "Shadow Hunter",
+          "source_clone_index": 7,
+          "addon_x": "458.37473206549",
+          "addon_y": "-475.41202529674",
+          "addon_sublevel": 1,
+          "addon_group": 4,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96587,
+          "npc_name": "Felsworn Infester",
+          "source_clone_index": 10,
+          "addon_x": "500.85174221874",
+          "addon_y": "-405.21617467725",
+          "addon_sublevel": 1,
+          "addon_group": 1,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96587,
+          "npc_name": "Felsworn Infester",
+          "source_clone_index": 11,
+          "addon_x": "329.49401829693",
+          "addon_y": "-414.74428808552",
+          "addon_sublevel": 1,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96584,
+          "npc_name": "Immoliant Fury",
+          "source_clone_index": 7,
+          "addon_x": "475.7062410865",
+          "addon_y": "-390.22712640379",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96584,
+          "npc_name": "Immoliant Fury",
+          "source_clone_index": 8,
+          "addon_x": "464.34264859316",
+          "addon_y": "-392.04529339993",
+          "addon_sublevel": 1,
+          "addon_group": 2,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 96584,
+          "npc_name": "Immoliant Fury",
+          "source_clone_index": 9,
+          "addon_x": "503.59712534374",
+          "addon_y": "-463.40894296133",
+          "addon_sublevel": 1,
+          "addon_group": 3,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 98954,
+          "npc_name": "Felsworn Myrmidon",
+          "source_clone_index": 4,
+          "addon_x": "331.76677605585",
+          "addon_y": "-446.10791600514",
+          "addon_sublevel": 1,
+          "addon_group": 7,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 99956,
+          "npc_name": "Fel-Infused Fury",
+          "source_clone_index": 3,
+          "addon_x": "234.08966582633",
+          "addon_y": "-432.49985770644",
+          "addon_sublevel": 1,
+          "addon_group": 9,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 100364,
+          "npc_name": "Spirit of Vengeance",
+          "source_clone_index": 6,
+          "addon_x": "413.79262506423",
+          "addon_y": "-264.68065199139",
+          "addon_sublevel": 3,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        },
+        {
+          "npc_id": 97678,
+          "npc_name": "Aranasi Broodmother",
+          "source_clone_index": 4,
+          "addon_x": "424.24719258042",
+          "addon_y": "-263.9533819902",
+          "addon_sublevel": 3,
+          "addon_group": 18,
+          "addon_patrol_present": false
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "routes": 13,
+    "maps": 12,
+    "teeming_points": 222,
+    "unique_npc_ids": 105
+  }
+}
