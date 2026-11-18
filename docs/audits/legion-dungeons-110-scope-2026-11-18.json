@@ -627,6 +627,16 @@
       "issue": "Teeming Cathedral/Seat criterion lookup and completion order",
       "audit": "legion-teeming-criteria-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_TEEMING_CONTENT_CLIENT_OPEN"
+    },
+    {
+      "issue": "Nearest dynamic collision height/contact surfaces",
+      "audit": "dynamic-model-nearest-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Maw shared ship model-local walking navigation",
+      "audit": "maw-ship-navigation-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {
@@ -639,8 +649,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "legion-teeming-criteria-2026-11-18.json",
-    "current_rollback": ".codex/legion-teeming-criteria-20261118/rollback-before-teeming-criteria-repair",
+    "superseded_by": "maw-ship-navigation-2026-11-18.json",
+    "current_rollback": ".codex/maw-ship-navigation-20261118/rollback-before-maw-navigation",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -664,10 +674,13 @@
     "quaking_native_checks": 225,
     "quaking_audit": "legion-quaking-native-2026-11-18.json",
     "teeming_admission_native_checks": 140,
-    "teeming_content": "PARTIAL:historical222 tagged addon points across13 routes/105 native NPC IDs;live markers0 and original server XYZ/placement receipts OPEN",
+    "teeming_content": "OPEN:222 historical addon points/105 native templates;native targets13/13,weight metadata105/106;211 surface/nav/body observations,186 conservative proximity-screen candidates,0 approved server spawns/live markers",
     "teeming_criteria_native_checks": 5176,
     "teeming_criteria_audit": "legion-teeming-criteria-2026-11-18.json",
-    "teeming_github_research": "legion-teeming-github-research-2026-11-18.json"
+    "teeming_github_research": "legion-teeming-github-research-2026-11-18.json",
+    "dynamic_model_nearest_native_checks": 1058,
+    "maw_ship_navigation_native_checks": 524,
+    "teeming_projection_research": "legion-teeming-projection-2026-11-18.json"
   },
   "focused_verifications": [
     {

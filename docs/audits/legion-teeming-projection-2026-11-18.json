@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "GITHUB_RECONCILIATION_COMPLETE_ORIGINAL_SERVER_SPAWNS_OPEN",
+  "request": "Continue the GitHub Teeming data search through native compatibility and geometry reconciliation.",
+  "prior_search": "legion-teeming-github-research-2026-11-18.json:12 public repositories/4482 SQL files/4101 blobs plus packaged World;no ready marked-spawn SQL in reviewed supported inputs. Existing unsupported-form limits retained.",
+  "result": {
+    "catalog": "docs/research/legion-teeming-projected-2026-11-18.json",
+    "catalog_sha256": "2bbdc872dcced4b9340c3507d6f0fe0bf82d933f08ff97e54ff00f6fa8480f96",
+    "points": 222,
+    "routes": 13,
+    "maps": 12,
+    "unique_npc_ids": 105,
+    "native_templates_matched": 105,
+    "native_anchor_observations": 4232,
+    "surface_requests": 1392,
+    "surface_nav_body_observation_bucket": 211,
+    "footprint_review": 9,
+    "no_nearby_matching_nav": 2,
+    "conservative_proximity_screen": 186,
+    "additional_nav_height_review": 25,
+    "server_spawns_approved": 0,
+    "live_teeming_markers_after_work": 0,
+    "force_targets_matching": 13,
+    "route_npc_weight_rows": 106,
+    "weight_matches": 105,
+    "weight_conflicts": [
+      {
+        "npc_id": 122401,
+        "addon_weight": 8,
+        "native_weights": [
+          4
+        ],
+        "metadata_match": false
+      }
+    ]
+  },
+  "interpretation": "Found usable historical identity/2D/group/patrol references and derived world-coordinate candidates,not original server placement records. All13 force targets match native metadata;Shadowguard Trickster122401 is8 in the addon and4 in the actual native tree. Native weights retained;no speculative spawn/force SQL.",
+  "geometry_limits": [
+    "All222 image headers match the immutable historical catalog;derived XY and sampled surface Z are reconstruction candidates,not original server poses.",
+    "211 is a surface/nav-query/body observation bucket,not211 approved placements. A separate conservative3-yard XY/0.8-yard vertical screen retains186;25 additional height differences need native route/normalization review. This screen does not replace the native global-nav tolerances.",
+    "Two Court of Stars points have no matching nearby floor/nav result;9 other points fail the sampled visual footprint/ground test. Source icons are presentation coordinates and must not be treated as authoritative collision poses.",
+    "A nearby nav polygon is not a completed corridor. Sampled display dimensions do not cover every template display variant. WMO group/MinZ floor inference does not recover original DoodadPlacementID or spawn receipts.",
+    "Nearest same-NPC records can be distant or on a different floor;they are references,not recovered parent spawns.",
+    "Original orientation,respawn,phase/attempt conditions,patrol/formation/AI publication and GUID receipts remain unproven. No SQL or Teeming marker added.",
+    "Native force targets/weights are metadata joins,not player/pet/guardian kills,earned forces,whole dungeon traversal or client verification."
+  ],
+  "source_ui": "Pinned Gethe7.3.5(26124) FrameXML dimensions1002x668 verified by immutable raw bytes;not claimed as a26972 UI extraction. Actual26972 WorldMapArea/DungeonMap/Chunk metadata supplies bounds. Historical MDT214-pixel tiles yield837.609375x558.40625 content dimensions;addon sublevel/native floor mapping is resolved by actual texture filename.",
+  "repairs": [
+    {
+      "issue": "Nearest dynamic geometry height/contact",
+      "audit": "dynamic-model-nearest-2026-11-18.json"
+    },
+    {
+      "issue": "Native Maw ship navigation",
+      "audit": "maw-ship-navigation-2026-11-18.json"
+    }
+  ],
+  "operations": "Read-only public/source/native data and compatibility analysis;no Teeming spawn SQL,marker,orientation,phase,respawn,patrol or force migration. Two independent verified C++/navigation-asset repairs deployed separately. No user server stopped,no client traversal.",
+  "retained_open_evidence": ".codex/teeming-placement-20261118 and .codex/teeming-github-20261118:hashed native exports/surfaces and immutable public sources retained. Native test executables,symbols,private configs and superseded rollback removed. Missing content never filed as fixed.",
+  "remaining": "Original server/sniff placement and per-spawn phase/path/formation/AI/respawn/orientation receipts remain unrecovered.211 is an observation bucket;186 pass an additional conservative proximity screen,none are approved server spawns. Actual earned player/pet/guardian forces,extra-only grid publication,AI/combat and full13 dungeon/client chains remain OPEN.",
+  "catalog_hash_basis": "UTF-8 LF committed JSON;Windows working-copy newline conversion was detected by staged-blob verification and corrected before commit."
+}
