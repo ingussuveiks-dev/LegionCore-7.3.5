@@ -81,6 +81,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50617
+          ],
+          "native_criteria_ids": [
+            31570
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -89,6 +96,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50616
+          ],
+          "native_criteria_ids": [
+            31569
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -97,6 +111,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50607
+          ],
+          "native_criteria_ids": [
+            31561
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -105,6 +126,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50606
+          ],
+          "native_criteria_ids": [
+            31560
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -113,6 +141,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50603
+          ],
+          "native_criteria_ids": [
+            31559
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -121,6 +156,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50619
+          ],
+          "native_criteria_ids": [
+            31571
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -129,6 +171,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50602
+          ],
+          "native_criteria_ids": [
+            31577
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -137,6 +186,13 @@
           "native_weights": [
             6
           ],
+          "native_leaf_ids": [
+            50605
+          ],
+          "native_criteria_ids": [
+            31576
+          ],
+          "native_effective_weight": 6,
           "metadata_match": true
         },
         {
@@ -145,6 +201,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50618
+          ],
+          "native_criteria_ids": [
+            31581
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -153,6 +216,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50601
+          ],
+          "native_criteria_ids": [
+            31580
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -161,6 +231,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            50613
+          ],
+          "native_criteria_ids": [
+            31575
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -180,6 +257,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58729
+          ],
+          "native_criteria_ids": [
+            36450
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -188,6 +272,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            59224
+          ],
+          "native_criteria_ids": [
+            36727
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -196,6 +287,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58732
+          ],
+          "native_criteria_ids": [
+            36453
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -204,6 +302,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58733
+          ],
+          "native_criteria_ids": [
+            36454
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -212,6 +317,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            59216
+          ],
+          "native_criteria_ids": [
+            36719
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -220,6 +332,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58724
+          ],
+          "native_criteria_ids": [
+            36445
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -228,6 +347,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58721
+          ],
+          "native_criteria_ids": [
+            36442
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -236,6 +362,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58731
+          ],
+          "native_criteria_ids": [
+            36452
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -244,6 +377,13 @@
           "native_weights": [
             1
           ],
+          "native_leaf_ids": [
+            58728
+          ],
+          "native_criteria_ids": [
+            36449
+          ],
+          "native_effective_weight": 1,
           "metadata_match": true
         },
         {
@@ -252,6 +392,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58727
+          ],
+          "native_criteria_ids": [
+            36448
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -260,6 +407,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            58722
+          ],
+          "native_criteria_ids": [
+            36443
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -279,6 +433,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52477
+          ],
+          "native_criteria_ids": [
+            32446
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -287,6 +448,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            52478
+          ],
+          "native_criteria_ids": [
+            32443
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -295,6 +463,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52479
+          ],
+          "native_criteria_ids": [
+            32447
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -303,6 +478,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52488
+          ],
+          "native_criteria_ids": [
+            32451
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -311,6 +493,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52484
+          ],
+          "native_criteria_ids": [
+            32438
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -319,6 +508,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52485
+          ],
+          "native_criteria_ids": [
+            32449
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -327,6 +523,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52487
+          ],
+          "native_criteria_ids": [
+            32442
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -346,6 +549,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51720
+          ],
+          "native_criteria_ids": [
+            31956
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -354,6 +564,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51718
+          ],
+          "native_criteria_ids": [
+            31964
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -362,6 +579,13 @@
           "native_weights": [
             10
           ],
+          "native_leaf_ids": [
+            51729
+          ],
+          "native_criteria_ids": [
+            31957
+          ],
+          "native_effective_weight": 10,
           "metadata_match": true
         },
         {
@@ -370,6 +594,13 @@
           "native_weights": [
             3
           ],
+          "native_leaf_ids": [
+            51724
+          ],
+          "native_criteria_ids": [
+            31961
+          ],
+          "native_effective_weight": 3,
           "metadata_match": true
         },
         {
@@ -378,6 +609,13 @@
           "native_weights": [
             9
           ],
+          "native_leaf_ids": [
+            51715
+          ],
+          "native_criteria_ids": [
+            31962
+          ],
+          "native_effective_weight": 9,
           "metadata_match": true
         },
         {
@@ -386,6 +624,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51725
+          ],
+          "native_criteria_ids": [
+            31970
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -394,6 +639,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51714
+          ],
+          "native_criteria_ids": [
+            31971
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -402,6 +654,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            51717
+          ],
+          "native_criteria_ids": [
+            31965
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -410,6 +669,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51722
+          ],
+          "native_criteria_ids": [
+            31969
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -429,6 +695,13 @@
           "native_weights": [
             10
           ],
+          "native_leaf_ids": [
+            51252
+          ],
+          "native_criteria_ids": [
+            31814
+          ],
+          "native_effective_weight": 10,
           "metadata_match": true
         },
         {
@@ -437,6 +710,13 @@
           "native_weights": [
             10
           ],
+          "native_leaf_ids": [
+            51272
+          ],
+          "native_criteria_ids": [
+            31833
+          ],
+          "native_effective_weight": 10,
           "metadata_match": true
         },
         {
@@ -445,6 +725,13 @@
           "native_weights": [
             10
           ],
+          "native_leaf_ids": [
+            51260
+          ],
+          "native_criteria_ids": [
+            31822
+          ],
+          "native_effective_weight": 10,
           "metadata_match": true
         },
         {
@@ -453,6 +740,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51250
+          ],
+          "native_criteria_ids": [
+            31812
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -461,6 +755,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51258
+          ],
+          "native_criteria_ids": [
+            31820
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -469,6 +770,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51251
+          ],
+          "native_criteria_ids": [
+            31813
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -488,6 +796,13 @@
           "native_weights": [
             2
           ],
+          "native_leaf_ids": [
+            47417
+          ],
+          "native_criteria_ids": [
+            29755
+          ],
+          "native_effective_weight": 2,
           "metadata_match": true
         },
         {
@@ -496,6 +811,13 @@
           "native_weights": [
             2
           ],
+          "native_leaf_ids": [
+            47418
+          ],
+          "native_criteria_ids": [
+            29753
+          ],
+          "native_effective_weight": 2,
           "metadata_match": true
         },
         {
@@ -504,6 +826,13 @@
           "native_weights": [
             2
           ],
+          "native_leaf_ids": [
+            47422
+          ],
+          "native_criteria_ids": [
+            29756
+          ],
+          "native_effective_weight": 2,
           "metadata_match": true
         },
         {
@@ -512,6 +841,13 @@
           "native_weights": [
             5
           ],
+          "native_leaf_ids": [
+            47421
+          ],
+          "native_criteria_ids": [
+            29758
+          ],
+          "native_effective_weight": 5,
           "metadata_match": true
         },
         {
@@ -520,6 +856,13 @@
           "native_weights": [
             2
           ],
+          "native_leaf_ids": [
+            47420
+          ],
+          "native_criteria_ids": [
+            29754
+          ],
+          "native_effective_weight": 2,
           "metadata_match": true
         },
         {
@@ -528,6 +871,13 @@
           "native_weights": [
             2
           ],
+          "native_leaf_ids": [
+            47425
+          ],
+          "native_criteria_ids": [
+            29748
+          ],
+          "native_effective_weight": 2,
           "metadata_match": true
         }
       ]
@@ -547,6 +897,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52341
+          ],
+          "native_criteria_ids": [
+            32387
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -555,6 +912,13 @@
           "native_weights": [
             6
           ],
+          "native_leaf_ids": [
+            52337
+          ],
+          "native_criteria_ids": [
+            32391
+          ],
+          "native_effective_weight": 6,
           "metadata_match": true
         },
         {
@@ -563,6 +927,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52344
+          ],
+          "native_criteria_ids": [
+            32395
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -571,6 +942,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52342
+          ],
+          "native_criteria_ids": [
+            32397
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -579,6 +957,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52345
+          ],
+          "native_criteria_ids": [
+            32390
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -587,6 +972,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52340
+          ],
+          "native_criteria_ids": [
+            32388
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -606,6 +998,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52300
+          ],
+          "native_criteria_ids": [
+            32372
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -614,6 +1013,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52295
+          ],
+          "native_criteria_ids": [
+            32369
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -622,6 +1028,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            52296
+          ],
+          "native_criteria_ids": [
+            32374
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -630,6 +1043,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52292
+          ],
+          "native_criteria_ids": [
+            32368
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -638,6 +1058,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52302
+          ],
+          "native_criteria_ids": [
+            32379
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -646,6 +1073,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52285
+          ],
+          "native_criteria_ids": [
+            32370
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -654,6 +1088,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52294
+          ],
+          "native_criteria_ids": [
+            32364
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -673,6 +1114,13 @@
           "native_weights": [
             1
           ],
+          "native_leaf_ids": [
+            57874
+          ],
+          "native_criteria_ids": [
+            35849
+          ],
+          "native_effective_weight": 1,
           "metadata_match": true
         },
         {
@@ -681,6 +1129,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57875
+          ],
+          "native_criteria_ids": [
+            35850
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -689,6 +1144,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57879
+          ],
+          "native_criteria_ids": [
+            35854
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -697,6 +1159,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            57891
+          ],
+          "native_criteria_ids": [
+            35866
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -705,6 +1174,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57872
+          ],
+          "native_criteria_ids": [
+            35835
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -713,6 +1189,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57882
+          ],
+          "native_criteria_ids": [
+            35857
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -721,6 +1204,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57883
+          ],
+          "native_criteria_ids": [
+            35858
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -729,6 +1219,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57884
+          ],
+          "native_criteria_ids": [
+            35859
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -737,6 +1234,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57887
+          ],
+          "native_criteria_ids": [
+            35862
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -745,6 +1249,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57886
+          ],
+          "native_criteria_ids": [
+            35861
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -753,6 +1264,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57897
+          ],
+          "native_criteria_ids": [
+            35872
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -761,6 +1279,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57898
+          ],
+          "native_criteria_ids": [
+            35873
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -769,6 +1294,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57878
+          ],
+          "native_criteria_ids": [
+            35853
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -788,6 +1320,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57818
+          ],
+          "native_criteria_ids": [
+            35836
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -796,6 +1335,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57817
+          ],
+          "native_criteria_ids": [
+            35835
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -804,6 +1350,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            57827
+          ],
+          "native_criteria_ids": [
+            35845
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -812,6 +1365,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57823
+          ],
+          "native_criteria_ids": [
+            35841
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -820,6 +1380,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            57828
+          ],
+          "native_criteria_ids": [
+            35846
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -839,15 +1406,32 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            60940
+          ],
+          "native_criteria_ids": [
+            37398
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
           "npc_id": 122401,
           "addon_weight": 8,
           "native_weights": [
+            4,
             4
           ],
-          "metadata_match": false
+          "native_leaf_ids": [
+            60950,
+            62527
+          ],
+          "native_criteria_ids": [
+            37408,
+            37408
+          ],
+          "native_effective_weight": 8,
+          "metadata_match": true
         },
         {
           "npc_id": 122403,
@@ -855,6 +1439,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            60947
+          ],
+          "native_criteria_ids": [
+            37405
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -863,6 +1454,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            60952
+          ],
+          "native_criteria_ids": [
+            37410
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -871,6 +1469,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            60943
+          ],
+          "native_criteria_ids": [
+            37401
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -879,6 +1484,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            60944
+          ],
+          "native_criteria_ids": [
+            37402
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -887,6 +1499,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            60945
+          ],
+          "native_criteria_ids": [
+            37403
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -895,6 +1514,13 @@
           "native_weights": [
             2
           ],
+          "native_leaf_ids": [
+            60941
+          ],
+          "native_criteria_ids": [
+            37399
+          ],
+          "native_effective_weight": 2,
           "metadata_match": true
         },
         {
@@ -903,6 +1529,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            60939
+          ],
+          "native_criteria_ids": [
+            37397
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -922,6 +1555,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52444
+          ],
+          "native_criteria_ids": [
+            32432
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -930,6 +1570,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52446
+          ],
+          "native_criteria_ids": [
+            32434
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -938,6 +1585,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52438
+          ],
+          "native_criteria_ids": [
+            32420
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -946,6 +1600,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52440
+          ],
+          "native_criteria_ids": [
+            32422
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -954,6 +1615,13 @@
           "native_weights": [
             10
           ],
+          "native_leaf_ids": [
+            52437
+          ],
+          "native_criteria_ids": [
+            32425
+          ],
+          "native_effective_weight": 10,
           "metadata_match": true
         },
         {
@@ -962,6 +1630,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            52439
+          ],
+          "native_criteria_ids": [
+            32423
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -970,6 +1645,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52447
+          ],
+          "native_criteria_ids": [
+            32429
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -978,6 +1660,13 @@
           "native_weights": [
             6
           ],
+          "native_leaf_ids": [
+            52445
+          ],
+          "native_criteria_ids": [
+            32435
+          ],
+          "native_effective_weight": 6,
           "metadata_match": true
         },
         {
@@ -986,6 +1675,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            52434
+          ],
+          "native_criteria_ids": [
+            32433
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -1005,6 +1701,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51890
+          ],
+          "native_criteria_ids": [
+            32084
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -1013,6 +1716,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51887
+          ],
+          "native_criteria_ids": [
+            32080
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -1021,6 +1731,13 @@
           "native_weights": [
             8
           ],
+          "native_leaf_ids": [
+            51895
+          ],
+          "native_criteria_ids": [
+            32089
+          ],
+          "native_effective_weight": 8,
           "metadata_match": true
         },
         {
@@ -1029,6 +1746,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51894
+          ],
+          "native_criteria_ids": [
+            32088
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -1037,6 +1761,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51918
+          ],
+          "native_criteria_ids": [
+            32083
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -1045,6 +1776,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51886
+          ],
+          "native_criteria_ids": [
+            32079
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         },
         {
@@ -1053,6 +1791,13 @@
           "native_weights": [
             4
           ],
+          "native_leaf_ids": [
+            51898
+          ],
+          "native_criteria_ids": [
+            32092
+          ],
+          "native_effective_weight": 4,
           "metadata_match": true
         }
       ]
@@ -4869,7 +5614,14 @@
         "distance_xy": 22.810288913714217,
         "z": 23.2849
       },
-      "approved_server_spawn": false
+      "approved_server_spawn": false,
+      "placement_review": {
+        "result": "PATROL_GROUP_CONFIRMED_RAW_ICON_POSE_REJECTED",
+        "audit": "../audits/legion-teeming-video-2026-11-18.json",
+        "native_leader_guid": 365657,
+        "native_path_id": 12909935,
+        "reason": "Video supports one additional Hound and Inquisitor in the existing bridge patrol. Raw addon extra icons are10.50/11.36yd transverse to its native path and query ground below the bridge;do not create static spawns here. Original formation offsets/orientation/respawn/phase receipts remain unrecovered."
+      }
     },
     {
       "candidate_id": 453,
@@ -5036,7 +5788,14 @@
         "distance_xy": 25.527690544462256,
         "z": 23.2177
       },
-      "approved_server_spawn": false
+      "approved_server_spawn": false,
+      "placement_review": {
+        "result": "PATROL_GROUP_CONFIRMED_RAW_ICON_POSE_REJECTED",
+        "audit": "../audits/legion-teeming-video-2026-11-18.json",
+        "native_leader_guid": 365657,
+        "native_path_id": 12909935,
+        "reason": "Video supports one additional Hound and Inquisitor in the existing bridge patrol. Raw addon extra icons are10.50/11.36yd transverse to its native path and query ground below the bridge;do not create static spawns here. Original formation offsets/orientation/respawn/phase receipts remain unrecovered."
+      }
     },
     {
       "candidate_id": 465,
@@ -16368,5 +17127,7 @@
       },
       "approved_server_spawn": false
     }
-  ]
+  ],
+  "native_force_reconciliation_method": "Sum the Amount of every distinct native kill-criterion tree leaf under the selected Operator9 force parent. Retain duplicate CriteriaID leaves;native progress is keyed by tree ID. See tools/research/reconcile_legion_teeming_forces.py and legion-teeming-video-2026-11-18.json.",
+  "video_followup": "legion-teeming-video-2026-11-18.json:three whole-timeline sampled-frame reviews,focused Court bridge sequence;not continuous playback/audio or local client traversal."
 }

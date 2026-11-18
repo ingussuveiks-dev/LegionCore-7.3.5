@@ -30,6 +30,39 @@ static void SeedLeaves(TeemingCriteriaScenario& scenario,CriteriaTree const* tre
     for(auto child:tree->Children)SeedLeaves(scenario,child);
 }
 
+static void CheckSeatTricksterWeight(TeemingCriteriaScenario& scenario,bool teeming)
+{
+    auto root=sAchievementMgr->GetCriteriaTree(teeming?60938:60914);
+    auto first=sAchievementMgr->GetCriteriaTree(teeming?60950:60926);
+    auto second=sAchievementMgr->GetCriteriaTree(teeming?62527:62526);
+    Require(root&&first&&second,"Native Seat Trickster weighted graph absent");
+    Check(root->Entry->Operator==CRITERIA_TREE_OPERATOR_SCENARIO&&root->Entry->Amount==(teeming?329:275),"Native Seat force target/operator changed");
+    Check(first!=second&&first->Entry->Parent==root->ID&&second->Entry->Parent==root->ID,"Distinct native Trickster leaves lost their selected parent");
+    Check(first->Criteria&&second->Criteria&&first->Criteria->Entry->ID==37408&&second->Criteria->Entry->ID==37408,"Native Trickster leaves no longer share the real kill criterion");
+    Check(first->Criteria->Entry->Type==CRITERIA_TYPE_KILL_CREATURE&&first->Criteria->Entry->Asset==122401&&first->Entry->Amount==4&&second->Entry->Amount==4,"Native Trickster 4+4 metadata changed");
+    Check(scenario.CanUpdateCriteria(first->ID)&&scenario.CanUpdateCriteria(second->ID),"Selected scenario denied one native Trickster leaf");
+    auto set=[&](CriteriaTree const* leaf,uint64 count)
+    {
+        auto& progress=(scenario.GetAchievementMgr().*Access(TeemingProgressTag{}))[leaf->ID];
+        progress.Counter=count;
+        (scenario.GetAchievementMgr().*Access(TeemingProgressArrayTag{}))[leaf->ID]=&progress;
+    };
+    // Controlled counters exercise the linked native weighted evaluator at its
+    // immutable threshold. They do not represent earned or dispatched kills.
+    uint64 below=root->Entry->Amount/8;
+    set(first,below);set(second,below);
+    Check(!scenario.GetAchievementMgr().IsCompletedScenarioTree(root->Entry),"Trickster weighted total completed below the real force target");
+    set(second,below+1);
+    Check(scenario.GetAchievementMgr().IsCompletedScenarioTree(root->Entry),"Native evaluator dropped a distinct Trickster leaf sharing CriteriaID37408");
+    set(first,below*2);set(second,0);
+    Check(!scenario.GetAchievementMgr().IsCompletedScenarioTree(root->Entry),"Single Trickster leaf exceeded its real four-point contribution");
+    set(second,1);
+    Check(scenario.GetAchievementMgr().IsCompletedScenarioTree(root->Entry),"Second Trickster leaf did not add its four-point contribution");
+    set(first,0);set(second,0);
+    Check(!scenario.GetAchievementMgr().IsCompletedScenarioTree(root->Entry),"Reset controlled Trickster counters retained forces");
+    std::cout<<"WEIGHT route=239 teeming="<<teeming<<" parent="<<root->ID<<" criterion=37408 npc=122401 leaves="<<first->ID<<','<<second->ID<<" amounts=4+4 effective=8 threshold="<<root->Entry->Amount<<";native evaluator,controlled counters,no earned-kill claim\n";
+}
+
 int main(int argc,char**argv)
 {
     try
@@ -61,6 +94,9 @@ int main(int argc,char**argv)
 #endif
                 Check(!scenario.IsCompleted(false)&&!scenario.Rewarded(),"Fresh native scenario was already completed");
                 scenario.UpdateCurrentStep(false);Check(scenario.GetCurrentStep()==0&&!scenario.Rewarded(),"Empty real criterion graph advanced progression");
+#ifndef TEEMING_CRITERIA_BASELINE
+                if(route->ID==239)CheckSeatTricksterWeight(scenario,teeming);
+#endif
                 if(teeming)
                 {
                     auto tree=sAchievementMgr->GetCriteriaTree(selected->Criteriatreeid);Require(tree&&!tree->Children.empty(),"Native selected criterion graph absent");

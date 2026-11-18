@@ -1,0 +1,230 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "NATIVE_WEIGHT_RECONCILIATION_CORRECTED_PATROL_COMPOSITION_SUPPORTED_SERVER_PLACEMENTS_OPEN",
+  "request": "Continue Teeming investigation using multiple relevant videos where needed.",
+  "result": {
+    "native_targets_matched": 13,
+    "npc_weight_rows_matched": 106,
+    "weight_conflicts": 0,
+    "native_criteria_checks": 5196,
+    "additional_trickster_assertions": 20,
+    "court_native_path_segments": 14,
+    "court_complete_path_results": 14,
+    "court_waypoint_ground_samples": 8,
+    "raw_extra_icon_ground_samples": 2,
+    "server_spawns_approved": 0,
+    "live_teeming_markers": 0
+  },
+  "weight_correction": {
+    "prior_commit": "9082df4075f7384fe44a82b24d6dbffdaa290809",
+    "cause": "The local research builder compared the set of individual leaf Amount values to addon count. That discarded multiplicity and falsely reported native4/addon8. Progress and weighted aggregation use distinct CriteriaTree IDs,not unique CriteriaID or weight values. This was a research/report error,not a server force-weight defect.",
+    "normal": {
+      "parent": 60914,
+      "required": 275,
+      "leaves": [
+        60926,
+        62526
+      ],
+      "criterion": 37408,
+      "npc": 122401,
+      "amounts": [
+        4,
+        4
+      ],
+      "effective_weight": 8
+    },
+    "teeming": {
+      "parent": 60938,
+      "required": 329,
+      "leaves": [
+        60950,
+        62527
+      ],
+      "criterion": 37408,
+      "npc": 122401,
+      "amounts": [
+        4,
+        4
+      ],
+      "effective_weight": 8
+    },
+    "repair": "Reusable pinned-source reconciliation sums each distinct selected native leaf and records leaf/criterion IDs. All13 targets and106 NPC rows match. Native data/core unchanged.",
+    "native_regression": "Linked real AchievementMgr<Scenario>::IsCompletedScenarioTree,selected native scenario admission and immutable DB2 parents. Controlled counters34+34/34+35 cross275;41+41/41+42 cross329. Single-leaf68/82 remains below target;second leaf1 crosses it. Zeroed counters remain incomplete. Both leaves admitted. All prior13-route/getter assertions retained. No earned kill,pet,guardian or group-credit dispatch claimed."
+  },
+  "video_method": {
+    "acquisition": "Normal public YouTube metadata/media using yt-dlp2026.10.26 with node JS runtime,no cookies or authenticated sessions;ffmpeg720p format136 video-only. Web-page connector throttled on later opens;public media download succeeded.",
+    "inspection": "Visual inspection of extracted contact-sheet frames,not continuous playback. Whole source timelines sampled every10s;Court08:00-09:45 additionally every1s. Times approximate and denote encoded video time;game timers may run faster or jump at edits. Audio not downloaded or reviewed.",
+    "sources": [
+      {
+        "id": "KGD9vkUrG9I",
+        "url": "https://www.youtube.com/watch?v=KGD9vkUrG9I",
+        "title": "Court of Stars Mythic +15 on time +2 Havoc DH pov 7.3.5 (Teeming, Quaking, Fortified)",
+        "channel": "Skai1013",
+        "upload_date": "20180717",
+        "duration": 1196,
+        "format": 136,
+        "bytes": 258069472,
+        "sha256": "3b7e0ee07028dfcdc496b2f4a60bd47c30a41a69578945385477a6ee7677df3d",
+        "metadata_sha256": "5f35827eeb416d11e3e7931599e23d4d4ff5a5d7482143a5193e67298de75089",
+        "review": "All120 ten-second timeline samples reviewed,including entrance/first-boss/courtyard/patrol/Talixae/suspect hunt/Baalgar/final boss and completion. All105 one-second samples of08:00-09:45 reviewed for prior pull,approach,bridge group combat,deaths,departure and next pull;selected720p originals also inspected.",
+        "version_limit": "Title7.3.5;upload2018-07-17. Legion110 UI/artifacts visible;actual client build not exposed by the recording.",
+        "key_sequence": "08:09-08:16 shows two Legion Hounds,two Watchful Inquisitors and one Guardian Construct approaching/being pulled on the bridge. Before group54.69%,after all five at~09:12:67.19%;+12.50%=24/192 matches native8+4+4+4+4. Counts inferred from visible nameplates/sequence and matching metadata,not extracted GUIDs."
+      },
+      {
+        "id": "IYvOF7zFvI0",
+        "url": "https://www.youtube.com/watch?v=IYvOF7zFvI0",
+        "title": "Brewmaster - Court of Stars +25 Teeming/Quaking/Fortified on time patch 7.3.2",
+        "channel": "Trell",
+        "upload_date": "20180409",
+        "duration": 1674,
+        "format": 136,
+        "bytes": 389818543,
+        "sha256": "dbbcdefbc1bff72d3eafd3248b0c5afab2f74e1d91e29203c9a0ecee0f5f6ae5",
+        "metadata_sha256": "aff49928879fe55c50f0003877e6223746b4bb1ceb915c18b27c190d87643b79",
+        "review": "All167 ten-second timeline samples reviewed from dock entrance through courtyard,bridge/casters,Talixae,suspect hunt,Baalgar,final boss. Additional final-second720p frame shows timed completion and chest. No continuous/audio review.",
+        "version_limit": "Title explicitly7.3.2 despite2018-04-09 upload;supporting older Legion route reference,not independent exact7.3.5 build proof.",
+        "key_sequence": "~08:25-09:15 bridge/caster fighting and movement reviewed;not used to recover exact spawn coordinates or extra formation offsets."
+      },
+      {
+        "id": "TvZSoXizkJE",
+        "url": "https://www.youtube.com/watch?v=TvZSoXizkJE",
+        "title": "7.3.5 - Mythic +24 - The Seat of the Triumvirate - MM Hunter POV",
+        "channel": "Goofwan",
+        "upload_date": "20181017",
+        "duration": 1822,
+        "format": 136,
+        "bytes": 468305726,
+        "sha256": "9f0826f06d1678d15fb68dc0af062d7883bd6d3cd070b6a6549b4fdae146e068",
+        "metadata_sha256": "7fefd89be5c18ce718ae65d6bc033be8dbe9a33a52c33823886f290e2f41d9b4",
+        "review": "All182 ten-second timeline samples reviewed:entrance combat,Zuraal,rift wardens,trash,Saprish,Viceroy,Lura and post-completion loot. First42-77s extracted at2fps;selected originals and HUD samples reviewed. No continuous/audio review.",
+        "version_limit": "Title7.3.5 but upload2018-10-17 after BFA;visible level110/artifact UI supports archived Legion footage,not upload-time build.",
+        "key_sequence": "Opening deaths overlap and an edit/timer jump occurs around53s,so14.59->23.10% cannot isolate Trickster contribution. No weight change inferred from this footage;native graph settles8=4+4."
+      },
+      {
+        "id": "K4MifTdpP8w",
+        "url": "https://www.youtube.com/watch?v=K4MifTdpP8w",
+        "title": "Mythic+ 15 Seat of the Triumvirate 1 Chest - Teeming + Necrotic + Tyrannical: Brewmaster Monk POV",
+        "channel": "Darkmech",
+        "upload_date": "20171112",
+        "duration": 1830,
+        "format": 136,
+        "bytes": 458006604,
+        "sha256": "3cd42a8c72af116bc760da43025e06c7c4dcea185b898b49ac462a80e0db89f6",
+        "metadata_sha256": "61a8c5e8bc08ba24137026ac9082f429c43d80832bd52ce05709c42946e22537",
+        "review": "Downloaded and frames prepared but NOT visually reviewed;not used as behavioral evidence.",
+        "version_limit": "2017-11-12 older7.3.x reference;not exact7.3.5 proof.",
+        "key_sequence": "Unused after native graph resolved the weight question."
+      }
+    ],
+    "not_claimed": "Original server/sniff placements,precise formation offsets,voice/timing between sampled frames,all NPC variants,unseen routes or local client traversal."
+  },
+  "court_bridge": {
+    "source_group": 25,
+    "composition": {
+      "guardian_construct_104270": 1,
+      "legion_hound_104277": 2,
+      "watchful_inquisitor_105715": 2
+    },
+    "existing_native_group": {
+      "leader_guid": 365657,
+      "leader_entry": 104270,
+      "hound_guid": 365655,
+      "inquisitor_guid": 365656,
+      "path_id": 12909935,
+      "points": 8,
+      "normal_formation": "leader0/0,Hound2yd/270deg,Inquisitor2yd/90deg,groupAI515;existing data retained"
+    },
+    "extra_candidates": [
+      {
+        "candidate_id": 451,
+        "npc": 104277,
+        "projected_xy": [
+          1153.4514982186183,
+          3383.942979814933
+        ],
+        "closest_native_path": {
+          "distance": 10.497417961475186,
+          "point": [
+            1158.5944507929055,
+            3393.094254189387,
+            28.49197089225367
+          ],
+          "segment": [
+            3,
+            4
+          ]
+        }
+      },
+      {
+        "candidate_id": 463,
+        "npc": 105715,
+        "projected_xy": [
+          1166.3941507362897,
+          3401.7391685040943
+        ],
+        "closest_native_path": {
+          "distance": 11.357599571397095,
+          "point": [
+            1160.829773270535,
+            3391.838018498019,
+            27.998749448232587
+          ],
+          "segment": [
+            3,
+            4
+          ]
+        }
+      }
+    ],
+    "native_observations": "All14 adjacent native leader waypoint corridors,forward and reverse,return accepted=true,PATHFIND_NORMAL1. Eight path samples find actual bridge heights19.965..28.985,walkable nav and center/foot clearance. Strict unadjusted body samples fail on six sloped positions;foot-adjusted samples pass. This is a sampled geometry/path observation,not native waypoint movement or combat traversal.",
+    "raw_icon_observations": "451/463 at addon-projected XY query terrainZ-9.41249 below the bridge and no nearby nav. They are10.4974/11.3576yd transverse to segment3-4. Inference:these offsets are consistent with presentation placement of icons rather than recovered actor poses. Raw static poses rejected;actual extra formation positions remain unrecovered.",
+    "conclusion": "Historical7.3.5 video plus pinned addon support one extra Hound and Inquisitor in the existing patrol. Existing bridge navigation works in the focused corridor probes;no evidence here for another Maw-style dynamic navigation repair. No speculative static spawn/formation SQL written."
+  },
+  "operations": "Research script,regression and audits only. No persistent DB/updater/server data or core changes,no production rebuild/deployment or extra startup needed. Canonical EXE/map and libraries retained. No user server stopped,no local client test.",
+  "diagnostics": {
+    "criteria": {
+      "Servers": [],
+      "ServerDiagnostics": [],
+      "Utc": "2026-11-18T21:24:59.3483637Z",
+      "ChangedCrashes": [],
+      "AppendedDBErrors": [],
+      "Completed": true,
+      "Crashes": {}
+    },
+    "court_geometry": {
+      "ChangedCrashes": [],
+      "Servers": [],
+      "Completed": true,
+      "Crashes": {},
+      "AppendedDBErrors": [],
+      "ServerDiagnostics": [],
+      "Utc": "2026-11-18T21:27:42.2609767Z"
+    },
+    "result": "Both native probes exit0;post-test Completed=true,no new/changed crashes,DBErrors or server warnings/errors/assertions. Native stdout,compiler captures and appended diagnostic files reviewed.",
+    "canonical_worldserver_sha256": "7e38756503ad753d0a706a76ddf76ed6909b0d0ec136a5c5c3cf2b40f1fa2730",
+    "canonical_map_sha256": "e2b9cc116d4373fb781290d4dbcbd206a0506e75c557c9d978fd150b26113857"
+  },
+  "evidence": {
+    "open_directory": ".codex/teeming-video-20261118",
+    "native_criteria_directory": "build-extractors/runtime-test/legion-teeming-criteria-native/20261118-232442-647",
+    "native_criteria_sha256": "43d3665a8b8e7a8e096f1052febb67aa2c5a61393e5cf34addf2c14b24bdd659",
+    "court_surfaces_sha256": "18c7c6d43f66e66c41d5b9e218d4f32f00ed333b223af675be3ec505224c919c",
+    "catalog_sha256": "7f86bd2489eecba5c95eb4f28873e9e15863ecb4fb11ef0110803c3561faa089",
+    "reconciled_forces_sha256": "88b47b85962836cad1492cc4b09ec0dd0a4e48b6a7c721a9d2856554a17f65a8",
+    "public_video_policy": "Public references and derived review notes only committed;no media,private configs,runtime logs or credentials committed.",
+    "hash_basis": "Exact UTF-8 LF committed catalog;runtime captures retain their original bytes.",
+    "final_read_only_world": "Live final read-only aggregate:teeming_markers0,path12909935 has8 rows;private query options removed."
+  },
+  "remaining": "All222 extra server placements remain unapproved and live markers remain0. Original GUID/orientation/phase/respawn/formation/patrol receipts not recovered. Nine footprint and25 conservative nav-height reviews remain;two raw Court icon poses are now specifically rejected rather than treated as missing bridge nav. Native earned player/pet/guardian/group forces,affix-only publication,AI/combat and complete dungeon/client traversals remain OPEN.",
+  "cleanup": {
+    "ReclaimedBytes": 1467857856,
+    "FixedArchive": "build-extractors/bin/Release/fixed/2026-11-18-teeming-weight-research",
+    "Deferred": [],
+    "Manifest": "cleanup-plan.json lists exact absolute targets,hashes and sizes;no recursive deletion used",
+    "OpenEvidence": ".codex/teeming-video-20261118/open-native plus three reviewed public videos/keyframes/metadata;original Teeming content remains OPEN",
+    "VerifiedCaptures": 32,
+    "Retained": "Canonical binaries/config/DLLs/data/required libs/current Maw rollback;all reusable regression/research source;OPEN public-source/geometry evidence",
+    "RemovedFiles": 209
+  }
+}

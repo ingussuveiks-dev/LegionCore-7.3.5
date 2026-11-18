@@ -6,7 +6,7 @@
   "prior_search": "legion-teeming-github-research-2026-11-18.json:12 public repositories/4482 SQL files/4101 blobs plus packaged World;no ready marked-spawn SQL in reviewed supported inputs. Existing unsupported-form limits retained.",
   "result": {
     "catalog": "docs/research/legion-teeming-projected-2026-11-18.json",
-    "catalog_sha256": "2bbdc872dcced4b9340c3507d6f0fe0bf82d933f08ff97e54ff00f6fa8480f96",
+    "catalog_sha256": "73941951b07dee39f2515eb7b6e224526a9d5abfed1aff8b79e810106ab0df57",
     "points": 222,
     "routes": 13,
     "maps": 12,
@@ -23,19 +23,10 @@
     "live_teeming_markers_after_work": 0,
     "force_targets_matching": 13,
     "route_npc_weight_rows": 106,
-    "weight_matches": 105,
-    "weight_conflicts": [
-      {
-        "npc_id": 122401,
-        "addon_weight": 8,
-        "native_weights": [
-          4
-        ],
-        "metadata_match": false
-      }
-    ]
+    "weight_matches": 106,
+    "weight_conflicts": []
   },
-  "interpretation": "Found usable historical identity/2D/group/patrol references and derived world-coordinate candidates,not original server placement records. All13 force targets match native metadata;Shadowguard Trickster122401 is8 in the addon and4 in the actual native tree. Native weights retained;no speculative spawn/force SQL.",
+  "interpretation": "Found usable historical identity/2D/group/patrol references and derived world-coordinate candidates,not original server placement records. All13 force targets and106 route-NPC effective weights match native metadata. Trickster122401 has two distinct four-point native leaves sharing CriteriaID37408:effective8. Earlier single-leaf/set comparison was an analysis error,corrected without changing server weights or spawns.",
   "geometry_limits": [
     "All222 image headers match the immutable historical catalog;derived XY and sampled surface Z are reconstruction candidates,not original server poses.",
     "211 is a surface/nav-query/body observation bucket,not211 approved placements. A separate conservative3-yard XY/0.8-yard vertical screen retains186;25 additional height differences need native route/normalization review. This screen does not replace the native global-nav tolerances.",
@@ -59,5 +50,6 @@
   "operations": "Read-only public/source/native data and compatibility analysis;no Teeming spawn SQL,marker,orientation,phase,respawn,patrol or force migration. Two independent verified C++/navigation-asset repairs deployed separately. No user server stopped,no client traversal.",
   "retained_open_evidence": ".codex/teeming-placement-20261118 and .codex/teeming-github-20261118:hashed native exports/surfaces and immutable public sources retained. Native test executables,symbols,private configs and superseded rollback removed. Missing content never filed as fixed.",
   "remaining": "Original server/sniff placement and per-spawn phase/path/formation/AI/respawn/orientation receipts remain unrecovered.211 is an observation bucket;186 pass an additional conservative proximity screen,none are approved server spawns. Actual earned player/pet/guardian forces,extra-only grid publication,AI/combat and full13 dungeon/client chains remain OPEN.",
-  "catalog_hash_basis": "UTF-8 LF committed JSON;Windows working-copy newline conversion was detected by staged-blob verification and corrected before commit."
+  "catalog_hash_basis": "UTF-8 LF committed JSON;Windows working-copy newline conversion was detected by staged-blob verification and corrected before commit.",
+  "followup": "legion-teeming-video-2026-11-18.json:linked native threshold evaluation confirms both Trickster leaves;three sampled whole-video timelines and focused Court bridge frames support the patrol composition. Raw icon poses451/463 rejected;original extra formation/spawn receipts remain OPEN."
 }

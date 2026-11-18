@@ -674,13 +674,14 @@
     "quaking_native_checks": 225,
     "quaking_audit": "legion-quaking-native-2026-11-18.json",
     "teeming_admission_native_checks": 140,
-    "teeming_content": "OPEN:222 historical addon points/105 native templates;native targets13/13,weight metadata105/106;211 surface/nav/body observations,186 conservative proximity-screen candidates,0 approved server spawns/live markers",
-    "teeming_criteria_native_checks": 5176,
+    "teeming_content": "OPEN:222 historical addon points/105 native templates;native targets13/13,effective weight metadata106/106;211 surface/nav/body observations,186 conservative proximity-screen candidates,0 approved server spawns/live markers. Court bridge group25 composition supported by7.3.5 video;raw icon poses451/463 rejected,original formation/spawn receipts unrecovered.",
+    "teeming_criteria_native_checks": 5196,
     "teeming_criteria_audit": "legion-teeming-criteria-2026-11-18.json",
     "teeming_github_research": "legion-teeming-github-research-2026-11-18.json",
     "dynamic_model_nearest_native_checks": 1058,
     "maw_ship_navigation_native_checks": 524,
-    "teeming_projection_research": "legion-teeming-projection-2026-11-18.json"
+    "teeming_projection_research": "legion-teeming-projection-2026-11-18.json",
+    "teeming_video_research": "legion-teeming-video-2026-11-18.json"
   },
   "focused_verifications": [
     {

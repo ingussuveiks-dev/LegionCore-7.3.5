@@ -21,7 +21,7 @@ try{
   & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
    & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/LegionTeemingCriteriaNative.cpp -ProbeName LegionTeemingCriteriaNative -OutputFile "$out/native.tsv" *> "$out/compiler.log"
    if(!$? -or $LASTEXITCODE){throw "Native Teeming verification failed: $out/compiler.log"}
-   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(META|PASS|DATA|ENV|INSPECT|COUNTERFACTUAL|ROUTE)'}
+   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(META|PASS|DATA|ENV|INSPECT|COUNTERFACTUAL|ROUTE|WEIGHT)'}
   }
  }finally{Pop-Location}
 }finally{
