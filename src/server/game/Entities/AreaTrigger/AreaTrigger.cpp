@@ -704,6 +704,18 @@ void AreaTrigger::AffectUnit(Unit* unit, AreaTriggerActionMoment actionM)
         if (!(info.action->moment & actionM))
             continue;
 
+        // Native Sanguine pools share a stacked child aura on each recipient.
+        // An ending pool dispatches LEAVE/DESPAWN and then REMOVE. Consume its
+        // contribution only at REMOVE, so overlapping pools keep their stack.
+        // Ordinary walk-out still consumes it at LEAVE.
+        if (GetRealEntry() == 8688 && GetSpellId() == 226489
+            && info.action->actionType == AT_ACTION_TYPE_REMOVE_STACK
+            && (info.action->spellId == 226510 || info.action->spellId == 226512)
+            && (_on_unload || _on_remove)
+            && (info.action->moment & AT_ACTION_MOMENT_REMOVE)
+            && actionM != AT_ACTION_MOMENT_REMOVE)
+            continue;
+
         DoAction(unit, info);
         // if(unit != _caster)
             // AffectOwner(actionM);//action if action on area trigger

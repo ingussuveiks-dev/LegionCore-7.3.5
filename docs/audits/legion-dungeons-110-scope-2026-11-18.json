@@ -602,6 +602,16 @@
       "issue": "Ordinary NPC combat-exit aura interrupt cleanup",
       "audit": "npc-combat-exit-auras-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Nullable instance script lookup during dungeon base-map destruction",
+      "audit": "instance-script-lifetime-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Overlapping Sanguine lifetime contributions and real Volcanic checks",
+      "audit": "legion-sanguine-volcanic-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {
@@ -614,8 +624,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "npc-combat-exit-auras-2026-11-18.json",
-    "current_rollback": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs",
+    "superseded_by": "legion-sanguine-volcanic-2026-11-18.json",
+    "current_rollback": ".codex/legion-environment-20261118/rollback-before-environment-repairs",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -630,6 +640,8 @@
     "burden_native_checks": 1067,
     "death_affix_native_checks": 217,
     "health_ownership_native_checks": 207,
-    "combat_exit_native_checks": 50
+    "combat_exit_native_checks": 50,
+    "environment_native_checks": 303,
+    "instance_lifetime_native_checks": 15
   }
 }

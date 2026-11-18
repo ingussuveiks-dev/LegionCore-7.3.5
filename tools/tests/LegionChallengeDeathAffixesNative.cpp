@@ -75,6 +75,7 @@ struct DeathAffixScenario
     ~DeathAffixScenario() { map.m_scenarios.erase(scenario); sScenarioMgr->RemoveScenario(map.GetInstanceId()); }
 };
 
+#ifndef CHALLENGE_DEATH_SUPPORT_ONLY
 int main(int argc, char** argv)
 {
     try
@@ -246,3 +247,4 @@ int main(int argc, char** argv)
     }
     catch (std::exception const& error) { std::cerr << error.what() << '\n'; return 1; }
 }
+#endif

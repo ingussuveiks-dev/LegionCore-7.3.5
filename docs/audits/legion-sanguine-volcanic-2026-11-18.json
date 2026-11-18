@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "baseline_commit": "535731809",
+  "cause": "Native Sanguine226489/area8688 has child heal226510 and damage226512 REMOVE_STACK actions at moment42=LEAVE2|DESPAWN8|REMOVE32. Ending dispatch emitted LEAVE or DESPAWN followed by REMOVE for the same still-affected live recipient. One ending pool removed two aura contributions,including a surviving overlapping pool. That survivor still recorded membership and did not restore its effect.",
+  "repair": "Only native area8688/spell226489 child226510/226512 remove-stack actions that receive final REMOVE defer earlier moments while the pool is unloading/removing. Walking LEAVE retains the original single decrement; final REMOVE uses native DoAction and recipient/eligibility guards. Other area actions,spell metadata and database rows are unchanged.",
+  "metadata": {
+    "sanguine": "Matching native226489 duration60000,activation delay1500,update delay200;heal226510 five percent each second;damage226512 fifteen percent each second with native START_PERIODIC_AT_APPLY. Overlap damage30% at initial application then the next authored periodic tick is expected,not a duplicated damage bug.",
+    "volcanic": "Native Might206150 effect7,209861 summons105877/properties64 at the eligible distant enemy destination;real plume AI waits250ms then casts209862 with2000ms cast and50-percent max-health damage;native summon lifetime10000ms. Generic Might damage scaling excludes209862."
+  },
+  "checks": {
+    "original": "249 native environmental assertions explicitly reproduced the broken0 remaining stacks at all18 Sanguine race/killer/ending contexts;4 real Volcanic cases passed. Baseline uses original AreaTrigger game.lib with the independently repaired nullable instance getter,not an ordinary successful gameplay run. Baseline wrapper intentionally rejects a repaired core.",
+    "current": "303 native assertions:18 Sanguine Human/Orc x Player/Pet/Guardian final blow x expiry/Remove(false)/Despawn contexts. Actual native Kill creates pools once,real native area entry applies grouped player damage and NPC healing,periodic damage/healing has correct dose,one ending and repeated callbacks preserve the surviving stack,walk-out/re-entry and final cleanup remain exact.",
+    "volcanic": "4 actual Might->209861 summon->registered105877 AI->209862 cast cases:Human/Orc x hit/dodge. One distant player selected;close player excluded.50ms Creature frames respect native out-of-combat batching,250ms AI delay and2000ms cast,50-percent hit,successful movement dodge,no repeated eruption and real10-second actor removal.",
+    "binary": "verify_legion_environment_release.py confirms area/spell/child/action predicates,both ending-state receipts,final REMOVE32 skip and ordinary native DoAction in staged/canonical PE. Nullable getter,death-affix,Burden,Necrotic and Scepter final-link checks retained.",
+    "database": "World/hotfix source read-only. Scoped connection-local proc/check/bonus and seven native area-table shadows exercise the actual native loader;account/character_instance fixture shadows avoid persistent writes. No migration or persistent character edits.",
+    "resolved_fixture_findings": [
+      "Windows near macro collided with a fixture variable;renamed closePlayer.",
+      "Initial97032 source was faction190 and not a valid hostile source;replaced with matching hostile97043 and asserted native eligibility.",
+      "Single249ms+1ms calls incorrectly assumed every Creature frame dispatches out-of-combat AI. Corrected to ordinary50ms frames without changing production timing.",
+      "Exception cleanup exposed the real unchecked InstanceMap getter;fixed and covered separately in instance-script-lifetime-2026-11-18.json."
+    ]
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "d0728a224fae89485073a362f156b1ea11aaa8312117aee0078de2fa01a8616c",
+    "worldserver_map_sha256": "8407a07051ece6dad0c154127ff018756cebace43750fde0dc1d2e24f970aa4c",
+    "method": "Original common/database/game/scripts Release targets and actual original final-link libraries. Separate staged final link, no global OutDir. Staged/canonical EXE and map identities match; source and library hashes sealed during native runs.",
+    "protected": "bnetserver,configuration,certificates,DLLs and shared extracted data retained; protected root identities checked.",
+    "rollback": ".codex/legion-environment-20261118/rollback-before-environment-repairs"
+  },
+  "diagnostics": {
+    "result": "Native/PE/retained/startup checks exit0 without new/changed crash reports, appended DBErrors or unexplained server warning/error/assertion. No full-core ASAN claim.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-environment",
+    "archive_policy": "Exact diagnostic bytes copied with source/archive/source SHA256 verification. Configurations/credentials excluded. No mixed active log cleared. Failed fixture traces retained with their resolved causes and passing counterparts.",
+    "compiler": "Changed Object.cpp and AreaTrigger.cpp rebuilt without compiler warnings. Missing per-run native.pdb triggers the expected fresh full native link; diagnostics retained.",
+    "startup": "Owned canonical PID32656 reached fresh ready,accepted server shutdown0 and exited0;stderr empty,new DBErrors0,protected configuration/certificate hashes unchanged. No user server stopped and no owned server left running.",
+    "archive_result": "331 original diagnostic/source captures with verified SHA256 manifest. Active canonical Crashes empty and DBErrors0. Initial archive attempt included its own open redirected log and stopped before deletion;retry after closing that log preserved the failure and completed exact-byte archive verification."
+  },
+  "remaining": [
+    "No client used. Actual pool rendering,live combat positioning,movement/network timing and complete affix encounters remain OPEN.",
+    "Native player publication,AI of Sanguine source actors,group and health fixtures are controlled. Volcanic plume AI and spells are actual core dispatch.",
+    "Other affix combinations,other area-trigger remove-stack definitions and full13 dungeon/63 encounter traversal remain separate work."
+  ],
+  "cleanup": {
+    "RemovedFiles": 302,
+    "ReclaimedBytes": 3624508644,
+    "Retained": ".codex/legion-environment-20261118/rollback-before-environment-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 331
+  }
+}
