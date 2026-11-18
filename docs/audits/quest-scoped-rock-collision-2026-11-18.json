@@ -33,5 +33,16 @@
   ],
   "diagnostics": "Final canonical PID23176 reached ready, graceful exit0, empty stderr and no appended DBErrors/warnings/errors/assertions or new/changed crashes. Earlier owned PID28888 intermediate startup also exited0. No task-owned hidden server remains. Final native47, selected PE, actual arrival and canonical Scepter checks passed. Existing mixed DBErrors7839 bytes/8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 remains unchanged/unresolved. No user server stopped.",
   "remaining": "Implement and test actual scoped Nobundo40225 gossip/native195070-195359 waypoint473698/real245122-195132 opening/turn-in/retry sequence; restore its two required counts only with connected actions. Priest40938 first follow-to-portal count remains independently open. No all36 whole-chain/client certification.",
-  "cleanup": "Earlier automatic approval review rejected temporary deletion with only blocked by policy. No alternative deletion attempted; zero files removed here. Redundant staged/native binaries are deferred; exact manifest follows after resolved diagnostics are archived."
+  "cleanup": "Earlier automatic approval review rejected temporary deletion with only blocked by policy. No alternative deletion attempted; zero files removed here. Redundant staged/native binaries are deferred; exact manifest follows after resolved diagnostics are archived.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/2026-11-18-quest-scoped-rock-collision",
+    "implementation_commit": "0a901dbc6",
+    "manifest_sha256": "B6C68494643C082088F49B328E2D196EED5CDA8A2C1BE53DF47090B281EC8256",
+    "verified_captures": 203,
+    "deferred_temporary_files": 26,
+    "deferred_temporary_bytes": 980827890,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "retained": "F50 rollback, original libraries, canonical config/cert/DLL/data and mixed7839-byte DBErrors; open Ring/Priest source/media/native probes. Native runtime configs excluded from archive. Exact no-reparse temporary targets listed locally; deletion still deferred after prior automatic policy rejection, no alternate removal."
+  }
 }
