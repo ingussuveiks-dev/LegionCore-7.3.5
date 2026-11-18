@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-18",
+  "status": "REQUESTED_SERVER_SIDE_REPAIRS_AND_FRESH_STRUCTURAL_AUDIT_COMPLETE_CLIENT_CHECKS_PENDING",
+  "implementation_commit": "a0ee17eae",
+  "canonical_exe_sha256": "1171c03fad42842437573f967634abe946c136c963f83f7c295d0e3bbe20d9ef",
+  "fresh_report": "docs/audits/artifact-routes-2026-11-18.json",
+  "fresh_report_sha256": "2431286db0cf1dc80ca1d3d37ae831f645deb24dc57e50810d0f7522621b38d0",
+  "scope": "Fresh matching7.3.5.26972 public World export,all36 actual artifact selections and149 native race/class pairs. Source graph/loot/selection/admission review is structural,not complete server execution or client traversal of every chain.",
+  "fresh_findings": {
+    "findings": 0,
+    "review_findings": 0,
+    "pickup_review_findings": 0
+  },
+  "artifact_shop_offers_remaining": 0,
+  "required_counters_closed": [
+    {
+      "quest": 42771,
+      "objective": 285316,
+      "credit": 110635,
+      "amount": 1,
+      "repair_commit": "3f7449dba",
+      "reward_guard": "b5711bda0"
+    },
+    {
+      "quest": 40225,
+      "objective": 280438,
+      "credit": 97047,
+      "amount": 1,
+      "repair_commit": "77df97bb1"
+    },
+    {
+      "quest": 40225,
+      "objective": 280439,
+      "credit": 97048,
+      "amount": 1,
+      "repair_commit": "77df97bb1"
+    },
+    {
+      "quest": 40938,
+      "objective": 281419,
+      "credit": 102466,
+      "amount": 1,
+      "repair_commit": "a0ee17eae"
+    }
+  ],
+  "closed_primary_actor_edges": [
+    {
+      "issue": "Fire Lyandra wreath phase",
+      "commit": "c024a5157"
+    },
+    {
+      "issue": "Ponshu authored dialogue terminator",
+      "commit": "1adc888d6"
+    },
+    {
+      "issue": "Amassing Darkness dialogue terminator",
+      "commit": "bfd2d505f"
+    },
+    {
+      "issue": "Judgment of the Flame dispatch terminator",
+      "commit": "fdf3d7250"
+    },
+    {
+      "issue": "Balaadur death terminator",
+      "commit": "1441bffc"
+    },
+    {
+      "issue": "Maw Blood pickup terminator",
+      "commit": "c2374e25d"
+    },
+    {
+      "issue": "Twinblades pickup terminator",
+      "commit": "5fdd36490"
+    }
+  ],
+  "scope_foundations": [
+    {
+      "issue": "Actor-owned private solid quest collision",
+      "commit": "0a901dbc6"
+    },
+    {
+      "issue": "Scaled rotated3D GO interaction bounds",
+      "commit": "ce08a351b"
+    }
+  ],
+  "checks": [
+    "Priest92 actual native follow/scene/3 inventory rituals/group/grip/ceremony/retry/login/cancel cases and497 extracted native reward ASAN cases; native fixture loading/callback boundaries recorded separately in Priest audit.",
+    "Retained Ring44 actual native sequence cases,Dargal43 ASAN service/41 reward cases and canonical Scepter recovery.",
+    "All36 legitimate inventory outcomes,74 offspec combinations,18 native pairs and55 real force-equip records.",
+    "Fresh all-class admission:22 live invitations,149 native race/class pairs,both genders/status/area branches131120 controlled cases;all36 choice controller900 cases plus2431 native quest admission cases.",
+    "Final selected PE Priest13 registrations/native endpoint consumers plus retained Ring/range/Frost/scenario paths and exact canonical executable/map copy identity.",
+    "Actual guarded25-table live Priest migration10 RELEASED readback,idempotent replay and19 refused partial/foreign variants.",
+    "Canonical task-owned PID20772 ready/graceful0;new crash0,appended DBErrors0,unexplained server warning/error/assertion0;configs/certificates/bnet/DLL/data preserved."
+  ],
+  "compiler_diagnostics": "Retained Dalaran controlled-source fixture emitted known signed/unsigned and shadowed-field MSVC warnings; inspected as extracted-fixture type/name differences,not new server runtime diagnostics. Earlier native fixture/PE failures are preserved and paired with final passing repairs in Priest audit/archive.",
+  "evidence": ".codex/artifact-final-20261118 public snapshot and diagnostic outputs; Priest fixed archive manifest 8df0b398b6bce572df3ad02010f2e57ee1a003c5b94d85fd8ea8169567df0601",
+  "remaining_client_checks": "Actual acceptance/phasing/visibility,spoken dialogue/animations,all three Priest bars/channel visuals,network far loading/reconnect,Faol appearance/turn-in/41015 and full quest/scenario traversals for36 artifacts. Current0 structural findings cannot establish these outcomes.",
+  "unresolved_prior_diagnostics": "Mixed pre-existing7839-byte DBErrors8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 remains unchanged/unresolved. Old intermittent client handshake cause and historical client-pending audits are not certified closed by this task.",
+  "cleanup": "Automatic approval review previously rejected temporary filesystem deletion,stating only blocked by policy. No alternate deletion attempted;current71 redundant files/3067390395 bytes listed and retained,zero reclaimed. This is a deferred cleanup,not a completed disk-cleaning claim. Required original libs,most recent rollback and original diagnostic evidence preserved;no hidden task server remains.",
+  "historical_scope": "Earlier audits recording seven primary edges or four required Amount0 objectives are historical checkpoints,superseded for these selected records by the commits above. The earlier500 unique-record review was structural and excluded active Protection gameplay;it is not500 repaired mechanics or36 full client playthroughs."
+}

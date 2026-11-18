@@ -37,5 +37,16 @@
     }
   ],
   "limits": "Actual client fresh acceptance/follow path visuals/voices, portal far loading/reconnect, all three artifact ritual bars and channel visuals, client scene timing/fake actors/camera, Faol appearance/turn-in/next41015 and full36 whole-chain traversals remain client-pending. Native encounter is a ritual, not a combat kill; player/pet/guardian kill ownership cannot substitute for its periodic cast receipt.",
-  "cleanup": "Resolved diagnostics archive pending this issue commit. Temporary filesystem deletion remains deferred after earlier automatic approval rejection whose only stated reason was blocked by policy; no alternate deletion, zero files removed. Task-owned disposable SQL clones/users dropped after every run; no hidden server remains."
+  "cleanup": "Resolved Priest and retained diagnostic bytes archived with4439 verified captures and manifest hash.71 redundant temporary executable/symbol/compiler files totaling3067390395 bytes recorded for deferred cleanup. Earlier automatic approval review rejected filesystem deletion with only blocked by policy; no alternate removal method,zero files removed. Pre-Priest rollback retained. Original required libraries,canonical configuration/bnet/DLLs/data and mixed7839-byte active DBErrors preserved. All task-owned servers and disposable SQL clones/users are stopped/dropped.",
+  "implementation_commit": "a0ee17eae",
+  "diagnostic_archive": {
+    "location": "build-extractors/bin/Release/fixed/2026-11-18-priest-formation",
+    "fix_commit": "a0ee17eae",
+    "manifest_sha256": "8df0b398b6bce572df3ad02010f2e57ee1a003c5b94d85fd8ea8169567df0601",
+    "verified_captures": 4439,
+    "deferred_files": 71,
+    "deferred_bytes": 3067390395,
+    "removed_files": 0,
+    "reclaimed_bytes": 0
+  }
 }
