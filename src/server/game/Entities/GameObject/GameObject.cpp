@@ -2549,19 +2549,15 @@ bool GameObject::IsInRange(float x, float y, float z, float radius) const
     float dx = x - GetPositionX();
     float dy = y - GetPositionY();
     float dz = z - GetPositionZ();
-    float dist = sqrt(dx * dx + dy * dy);
-    //! Check if the distance between the 2 objects is 0, can happen if both objects are on the same position.
-    //! The code below this check wont crash if dist is 0 because 0/0 in float operations is valid, and returns infinite
-    if (G3D::fuzzyEq(dist, 0.0f))
-        return true;
-
-    float sinB = dx / dist;
-    float cosB = dy / dist;
-    dx = dist * (cosA * cosB + sinA * sinB);
-    dy = dist * (cosA * sinB - sinA * cosB);
-    return dx < info->GeoBoxMax.X + radius && dx > info->GeoBoxMin.X - radius
-        && dy < info->GeoBoxMax.Y + radius && dy > info->GeoBoxMin.Y - radius
-        && dz < info->GeoBoxMax.Z + radius && dz > info->GeoBoxMin.Z - radius;
+    // Matching 7.3.5 GameObjectModel uses orientation about Z and object scale.
+    // Invert that same world transform; swapping X/Y rejects valid faces of
+    // non-square models. Radius stays in world yards after scaling the DB2 box.
+    float localX = cosA * dx + sinA * dy;
+    float localY = -sinA * dx + cosA * dy;
+    float scale = GetObjectScale();
+    return localX < info->GeoBoxMax.X * scale + radius && localX > info->GeoBoxMin.X * scale - radius
+        && localY < info->GeoBoxMax.Y * scale + radius && localY > info->GeoBoxMin.Y * scale - radius
+        && dz < info->GeoBoxMax.Z * scale + radius && dz > info->GeoBoxMin.Z * scale - radius;
 }
 
 void GameObject::EventInform(uint32 eventId)

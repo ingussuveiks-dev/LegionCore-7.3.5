@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_CHECKED_CLIENT_PENDING",
+  "cause": "GameObject::IsInRange swapped local X/Y, ignored object scale, and returned true for identical planar position without testing Z. The real2230/1.75/.237051 Ring face was rejected while a point200 yards above its pivot was admitted.",
+  "fix": "Use inverse yaw matching this7.3.5 GameObjectModel and scale all six native DB2 GeoBox faces. Keep world-yard radius, strict box boundaries, map/phase callers and missing-display spherical fallback. No larger interaction radius or quest grant.",
+  "references": "Current matching26972 GameObjectDisplayInfo2230 bounds and native mesh transform first; git cbf4f2536 origin of old function. Newer local TrinityCore has correct scaled world-box interaction in IsAtInteractDistance but still old IsInRange; adapt only current yaw/scale API, not unsupported newer quaternion semantics.",
+  "checks": {
+    "baseline": "480 actual native GO/DB2 boundary cases,218 mismatches; concrete face rejected and remote sameXY height admitted. Expected-broken pre-fix library, not successful ordinary behavior.",
+    "repaired": "484 actual native cases passed:4 scales,5 rotations,2 radii,6 independent forward-G3D-transformed faces, actual rock approach, remote height and missing-display fallback. Release native core, not full-core ASAN.",
+    "retained": "47 native private/shared rock collision cases including actual owner/pet/guardian/nested/cyclic ownership;24 native DOOR/BUTTON/reset/4413 mesh cases; actual both-ship extracted collision/placement checks passed.",
+    "linked": "Final PE verifies scale field11/all6 DB2 face multiplications/6 comparisons, fallback and actual inlined virtual distance consumer. Original game/scripts/common library final-link inputs retained.",
+    "limitations": "Actual client interaction/visuals remain separate; Ring source/data repair is a separate focused change."
+  },
+  "release": {
+    "worldserver.exe": "03D5C3334F419A1362C7A0D9878B6FAE79B20BEBBF8D951ADFB160745CDB658E",
+    "worldserver.map": "8CA0ADB8440F0381F709BE1B09264E0D1B63CEA6F21B398B6CFA1A3B7C4AC521"
+  },
+  "diagnostics": "All checks recorded before/after canonical and own crashes/logs and exit/stdout/stderr. First range fixture lacked1469 MMap initialization and asserted; corrected bootstrap paired with passing native baseline/repaired run. Initial PE assertions used wrong overload and assumed uninlined call; corrected to actual selected overload/inlined body, passing. Mixed7839-byte active DBErrors retained unchanged.",
+  "evidence": [
+    "build-extractors/runtime-test/gameobject-range-native",
+    ".codex\\ring-reforged-progression-20261118"
+  ],
+  "cleanup": "Archive follows after commits/startup. Filesystem deletion remains deferred after prior automatic policy rejection, reason blocked by policy; no alternate deletion. Zero files removed.",
+  "canonical_startup": "Owned canonical worldserver PID35668 reached ready, gracefully exited0; stderr empty, appendedDBErrors0, no new/changed crashes or warnings/errors/assertions. No user server stopped; own hidden server is stopped."
+}
