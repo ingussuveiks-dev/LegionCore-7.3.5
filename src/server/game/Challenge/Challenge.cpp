@@ -136,8 +136,11 @@ void Challenge::OnPlayerLeaveForScript(Player* player)
     player->RemoveAura(ChallengersBurden);
 }
 
-void Challenge::OnPlayerDiesForScript(Player* /*player*/)
+void Challenge::OnPlayerDiesForScript(Player* player)
 {
+    if (!_canRun || !_run || _complete || !player || player->GetMap() != _map || !_challengers.count(player->GetGUID()))
+        return;
+
     ++_deathCount;
     ModChallengeTimer(Seconds(5).count());
 
@@ -227,20 +230,27 @@ void Challenge::OnUnitRemoveCharmed(Unit* unit, Unit* /*charmer*/)
 
 void Challenge::Update(uint32 diff)
 {
-    m_Functions.Update(diff);
-
-    if (_complete) // Stop update if complete
+    if (!_canRun || _complete)
         return;
+
+    bool const wasRunning = _run;
+    m_Functions.Update(diff);
 
     if (!_run && _checkStart)
     {
         if (CanStart())
         {
             Start();
-            SummonWall(nullptr);
+            if (!_checkStart)
+                SummonWall(nullptr);
         }
         return;
     }
+
+    // The countdown callback opens the run during this update. Its elapsed
+    // countdown time must not become run time or advance the first affix tick.
+    if (!_run || !wasRunning)
+        return;
 
     _challengeTimer += diff;
 
@@ -298,15 +308,28 @@ void Challenge::Update(uint32 diff)
 
 bool Challenge::CanStart()
 {
+    if (!_canRun || _complete || !_map)
+        return false;
+
     if (_run)
         return true;
 
-    return _map->GetPlayerCount() == _challengers.size(); // wait when group complete
+    if (_challengers.empty() || _map->GetPlayerCount() != _challengers.size())
+        return false;
+
+    for (auto const& member : _map->GetPlayers())
+    {
+        Player* player = member.getSource();
+        if (!player || !player->IsInWorld() || player->GetMap() != _map || !_challengers.count(player->GetGUID()))
+            return false;
+    }
+
+    return true;
 }
 
 void Challenge::Start()
 {
-    if (!_canRun)
+    if (!_canRun || _run || !_checkStart || _complete || !CanStart())
         return;
 
     Player* keyOwner = ObjectAccessor::FindPlayer(m_ownerGuid);
@@ -317,11 +340,6 @@ void Challenge::Start()
     if (!_item)
         return;
 
-    keyOwner->m_challengeKeyInfo.InstanceID = keyOwner->GetInstanceId();
-    keyOwner->m_challengeKeyInfo.needUpdate = true;
-
-    _isKeyDepleted = false;
-
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
@@ -329,6 +347,10 @@ void Challenge::Start()
 
     if(!sChallengeMgr->GetStartPosition(_map->GetId(), x, y, z, o, m_ownerGuid))
         return;
+
+    keyOwner->m_challengeKeyInfo.InstanceID = _instanceID;
+    keyOwner->m_challengeKeyInfo.needUpdate = true;
+    _isKeyDepleted = false;
 
     _map->ApplyOnEveryPlayer([&](Player* player)
     {
@@ -365,7 +387,7 @@ void Challenge::Start()
 
 void Challenge::Complete()
 {
-    if (_complete)
+    if (!_canRun || !_run || _complete)
         return;
 
     _complete = true;
