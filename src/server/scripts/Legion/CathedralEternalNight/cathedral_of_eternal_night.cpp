@@ -478,9 +478,9 @@ class spell_coen_blinding_glare : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_coen_blinding_glare_SpellScript::CorrectTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_coen_blinding_glare_SpellScript::CorrectTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_coen_blinding_glare_SpellScript::CorrectTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
+                // Shared with Flashlight (two effects); Blinding Glare has
+                // three. Filter every authored enemy-area effect of either.
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_coen_blinding_glare_SpellScript::CorrectTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 

@@ -552,6 +552,26 @@
       "issue": "Violet Hold native state persistence and restored completion",
       "audit": "violet-hold-save-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Mythic+ countdown,death timer and accepted roster",
+      "audit": "legion-mythic-start-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Solo Mythic+ completion dispatch",
+      "audit": "legion-mythic-solo-completion-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Mythic+ route record persistence and metadata",
+      "audit": "legion-mythic-records-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Shared Flashlight/Blinding Glare effect registration and13-map metadata audit",
+      "audit": "legion-dungeon-mechanics-checks-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {
@@ -559,8 +579,21 @@
     "method": "Exact diagnostic captures copied and source/archive/source SHA256 verified;no mixed active log cleared. Local manifest receives actual fix commits after commit."
   },
   "cleanup": {
-    "Retained": "Current rollback-before-harbaron EXE/map;canonical original libs/runtime/data;all regression source;verified fixed diagnostic archives. Older blocked20 files not retried.",
-    "RemovedFiles": 75,
-    "ReclaimedBytes": 2872945793.0
+    "initial_scope_result": {
+      "Retained": "Current rollback-before-harbaron EXE/map;canonical original libs/runtime/data;all regression source;verified fixed diagnostic archives. Older blocked20 files not retried.",
+      "RemovedFiles": 75,
+      "ReclaimedBytes": 2872945793.0
+    },
+    "superseded_by": "legion-dungeon-mechanics-checks-2026-11-18.json",
+    "current_rollback": ".codex/legion-challenge-20261118/rollback-before-challenge-repairs"
+  },
+  "progress_verification": {
+    "audit": "legion-dungeon-mechanics-checks-2026-11-18.json",
+    "start_native_checks": 443,
+    "completion_native_checks": 1005,
+    "retained_instance_checks": 9012,
+    "native_unique_spells": 1022,
+    "registered_spell_loaders": 135,
+    "actual_client": "NOT_PERFORMED;all per-map gameplay labels remain OPEN"
   }
 }
