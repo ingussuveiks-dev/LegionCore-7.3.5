@@ -483,6 +483,15 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
         });
     }
 
+    // Keystone admission supports both a solo owner and a party. Completion
+    // belongs to the actual challenge; LFG rewards below still require a group.
+    if (_scenarioEntry->Type == SCENARIO_TYPE_CHALLENGE_MODE)
+    {
+        if (_challenge && !bonus)
+            _challenge->Complete();
+        return;
+    }
+
     // should not happen
     if (groupGuid.IsEmpty())
         return;
@@ -503,10 +512,6 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
 
                 sLFGMgr->FinishDungeon(groupGuid, dungeonId);
             }
-            break;
-        case SCENARIO_TYPE_CHALLENGE_MODE:
-            if (_challenge)
-                _challenge->Complete();
             break;
         default:
             break;
