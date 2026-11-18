@@ -41,5 +41,19 @@
   ],
   "remaining": "Priest40938/281419/102466 connected follow/portal/ceremony remains next independent repair; actual all36 whole-chain client verification remains OPEN.",
   "cleanup": "Resolved diagnostics archive follows verified canonical startup/readback and focused commits. Prior automatic review rejected filesystem deletion with blocked by policy; no alternative filesystem deletion. Disposable owned SQL schema/user cleanup is ordinary isolated-test lifecycle, not filesystem deletion. Zero files removed.",
-  "canonical_startup": "Owned canonical worldserver PID35668 reached ready, gracefully exited0; stderr empty, appendedDBErrors0, no new/changed crashes or warnings/errors/assertions. No user server stopped; own hidden server is stopped."
+  "canonical_startup": "Owned canonical worldserver PID35668 reached ready, gracefully exited0; stderr empty, appendedDBErrors0, no new/changed crashes or warnings/errors/assertions. No user server stopped; own hidden server is stopped.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/2026-11-18-ring-reforged-and-interaction",
+    "fix_commits": [
+      "ce08a351b",
+      "77df97bb1"
+    ],
+    "manifest_sha256": "2E8476D5BDE3400E1F3D5718B122EA4378F0E724AF3750E7FF5C4CA4805ADB7C",
+    "verified_captures": 2082,
+    "deferred_files": 53,
+    "deferred_bytes": 2427622601,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "retained": "Rollback0C and guarded original/expected public World fixtures, original required build libs, canonical binaries/config/data, mixed active7839-byte DBErrors, open Priest research and Ring client/presentation evidence. Temporary filesystem deletion deferred after earlier automatic policy rejection; no alternate deletion."
+  }
 }
