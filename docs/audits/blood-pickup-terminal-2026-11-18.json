@@ -27,5 +27,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed historical unresolved log preserved. Retained native host reports known int64-to-int32 key-conversion compiler warnings; no unexplained runtime warning/error."
   },
-  "limits": "Original missing1 author intent is unrecovered. No new native host for a one-field terminator: existing actual condition/lifecycle/caster/loot regressions plus full-row guarded delta cover the affected behavior. Actual play of full940,real loot/equipment/scene/render/group/faction/re-entry/return still requires client traversal. Twinblades is the remaining primary structural pickup edge."
+  "limits": "Original missing1 author intent is unrecovered. No new native host for a one-field terminator: existing actual condition/lifecycle/caster/loot regressions plus full-row guarded delta cover the affected behavior. Actual play of full940,real loot/equipment/scene/render/group/faction/re-entry/return still requires client traversal. Twinblades is the remaining primary structural pickup edge.",
+  "fix_commit": "c2374e25d",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-blood-pickup-terminal",
+    "manifest_sha256": "af6ddfe1d38ae068e95b625562674ce0137c9005ba0863c9299758612ce4733f",
+    "verified_captures": 467,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 26,
+    "deferred_bytes": 99212326,
+    "reason": "Temporary removal remains deferred after prior automatic review rejected the same cleanup with blocked by policy. Exact no-reparse targets/hashes inspected; no alternate deletion. Canonical assets/config,regression sources and mixed historical diagnostic log preserved; no servers running."
+  }
 }
