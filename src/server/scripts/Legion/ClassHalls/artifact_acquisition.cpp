@@ -2491,9 +2491,13 @@ struct npc_stromkar_thoradin : SmartAI
 #include "talonclaw_boarded_departure.h"
 #include "valzuun_intel.h"
 #include "stromkar_split.h"
+#include "keeping_the_peace.h"
 
 void AddSC_artifact_acquisition()
 {
+    new player_keeping_the_peace();
+    RegisterCreatureAI(npc_keeping_the_peace_dargal);
+    RegisterCreatureAI(npc_keeping_the_peace_mortar);
     new condition_artifact_acquisition_inventory("condition_artifact_inventory_128910", 128910);
     new condition_artifact_acquisition_inventory("condition_artifact_inventory_128861", 128861);
     new condition_artifact_acquisition_inventory("condition_artifact_inventory_128826", 128826);

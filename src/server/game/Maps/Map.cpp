@@ -4414,6 +4414,20 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             owner->BindQuestObject(40710, summon, false);
     }
 
+    // Dargal is created by the real ninth-spirit followup spell. Bind before
+    // InitSummon/AddToMap so its native owner-list registration, first create,
+    // SmartAI combat and any children share this accepted quest attempt.
+    if (entry == 110635 && spellId == 228199 && properties && properties->ID == 2912 &&
+        GetId() == 0 && summoner && summoner->IsPlayer())
+    {
+        Player* owner = summoner->ToPlayer();
+        if (owner->getClass() == CLASS_PALADIN && owner->IsAlive() &&
+            (owner->GetAreaId() == 197 || owner->GetAreaId() == 196) &&
+            !owner->GetQuestRewardStatus(42771) && owner->GetQuestStatus(42771) == QUEST_STATUS_INCOMPLETE &&
+            owner->GetQuestObjectiveData(42771, 108815) >= 9 && owner->GetQuestObjectiveData(42771, 110635) < 1)
+            owner->BindQuestObject(42771, summon, false);
+    }
+
     // These personal return actors must bypass93819's ordinary Dalaran RESET
     // from their first AI initialization, and expire with this quest attempt.
     if (entry == 93819 && (GetId() == 1511 || GetId() == 1495) && summoner && summoner->IsPlayer())

@@ -24,6 +24,20 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
   [object[]]$edits=if($context.ContainsKey('edits')){@($context.edits)}else{@($context.edit)}
   $changedTables=@($edits|ForEach-Object {$_.table}|Sort-Object -Unique);$expectedEdit=''
   foreach($edit in $edits){$expectedEdit+="UPDATE $($edit.table) SET ``$($edit.field)``=$(Value $edit.after) WHERE $($edit.where) AND ``$($edit.field)`` <=> $(Value $edit.before);`n"}
+  # A reconstructed actor may add rows, not just terminate an existing link.
+  # Compare its complete independent expected fixture in the same real schema.
+  if($context.after_fixture){
+   $after=Get-Content (Join-Path (Split-Path -Parent $ContextFile) $context.after_fixture) -Raw|ConvertFrom-Json -AsHashtable
+   if((@($after.Keys|Sort-Object) -join ',') -cne (@($context.filters.Keys|Sort-Object) -join ',')){throw 'Expected fixture tables differ'}
+   $expectedEdit=''
+   foreach($table in $context.filters.Keys){
+    $expectedEdit+="DELETE FROM $table;`n";$cols=($context.columns[$table]|ForEach-Object{"``$_``"}) -join ','
+    foreach($row in $after[$table]){
+     if((@($row.Keys|Sort-Object) -join ',') -cne (@($context.columns[$table]|Sort-Object) -join ',')){throw "Expected row columns differ:$table"}
+     $values=($context.columns[$table]|ForEach-Object{Value $row[$_]}) -join ',';$expectedEdit+="INSERT INTO $table($cols) VALUES($values);`n"
+    }
+   }
+  }
   $sql=$setup+$baseline+(Snapshot original)+$expectedEdit+(Snapshot expected)+$baseline+$migration+(Snapshot first)+$migration+(Snapshot second)
   for($i=0;$i -lt $context.refusals.Count;++$i){$sql+=$baseline+$context.refusals[$i]+(Snapshot "refuse-$i-before")+$migration+(Snapshot "refuse-$i-after")}
   if($VerifyLiveData){
@@ -39,6 +53,7 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
   $rows=[IO.File]::ReadAllLines("$out/replay.tsv");if($rows[-1] -cne '__SMART_TERMINAL_COMPLETE__'){throw 'Incomplete terminal replay'}
   $groups=@{};foreach($line in $rows){$tab=$line.IndexOf("`t");if($tab -lt 1){continue};$tag=$line.Substring(0,$tab);if(!$groups.ContainsKey($tag)){$groups[$tag]=[Collections.Generic.List[string]]::new()};$groups[$tag].Add($line.Substring($tab+1))}
   function Signature($tag){if(!$groups.ContainsKey($tag)){return ''};[string]::Join("`n",$groups[$tag])}
+  if($context.after_fixture){$changedTables=@($context.filters.Keys|Where-Object{(Signature "original-$_") -cne (Signature "expected-$_")})}
   foreach($table in $context.filters.Keys){
    if((Signature "first-$table") -cne (Signature "expected-$table") -or (Signature "first-$table") -cne (Signature "second-$table")){throw "Wrong edit or non-idempotent: $table"}
    if($table -notin $changedTables -and (Signature "original-$table") -cne (Signature "first-$table")){throw "Unrelated table changed: $table"}
@@ -48,6 +63,6 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
   foreach($table in $changedTables){if((Signature "original-$table") -ceq (Signature "expected-$table")){throw "Expected edit did not alter pinned $table"}}
   if($VerifyLiveData -and (Signature release) -cne "$hash`tRELEASED"){throw 'Actual updater identity/state differs'}
   [IO.File]::WriteAllLines("$out/original-smart.tsv",$groups['original-smart_scripts']);[IO.File]::WriteAllLines("$out/terminal-smart.tsv",$groups['first-smart_scripts'])
-  "PASS full-schema $($context.filters.Count)-table guarded replay, exact $($edits.Count) intended field edits, repeat/live identity and $($context.refusals.Count) foreign/partial refusals; persistent DML denied"
+  "PASS full-schema $($context.filters.Count)-table guarded replay, exact expected rows across $($changedTables.Count) changed tables, repeat/live identity and $($context.refusals.Count) foreign/partial refusals; persistent DML denied"
  }
 }
