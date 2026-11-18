@@ -26,5 +26,16 @@
     "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
     "policy": "Mixed historical unresolved log preserved unchanged. Failed native-host expectation and stale pre-fallback live comparison paired with passing corrected native/context checks."
   },
-  "limits": "Original missing5 intent is unrecovered. Both valid initiators can request the common native52805/return actors once each; duplicate presentation under a real overlapping client interaction and actual progression deduplication were not exercised here. No whole-chain once-only actor/client claim. Actual paired appearance/equipment/scene/party/faction/reconnect/return and full900 remain client checks. All seven primary edges listed after Guardian18 are now individually repaired; broader earlier zero-count/source and unrelated/shared-map findings retain separate open evidence."
+  "limits": "Original missing5 intent is unrecovered. Both valid initiators can request the common native52805/return actors once each; duplicate presentation under a real overlapping client interaction and actual progression deduplication were not exercised here. No whole-chain once-only actor/client claim. Actual paired appearance/equipment/scene/party/faction/reconnect/return and full900 remain client checks. All seven primary edges listed after Guardian18 are now individually repaired; broader earlier zero-count/source and unrelated/shared-map findings retain separate open evidence.",
+  "fix_commit": "5fdd36490",
+  "cleanup": {
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\2026-11-18-twinblades-pickup-terminal",
+    "manifest_sha256": "6dab530950dd7a7be25e951c9d98bc6a761c1ec6de4fac9bad67feefa48ca5bb",
+    "verified_captures": 301,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "deferred_files": 16,
+    "deferred_bytes": 65758649,
+    "reason": "Temporary removal remains deferred after prior automatic review rejected the same cleanup with blocked by policy. Exact no-reparse targets/hashes checked; no alternate deletion method. Canonical assets/config,regression sources and mixed historical log preserved; no servers running."
+  }
 }
