@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-18",
+  "status": "NATIVE_SEQUENCE_RECOVERED_IMPLEMENTATION_PENDING",
+  "quest": 40938,
+  "first_milestone": "281419/102466 remains Amount0. Full matching SpellEffect scan of every effect type, not only90, found no102466 producer. Video actual first credit is at the portal after following Velen, before entry. Do not grant it on acceptance, arbitrary arrival or use202324(second marker). Matching quest POIs separate real upper pad(-845,4467) and lower portal(-882,4498).",
+  "native_flow": "119/120 are real EventObjects source13 at1512/1251.81,1344.14,185 and1335.12,1344.29,177.221. Existing12 source22 predicates incorrectly use SourceId10(Scene), so do not guard their two actual13 SmartAI roots.119 requests202457,120 requests202835. Preserve actual source13/89/85 and per-player native EventObject dispatch; do not bypass requirements or invent links.",
+  "recovered_scene": {
+    "package": 1556,
+    "misc": 1191,
+    "spell": 202457,
+    "source": "matching26972 SceneScriptText/SceneScript/SceneScriptPackageMember complete selected package including init continuation, all side tracks and imported framework; readonly Hotfix applied.",
+    "contract": "Native main waits2+12+15 seconds, actual actor path completion,1+5 seconds, then emits ReadyForSpell. It awaits PlayerCondition38062 (actual ritual channel aura), runs real void-god transformation, then LifeGrip, CeremonyComplete, PortPlayer and native end. These are distinct receipts; complete/cancel is not an award-all substitute. Ready timing additionally depends on authored client path. Scene1191 has no existing spell_scene_event rows.",
+    "visuals": "Client package itself provides Velen/Faol/Moira/guards/prison/void-god/naarurebirth/ceremony; do not replace these with invented timer-spawned presentation. Scene excludes real102528, whose current World spawns are map1629 only; actual server ritual anchor on1512 needs safe scoped reconstruction."
+  },
+  "native_spells": "202835 personal90/102652 plus native override bars:202749/654 with202747 DarkDrain,216416/731 with216409 PurgingtheShadow,216419/732 with216418 ImbuingtheLight. All three actual14s channels trigger202881 at native periodic14000ms.202881 dispatches134(group)102653/event48528 and removes202835/all3 bars. Effect90 is personal,134 native eligible-group.202945 personal90/102654;202491 native post-formation teleport252 plus same final marker/phase update.202324 teleport227 plus personal90/102465 uses real spell_target_position1512/1249.25,1344.14,185. Its misc1354/1371 are not WorldSafeLoc IDs (numeric-name matches belong to another namespace).",
+  "inventory": "Native PlayerConditions38059/38060/38061 select actual artifact items128827/128868/128825, spec index-1.38062 ORs actual channel auras202747/216409/216418. Preserve legitimate inventory/offspec bag eligibility; no fake artifact grant/equipment prerequisite.",
+  "wrong_links": "Existing202457->202945 linked-on-cast attempts promotion before listen/ritual and cannot serve actual ceremony acknowledgement. Existing202835->202749 always supplies Shadow bar, regardless of actual acquired priest artifact. Both exact rows need repair with the connected native sequence, not suppression.",
+  "dalaran": "Existing actual decorative pads244534/244560 and go_eye_portrait_teleporter implement native192293/192295 and destination acknowledgement for other quests. Preserve shared pad behavior; use same real pad/teleport for Velen. No native authored Velen street path recovered from local current/newerTrinity,2018TDB matching actor/path scans or reviewed Ashamane file; reconstruct navigation explicitly as inferred and retain client path check.",
+  "references": [
+    {
+      "url": "https://www.youtube.com/watch?v=sUvMdR0MgXs",
+      "review": "Earlier full257s extent reviewed as all129 sampled2s frames/nine contact sheets. Re-inspected sheets00,02,03,04,05 here; no audio or continuous playback claim. Real follow/upper-transporter/lower-portal/first109s/entry113s/scene/Ready151s/channel155-171s/ceremony195-237s/turn-in251-255s matches recovered client script."
+    },
+    {
+      "url": "https://github.com/AshamaneProject/AshamaneCore/blob/master/src/server/scripts/BrokenIsles/ClassHalls/class_hall_priest.cpp",
+      "blob": "7db4baee6db0aa5d38464f0033f1fa43a71c3154",
+      "review": "Complete97-line reference file reviewed; only40705 messenger/102343 logic, no40938/101313 route. Not a compatible implementation to copy."
+    }
+  ],
+  "checks": "Readonly native spell/scene catalogs all exit0, before/after canonical/own diagnostics unchanged; no new crash/appendedDBErrors/warnings/errors/assertions. Readonly SQL schema mistakes(scene_template absent,spell_scene field namedMiscValue) corrected from actual schema; CLI query failures retained as research, not successful tests. No production SQL/character writes or server launch/stop in this research.",
+  "canonical": "03D5C3334F419A1362C7A0D9878B6FAE79B20BEBBF8D951ADFB160745CDB658E; Ring/interaction fixes remain deployed and committed. Mixed7839-byte DBErrors8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 unchanged/unresolved.",
+  "evidence": ".codex\\priest-light-void-20261118",
+  "limits": "Research is not a completed fix or client verification. Native scene event security/order, actual channel target/caster/group endpoint, failed cast/transfer/retry/logout/re-entry, accepted lifetime, all3 legitimate artifacts and full connected reward admission still need implementation and native checks. Media/native artifacts retained for concrete open repair; no filesystem deletion after prior automatic policy rejection."
+}
