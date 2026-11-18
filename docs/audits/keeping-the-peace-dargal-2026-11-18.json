@@ -44,5 +44,17 @@
     "bnet": "Canonical bnet EXE/map/configuration retained; staged relink .text SHA5ef9f198898d7b55f5311fad1ed98b1d7a6aa6c871a6197f319e1f45f441d732 exactly matches canonical. Redundant relink changes only build metadata,not needed functional deployment."
   },
   "remaining": "Actual98/110 spawn health/damage,Shrapnel/mortar rendering/facing/party/faction behavior,one-hit/pet/group death,acceptance/turn-in/relog and full42770-42774 client traversal remain separate. Exact authored7.3.5 cadence/221357-versus251223 association is not certified by2017 sampled footage. Required Ring40225 two counters and Priest40938 portal-follow counter remain OPEN at0 pending their real connected actions; no blanket restoration or fabricated arrival credit. Other all36 whole chains/visuals remain client-pending.",
-  "cleanup": "Matching deployed code/data and canonical startup verified. Preserve E816 rollback with pre08 World context. Resolved diagnostics archive/hash manifest recorded after implementation commit. Temporary removal remains deferred after earlier automatic approval rejection (blocked by policy); zero files removed and no alternate deletion workaround."
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-keeping-the-peace-dargal",
+    "manifest_sha256": "46135436CE5DE49EC8FF8838982AB0758BB80ED8DE26D1DE3DF6C2C1ADF4BEBF",
+    "captures": 440,
+    "deferred_files": 35,
+    "deferred_bytes": 223365182,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "metadata_correction": "Initial summary Measure-Object did not resolve ordered-dictionary numeric keys;total now comes directly from the verified manifest records. Archive bytes/manifests remain untouched.",
+    "retained": "E816 rollback with exact pre08 original/expected/context/migration;latest generic native catalog supports open Ring/Priest research;original build libraries/shared extracted data/configuration/bnet and mixed historical errors preserved.",
+    "deferred_reason": "Previous automatic approval review rejected temporary deletion with blocked by policy;zero files removed,no alternate deletion method attempted."
+  },
+  "fix_commit": "3f7449dba"
 }
