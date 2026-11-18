@@ -1983,7 +1983,7 @@ bool WorldObject::IsWithinLOS(float ox, float oy, float oz, VMAP::ModelIgnoreFla
         else
             GetHitSpherePointFor({ ox, oy, oz }, x, y, z);
 
-        return GetMap()->isInLineOfSight(x, y, z + 2.f, ox, oy, oz + 2.f, GetPhases(), ignoreFlags);
+        return GetMap()->isInLineOfSight(x, y, z + 2.f, ox, oy, oz + 2.f, GetPhases(), ignoreFlags, nullptr, this);
     }
 
     return true;
@@ -2007,7 +2007,7 @@ float WorldObject::GetWaterOrGroundLevel(float x, float y, float z, float* groun
 
     if (!GetMap())
         return VMAP_INVALID_HEIGHT_VALUE;
-    return GetMap()->GetWaterOrGroundLevel(GetPhases(), x, y, z, ground);
+    return GetMap()->GetWaterOrGroundLevel(GetPhases(), x, y, z, ground, false, this);
 }
 
 float WorldObject::GetHeight(float x, float y, float z, bool vmap /*= true*/, float maxSearchDist /*= DEFAULT_HEIGHT_SEARCH*/) const
@@ -2025,7 +2025,7 @@ float WorldObject::GetHeight(float x, float y, float z, bool vmap /*= true*/, fl
 
     if (!GetMap())
         return VMAP_INVALID_HEIGHT_VALUE;
-    return GetMap()->GetHeight(GetPhases(), x, y, z, vmap, maxSearchDist);
+    return GetMap()->GetHeight(GetPhases(), x, y, z, vmap, maxSearchDist, nullptr, this);
 }
 
 Position WorldObject::GetHitSpherePointFor(Position const& dest) const
@@ -3436,7 +3436,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         destz -= 0.5f;
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f, nullptr, this);
 
     // Collided with a gameobject
     if (col)
@@ -3637,7 +3637,7 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
     }
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f, nullptr, this);
 
     // Collided with a gameobject
     if (col)

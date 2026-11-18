@@ -277,6 +277,11 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
 
         void UpdateModelPosition(bool full = true);
 
+        // Opt in before map publication, after binding the accepted quest scope.
+        // Shared objects retain ordinary collision, including context-free queries.
+        bool EnableQuestScopedCollision();
+        bool CanCollideWith(WorldObject const* requester) const;
+
         void EnableOrDisableGo(bool activate, bool alternative = false);
 
         uint32 GetVignetteId() const;
@@ -353,6 +358,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         bool   m_onUse;
 
         bool m_actionActive = false;
+        bool m_questScopedCollision = false;
         uint32 m_actionTimeCheck = 2500;
         std::vector<GameObjectActionData> const* m_actionVector;
         uint32 m_maxActionDistance = 0;

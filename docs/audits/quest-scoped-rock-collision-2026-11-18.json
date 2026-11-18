@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_CORE_SUPPORT_RING_QUEST_STILL_PENDING",
+  "cause": "A Ring Reforged40225 uses a shared native map1469. Its recovered rock model2230 is genuinely solid (50/50 sampled real mesh rays). Personal visibility/QuestObjectScope alone does not filter DynamicMapTree collision, so a private reconstructed door would invisibly obstruct unrelated players. No live245122 spawn existed and none is added by this core repair.",
+  "implementation": [
+    "Explicit GameObject opt-in requires a live player-owned accepted scope and must occur before world publication. Ordinary shared collision remains unchanged. Expired/canceled private scope and queries without an actor cannot collide with the private door.",
+    "CanCollideWith uses actual owner GUID/same accepted scope and a bounded16 native GetAnyOwner walk for pets, TempSummons and nested guardians. Collision audience is independent of restrictTargets=false combat scope. No global/thread-local viewer or synthetic phase IDs.",
+    "DynamicTreeCallback composes an optional pre-intersection filter. Rejected models cannot shorten distance or erase an earlier valid hit. Map LOS/contact/height carries the requesting actor; WorldObject water/ground, movement/path, anti-cheat, arrival, archaeology and pet-battle callers forward it. LOS now forwards its callback in the actual callback argument instead of converting it to the preceding bool.",
+    "QuestCollisionQuery retains caller filter and hit receipt; its filter captures one stack-object pointer rather than allocating a large captured std::function on every ordinary query."
+  ],
+  "checks": {
+    "native_private_collision": "47 actual Map/DynamicMapTree/GameObject/Player/TempSummon cases with real2230 mesh: independent simultaneous owners, open/reset, accepted-scope and owner-guid creature (native Pet CREATED_BY field), actual no-owner-guid TempSummon and nested/cyclic summoner chains, unrelated/no-context rays, canceled scope, composed caller filters, LOS/contact/height receipts and shared obstacle retention. Player publication and scope acceptance are controlled; no actual login/quest/client. Two setup failures retained: player accessor vector initially too small; SetOwnerGUID writes SUMMONED_BY in this core whereas Pet::Create sets CREATED_BY. Corrected fixtures passed.",
+    "shared_door": "24 actual native DOOR/BUTTON pose/loot contexts and real4413 mesh rays/reset passed.",
+    "arrival": "Retained extracted real Map/Player geometry-before-self, actual support receipt, ordinary/distant/known/hidden floors, same-map protection/loading/timeout and visibility lifecycle passed with actual new query class.",
+    "ship": "Actual both-ship native model/DB2 deck surfaces and production placement helper passed; retained moving-transport visibility regression passed.",
+    "release": "Original common.lib/game.lib/scripts.lib rebuilt, actual final-link inputs used, stable implementation hashes recorded. Selected PE filter vtable invokes CanCollideWith/GetAnyOwner, actual actor-aware map and WorldObject/arrival consumers verified. Canonical Scepter login and retained native10 scenario/Frost selected paths passed.",
+    "limits": "No full native-core ASAN claim. No real two-client movement/visibility traversal or Ring quest completion; native fixtures/control endpoints are identified above."
+  },
+  "build": {
+    "worldserver_sha256": "D62A1F03F5597AA5477C18EC4790387D8DFCB2CD271C0BFF951C02FC5152B70E",
+    "map_sha256": "02AF1F1394A7A9CA142245FB8444F2EB51927A46BF5F0F316AF448768F0CB937",
+    "runtime": "build-extractors/bin/Release",
+    "sql_changes": 0,
+    "character_changes": 0,
+    "bnet_configuration_certificates_dll_data": "Preserved",
+    "rollback": ".codex/quest-collision-20261118/rollback-before-collision (F50 Dargal binary, same World data compatible)",
+    "superseded": "Initial compile overlapped the final ownership source review; not promoted. First tested5ED build was promoted/started, then replaced with stable final D62 after the small-filter capture refinement. Final native/PE and final canonical startup are required below, not inferred from the intermediate start."
+  },
+  "evidence": [
+    ".codex/quest-collision-20261118",
+    "build-extractors/runtime-test/quest-collision-native",
+    ".codex/ring-reforged-20261118/geometry-fixed-diagnostics"
+  ],
+  "diagnostics": "Final canonical PID23176 reached ready, graceful exit0, empty stderr and no appended DBErrors/warnings/errors/assertions or new/changed crashes. Earlier owned PID28888 intermediate startup also exited0. No task-owned hidden server remains. Final native47, selected PE, actual arrival and canonical Scepter checks passed. Existing mixed DBErrors7839 bytes/8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 remains unchanged/unresolved. No user server stopped.",
+  "remaining": "Implement and test actual scoped Nobundo40225 gossip/native195070-195359 waypoint473698/real245122-195132 opening/turn-in/retry sequence; restore its two required counts only with connected actions. Priest40938 first follow-to-portal count remains independently open. No all36 whole-chain/client certification.",
+  "cleanup": "Earlier automatic approval review rejected temporary deletion with only blocked by policy. No alternative deletion attempted; zero files removed here. Redundant staged/native binaries are deferred; exact manifest follows after resolved diagnostics are archived."
+}

@@ -864,7 +864,7 @@ void Creature::UpdateMovementFlags()
 //        return;
 
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
-    float ground = GetMap()->GetHeight(GetPhases(), GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
+    float ground = GetMap()->GetHeight(GetPhases(), GetPositionX(), GetPositionY(), GetPositionZMinusOffset(), true, DEFAULT_HEIGHT_SEARCH, nullptr, this);
 
     bool isInAir = (G3D::fuzzyGt(GetPositionZMinusOffset(), ground + 0.05f) || G3D::fuzzyLt(GetPositionZMinusOffset(), ground - 0.05f)); // Can be underground too, prevent the falling
 
@@ -2316,7 +2316,7 @@ bool Creature::LoadCreatureFromDB(ObjectGuid::LowType guid, Map* map, bool addTo
         m_deathState = DEAD;
         if (CanFly())
         {
-            float tz = map->GetHeight(GetPhases(), data->posX, data->posY, data->posZ, false);
+            float tz = map->GetHeight(GetPhases(), data->posX, data->posY, data->posZ, false, DEFAULT_HEIGHT_SEARCH, nullptr, this);
             if (data->posZ - tz > 0.1f)
                 Relocate(data->posX, data->posY, tz);
         }

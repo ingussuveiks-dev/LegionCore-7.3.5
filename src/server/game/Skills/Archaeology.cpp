@@ -148,7 +148,7 @@ bool Player::OnSurvey(uint32& entry, float& x, float& y, float& z, float &orient
     entry = site.find_id;
     /*x = site.loot_x;
     y = site.loot_y;
-    z = GetMap()->GetHeight(GetPhases(), x, y, GetPositionZ(), true, 5);
+    z = GetMap()->GetHeight(GetPhases(), x, y, GetPositionZ(), true, 5, nullptr, this);
     if (z > INVALID_HEIGHT)
         z += 0.05f;                                     // just to be sure that we are not 
     else*/
@@ -358,7 +358,7 @@ bool Player::TeleportToDigsiteInMap(uint32 mapId)
     ResearchPOIPoint const& point = Trinity::Containers::SelectRandomContainerElement(data.points);
     float x = point.x;
     float y = point.y;
-    float z = map->GetHeight(GetPhases(), x, y, MAX_HEIGHT) + 0.1;
+    float z = map->GetHeight(GetPhases(), x, y, MAX_HEIGHT, true, DEFAULT_HEIGHT_SEARCH, nullptr, this) + 0.1;
 
     TeleportTo(mapId, x, y, z, GetOrientation());
     return true;

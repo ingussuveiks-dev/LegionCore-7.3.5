@@ -23,6 +23,7 @@
 #include "Define.h"
 #include <set>
 #include <mutex>
+#include <functional>
 
 namespace G3D
 {
@@ -37,6 +38,9 @@ class GameObject;
 struct DynamicTreeCallback
 {
     GameObject* go = nullptr;
+    // An optional query filter is evaluated before a model changes ray distance.
+    // It must not call back into the dynamic tree while its lock is held.
+    std::function<bool(GameObject const*)> filter;
 };
 
 typedef std::lock_guard<std::recursive_mutex> RecursiveGuard;

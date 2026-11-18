@@ -134,6 +134,36 @@ GameObject::~GameObject()
     objectCountInWorld[uint8(HighGuid::GameObject)]--;
 }
 
+bool GameObject::EnableQuestScopedCollision()
+{
+    auto scope = GetQuestObjectScope().lock();
+    if (IsInWorld() || !HasQuestObjectScope() || !scope || scope->Cancelled || !scope->Owner.IsPlayer())
+        return false;
+    m_questScopedCollision = true;
+    return true;
+}
+
+bool GameObject::CanCollideWith(WorldObject const* requester) const
+{
+    if (!m_questScopedCollision)
+        return true;
+    auto scope = GetQuestObjectScope().lock();
+    if (!requester || !scope || scope->Cancelled)
+        return false;
+    if (requester->GetGUID() == scope->Owner || requester->GetQuestObjectScope().lock() == scope)
+        return true;
+    // Ordinary TempSummons need their actual summoner, not only UNIT_FIELD
+    // ownership. A bounded native owner walk also accepts nested guardians.
+    Unit const* unit = requester->ToUnit();
+    for (uint8 depth = 0; unit && depth != 16; ++depth)
+    {
+        if (unit->GetGUID() == scope->Owner)
+            return true;
+        unit = unit->GetAnyOwner();
+    }
+    return false;
+}
+
 void GameObject::AIM_Destroy()
 {
     delete m_AI;

@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <functional>
 #define TC_LOG_INFO(...) ((void)0)
 #define TC_LOG_DEBUG(...) ((void)0)
 using uint32 = uint32_t;
@@ -32,6 +33,7 @@ struct WorldObject:Position {
     int id; bool creature=false, inWorld=true, visible=true;
     explicit WorldObject(int n):id(n){}
     bool IsCreature()const{return creature;} bool IsInWorld()const{return inWorld;}
+    bool IsPlayer()const{return id==1;} bool IsUnitOwnedByPlayer()const{return false;}
     int GetGUID()const{return id;}
     void BuildCreateUpdateBlockForPlayer(UpdateData* d,Player*)const{d->objects.push_back(id);}
 };
@@ -47,6 +49,7 @@ struct GameObject:WorldObject {
     bool mapObject=true;
     Model* m_model=nullptr;
     bool HasFlag(int,int)const{return mapObject;}
+    bool CanCollideWith(WorldObject const*)const{return true;} // Ordinary shared supporting geometry.
     float GetVisibilityRange()const{return 90;}
 };
 using StaticTransport=GameObject;
@@ -96,11 +99,13 @@ struct Player:WorldObject {
     void BuildCreateUpdateBlockForPlayer(UpdateData* d,Player* p){selfCreateProtected=IsMapObjectArrivalProtected()&&IsLevitating()&&HasUnitMovementFlag(MOVEMENTFLAG_ROOT);WorldObject::BuildCreateUpdateBlockForPlayer(d,p);}
     Player* GetUnitBeingMoved(){return this;} Player* ToPlayer(){return this;}
 };
-struct DynamicTreeCallback {GameObject* go=nullptr;};
+struct DynamicTreeCallback {GameObject* go=nullptr;std::function<bool(GameObject const*)> filter;};
+#include "QuestCollisionQuery.inc"
 struct Tree {
     GameObject* floor=nullptr;float height=747.6f;bool* gridLoaded=nullptr;
     float getHeight(float,float,float z,float range,std::set<uint32>const&,bool playerRules,DynamicTreeCallback* callback=nullptr)const{
-        if(!floor||!floor->visible||!floor->inWorld||(gridLoaded&&!*gridLoaded)||height<z-range||height>z)
+        if(!floor||!floor->visible||!floor->inWorld||(gridLoaded&&!*gridLoaded)||height<z-range||height>z||
+            (callback&&callback->filter&&!callback->filter(floor)))
             return -std::numeric_limits<float>::infinity();
         if(callback){assert(playerRules);callback->go=floor;}
         return height;
@@ -128,7 +133,7 @@ struct Map {
     Map(){_dynamicTree.gridLoaded=&gridLoaded;}
     int GetId()const{return id;}
     float GetHeight(float,float,float,bool,float)const{return staticFloor;}
-    float GetHeight(std::set<uint32>const& phases,float x,float y,float z,bool vmap=true,float range=50,DynamicTreeCallback* callback=nullptr)const;
+    float GetHeight(std::set<uint32>const& phases,float x,float y,float z,bool vmap=true,float range=50,DynamicTreeCallback* callback=nullptr,WorldObject const* requester=nullptr)const;
     void BuildPlayerArrivalObjects(Player*,Position const&,UpdateData&,bool notifyMovement=false);
     void SendInitSelf(Player*);
 };

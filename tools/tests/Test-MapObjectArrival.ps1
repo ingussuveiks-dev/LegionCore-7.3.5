@@ -4,6 +4,10 @@ $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $output="$repo/build-extractors/runtime-test/map-object-arrival"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $source=[IO.File]::ReadAllText("$repo/src/server/game/Maps/Map.cpp")
+$query=[IO.File]::ReadAllText("$repo/src/server/game/Maps/QuestCollisionQuery.h")
+$query=$query.Substring($query.IndexOf('class QuestCollisionQuery'))
+$query=$query.Substring(0,$query.LastIndexOf('#endif'))
+[IO.File]::WriteAllText("$output/QuestCollisionQuery.inc",$query)
 foreach($item in @(
  @('BuildPlayerArrivalObjects','void Map::BuildPlayerArrivalObjects('),
  @('GetArrivalHeight','float Map::GetHeight(std::set<uint32> const& phases')

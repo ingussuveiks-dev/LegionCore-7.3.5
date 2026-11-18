@@ -712,7 +712,7 @@ void WorldSession::HandlePetBattleRequestPVP(WorldPackets::BattlePet::RequestPVP
 
     for (auto const& teamPosition : battleRequest->TeamPosition)
     {
-        if (_player->GetMap()->getObjectHitPos(_player->GetPhases(), true, battleRequest->PetBattleCenterPosition, teamPosition, 0.0f))
+        if (_player->GetMap()->getObjectHitPos(_player->GetPhases(), true, battleRequest->PetBattleCenterPosition, teamPosition, 0.0f, nullptr, _player))
         {
             SendPetBattleRequestFailed(PETBATTLE_REQUEST_NOT_HERE_UNEVEN_GROUND);
             sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);

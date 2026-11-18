@@ -16,6 +16,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "QuestCollisionQuery.h"
+
 #include "BattlefieldMgr.h"
 #include "BattlegroundMgr.h"
 #include "BrawlersGuild.h"
@@ -2408,12 +2410,12 @@ inline GridMap* Map::GetGrid(float x, float y)
     return GridMaps[gx][gy];
 }
 
-float Map::GetWaterOrGroundLevel(std::set<uint32> const& phases, float x, float y, float z, float* ground /*= NULL*/, bool /*swim = false*/) const
+float Map::GetWaterOrGroundLevel(std::set<uint32> const& phases, float x, float y, float z, float* ground /*= NULL*/, bool /*swim = false*/, WorldObject const* requester) const
 {
     if (const_cast<Map*>(this)->GetGrid(x, y))
     {
         // we need ground level (including grid height version) for proper return water level in point
-        float ground_z = GetHeight(phases, x, y, z, true, 50.0f);
+        float ground_z = GetHeight(phases, x, y, z, true, 50.0f, nullptr, requester);
         if (ground)
             *ground = ground_z;
 
@@ -2763,41 +2765,45 @@ float Map::GetWaterLevel(float x, float y) const
     return 0;
 }
 
-bool Map::isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags, DynamicTreeCallback* dCallback /*= nullptr*/) const
+bool Map::isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags, DynamicTreeCallback* dCallback /*= nullptr*/, WorldObject const* requester) const
 {
+    QuestCollisionQuery query(requester, dCallback);
+    bool playerRules = requester ? requester->IsPlayer() || requester->IsUnitOwnedByPlayer() : dCallback != nullptr;
     return VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetId(), x1, y1, z1, x2, y2, z2, ignoreFlags)
-        && _dynamicTree.isInLineOfSight({ x1, y1, z1 }, { x2, y2, z2 }, phases, dCallback);
+        && _dynamicTree.isInLineOfSight({ x1, y1, z1 }, { x2, y2, z2 }, phases, playerRules, &query.Query);
 }
 
-bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, Position startPos, Position destPos, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/)
+bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, Position startPos, Position destPos, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/, WorldObject const* requester)
 {
+    QuestCollisionQuery query(requester, dCallback);
     G3D::Vector3 resultPos;
     G3D::Vector3 _startPos = G3D::Vector3(startPos.m_positionX, startPos.m_positionY, startPos.m_positionZ);
     G3D::Vector3 _dstPos = G3D::Vector3(destPos.m_positionX, destPos.m_positionY, destPos.m_positionZ);
-    return _dynamicTree.getObjectHitPos(phases, otherUsePlayerPhasingRules, _startPos, _dstPos, resultPos, modifyDist, dCallback);
+    return _dynamicTree.getObjectHitPos(phases, otherUsePlayerPhasingRules, _startPos, _dstPos, resultPos, modifyDist, &query.Query);
 }
 
-bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float& ry, float& rz, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/)
+bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float& ry, float& rz, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/, WorldObject const* requester)
 {
+    QuestCollisionQuery query(requester, dCallback);
     G3D::Vector3 startPos = G3D::Vector3(x1, y1, z1);
     G3D::Vector3 dstPos = G3D::Vector3(x2, y2, z2);
 
     G3D::Vector3 resultPos;
-    bool result = _dynamicTree.getObjectHitPos(phases, otherUsePlayerPhasingRules, startPos, dstPos, resultPos, modifyDist, dCallback);
+    bool result = _dynamicTree.getObjectHitPos(phases, otherUsePlayerPhasingRules, startPos, dstPos, resultPos, modifyDist, &query.Query);
     rx = resultPos.x;
     ry = resultPos.y;
     rz = resultPos.z;
     return result;
 }
 
-float Map::GetHeight(std::set<uint32> const& phases, float x, float y, float z, bool vmap /*= true*/, float maxSearchDist /*= DEFAULT_HEIGHT_SEARCH*/, DynamicTreeCallback* dCallback /*= nullptr*/) const
+float Map::GetHeight(std::set<uint32> const& phases, float x, float y, float z, bool vmap /*= true*/, float maxSearchDist /*= DEFAULT_HEIGHT_SEARCH*/, DynamicTreeCallback* dCallback /*= nullptr*/, WorldObject const* requester) const
 {
+    QuestCollisionQuery query(requester, dCallback);
     float vmapZ = GetHeight(x, y, z, vmap, maxSearchDist);
-    // The sixth argument is a phasing-rules bool, not the callback. Passing
-    // only dCallback there silently discarded the supporting-object result.
-    float goZ = _dynamicTree.getHeight(x, y, z, maxSearchDist, phases, dCallback != nullptr, dCallback);
-    if (vmapZ > goZ && dCallback)
-        dCallback->go = nullptr;
+    bool playerRules = requester ? requester->IsPlayer() || requester->IsUnitOwnedByPlayer() : dCallback != nullptr;
+    float goZ = _dynamicTree.getHeight(x, y, z, maxSearchDist, phases, playerRules, &query.Query);
+    if (vmapZ > goZ)
+        query.Query.go = nullptr;
 
     return std::max<float>(vmapZ, goZ);
 }
@@ -2888,7 +2894,7 @@ void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination,
 
     DynamicTreeCallback floor;
     float height = GetHeight(player->GetPhases(), destination.GetPositionX(), destination.GetPositionY(),
-        destination.GetPositionZ() + 2.0f, true, 5.0f, &floor);
+        destination.GetPositionZ() + 2.0f, true, 5.0f, &floor, player);
     // Moving transports are outside the ordinary grid visitor and can still
     // be waiting for their first dynamic-tree insertion. Query their actual
     // phase-visible models rather than guessing a floor from an entry/map ID.

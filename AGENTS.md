@@ -42,6 +42,9 @@
 - Full bags cannot force an off-spec artifact into equipment or award an unreceived item. Retain failed-loot retry, normal same-spec equip/storage errors and real parent/child checks. See `ArtifactAcquisitionInventory.h`, `Test-ArtifactAcquisitionInventory.ps1` and `docs/audits/artifact-acquisition-inventory-2026-11-17.json`; all36 metadata/controller checks do not certify complete client chains.
 - A restart after genuine Thas'dorah pickup but before the exit selection may recover the original Vereesa gossip. It must not select the option or award return credit automatically. Native59 records103481; native205040 must accept the real transfer before102548. Automatic transfer retry still requires the actual selection receipt.
 
+# Personal quest collision
+
+- A private solid quest object on a shared map needs actor-aware collision as well as personal visibility. Bind its actual accepted QuestObjectScope and call EnableQuestScopedCollision before AddToMap; never disable collision or invent phase IDs to hide a foreign-player obstruction. Forward the real requesting WorldObject through Map LOS/contact/height queries. Preserve shared geometry, caller filters and supporting-object receipts, native owner/pet/TempSummon resolution and canceled-scope cleanup. Run Test-QuestCollisionNative.ps1, retained door/arrival/ship checks and verify_quest_collision_release.py. Native two-owner mesh checks do not certify two-client traversal or the still separate Ring40225 story.
 # Build and runtime convention
 
 - Treat `build-extractors/bin/Release` as the canonical final runtime directory for the compiled `bnetserver.exe` and `worldserver.exe`.
