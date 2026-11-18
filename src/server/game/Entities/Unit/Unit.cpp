@@ -1299,6 +1299,20 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
                 victim->ToPlayer()->DurabilityPointLossForEquipSlot(EquipmentSlots(urand(0, EQUIPMENT_SLOT_END - 1)));
         }
 
+        // Raging belongs to the surviving result of this damage, after native
+        // level scaling and encounter/AI damage policies. The ordinary Might
+        // proc is an outgoing melee receipt and cannot observe that result.
+        if (Creature* creature = victim->ToCreature())
+            if (AuraEffect* raging = creature->GetAuraEffect(206150, EFFECT_2))
+                if (raging->GetAmount() && creature->IsAlive() && !creature->IsAffixDisabled(Affixes::Raging)
+                    && !creature->HasAura(228318))
+                {
+                    uint64 maximum = creature->GetMaxHealth();
+                    uint64 threshold = (maximum / 10) * 3 + (maximum % 10) * 3 / 10;
+                    if (creature->GetHealth() <= threshold)
+                        creature->CastSpell(creature, 228318, true, nullptr, raging);
+                }
+
         // Rage from damage received
         if (this != victim && victim->GetPowerType() == POWER_RAGE)
             victim->RewardRage(damage + (cleanDamage ? (cleanDamage->absorbed_damage + cleanDamage->mitigated_damage) : 0), false);
@@ -7732,9 +7746,8 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                     switch (effIndex)
                     {
                         case EFFECT_2:
-                            if (!triggerAmount || GetHealthPct() > 30.0f)
-                                return false;
-                            break;
+                            // Applied after final incoming damage in DealDamage.
+                            return false;
                         case EFFECT_8:
                             if (!triggerAmount)
                                 return false;

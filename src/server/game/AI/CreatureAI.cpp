@@ -26,6 +26,7 @@
 #include "Player.h"
 #include "CreatureTextMgr.h"
 #include "Group.h"
+#include "SpellAuraEffects.h"
 
 bool CreatureAI::UpdateVictimWithGaze()
 {
@@ -100,6 +101,12 @@ bool CreatureAI::_EnterEvadeMode()
 {
     if (!me->IsAlive())
         return false;
+
+    // Vehicles retain their other auras below, but an enemy Might attempt's
+    // Enrage must still end with this evade rather than leak into the next pull.
+    if (AuraEffect* raging = me->GetAuraEffect(206150, EFFECT_2))
+        if (raging->GetAmount())
+            me->RemoveAurasDueToSpell(228318);
 
     // dont remove vehicle auras, passengers arent supposed to drop off the vehicle
     // NPC_HOLY_GUARDIAN or Mindbender or any summons

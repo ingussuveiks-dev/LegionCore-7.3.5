@@ -49,5 +49,6 @@
     "Actual client targeting and single-target/AoE immunity interactions,interrupt attempts,health bar,visuals and combat/network timing remain OPEN.",
     "Keystone weekly admission,other affix combinations,boss-owned summon variants and full13 dungeon/63 encounter traversal are not certified by this controlled Explosive regression.",
     "Raging and the remaining full-combat affix/encounter paths still need independent coverage;prior scaling/metadata audits alone are not full gameplay checks."
-  ]
+  ],
+  "followup": "legion-raging-damage-2026-11-18.json adds1493 native Raging checks and repairs its final-damage/evade paths;the359 native Explosive assertions remain passing against that final build. Full client traversal remains OPEN."
 }

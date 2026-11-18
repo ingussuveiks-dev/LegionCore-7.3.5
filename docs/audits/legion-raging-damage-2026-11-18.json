@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "baseline_commit": "58b672e7a",
+  "cause": [
+    "Matching Might206150 has native proc flag4 (outgoing melee),no World proc override and effect2 triggering Enrage228318. Raging did not react to incoming damage;it could activate only when the low-health NPC next landed its own melee receipt.",
+    "Incoming melee/spell proc dispatch precedes final DealDamage scaling,encounter and AI protection hooks. Moving only the proc flags to damage TAKEN still checks pre-hit health and cannot reliably observe the final surviving result.",
+    "Native CreatureAI evade preserves other auras on vehicles through isAnySummons. Enrage228318 has no LEAVE_COMBAT interrupt bit,so an enemy NPC vehicle could retain the old attempt Enrage through evade."
+  ],
+  "repair": [
+    "Apply native228318 once from the real surviving DealDamage branch after ModifyHealth and native threat handling. Require Creature,the actual Might206150 effect2 with nonzero amount,dynamic Raging enabled,alive recipient and no existing Enrage. Lethal,absorbed and final-policy-zero damage never reaches this application. No manual kill or quest credit.",
+    "Use the final stored uint64 health and inclusive floor(3*maximum/10) threshold,computed by quotient/remainder without overflow or floating-point rounding. This respects actual native level scaling and final AI damage veto/clamp.",
+    "Disable only effect2 of the old outgoing dummy proc. Necrotic effect8,its native flag4 and cooldown dispatch remain unchanged. No live database migration or SpellInfo proc modification.",
+    "At native evade,remove only228318 when the actual Might effect2 is active. Preserve the original ordinary/vehicle/summon/control-vehicle aura policy and the rest of evade handling."
+  ],
+  "local_evidence": {
+    "source": "Matching local7.3.5 DB2,World rows,Challenge/Unit/CreatureAI source and actual Release libraries. No modern-core or web implementation copied.",
+    "metadata": "Might14 effects/mask16383,World proc rows0,native ProcTypeMask4,proc chance100. Effect2 amount is derived from the actual Raging affix,nonboss and disabled-affix guards. Enrage228318 native permanent self aura:damage100%,scale20%,mechanic-immunity mask1701,dispel9,nonstacking and interrupt flags0. Metadata and all three child effects retained."
+  },
+  "checks": {
+    "original": "4 strict native expected-broken checks on original game.lib:incoming31/30/29-percent receipts do not activate Raging;outgoing melee at29% does. Not an ordinary passing gameplay run.",
+    "data_only": "4 strict expected-broken native checks with connection-local counterfactual proc rows and original game.lib:incoming31->29 still fails to enrage,while already30/29 works;outgoing no longer activates it. Counterfactual SQL is retained only under tools/tests/fixtures/LegionRagingProcCounterfactual.sql and must never be installed in World.",
+    "current": "1493 native assertions with21 expanded contexts plus the initial native crossing/live-data checks.18 Human/Orc x Keystone4/10/15 x Player/Pet/Guardian attacker contexts cover real ordinary scaled NPC97032,NPC vehicle97043 and native boss96754;two absent/disabled-affix contexts and one final AI-policy context complete the scope.",
+    "thresholds": "Native unscaled vehicle cases cover above/exact/below30%,single damage crossing,partial/full absorb,zero damage,nondecimal max health and exact uint64 boundaries beyond2^54. Damage remains100% increased,one nonstacking Enrage survives repeated hits/healing and can be admitted again after explicit native aura removal.",
+    "scaling": "Real native scaled NPC damage uses GetHealthMultiplierForTarget/GetHealth(attacker)/SetHealthScal and reaches expected30.8/29.9/28.8-percent endpoints across all tested keys and attacker types. Raging follows those final endpoints. Exact unscaled test receipts and scaled damage inputs are controlled.",
+    "lifecycle": "Actual CreatureAI::_EnterEvadeMode endpoint clears only old Raging while preserving the native vehicle Might/unrelated2479 policy;ordinary NPC cleanup remains native. Native re-entry restores fresh Might;actual Challenge charm/uncharm cleanup remains guarded. Full-health one-hit native vehicle deaths and repeated Player/Pet/Guardian final blows retain no corpse Enrage. Boss and player-owned actors/group members receive no enemy Enrage.",
+    "final_policy": "Actual DamageTakenAfterScaling AI clamps0/5000/15000 govern both final health and Enrage;actual Unit::DealDamage direct,spell-direct and periodic damage endpoints all activate at29%. These are controlled damage receipts,not full Spell/periodic-aura or client attack traversal.",
+    "retained": "283 native Might/GT/profile/Necrotic checks and359 native Explosive checks pass against the final original libraries. Total final ordinary native assertions2135. Staged/canonical Raging PE,retained Necrotic/death-affix/nullable-getter PE and canonical Scepter login regression pass.",
+    "binary": "Actual final PE checks the post-ModifyHealth Might effect2 gate,alive/dynamic-disabled/existing-aura guards,uint64 quotient/remainder threshold,inclusive comparison and self CastSpell. Old effect2 proc returns false. Native evade retains both scoped Raging removal and original ordinary/vehicle aura handling.",
+    "database": "Read-only native World/hotfix plus connection-local account/character_instance and proc/check/bonus TEMP shadows. Only the explicitly labeled DataOnly counterfactual installs its temporary proc rows. Live Might proc rows remain0. No persistent World,character,schema or updater edits."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "166bc935b6d1736d51bd98ce9a163569485ddd44ef27891b4f382b00992d3d11",
+    "worldserver_map_sha256": "23abc72b5a9cfe2716098b617f331c521357cdb27caa62858c795c23229b63e3",
+    "method": "Original common/database/game/scripts Release targets and actual original final-link libraries;separate staged final link,no global OutDir. Native source/library input hashes sealed. Canonical EXE/map match staged identities and linked implementation inspection.",
+    "protected": "Canonical bnetserver,configuration,certificates,DLLs,logs history and shared extracted data preserved;protected root hashes rechecked.",
+    "rollback": ".codex/legion-raging-20261118/rollback-before-raging-repair"
+  },
+  "diagnostics": {
+    "result": "Final native/PE/retained/startup checks exit0 with no new/changed crash reports,appended DBErrors or unexplained appended server warning/error/assertion. Canonical active Crashes empty and DBErrors0. No full-core ASAN established.",
+    "startup": "Task-owned canonical PID16560 reached fresh ready,accepted server shutdown0 and exited0;stderr empty,new DBErrors0,configuration/certificate hashes unchanged. No user server stopped and no owned hidden process remains.",
+    "resolved_findings": [
+      "Prototype fixture used nonexistent DamageInfo::SetAbsorb and omitted fstream;corrected to native AbsorbDamage and explicit header. Original compiler traces retained.",
+      "Pre-damage projection prototype plus exact raw-health fixture failed on actual scaled NPC:incoming10000 became16499 in the native scaled damage model and raw health became305181. The final production design uses actual post-damage health;strict scaled regressions pass.",
+      "Expanded fixture placed multiple large map/player contexts in one stack frame and overflowed at Expanded entry. Moved those test-owned contexts to heap storage;native current1493 checks pass. Original stack trace retained;no dump file generated.",
+      "PE prototype used GetAura instead of actual GetAuraApplication,assumed direct dispatch for virtual encounter hooks and treated a signed64-bit reciprocal immediate as unsigned. Corrected actual symbol/virtual-site inspection and normalized only the immediate representation;all failed captures and final passing counterparts retained."
+    ],
+    "compiler": "Release Unit.cpp emits existing signed/unsigned and legacy-header warnings outside changed hunks;logs retained,warnings not suppressed. No warning in the edited Raging/evade hunks.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-raging",
+    "archive_policy": "Exact original diagnostic bytes copied with source/archive/source SHA256 verification. Reviewed counterfactuals and resolved fixture failures remain explicit. Private configs/credentials excluded,no mixed live log cleared. Redundant native/staging/compiler outputs and superseded rollback removed after passing checks."
+  },
+  "cleanup": {
+    "RemovedFiles": 259,
+    "ReclaimedBytes": 3273777620,
+    "Retained": ".codex/legion-raging-20261118/rollback-before-raging-repair EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 323
+  },
+  "remaining": [
+    "Actual client combat,cast/VFX timing,health-bar scaling,pet AI/portrait,dispels and full dungeon traversal remain OPEN.",
+    "Native source AI/publication,health/group and hit receipts are controlled. Evade endpoint and Challenge charm callbacks do not certify actual path home,client re-entry or possession gameplay.",
+    "Counterfactual modes require original58b672e7a game.lib and deliberately reject the repaired core. Other affix combinations,weekly key admission and all13 dungeons/63 encounter chains remain separate."
+  ]
+}

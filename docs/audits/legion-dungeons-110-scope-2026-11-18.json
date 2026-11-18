@@ -612,6 +612,11 @@
       "issue": "Overlapping Sanguine lifetime contributions and real Volcanic checks",
       "audit": "legion-sanguine-volcanic-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Raging final incoming damage and native evade reset",
+      "audit": "legion-raging-damage-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {
@@ -624,8 +629,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "legion-sanguine-volcanic-2026-11-18.json",
-    "current_rollback": ".codex/legion-environment-20261118/rollback-before-environment-repairs",
+    "superseded_by": "legion-raging-damage-2026-11-18.json",
+    "current_rollback": ".codex/legion-raging-20261118/rollback-before-raging-repair",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -644,7 +649,8 @@
     "environment_native_checks": 303,
     "instance_lifetime_native_checks": 15,
     "explosive_native_checks": 359,
-    "explosive_audit": "legion-explosive-native-2026-11-18.json"
+    "explosive_audit": "legion-explosive-native-2026-11-18.json",
+    "raging_native_checks": 1493
   },
   "focused_verifications": [
     {
