@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_TEEMING_CONTENT_CLIENT_OPEN",
+  "source_commit": "96d8a8263d417fdbefb77c0a8c7512961f6ba661",
+  "fix_commit": "Containing focused commit;exact SHA recorded in local verified archive manifest after commit",
+  "cause": "ScenarioMgr places every native Teeming criterion variant at effective step0. Cathedral1335 native step3292/tree58715 and Seat1428 step3537/tree60933 retain original DB2 OrderIndex1. Scenario lookup compared against original order,leaving currentTree0 and denying real criterion receipts. Completion then used original order+1=2 although its vector has one step,so IsCompleted(false) was false.",
+  "fix": "Use one scoped effective-step-order helper in criterion lookup and UpdateCurrentStep. An actual Challenge carrying Teeming5 plus the existing recognized native Teeming tree identifies effective order0. Every other step retains its immutable DB2 order. Both lookup and completion use the same order;no global DB2 mutation,new criterion grant,timer completion or force-count change.",
+  "checks": {
+    "baseline": "Pinned full Scenario.cpp from96d8a8263 compiled into native counterfactual;5176 assertions reproduce both currentTree0/receipt denial and completion overshoot for Cathedral/Seat,with11 other Teeming variants unaffected. Also recorded pre-edit274-route-assertion run. Expected-broken counterfactuals,not ordinary successful runs.",
+    "native_assertions": 5176,
+    "route_assertions": 274,
+    "ordinary_fallback_assertions": 4902,
+    "routes": "13 real native MapChallengeMode routes x normal/Teeming key:actual Scenario::CreateChallenge selects the native step/tree,including227/234 sharing1651;pointer identity and original DB2 order retained. Empty actual criterion graphs do not advance;selected immediate child receipts are accepted. All13 selected native criterion graphs are evaluated with controlled completed leaf counters;actual loading-only UpdateCurrentStep finishes exactly at1,clears currentTree and is stable on repeat.",
+    "fallback": "1638 native ScenarioStep rows each retain their own order without a challenge and reject a different order.1625 nonvariant rows also retain native order under an actual Teeming key;empty vector still returns0. One-element step-vector publication is controlled. This verifies the getter fallback,not1638 whole scenario traversals.",
+    "boundaries": "Completed leaf counters and inactive run are controlled checkpoints. Actual AchievementGlobalMgr::LoadCriteriaList,Criterion tree evaluation,Scenario selection/admission/progression execute. No fabricated combat kills,forces,loot,quest progression,completion reward or persistent DB writes in this regression. loading=true intentionally preserves reward state;actual reward/save endpoints have separate retained coverage.",
+    "retained": "Final-library140 spawn-admission +443 challenge lifecycle +1005 native completion endpoint assertions pass. Completion coverage104 contexts/13 routes/solo+party/all4 timer tiers uses native stored keys,placed chests,entitlement allocation,async prepared TEMP writes,reload and idempotency;not earned dungeon traversal. Combined final native assertions6764,of which4902 are getter metadata fallback checks.",
+    "binary": "verify_legion_teeming_criteria_release.py inspects both actual inlined key5/recognized-variant predicates,immutable original-order fallback,effective-zero lookup and native completion increment. Both criterion and earlier marked-spawn inspectors pass against final canonical PE;Scepter login Release check passes.",
+    "database": "World/hotfix read-only data. Existing empty account/character_instance bootstrap and completion-specific connection-local challenge shadow tables only. No persistent World/character/schema/updater change,no live server used by native probes,no full-core ASAN/client login."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "388e15a94582bf55dae4303972ea524fa40f36c92110b606a3b21d6905a402bd",
+    "worldserver_map_sha256": "c6eeff200e1b3173ccbda82ca62fe028d0d0b6720807549c1c76c2d91eaa1c64",
+    "source_sha256": "3532f7c224abebf6040e06e888da03a4c439f1ce6c245c252a5ccf53863542ba",
+    "identity": "Original common/database/game/scripts Release library paths built;actual final-link inputs recorded in final-libraries.json,staged final link without global OutDir. Stage/canonical EXE+map hashes identical. Previous Teeming admission remains in the deployed code.",
+    "protected": "bnetserver/configurations/certificates/DLLs/shared extracted data unchanged;no user server stopped.",
+    "rollback": ".codex/legion-teeming-criteria-20261118/rollback-before-teeming-criteria-repair"
+  },
+  "diagnostics": {
+    "result": "Final native6764,canonical PE pair,Scepter and owned startup pass;no new/changed crash files,appended DBErrors or unexplained warnings/errors/assertions. Canonical Crashes empty,DBErrors0.",
+    "startup": "Owned canonical PID5736 reached fresh ready,accepted server shutdown0 and exited0;stderr empty,new DBErrors0,protected hashes unchanged. No hidden owned process remains.",
+    "reviewed_failures": [
+      "Earlier expanded admission fixture stopped on Cathedral missing tree;this production failure is paired with pinned native counterfactual and repaired13-route criteria check.",
+      "Initial gate fixture cleanup accessed uncreated update fields;corrected cleanup is paired with original baseline16 and final admission140.",
+      "First gate PE inspector slice was one instruction early;actual disassembly reviewed,corrected stage and canonical inspectors pass.",
+      "Initial SQL scanner missed lowercase/multispace multiline INSERT statements;streaming final parser scans actual row shapes and records source SHA256. No claimed row coverage for unrelated/unparsed creature_data formats."
+    ],
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-teeming",
+    "archive_files": 331,
+    "policy": "331 original diagnostic/source captures verified by source/archive/source SHA256 and final archive checks. Private configs excluded. Resolved fixture and production failures archived with passing counterparts. No mixed live log cleared.",
+    "open_content_evidence": ".codex/legion-teeming-open-content-20261118/manifest.json",
+    "open_policy": "34 exact-byte captures retained separately as OPEN,including the initial missing-spawn inspection failure,source scans/hashes and historical addon evidence. Missing data is not archived or reported as fixed."
+  },
+  "cleanup": {
+    "RemovedFiles": 284,
+    "ReclaimedBytes": 4108314596,
+    "ArchiveFiles": 331,
+    "OpenEvidenceFiles": 34,
+    "Retained": "Canonical runtime/shared data/required original libraries;latest .codex/legion-teeming-criteria-20261118/rollback-before-teeming-criteria-repair;regression source and verified archives;separate ignored OPEN content evidence",
+    "Deferred": "Missing authentic Teeming placements and client whole-chain checks remain OPEN;no temporary executable needed. Pre-existing small lifecycle/completion history and Scepter startup/deployment logs retained."
+  },
+  "content_gap": {
+    "status": "OPEN_UNRESOLVED",
+    "live_flagged_spawns": 0,
+    "reviewed_dumps": [
+      {
+        "source": "sql\\base\\LegionCore_full_735.26972_2024_10_23\\LegionCore_world_735.26972_2024_10_23.sql",
+        "rows": 408427,
+        "flags": 0,
+        "sha256": "0265cc795b6507f8918162293e7c905143cdb2ef227ee72179bb43bcf889f68c"
+      },
+      {
+        "source": ".codex\\armament-sources\\dufernst-world\\LegionCore_world_2020_04_25.sql",
+        "rows": 408442,
+        "flags": 0,
+        "sha256": "0cf4a35bb7a27120fd5a4d8350271b424ddc8c5acc6cf3e9638d2e5ad9b840f5"
+      },
+      {
+        "source": ".codex\\armament-sources\\titans-world_database_01.sql",
+        "rows": 408503,
+        "flags": 0,
+        "sha256": "d707dab63e7c61b9f24d6a1962b189a656efdaa6696ee04eafe45736d42000f3"
+      }
+    ],
+    "limits": "Only actual parsed creature rows count as checked. Other cached creature_data formats and split dump parts with no parsed creature table are not evidence of absent Teeming data.",
+    "reference": "Historical MethodDungeonTools2018-05-27 MawOfSouls.lua distinguishes extra clones but provides addon2D/sublevel coordinates rather than authoritative server XYZ/orientation/respawn. No invented placement/force-weight migration or random NPC duplication.",
+    "primary_reference": "https://github.com/Nnoggie/MythicDungeonTools/blob/aaabf806caac2cc519b692bce68c9ce38e934974/MawOfSouls.lua"
+  },
+  "remaining": [
+    "Actual7.3.5 extra NPC placement data and corresponding native force weights remain unresolved;these two core repairs alone do not restore Teeming extra population.",
+    "Actual client Cathedral/Seat progress/forces/combat/visuals and13 whole dungeon chains/63 encounters remain OPEN.",
+    "Pet/guardian/group killer credit is untouched and not certified by admission/controlled-checkpoint tests.",
+    "Overflowing is legacy/manual support outside this project12-week affix rotation;only metadata/proc source inspected,actual native heal/absorb coverage remains separate."
+  ]
+}

@@ -3,7 +3,7 @@
   "client_build": 26972,
   "status": "DEPLOYED_SPAWN_ADMISSION_NATIVE_PE_PASS_TEEMING_CONTENT_OPEN",
   "source_commit": "dcca4d01d",
-  "fix_commit": "Containing focused commit; exact SHA recorded in local diagnostic manifest after commit",
+  "fix_commit": "96d8a8263d417fdbefb77c0a8c7512961f6ba661",
   "cause": "Creature::LoadCreatureFromDB checked the marker only in the nonzero-instance branch and only if a scenario existed. Missing scenario admitted marked extras; an artificial Teeming challenge also admitted them in ordinary difficulties.",
   "fix": "Marked DB spawns now require exact native Keystone difficulty8 and an actual registered scenario with a Challenge carrying Teeming5 before either GUID branch or native Create. Countdown remains valid; no timed-run latch added. Ordinary DB spawns retain original GUID/duplicate/create behavior.",
   "checks": {
@@ -18,8 +18,8 @@
   "content_gap": {
     "status": "OPEN_UNRESOLVED",
     "live": "SELECT map,COUNT(*) FROM creature WHERE isTeemingSpawn<>0 GROUP BY map returned no rows across World.",
-    "base": "Matching repository base SQL408427 creature rows:zero Teeming markers. Cached Titans world01 has408503 creature rows:zero markers.",
-    "limits": "Other cached source files yielded zero parsed creature rows;not evidence that those files contain zero Teeming spawns.",
+    "base": "Final streaming scan:matching repository base408427 rows,cached dufernst408442 rows,Titans408503 rows;all zero Teeming markers. Source hashes in criterion audit and OPEN evidence.",
+    "limits": "Remaining cached creature_data formats/split parts yielded no parsed creature table;no absence claim for unparsed data.",
     "references": [
       "Local newer TrinityCore checkout has no located Teeming source/history;not treated as version-compatible implementation.",
       "Local DestinyCore randomly clones30-percent of nonboss spawns;rejected as unverified matching-placement data.",
@@ -29,25 +29,33 @@
     "next": "Recover and validate original7.3.5 extra placements/force weights before any spawn migration. Gate fix does not restore missing extra packs."
   },
   "new_finding": {
-    "status": "OPEN_FOR_NEXT_SEPARATE_REPAIR",
-    "issue": "Expanded13-route test reaches Cathedral Teeming variant but GetScenarioCriteriaByStep(0) does not return its chosen tree. Preserve failed trace and native runtime until isolated root cause/regression repair."
+    "status": "REPAIRED_SEPARATELY_NATIVE_PE_PASS_CLIENT_OPEN",
+    "audit": "legion-teeming-criteria-2026-11-18.json",
+    "issue": "Cathedral/Seat nonzero native Teeming step order caused missing currentTree and completion overshoot;separate criterion repair now deployed."
   },
   "build": {
     "runtime": "build-extractors/bin/Release",
     "worldserver_sha256": "d4f2b16701694695c7091ebeab4a59b23fc93ef1cd8d09ec037654acb3bd02df",
     "worldserver_map_sha256": "4ec48e38f0a95141d767f93557b175cfe48a4886dd90a719dec44bb918dac0b6",
     "identity": "Built original common/database/game/scripts Release library locations,staged final link without OutDir override;stage/canonical hashes match. Configs/certificates/DLLs/bnet/shared data unchanged.",
-    "rollback": ".codex/legion-teeming-20261118/rollback-before-teeming-repair"
+    "rollback": ".codex/legion-teeming-20261118/rollback-before-teeming-repair",
+    "superseded_runtime_by": "legion-teeming-criteria-2026-11-18.json"
   },
   "diagnostics": {
     "result": "Final gate140/lifecycle443/PE/Scepter/owned startup exit0,no new/changed crashes or appended DBErrors/unexplained warnings/errors/assertions. Canonical Crashes empty,DBErrors0.",
     "startup": "Owned canonical PID2336 reached fresh ready,server shutdown0,exit0,stderr empty,new DBErrors0;no hidden server remains,no user process stopped.",
     "fixture_failure": "Initial cleanup touched update fields on a rejected uncreated Creature and crashed in Object::RemoveFlag. Guarded cleanup by actual GetMap;passing baseline16 and current140 paired with that trace.",
-    "preservation": "Gate evidence retained locally for final verified archive;missing content evidence and failed Cathedral criterion trace remain explicitly unresolved. No active log cleared."
+    "preservation": "Resolved gate/fixture and criterion evidence has331 hash-verified fixed captures.34 missing-content/source captures preserved separately as OPEN;no active log cleared.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-teeming",
+    "open_content_evidence": ".codex/legion-teeming-open-content-20261118/manifest.json"
   },
   "cleanup": {
-    "status": "DEFERRED_CONCRETE_OUTSTANDING_CRITERIA_CHECK",
-    "reason": "Native runtime/stage/source investigation still needed for newly found Teeming criterion regression. Final task cleanup follows that separate repair;canonical runtime/current rollback retained."
+    "RemovedFiles": 284,
+    "ReclaimedBytes": 4108314596,
+    "ArchiveFiles": 331,
+    "OpenEvidenceFiles": 34,
+    "Retained": "Canonical runtime/shared data/required original libraries;latest .codex/legion-teeming-criteria-20261118/rollback-before-teeming-criteria-repair;regression source and verified archives;separate ignored OPEN content evidence",
+    "Deferred": "Missing authentic Teeming placements and client whole-chain checks remain OPEN;no temporary executable needed. Pre-existing small lifecycle/completion history and Scepter startup/deployment logs retained."
   },
   "remaining": [
     "Missing original Teeming extra spawn data unresolved.",

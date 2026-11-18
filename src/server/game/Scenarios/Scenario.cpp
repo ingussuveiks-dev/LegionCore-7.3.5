@@ -27,6 +27,19 @@
 #include "QuestData.h"
 #include "OutdoorPvP.h"
 
+namespace
+{
+    uint8 GetScenarioStepOrder(ScenarioStepEntry const* step, Challenge* challenge)
+    {
+        // ScenarioMgr publishes the Teeming variant as a single effective
+        // step. Cathedral and Seat retain OrderIndex 1 in the immutable DB2.
+        if (challenge && challenge->HasAffix(Affixes::Teeming) && sScenarioMgr->HasAffixesTeeming(step->Criteriatreeid))
+            return 0;
+
+        return step->OrderIndex;
+    }
+}
+
 Scenario::Scenario(Map* map, lfg::LFGDungeonData const* _dungeonData, Player* player, bool find) : m_achievementMgr(this)
 {
     if (!map)
@@ -340,8 +353,9 @@ void Scenario::UpdateCurrentStep(bool loading)
 
     for (ScenarioSteps::const_iterator itr = steps.begin(); itr != steps.end(); ++itr)
     {
+        uint8 stepOrder = GetScenarioStepOrder(*itr, _challenge);
         //Not check if ctep already complete
-        if (currentStep > (*itr)->OrderIndex)
+        if (currentStep > stepOrder)
             continue;
 
         CriteriaTreeEntry const* criteriaTree = sCriteriaTreeStore.LookupEntry((*itr)->Criteriatreeid);
@@ -350,7 +364,7 @@ void Scenario::UpdateCurrentStep(bool loading)
 
         if (GetAchievementMgr().IsCompletedScenarioTree(criteriaTree))
         {
-            currentStep = (*itr)->OrderIndex + 1;
+            currentStep = stepOrder + 1;
             currentTree = GetScenarioCriteriaByStep(currentStep);
         }
     }
@@ -403,7 +417,7 @@ uint32 Scenario::GetScenarioCriteriaByStep(uint8 step)
         return 0;
 
     for (auto const& step_ : steps)
-        if (step_ && step == step_->OrderIndex)
+        if (step_ && step == GetScenarioStepOrder(step_, _challenge))
             return step_->Criteriatreeid;
 
     return 0;
