@@ -128,6 +128,7 @@ void ChallengeMgr::SaveChallengeToDB(ChallengeData const* challengeData)
             affixesListIDs << affixe << ' ';
     stmt->setString(7, affixesListIDs.str());
     stmt->setUInt32(8, challengeData->ChestID);
+    stmt->setUInt16(9, challengeData->ChallengeID);
     trans->Append(stmt);
 
     for (auto const& v : challengeData->member)

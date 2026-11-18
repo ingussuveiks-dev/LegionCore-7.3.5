@@ -671,7 +671,7 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_DEL_GUILD_FINDER_GUILD_SETTINGS, "DELETE FROM guild_finder_guild_settings WHERE guildId = ?", CONNECTION_ASYNC);
 
     // Challenge
-    PrepareStatement(CHAR_INS_CHALLENGE, "INSERT INTO challenge (`ID`, `GuildID`, `MapID`, `RecordTime`, `Date`, `ChallengeLevel`, `TimerLevel`, `Affixes`, `ChestID`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_INS_CHALLENGE, "INSERT INTO challenge (`ID`, `GuildID`, `MapID`, `RecordTime`, `Date`, `ChallengeLevel`, `TimerLevel`, `Affixes`, `ChestID`, `ChallengeID`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_CHALLENGE_MEMBER, "INSERT INTO challenge_member (`id`, `member`, `specID`, `ChallengeLevel`, `Date`, `ChestID`) VALUES (?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_CHALLENGE_OPLOTE_LOOT, "REPLACE INTO challenge_oplote_loot (`guid`, `chestListID`, `date`, `ChallengeLevel`) VALUES (?, ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_DEL_CHALLENGE_OPLOTE_LOOT, "DELETE FROM challenge_oplote_loot WHERE date <= UNIX_TIMESTAMP()", CONNECTION_ASYNC);

@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "baseline_commit": "3263742f7",
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "2292e1a5fcb0ef66b3b16a6dcfaa406125e6530813414d508ae8a94658c0ea63",
+    "worldserver_map_sha256": "414dc143db72250ed150430fc1e0d40e96f0e743a9ad8b031cb2343ee57c4906",
+    "method": "Original common/database/game/scripts Release projects;original final-link input paths,including database.lib,checked. Separate staged link and canonical EXE/map SHA256 identity;actual PE call/SQL/route-parameter/hook inspection. No global OutDir and no SQL migration.",
+    "protected": "Canonical bnetserver,configuration,certificates,DLLs and shared extracted data preserved;protected root-file hashes matched.",
+    "rollback": ".codex/legion-challenge-20261118/rollback-before-challenge-repairs"
+  },
+  "diagnostics": {
+    "result": "Final native/PE/retained/startup probes bracketed with crash/log snapshots;exit0,no new/changed crashes,appended DBErrors or unexplained runtime warning/error/assertion. Final mechanics debug log has no unreachable-hook diagnostics.",
+    "startup": "Canonical owned PID34440 reached fresh ready;server shutdown0/exit0,stderr empty. No user server stopped;no hidden server left.",
+    "resolved_fixture_and_build_findings": "Initial fixture syntax/API/include/narrowing issues corrected;the empty native quest fixture originally lacked slot0 and caused QuestDataStoreMgr::GetQuestTemplate access violation. Initialize that slot only after asserting every selected native completion step has RewardQuestID0;paired final1005 pass. Membership fixture exposed a retained global object after map-reference removal;readiness now checks actual map references. PE inspection adapted to inlined helpers/methods. Old database PCH rejected by compiler C1853;rebuilt the original database target with the current compiler. Existing unchanged DBUpdater.cpp333 C4101 unused catch variable retained;no warning in changed implementation sources.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-challenge;exact diagnostic captures and verified source/archive/source SHA256 manifest. No mixed log cleared;canonical Crashes empty/DBErrors0."
+  },
+  "remaining": [
+    "No game client was running or used. Per-map client entry/traversal/doors,rendering,audio,camera,pet presentation and reconnect remain OPEN.",
+    "Native completion tests call the genuine reward endpoint with a controlled timer;they do not earn every boss/forces leaf through real combat. Count2/3 chest entitlements at level10 are not actual loot opening/item table generation,other key levels,full bags or weekly chest verification.",
+    "Two-member native party publication is controlled,not live five-client play. Combat/scaling/one-hit phases,player/pet/guardian final blows,all affixes/trash paths,abandon/reset/disconnect and each whole chain remain separate.",
+    "These probes link actual Release libraries and are not full-core ASAN. Existing source/native Harbaron coverage remains distinct from all63 encounter gameplay."
+  ],
+  "cause": "The async CHAR_INS_CHALLENGE insert and its binder omitted the existing ChallengeID column,so records reloaded into route0 and could not preserve Lower/Upper Karazhan. Record notification also sent reward tier instead of started key level,and map-stat lookup used physical MapID against a ChallengeID-keyed cache.",
+  "repair": "Write and bind existing ChallengeID as the tenth parameter;retain physical MapID separately. Send the started challenge level and look up statistics by actual route ID. No schema change or historical row rewrite.",
+  "live_history": "Read-only aggregate before TEMP setup:0 stored challenge records,0 missing route IDs;no historical/personal rows copied,changed or committed.",
+  "checks": {
+    "baseline": "573 pinned native counterfactual checks:52 party records saved with route0 and52 solo callbacks lost.",
+    "current": "1005 native checks over104 contexts:13 routes xsolo/party xall4 timer tiers. Actual async prepared writes into empty connection-local challenge/challenge_member shadows;104 saved records/156 synthetic members copied field-for-field to the sync TEMP tables,original ChallengeMgr caches rebuilt through native LoadFromDB and all13 route buckets/member lookups checked,including227 and234 on map1651. This is a native DB-loader replay,not an actual server/client restart.",
+    "binary": "Actual final PE contains the10-column SQL and route parameter9 setUInt16;native start/reward/completion call paths and shared hook registration checked. Packet field/cache-key changes reviewed in source;client UI not observed."
+  },
+  "cleanup": {
+    "RemovedFiles": 128,
+    "ReclaimedBytes": 3240718017,
+    "Retained": "Current rollback-before-challenge-repairs EXE/map,canonical runtime/shared data/required build libraries,all regression sources,verified diagnostic archive",
+    "Deferred": "None for current completed checks;full client/per-boss/Keystone gameplay remains OPEN",
+    "ArchiveFiles": 447
+  }
+}
