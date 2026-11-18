@@ -577,6 +577,16 @@
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
       "issue": "Might Necrotic double-counted proc cooldown",
       "audit": "legion-necrotic-proc-2026-11-18.json"
+    },
+    {
+      "issue": "Skittish native tank threat percentage",
+      "audit": "legion-skittish-threat-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Grievous admission, native percent damage and healed-player cleanup",
+      "audit": "legion-grievous-affix-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {
@@ -589,8 +599,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "legion-necrotic-proc-2026-11-18.json",
-    "current_rollback": ".codex/legion-affixes-20261118/rollback-before-affix-repair",
+    "superseded_by": "legion-grievous-affix-2026-11-18.json",
+    "current_rollback": ".codex/legion-burden-20261118/rollback-before-burden-repairs",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -601,6 +611,7 @@
     "native_unique_spells": 1022,
     "registered_spell_loaders": 135,
     "actual_client": "NOT_PERFORMED;all per-map gameplay labels remain OPEN",
-    "affix_native_checks": 283
+    "affix_native_checks": 283,
+    "burden_native_checks": 1067
   }
 }

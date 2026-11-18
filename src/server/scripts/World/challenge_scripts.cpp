@@ -339,6 +339,7 @@ class spell_challengers_burden : public AuraScript
     {
         DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_challengers_burden::CalculateAmount, EFFECT_1, SPELL_AURA_DUMMY);
         DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_challengers_burden::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_THREAT);
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_challengers_burden::CalculateAmount, EFFECT_3, SPELL_AURA_PERIODIC_DUMMY);
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_challengers_burden::OnTick, EFFECT_3, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
@@ -372,14 +373,42 @@ class spell_challengers_grievous_wound : public AuraScript
 {
     PrepareAuraScript(spell_challengers_grievous_wound);
 
+    void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
+    {
+        // The 7.3.5 description expresses this percentage as $m1 / 10.
+        amount /= 10.0f;
+    }
+
+    void CalculateTickDamage(AuraEffect const* aurEff, float& damage, Unit* /*target*/)
+    {
+        // Native percent damage truncates its percentage to int32. Restore
+        // the fractional part here, preserving native partial-tick scaling
+        // and the subsequent absorb/resist/damage dispatch.
+        int32 wholePercent = int32(aurEff->GetAmount());
+        if (wholePercent > 0)
+            damage = float(double(damage) * aurEff->GetAmount() / wholePercent);
+    }
+
     void OnTick(AuraEffect const* aurEff)
     {
+        if (Unit* owner = GetUnitOwner())
+            if (!owner->HealthBelowPct(90))
+            {
+                // The Burden controller can already be gone after leaving.
+                // Removing the aura alone does not prevent this damage tick.
+                PreventDefaultAction();
+                aurEff->GetBase()->Remove();
+                return;
+            }
+
         if (auto aura = aurEff->GetBase())
             aura->ModStackAmount(1);
     }
 
     void Register() override
     {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_challengers_grievous_wound::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
+        DoEffectChangeTickDamage += AuraEffectChangeTickDamageFn(spell_challengers_grievous_wound::CalculateTickDamage, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_challengers_grievous_wound::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
     }
 };

@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "baseline_commit": "6eab3f32b",
+  "cause": [
+    "Burden 206151 effect 3 had an existing Grievous CalculateAmount branch but no registered amount hook. Its native base 0 disabled the controller even for an eligible Grievous key.",
+    "Wound 240559 used native base 25 directly, while its matching 7.3.5 description explicitly divides m1 by 10. Native percent damage additionally truncates fractional percentages. The original first tick at two stacks inflicted 50 percent instead of 5 percent.",
+    "Healing cleanup existed only in Burden. After Burden removal on leaving, the still-active wound could damage a player already healed to 90 percent."
+  ],
+  "repair": [
+    "Register the actual effect-3 periodic-dummy amount calculation, retaining native challenge level/affix admission.",
+    "Convert the actual wound base amount to percent with /10. Correct only this wound tick for the native whole-percent truncation, preserving incoming partial-tick scaling and subsequent native mitigation/proc/damage dispatch. Use a double intermediate to avoid the observed one-HP float under-rounding at five stacks.",
+    "At the real wound periodic callback, use its Unit owner and the existing 90-percent boundary. Veto the current default damage before removing the wound. Retain native 3-second period, five-stack cap, 60-second duration and stack growth."
+  ],
+  "native_metadata": {
+    "source": "Actual local Spell/SpellEffect/SpellAuraOptions for build 26972, loaded by native SpellMgr with project hotfixes.",
+    "burden": "206151: infinite duration; effect 3 periodic dummy, base 0, period 100ms. Effect 2 threat percentage -75; Skittish repair is separate commit 6eab3f32b.",
+    "wound": "240559: periodic percent-damage effect 0, base 25, period 3000ms, duration 60000ms, CumulativeAura 5. Matching Spell.Description contains m1/10 percent. Runtime amount is 2.5 at one stack."
+  },
+  "checks": {
+    "baseline": "1029 native counterfactual checks pinned to 6eab3f32b. Actual Grievous controller remains 0; manual native wound deals 500000 of 1000000 max HP at two stacks. After leaving and healing to 900000, its next original tick leaves 150000 HP. Expected broken behavior, not a successful ordinary run.",
+    "current": "1067 native checks linked to original Release game.lib/scripts.lib: 64 level/affix/role/faction contexts (2/4/7/10; none/Overflowing/Skittish/Grievous; Marksmanship/Protection; Human/Orc), plus a controlled native two-member group. Actual registered Burden enter/leave/re-entry, native key slot admission and threat modifiers on seven schools.",
+    "grievous": "Actual parent ticks cast the real child once; repeated controller ticks neither replace nor stack it. Actual immunity rejects a child cast; removing immunity allows the next native tick to retry. Real child ticks deal 50000/75000/100000/125000/125000 at stacks 2/3/4/5/5 on 1000000 max HP. Parent cleanup works at 90 percent. After parent removal, real child ticks at 90/100 percent remove it with no health loss. Group players retain separate self-casters; healing one leaves the other wound intact.",
+    "fraction": "A direct real-script damage hook receives a controlled half-tick native base: 35000 at whole 7 percent becomes 37500 at 7.5 percent. An already-zero input stays zero. This checks preservation of an incoming fraction, not an actual terminal aura-expiry playback.",
+    "binary": "verify_legion_burden_release.py passed on staged and canonical PE: actual effect-3 registration, native tank-role guard, /10 normalization, double-precision correction and owner/90-percent/veto/removal order. Retained Necrotic PE and Test-ScepterLogin.ps1 -VerifyReleaseBinary passed; shared SmartAI 11-call inspector remains clean.",
+    "database": "World/hotfix source reads are read-only; only actual 206151/240559 proc/check/bonus rows enter connection-local TEMP tables for native loader vectors. Empty account/character_instance TEMP fixtures. No persistent World/account/character changes or SQL migration.",
+    "credit_review": "This is a player aura repair with no kill, item, quest or scenario-credit grant. Native pets/guardians do not receive player Burden; the unchanged player-only challenge entry path was reviewed. No player/pet/guardian final-blow outcome is inferred from these aura checks."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "a3bf9efefa462c44bddf0e8f5ae1ddf04f0dbf7f08db9ade3e0b71c14b080bca",
+    "worldserver_map_sha256": "3d213fad59dfd957e7b5d4a19ed129f534835066909a6a84149ad1cf2f2791f5",
+    "method": "Original Release common/database/game/scripts targets and original final-link input paths. No global OutDir. Separate staged final link; staged/canonical EXE and map identities match. Native fixture/source/library hashes sealed during each run.",
+    "protected": "Canonical configuration, bnetserver, certificates, DLLs and shared extracted data preserved.",
+    "rollback": ".codex/legion-burden-20261118/rollback-before-burden-repairs"
+  },
+  "diagnostics": {
+    "result": "Final baseline/current/PE/retained/startup runs exit 0; no new/changed crash reports, appended DBErrors or unexplained server warnings/errors/assertions. Canonical Crashes empty/DBErrors 0. Existing failed assertion and compilation evidence is preserved and paired with passing repaired runs.",
+    "resolved_findings": "Initial fixture compilation used nonexistent StackAmount, corrected to CumulativeAura. First repaired wound regression caught float ratio rounding to 124999 instead of 125000 at five stacks; production calculation now uses a double intermediate and the strict repaired regression passes. Both failed captures remain preserved for final verified archive; no unexplained dump or mixed log cleared.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-burden: 228 exact captures with verified source/archive/source SHA256 manifest; no mixed active log cleared. Temporary runtime/staging/compiler outputs and superseded rollback removed after final checks.",
+    "startup": "Task-owned canonical PID 29156 reached fresh ready, accepted server shutdown 0 and exited 0; stderr empty, new DBErrors 0, protected hashes unchanged. No user server stopped; no hidden server remains."
+  },
+  "investigation": {
+    "local": "Actual project scripts, native Spell/SpellEffect/SpellAuraOptions and original core periodic-damage/threat dispatch inspected first.",
+    "reference": "Local newer TrinityCore has no relevant implementation at this ID. Original dufernst LegionCore challenge_scripts.cpp retains the omissions; used as provenance only, not as a fix.",
+    "reference_url": "https://raw.githubusercontent.com/dufernst/LegionCore-7.3.5/master/src/server/scripts/World/challenge_scripts.cpp",
+    "excluded": "Current Wowhead 12.1.x data is a different version and was not used for the repair. No video reviewed or client traversal claimed."
+  },
+  "remaining": [
+    "Actual client combat, visuals, healing timing and enemy threat ranking remain OPEN.",
+    "Native player/group publication, specialization assignment and health are controlled. This is not five-client play, full encounter combat, actual death/resurrection, relog or terminal-expiry traversal.",
+    "Other affix combinations, all 63 encounters, all 13 complete dungeon paths and loot opening remain separate.",
+    "No full-core ASAN performed for these aura/percentage repairs."
+  ],
+  "cleanup": {
+    "RemovedFiles": 189,
+    "ReclaimedBytes": 2086307889,
+    "Retained": ".codex/legion-burden-20261118/rollback-before-burden-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 228
+  }
+}

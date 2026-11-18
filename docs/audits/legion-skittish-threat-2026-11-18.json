@@ -1,7 +1,7 @@
 {
   "date": "2026-11-18",
   "client_build": 26972,
-  "status": "NATIVE_PASS_STAGED_CUMULATIVE_DEPLOYMENT_PENDING",
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
   "baseline_commit": "1d75107c4",
   "cause": "Burden effect 2 is a native threat percentage (-75), but its script replaced that value with boolean 1 for an eligible tank. The actual native modifier consequently turned 100 threat into 101 instead of 25.",
   "repair": "Retain the incoming native percentage for an eligible Skittish tank; zero the amount only when the real challenge lacks the affix or the player is not in a native tank specialization.",
@@ -9,22 +9,32 @@
     "baseline": "482 native counterfactual checks pinned to 1d75107c4, including actual 101 threat on all seven spell schools for eligible tanks. Not a successful ordinary run.",
     "current": "482 native checks against actual original Release libraries: 32 level/affix/role contexts (2/4/7/10, none/Overflowing/Skittish/Grievous, Hunter Marksmanship/Warrior Protection), native challenge slot admission, registered Burden cast, actual ApplyTotalThreatModifier on all seven schools, native leave removal and restored 100 threat.",
     "scope": "Real registered World script and native core aura/modifier application. Controlled native player publication and specialization fields; no client combat, enemy threat ranking or five-player traversal claim.",
-    "other_findings": "The same investigation reproduced the separately unresolved Grievous effect-3 registration and raw 25-percent wound tick. Its matching 7.3.5 description divides base points by 10. Grievous repair and regression follow in a separate commit before cumulative promotion."
+    "other_findings": "Grievous activation, tenfold damage and healed-player tick were repaired and verified in the separate follow-up documented by legion-grievous-affix-2026-11-18.json.",
+    "cumulative": "Final 1067 native Burden checks retain all seven-school threat modifiers across Human/Orc and both native roles. Canonical Burden/retained Necrotic PE and Scepter login checks passed; see legion-grievous-affix-2026-11-18.json."
   },
   "build": {
     "stage": ".codex/legion-burden-20261118-release",
     "intermediate_worldserver_sha256": "f6a1ec74f0df9019675eb34fef4329392fe03fbdc255503a7c88d868e0bbce2a",
     "method": "Original Release common/database/game/scripts projects and final-link paths. Intermediate Skittish stage prepared; canonical b488ee61 executable retained until the independent Grievous follow-up is ready.",
-    "deployment": "Pending cumulative final promotion/startup. No user server stopped."
+    "deployment": "Final cumulative Skittish/Grievous EXE/map promoted to canonical Release. Owned PID 29156 reached ready and gracefully exited 0, no new diagnostics; protected runtime assets unchanged. Intermediate stage superseded and removed after final verification.",
+    "worldserver_sha256": "a3bf9efefa462c44bddf0e8f5ae1ddf04f0dbf7f08db9ade3e0b71c14b080bca",
+    "rollback": ".codex/legion-burden-20261118/rollback-before-burden-repairs"
   },
   "diagnostics": {
     "result": "Native runs bracketed by canonical/test crash and log snapshots. Final baseline/current exit 0; no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions.",
     "fixture": "Initial probe used the wrong SpellAuraOptions member name StackAmount; corrected to native CumulativeAura. Compilation failure preserved; no executable ran for that attempt.",
-    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-burden; final archive/cleanup follow cumulative deployment."
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-burden: 228 exact captures with verified source/archive/source SHA256 manifest; no mixed active log cleared. Temporary runtime/staging/compiler outputs and superseded rollback removed after final checks."
   },
   "remaining": [
-    "Actual client Skittish combat and full dungeon gameplay remain OPEN.",
-    "Grievous activation/damage/90-percent healing and child cleanup are separately in progress; this commit does not certify them.",
-    "Full-core ASAN not run; the original Release native modifier path was exercised."
-  ]
+    "Actual client Skittish combat, enemy threat ranking and full dungeon gameplay remain OPEN.",
+    "Grievous native repair is documented separately; actual client combat and five-player use remain OPEN.",
+    "Full-core ASAN not run; original Release native modifier path exercised."
+  ],
+  "cleanup": {
+    "RemovedFiles": 189,
+    "ReclaimedBytes": 2086307889,
+    "Retained": ".codex/legion-burden-20261118/rollback-before-burden-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 228
+  }
 }

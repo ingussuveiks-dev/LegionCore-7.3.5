@@ -16,7 +16,7 @@ try{
  $env:CL="$compiler /DNDEBUG /Zi /I`"$out`" /I`"$repo/src/server/scripts/Legion`" /I`"$repo/src/server/scripts/Legion/MawofSouls`""
  if($Baseline){
   $env:CL+=' /DCHALLENGE_BURDEN_BASELINE'
-  $source=(& git -C $repo show '1d75107c4:src/server/scripts/World/challenge_scripts.cpp') -join "`n"
+  $source=(& git -C $repo show '6eab3f32b:src/server/scripts/World/challenge_scripts.cpp') -join "`n"
   if(!$source){throw 'Pinned Burden implementation unavailable'}
   [IO.File]::WriteAllText("$out/ChallengeBurdenActual.inc",$source)
  }
@@ -26,7 +26,7 @@ try{
   & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
    & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/LegionChallengeBurdenNative.cpp -ProbeName LegionChallengeBurdenNative -OutputFile "$out/native.tsv" *> "$out/compiler.log"
    if(!$? -or $LASTEXITCODE){throw "Native Burden verification failed: $out/compiler.log"}
-   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(META|PASS|BURDEN|COUNTERFACTUAL)'}
+   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(META|PASS|BURDEN|WOUND|COUNTERFACTUAL)'}
   }
  }finally{Pop-Location}
 }finally{
