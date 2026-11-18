@@ -200,8 +200,7 @@ class spell_challengers_might : public AuraScript
             necroticProcDelay = 1000;
     }
 
-    // Fel Explosives
-    void OnUpdate(uint32 diff, AuraEffect* aurEff)
+    void UpdateNecroticCooldown(uint32 diff)
     {
         if (necroticProcDelay)
         {
@@ -210,7 +209,11 @@ class spell_challengers_might : public AuraScript
             else
                 necroticProcDelay -= diff;
         }
+    }
 
+    // Fel Explosives
+    void OnUpdate(uint32 diff, AuraEffect* aurEff)
+    {
         if (!aurEff->GetAmount() || aurEff->GetEffIndex() != EFFECT_12 || !GetCaster()->isInCombat())
             return;
 
@@ -270,7 +273,9 @@ class spell_challengers_might : public AuraScript
         DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_challengers_might::CalculateAmount, EFFECT_13, SPELL_AURA_DUMMY);
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_challengers_might::OnTick, EFFECT_7, SPELL_AURA_PERIODIC_DUMMY);
         OnEffectProc += AuraEffectProcFn(spell_challengers_might::OnProc, EFFECT_8, SPELL_AURA_DUMMY);
-        OnEffectUpdate += AuraEffectUpdateFn(spell_challengers_might::OnUpdate, EFFECT_11, SPELL_AURA_DUMMY);
+        // One cooldown belongs to this aura, independently of how many dummy
+        // effects receive an update (including effects with a zero amount).
+        OnAuraUpdate += AuraUpdateFn(spell_challengers_might::UpdateNecroticCooldown);
         OnEffectUpdate += AuraEffectUpdateFn(spell_challengers_might::OnUpdate, EFFECT_12, SPELL_AURA_DUMMY);
     }
 };

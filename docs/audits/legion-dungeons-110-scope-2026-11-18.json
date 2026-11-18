@@ -572,6 +572,11 @@
       "issue": "Shared Flashlight/Blinding Glare effect registration and13-map metadata audit",
       "audit": "legion-dungeon-mechanics-checks-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+      "issue": "Might Necrotic double-counted proc cooldown",
+      "audit": "legion-necrotic-proc-2026-11-18.json"
     }
   ],
   "archive": {
@@ -584,8 +589,8 @@
       "RemovedFiles": 75,
       "ReclaimedBytes": 2872945793.0
     },
-    "superseded_by": "legion-dungeon-mechanics-checks-2026-11-18.json",
-    "current_rollback": ".codex/legion-challenge-20261118/rollback-before-challenge-repairs",
+    "superseded_by": "legion-necrotic-proc-2026-11-18.json",
+    "current_rollback": ".codex/legion-affixes-20261118/rollback-before-affix-repair",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -595,6 +600,7 @@
     "retained_instance_checks": 9012,
     "native_unique_spells": 1022,
     "registered_spell_loaders": 135,
-    "actual_client": "NOT_PERFORMED;all per-map gameplay labels remain OPEN"
+    "actual_client": "NOT_PERFORMED;all per-map gameplay labels remain OPEN",
+    "affix_native_checks": 283
   }
 }

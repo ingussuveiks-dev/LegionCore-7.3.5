@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "baseline_commit": "6ec8cef6a",
+  "cause": "Might 206150 registered the same update callback on dummy effects 11 and 12. Both callbacks decremented one 1000 ms Necrotic proc delay, including zero-amount effects. A second accepted melee proc and real 209858 stack therefore became possible after 500 ms.",
+  "repair": "Move only the saturating Necrotic countdown to one OnAuraUpdate hook. Keep native effect 8 proc admission and its 1000 ms reset; retain the existing effect 12 Explosives update. No database migration, spell metadata, damage/health formula or progression grants changed.",
+  "checks": {
+    "baseline": "283 native counterfactual checks pinned to 6ec8cef6a. Actual Aura::UpdateOwner releases the proc veto at 500 ms; actual legacy melee proc dispatch applies 209858 stack 2 at 500 ms and stack 3 at 1000 ms. This is expected broken behavior, not a successful ordinary run.",
+    "current": "283 native checks linked against original Release game.lib/scripts.lib. 20 contexts: key levels 2/4/7/10/15 crossed with none/Necrotic/Necrotic+Tyrannical/Necrotic+Fortified, with native affix level admission. Matching GT health/damage amounts and real native max-health modifier checked on Harbaron 96754 and trash 97043. Player pet/guardian remain excluded by actual create/difficulty/combat hooks.",
+    "timing": "18 proc-veto cases at 0, 1, 249, 499, 500, 750, 999, 1000, 1500 ms with single/split 100 ms updates; independent actors and remove/reapply. Real melee proc dispatcher with controlled 1-point DamageInfo applies stack 1 at 0, keeps 1 at 499/500/999 ms and applies 2 at 1000 ms. Native 206150 ProcChance 100/category 0 and scoped actual spell_proc_event rows 0 recorded.",
+    "binary": "verify_legion_necrotic_release.py inspects actual PE member-pointer registration: one whole-aura cooldown hook, sole effect 12 update, 1000 ms reset/saturating decrement, and no cooldown access from Explosives. Staged and canonical verification passed; retained 11 SmartAI linked-cast checks and Test-ScepterLogin.ps1 -VerifyReleaseBinary passed.",
+    "database": "World/hotfix source reads are read-only. Proc/check/bonus loader fixtures copy only 206150/209858 into connection-local TEMP shadows; account/character_instance are empty TEMP fixtures. No persistent account/character/World edit.",
+    "source_review": "This shared script is used across challenge routes. Per-aura actor state remains independent; no killer/quest/group credit changes. Actual scenario/map/affix ownership is retained. Explosives body and other Might effect handlers unchanged."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "b488ee61f0aa53decdc6fb9ce4bf76b0b7398b200c81775407383bd9a66ee917",
+    "worldserver_map_sha256": "e7407d648e24c24e2e37c8dc1749c628de1f85adaf652394d3616134b1350e90",
+    "method": "Original Release library paths, including actual final-link inputs; separate staged final link. Source/fixture/library inputs sealed during native tests. Staged/canonical EXE/map hashes match. No global OutDir.",
+    "protected": "Canonical bnetserver, configuration, certificates, DLLs and shared extracted data preserved; root-file hashes rechecked after deployment and cleanup.",
+    "rollback": ".codex/legion-affixes-20261118/rollback-before-affix-repair"
+  },
+  "diagnostics": {
+    "result": "Every native/PE/retained/startup run bracketed by canonical/test crash snapshots and appended log checks. Final runs exit 0, no new/changed crash reports, appended DBErrors or unexplained server warnings/errors/assertions. Canonical Crashes empty/DBErrors 0.",
+    "fixture_failures": "Two expanded melee fixture runs exited with SEH c0000005, first in GetSpellPrcoCheck and then GetSpellBonusData because isolated native loader vectors were uninitialized. Fixed fixture initialization with the scoped real native loaders. No canonical/new dump was produced. Exact failed compiler trace/stdout/diagnostic captures archived and paired with final baseline/current 283 passes; no production crash claimed resolved by hiding evidence.",
+    "startup": "Task-owned canonical worldserver PID 4444 reached fresh ready, accepted server shutdown 0 and exited 0; stderr empty and new DBErrors 0. No user server stopped; no hidden server remains.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-affixes",
+    "archive_policy": "Exact diagnostic captures and source/archive/source SHA256 verified. No mixed active log cleared or unexplained report removed. Configurations with credentials excluded."
+  },
+  "remaining": [
+    "No game client used. Actual Necrotic combat, healing/damage presentation, movement, pets and disconnect/re-entry remain OPEN.",
+    "The native proc receipt is controlled DamageInfo and actor AI is NullCreatureAI; this does not simulate a complete melee encounter or client traversal. Actual native aura/proc/debuff dispatch and native scaling are exercised.",
+    "Other affix lifecycle/combination behavior, all 63 encounters, whole 13 dungeon paths, five-client grouping and loot opening remain separate. The structural/native/metadata audits do not certify whole gameplay.",
+    "No full-core ASAN was run for this aura timing repair."
+  ],
+  "cleanup": {
+    "RemovedFiles": 152,
+    "ReclaimedBytes": 1915318853,
+    "Retained": ".codex/legion-affixes-20261118/rollback-before-affix-repair EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 180
+  }
+}
