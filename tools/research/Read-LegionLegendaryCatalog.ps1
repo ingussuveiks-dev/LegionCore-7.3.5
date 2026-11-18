@@ -11,6 +11,7 @@ $libs=$group.Link.AdditionalDependencies.Split(';') | Where-Object {$_ -and $_ -
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $args=@('/nologo','/EHsc','/std:c++17','/MD','/DNOMINMAX','/DWIN32_LEAN_AND_MEAN','/D_WIN32_WINNT=0x0601','/DBOOST_ALL_NO_LIB')
 $args+=($includes+$commonIncludes+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include') | ForEach-Object {'/I"'+$_+'"'})
+if($env:CL -notmatch '(?i)(?:^|\s)/Fd'){$args+='/Fd"'+$output+'/'+$ProbeName+'.compiler.pdb"'}
 $args+='"'+$repo+'/tools/research/'+$SourceFile+'"'
 $args+='/Fe"'+$output+'/'+$ProbeName+'.exe"'
 $args+='/Fo"'+$output+'/'+$ProbeName+'.obj"'

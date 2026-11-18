@@ -585,7 +585,8 @@
       "ReclaimedBytes": 2872945793.0
     },
     "superseded_by": "legion-dungeon-mechanics-checks-2026-11-18.json",
-    "current_rollback": ".codex/legion-challenge-20261118/rollback-before-challenge-repairs"
+    "current_rollback": ".codex/legion-challenge-20261118/rollback-before-challenge-repairs",
+    "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
     "audit": "legion-dungeon-mechanics-checks-2026-11-18.json",

@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-18",
+  "status": "FIXED_NATIVE_TOOL_CHECK_PASS",
+  "cause": "MSVC /Zi used its default vc140.pdb in the native catalog caller working directory. Final protected-root inspection identified this regenerable compiler artifact changing under the canonical runtime;configuration,binaries,DLLs and certificates were unchanged.",
+  "repair": "Read-LegionLegendaryCatalog.ps1 supplies a per-probe compiler /Fd path inside ignored native outputs,unless the caller already supplies its own /Fd.",
+  "verification": "Existing LegionDungeonModesCatalog.cpp compiled and ran from canonical Release with /Zi:PASS matching native catalog17 raw maps,explicit per-probe compiler PDB exists,and canonical vc140.pdb SHA256 unchanged. Before/after diagnostics clean;no new test source or production rebuild required.",
+  "compiler_artifact": {
+    "path": "build-extractors/bin/Release/vc140.pdb",
+    "bytes": 39251968,
+    "sha256": "6C983E54BF3B6C01C37EB0F415B80CE1AAB374F2693D0E64D9F46F7A654E1C67",
+    "disposition": "Exact current generated compiler-symbol bytes archived and source/archive/source hashes verified,then removed as redundant compiler output;not a server runtime asset."
+  },
+  "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-challenge",
+  "cleanup": {
+    "RemovedFiles": 134,
+    "ReclaimedBytes": 3481858916,
+    "Retained": "Current rollback-before-challenge-repairs EXE/map,canonical runtime/shared data/required build libraries,all regression sources,verified diagnostic archive",
+    "Deferred": "None for current completed checks;full client/per-boss/Keystone gameplay remains OPEN",
+    "ArchiveFiles": 461
+  },
+  "server_binary": "Unchanged from the four focused dungeon/Mythic+ repairs;canonical EXE/map/configuration/DLL/certificate hashes checked separately."
+}
