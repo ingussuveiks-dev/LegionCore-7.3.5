@@ -28,6 +28,7 @@
 #include "MMapManager.h"
 #include "Map.h"
 #include "TransportGroundPath.h"
+#include "MawShipGroundPath.h"
 #include <G3D/Vector3.h>
 
 ////////////////// PathGenerator //////////////////
@@ -159,6 +160,20 @@ bool PathGenerator::CalculatePath(G3D::Vector3 const& startPoint, G3D::Vector3 c
     // make sure navMesh works - we can run on map w/o mmap
     // check if the start and end point have a .mmtile loaded (can we pass via not loaded tile on the way?)
     const Unit* _sourceUnit = _source->ToUnit();
+    if (!forceDest && !_useRaycast && DisableMgr::IsPathfindingEnabled(_source->GetMapId()) &&
+        !(_sourceUnit && _sourceUnit->HasUnitState(UNIT_STATE_IGNORE_PATHFINDING)))
+    {
+        auto shipPath = Movement::BuildMawShipGroundPath(_source, startPoint, endPoint, _pointPathLimit, _pathPoints);
+        if (shipPath != Movement::MawShipPathResult::NotApplicable)
+        {
+            _polyLength = 0;
+            _type = shipPath == Movement::MawShipPathResult::Complete ? PATHFIND_NORMAL :
+                shipPath == Movement::MawShipPathResult::TooLong ? PATHFIND_SHORT : PATHFIND_NOPATH;
+            if (shipPath == Movement::MawShipPathResult::Complete)
+                SetActualEndPosition(_pathPoints.back());
+            return shipPath == Movement::MawShipPathResult::Complete;
+        }
+    }
     if (!_navMesh || !_navMeshQuery || (_sourceUnit && _sourceUnit->HasUnitState(UNIT_STATE_IGNORE_PATHFINDING)) ||
         !HaveTile(startPoint) || !HaveTile(endPoint))
     {

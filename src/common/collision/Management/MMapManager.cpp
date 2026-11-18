@@ -20,6 +20,7 @@
 #include "Errors.h"
 #include "Log.h"
 #include "MapDefines.h"
+#include <memory>
 
 namespace MMAP
 {
@@ -31,6 +32,8 @@ namespace MMAP
     {
         for (MMapDataSet::iterator i = loadedMMaps.begin(); i != loadedMMaps.end(); ++i)
             delete i->second;
+        for (auto const& model : loadedModels)
+            delete model.second;
 
         // by now we should not have maps loaded
         // if we had, tiles in MMapData->mmapLoadedTiles, their actual data is lost!
@@ -410,6 +413,24 @@ namespace MMAP
         return queryItr->second;
     }
 
+    dtNavMeshQuery const* MMapManager::GetModelNavMeshQuery(uint32 displayId) const
+    {
+        auto model = loadedModels.find(displayId);
+        if (model == loadedModels.end() || !model->second)
+            return nullptr;
+        using Query = std::unique_ptr<dtNavMeshQuery, decltype(&dtFreeNavMeshQuery)>;
+        thread_local std::unordered_map<uint32, Query> queries;
+        auto found = queries.find(displayId);
+        if (found != queries.end() && found->second->getAttachedNavMesh() == model->second->navMesh)
+            return found->second.get();
+        Query query(dtAllocNavMeshQuery(), dtFreeNavMeshQuery);
+        if (!query || dtStatusFailed(query->init(model->second->navMesh, 4096)))
+            return nullptr;
+        auto result = query.get();
+        queries.insert_or_assign(displayId, std::move(query));
+        return result;
+    }
+
     bool MMapManager::loadGameObject(uint32 displayId, std::string patch)
     {
         // we already have this map loaded?
@@ -430,9 +451,10 @@ namespace MMAP
         }
 
         MmapTileHeader fileHeader;
-        fread(&fileHeader, sizeof(MmapTileHeader), 1, file);
+        size_t headerCount = fread(&fileHeader, sizeof(MmapTileHeader), 1, file);
 
-        if (fileHeader.mmapMagic != MMAP_MAGIC)
+        if (headerCount != 1 || fileHeader.mmapMagic != MMAP_MAGIC ||
+            fileHeader.dtVersion != DT_NAVMESH_VERSION || fileHeader.size < sizeof(dtMeshHeader) || fileHeader.size > 64 * 1024 * 1024)
         {
             TC_LOG_ERROR("maps", "MMAP:loadGameObject: Bad header in mmap %s", fileName);
             fclose(file);
@@ -454,6 +476,7 @@ namespace MMAP
         if (!result)
         {
             TC_LOG_ERROR("maps", "MMAP:loadGameObject: Bad header or data in mmap %s", fileName);
+            dtFree(data);
             fclose(file);
             delete [] fileName;
             return false;
@@ -467,6 +490,7 @@ namespace MMAP
         if (dtStatusFailed(r))
         {
             dtFreeNavMesh(mesh);
+            dtFree(data);
             TC_LOG_ERROR("maps", "MMAP:loadGameObject: Failed to initialize dtNavMesh from file %s. Result 0x%x.", fileName, r);
             delete [] fileName;
             return false;

@@ -68,6 +68,9 @@ public:
 
     const G3D::Vector3& getPosition() const { return iPos;}
 
+    G3D::Vector3 WorldToModel(G3D::Vector3 const& point) const { return iInvRot * (point - iPos) * iInvScale; }
+    G3D::Vector3 ModelToWorld(G3D::Vector3 const& point) const { return iInvRot.transpose() * (point * iScale) + iPos; }
+
     /* Enables/disables collision */
     void enableCollision(bool enable) { _collisionEnabled = enable; }
     bool isCollisionEnabled() const { return _collisionEnabled; }

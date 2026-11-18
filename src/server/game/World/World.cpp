@@ -75,6 +75,7 @@
 #include "Log.h"
 #include "LootMgr.h"
 #include "MMapFactory.h"
+#include "MMapManager.h"
 #include "MapManager.h"
 #include "MiscPackets.h"
 #include "ObjectMgr.h"
@@ -1721,6 +1722,21 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO("server.loading", "Loading Game Object Templates...");         // must be after LoadPageTexts
     sObjectMgr->LoadGameObjectTemplate();
+
+    // The Naglfar is a destructible GO, so its decks are absent from terrain
+    // mmaps. Load immutable model meshes before any map worker requests paths.
+    if (auto ship = sObjectMgr->GetGameObjectTemplate(246919))
+    {
+        std::set<uint32> models = {ship->displayId};
+        if (auto states = sDestructibleModelDataStore.LookupEntry(ship->destructibleBuilding.DestructibleModelRec))
+        {
+            if (states->State1Wmo) models.insert(states->State1Wmo);
+            if (states->State3Wmo) models.insert(states->State3Wmo);
+        }
+        for (uint32 display : models)
+            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadGameObject(display, m_dataPath))
+                TC_LOG_ERROR("maps", "Maw ship navigation model %u is unavailable; rebuild its model mmap from matching collision data.", display);
+    }
 
     TC_LOG_INFO("server.loading", "Loading Transport templates...");
     sTransportMgr->LoadTransportTemplates();

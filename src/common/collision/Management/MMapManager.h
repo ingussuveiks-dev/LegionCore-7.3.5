@@ -74,6 +74,8 @@ namespace MMAP
             // the returned [dtNavMeshQuery const*] is NOT threadsafe
             dtNavMeshQuery const* GetNavMeshQuery(uint32 mapId, uint32 instanceId);
             dtNavMesh const* GetNavMesh(uint32 mapId);
+            // Models are loaded during startup. Each thread owns its query.
+            dtNavMeshQuery const* GetModelNavMeshQuery(uint32 displayId) const;
 
             uint32 getLoadedTilesCount() const { return loadedTiles; }
             uint32 getLoadedMapsCount() const { return uint32(loadedMMaps.size()); }
