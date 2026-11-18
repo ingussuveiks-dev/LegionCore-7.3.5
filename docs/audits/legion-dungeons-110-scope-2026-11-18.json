@@ -642,6 +642,15 @@
     "health_ownership_native_checks": 207,
     "combat_exit_native_checks": 50,
     "environment_native_checks": 303,
-    "instance_lifetime_native_checks": 15
-  }
+    "instance_lifetime_native_checks": 15,
+    "explosive_native_checks": 359,
+    "explosive_audit": "legion-explosive-native-2026-11-18.json"
+  },
+  "focused_verifications": [
+    {
+      "issue": "Existing Explosive native summon/AI/cast/radius/kill/admission",
+      "audit": "legion-explosive-native-2026-11-18.json",
+      "status": "EXISTING_IMPLEMENTATION_NATIVE_PE_PASS_CLIENT_OPEN"
+    }
+  ]
 }

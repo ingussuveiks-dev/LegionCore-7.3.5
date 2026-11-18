@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "EXISTING_IMPLEMENTATION_NATIVE_PE_PASS_CLIENT_OPEN",
+  "source_commit": "276faf2a1",
+  "production_changes": "None. No gameplay defect found in the covered native paths. Added reproducible native regressions and actual linked-binary inspection;existing canonical executable retained.",
+  "local_evidence": {
+    "spells": "Matching local7.3.5 DB2/SpellInfo and real World rows.243110 and240444 summon120651/properties64 for60000ms at native destination with radius3;existing Might update uses243110.",
+    "actor": "World120651 has actual npc_challenger_fel_explosives registration,faction14,AffixState131070. Native constructor sets totem unit mask and passive reaction. IsSummonedBy applies240445 visual and schedules500ms event. No selected victim is required:actual AI-spell classification for240446 is SELF.",
+    "damage": "Native240446 effect165 deals50 percent max health in60-yard source-area enemy radius,casts6000ms,and effect64 triggers3617. Native SpellFinishCast schedules actor despawn100ms after successful completion. Observed exact50-percent player damage at Keystone7/10/15.",
+    "timing": "Might initial randomized2..10 seconds and subsequent8..16 seconds. Actual50ms Creature/TempSummon frames preserve native out-of-combat batching. Explosion starts500ms after summon,finishes6500ms and native actor cleanup completes6600ms."
+  },
+  "checks": {
+    "assertions": 359,
+    "contexts": 34,
+    "explosions": "12 contexts:Human/Orc x Keystone7/10/15 x group member inside/outside60 yards. Real Might summon,actual registered orb AI,visual,positive health,source ownership,self-affix exclusion,500ms event,6000ms cast,no early damage,exact50-percent group/radius result,no repeated damage and100ms native cleanup.",
+    "kills": "18 contexts:Human/Orc x Player/Pet/Guardian killer x0/500/6450ms. Real Unit::Kill called twice,cancels actual casting,leaves no delayed damage to either group member and no new orb;native final cleanup verified. Direct native killing receipt is controlled;real autoattack/spell targeting and player progression are not certified.",
+    "admission": "4 profiles:Human/Orc x absent/present affix. Actual native update denies noncombat source,players not in combat,out-of-range players,disabled affix,real resolved player owner,real resolved nonboss NPC owner and friendly source. After recovery exactly one orb is generated for two eligible players. Recurrence cannot happen before8 seconds and occurs by16 seconds.",
+    "binary": "verify_legion_explosive_release.py inspects the canonical PE:actual visual240445 and500ms event,240446 cast and100ms completion despawn,Might243110 summon,8..16-second recurrence,60-yard eligible player plus native hostile/control/boss/owner predicates. Includes retained11 SmartAI native call/vtable checks from the shared inspector.",
+    "database": "Read-only World/hotfix queries with scoped connection-local proc/check/bonus shadows. Native bootstrap uses empty account/character_instance TEMP shadows. No persistent schema,World,character or quest edits. No client login.",
+    "limits": "Group/player publication,health,source NullCreatureAI and killer receipts are controlled. Orb summon,orb AI,Spell/Aura scheduler,kill cancellation,range targeting and TempSummon removal are actual Release-library paths. No full-core ASAN claim."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "d0728a224fae89485073a362f156b1ea11aaa8312117aee0078de2fa01a8616c",
+    "worldserver_map_sha256": "8407a07051ece6dad0c154127ff018756cebace43750fde0dc1d2e24f970aa4c",
+    "identity": "Canonical EXE/map unchanged. Actual scripts.lib/game.lib plus retained original final-link libraries match the276faf2a1 deployment receipts. Native source/library fingerprints sealed during execution. No replacement build or promotion necessary for this verification.",
+    "protected": "Canonical bnetserver,configuration,certificates,DLLs and shared extracted data preserved. Current recovery rollback remains .codex/legion-environment-20261118/rollback-before-environment-repairs."
+  },
+  "diagnostics": {
+    "result": "Final native/PE/startup checks exit0;no new/changed crash reports,no appended DBErrors or unexplained server warning/error/assertion. Canonical Crashes empty and DBErrors0.",
+    "startup": "Owned canonical PID29540 reached fresh ready,accepted server shutdown0 and exited0. Stderr empty,new DBErrors0,configuration/certificate hashes unchanged. No user server stopped;no hidden server remains.",
+    "resolved_fixture_findings": [
+      "Initial metadata query selected type from creature_template although that field belongs to other matching data. Removed the invalid projection. Its local sql1054/out-of-date diagnostic and native failure trace are retained;the corrected query and final run pass. This was a fixture query error,not a production schema problem or missing migration.",
+      "Admission fixture initially populated SUMMONED_BY alone through SetOwnerGUID;this core resolves an ordinary Creature owner through CREATED_BY. Populated both native identity fields and required actual GetAnyOwner equality before checking denial. No production ownership bypass or getter change.",
+      "PE inspector initially requested IsInControl under ScriptedAI;the actual linked implementation belongs to CreatureAI. Corrected symbol resolution and retained both failed and passing captures."
+    ],
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-explosive",
+    "archive_policy": "123 original captures copied with source/archive/source SHA256 verification. All fixture failures reviewed and paired with passing counterparts. No mixed live log cleared;private configs/credentials excluded. Redundant native executables,symbols,maps,configs and compiler files removed after checks."
+  },
+  "cleanup": {
+    "RemovedFiles": 97,
+    "ReclaimedBytes": 1211081368,
+    "ArchiveFiles": 123,
+    "Retained": "Canonical runtime/shared data/required libraries and .codex/legion-environment-20261118/rollback-before-environment-repairs;all regression source and verified archive",
+    "Deferred": "No native runtime needed for completed checks;actual client combat and other affixes remain OPEN"
+  },
+  "remaining": [
+    "Actual client targeting and single-target/AoE immunity interactions,interrupt attempts,health bar,visuals and combat/network timing remain OPEN.",
+    "Keystone weekly admission,other affix combinations,boss-owned summon variants and full13 dungeon/63 encounter traversal are not certified by this controlled Explosive regression.",
+    "Raging and the remaining full-combat affix/encounter paths still need independent coverage;prior scaling/metadata audits alone are not full gameplay checks."
+  ]
+}
