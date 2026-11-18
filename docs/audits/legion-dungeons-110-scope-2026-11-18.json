@@ -650,12 +650,19 @@
     "instance_lifetime_native_checks": 15,
     "explosive_native_checks": 359,
     "explosive_audit": "legion-explosive-native-2026-11-18.json",
-    "raging_native_checks": 1493
+    "raging_native_checks": 1493,
+    "quaking_native_checks": 225,
+    "quaking_audit": "legion-quaking-native-2026-11-18.json"
   },
   "focused_verifications": [
     {
       "issue": "Existing Explosive native summon/AI/cast/radius/kill/admission",
       "audit": "legion-explosive-native-2026-11-18.json",
+      "status": "EXISTING_IMPLEMENTATION_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Existing Quaking native timing/damage/interrupt/cancellation",
+      "audit": "legion-quaking-native-2026-11-18.json",
       "status": "EXISTING_IMPLEMENTATION_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ]

@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "EXISTING_IMPLEMENTATION_NATIVE_PE_PASS_CLIENT_OPEN",
+  "source_commit": "d7baf113f",
+  "production_changes": "None. Existing implementation passes the covered native controller,damage,interrupt and cancellation paths. Added reusable native regression and canonical linked-binary inspector;existing166bc935 executable retained.",
+  "metadata": {
+    "source": "Matching local Legion7.3.5 DB2/World and actual Challenge/Spell/Aura/Player source;no modern behavior or external code copied.",
+    "warning": "240447 has2500ms duration and2500ms periodic-trigger effect23 targeting native240448. Original map-change0x80000 and teleported0x400000 interrupt bits retained. No Quaking spell script binding or source13/17/24 condition rows in this live scope.",
+    "pulse": "240448 native effect165 deals20-percent max-health base damage in5-yard source-area ally radius;effect68 interrupts current spells and uses5000ms duration for school lock. Unmitigated isolated player loses20%;two nearby actual warnings each pulse once and each player loses40%. Native companion damage/avoidance can differ;no player-only damage filter invented.",
+    "controller": "Challenge::Update uses a20000ms recurrence and actual contact,existing warning,no-actions and vehicle gates. Dead-player aura admission is rejected by native Unit::AddAura. Stopped/completed controllers do not create new warnings."
+  },
+  "checks": {
+    "assertions": 225,
+    "contexts": 28,
+    "pulse": "16 contexts:Human/Orc x source/group member near3 or separated15 yards x one/two warning sources x normal50ms frames/one10000ms delayed Unit update. Real2500ms deadline,no early damage,correct single/overlap/range result,one pulse even under lag,native expiry on following update and no repeat damage. Actual Pet/Guardian actors never receive controller warning auras;their native area-damage observations are retained without overriding avoidance.",
+    "interrupt": "4 contexts:Human/Orc x near/separated member. Actual native Fireball133 starts at warning2000ms with2250ms cast time,normal casting/time-rate fields and stationary facing pose. Minimal flags ignore mana/reagent and GCD prerequisites but preserve cast time/current-spell containers. At2500ms native Quake interrupts source and nearby member,leaves the outside member casting and applies the native roughly5-second school cooldown. Fireball is not an abort-on-damage cast,so the result exercises effect68.",
+    "cancellation": "6 contexts:Human/Orc x native CHANGE_MAP interrupt cleanup/TELEPORTED cleanup/actual player death2000ms into warning. Warning removed before its periodic tick,no delayed self/group damage;after actual death only the living group member receives the next controller warning.",
+    "admission": "2 contexts cover real no-actions flag denial/recovery,existing warning guard,stopped and completed run latches. Run/countdown completion latches and player/group publication are controlled;the actual Challenge::Update and Aura/Spell machinery execute.",
+    "retained": "443 actual native lifecycle/start/death-penalty/roster/timer assertions across13 routes still pass. Combined final native assertions668. Prior earned-completion/save and instance-mode audits remain separate evidence.",
+    "binary": "verify_legion_quaking_release.py checks the canonical20-second controller and its actual out-of-line std::function callback:CanContact,warning240447/no-actions/vehicle gates,self AddAura,native periodic CastSpell and effect68 indexed current-spell/InterruptSpell dispatch. Matching metadata and native runtime verify timing,dose,radius and lock duration.",
+    "database": "Read-only World/hotfix with connection-local proc/check/bonus shadows for240447/240448/133 and empty account/character_instance bootstrap tables. No persistent World/character/schema or updater writes. No client login or full-core ASAN."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "166bc935b6d1736d51bd98ce9a163569485ddd44ef27891b4f382b00992d3d11",
+    "worldserver_map_sha256": "23abc72b5a9cfe2716098b617f331c521357cdb27caa62858c795c23229b63e3",
+    "identity": "Canonical EXE/map unchanged. Actual original Release libraries match the d7baf113f final-link receipts;native source/library hashes sealed during checks. No replacement build or promotion required for this verification.",
+    "protected": "Canonical bnetserver,configurations,certificates,DLLs and shared extracted data retained. Current recovery rollback remains .codex/legion-raging-20261118/rollback-before-raging-repair."
+  },
+  "diagnostics": {
+    "result": "Final native/PE/retained/startup checks exit0 without new/changed crash files,appended DBErrors or unexplained server warnings/errors/assertions. Canonical Crashes empty and DBErrors0.",
+    "startup": "Task-owned canonical PID30676 reached fresh ready,accepted server shutdown0 and exited0;stderr empty,new DBErrors0,configuration/certificate hashes unchanged. No user server stopped and no hidden owned process remains.",
+    "resolved_fixture_findings": [
+      "Minimal player fixture originally had zero casting/time-rate fields,making an intended2250ms cast instant. Initialized normal1.0 values and required real caster-specific cast time.",
+      "Native Fireball first rejected a fixture pose with153 UNIT_NOT_INFRONT. SetFacingToObject then correctly launched a native movement spline,causing72 MOVING. Set only the initial fixture orientation and require stationary/in-arc state. Production checks were preserved.",
+      "GetCurrentSpell is inlined in the linked effect68 implementation. PE inspector now checks the actual indexed Unit spell-slot read and native InterruptSpell call. An invalid Python executable path caused one inspection not to run;corrected invocation and final check pass. All failed captures retained."
+    ],
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-quaking",
+    "archive_policy": "168 original captures with verified source/archive/source SHA256 manifest. Private configs excluded;no mixed live log cleared. Removed only this task Quaking runtime and current183620 lifecycle run plus corresponding regenerable native outputs. Seven pre-existing small lifecycle diagnostic directories contained no binaries and remain untouched."
+  },
+  "cleanup": {
+    "RemovedFiles": 121,
+    "ReclaimedBytes": 1705030962,
+    "ArchiveFiles": 168,
+    "Retained": "Canonical runtime/shared data/required libraries and .codex/legion-raging-20261118/rollback-before-raging-repair;all regression source and verified archive",
+    "Deferred": "No native runtime needed for completed checks;actual client combat and other affixes remain OPEN"
+  },
+  "remaining": [
+    "Actual client warning display/audio,spellbar/network timing,player movement and full dungeon traversal remain OPEN.",
+    "Map-change/teleport cancellation exercises the real aura-interrupt endpoint and matching native flags. It does not certify a complete far/near teleport packet acknowledgement,logout/reconnect or two-client transfer.",
+    "Vehicle exclusion is checked in the linked predicate;actual player boarding/flight/cinematic admission is still separate. Pet/guardian damage,immunity/absorb combinations,low-health explosion deaths and all class/race spell variants are not certified.",
+    "Completed-run new-warning denial uses a controlled completion latch. Existing warnings at an actual earned completion and all63 encounter/13 whole-dungeon chains remain separate checks."
+  ]
+}
