@@ -25,7 +25,7 @@ using ObjectList=std::vector<Unit*>;struct SpellInfo{};struct GameObject{};
 struct SmartScriptHolder {
  uint32 entryOrGuid=102532,source_type=0,event_id=0,link=0,type=0,actionType=0,targetType=0,parameter=0,second=0;bool active=true,runOnce=false;
  struct {uint32 event_flags=0,event_phase_mask=0,event_chance=100;
-  struct {uint32 textGroupID=0,creatureEntry=0;} textOver;
+  struct{uint32 state=0;}goStateChanged;struct {uint32 textGroupID=0,creatureEntry=0;} textOver;
   struct {uint32 id=0,value=0,cooldownMin=0,cooldownMax=0;} dataSet;
   struct {uint32 min=0,max=0,repeatMin=0,repeatMax=0;} minMaxRepeat;
  } event;
@@ -75,6 +75,7 @@ struct SmartScript {
 #include "NoParamEvents.inc"
 #include "TextOverEvent.inc"
 #include "DataSetEvent.inc"
+#include "GoStateEvent.inc"
 #include "HealthEvent.inc"
  }
 }
@@ -83,15 +84,15 @@ struct SmartScript {
  switch(e.GetActionType()){
 #include "TalkAction.inc"
  // Unchanged native services are observed as requests, not granted progression.
- case 2:case 11:case 205:case 45:case 37:case 42:case 75:case 12:case 22:case 50:case 80:break;
+ case 85:case 2:case 11:case 205:case 45:case 37:case 42:case 75:case 12:case 22:case 50:case 80:break;
  }
 #include "LinkTail.inc"
 void SmartScript::Update(uint32 diff){now+=diff;
 #include "TextTimer.inc"
-static std::vector<SmartScriptHolder> Read(char const* path,uint32 entry){std::ifstream f(path);std::string line;std::vector<SmartScriptHolder> rows;while(std::getline(f,line)){
+static std::vector<SmartScriptHolder> Read(char const* path,uint32 entry,uint32 source=0){std::ifstream f(path);std::string line;std::vector<SmartScriptHolder> rows;while(std::getline(f,line)){
  std::stringstream ss(line);std::vector<std::string> fields;std::string cell;while(std::getline(ss,cell,'\t'))fields.push_back(cell);assert(fields.size()==31);
- auto n=[&](size_t i){return uint32(std::stoul(fields[i]));};if(n(0)!=entry||n(1)!=0)continue;SmartScriptHolder e;e.entryOrGuid=n(0);e.event_id=n(2);e.link=n(3);e.type=n(5);e.event.event_phase_mask=n(6);e.event.event_chance=n(7);e.event.event_flags=n(8);
- e.event.textOver={n(9),n(10)};e.event.dataSet={n(9),n(10),n(11),n(12)};e.event.minMaxRepeat={n(9),n(10),n(11),n(12)};
+ auto n=[&](size_t i){return uint32(std::stoul(fields[i]));};if(n(0)!=entry||n(1)!=source)continue;SmartScriptHolder e;e.entryOrGuid=n(0);e.event_id=n(2);e.link=n(3);e.type=n(5);e.event.event_phase_mask=n(6);e.event.event_chance=n(7);e.event.event_flags=n(8);
+ e.event.goStateChanged.state=n(9);e.event.textOver={n(9),n(10)};e.event.dataSet={n(9),n(10),n(11),n(12)};e.event.minMaxRepeat={n(9),n(10),n(11),n(12)};
  e.actionType=n(14);e.parameter=n(15);e.second=n(16);e.action.talk={n(15),n(16)};e.targetType=n(21);rows.push_back(e);
  }return rows;}
 static void Texts(char const* path){std::ifstream f(path);std::string line;while(std::getline(f,line)){std::stringstream ss(line);std::string entry,group;std::getline(ss,entry,'\t');std::getline(ss,group,'\t');chat.groups[uint32(std::stoul(entry))][uint8(std::stoul(group))]=1;}chat.Prepare();}
@@ -126,9 +127,15 @@ static void Allaris(std::vector<SmartScriptHolder> const& rows,Unit* victim,bool
  chat.requests.clear();auto one=Script(rows,110556,victim);one.ProcessEventsFor(SMART_EVENT_DEATH,victim);assert(one.calls.size()==1&&chat.requests.size()==unsigned(own));
 }
 int main(int argc,char** argv){
- if(argc!=4)return 1;Texts(argv[3]);auto vo=Read(argv[1],94836),vf=Read(argv[2],94836),ao=Read(argv[1],110556),af=Read(argv[2],110556);assert(vo.size()==11&&vf.size()==11&&ao.size()==7&&af.size()==7);
+ if(argc!=4&&argc!=5)return 1;Texts(argv[3]);auto vo=Read(argv[1],94836),vf=Read(argv[2],94836),ao=Read(argv[1],110556),af=Read(argv[2],110556);assert(vo.size()==11&&vf.size()==11&&ao.size()==7&&af.size()==7);
  Player player;Creature pet,guardian,npc;pet.entry=9001;guardian.entry=9002;npc.entry=9003;
  for(Unit* victim:{static_cast<Unit*>(&player),static_cast<Unit*>(&pet),static_cast<Unit*>(&guardian),static_cast<Unit*>(&npc),static_cast<Unit*>(nullptr)}){Varedis(vo,victim,false);Varedis(vf,victim,true);Allaris(ao,victim,false);Allaris(af,victim,true);}
  for(uint32 entry:{94836u,110556u})for(unsigned mode=0;mode<3;++mode){chat.requests.clear();auto s=Script(entry==94836?vf:af,entry,&pet);conditions.allow=mode!=0;s.actor.expired=mode==1;if(mode==2)s.me=nullptr;s.ProcessEventsFor(SMART_EVENT_AGGRO,&pet);assert(chat.requests.empty());if(mode<2)assert(s.calls.empty());}conditions.allow=true;
  std::puts("PASS native Varedis/Allaris TALK/SELF/VICTIM/INVOKER/CreatureTextMgr,event,HEALTH,DATA,TEXT_OVER,timer,LINK: old pet silent/fixed own six groups; five victim kinds, original repeated Varedis thresholds, Allaris once50/death, onehit and invalid/missing actors. Native null-invoker introduction still reaches real text-over after5000+1ms and requests original data2/faction14. Varedis death205/text8/summon109978/chest251878 retained once. Cast/credit/summon/faction/data/chat packet endpoints controlled; full encounter/client separate.");
+ if(argc==5){auto originalPickup=Read(argv[2],251878,1),terminal=Read(argv[4],251878,1);assert(originalPickup.size()==5&&terminal.size()==5);unsigned cases=0;
+ for(Unit*cause:{static_cast<Unit*>(&player),static_cast<Unit*>(&pet),static_cast<Unit*>(&guardian),static_cast<Unit*>(&npc),static_cast<Unit*>(nullptr)})for(bool gossipFirst:{false,true})for(bool repaired:{false,true}){auto pickup=Script(repaired?terminal:originalPickup,251878,cause);pickup.ProcessEventsFor(gossipFirst?SMART_EVENT_GOSSIP_HELLO:SMART_EVENT_GO_STATE_CHANGED,cause,3);assert(pickup.calls.size()==4&&pickup.errors==(repaired?0u:1u));uint32 actions[]={85,205,12,12},values[]={189916,92,101902,101903};for(unsigned i=0;i<4;++i)assert(pickup.calls[i].action==actions[i]&&pickup.calls[i].parameter==values[i]);pickup.ProcessEventsFor(gossipFirst?SMART_EVENT_GO_STATE_CHANGED:SMART_EVENT_GOSSIP_HELLO,cause,3);assert(pickup.calls.size()==8&&pickup.calls[4].action==85&&pickup.calls[5].action==205&&pickup.calls[6].parameter==101902&&pickup.calls[7].parameter==101903&&pickup.errors==(repaired?0u:2u));pickup.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED,cause,3);pickup.ProcessEventsFor(SMART_EVENT_GOSSIP_HELLO,cause,3);assert(pickup.calls.size()==8&&pickup.errors==(repaired?0u:2u));++cases;}
+ for(unsigned state:{0u,1u,2u}){auto pickup=Script(terminal,251878,&player);pickup.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED,&player,state);assert(pickup.calls.empty()&&!pickup.errors);++cases;}
+ for(unsigned mode=0;mode<2;++mode){auto pickup=Script(terminal,251878,&player);conditions.allow=mode!=0;pickup.actor.expired=mode==1;pickup.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED,&player,3);pickup.ProcessEventsFor(SMART_EVENT_GOSSIP_HELLO,&player);assert(pickup.calls.empty()&&!pickup.errors);conditions.allow=true;++cases;}
+ std::printf("PASS %u native Twinblades state3/gossip/event/LINK/once request cases: ordinary189916,52805 and101902/101903 preserved across either initiator order and five invoker kinds; each actual root runs once, native LINK copies allow a common request per initiator,wrongstate/condition/expired rejection,no missing5 in successor. GO identity/conditions,delayed cast/criteria/spawn/return services controlled or separately native-tested; actual client separate.\n",cases);}
+
 }

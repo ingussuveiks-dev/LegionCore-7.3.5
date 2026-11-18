@@ -71,7 +71,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_04_twinbl
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_04_twinblades_real_loot.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Twinblades loot wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Twinblades loot regression $table"}}
+  $fullLive=Query (Snapshot 'live');$fullLive=& "$PSScriptRoot/Convert-VerifiedTwinbladesPickupTerminal.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Twinblades loot regression $table"}}
  }
  'PASS full-schema TEMP Twinblades: Data1 only plus140 exact predicates for both The Hunt variants; unchanged five native actions/loot/unknownLINK5; idempotence,18 custom-partial refusals/live equality'
 }

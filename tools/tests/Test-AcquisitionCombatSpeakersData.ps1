@@ -78,7 +78,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_03_acquis
    $applied=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_04_twinblades_real_loot.sql' AND hash='$hash' AND state='RELEASED';"
    if($applied -contains '1'){$expectedRows=Query ($setup+$baseline+$migration+$later+(Snapshot 'known-followup'));$expectedTag='known-followup'}
   }
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Acquisition combat speaker regression $table"}}
+  $fullLive=Query (Snapshot 'live');$fullLive=& "$PSScriptRoot/Convert-VerifiedTwinbladesPickupTerminal.ps1" -Rows $fullLive;foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Acquisition combat speaker regression $table"}}
  }
  'PASS full-schema TEMP Varedis/Allaris combat speakers: exactly six TALK targets, unchanged intro/timers/combat/credit/loot/knownGO link; repeat/live equality and twenty-one custom refusals'
 }

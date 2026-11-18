@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_DATA_NATIVE_AND_CANONICAL_STARTUP_PASS_CLIENT_SEPARATE",
+  "cause": "Twinblades GO251878 state3 and owned gossip roots each request native189916 then52805 and native Illidari Fel Bat101902/Kayn101903. Last Kayn summon row4 references absent LINK5. Actual real parent127829 loot,child127830,equip pulse and click-only1220 return already have native services; no missing5 reward or transfer invented.",
+  "sources": [
+    "Matching current12-table context:47 SAI,146 admission/loot/spell/click conditions,17 texts,6 optional server template overrides but7 WDB definitions,2 static spawns,2 GO/loot rows,1063 scene package1462/flags17,no custom scene callback,and native bat spellclick. Both actual39247/41119 quest branches retained. WDB109978 already creates a valid native CreatureTemplate before optional creature_template overrides; lack of a server override is not a missing runtime template.",
+    "Typed TwinbladesAcquisitionCatalog:189916 actual114515/scene1063 and201012 pulse2000ms->201010 existing-item effect249/127829 plus225863 ability-bar service; native child127830/slot16,scenario900/3 actual45717 then900/4 actual52805 amount1. Native item/equipment policy was freshly tested for all36/74 off-spec combinations/18 pairs immediately before this repair on unchanged E8163A02.",
+    "Native70 loot-state callback/filter,64 gossip root,event/once/LINK/205/12 and delayed85 semantics traced with actual owned/source22 gates. Original state/gossip two initiators deliberately retained. Native LINK lookup returns copies: NOT_REPEATABLE on a LINK copy does not share persistent once-state across two different roots. No claim of global once-only spawn requests or actual player progression is inferred from a request host."
+  ],
+  "change": {
+    "migration": "sql/updates/world/2026_11_18_07_twinblades_pickup_terminal.sql",
+    "updater_sha1": "9C5EA0D926925A0DC873DC46060994B9ABA94BA5",
+    "state": "RELEASED",
+    "edit": "Exactly251878/source1/id4.link5->0 under complete12-table original/applied guards. Preserve both initiators,189916,52805,bat/Kayn positions/ownership,real loot/parent-child and actual click return. No new item/quest/health/progress/teleport grant or logging suppression."
+  },
+  "checks": [
+    "Restricted actual-schema TEMP replay:one independent field edit,idempotence,15 foreign/missing/partial refusals,actual RELEASED/live equality.",
+    "Extended retained ASAN AcquisitionCombatSpeakers native event/TALK/health/timer/LINK host with25 state3/gossip cases across both initiator orders,five invoker kinds,wrongstate/condition/expired and repeated actual roots. Existing Varedis/Allaris six speaker fixes,real5s introduction,three native repeatable health lines,death45717/chest requests/one-hit retained. Initial expectation wrongly assumed common LINK copy runOnce persisted; actual native code showed one common request chain per each distinct once-only root. Corrected the test to preserve native bounded behavior,not silently alter production dispatch. Caster/spawn/criteria/world endpoints controlled.",
+    "Test-TwinbladesArtifactLoot -VerifyLiveData -AddressSanitizer passes actual native selector/condition/ElseGroup/cached-slot/root/owned-gossip for39247 and41119,wrong/early/abandoned/rewarded/cache/bank controls. Native scene/force-equip/pair policy separately checked by fresh all36 inventory suite; actual client remains separate.",
+    "Shared speaker live check initially found four legitimate later native fallback Text corrections:94836/1 and110556/0,1,4. Full12-table07/RELEASED proof now precedes reversing only terminal link and these exact four committed before/after Text records in old comparison snapshots. Corresponding fallback batches01/02/03/04 actual RELEASED hashes read back; typed native nine texts agree. No live text reverted,other differences/checks remain enforced. Final old6-table speaker and real-loot4-table live checks pass.",
+    "Canonical task-owned PID33664 ready/graceful exit0,guarded07 applied. No new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions; configs/certificates protected,no user process stopped or owned process left running."
+  ],
+  "diagnostics": {
+    "evidence": "C:/wamp64/www/LegionCore-7.3.5/.codex/twinblades-terminal-20261118",
+    "active_DBErrors_bytes": 7839,
+    "active_DBErrors_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "policy": "Mixed historical unresolved log preserved unchanged. Failed native-host expectation and stale pre-fallback live comparison paired with passing corrected native/context checks."
+  },
+  "limits": "Original missing5 intent is unrecovered. Both valid initiators can request the common native52805/return actors once each; duplicate presentation under a real overlapping client interaction and actual progression deduplication were not exercised here. No whole-chain once-only actor/client claim. Actual paired appearance/equipment/scene/party/faction/reconnect/return and full900 remain client checks. All seven primary edges listed after Guardian18 are now individually repaired; broader earlier zero-count/source and unrelated/shared-map findings retain separate open evidence."
+}
