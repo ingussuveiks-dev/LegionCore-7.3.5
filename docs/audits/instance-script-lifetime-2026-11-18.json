@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "baseline_commit": "535731809",
+  "cause": "WorldObject::GetInstanceScript tested map-entry IsDungeon, then dereferenced an unchecked dynamic_cast<InstanceMap*>. A MapInstanced dungeon parent and the base Map destructor have dungeon metadata but no InstanceMap dynamic type. Native Volcanic fixture assertion cleanup exposed a c0000005 through ordinary NPC ClearInCombat after535731809 removed its premature return.",
+  "repair": "Retain missing-map and IsDungeon guards, test the actual InstanceMap dynamic cast and return null if absent. Live derived instances retain their real instance script. Combat-exit aura cleanup stays enabled.",
+  "checks": {
+    "original": "Explicit2-check counterfactual catches only the demonstrated access violation on an actual dungeon parent linked against the original game.lib. Not an ordinary successful run. Original failed Volcanic cleanup trace retained; no crash dump file was generated.",
+    "current": "15 native assertions:unbound and real dungeon-parent getters,actual live instance script identity,and6 real map-owned heap NPC/vehicle/plume destructor paths across normal and Keystone. Destruction uses native Map grid cleanup with no surviving derived InstanceMap type.",
+    "retained": "50 native combat-exit assertions remain passing for NPC,NPC vehicle,Pet,Guardian and Player,with idle and active encounter states,exact aura interrupt cleanup and idempotent exit.303 environmental assertions also pass.",
+    "binary": "verify_instance_script_lifetime_release.py checks the deployed live script-pointer load after a tested RTTI result and all three branches returning null. Retained death-affix,Burden,Necrotic and Scepter final-link inspectors pass.",
+    "fixture": "Initial lifetime fixture attempted a protected WorldObject constructor; corrected with a public test subclass before successful baseline/current runs. No production check disabled.",
+    "database": "Read-only native fixture connections with connection-local test shadows. No persistent schema,World or character changes."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "d0728a224fae89485073a362f156b1ea11aaa8312117aee0078de2fa01a8616c",
+    "worldserver_map_sha256": "8407a07051ece6dad0c154127ff018756cebace43750fde0dc1d2e24f970aa4c",
+    "method": "Original common/database/game/scripts Release targets and actual original final-link libraries. Separate staged final link, no global OutDir. Staged/canonical EXE and map identities match; source and library hashes sealed during native runs.",
+    "protected": "bnetserver,configuration,certificates,DLLs and shared extracted data retained; protected root identities checked.",
+    "rollback": ".codex/legion-environment-20261118/rollback-before-environment-repairs"
+  },
+  "diagnostics": {
+    "result": "Native/PE/retained/startup checks exit0 without new/changed crash reports, appended DBErrors or unexplained server warning/error/assertion. No full-core ASAN claim.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-environment",
+    "archive_policy": "Exact diagnostic bytes copied with source/archive/source SHA256 verification. Configurations/credentials excluded. No mixed active log cleared. Failed fixture traces retained with their resolved causes and passing counterparts.",
+    "compiler": "Changed Object.cpp and AreaTrigger.cpp rebuilt without compiler warnings. Missing per-run native.pdb triggers the expected fresh full native link; diagnostics retained.",
+    "startup": "Owned canonical PID32656 reached fresh ready,accepted server shutdown0 and exited0;stderr empty,new DBErrors0,protected configuration/certificate hashes unchanged. No user server stopped and no owned server left running.",
+    "archive_result": "331 original diagnostic/source captures with verified SHA256 manifest. Active canonical Crashes empty and DBErrors0. Initial archive attempt included its own open redirected log and stopped before deletion;retry after closing that log preserved the failure and completed exact-byte archive verification."
+  },
+  "remaining": [
+    "Actual client grid transitions,evade/charm,visuals and full dungeon traversal remain OPEN.",
+    "Map-owned test actors use controlled NullCreatureAI/publication. No full13 dungeons/63 boss encounters or two-client traversal certification."
+  ],
+  "cleanup": {
+    "RemovedFiles": 302,
+    "ReclaimedBytes": 3624508644,
+    "Retained": ".codex/legion-environment-20261118/rollback-before-environment-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
+    "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
+    "ArchiveFiles": 331
+  }
+}

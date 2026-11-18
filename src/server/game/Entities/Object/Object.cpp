@@ -1794,9 +1794,15 @@ void WorldObject::GetZoneAndAreaId(uint32& zoneid, uint32& areaid) const
 InstanceScript* WorldObject::GetInstanceScript() const
 {
     Map* map = GetMap();
-    if (!map)
+    if (!map || !map->IsDungeon())
         return nullptr;
-    return map->IsDungeon() ? dynamic_cast<InstanceMap*>(map)->GetInstanceScript() : nullptr;
+
+    // Dungeon parent maps and the base Map destructor have no InstanceMap
+    // dynamic type, even though their map entry still describes a dungeon.
+    if (InstanceMap* instance = dynamic_cast<InstanceMap*>(map))
+        return instance->GetInstanceScript();
+
+    return nullptr;
 }
 
 float WorldObject::GetDistance(const WorldObject* obj) const

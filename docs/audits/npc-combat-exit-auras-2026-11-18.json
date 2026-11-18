@@ -39,5 +39,6 @@
     "Retained": ".codex/legion-death-affixes-20261118/rollback-before-death-affix-repairs EXE/map;canonical runtime,shared data,required build libraries,regression sources and verified diagnostic archive",
     "Deferred": "No temporary runtime remains necessary for completed checks;client combat and other affixes remain OPEN",
     "ArchiveFiles": 360
-  }
+  },
+  "followup": "instance-script-lifetime-2026-11-18.json repairs the unchecked common getter exposed by ordinary NPC cleanup during base Map destruction. Retained50 native combat-exit assertions still pass;the535731809 aura cleanup is preserved."
 }
