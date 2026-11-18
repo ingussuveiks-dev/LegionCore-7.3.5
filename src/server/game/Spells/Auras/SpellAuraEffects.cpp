@@ -5362,7 +5362,16 @@ void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurAp
 
     Unit* target = aurApp->GetTarget();
 
-    if (target->isAnySummons())
+    // Ordinary NPCs can have a vehicle kit without being an owned summon.
+    // Keep the owner-only rule for real summons and controlled vehicles,
+    // including owner GUIDs whose objects no longer resolve.
+    bool const unownedVehicle = target->IsVehicle()
+        && !target->HasUnitTypeMask(UNIT_MASK_SUMMON | UNIT_MASK_MINION | UNIT_MASK_GUARDIAN | UNIT_MASK_TOTEM | UNIT_MASK_PET | UNIT_MASK_HUNTER_PET | UNIT_MASK_PUPPET | UNIT_MASK_ACCESSORY | UNIT_MASK_CONTROLABLE_GUARDIAN | UNIT_MASK_CREATED_BY_CLASS_SPELL | UNIT_MASK_CREATED_BY_PLAYER)
+        && target->GetCharmerOrOwnerGUID().IsEmpty() && target->GetSummonedByGUID().IsEmpty()
+        && target->GetDemonCreatorGUID().IsEmpty()
+        && !target->IsControlledByPlayer();
+
+    if (target->isAnySummons() && !unownedVehicle)
     {
         if (target != GetCaster() && GetCaster() != target->GetAnyOwner())
             return;
