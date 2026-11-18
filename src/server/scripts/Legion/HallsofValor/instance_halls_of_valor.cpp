@@ -17,6 +17,7 @@ DoorData const doorData[] =
     {GO_GATES_OF_GLORY_DOOR,        DATA_FENRYR,          DOOR_TYPE_PASSAGE,    BOUNDARY_NONE},
     {GO_ODYN_AND_SKOVALD_DOOR,      DATA_SKOVALD,         DOOR_TYPE_ROOM,       BOUNDARY_NONE},
     {GO_ODYN_AND_SKOVALD_DOOR,      DATA_ODYN,            DOOR_TYPE_ROOM,       BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_halls_of_valor : public InstanceMapScript

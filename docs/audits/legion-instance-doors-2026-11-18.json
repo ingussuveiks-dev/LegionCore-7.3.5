@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_ASAN_NATIVE_PE_PASS_CLIENT_OPEN",
+  "previous_scope": "legion-dungeons-110-scope-2026-11-18.json",
+  "baseline_commit": "ee492cf20",
+  "causes": [
+    "Nine Legion dungeon doorData arrays omitted the entry0 sentinel required by the native InstanceScript::LoadDoorData pointer walk. Pinned source ASAN reproduces global-buffer-overflow for each table;this is controlled counterfactual evidence,not a claim of nine observed live crashes.",
+    "Cathedral's declared Thrashbite room gate268709 and shared Domatrax/Mephistroth room gate268680 were omitted from OnGameObjectCreate registration;native published gate state diverged from the actual table."
+  ],
+  "repaired_maps": [
+    1458,
+    1477,
+    1492,
+    1493,
+    1501,
+    1516,
+    1571,
+    1651,
+    1677
+  ],
+  "repair": "Terminate the nine existing tables;register both omitted Cathedral gate entries using native AddDoor. Preserve all native boss IDs,room/passage/spawn-hole types,boundaries and shared gate AND semantics;inherited native OnGameObjectRemove unregisters pointers.",
+  "sources": [
+    "Local Legion instance tables/headers and matching native World GO placements/templates",
+    "Native LoadDoorData/AddDoor/UpdateDoorState/SetBossState and actual registered InstanceMap factories;no external behavior imported"
+  ],
+  "regressions": {
+    "asan_baseline": "Test-LegionInstanceDoors.ps1 -Baseline:9 expected ASAN global-buffer-overflow failures against pinned ee492cf20;3 already-terminated tables pass. Not ordinary successful execution.",
+    "asan_repaired": "Test-LegionInstanceDoors.ps1:622 passing checks over12 actual tables and production loader/state methods with controlled containers;all owning-boss state combinations and unrelated/null doors.",
+    "linked_binary": "verify_legion_instance_doors_release.py:all12 exact row arrays including zero terminators are read from the actual RIP-relative arguments passed to LoadDoorData;all4 Cathedral entries reach linked AddDoor through the compiler's real decision tree.",
+    "native": "Test-LegionInstanceProgressionNative.ps1:9012 checks;13 actual registered factories/46 native mode pairs,496 placed/published GOs including saved-instance publication;native room/passage/spawn-hole state updates,shared AND gates,repeated state idempotency,remove/recreate and actual InstanceSave/CreateInstanceData re-entry. Base state API deliberately seeds controlled checkpoints;individual boss AI combat/outros not simulated.",
+    "retained": "Actual canonical PE Harbaron Fragment branch/cleanup and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass; separate diagnostic snapshots.",
+    "limits": "Native checks are not a full-core ASAN run, socket/client traversal, real boss kill,group reward,loot or full Keystone run. Combat final-blow owner/pet/guardian and group dispatch were not changed or replaced by synthetic credit."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "5ae010b7673a67637d392ded12bf5c386bdf023074ad37d8c3dbbeb708dfb56c",
+    "worldserver_map_sha256": "f83fe2dea5d09eaa824ab73b7a8a58f5018fe9cc981f1d77a8e415129aa38c22",
+    "method": "Original common/game/scripts Release projects; original final-link response libraries, staged separately; no global OutDir. Actual linked door arguments/table bytes and Violet state calls inspected in stage/canonical PE. Staged/canonical SHA256 identity verified; no SQL migration.",
+    "preserved": "Canonical bnetserver, configuration, certificates, DLLs and extracted data; all protected root-file hashes matched after deployment.",
+    "rollback": ".codex/legion-instance-progression-20261118/rollback-before-instance-repairs"
+  },
+  "diagnostics": {
+    "result": "Before/after crash and log snapshots for all probes/startup. Final runs: no new/changed crashes, appended DBErrors, server warnings/errors/assertions or unexplained stderr; native exit0.",
+    "startup": "Canonical task-owned PID22800 reached fresh ready; server shutdown0 and exit0; no task-owned server left. No user server stopped.",
+    "reviewed_fixture_failures": "Earlier native door mismatch exposed the Cathedral registration defect, paired with repaired native replay. Missing Python capstone search path and an overstrict PE switch-literal assertion were corrected; MSVC encodes those cases as a subtract/compare tree, now followed for each actual entry. Native combined-header DataHeader warning fixed by isolating the two legacy macros, not disabling compiler diagnostics. Original passing body at baseline and subsequent passing final runs retained.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-legion-instance-progression; source/archive/source SHA256 verification and manifest. No mixed log truncated; active Crashes empty and DBErrors0 at final check."
+  },
+  "remaining": [
+    "Actual client traversal,doors/collision and re-entry",
+    "Per-boss/trash mechanics,real combat/scaling/loot and full Keystone lifecycle remain OPEN in the parent inventory",
+    "Violet Hold state persistence is a separate focused repair;see violet-hold-save-2026-11-18.json"
+  ],
+  "cleanup": {
+    "RemovedFiles": 33,
+    "ReclaimedBytes": 850166602.0,
+    "Retained": "Current rollback-before-instance-repairs EXE/map,canonical runtime/shared data/required build libraries,all regression sources,verified diagnostic archive",
+    "Deferred": "None for current completed checks;full client/per-boss/Keystone gameplay remains OPEN",
+    "ArchiveFiles": 347
+  }
+}

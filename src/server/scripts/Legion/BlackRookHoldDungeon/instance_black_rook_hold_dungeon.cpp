@@ -17,6 +17,7 @@ DoorData const doorData[] =
     {GO_SMASH_KURT_DOOR_1,      DATA_SMASHSPITE,        DOOR_TYPE_PASSAGE,      BOUNDARY_NONE},
     {GO_SMASH_KURT_DOOR_2,      DATA_SMASHSPITE,        DOOR_TYPE_PASSAGE,      BOUNDARY_NONE},
     {GO_KURTALOS_DOOR,          DATA_KURTALOS,          DOOR_TYPE_ROOM,         BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_black_rook_hold_dungeon : public InstanceMapScript

@@ -9,7 +9,8 @@ DoorData const doorData[] =
     {GO_GERDO_DOOR,           DATA_CAPTAIN_GERDO,       DOOR_TYPE_PASSAGE,     BOUNDARY_NONE},
     {GO_MELANDRUS_DOOR_1,     DATA_TALIXAE,             DOOR_TYPE_PASSAGE,     BOUNDARY_NONE},
     {GO_MELANDRUS_DOOR_2,     DATA_MELANDRUS_EVENT,     DOOR_TYPE_PASSAGE,     BOUNDARY_NONE},
-    {GO_MELANDRUS_DOOR_2,     DATA_MELANDRUS,           DOOR_TYPE_ROOM,        BOUNDARY_NONE}
+    {GO_MELANDRUS_DOOR_2,     DATA_MELANDRUS,           DOOR_TYPE_ROOM,        BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_court_of_stars : public InstanceMapScript

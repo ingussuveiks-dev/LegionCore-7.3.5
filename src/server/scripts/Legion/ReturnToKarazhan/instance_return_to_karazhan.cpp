@@ -14,6 +14,7 @@ DoorData const doorData[] =
     {GO_MEDIVH_DOOR_1,          DATA_SHADE_OF_MEDIVH,   DOOR_TYPE_ROOM,         BOUNDARY_NONE},
     {GO_MEDIVH_DOOR_2,          DATA_SHADE_OF_MEDIVH,   DOOR_TYPE_PASSAGE,      BOUNDARY_NONE},
     {GO_VIZADUUM_DOOR_1,        DATA_VIZADUUM,          DOOR_TYPE_ROOM,         BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_return_to_karazhan : public InstanceMapScript

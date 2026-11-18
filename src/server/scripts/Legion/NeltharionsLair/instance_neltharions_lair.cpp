@@ -12,6 +12,7 @@ DoorData const doorData[] =
     {GO_NARAXAS_DOOR,           DATA_NARAXAS,       DOOR_TYPE_ROOM,         BOUNDARY_NONE},
     {GO_NARAXAS_EXIT_DOOR_1,    DATA_NARAXAS,       DOOR_TYPE_PASSAGE,      BOUNDARY_NONE},
     {GO_NARAXAS_EXIT_DOOR_2,    DATA_NARAXAS,       DOOR_TYPE_PASSAGE,      BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_neltharions_lair : public InstanceMapScript

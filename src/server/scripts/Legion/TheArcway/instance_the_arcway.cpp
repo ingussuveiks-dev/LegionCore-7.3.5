@@ -15,6 +15,7 @@ DoorData const doorData[] =
     {GO_DOOR_B,                 DATA_NALTIRA,         DOOR_TYPE_PASSAGE,    BOUNDARY_NONE},
     {GO_DOOR_K,                 DATA_NALTIRA,         DOOR_TYPE_PASSAGE,    BOUNDARY_NONE},
     {GO_DOOR_A,                 DATA_NALTIRA,         DOOR_TYPE_PASSAGE,    BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_the_arcway : public InstanceMapScript

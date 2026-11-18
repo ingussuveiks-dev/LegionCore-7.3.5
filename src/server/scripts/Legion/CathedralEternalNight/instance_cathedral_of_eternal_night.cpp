@@ -7,6 +7,7 @@ DoorData const doorData[] =
     {GO_THRASHBITE_DOOR_ENTER,       DATA_THRASHBITE,         DOOR_TYPE_ROOM,    BOUNDARY_NONE},
     {GO_LAST_DOORS,       DATA_DOMATRAX,         DOOR_TYPE_ROOM,    BOUNDARY_NONE},
     {GO_LAST_DOORS,       DATA_MEPHISTROTH,         DOOR_TYPE_ROOM,    BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_cathedral_of_eternal_night : public InstanceMapScript
@@ -136,6 +137,8 @@ public:
                     break;
                 case GO_AGRONOX_DOOR:
                 case GO_THRASHBITE_DOOR:
+                case GO_THRASHBITE_DOOR_ENTER:
+                case GO_LAST_DOORS:
                     AddDoor(go, true);
                     break;
                 default:

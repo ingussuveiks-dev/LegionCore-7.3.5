@@ -16,6 +16,7 @@ DoorData const doorData[] =
     {GO_ASHGOLM_BRIDGE,         DATA_ASHGOLM,          DOOR_TYPE_SPAWN_HOLE,    BOUNDARY_NONE},
     {GO_GLAZER_BRIDGE,          DATA_GLAZER,           DOOR_TYPE_SPAWN_HOLE,    BOUNDARY_NONE},
     {GO_CORDANA_DOOR,           DATA_CORDANA_SPIRIT,   DOOR_TYPE_PASSAGE,       BOUNDARY_NONE},
+    {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE} // End of the sentinel-terminated door table.
 };
 
 class instance_vault_of_the_wardens : public InstanceMapScript
