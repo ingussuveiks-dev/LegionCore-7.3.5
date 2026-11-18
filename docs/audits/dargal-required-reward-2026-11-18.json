@@ -23,5 +23,16 @@
     ".codex/dargal-reward-20261118",
     "build-extractors/runtime-test/dargal-reward"
   ],
-  "cleanup": "Resolved diagnostics archive follows after focused implementation commit; temporary deletion remains deferred after earlier automatic policy rejection (blocked by policy), no alternate deletion. Zero files removed."
+  "cleanup": "Resolved diagnostics archive follows after focused implementation commit; temporary deletion remains deferred after earlier automatic policy rejection (blocked by policy), no alternate deletion. Zero files removed.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/2026-11-18-dargal-required-reward",
+    "fix_commit": "b5711bda0",
+    "manifest_sha256": "8AED55E8FA94F6038E67EDCB4D4229B044C7D80F6FD491196C670196548D2CF0",
+    "verified_captures": 106,
+    "deferred_files": 17,
+    "deferred_bytes": 222841298,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "retained": "D62 rollback, required original libraries, canonical binaries/configuration/data and mixed active7839-byte DBErrors. Open Ring/Priest source/media retained. No runtime secrets archived; exact temporary no-reparse targets recorded locally. Removal deferred after prior automatic policy rejection, no alternate deletion."
+  }
 }
