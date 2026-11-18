@@ -100,11 +100,11 @@ public:
     }
 
     template<typename RayCallback>
-    void intersectRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& maxDist)
+    void intersectRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& maxDist, bool stopAtFirstHit = true)
     {
         balance();
         MDLCallback<RayCallback> temp_cb(intersectCallback, m_objects.getCArray(), m_objects.size());
-        m_tree.intersectRay(ray, temp_cb, maxDist, true);
+        m_tree.intersectRay(ray, temp_cb, maxDist, stopAtFirstHit);
     }
 
     template<typename IsectCallback>

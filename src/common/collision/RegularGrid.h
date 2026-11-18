@@ -112,7 +112,7 @@ public:
     }
 
     template<typename RayCallback>
-    void intersectRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& max_dist, const G3D::Vector3& end)
+    void intersectRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& max_dist, const G3D::Vector3& end, bool stopAtFirstHit = true)
     {
         Cell cell = Cell::ComputeCell(ray.origin().x, ray.origin().y);
         if (!cell.isValid())
@@ -123,7 +123,7 @@ public:
         if (cell == last_cell)
         {
             if (Node* node = nodes[cell.x][cell.y])
-                node->intersectRay(ray, intersectCallback, max_dist);
+                node->intersectRay(ray, intersectCallback, max_dist, stopAtFirstHit);
             return;
         }
 
@@ -169,7 +169,7 @@ public:
             if (Node* node = nodes[cell.x][cell.y])
             {
                 //float enterdist = max_dist;
-                node->intersectRay(ray, intersectCallback, max_dist);
+                node->intersectRay(ray, intersectCallback, max_dist, stopAtFirstHit);
             }
             if (cell == last_cell)
                 break;
@@ -199,13 +199,13 @@ public:
 
     // Optimized verson of intersectRay function for rays with vertical directions
     template<typename RayCallback>
-    void intersectZAllignedRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& max_dist)
+    void intersectZAllignedRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& max_dist, bool stopAtFirstHit = true)
     {
         Cell cell = Cell::ComputeCell(ray.origin().x, ray.origin().y);
         if (!cell.isValid())
             return;
         if (Node* node = nodes[cell.x][cell.y])
-            node->intersectRay(ray, intersectCallback, max_dist);
+            node->intersectRay(ray, intersectCallback, max_dist, stopAtFirstHit);
     }
 };
 

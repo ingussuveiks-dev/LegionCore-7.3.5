@@ -148,7 +148,10 @@ struct DynamicTreeIntersectionCallback
     {
         if (_query && _query->filter && !_query->filter(obj.owner->GetOwner()))
             return false;
-        bool hit = obj.intersectRay(r, distance, true, _phases, _otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing);
+        // Height/contact queries need the nearest surface inside each model.
+        // The first BIH triangle can be a lower deck/underside, even when a
+        // closer floor exists in that same GO. LOS has its own any-hit callback.
+        bool hit = obj.intersectRay(r, distance, false, _phases, _otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing);
         if (hit)
         {
             _didHit = true;
@@ -218,7 +221,7 @@ bool DynamicMapTree::getIntersectionTime(std::set<uint32> const& phases, bool ot
     float distance = maxDist;
     DynamicTreeIntersectionCallback callback(phases, otherUsePlayerPhasingRules, dCallback);
     RecursiveGuard guard(dynamic_lock);
-    impl->intersectRay(ray, callback, distance, endPos);
+    impl->intersectRay(ray, callback, distance, endPos, false);
     if (callback.didHit())
     {
         if (dCallback)
@@ -293,7 +296,7 @@ float DynamicMapTree::getHeight(float x, float y, float z, float maxSearchDist, 
     G3D::Ray r(v, G3D::Vector3(0, 0, -1));
     DynamicTreeIntersectionCallback callback(phases, otherUsePlayerPhasingRules, dCallback);
     RecursiveGuard guard(dynamic_lock);
-    impl->intersectZAllignedRay(r, callback, maxSearchDist);
+    impl->intersectZAllignedRay(r, callback, maxSearchDist, false);
 
     if (callback.didHit())
     {

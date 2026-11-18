@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-18",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN",
+  "source_commit": "be9af5a4540e835669960d4540af48d3bfee5040",
+  "fix_commit": "Containing focused commit;exact SHA is recorded after commit in the local verified archive manifest",
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "7e38756503ad753d0a706a76ddf76ed6909b0d0ec136a5c5c3cf2b40f1fa2730",
+    "worldserver_map_sha256": "e2b9cc116d4373fb781290d4dbcbd206a0506e75c557c9d978fd150b26113857",
+    "link": "Original common/database/game/scripts Release library paths built;no global OutDir. Actual final-link inputs and library hashes retained in .codex/maw-ship-navigation-20261118/final-libraries.json. Combined final binary contains both nearest-surface and Maw navigation repairs.",
+    "protected": "bnetserver,configurations,certificates,DLLs and existing extracted data preserved;two new generated model navigation files are the deliberate data addition. No user server stopped.",
+    "rollback": ".codex/maw-ship-navigation-20261118/rollback-before-maw-navigation"
+  },
+  "diagnostics": {
+    "result": "All final native/PE/retained checks and owned canonical startup pass;no new/changed crash report,appended DBErrors or unexplained server warning/error/assertion. Captured runtime stdout also reviewed.",
+    "startup": "Owned final canonical PID32316 reached fresh ready,accepted server shutdown0 and exited0;stderr empty,DBErrors0,protected hashes unchanged. Earlier combined binary startup PID15060 also exited0. No owned hidden server remains.",
+    "compiler": "Changed production units have no new compiler warning. Full rebuild also emitted warnings in unchanged legacy game sources;retained extracted arrival fixtures emit existing C4458 shadowing warnings. These are recorded,not classified as server runtime diagnostics.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-18-maw-navigation",
+    "archive_files": 592,
+    "archive_policy": "Original diagnostic bytes source/archive/source SHA256 verified;resolved prototypes and fixture/tooling failures paired with passing checks. Private configs excluded. OPEN Teeming source/placement evidence retained separately;no mixed active log truncated.",
+    "reviewed_tooling_failures": [
+      "Initial research model builder used the full scenery-sized untiled model and produced no usable mesh;final builder scopes native ship floors967/968 and builds two usable,byte-reproducible meshes with passing native paths.",
+      "Fixture include/type issues,unpublished actor lookup,visual bounds versus native navigation-agent sizing and duplicate spline vertices were corrected;actual Map/Unit movement now reaches destinations in all4 modes/2 models.",
+      "A retained PE runner initially selected the Windows Store python alias;rerun with the installed primary-runtime Python executes the real check and passes. No check disabled.",
+      "First cleanup included its own active redirect log;subsequent ownership guard correctly refused a stale expected probe name. Completed failure logs preserved;reviewed actual owned compiler command and final cleanup pass."
+    ]
+  },
+  "cleanup": {
+    "RemovedFiles": 136,
+    "ReclaimedBytes": 6987000321,
+    "ArchiveFiles": 592,
+    "Retained": "Canonical runtime/two model meshes/required original libraries;latest pre-Maw8c67 EXE/map rollback;all regression/generator source;hashed OPEN Teeming placement observations and public source cache",
+    "Deferred": [],
+    "OpenEvidence": "Geometry/map catalog/public source inputs remain under .codex/teeming-placement-20261118 and .codex/teeming-github-20261118;no missing-content issue archived as fixed"
+  },
+  "client": "Not performed. Actual AI combat,chase/patrol,doors,presentation,pet follow and full dungeon/quest traversal remain separate checks;no full-core ASAN claim.",
+  "cause": "Dynamic height/contact selected the first intersecting triangle inside a GO instead of its nearest surface. The grid/object BIH also hardcoded first-object traversal. On actual Maw collision,78/81 sampled deck queries disagreed with the native closest-model ray.",
+  "fix": "Request nearest traversal at both object and triangle levels for height/contact;retain shrinking distance,supporting-GO receipt,phases,caller filters and door padding. Separate LOS callback retains any-hit traversal. No collision disabled,phase invented or progression granted.",
+  "checks": {
+    "baseline": "Pinned full DynamicTree.cpp frombe9af5a45 with compatibility-preserving default first-hit headers:410 expected-broken counterfactual checks,3/81 matching and78/81 mismatching native model heights. Not an ordinary successful geometry run.",
+    "native_assertions": 1058,
+    "native_scope": "81 actual extracted ship samples compare direct closest-model rays with dynamic height/contact;two overlapping native models in both insertion orders,nearest supporting identity,composed caller filter,disabled model,bounded search and unchanged obstructed LOS. Shared model poses are controlled,not persistent World writes.",
+    "retained": "47 actual native owner/private/shared rock/Map LOS/contact/height checks;actual both-boost-ship floor checks;extracted map arrival/boost arrival/transport visibility;canonical Scepter login.",
+    "binary": "verify_dynamic_model_nearest_release.py verifies actual final PE false first-hit arguments for model rays and height/contact object traversal;LOS still passes true. Retained actor-aware collision inspector passes."
+  }
+}
