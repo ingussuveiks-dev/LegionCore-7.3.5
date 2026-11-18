@@ -309,7 +309,8 @@ class spell_challengers_burden : public AuraScript
                 amount = challenge->HasAffix(Affixes::Overflowing);
                 break;
             case EFFECT_2:
-                amount = challenge->HasAffix(Affixes::Skittish) && player->isInTankSpec();
+                if (!challenge->HasAffix(Affixes::Skittish) || !player->isInTankSpec())
+                    amount = 0;
                 break;
             case EFFECT_3:
                 amount = challenge->HasAffix(Affixes::Grievous);
