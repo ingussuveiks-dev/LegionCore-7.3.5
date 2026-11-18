@@ -28,6 +28,7 @@
 #include "PlayerDefines.h"
 #include "ScriptsData.h"
 #include "SpellScript.h"
+#include "ScriptMgr.h"
 #include "Transport.h"
 
 void WaypointMovementGenerator<Creature>::LoadPath(Creature& creature)
@@ -401,7 +402,12 @@ bool WaypointMovementGenerator<Player>::StartMove(Player &player)
     {
         if (_currentNode == _path->size() - 1) // If that's our last waypoint
         {
+            // For player WAYPOINT notifications ID is the completed path ID.
+            // Notify after restoring ordinary movement. Initialize may delete
+            // this generator, so retain the ID and never access it afterwards.
+            uint32 completedPath = _pathId;
             player.GetMotionMaster()->Initialize();
+            sScriptMgr->OnMovementInform(&player, WAYPOINT_MOTION_TYPE, completedPath);
             return false;
         }
 

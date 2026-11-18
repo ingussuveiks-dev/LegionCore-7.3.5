@@ -19165,6 +19165,11 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    // Repaired required counts also apply to saved legacy COMPLETE logs.
+    if (quest->GetQuestId() == 40225 &&
+        (GetQuestObjectiveData(40225, 97047) < 1 || GetQuestObjectiveData(40225, 97048) < 1))
+        return false;
+
     // Old saved COMPLETE logs can predate the repaired required Dargal count.
     // The area service reopens these logs, but reward may arrive before its
     // first update (or at Mehlar outside that area). Require the real counters.
@@ -21265,6 +21270,15 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
 
         if (questid == 40216 && (entry == 97441 || real_entry == 97441))
             continue; // Addie's owner-scoped hunting controller owns all skill counters.
+
+        // These markers are also used by the separate1572 shaman intro.
+        // Ring40225 uses the real1469 leadership/opening actions, and its
+        // second personal marker must already have the leadership checkpoint.
+        if (questid == 40225 && (real_entry == 97047 || real_entry == 97048) &&
+            (getClass() != CLASS_SHAMAN || GetMapId() != 1469 ||
+             (real_entry == 97048 && GetQuestObjectiveData(40225, 97047) < 1)))
+            continue;
+
 
         // Dargal is the sequenced ninth-spirit encounter, including for a
         // legitimate nearby group recipient of an owner's pet/guardian kill.

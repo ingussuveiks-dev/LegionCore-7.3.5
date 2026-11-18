@@ -4420,6 +4420,22 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             owner->BindQuestObject(40710, summon, false);
     }
 
+    // The shared1469 hall needs a separate Nobundo for each accepted40225.
+    // Non-null2912 keeps the ordinary TempSummon owner list; no pet control.
+    // Bind before first AI/world publication, only at the two scoped checkpoints.
+    if (entry == 96528 && spellId == 0 && properties && properties->ID == 2912 &&
+        GetId() == 1469 && summoner && summoner->IsPlayer())
+    {
+        Player* owner = summoner->ToPlayer();
+        QuestStatus status = owner->GetQuestStatus(40225);
+        bool circle = pos.GetExactDist2d(824.349f, 1093.92f) < 5.0f;
+        bool rock = pos.GetExactDist2d(873.0f, 1109.7f) < 5.0f && owner->GetQuestObjectiveData(40225, 97047) > 0;
+        if (owner->getClass() == CLASS_SHAMAN && owner->IsAlive() && !owner->GetQuestRewardStatus(40225) &&
+            (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE) && (circle || rock))
+            owner->BindQuestObject(40225, summon);
+    }
+
+
     // Dargal is created by the real ninth-spirit followup spell. Bind before
     // InitSummon/AddToMap so its native owner-list registration, first create,
     // SmartAI combat and any children share this accepted quest attempt.

@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_AND_CANONICAL_STARTUP_CHECKED_CLIENT_PENDING",
+  "quest": 40225,
+  "required_objectives": {
+    "280438/97047": 1,
+    "280439/97048": 1
+  },
+  "cause": "The shared1469 class hall had no connected40225 leadership/oath/rock sequence, missing native player path473698 and no clickable245122. Gossip18940/0 instead belonged to the separate1572 intro. Both required amounts had been0. A realGO was initially rejected by the independent range bug, and the WIP wrongly used the original-Unit identity API for a GO.",
+  "fix": "Owner-scoped Nobundo96528 plus actual native195070 personal90 first credit, delayed160/195359 child, real226/player waypoint completion and actual12s aura expiry, native texts, NPC approach on real terrain, private solid245122 and actual195132/Lock2454 opening. Same native personal90/97048 endpoint is deferred until successful OPEN_LOCK SendLoot acknowledgement, not raw use or before GO processing. Native5s stun retained, own door removed before9s reclose. Both real counters gate native reward; no acceptance/arrival/fake item grants.",
+  "native_audience": "Native effect90 maps to EffectKillCreditPersonal, not EffectKillCredit(group). Expanded actual native group fixture exposed the mistaken WIP group assumption; repaired callback now uses KilledMonsterCredit exactly like90. Nearby/grouped other-faction Shaman, later member, distant and wrong-class members receive no automatic personal action credit. Generic required-marker recipient guards preserve real class/map/prerequisite and separate1572 intro.",
+  "lifetime": "Real accepted cancellation receipt and properties2912 ownerlist, prepublication map binding, finite3 spawn/walk attempts,5min actor lifetime, cancel/logout/map/re-entry cleanup, real persisted first checkpoint recovery. No player-pet bar properties207 or global phase change. Shared96528 SmartAI9 rows/full40-row context, other quests and map1572 actors/247333 decoration preserved.",
+  "presentation_evidence": {
+    "source": "https://www.youtube.com/watch?v=O-ThMyT2K8U",
+    "reviewed": "PhoenixGaming2016-12-24 full128-second extent, all64 sampled2-second frames in4 contact sheets. No audio or continuous-playback claim. Acceptance, first native credit before oath finishes, walking, actual rock click, second credit and turn-in observed.",
+    "limits": "Missing473698 coordinates reconstructed from matching circle/POI/terrain;14s speech wait and approach reconstructed from observed sequence, not recovered authored clip acknowledgement. Exact visual/audio cadence and full client traversal remain OPEN. Native195078 has unresolved original role and was not arbitrarily granted."
+  },
+  "data": "Migration09 full18-table guarded transaction,11 mutations across7 tables,2 counts,2 ScriptNames,1 real player path,4 spell/aura bindings,3 English fallback text corrections. OptionNpc0 is valid white chat and preserved. Full40 SAI, intro objectives/conditions/starts/ends/phases and original native geometry preserved.",
+  "checks": {
+    "native": "44 actual native Spell/Player/Map/SmartAI/GO cases passed using independent expected18-table data in disposable World schema: real gossip and immediate first credit,10ms child, actual player path+12s expiry, actual NPC path, closed/open solid mesh, full GO identity/Lock, failed stunned cast nonce cleanup, personal/group isolation, real5s stun, COMPLETE/reward admission, repeat prevention,5s door cleanup, cancel before child, actual first-credit resume/Horde actor, missing door recovery, inactive quest, non-expiry aura and canceled player path do not advance. Accepted log/shared source publication and in-memory group links are explicit controlled fixtures; no client login/save.",
+    "reward": "18 pinned5e7424b7d expected-broken COMPLETE baselines and29 repaired full native CanRewardQuest cases passed AddressSanitizer; storage/status endpoints controlled, native full arc tested separately.",
+    "sql": "Actual schema independent expected18-table replay, repeat/idempotence and16 foreign/partial refusals passed; production persistent DML denied. Native clone all expected scopes hashed, original production scopes compared before/after including failure, unique DB/user dropped in finally. Canonical actual-updater readback verified all18 expected scopes; migration09 RELEASED SHA1 2BFACE32FAA7FF447FF4DBBD4D290B79B895CB86.",
+    "linked": "Final selected PE verifies all7 registrations/real vtables/hooks, actual explicitGO capture, native successful personal90 endpoint, real waypoint completion, scoped solid publication and reward/recipient guards.",
+    "retained": "Dargal43 service/controller/ASAN and full10-table live guards;41 Dargal reward ASAN after replacing affected40225 in old unrelated sample; canonical Scepter retained. Collision47/doors24/actual both-ship geometry passed.",
+    "not_applicable": "No combat kill in this sequence; pet/guardian final-blow progression is not substituted. Native private collision owner/pet/guardian coverage retained. No full native-core ASAN or whole all36/client claim."
+  },
+  "bootstrap_failures_resolved": "Retained test evidence: SELECT-only native DML preparation mismatch; omitted preparation null-prepared-statement exception; discarded duplicate-driver linker attempt; disposable native clone DML preparation before readonly; missingPOI/SmartWaypoints/NPCText loader diagnostics; native fixture Windows near/far macros. All corrected without disabling native driver checks or suppressing errors, paired with passing full44 sequence. Actual range/GO-identity/personal-audience WIP failures paired with passing repaired arc. Failed diagnostics preserved, not erased.",
+  "release": {
+    "worldserver.exe": "03D5C3334F419A1362C7A0D9878B6FAE79B20BEBBF8D951ADFB160745CDB658E",
+    "worldserver.map": "8CA0ADB8440F0381F709BE1B09264E0D1B63CEA6F21B398B6CFA1A3B7C4AC521",
+    "canonical": "build-extractors/bin/Release",
+    "rollback": ".codex/ring-reforged-progression-20261118/rollback-before-ring"
+  },
+  "rollback": "Old0C executable requires reversing migration09 from guarded original public fixtures before launch; do not run old code with new ScriptNames. Previous binary/map and original/expected/context preserved. No character rows copied/changed by tests.",
+  "diagnostics": "Canonical startup and live18-table readback passed, canonical selected PE and retained Scepter passed under before/after diagnostics. Existing mixed7839-byte DBErrors hash8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 unchanged/unresolved, not cleared. No task-owned hidden server remains.",
+  "evidence": [
+    ".codex/ring-reforged-20261118",
+    ".codex/ring-reforged-progression-20261118",
+    "build-extractors/runtime-test/ring-reforged-native",
+    "build-extractors/runtime-test/ring-reforged-reward"
+  ],
+  "remaining": "Priest40938/281419/102466 connected follow/portal/ceremony remains next independent repair; actual all36 whole-chain client verification remains OPEN.",
+  "cleanup": "Resolved diagnostics archive follows verified canonical startup/readback and focused commits. Prior automatic review rejected filesystem deletion with blocked by policy; no alternative filesystem deletion. Disposable owned SQL schema/user cleanup is ordinary isolated-test lifecycle, not filesystem deletion. Zero files removed.",
+  "canonical_startup": "Owned canonical worldserver PID35668 reached ready, gracefully exited0; stderr empty, appendedDBErrors0, no new/changed crashes or warnings/errors/assertions. No user server stopped; own hidden server is stopped."
+}

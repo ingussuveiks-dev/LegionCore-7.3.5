@@ -2492,9 +2492,17 @@ struct npc_stromkar_thoradin : SmartAI
 #include "valzuun_intel.h"
 #include "stromkar_split.h"
 #include "keeping_the_peace.h"
+#include "ring_reforged.h"
 
 void AddSC_artifact_acquisition()
 {
+    new player_ring_reforged();
+    new npc_ring_reforged_nobundo();
+    new go_ring_reforged_rock();
+    RegisterSpellScript(spell_ring_reforged_assume);
+    RegisterSpellScript(spell_ring_reforged_oath);
+    RegisterAuraScript(aura_ring_reforged_oath);
+    RegisterSpellScript(spell_ring_reforged_rock);
     new player_keeping_the_peace();
     RegisterCreatureAI(npc_keeping_the_peace_dargal);
     RegisterCreatureAI(npc_keeping_the_peace_mortar);
