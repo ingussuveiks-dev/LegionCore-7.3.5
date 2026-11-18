@@ -19165,6 +19165,11 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    if (quest->GetQuestId() == 40938)
+        for (uint32 credit : {102466u, 102465u, 102652u, 102653u, 102654u})
+            if (GetQuestObjectiveData(40938, credit) < 1)
+                return false;
+
     // Repaired required counts also apply to saved legacy COMPLETE logs.
     if (quest->GetQuestId() == 40225 &&
         (GetQuestObjectiveData(40225, 97047) < 1 || GetQuestObjectiveData(40225, 97048) < 1))
@@ -21279,6 +21284,23 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
              (real_entry == 97048 && GetQuestObjectiveData(40225, 97047) < 1)))
             continue;
 
+
+        // Real40938 stages, including an eligible recipient of the native134
+        // ritual-group event, retain every previous personal milestone.
+        if (questid == 40938 && real_entry >= 102465 && real_entry <= 102654 &&
+            (real_entry == 102466 || real_entry == 102465 || real_entry == 102652 || real_entry == 102653 || real_entry == 102654))
+        {
+            bool prior = true;
+            for (uint32 milestone : {102466u, 102465u, 102652u, 102653u, 102654u})
+            {
+                if (milestone == real_entry)
+                    break;
+                if (GetQuestObjectiveData(40938, milestone) < 1)
+                    prior = false;
+            }
+            if (getClass() != CLASS_PRIEST || GetMapId() != (real_entry == 102466 ? 1220u : 1512u) || !prior)
+                continue;
+        }
 
         // Dargal is the sequenced ninth-spirit encounter, including for a
         // legitimate nearby group recipient of an owner's pet/guardian kill.

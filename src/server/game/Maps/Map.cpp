@@ -4436,6 +4436,20 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     }
 
 
+    // Priest40938's actual lead and native ritual-target checkpoint use the
+    // ordinary non-pet2912 owner list, bound before first AI/world publication.
+    if (spellId == 0 && properties && properties->ID == 2912 && summoner && summoner->IsPlayer() &&
+        ((entry == 101313 && GetId() == 1220 && pos.GetExactDist2d(-698.346f, 4494.7f) < 3.0f) ||
+         (entry == 102528 && GetId() == 1512 && pos.GetExactDist2d(1417.67712f, 1343.95483f) < 3.0f)))
+    {
+        Player* owner = summoner->ToPlayer();
+        QuestStatus status = owner->GetQuestStatus(40938);
+        if (owner->getClass() == CLASS_PRIEST && owner->IsAlive() && !owner->GetQuestRewardStatus(40938) &&
+            (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE) &&
+            (entry == 101313 || (owner->GetQuestObjectiveData(40938, 102466) >= 1 && owner->GetQuestObjectiveData(40938, 102465) >= 1)))
+            owner->BindQuestObject(40938, summon);
+    }
+
     // Dargal is created by the real ninth-spirit followup spell. Bind before
     // InitSummon/AddToMap so its native owner-list registration, first create,
     // SmartAI combat and any children share this accepted quest attempt.

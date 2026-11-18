@@ -1,8 +1,8 @@
 {
   "date": "2026-11-18",
-  "status": "NATIVE_SEQUENCE_RECOVERED_IMPLEMENTATION_PENDING",
+  "status": "RESEARCH_SUPERSEDED_BY_DEPLOYED_PRIEST_FORMATION_AUDIT",
   "quest": 40938,
-  "first_milestone": "281419/102466 remains Amount0. Full matching SpellEffect scan of every effect type, not only90, found no102466 producer. Video actual first credit is at the portal after following Velen, before entry. Do not grant it on acceptance, arbitrary arrival or use202324(second marker). Matching quest POIs separate real upper pad(-845,4467) and lower portal(-882,4498).",
+  "first_milestone": "At research time281419/102466 was Amount0; migration10 now restores1 with connected progression. Full matching SpellEffect scan of every effect type, not only90, found no102466 producer. Video actual first credit is at the portal after following Velen, before entry. Do not grant it on acceptance, arbitrary arrival or use202324(second marker). Matching quest POIs separate real upper pad(-845,4467) and lower portal(-882,4498).",
   "native_flow": "119/120 are real EventObjects source13 at1512/1251.81,1344.14,185 and1335.12,1344.29,177.221. Existing12 source22 predicates incorrectly use SourceId10(Scene), so do not guard their two actual13 SmartAI roots.119 requests202457,120 requests202835. Preserve actual source13/89/85 and per-player native EventObject dispatch; do not bypass requirements or invent links.",
   "recovered_scene": {
     "package": 1556,
@@ -24,11 +24,12 @@
     {
       "url": "https://github.com/AshamaneProject/AshamaneCore/blob/master/src/server/scripts/BrokenIsles/ClassHalls/class_hall_priest.cpp",
       "blob": "7db4baee6db0aa5d38464f0033f1fa43a71c3154",
-      "review": "Complete97-line reference file reviewed; only40705 messenger/102343 logic, no40938/101313 route. Not a compatible implementation to copy."
+      "review": "Complete reference file reviewed; only40705 messenger/102343 logic, no40938/101313 route. Not a compatible implementation to copy."
     }
   ],
   "checks": "Readonly native spell/scene catalogs all exit0, before/after canonical/own diagnostics unchanged; no new crash/appendedDBErrors/warnings/errors/assertions. Readonly SQL schema mistakes(scene_template absent,spell_scene field namedMiscValue) corrected from actual schema; CLI query failures retained as research, not successful tests. No production SQL/character writes or server launch/stop in this research.",
   "canonical": "03D5C3334F419A1362C7A0D9878B6FAE79B20BEBBF8D951ADFB160745CDB658E; Ring/interaction fixes remain deployed and committed. Mixed7839-byte DBErrors8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 unchanged/unresolved.",
   "evidence": ".codex\\priest-light-void-20261118",
-  "limits": "Research is not a completed fix or client verification. Native scene event security/order, actual channel target/caster/group endpoint, failed cast/transfer/retry/logout/re-entry, accepted lifetime, all3 legitimate artifacts and full connected reward admission still need implementation and native checks. Media/native artifacts retained for concrete open repair; no filesystem deletion after prior automatic policy rejection."
+  "limits": "Research is not a completed fix or client verification. Native scene event security/order, actual channel target/caster/group endpoint, failed cast/transfer/retry/logout/re-entry, accepted lifetime, all3 legitimate artifacts and full connected reward admission still need implementation and native checks. Media/native artifacts retained for concrete open repair; no filesystem deletion after prior automatic policy rejection.",
+  "implementation": "See priest-formation-progression-2026-11-18.json for deployed92-native/497-ASAN/live25-table/canonical-startup evidence; the remaining text records the earlier research checkpoint."
 }

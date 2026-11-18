@@ -37,8 +37,9 @@ int main(int argc,char** argv)
     for(auto l:locs)if(l->MapID==1512||l->ID==1354||l->ID==1371)std::cout<<"WORLD_SAFE\t"<<l->ID<<'\t'<<l->Name->Str[0]<<'\t'<<l->MapID<<'\t'<<l->Loc.X<<'\t'<<l->Loc.Y<<'\t'<<l->Loc.Z<<'\t'<<l->Loc.O<<'\n';
     for(auto t:texts)if((t->ID>=104670&&t->ID<=104690)||std::string(t->Text->Str[0]).find("At last we found a way")!=std::string::npos)std::cout<<"VELEN_TEXT\t"<<t->ID<<'\t'<<t->Text->Str[0]<<'\t'<<t->SoundEntriesID[0]<<'\n';
     std::set<uint32> pending{192293,192295,202324,202457,202835,202747,202749,202744,202759,216409,216418,202491,202945},seen;
-    
+
     for(auto e:effects)if(e->EffectMiscValue[0]==102466||e->EffectMiscValue[0]==102465||e->EffectMiscValue[0]==102652||e->EffectMiscValue[0]==102653||e->EffectMiscValue[0]==102654){pending.insert(e->SpellID);std::cout<<"ALL_MARKER_SOURCE\t"<<e->SpellID<<'\t'<<e->Effect<<'\t'<<e->EffectMiscValue[0]<<'\n';}
+    for(auto s:spells)if(std::string(s->Name->Str[0]).find("Life Grip")!=std::string::npos||(s->ID>=202400&&s->ID<=202950&&(std::string(s->Name->Str[0]).find("Teleport")!=std::string::npos||std::string(s->Name->Str[0]).find("Ritual")!=std::string::npos))){pending.insert(s->ID);}
     while(!pending.empty()){
         uint32 id=*pending.begin();pending.erase(pending.begin());if(!seen.insert(id).second)continue;if(seen.size()>160)return 5;
         auto s=spells.LookupEntry(id);if(!s){std::cout<<"MISSING\t"<<id<<'\n';continue;}

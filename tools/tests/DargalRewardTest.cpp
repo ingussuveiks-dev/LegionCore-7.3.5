@@ -28,7 +28,7 @@ int main(){Quest q;unsigned checked=0;
 #ifdef EXPECT_BASELINE
  std::cout<<"COUNTERFACTUAL "<<checked<<" pinned native COMPLETE reward cases ignore missing repaired required counters; expected broken baseline, not successful ordinary progression\n";return 0;
 #else
- for(uint32 id:{40226u,40938u,42770u,42772u,40518u}){Player p;q.id=id;assert(p.CanRewardQuest(&q,false));++checked;}q.id=42771;
+ for(uint32 id:{40226u,40939u,42770u,42772u,40518u}){Player p;q.id=id;assert(p.CanRewardQuest(&q,false));++checked;}q.id=42771;
  for(int mode=0;mode<7;++mode){Player p;p.progress={{108815,9},{110635,1}};
   if(mode==0)p.status=QUEST_STATUS_INCOMPLETE;if(mode==1)p.status=0;if(mode==2)p.daily=true;if(mode==3)p.weekly=true;if(mode==4)p.seasonal=true;if(mode==5)p.rewarded=true;
   if(mode==6){p.status=0;q.df=true;assert(p.CanRewardQuest(&q,false));q.df=false;}else assert(!p.CanRewardQuest(&q,true));++checked;

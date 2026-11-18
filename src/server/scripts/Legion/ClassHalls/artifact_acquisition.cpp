@@ -2493,9 +2493,25 @@ struct npc_stromkar_thoradin : SmartAI
 #include "stromkar_split.h"
 #include "keeping_the_peace.h"
 #include "ring_reforged.h"
+#include "MoveSpline.h"
+#include "priest_formation.h"
+#include "priest_formation_follow.h"
 
 void AddSC_artifact_acquisition()
 {
+    new player_priest_formation();
+    new npc_priest_formation_velen();
+    new go_priest_formation_portal();
+    new scene_priest_formation();
+    new eventobject_priest_formation();
+    RegisterSpellScript(spell_priest_formation_scene);
+    RegisterAuraScript(aura_priest_formation_scene);
+    RegisterSpellScript(spell_priest_formation_ready);
+    RegisterSpellScript(spell_priest_formation_channel);
+    RegisterAuraScript(aura_priest_formation_channel);
+    RegisterSpellScript(spell_priest_formation_ritual);
+    RegisterSpellScript(spell_priest_formation_finish);
+    RegisterSpellScript(spell_priest_formation_entry);
     new player_ring_reforged();
     new npc_ring_reforged_nobundo();
     new go_ring_reforged_rock();
