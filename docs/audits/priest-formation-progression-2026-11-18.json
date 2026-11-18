@@ -48,5 +48,6 @@
     "deferred_bytes": 3067390395,
     "removed_files": 0,
     "reclaimed_bytes": 0
-  }
+  },
+  "legacy_log_followup": "The7839-byte mixed log was subsequently reviewed in full:all54 entries/six causes verified against their deployed fixes and passing regressions,original bytes archived with verified hash,and active log safely rotated to0. See legacy-dberrors-review-2026-11-18.json;earlier unresolved wording records the original checkpoint."
 }

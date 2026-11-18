@@ -53,5 +53,5 @@ $out="$repo/build-extractors/runtime-test/slaghammer-link2-data/$(Get-Date -Form
   'custom-guard'="UPDATE creature_template SET faction=35 WHERE entry=101122;"
  }
  foreach($variant in $variants.Keys){$rows=Query ($setup+$variants[$variant]+(Snapshot 'custom')+$migration+(Snapshot 'after')) -Refusal;foreach($table in $filters.Keys){if((Signature $rows "custom-$table") -cne (Signature $rows "after-$table")){throw "Refused $variant state changed: $table"}}}
- "PASS TEMP full-schema reconstructed LINK2: one native AttackStart row/eight invoker gates, replay and8 drift refusals; original other scripts/conditions/actors retained,103151 unknown link remains; no persistent writes"
+ "PASS TEMP full-schema reconstructed LINK2: one native AttackStart row/eight invoker gates, replay and8 drift refusals; original other scripts/conditions/actors retained,current shared103151 graph retained; no persistent writes"
 }

@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-18",
+  "status": "ALL54_HISTORICAL_ENTRIES_REVIEWED_DEPLOYED_CAUSES_VERIFIED_ORIGINAL_ARCHIVED_ACTIVE_LOG_ROTATED",
+  "request": "User asked what the old mixed error log means and whether its errors can also be fixed.",
+  "original": {
+    "path": "build-extractors/bin/Release/logs/DBErrors.log",
+    "bytes": 7839,
+    "sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "entries": 54,
+    "distinct_causes": 6,
+    "first": "2026-10-27_16:30:49",
+    "last": "2026-11-17_18:09:31"
+  },
+  "findings": "All six causes already had deployed focused repairs. This task independently traced every old entry to those repairs,reran relevant real code/data checks,added missing Hippogryph migration regression and corrected one stale shared-ward test summary. No production behavior changed,no diagnostic suppressed,no additional C++ build or SQL application needed.",
+  "cases": [
+    {
+      "key": "101430/0/event1/LINK2",
+      "entries": 5,
+      "cause": "Slaghammer introductory conversation linked to missing combat node2.",
+      "fix": "34f91950f",
+      "verification": "Installed real LINK2 AttackStart and8 actual admission predicates; full TEMP replay+8 refusals,18 actual native Human/BloodElf player/pet/guardian combat/death/owner handoffs pass. Original authored payload is explicitly reconstructed,not recovered."
+    },
+    {
+      "key": "103151/0/event1/LINK2",
+      "entries": 42,
+      "cause": "Tirisfal cosmetic receiver used an absent LINK2 and could not acknowledge/retry a failed native Holy Wards application.",
+      "fix": "9f50daf0a",
+      "verification": "Current dedicated npc_tirisfal_holy_ward receiver,only independent native summon3->4 graph retained.23 actual extracted ASAN receiver/destination cases and5-table all-field replay/live+6 refusal cases pass; native ritualist/player/pet/group progression unchanged."
+    },
+    {
+      "key": "102177/0/event1/LINK2",
+      "entries": 1,
+      "cause": "Silver Covenant Hippogryph terminal teleport referenced nonexistent2 after its real credit action.",
+      "fix": "24eb9f943",
+      "verification": "Current native graph0->1->terminal0,original102173 credit and destination1220 preserved. New restricted-reader TEMP regression reconstructs2->0,checks full actor/script/condition snapshots,idempotency and9 refused extra-node/edge/action/map/target/destination/binding/quest variants. Persistent DELETE denied; no live mutation."
+    },
+    {
+      "key": "109704/0/event5/LINK6",
+      "entries": 1,
+      "cause": "Hodir real setup/health-floor action referenced absent6.",
+      "fix": "97aa0c310",
+      "verification": "Installed event5 terminal0 retains action42/healthfloor3,rest of13-row graph and conditions. Complete actor/script/condition TEMP snapshots,repeat and7 custom refusals pass."
+    },
+    {
+      "key": "custom AreaTrigger11869/action1",
+      "entries": 2,
+      "cause": "Condition loader searched ordinary11869(action0) but omitted the real custom11869 enter0/leave1 store.",
+      "fix": "9473ba818",
+      "verification": "27 ASAN complete actual-validator cases including retained invalid-action diagnostics; actual native MariaDB ordinary/custom store and full core validator accepts0/1. Current23 owner-aware pickup/return predicates and real leave branches read back;51 extracted native ASAN return-controller/conversation cases pass."
+    },
+    {
+      "key": "PHASE_DEFINITION/condition32",
+      "entries": 3,
+      "cause": "Ebonchill equipped-item phase used TYPE_MASK32 instead of native ITEM_EQUIPPED3,so loader correctly rejected it.",
+      "fix": "5a0571e59",
+      "verification": "Current phase7502/1201 uses native3/equipped plus guarded carried-inventory alternatives;global source23/type32 count0.72 native whitelist/condition/inventory/notification ASAN cases,exact migration/live/refusal checks and canonical PE notification consumers pass. Ordinary condition diagnostics remain enabled."
+    }
+  ],
+  "live_updater_identity": "All six relevant data migrations read back RELEASED;actual stored hashes captured locally and guarded live/data tests passed. AreaTrigger core fix is a separate retained implementation commit. Full live actor bindings and post-fix graphs captured without character rows.",
+  "canonical": {
+    "exe_sha256": "1171c03fad42842437573f967634abe946c136c963f83f7c295d0e3bbe20d9ef",
+    "startup_pid": 3972,
+    "startup": "Ready,graceful shutdown exit0,stdout/stderr and appended server/DBErrors reviewed. New/changed crash0,new DBErrors0,unexplained runtime warning/error/assertion0. No user server stopped. Config/cert/DLL/bnet binaries preserved.",
+    "active_DBErrors_bytes_after_review": 0
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-18-legacy-dberrors",
+    "original_log_file": "DBErrors.original.log",
+    "original_sha256": "8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91",
+    "manifest_sha256": "74a6b09b4bd3c8e4e3b354b010e654e6ff56e727a5e7494f6d3fcec76e133e75",
+    "verified_other_captures": 288,
+    "method": "Exact original7839 bytes copied and SHA256 verified;all288 diagnostic captures checked source/archive/source. Immediately rechecked no world/bnet process,no crash,protected runtime hashes and unchanged exact original hash before truncating only this wholly reviewed canonical log. No unrelated log/server history/file deleted."
+  },
+  "evidence": ".codex/legacy-dberrors-review-20261118;newest slaghammer-link2-native and areatrigger-condition-native directories plus named focused regression outputs. Private configs/runtime logs remain ignored,not committed.",
+  "diagnostic_limits": "Compiler fixture shadow warnings in ArtifactInventoryPhaseTest were inspected as controlled fixture field-name differences;no new server diagnostic. Reconstructed Slaghammer/ward original payload/visual fidelity and actual client movement,phasing,portal,pets/camera remain separate gameplay checks. Empty active log means these54 reviewed entries are resolved,not every possible game error.",
+  "cleanup": {
+    "deferred_files": 20,
+    "deferred_bytes": 432443088,
+    "removed_files": 0,
+    "reclaimed_bytes": 0,
+    "reason": "Earlier automatic approval review rejected temporary filesystem deletion with only blocked by policy. No alternate removal used;20 current regenerable compiler/test files recorded locally. Required original libs,canonical runtime/data and recovery copies retained. No hidden task-owned server remains."
+  }
+}
