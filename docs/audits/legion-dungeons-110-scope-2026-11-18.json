@@ -542,6 +542,16 @@
       "issue": "Harbaron Fragment Keystone count and encounter-end orphan effects",
       "audit": "harbaron-fragment-2026-11-18.json",
       "status": "DEPLOYED_NATIVE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Nine unbounded door tables and Cathedral omitted gate registration",
+      "audit": "legion-instance-doors-2026-11-18.json",
+      "status": "DEPLOYED_ASAN_NATIVE_PE_PASS_CLIENT_OPEN"
+    },
+    {
+      "issue": "Violet Hold native state persistence and restored completion",
+      "audit": "violet-hold-save-2026-11-18.json",
+      "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     }
   ],
   "archive": {

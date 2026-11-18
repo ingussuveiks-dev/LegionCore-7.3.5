@@ -154,6 +154,8 @@ public:
             {
                 case GO_MAIN_DOOR:
                     uiMainDoor = go->GetGUID();
+                    if (uiMainEventPhase == DONE)
+                        go->SetGoState(GO_STATE_ACTIVE);
                     break;
                 case GO_KAAHRJ_DOOR:
                     uiKaahrjCell = go->GetGUID();
@@ -194,6 +196,9 @@ public:
 
         bool IsEncounterInProgress() const override
         {
+            if (InstanceScript::IsEncounterInProgress())
+                return true;
+
             for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
                 if (m_auiEncounter[i] == IN_PROGRESS)
                     return true;
@@ -526,6 +531,11 @@ public:
                 << ' ' << (uint16)uiFirstBoss
                 << ' ' << (uint16)uiSecondBoss;
 
+            // Keep the legacy five fields readable, then persist the actual
+            // BossAI states used by the core for this instance's eight bosses.
+            saveStream << " B ";
+            WriteSaveDataBossStates(saveStream);
+
             str_data = saveStream.str();
 
             OUT_SAVE_INST_DATA_COMPLETE;
@@ -542,25 +552,63 @@ public:
 
             OUT_LOAD_INST_DATA(in);
 
-            char dataHead1, dataHead2;
-            uint16 data0, data1, data2, data3, data4;
+            char dataHead1 = 0, dataHead2 = 0;
+            uint32 data0, data1, data2, data3, data4;
 
             std::istringstream loadStream(in);
-            loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2 >> data3 >> data4;
-
-            if (dataHead1 == 'V' && dataHead2 == 'H')
+            if (!(loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2 >> data3 >> data4)
+                || dataHead1 != 'V' || dataHead2 != 'H'
+                || data0 >= TO_BE_DECIDED || data1 >= TO_BE_DECIDED || data2 >= TO_BE_DECIDED
+                || data3 > DATA_THALENA || data4 > DATA_THALENA)
             {
-                m_auiEncounter[0] = data0;
-                m_auiEncounter[1] = data1;
-                m_auiEncounter[2] = data2;
+                OUT_LOAD_INST_DATA_FAIL;
+                return;
+            }
 
-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                    if (m_auiEncounter[i] == IN_PROGRESS)
-                        m_auiEncounter[i] = NOT_STARTED;
+            uint32 states[MAX_ENCOUNTER] = {};
+            loadStream >> std::ws;
+            if (!loadStream.eof())
+            {
+                char marker = 0;
+                if (!(loadStream >> marker) || marker != 'B')
+                {
+                    OUT_LOAD_INST_DATA_FAIL;
+                    return;
+                }
+                for (uint32& state : states)
+                    if (!(loadStream >> state) || state >= TO_BE_DECIDED)
+                    {
+                        OUT_LOAD_INST_DATA_FAIL;
+                        return;
+                    }
+            }
+            else
+            {
+                // Older saves only know the completed wave bosses. Recover
+                // those exact selections; do not manufacture other victories.
+                if (data0 == DONE)
+                    states[data3] = DONE;
+                if (data1 == DONE)
+                    states[data4] = DONE;
+                if (data2 == DONE)
+                    states[DATA_BETRUG] = DONE;
+            }
 
-                uiFirstBoss = uint8(data3);
-                uiSecondBoss = uint8(data4);
-            } else OUT_LOAD_INST_DATA_FAIL;
+            m_auiEncounter[0] = data0;
+            m_auiEncounter[1] = data1;
+            m_auiEncounter[2] = data2;
+            for (uint16& state : m_auiEncounter)
+                if (state == IN_PROGRESS || state == SPECIAL)
+                    state = NOT_STARTED;
+
+            uiFirstBoss = uint8(data3);
+            uiSecondBoss = uint8(data4);
+            // Bypass wave advancement during load, as the core's first
+            // TO_BE_DECIDED initialization does for the other instances.
+            for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
+                InstanceScript::SetBossState(i, states[i] == IN_PROGRESS || states[i] == SPECIAL
+                    ? NOT_STARTED : EncounterState(states[i]));
+            uiMainEventPhase = m_auiEncounter[2] == DONE ? DONE : NOT_STARTED;
 
             OUT_LOAD_INST_DATA_COMPLETE;
         }
