@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-18",
+  "status": "ADDITIONAL_NATIVE_SOURCES_RECOVERED_REPAIRS_PENDING",
+  "previous_audit": "docs/audits/artifact-nonblocking-objective-counts-2026-11-17.json",
+  "ring_40225": {
+    "objective_ids": [
+      280438,
+      280439
+    ],
+    "native": "195070 effect90/97047 then160/195359. 195359 has actual226/player MovePath473698 and12000ms dummy aura.195132 opens nativeLock2454 via effect33,plays46425,casts195134 stun5000ms and native90/97048. Both target credits are real; generic97168/97169 intro39746 producers reuse these markers and are not40225 sources.",
+    "world_gap": "96528 current18940/0 gossip is connected to the OTHER map1572 intro DATA1/96527 ->46554. It must remain there. Class-hall1469 outside/inside96528 lack connected40225 gossip/195070. Native473698 waypoint_data_script is absent; source2018TDB also has no recovered path or original1469 placement. No245122 spawn exists.247333 at887.451/1106.41/49.4598 is a different map1572 decoration,not this quest's clickable door.1469 is shared nativeMAP_COMMON,not personal scenario1572. Any reconstruction needs player-specific actors/door state and accepted-attempt cleanup.",
+    "video": "https://www.youtube.com/watch?v=O-ThMyT2K8U",
+    "review": "PhoenixGaming2016-12-24,128s. All64 sampled2s frames across entire video inspected in four contact sheets; no audio or continuous-playback claim. Accept~11-15,Nobundo group3~17-25,gossip~27-29,first credit/group4~31,guided circle,group5~43,lightning/ring~49-53,group6/walk~57,real rock click~73 grants second credit,turn-in~81-85. Sample times approximate; authored473698 coordinates and exact group scheduling not recovered.",
+    "fallbacks": "NativeBT100765/100767/100768/100830 and sounds60715-60718 recovered. Native optionBT100783 is Yes. I will be your Farseer!,not the current fortune-teller fallback. Old Amount0 remains unchanged pending connected safe progression; no acceptance/arrival grants or invented LINK payload."
+  },
+  "paladin_42771": {
+    "objective": 285316,
+    "native": "Recovered actual228199 Summon Cannoneer Dargal,effect28/110635/properties2912,targets18/79 plus infinite dummy aura4. Properties2912 flags1/control0/faction0/title0/slot0: does not supply a hostile faction or personal scope.110635 WDB/model71598 exists but no World override/scaling/SmartAI/text/spawn/cast source. Original2018TDB only has an unconfigured min1/faction35 template,not a working fight.",
+    "video": "https://www.youtube.com/watch?v=HmrqWfctPuk",
+    "review": "Boxofbeer2017-05-03,137s. All68 sampled2s frames across entire video inspected in five contact sheets; no audio/continuous-playback claim. Accept0-15,real spirits20-99,ninth credit~99-101 immediately followed by Dargal near player~101-103. Hostile fight includes Shrapnel Blast; actual death~119 grants completion,turn-in129-131. NativeBT118697/118698/118701/118702 recovered. NativeArea197 Sorrow Hill,196 Uther's Tomb,zone28/map0. Ability name alone has24 matching native spells; exact associated ID/timers not yet established.",
+    "additional_native_evidence": "Typed descriptions narrow the physical frontal Shrapnel family:221357/221358 has actual2s cast plus4500ms periodic1500ms,matching the2017 sampled channel;221411 uniquely summons Spectral Mortar111212/properties714(flags2/control0/faction0/title0/slot0).221432/221433 is a same-era4.5s auxiliary physical channel.251223/251224 is a separate native4s/1000ms variant. Exact original actor-to-ability links/cadence are still not recovered: a server reconstruction must say which choices are inferred rather than call them original authored timing.",
+    "prepared_successor": "Dargal progression reconstruction is staged separately with full10-table guarded TEMP replay and43 controlled-endpoint native service/AI cases. It is not deployed at this source-review checkpoint; successor audit will record promotion/client limits."
+  },
+  "priest_40938": {
+    "objective": 281419,
+    "native": "No native effect90 producer for102466 found.202324 is actual227 teleport1354/1371 plus90/102465 for SECOND objective. Do not use it as evidence of first follow-to-portal credit. Current quest starts101313/400010,ends102655. Existing119/120 scenes have active40938/uncompleted102652-102654 gates; phase conditions separate.",
+    "video": "https://www.youtube.com/watch?v=sUvMdR0MgXs",
+    "review": "Boxofbeer2017-03-31,257s. All129 sampled2s frames across entire video inspected in nine contact sheets; no audio/continuous-playback claim. Accept~0-11,real Velen walk/dialogue/transporter12-105,first follow credit near portal~109 BEFORE click. Portal click/second~113,Netherlight115,listen151,dark-drain actual channel155-171/ritual credit171,ceremony~195-237,black transition/real turn-in~251-255. Entire route/first actor receipt must be repaired before restoring Amount1; arbitrary arrival/acceptance credit not acceptable."
+  },
+  "verification": "ArtifactRequiredObjectivesCatalog.cpp reads matching26972 Spell/Effect/Misc/Duration/CastTimes/Map/BroadcastText/Lock/SummonProperties/CreatureDifficulty/AreaTable plus readonly Hotfix overrides. Repeated catalog runs wrapped in runtime diagnostics returned0; all SQL investigation readonly. NativeCreatureDifficulty has no110635 row. Full originalTDB template selected with bounded quoted-tuple reader. New sources explain required behavior but do not themselves repair any of the four counters.",
+  "evidence": [
+    ".codex/ring-reforged-20261118",
+    ".codex/artifact-completion-20261118"
+  ],
+  "diagnostics": "No new or changed canonical/own runtime crashes,DBErrors or unexplained warnings/errors/assertions from catalog checks. Canonical worldserver remains E8163A02 unchanged. Mixed DBErrors7839 bytes/8224a39bfbc9a6b195edb71425191ffa9eee4ca43762af643430c5556a5d0c91 retained. No server launched/stopped or character rows modified by this source review.",
+  "remaining": "Four required zero-count objectives remain OPEN. Exact paths/cast links/stats not reconstructed yet; no full quest,pet/group/retry/client fidelity certified by frame sampling or catalog reads. Research media/native evidence retained because unresolved. Earlier policy-blocked temporary deletion remains deferred; zero files removed here."
+}
