@@ -47,6 +47,18 @@ enum eMisc
     DATA_ACHIEVEMENT                = 0
 };
 
+static void RemoveSoulFragmentAuras(Creature* fragment)
+{
+    if (auto summoner = fragment->GetAnyOwner())
+    {
+        if (auto aura = summoner->GetAura(194344, fragment->GetGUID()))
+            aura->Remove();
+
+        if (!summoner->HasAura(194344))
+            summoner->RemoveAurasDueToSpell(194327);
+    }
+}
+
 //96754
 struct boss_harbaron : public BossAI
 {
@@ -137,7 +149,12 @@ struct boss_harbaron : public BossAI
         for (auto const& guid : trashGUID)
             if (auto soul = Creature::GetCreature(*me, guid))
                 if (soul->IsInWorld())
+                {
+                    // Unsummoning does not run the fragment's death callback.
+                    RemoveSoulFragmentAuras(soul);
                     soul->DespawnOrUnsummon();
+                }
+        trashGUID.clear();
     }
 
     void SpellHitTarget(Unit* target, const SpellInfo* spell) override
@@ -158,7 +175,8 @@ struct boss_harbaron : public BossAI
 
         if (spell->Id == SPELL_FRAGMENT)
         {
-            uint8 maxCount = GetDifficultyID() == DIFFICULTY_MYTHIC_DUNGEON ? 4 : 2;
+            uint8 maxCount = (GetDifficultyID() == DIFFICULTY_MYTHIC_DUNGEON ||
+                GetDifficultyID() == DIFFICULTY_MYTHIC_KEYSTONE) ? 4 : 2;
             Position pos;
             float angle = frand(0.0f, 6.28f);
 
@@ -352,14 +370,7 @@ struct npc_harbaron_soul_fragment : public ScriptedAI
 
     void JustDied(Unit* /*killer*/) override
     {
-        if (auto summoner = me->GetAnyOwner())
-        {
-            if (auto aura = summoner->GetAura(194344, me->GetGUID()))
-                aura->Remove();
-
-            if (!summoner->HasAura(194344))
-                summoner->RemoveAurasDueToSpell(194327);
-        }
+        RemoveSoulFragmentAuras(me);
     }
 
     void UpdateAI(uint32 diff) override {}

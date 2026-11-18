@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-18",
+  "status": "DEPLOYED_NATIVE_REGRESSIONS_PASS_CLIENT_COMBAT_OPEN",
+  "request": "All Legion level110 dungeons in their native Normal/Heroic/Mythic/Keystone modes;no raids. First focused mechanic repair in the wider audit.",
+  "baseline_commit": "c92852906",
+  "causes": [
+    "Fragment194325 selected four summons only for difficulty23,so native Keystone8 incorrectly selected two despite8->23 fallback and this same boss's other Mythic-family branches.",
+    "Boss evade/death unsummoned player-owned soul fragments without invoking their JustDied cleanup. Native dungeon encounter cleanup does not remove these player effects: DoRemovePlayeresCooldownAndDebuff is raid-only. Actual native evade and player/pet/guardian boss kills reproduced orphaned194344/194327."
+  ],
+  "repair": "Select4 for23/8 and2 for1/2. Share exact-owner/per-fragment-caster194344 cleanup between fragment death and boss despawn;remove parent194327 only after no drains remain. Clean before unsummon,clear tracked GUIDs idempotently. Retain separate native fixed stun198551,normal positioning/summon/kill and instance progression.",
+  "evidence_sources": [
+    "Matching26972 native DB2+Hotfix manager:MapDifficulty8->23;Fragment194325 DUMMY194327 in all4 modes;native spell description says until all fragments defeated.",
+    "Readonly World194325 dummy-trigger and194327->198551 linked spell;real96754/98761 bindings;actual Maw1492 boss pose and native246919 ship collision.",
+    "Local source SpellHitTarget/IsSummonedBy/JustDied/DespawnSouls,CreatureAI evade,BossAI reset/death and InstanceScript raid-only aura cleanup. No external behavior invented."
+  ],
+  "regressions": [
+    {
+      "test": "Test-HarbaronFragment.ps1 -Baseline -AddressSanitizer",
+      "result": "60 expected-broken extracted cases against pinned source;explicit counterfactual,not ordinary successful gameplay."
+    },
+    {
+      "test": "Test-HarbaronFragment.ps1 -AddressSanitizer",
+      "result": "98 repaired extracted cases:four modes,angle spacing,individual failed summons,unrelated spell,repeated casts,exact-caster/last-drain,overlapping owners/unrelated drain,missing owner,idempotent cleanup. Controlled geometry/summon endpoints."
+    },
+    {
+      "test": "Test-HarbaronFragmentNative.ps1 -Baseline",
+      "result": "576 checks across48 actual native contexts reproduced original Keystone2 and orphan effects after evade or boss death. Empty per-connection account/character_instance shadows keep all fixture session/binding writes temporary."
+    },
+    {
+      "test": "Test-HarbaronFragmentNative.ps1",
+      "result": "624 checks across48 native contexts:Human/Orc x4 modes x player/pet/guardian final blows x evade/boss death;real registered instance/boss,actual ship collision,real194325->194327 and98761->194344,per-fragment final kills,repeated cast,encounter cleanup. Accepted player/actor publication controlled;not client/network/full core ASAN."
+    },
+    {
+      "test": "verify_harbaron_fragment_release.py",
+      "result": "Actual final-linked branch23/8->4,other->2 and loop consumer;exact-owner/caster cleanup before despawn;boss evade/death and fragment death call paths;native198551 preserved;actual Legion registration. Stage/canonical hash identity verified."
+    }
+  ],
+  "build": {
+    "method": "Original generated common/game/scripts Release projects then original final-link response inputs to separate stage;no global OutDir override. Canonical untouched during build;only EXE/map promoted while stopped. No SQL migration.",
+    "worldserver_sha256": "1956b9460bc3c825dce5b9d3b4eb7d0ed7c70e50014cf6e98fed304f91d96c24",
+    "worldserver_map_sha256": "1f9a08603569f838b41613ae263e02931073aeebf828bb7cfc5ee41e624b6bf2",
+    "runtime": "build-extractors/bin/Release",
+    "rollback": ".codex/legion-dungeons-110-20261118/rollback-before-harbaron"
+  },
+  "diagnostics": {
+    "canonical_owned_pid": 34248,
+    "startup": "Ready,graceful exit0;stdout/stderr and appended logs inspected;zero new/changed crash,DBErrors or unexplained warning/error/assertion. No user server stopped,no hidden server left. Configuration/certificates/DLLs/bnet/shared data preserved.",
+    "paired_fixture_failures": "Initial include/override/AI-publication setup;actual ship collision absent caused out-of-range drain;missing ephemeral bind save;readonly temporary DDL attempted too late caused unscoped loader/LFG null;PE inspection dependency/window/class-symbol setup. Corrected fixture/environment causes and paired passing regressions retained. No production diagnostic hidden.",
+    "retained_compiler_warning": "Existing scytheRange float-to-uint8 warning in extracted unrelated branch;also in pinned baseline. No runtime warning/error/assertion in repaired runs."
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-18-legion-dungeons",
+    "method": "Exact diagnostic captures copied and source/archive/source SHA256 verified;no mixed active log cleared. Local manifest receives actual fix commits after commit."
+  },
+  "cleanup": {
+    "Retained": "Current rollback-before-harbaron EXE/map;canonical original libs/runtime/data;all regression source;verified fixed diagnostic archives. Older blocked20 files not retried.",
+    "RemovedFiles": 75,
+    "ReclaimedBytes": 2872945793.0
+  },
+  "remaining": [
+    "Actual client Harbaron combat/visuals/timing and full Maw traversal.",
+    "Full native-core ASAN,real failed-all-summon path,live group/faction entry/re-entry and disconnect not established by these controlled endpoints.",
+    "Other dungeon mechanics/trash/loot/affixes/forces/timer/completion remain separate wider work;see legion-dungeons-110-scope-2026-11-18.json."
+  ]
+}
