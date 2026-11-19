@@ -51,7 +51,16 @@
   },
   "archive": {
     "directory": "build-extractors/bin/Release/fixed/2026-11-19-teeming-formations",
-    "status": "Pending verified evidence archive and redundant probe cleanup after this regression commit."
+    "status": "COMPLETE",
+    "regression_commit": "a1f240b12f645febe13b0f10e322d675739ea600",
+    "manifest_sha256": "e27bea49e1c0ea623d2c7ff553930e6273ad69b53ea7ba570d1fe20f01deb932",
+    "deletion_manifest_sha256": "7bf84c3296956b58e242ea4737955213af8c5e7bd445902518089a230ba5309b",
+    "evidence_locator": "Archived files retain their repository-relative source paths below this archive directory;the original dated runtime directories were removed.",
+    "archived_records": 118,
+    "verification": "Source/archive/source SHA256 and length checked before deletion;all118 archive files reverified afterward. Private configurations were already removed;none archived. Resolved failed harness diagnostics and the passing replacement are retained together.",
+    "removed_files": 126,
+    "removed_bytes": 1396188067,
+    "cleanup": "Removed six dated formation runtime directories,the new live readback directory,and only LegionTeemingFormationNative probe executable/object/PDB/ILK scratch files. Preserved regression sources/tools,canonical runtime/configuration,shared Release libraries/data,the latest Teeming rollback and original gameplay research media. Canonical protected hashes and rollback hashes rechecked;Crashes empty,DBErrors0 bytes,no worldserver/bnetserver/probe processes left."
   },
   "remaining": [
     "Actual client dungeon traversal,formation appearance,combat pulls/spells,pet behaviour,wipes/re-entry and full timed completion remain unverified by this controlled movement test.",

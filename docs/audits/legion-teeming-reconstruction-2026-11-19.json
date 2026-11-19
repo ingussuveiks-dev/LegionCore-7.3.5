@@ -243,5 +243,6 @@
   "unresolved_new_runtime_errors": [],
   "archive": "docs/audits/legion-teeming-cleanup-2026-11-19.json",
   "fix_commit": "Commit containing this implementation/audit;actual hash is also recorded in ignored archive manifests.",
-  "implementation_commit": "95165b05f61569503d55902c46a4d76f20964960"
+  "implementation_commit": "95165b05f61569503d55902c46a4d76f20964960",
+  "formation_movement_followup": "docs/audits/legion-teeming-formations-2026-11-19.json"
 }
