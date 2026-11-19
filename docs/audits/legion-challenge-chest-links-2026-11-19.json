@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "cause": "Five actual personal Mythic+ chest templates had Data1=0 despite existing native same-entry loot tables:252686,269843,269852,269871,272689. Native SendLoot skips FillLoot when the link is0.",
+  "repair": "Guarded,idempotent migration links only these five Data1 values to their existing loot entries; preserves encounters,personal settings,negative DB spawn timers and actual challenge completion/entitlements.",
+  "native": "13 routes,solo+party,timed+late; native registered Scenario completion endpoint,actual placed chest/native spawn semantics,SendLoot,gear entitlement,full bags/pending retry,all item pickups,reopen and duplicate storage rejection. Gold is generated and preserved on reopen; no money packet/client pickup claim.",
+  "files": [
+    "sql/updates/world/2026_11_19_05_challenge_chest_loot_links.sql"
+  ],
+  "regression_audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json"
+}
