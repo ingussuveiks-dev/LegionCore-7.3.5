@@ -683,6 +683,18 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
 
             bool failedSpellCast = false, successfulSpellCast = false;
 
+            // Finish the Stalker's first real hit/teleport before its child
+            // cast, rather than overwrite a pending normal cast in this loop.
+            if (me && me->GetEntry() == 99365 && me->GetMapId() == 1466 && e.action.cast.spell == 201517 &&
+                e.action.cast.flags == 0 && e.GetEventType() == SMART_EVENT_UPDATE_IC && e.GetTargetType() == SMART_TARGET_PLAYER_RANGE &&
+                e.target.playerRange.minDist == 8 && e.target.playerRange.maxDist == 40)
+                if (SmartAI* smart = dynamic_cast<SmartAI*>(me->AI()))
+                    if (smart->QueueDarkHunt(*targets))
+                    {
+                        delete targets;
+                        break;
+                    }
+
             for (auto target : *targets)
             {
                 if (!IsUnit(target))

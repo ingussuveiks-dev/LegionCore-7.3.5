@@ -31,6 +31,137 @@
 #include "ScriptedCreature.h"
 #include "SpellMgr.h"
 
+struct DarkHuntCastSequence
+{
+    ObjectGuid targets[2];
+    uint32 child = 0;
+    uint32 lifetime = 8000;
+    uint32 delay = 0;
+    uint8 index = 0;
+    uint8 attempts = 0;
+    bool waiting = false;
+    bool hitPlayer = false;
+    bool teleported = false;
+    bool deferUpdate = false;
+};
+
+void SmartAI::ResetDarkHunt()
+{
+    ++m_darkHuntSerial;
+    m_darkHunt.reset();
+}
+
+bool SmartAI::QueueDarkHunt(ObjectList const& targets)
+{
+    if (me->GetEntry() != 99365 || me->GetMapId() != 1466)
+        return false;
+    if (!me->IsAlive() || !me->IsInWorld() || me->IsInEvadeMode() || me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        return true;
+    if (m_darkHunt)
+        return true; // An actual earlier request still owns its two targets.
+    auto info = sSpellMgr->GetSpellInfo(201517);
+    auto effect = info ? info->GetEffect(EFFECT_1, me->GetMap()->GetDifficultyID()) : nullptr;
+    if (!effect || effect->Effect != SPELL_EFFECT_TELEPORT_L || effect->TriggerSpell != 201564)
+        return false;
+    std::unique_ptr<DarkHuntCastSequence> request(new DarkHuntCastSequence);
+    request->child = effect->TriggerSpell;
+    unsigned count = 0;
+    for (WorldObject* object : targets)
+        if (Player* player = object->ToPlayer())
+            if (player->IsAlive() && player->IsInWorld() && !player->IsPreDelete() && player->GetMap() == me->GetMap() && me->IsValidAttackTarget(player) &&
+                me->IsInRange(player, info->GetMinRange(false), info->GetMaxRange(false)))
+            {
+                if (count && request->targets[0] == player->GetGUID())
+                    continue;
+                request->targets[count++] = player->GetGUID();
+                if (count == 2)
+                    break;
+            }
+    if (count)
+    {
+        ++m_darkHuntSerial;
+        m_darkHunt = std::move(request);
+    }
+    return true;
+}
+
+void SmartAI::UpdateDarkHunt(uint32 diff)
+{
+    if (!m_darkHunt)
+        return;
+    auto& request = *m_darkHunt;
+    if (!me->IsAlive() || !me->IsInWorld() || !me->isInCombat() || me->IsInEvadeMode() || me->GetEntry() != 99365 ||
+        me->GetMapId() != 1466 || me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) || request.lifetime <= diff)
+    {
+        ResetDarkHunt();
+        return;
+    }
+    request.lifetime -= diff;
+    if (request.waiting)
+        return;
+    if (request.deferUpdate)
+    {
+        request.deferUpdate = false;
+        return; // Do not charge this frame's pre-ack diff to the new child delay.
+    }
+    if (request.delay > diff)
+    {
+        request.delay -= diff;
+        return;
+    }
+    Unit* target = ObjectAccessor::GetUnit(*me, request.targets[request.index]);
+    uint32 serial = m_darkHuntSerial;
+    request.waiting = true;
+    request.hitPlayer = request.teleported = false;
+    SpellCastResult result = target && target->IsPlayer() && target->IsAlive() && target->IsInWorld() && !target->IsPreDelete() && target->GetMap() == me->GetMap() && me->IsValidAttackTarget(target) ?
+        me->CastSpell(target, request.index ? request.child : 201517) : SPELL_FAILED_BAD_TARGETS;
+    // Native hit hooks can finish/reset this request synchronously.
+    if (serial != m_darkHuntSerial || !m_darkHunt)
+        return;
+    if (result != SPELL_CAST_OK)
+    {
+        request.waiting = false;
+        request.delay = 500;
+        if (++request.attempts >= 3)
+        {
+            if (!request.index && !request.targets[1].IsEmpty())
+            {
+                request.targets[0] = request.targets[1];
+                request.targets[1].Clear();
+                request.attempts = 0;
+            }
+            else
+                ResetDarkHunt();
+        }
+    }
+}
+
+void SmartAI::AcknowledgeDarkHunt(Unit* target, SpellInfo const* spell)
+{
+    if (!m_darkHunt || !m_darkHunt->waiting)
+        return;
+    auto& request = *m_darkHunt;
+    if (spell->Id != (request.index ? request.child : 201517))
+        return;
+    if (target->GetGUID() == request.targets[request.index])
+        request.hitPlayer = true;
+    if (target == me)
+        request.teleported = true;
+    if (request.hitPlayer && request.teleported)
+    {
+        if (!request.index && !request.targets[1].IsEmpty())
+        {
+            request.index = 1;
+            request.waiting = false;
+            request.delay = 100;
+            request.deferUpdate = true;
+            request.attempts = 0;
+        }
+        else
+            ResetDarkHunt();
+    }
+}
+
 SmartAI::~SmartAI()
 {
 }
@@ -101,6 +232,7 @@ void SmartAI::UpdateDespawn(const uint32 diff)
 
 void SmartAI::Reset()
 {
+    ResetDarkHunt();
     if (!HasEscortState(SMART_ESCORT_ESCORTING))//dont mess up escort movement after combat
         SetRun(mRun);
     if (instance && _bossId)
@@ -392,6 +524,7 @@ void SmartAI::UpdateCorpseAI(uint32 diff)
 void SmartAI::UpdateAI(uint32 diff)
 {
     GetScript()->OnUpdate(diff);
+    UpdateDarkHunt(diff);
     UpdatePath(diff);
     UpdateDespawn(diff);
 
@@ -506,6 +639,7 @@ void SmartAI::RemoveAuras()
 
 void SmartAI::EnterEvadeMode()
 {
+    ResetDarkHunt();
     if (mEvadeDisabled)
     {
         GetScript()->ProcessEventsFor(SMART_EVENT_EVADE);
@@ -694,6 +828,7 @@ void SmartAI::EnterCombat(Unit* enemy)
 
 void SmartAI::JustDied(Unit* killer)
 {
+    ResetDarkHunt();
     GetScript()->ProcessEventsFor(SMART_EVENT_DEATH, killer);
     if (HasEscortState(SMART_ESCORT_ESCORTING))
         EndPath(true);
@@ -751,6 +886,7 @@ void SmartAI::SpellHit(Unit* unit, const SpellInfo* spellInfo)
 void SmartAI::SpellHitTarget(Unit* target, const SpellInfo* spellInfo)
 {
     GetScript()->ProcessEventsFor(SMART_EVENT_SPELLHIT_TARGET, target, 0, 0, false, spellInfo);
+    AcknowledgeDarkHunt(target, spellInfo);
 }
 
 void SmartAI::DamageTaken(Unit* doneBy, uint32& damage, DamageEffectType dmgType)
@@ -815,6 +951,7 @@ void SmartAI::InitializeAI()
 
 void SmartAI::OnCharmed(bool apply)
 {
+    ResetDarkHunt();
     GetScript()->ProcessEventsFor(SMART_EVENT_CHARMED, nullptr, 0, 0, apply);
 }
 

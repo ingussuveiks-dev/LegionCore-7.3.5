@@ -94,7 +94,7 @@
   },
   "remaining": [
     "Actual client traversal,visuals/audio,real party/pet positioning,reconnect,network loot/money packets and earned boss/forces/timed full dungeon run remain OPEN. No client used.",
-    "One stationary two-player90s sample is not exhaustive every NPC target/conditional ability.99365 friendly-range heal201517 lacks an injured friendly-NPC fixture;100364 and119978 have no timed cast in this isolated sample. Interrupt attempts are reported with their actual outcomes.",
+    "The original stationary sample is not exhaustive for every NPC/conditional ability. The incorrect99365 friendly-heal description is corrected by the actual Dark Hunt follow-up;100364 and119978 are melee-only in the reviewed script scope. Actual client traversal remains separate.",
     "All222 Teeming additions remain reconstructions,not recovered original Blizzard/sniff SQL. Prior full boss/formation/criteria audits retain their own boundaries.",
     "No fresh inferred repair remains unverified in this focused follow-up;future client observations can expose additional issues."
   ],
@@ -135,5 +135,11 @@
     "retained": "Canonical runtime/configuration/DLLs/shared extracted data,original required Release libraries,pre-combat rollback307bb7 and earlier Teeming reconstruction rollback retained for pending client recovery. Old mixed completion/scepter/shared runtime history left untouched.",
     "deferred": "Older mixed completion/scepter/shared runtime history was not reviewed for disposal in this follow-up;left intact for separate diagnostic review. No current-task executable,symbol,isolated runtime or staged deployment is deferred.",
     "canonical": "Protected canonical EXE/map/configuration/certificates/DLLs and rollback hashes identical after cleanup;Crashes empty,DBErrors0 bytes;no worldserver,bnetserver or task probe left running. Server.log history retained;no active log truncated."
+  },
+  "dark_hunt_followup": {
+    "date": "2026-11-19",
+    "audit": "docs/audits/legion-dark-hunt-2026-11-19.json",
+    "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+    "note": "Historical binaries,counts and archives above remain intact;the current canonical runtime supersedes the earlier8027a89a snapshot with this focused SmartAI repair."
   }
 }

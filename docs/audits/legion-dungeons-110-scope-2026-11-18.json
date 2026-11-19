@@ -708,5 +708,10 @@
     "audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json",
     "status": "OFFLINE_FOCUSED_REPAIRS_COMPLETE_CLIENT_WHOLE_DUNGEONS_OPEN",
     "note": "Historical proof and limitations above remain unchanged;see follow-up for actual timed combat/evade,focused repairs and native chest storage coverage."
+  },
+  "dark_hunt_followup": {
+    "date": "2026-11-19",
+    "audit": "docs/audits/legion-dark-hunt-2026-11-19.json",
+    "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN"
   }
 }

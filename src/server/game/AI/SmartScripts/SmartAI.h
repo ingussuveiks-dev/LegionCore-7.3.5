@@ -26,6 +26,9 @@
 #include "SmartScript.h"
 #include "SmartScriptMgr.h"
 #include "GameObjectAI.h"
+#include <memory>
+
+struct DarkHuntCastSequence;
 
 enum SmartEscortState
 {
@@ -57,6 +60,7 @@ class TC_GAME_API SmartAI : public CreatureAI
         void RemoveEscortState(uint32 uiEscortState);
         void SetAutoAttack(bool on);
         void SetCombatMove(bool on);
+        bool QueueDarkHunt(ObjectList const& targets);
         bool CanCombatMove();
         void SetFollow(Unit* target, float dist = 0.0f, float angle = 0.0f, uint32 credit = 0, uint32 end = 0, uint32 creditType = 0);
         ObjectGuid GetFollowGuid() const { return mFollowGuid; }
@@ -199,6 +203,11 @@ class TC_GAME_API SmartAI : public CreatureAI
         void OnApplyOrRemoveAura(uint32 spellId, AuraRemoveMode mode, bool apply)  override;
 
     private:
+        void ResetDarkHunt();
+        void UpdateDarkHunt(uint32 diff);
+        void AcknowledgeDarkHunt(Unit* target, SpellInfo const* spell);
+        std::unique_ptr<DarkHuntCastSequence> m_darkHunt;
+        uint32 m_darkHuntSerial = 0;
         uint32 mFollowCreditType;
         uint32 mFollowArrivedTimer;
         uint32 mFollowCredit;

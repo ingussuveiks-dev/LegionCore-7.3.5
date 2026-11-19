@@ -52,6 +52,10 @@ checks = {
     "?GetGUID@npc_brh_fel_bat@@": {203163},
     "?SpellHit@npc_nl_understone_demolisher@@": {188587},
     "?SpellHit@npc_brh_wyrmtongue_scavenger@@": {200784},
+    "?QueueDarkHunt@SmartAI@@": {1466, 99365, 201517, 201564},
+    "?UpdateDarkHunt@SmartAI@@": {1466, 99365, 201517},
+    # MSVC inlines the private acknowledgement helper into this native hook.
+    "?SpellHitTarget@SmartAI@@": {201517},
 }
 for prefix, expected in checks.items():
     observed = constants(prefix)
@@ -60,6 +64,9 @@ for prefix, expected in checks.items():
 area_list = "?GetAreaObjectList@Unit@@QEAAXAEAV?$list@PEAVAreaTrigger@@V?$allocator@PEAVAreaTrigger@@@std@@@std@@I@Z"
 assert n["symbol"](area_list) in n["calls"]("?DoAction@AreaTrigger@@"), "Crackle overlap check omitted from final AreaTrigger object"
 assert n["symbol"]("?SetGazeOn@CreatureAI@@") in n["calls"]("?UpdateAI@npc_brh_fel_bat@@"), "Native bat target-switch implementation missing"
+for caller, callee in (("?ProcessAction@SmartScript@@", "?QueueDarkHunt@SmartAI@@"), ("?UpdateAI@SmartAI@@", "?UpdateDarkHunt@SmartAI@@")):
+    assert n["symbol"](callee) in n["calls"](caller), f"Missing linked Dark Hunt native path {caller} -> {callee}"
+print("PASS linked native SmartAI Dark Hunt request/update/actual-hit acknowledgement paths")
 for prefix, threshold in (("?Reset@npc_nl_understone_demolisher@@", 70), ("?Reset@npc_brh_wyrmtongue_scavenger@@", 66)):
     assert any(value == threshold or value >> 32 == threshold for value in constants(prefix)), f"Missing linked health-threshold reset {prefix}"
     print(f"PASS linked health-threshold reset {prefix}: {threshold}")

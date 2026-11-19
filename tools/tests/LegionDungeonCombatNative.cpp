@@ -148,6 +148,96 @@ static bool NativeFrenzyDeath(NativeAIActor& actor,bool hadOwnFrenzy)
     return true;
 }
 
+struct DarkHuntObserver:SmartAI
+{
+    explicit DarkHuntObserver(Creature* actor):SmartAI(actor){}
+    std::map<uint32,std::map<ObjectGuid,unsigned>> Hits;
+    void SpellHitTarget(Unit* target,SpellInfo const* spell) override
+    {
+        SmartAI::SpellHitTarget(target,spell);
+        if(spell->Id==201517||spell->Id==201564){++Hits[spell->Id][target->GetGUID()];std::cout<<"DARK_HIT spell="<<spell->Id<<" target="<<target->GetGUIDLow()<<" player="<<target->IsPlayer()<<'\n';}
+    }
+};
+static void DarkHuntReceipts(NativeAIActor& actor,InstanceMap& map,Player& owner,Player& member)
+{
+    Require(actor.GetEntry()==99365&&dynamic_cast<SmartAI*>(actor.AI()),"Actual Stalker SmartAI missing");
+    auto observer=new DarkHuntObserver(&actor);Require(actor.AIM_Initialize(observer),"Native forwarding SmartAI observer initialization failed");
+    auto origin=actor.GetHomePosition();
+    auto reset=[&]{actor.AI()->EnterEvadeMode();owner.CombatStop(true);member.CombatStop(true);for(unsigned t=0;t<30000&&(actor.IsInEvadeMode()||actor.isInCombat());t+=100)Tick(map,owner,member,100);Require(!actor.IsInEvadeMode()&&!actor.isInCombat(),"Native Stalker evade/home did not finish");actor.CastStop();owner.CastStop();member.CastStop();observer->Hits.clear();};
+    Position goodOwner,goodMember;
+    auto count=[&](uint32 spell){return observer->Hits[spell][owner.GetGUID()]+observer->Hits[spell][member.GetGUID()];};
+    auto pump=[&](unsigned ms){for(unsigned t=0;t<ms;t+=100)Tick(map,owner,member,100);};
+    auto start=[&]{static_cast<SmartAI*>(actor.AI())->SetCombatMove(false);actor.AI()->AttackStart(&owner);actor.AddThreat(&member,1.f);member.SetInCombatWith(&actor);};
+    for(float distance:{0.f,1.f,2.f,20.f,60.f})
+    {
+        reset();
+        unsigned used=0;for(Player* player:{&owner,&member})
+        {
+            float requested=distance==1?(player==&owner?20.f:0.f):distance==2?(player==&member?20.f:0.f):distance;
+            bool placed=false;for(unsigned candidate=used;candidate<64;++candidate)
+            {
+                auto point=actor.GetNearPosition(requested,float(candidate)*float(M_PI)/32.f);
+                player->UpdatePosition(point.GetPositionX(),point.GetPositionY(),point.GetPositionZ(),0,true);
+                bool range=requested==0?actor.IsInRange(player,0,7):requested==60?!actor.IsInRange(player,0,40):actor.IsInRange(player,8,40);
+                if(range&&actor.IsWithinLOSInMap(player)){placed=true;used=candidate+8;break;}
+            }
+            Require(placed,"Native terrain/LOS fixture has no eligible position in requested range");
+            std::cout<<"DARK_POSITION requested="<<requested<<" player="<<player->GetGUIDLow()<<" actual="<<actor.GetDistance(player)<<" los="<<actor.IsWithinLOSInMap(player)<<'\n';
+        }
+        if(distance==20){goodOwner=owner.GetPosition();goodMember=member.GetPosition();}
+        start();
+        auto first=owner.GetHealth(),second=member.GetHealth();
+        for(unsigned elapsed=0;elapsed<30000;elapsed+=100)Tick(map,owner,member,100);
+        auto primary=observer->Hits[201517][owner.GetGUID()]+observer->Hits[201517][member.GetGUID()];auto child=observer->Hits[201564][owner.GetGUID()]+observer->Hits[201564][member.GetGUID()];
+        std::cout<<"DARK_CASE range="<<distance<<" primary="<<primary<<" child="<<child<<" ownerDamage="<<first-owner.GetHealth()<<" memberDamage="<<second-member.GetHealth()<<" casterTravel="<<actor.GetExactDist(origin)<<'\n';
+        if(distance==0||distance==60)Check(!primary&&!child,"Dark Hunt ignored actual player-range target admission");
+        else Check(primary>0,"Native ranged SmartAI did not execute Dark Hunt");
+        if(distance==20)Check(child>0&&owner.GetHealth()<first&&member.GetHealth()<second,"Native Dark Hunt did not execute both actual player hits and teleports");
+    }
+    auto fresh=[&]{reset();owner.UpdatePosition(goodOwner.GetPositionX(),goodOwner.GetPositionY(),goodOwner.GetPositionZ(),0,true);member.UpdatePosition(goodMember.GetPositionX(),goodMember.GetPositionY(),goodMember.GetPositionZ(),0,true);start();};
+    auto queue=[&]{ObjectList targets{&owner,&member};Check(static_cast<SmartAI*>(actor.AI())->QueueDarkHunt(targets),"Native controller request refused actual Stalker scope");};
+    auto firstHit=[&]{for(unsigned t=0;t<3000&&!count(201517);t+=100)pump(100);Require(count(201517)==1&&!count(201564),"Native first hit did not expose the real between-hit boundary");};
+    fresh();ObjectList duplicate{&owner,&owner,&member};Check(static_cast<SmartAI*>(actor.AI())->QueueDarkHunt(duplicate),"Duplicate-target request rejected");ObjectList reversed{&member,&owner};Check(static_cast<SmartAI*>(actor.AI())->QueueDarkHunt(reversed),"Repeated pending request rejected");pump(4000);
+    Check(count(201517)==1&&count(201564)==1,"Repeated/duplicate input duplicated or replaced a native pair");
+    Check(observer->Hits[201517][owner.GetGUID()]==1&&observer->Hits[201564][member.GetGUID()]==1,"Pending request changed its actual selected target identities");
+    std::cout<<"DARK_LIFECYCLE duplicate targets/pending request exactly-once PASS\n";
+
+    {
+        LifecyclePlayer outsider(map,973,goodOwner);outsider.SetMaxHealth(1000000000);outsider.SetHealth(1000000000);
+        fresh();ObjectList three{&owner,&member,&outsider};Check(static_cast<SmartAI*>(actor.AI())->QueueDarkHunt(three),"Three-player native request rejected");pump(4000);
+        Check(count(201517)==1&&count(201564)==1&&!observer->Hits[201517][outsider.GetGUID()]&&!observer->Hits[201564][outsider.GetGUID()],"Dark Hunt exceeded its actual two distinct selected players");
+        fresh();ObjectList outsideParty{&outsider};Check(static_cast<SmartAI*>(actor.AI())->QueueDarkHunt(outsideParty),"Native nearby nonparty player request rejected");pump(4000);
+        Check(observer->Hits[201517][outsider.GetGUID()]==1&&!count(201564),"Native player-range selector acquired an invented party-only gate");
+        std::cout<<"DARK_LIFECYCLE three-player cap and legitimate nearby nonparty player PASS\n";
+    }
+
+    fresh();queue();firstHit();member.CombatStop(true);member.CastStop();member.GetMapRef().unlink();member.Unit::RemoveFromWorld();member.RemoveFromGrid();sObjectAccessor->RemoveObject(&member);pump(4000);
+    Check(count(201517)==1&&!count(201564),"Missing second target received or duplicated a hit");
+    sObjectAccessor->AddObject(&member);map.AddToGrid(&member,Cell(Trinity::ComputeCellCoord(member.GetPositionX(),member.GetPositionY())));member.Unit::AddToWorld();member.GetMapRef().link(&map,&member);
+    std::cout<<"DARK_LIFECYCLE actual second-player unpublication/republication PASS\n";
+
+    fresh();queue();firstHit();member.Unit::setDeathState(JUST_DIED);pump(4000);Check(!count(201564),"Dead second player received a child hit");member.Unit::setDeathState(ALIVE);member.SetHealth(member.GetMaxHealth());
+    std::cout<<"DARK_LIFECYCLE native Unit death-state checkpoint rejects second target PASS;not a client death/corpse claim\n";
+
+    for(unsigned cancellation=0;cancellation<3;++cancellation)
+    {
+        fresh();queue();firstHit();
+        if(cancellation==0){actor.AI()->EnterEvadeMode();owner.CombatStop(true);member.CombatStop(true);}
+        else if(cancellation==1)actor.AI()->Reset();
+        else actor.AI()->OnCharmed(true);
+        pump(2000);Check(!count(201564),"Canceled attempt retained its second native hit");
+        std::cout<<"DARK_LIFECYCLE cancel="<<cancellation<<" between real hits PASS\n";
+    }
+    fresh();queue();actor.AI()->UpdateAI(1);actor.InterruptNonMeleeSpells(false,201517);pump(4000);Check(!count(201517)&&!count(201564),"Canceled pending first cast synthesized a hit/child");
+    std::cout<<"DARK_LIFECYCLE native pending-cast interruption PASS;instant ability Counterspell interruptibility is separate\n";
+
+    fresh();bool blocked=false;for(unsigned i=0;i<64;++i){owner.UpdatePosition(origin.GetPositionX()+20.f*std::cos(float(i)*float(M_PI)/32.f),origin.GetPositionY()+20.f*std::sin(float(i)*float(M_PI)/32.f),origin.GetPositionZ(),0,true);if(actor.IsInRange(&owner,8,40)&&!actor.IsWithinLOSInMap(&owner)){blocked=true;break;}}
+    Require(blocked,"Native geometry has no blocked-cast fixture");member.UpdatePosition(owner.GetPositionX(),owner.GetPositionY(),owner.GetPositionZ(),0,true);ObjectList blockedTarget{&owner};Check(static_cast<SmartAI*>(actor.AI())->QueueDarkHunt(blockedTarget),"Blocked native request not admitted for normal cast validation");pump(9000);Check(!count(201517)&&!count(201564),"Dark Hunt bypassed a real line-of-sight rejection");
+    std::cout<<"DARK_LIFECYCLE native blocked normal casts and finite timeout PASS\n";
+    fresh();queue();pump(4000);Check(count(201517)==1&&count(201564)==1,"Native retry/re-entry failed after canceled and missing-target attempts");
+    reset();std::cout<<"DARK_HUNT actual ranged timer,pair,normal spell checks,duplicate/missing/dead/canceled attempts and native home/re-entry PASS\n";
+}
+
 static void LoadCombatSpellConditions()
 {
     auto known=[](uint32 id){return id&&sSpellStore.LookupEntry(id)&&sSpellMgr->GetSpellInfo(id);};
@@ -220,9 +310,9 @@ int main(int argc,char**argv)
         }
         CharacterDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");CharacterDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
         for(auto row:sSpellStore)if(std::string(row->Name->Str[0])=="Crackle"||std::string(row->Name->Str[0])=="Sic Bats!")std::cout<<"NAMED id="<<row->ID<<" name="<<row->Name->Str[0]<<" desc="<<row->Description->Str[0]<<'\n';
-        for(uint32 id:{199805u,199807u,199808u,199818u,198745u,191639u,191641u,191642u,193069u,2139u,228320u,228328u,228331u,228333u,238605u,203163u,227913u})if(auto spell=sSpellMgr->GetSpellInfo(id))
+        for(uint32 id:{199805u,199807u,199808u,199818u,198745u,191639u,191641u,191642u,193069u,2139u,228320u,228328u,228331u,228333u,238605u,203163u,227913u,201517u,201564u})if(auto spell=sSpellMgr->GetSpellInfo(id))
         {
-            std::cout<<"META id="<<id<<" name="<<sSpellStore.LookupEntry(id)->Name->Str[0]<<" desc="<<sSpellStore.LookupEntry(id)->Description->Str[0]<<'\n';
+            std::cout<<"META id="<<id<<" name="<<sSpellStore.LookupEntry(id)->Name->Str[0]<<" desc="<<sSpellStore.LookupEntry(id)->Description->Str[0]<<" minRange="<<spell->GetMinRange(false)<<" maxRange="<<spell->GetMaxRange(false)<<'\n';
             for(auto mode:{DIFFICULTY_NORMAL,DIFFICULTY_MYTHIC_DUNGEON,DIFFICULTY_MYTHIC_KEYSTONE})for(unsigned i=0;i<MAX_SPELL_EFFECTS;++i)if(auto effect=spell->GetEffect(SpellEffIndex(i),mode))if(effect->Effect)std::cout<<"EFFECT id="<<id<<" mode="<<unsigned(mode)<<" index="<<i<<" type="<<effect->Effect<<" aura="<<effect->ApplyAuraName<<" bp="<<effect->BasePoints<<" trigger="<<effect->TriggerSpell<<" target="<<effect->TargetA.GetTarget()<<" targetB="<<effect->TargetB.GetTarget()<<'\n';
         }
         if(std::getenv("LEGION_COMBAT_METADATA_ONLY"))
@@ -233,6 +323,8 @@ int main(int argc,char**argv)
         do{auto guid=all->Fetch()[0].GetUInt64();auto data=sObjectMgr->GetCreatureData(guid);Require(data,"Combat native cache missing");sObjectMgr->RemoveCreatureFromGrid(guid,data);}while(all->NextRow());
 #ifdef DUNGEON_SIC_BASELINE
         auto rows=WorldDatabase.Query("SELECT MIN(guid),id,map FROM creature WHERE guid BETWEEN 900902000 AND 900902214 AND id=102788 GROUP BY id,map ORDER BY map,id");
+#elif defined(DUNGEON_DARK_HUNT_ONLY)
+        auto rows=WorldDatabase.Query("SELECT MIN(guid),id,map FROM creature WHERE guid BETWEEN 900902000 AND 900902214 AND id=99365 GROUP BY id,map ORDER BY map,id");
 #else
         auto rows=WorldDatabase.Query("SELECT MIN(guid),id,map FROM creature WHERE guid BETWEEN 900902000 AND 900902214 GROUP BY id,map ORDER BY map,id");
 #endif
@@ -241,17 +333,33 @@ int main(int argc,char**argv)
         do
         {
             auto f=rows->Fetch();uint64 guid=f[0].GetUInt64();uint32 entry=f[1].GetUInt32(),mapId=f[2].GetUInt32();auto data=sObjectMgr->GetCreatureData(guid);
-            MapInstanced parent(mapId,300);InstanceMap map(mapId,300,9936000+contexts,DIFFICULTY_MYTHIC_KEYSTONE,&parent);map.CreateInstanceData(nullptr);
+#ifdef DUNGEON_DARK_HUNT_ONLY
+            for(auto difficulty:{DIFFICULTY_NORMAL,DIFFICULTY_HEROIC,DIFFICULTY_MYTHIC_DUNGEON,DIFFICULTY_MYTHIC_KEYSTONE})for(uint8 race:{uint8(RACE_HUMAN),uint8(RACE_ORC)})
+#else
+            for(auto difficulty:{DIFFICULTY_MYTHIC_KEYSTONE})for(uint8 race:{uint8(RACE_HUMAN)})
+#endif
+            {
+            MapInstanced parent(mapId,300);InstanceMap map(mapId,300,9936000+contexts,difficulty,&parent);map.CreateInstanceData(nullptr);
             std::unique_ptr<DungeonShip> ship;if(mapId==1492)ship=std::make_unique<DungeonShip>(map);
             for(float x:{-96.f,0.f,96.f})for(float y:{-96.f,0.f,96.f})map.LoadGrid(data->posX+x,data->posY+y);
             Position pose{data->posX,data->posY,data->posZ,data->orientation};LifecyclePlayer owner(map,971,pose),member(map,972,pose);
             for(Player* player:{static_cast<Player*>(&owner),static_cast<Player*>(&member)}){player->SetMaxHealth(1000000000);player->SetHealth(1000000000);}
+            for(Player* player:{static_cast<Player*>(&owner),static_cast<Player*>(&member)}){player->SetByteValue(UNIT_FIELD_BYTES_0,0,race);player->setFactionForRace(race);auto info=sChrRacesStore.LookupEntry(race);player->SetDisplayId(info->MaleDisplayID);player->SetNativeDisplayId(info->MaleDisplayID);}
             MapChallengeModeEntry const* route=nullptr;for(auto row:sMapChallengeModeStore)if(row->MapID==mapId){route=row;break;}Require(route,"Combat native route missing");
             auto key=owner.Key(*route);owner.m_challengeKeyInfo.Affix=Affixes::Teeming;LifecycleGroup party(owner,&member,*route,*key);
             party.group.m_affixes={uint32(Affixes::Teeming),0,0};
-            auto scenario=sScenarioMgr->AddScenario(&map,1175);Require(scenario,"Combat native scenario unavailable");scenario->CreateChallenge(&owner);
+            auto scenario=sScenarioMgr->AddScenario(&map,1175);Require(scenario,"Combat native scenario unavailable");if(difficulty==DIFFICULTY_MYTHIC_KEYSTONE)scenario->CreateChallenge(&owner);
             {
-                NativeAIActor actor;Require(actor.LoadCreatureFromDB(guid,&map,true),"Real combat actor admission failed");
+                NativeAIActor actor;
+#ifdef DUNGEON_DARK_HUNT_ONLY
+                if(difficulty!=DIFFICULTY_MYTHIC_KEYSTONE){Require(actor.Create(190650,&map,1,99365,0,ALLIANCE,pose.GetPositionX(),pose.GetPositionY(),pose.GetPositionZ(),pose.GetOrientation()),"Native non-Teeming Stalker template create failed");actor.SetHomePosition(pose);Require(map.AddToMap(static_cast<Creature*>(&actor)),"Native non-Teeming Stalker publication failed");}
+                else
+#endif
+                    Require(actor.LoadCreatureFromDB(guid,&map,true),"Real combat actor admission failed");
+#ifdef DUNGEON_DARK_HUNT_ONLY
+                std::cout<<"DARK_PROFILE mode="<<unsigned(difficulty)<<" race="<<unsigned(race)<<" actualDbSpawn="<<(difficulty==DIFFICULTY_MYTHIC_KEYSTONE)<<" controlledPoseFrom="<<guid<<'\n';
+                DarkHuntReceipts(actor,map,owner,member);
+#else
                 std::vector<std::unique_ptr<NativeAIActor>> bats;
                 if(entry==102788)for(unsigned i=0;i<3;++i)
                 {
@@ -330,13 +438,17 @@ int main(int argc,char**argv)
                 actor.CombatStop(true);actor.CastStop();actor.RemoveAllAuras();actor.m_Events.KillAllEvents(true);
                 ClearEphemeral(map,owner);owner.CombatStop(true);member.CombatStop(true);owner.CastStop();member.CastStop();owner.RemoveAllAuras();member.RemoveAllAuras();
                 TC_LOG_INFO("spells","COMBAT_CASE END entry=%u",entry);
+#endif
             }
             Check(map.CreatureGroupHolder.empty(),"Native combat teardown retained formation pointers");
             ClearEphemeral(map,owner);map.m_scenarios.erase(scenario);sScenarioMgr->RemoveScenario(map.GetInstanceId());++contexts;
+            }
         }while(rows->NextRow());
 #ifdef DUNGEON_SIC_BASELINE
         Check(contexts==1&&repulls==1,"Pinned bat regression scope changed");
         std::cout<<"COUNTERFACTUAL "<<checked<<" native pinned-original bat checks;repeat targeting is expected broken,not a passing ordinary run\n";
+#elif defined(DUNGEON_DARK_HUNT_ONLY)
+        Check(contexts==8,"Focused actual Stalker scope changed");std::cout<<"PASS "<<checked<<" native Dark Hunt actual timer/pair/lifecycle checks across4 difficulties and Human/Orc;6 template Create contexts plus2 real Teeming DB actors,controlled native pose,not client traversal\n";
 #else
         Check(contexts==103&&repulls==103,"Actual timed combat template/repull coverage changed");
         std::cout<<"PASS "<<checked<<" native timed combat checks;contexts="<<contexts<<" interrupt attempts="<<interrupts<<" repulls="<<repulls<<" damage contexts="<<damageContexts<<";up to90s rotation/native Frenzy self-death,actual corpse/respawn+evade+up to15s repull,stationary synthetic party/health checkpoints,not whole dungeon/client gameplay\n";

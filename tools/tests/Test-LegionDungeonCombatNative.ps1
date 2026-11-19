@@ -1,6 +1,7 @@
-param([Parameter(Mandatory=$true)][string]$ModelDataDirectory,[string]$MigrationDirectory="$PSScriptRoot/../../sql/updates/world",[switch]$SicBatsBaseline)
+param([Parameter(Mandatory=$true)][string]$ModelDataDirectory,[string]$MigrationDirectory="$PSScriptRoot/../../sql/updates/world",[switch]$SicBatsBaseline,[switch]$DarkHuntOnly)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+if($SicBatsBaseline -and $DarkHuntOnly){throw 'Select only one focused native mode'}
 $modelPath=(Resolve-Path -LiteralPath $ModelDataDirectory).Path.Replace('\','/')
 $out="$repo/build-extractors/runtime-test/legion-dungeon-combat/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
@@ -61,6 +62,7 @@ $inputs=@("$repo/tools/tests/LegionDungeonCombatNative.cpp","$repo/src/server/ga
 $sealed=@(Get-FileHash -LiteralPath $inputs|Select-Object Path,Hash);$sealed|ConvertTo-Json|Set-Content "$out/inputs-before.json"
 $extraInputs=@("$repo/src/server/game/Spells/Auras/SpellAuraEffects.cpp","$repo/src/server/game/Spells/SpellEffects.cpp","$repo/src/server/game/Entities/AreaTrigger/AreaTrigger.cpp","$repo/src/server/scripts/Legion/BlackRookHoldDungeon/boss_smashspite_the_hateful.cpp","$repo/tools/tests/LegionTeemingAINative.cpp","$repo/tools/tests/LegionTeemingFormationNative.cpp")+@('2026_11_19_02_hov_crackle.sql','2026_11_19_03_karazhan_volatile_charge.sql','2026_11_19_04_brh_sic_bats.sql'|ForEach-Object {Join-Path $MigrationDirectory $_})
 $extraInputs+=@("$repo/src/server/scripts/Legion/NeltharionsLair/boss_dargrul_the_underking.cpp","$repo/src/server/scripts/Legion/BlackRookHoldDungeon/boss_illysanna_ravencrest.cpp")
+$extraInputs+=@("$repo/src/server/game/AI/SmartScripts/SmartAI.h","$repo/src/server/game/AI/SmartScripts/SmartAI.cpp","$repo/src/server/game/AI/SmartScripts/SmartScript.cpp")
 $sealed+=@(Get-FileHash -LiteralPath $extraInputs|Select-Object Path,Hash);$sealed|ConvertTo-Json|Set-Content "$out/inputs-before.json"
 try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:LEGION_TEEMING_FORMATION_SQL="$out/shadow.sql";$env:LEGION_MAW_MODEL_DATA=$modelPath
@@ -68,6 +70,7 @@ try{
  $potion=[regex]::Match((Get-Content "$repo/src/server/scripts/Legion/BlackRookHoldDungeon/boss_illysanna_ravencrest.cpp" -Raw),'SPELL_DRINK_ANCIENT_POTION\s*=\s*(\d+)')
  if(!$potion.Success){throw 'Matching native potion constant unavailable'};$env:LEGION_COMBAT_POTION=$potion.Groups[1].Value
  $env:CL="$($previous['CL']) /DNDEBUG /Zi /I`"$repo/src/server/scripts/Legion`" /I`"$repo/src/server/scripts/Legion/MawofSouls`""
+ if($DarkHuntOnly){$env:CL+=' /DDUNGEON_DARK_HUNT_ONLY'}
  if($SicBatsBaseline){
   $original=(& git -C $repo show 'bbeed94c5:src/server/scripts/Legion/BlackRookHoldDungeon/boss_smashspite_the_hateful.cpp')-join "`n"
   $begin=$original.IndexOf('struct npc_brh_fel_bat : public ScriptedAI');$end=$original.IndexOf('//198114',$begin)
@@ -81,7 +84,7 @@ try{
   & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
    & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/LegionDungeonCombatNative.cpp -ProbeName LegionDungeonCombatNative -OutputFile "$out/native.tsv" *> "$out/compiler.log"
    if(!$? -or $LASTEXITCODE){throw "Native formation verification failed:$out/compiler.log"}
-   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(CASE|EVADE|HAZARD|SIC_BATS|COUNTERFACTUAL|PASS)'}
+   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(CASE|EVADE|HAZARD|SIC_BATS|COUNTERFACTUAL|DARK_PROFILE|DARK_CASE|DARK_LIFECYCLE|DARK_HUNT|PASS)'}
   }
  }finally{Pop-Location}
 }finally{

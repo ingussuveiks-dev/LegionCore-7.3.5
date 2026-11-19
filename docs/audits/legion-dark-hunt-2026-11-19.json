@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "correction": "The previous combat audit incorrectly called201517 a friendly heal. Matching26972 data identifies Dark Hunt:school damage plus native self teleport. SmartAI target17 is PLAYER_RANGE8..40,not a friendly-NPC selector. Old stationary zero-range samples could not exercise this ability;no missing healer was established.",
+  "cause": "The actual99365/map1466 SmartAI row starts ordinary201517 casts for multiple player targets in one action. Unit::SetCurrentCastedSpell interrupts the earlier pending normal cast. Pre-fix native receipts show each single target works,but the two-player case loses the first hit and never executes native child201564.",
+  "implementation": [
+    "src/server/game/AI/SmartScripts/SmartScript.cpp",
+    "src/server/game/AI/SmartScripts/SmartAI.cpp",
+    "src/server/game/AI/SmartScripts/SmartAI.h"
+  ],
+  "repair": "Only exact99365/map1466,UPDATE_IC,201517,castflags0,PLAYER_RANGE8..40 routes to the optional native SmartAI sequence. Keep the original selected player list,retain at most two distinct eligible players,and derive201564 from actual26972 parent effect1/252. The child waits for actual first player-hit and self-teleport effect callbacks,with a deferred post-ack update;both casts retain ordinary range,LOS,target and spell validation. No triggered cast bypass,custom destination,damage injection,item/quest grant or SQL change.",
+  "lifecycle": "8s finite request lifetime,at most3 native cast failures per selected target with500ms retry;100ms minimum dispatch delay with the pre-ack frame excluded. If the first selected target fails,try the other as a single parent rather than fabricate a hit. Repeated pending requests cannot replace targets. Evade,Reset,death,charm,entry/map/control changes cancel state. Target GUIDs are resolved anew;dead,unpublished,foreign-map or invalid attack targets cannot receive the second hit. A request serial protects synchronous hit/reset re-entry.",
+  "native_data": {
+    "actor": 99365,
+    "name": "Taintheart Stalker",
+    "map": 1466,
+    "source_row": "source0,event0,100%,initial/repeat10000..12000ms,action11/201517/flags0,target17/min8/max40;unchanged",
+    "parent": "201517 Dark Hunt:effect0 school damage;effect1 TELEPORT_L252,self1/destination65,TriggerSpell201564",
+    "child": "201564 Dark Hunt:effect0 school damage;effect1 TELEPORT_L252,self1/destination65,no further child",
+    "source13_17_conditions": "No additional201517/201564 condition rows in matching local World data",
+    "scope": "Four original DB spawns1466/mask8388870 and the reviewed Teeming copy900902069/mask256;one entry script,no per-GUID script discovered. No live database writes or updater changes."
+  },
+  "tests": {
+    "focused": {
+      "directory": "build-extractors/runtime-test/legion-dungeon-combat/20261119-113649-809",
+      "result": "PASS 249 native Dark Hunt actual timer/pair/lifecycle checks across4 difficulties and Human/Orc;6 template Create contexts plus2 real Teeming DB actors,controlled native pose,not client traversal",
+      "diagnostics": "PASS:exit0,no new/changed crashes,appended DBErrors or server warnings/errors/assertions"
+    },
+    "retained_combat": {
+      "directory": "build-extractors/runtime-test/legion-dungeon-combat/20261119-113709-767",
+      "result": "PASS 92344 native timed combat checks;contexts=103 interrupt attempts=72 repulls=103 damage contexts=103;up to90s rotation/native Frenzy self-death,actual corpse/respawn+evade+up to15s repull,stationary synthetic party/health checkpoints,not whole dungeon/client gameplay",
+      "diagnostics": "PASS:exit0,no new/changed crashes,appended DBErrors or server warnings/errors/assertions"
+    },
+    "coverage": [
+      "Eight contexts:Normal1,Heroic2,Mythic23,Keystone8 x Human/Orc Hunter players. Six native template Create contexts plus two actual Teeming LoadCreatureFromDB contexts at the same controlled real map pose;this is not full original-spawn traversal.",
+      "Actual10..12s SmartAI timer,too-close/out-of-range rejection,two real school-damage hits and two native self-teleport effects. Observer subclasses SmartAI and forwards every original callback;it does not implement the repair.",
+      "Actual controller API with real player lists for repeated/duplicate requests,three distinct players/two-target cap,and legitimate nearby nonparty player eligibility.",
+      "Actual second-player unpublication/republication;native Unit death-state checkpoint;evade,Reset and charm hooks between hits;native pending-cast cancellation;normal LOS rejection and finite retry/timeout;fresh successful pair afterward. Death-state/charm checkpoints are not a client death/corpse or Enslave traversal.",
+      "Retained103-template actual timed combat,damage,spells/areas/summons,native home/evade and repull regression. Authored Frenzy self-death can end a rotation early;its variable assertion count is expected."
+    ],
+    "previous_loot_completion": "The earlier938 loot/1005 completion checks remain historical evidence;not rerun for this SmartAI-only repair. No loot/completion source changed."
+  },
+  "counterfactual": {
+    "directory": "build-extractors/runtime-test/legion-dungeon-combat/20261119-111237-034",
+    "result": "Pre-fix actual library:single-target paths hit,but paired case has one201517 player receipt and no201564;the discovery PASS7 covered range exploration only,not a successful two-target sequence. New strict pair assertion is paired with the repaired249 checks.",
+    "fixture_findings": [
+      "Initial raw XY offsets with an unchanged Z hit native LOS rejection68. Native terrain/LOS placement fixed the fixture;no LOS checks disabled.",
+      "A100ms test update initially consumed the new child delay using pre-ack diff. The repair now defers that update and preserves a real between-hit cancellation boundary.",
+      "A negative LOS fixture initially left another legitimate eligible player in range;its ordinary background event was not a LOS bypass. Both players are now placed behind the actual obstruction.",
+      "MSVC inlines AcknowledgeDarkHunt into SpellHitTarget;the selected PE verifier checks that inlined parent-ID branch and actual request/update call paths."
+    ]
+  },
+  "database_safety": "No sockets or real client. Synthetic in-memory players/keys only. Permanent World/character/login/hotfix operations remain read-only;fixture writes target connection-local TEMP catalogs/empty respawn tables. No character save,real item/history change or credential output.",
+  "build": "Original generated game.lib and scripts.lib paths rebuilt;SmartAI header layout changed,so scripts were rebuilt too. Actual final-link inputs checked by staged helper. Both staged/canonical EXE and maps match;configuration,certificates,DLLs and extracted data preserved. Existing unchanged PET_FOLLOW_ANGLE double-to-float warnings in SmartAI and enum/float C5055 warnings in SpellAuraEffects are compiler baseline diagnostics,not newly introduced runtime errors.",
+  "canonical": {
+    "worldserver_sha256": "e4597671cfbce41895258c0e4aba7de0266435545206663e59b5645954a44a25",
+    "map_sha256": "48879393999999b461f7504df3c465822e01bc133cf80484839dfe0da47ed7df",
+    "startup": "Owned PID28716,fresh ready,graceful shutdown0,exit0,stderr empty;no new crashes,DBErrors,warnings/errors/assertions. No hidden server left.",
+    "pe": "Actual linked request/update/inlined hit-acknowledgement paths and scoped IDs pass;retained scenario,LFG,combat,health reset and challenge-key separation checks pass.",
+    "scepter": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes against the deployed canonical binary.",
+    "rollback": ".codex/dungeon-healer-20261119/rollback-before-dark-hunt;verified prior8027a89a binary/maps retained for pending client recovery."
+  },
+  "sources": {
+    "local": "Matching Legion26972 DB2,actual World SmartAI/spawn rows and core spell/current-cast/teleport implementations reviewed first. Newer local TrinityCore contains no matching201517/201564/99365 implementation in available source.",
+    "github": "Queries for exact IDs/Taintheart Stalker found no applicable implementation;no modern behavior copied.",
+    "video": "No footage reviewed for this repair. Two-hit semantics and child ID come from native data;100ms post-ack dispatch and bounded retry are implementation policy,not recovered original timing."
+  },
+  "archive": {
+    "status": "PENDING_FINAL_ARCHIVE_CLEANUP",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-dark-hunt"
+  },
+  "remaining": [
+    "Actual client animation/audio/shadow teleport presentation,player movement under real latency,multi-client party/pet positioning,reconnect and earned whole-dungeon boss/forces/loot traversal remain OPEN. No client used.",
+    "All222 Teeming additions remain reconstructions,not recovered Blizzard/sniff SQL.",
+    "The concrete99365 zero-cast gap is closed with native range/timer/pair/lifecycle checks.100364 and119978 are melee-only in their reviewed isolated script scope;their lack of timed casts is not evidence of a missing heal. No newly discovered repair remains unresolved in this follow-up."
+  ]
+}
