@@ -3235,6 +3235,11 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
     // Rolling non-grouped items
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
     {
+        // The native eligibility branch below grants a new keystone separately.
+        // A template key row must not consume one of the run's gear entitlements.
+        if (i->type == LOOT_ITEM_TYPE_ITEM && i->itemid == 138019)
+            continue;
+
         bool _delete = false;
         if (i->needs_quest) //Don`t add quest item
         {

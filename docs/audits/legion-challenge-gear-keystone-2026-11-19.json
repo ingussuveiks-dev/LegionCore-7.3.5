@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "cause": "Twelve actual chest loot tables contain138019. It is class5 and not IsOtherDrops,so ProcessChallengeChest could select it as a gear entitlement and then add a second key via native eligibility;the native pre-fix sample reproduced missing gear and duplicate keys.",
+  "repair": "Exclude only template138019 from the challenge gear candidate loop. Retain the existing native inactive-key/no-weekly-loot eligibility grant and all ordinary/weekly loot handlers.",
+  "native": "52 completion contexts/13 routes/78 personal containers compare actual regular gear/relic counts to native completion entitlements and key count to native eligibility;all item storage,full bags/retry,reopen and duplicate rejection pass. Failed pre-fix native evidence is an expected-broken counterfactual,not a successful run.",
+  "files": [
+    "src/server/game/Loot/LootMgr.cpp"
+  ],
+  "regression_audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json"
+}
