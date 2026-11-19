@@ -1,0 +1,28 @@
+{
+  "scope": "Native death credit and exactly-once completion of the three restored Legion world tasks",
+  "runtime": {
+    "worldserver_sha256": "ff80e0e90c65df9a4469cdb5f6a4394990f3397bf75e8c5096e49296d83de119",
+    "change": "Regression coverage only. Production executable and SQL are unchanged from the deployed rotation repair."
+  },
+  "checks": {
+    "driver": "tools/tests/Test-LegionWorldQuestRotationNative.ps1 -Progression",
+    "case_results": [
+      {"quest": 46021, "name": "Thel'draz", "kills": 1, "last_killer": "eligible player's pet"},
+      {"quest": 46063, "name": "The Wailing Dead", "kills": 15, "last_killer": "eligible player's guardian"},
+      {"quest": 46073, "name": "Break Their Garrison", "kills": 37, "last_killer": "eligible player's guardian"}
+    ],
+    "garrison": "Native completion remained pending after 17 Wrathguard Dreadblades at 2.5 percent each and 3 Felblade Devastators at 5 percent each (57.5 percent). Seventeen replacement Dreadblades reached 100 percent through the normal kill credit. Deployed static spawns of those two types use a 180-second timer; the test created replacements without waiting for the live respawn system.",
+    "kill_path": "Actual Creature entries, native attacker-scaled DealDamage and Unit::Kill, delayed KillRewarder dispatch, rotating player/pet/guardian attackers, corpse repeat and no eligible quest on the unaffiliated player. Controlled actor publication and no live-client combat claims.",
+    "reward_path": "Test used a deterministic 1234-copper world quest reward. A pre-credit gold snapshot separates ordinary kill rewards from the delayed quest reward. Each final kill removed its active slot, saved one receipt and the expected money in the same native transaction and denied another RewardQuest invocation within the rotation.",
+    "isolation": "Schema-only copy of CharacterDatabase on a task-owned loopback MariaDB with a separate port and data directory. Prepared-statement readback used temporary tables on the verified isolated worker. No live characters were copied or used.",
+    "retained": "Standard rotation tests, source-derived world quest reward admission/save/load/reset with pinned expected-broken baseline, SQL prepared-statement shadow round trip, and actual Release reward call order passed."
+  },
+  "diagnostics": {
+    "final": "Native and retained checks passed with no new crashes, appended DB errors, server warnings, errors or assertions. The task-owned MariaDB shut down with exit 0 and no startup/runtime warning or error.",
+    "resolved_probe_attempts": "Early failures came from fixture template linkage, base damage vs attacker-scaled death threshold, late application of ordinary kill gold, and unloaded native loot/random-enchantment catalogs. The live schema account was denied CREATE DATABASE; the final test used a disposable service instead. The retained source-derived reward fixture also needed a fail-fast declaration for unrelated newer quest gates."
+  },
+  "open": [
+    "Real player and party traversal, live respawn timing, network offer UI, audio/avatar playback and the live rotation timer still require a client check.",
+    "The local Garrison area has no static Felfire Imp 117555, Imp Mother Flaz 118720 or Libram 269154 there. Their dynamic appearance and original positions were not established. The tested path uses only the two currently spawned demon types."
+  ]
+}

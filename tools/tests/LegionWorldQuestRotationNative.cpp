@@ -1,6 +1,11 @@
 #define AREA_DIALOGUE_SUPPORT_ONLY
 #include "LegionAreaDialogueNative.cpp"
+#include "ItemEnchantmentMgr.h"
+#include "LootMgr.h"
 #include "WorldStateMgr.h"
+#include <chrono>
+#include <cmath>
+#include <thread>
 
 struct RotationUpdateTag
 {
@@ -95,15 +100,172 @@ struct RotationCase
     uint32 SecondaryVariable;
 };
 
+#ifdef LEGION_ROTATION_PROGRESSION
+struct RotationControlledTag
+{
+    using Type = bool Unit::*;
+    friend Type Access(RotationControlledTag);
+};
+template struct FixtureAccess<RotationControlledTag, &Unit::m_ControlledByPlayer>;
+
+static QueryResult QueryRewardFixture(char const* sql)
+{
+    QueryResult result;
+    auto query = CharacterDatabase.AsyncQuery(sql).WithCallback([&](QueryResult rows) { result = std::move(rows); });
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    while (!query.InvokeIfReady())
+    {
+        Require(std::chrono::steady_clock::now() < deadline, "Timed out waiting for the isolated character worker");
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    return result;
+}
+
+static void InitializeRewardFixture()
+{
+    auto expectedSchema = std::getenv("LEGION_REWARD_SCHEMA");
+    auto schema = QueryRewardFixture("SELECT DATABASE()");
+    Require(expectedSchema && std::string_view(expectedSchema).rfind("codex_wq_reward_", 0) == 0 && schema &&
+        schema->Fetch()[0].GetString() == expectedSchema, "Native reward test requires its disposable character schema");
+
+    // The single asynchronous worker executes these statements in order.
+    // Check persistence in its connection-local tables inside the isolated schema.
+    CharacterDatabase.Execute("SET SESSION TRANSACTION READ WRITE");
+    CharacterDatabase.Execute("CREATE TEMPORARY TABLE characters (guid BIGINT UNSIGNED PRIMARY KEY, money BIGINT UNSIGNED NOT NULL, native_fixture TINYINT NOT NULL)");
+    CharacterDatabase.Execute("INSERT INTO characters (guid,money,native_fixture) VALUES (101,0,1)");
+    for (char const* table : {"character_queststatus", "character_queststatus_objectives", "character_queststatus_rewarded",
+         "character_queststatus_world", "character_currency"})
+    {
+        std::string name = table;
+        CharacterDatabase.Execute(("CREATE TEMPORARY TABLE reward_schema LIKE " + name).c_str());
+        CharacterDatabase.Execute(("CREATE TEMPORARY TABLE " + name + " LIKE reward_schema").c_str());
+        CharacterDatabase.Execute("DROP TEMPORARY TABLE reward_schema");
+    }
+    CharacterDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
+    auto ready = QueryRewardFixture("SELECT @@tx_read_only,native_fixture FROM characters WHERE guid=101");
+    Require(ready && ready->Fetch()[0].GetUInt32() == 1 && ready->Fetch()[1].GetUInt32() == 1,
+        "Character worker did not establish its read-only reward shadows");
+}
+
+class RotationVictim : public Creature
+{
+public:
+    RotationVictim(RotationPlayer& player, uint32 entry, uint32 guid) : Creature(false)
+    {
+        Map* map = player.GetMap();
+        Require(Create(guid, map, 1, entry, 0, ALLIANCE, player.GetPositionX() + 2, player.GetPositionY(), player.GetPositionZ(), 0),
+            "Could not create the real objective creature entry");
+        SetPhaseId(player.GetPhases(), false);
+        Require(map->AddToMap(static_cast<Creature*>(this)), "Could not publish the objective creature");
+        Require(GetHealth() && GetHealth() < std::numeric_limits<uint32>::max(), "Objective creature needs native one-hit damage range");
+    }
+
+    ~RotationVictim()
+    {
+        CombatStop(true);
+        if (IsInWorld())
+            GetMap()->RemoveFromMap(static_cast<Creature*>(this), false);
+        ResetMap();
+    }
+};
+
+static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locked, Quest const* quest, WorldQuest& active)
+{
+    Require(!quest->RewardMailTemplateId, "Review new reward mail before exercising shadow persistence");
+    uint32 const questId = quest->GetQuestId();
+    uint32 const fixtureGold = 1234;
+    uint64 expectedMoney = 0;
+    active.Gold = fixtureGold;
+    active.CurrencyID = 0;
+    active.Recipe = nullptr;
+    for (WorldQuestItem& item : active.ItemList)
+        item = {};
+
+    DungeonPet pet(player, *player.GetMap());
+    DungeonGuardian guardian(player, *player.GetMap());
+    pet.*Access(RotationControlledTag{}) = true;
+    guardian.*Access(RotationControlledTag{}) = true;
+    Unit* killers[] = {&player, &pet, &guardian};
+    uint32 guid = 190000;
+    auto kill = [&](uint32 target, uint32 killer, bool finalKill = false)
+    {
+        RotationVictim victim(player, target, guid++);
+        uint32 before = player.GetQuestObjectiveData(questId, target);
+        Unit* attacker = killers[killer];
+        uint64 health = victim.GetHealth(attacker);
+        float multiplier = victim.GetHealthMultiplierForTarget(attacker);
+        double lethalDamage = std::ceil(double(health) * multiplier * 1.001);
+        Require(lethalDamage > 0 && lethalDamage <= std::numeric_limits<uint32>::max(), "Invalid scaled one-hit damage");
+        uint32 dealt = attacker->DealDamage(&victim, uint32(lethalDamage), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+        if (!victim.isDead())
+            std::cout << "PROGRESSION " << questId << " target=" << target << " killer=" << killer << " health=" << health
+                      << " multiplier=" << multiplier << " damage=" << dealt << " remaining=" << victim.GetHealth() << '\n';
+        Require(victim.isDead(), "Native one-hit damage did not kill the quest target");
+        attacker->Kill(&victim); // Duplicate death dispatch must award nothing.
+        uint64 const moneyBeforeCredit = player.GetMoney();
+        player.PumpCallbacks(50);
+        Require(locked.GetQuestStatus(questId) == QUEST_STATUS_NONE, "Unaffiliated player gained quest credit");
+        if (finalKill)
+        {
+            expectedMoney = moneyBeforeCredit + fixtureGold;
+            std::cout << "PROGRESSION " << questId << " final target=" << target << " kills=" << player.GetKillCreature(target)
+                      << " objective=" << player.GetQuestObjectiveData(questId, target) << " status=" << unsigned(player.GetQuestStatus(questId))
+                      << " money=" << player.GetMoney() << " moneyBeforeCredit=" << moneyBeforeCredit
+                      << " slot=" << player.FindQuestSlot(questId)
+                      << " reward=" << player.WorldQuestCompleted(questId) << '\n';
+        }
+        if (!finalKill)
+            Require(player.GetQuestObjectiveData(questId, target) == before + 1 &&
+                !player.WorldQuestCompleted(questId) && player.GetMoney() == moneyBeforeCredit,
+                "Native kill credit duplicated, failed, or rewarded the task early");
+    };
+
+    if (questId == 46021)
+        kill(118002, 1, true);
+    else if (questId == 46063)
+        for (uint32 index = 0; index < 15; ++index)
+            kill(118657, index % 3, index == 14);
+    else
+    {
+        for (uint32 index = 0; index < 17; ++index)
+            kill(117559, index % 3);
+        for (uint32 index = 0; index < 3; ++index)
+            kill(117546, index);
+        Require(player.GetQuestObjectiveData(questId, 117559) == 17 && player.GetQuestObjectiveData(questId, 117546) == 3,
+            "The bounded first batch must remain at 57.5 percent");
+        for (uint32 index = 0; index < 17; ++index)
+            kill(117559, (index + 1) % 3, index == 16);
+    }
+
+    Require(player.WorldQuestCompleted(questId) && player.FindQuestSlot(questId) == MAX_QUEST_LOG_SIZE &&
+        player.GetMoney() == expectedMoney, "Final kill did not award the native world quest exactly once");
+    player.RewardQuest(quest, 0, &player, true);
+    Require(player.GetMoney() == expectedMoney && !player.CanRewardWorldQuest(quest), "Repeated reward call bypassed the native receipt");
+    auto row = QueryRewardFixture(("SELECT c.money,c.native_fixture,s.resetTime FROM characters c JOIN character_queststatus_world s "
+        "ON c.guid=s.guid WHERE c.guid=101 AND s.quest=" + std::to_string(questId)).c_str());
+    Require(row && row->GetRowCount() == 1 && row->Fetch()[0].GetUInt64() == expectedMoney &&
+        row->Fetch()[1].GetUInt32() == 1 && row->Fetch()[2].GetUInt32() == active.StartTime + active.Timer,
+        "Native gold and receipt did not commit together to the shadow transaction");
+    std::cout << "PROGRESSION " << questId << " kills=" << guid - 190000 << " completion and one persisted reward\n";
+}
+#endif
+
 int main(int argc, char** argv)
 {
     try
     {
         InitializeDungeon(argc, argv, true);
+#ifdef LEGION_ROTATION_PROGRESSION
+        InitializeRewardFixture();
+        LoadRandomEnchantmentsTable();
+#endif
         DisableMgr::LoadDisables();
         sObjectMgr->LoadItemTemplates();
         sObjectMgr->LoadItemTemplateAddon();
         sQuestDataStore->LoadQuests();
+#ifdef LEGION_ROTATION_PROGRESSION
+        LoadLootTables();
+#endif
 
         std::unordered_map<uint32, std::vector<uint32>> outdoor{{1220, {}}};
         dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe(outdoor);
@@ -244,6 +406,9 @@ int main(int argc, char** argv)
             Require(LiveConversations().empty() && eligible.GetQuestStatus(test.QuestId) == QUEST_STATUS_INCOMPLETE,
                 "Repeated polling replayed the introduction or changed objective progress");
 
+#ifdef LEGION_ROTATION_PROGRESSION
+            CheckProgressAndReward(eligible, locked, quest, (*rotations)[quest->QuestSortID][test.QuestId]);
+#endif
             (*rotations)[quest->QuestSortID][test.QuestId].ResetTime = GameTime::GetGameTime();
             late.PumpCallbacks();
             Require(late.FindQuestSlot(test.QuestId) == MAX_QUEST_LOG_SIZE, "An expired task was offered from a queued refresh");

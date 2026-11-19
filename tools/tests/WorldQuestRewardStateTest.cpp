@@ -69,6 +69,7 @@ struct Player:Object{
  QuestStatus GetQuestStatus(uint32)const{return state.Status;}
  bool IsQuestDailyRewarded(uint32)const{return false;}bool IsQuestWeekRewarded(uint32)const{return false;}bool IsQuestSeasonalRewarded(uint32)const{return false;}
  bool GetQuestRewardStatus(uint32)const{return false;}uint32 GetItemCount(uint32)const{return 100;}
+ uint32 GetQuestObjectiveData(uint32,uint32)const{throw std::runtime_error("Unexpected unrelated quest objective gate in world reward fixture");}
  void SendEquipError(uint32,void*,void*,uint32){}
  bool HasCurrency(uint32,uint32)const{return true;}bool HasEnoughMoney(uint64)const{return true;}
  bool CanTakeQuest(Quest const*,bool)const{return true;}
