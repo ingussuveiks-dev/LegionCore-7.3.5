@@ -70,6 +70,7 @@ foreach($pair in @(
  @('WorldQuest const* QuestDataStoreMgr::GenerateNewWorldQuest(','GenerateNew'),
  @('WorldQuest const* QuestDataStoreMgr::GenerateWorldQuest(','Generate'),
  @('bool QuestDataStoreMgr::CanBeActivate(','CanActivate'),
+ @('bool QuestDataStoreMgr::HasConflictingWorldQuestState(','WorldStateConflict'),
  @('void QuestDataStoreMgr::AddWorldQuestTask(','AddWorldQuestTask'),
  @('WorldQuest const* QuestDataStoreMgr::GetWorldQuest(','GetWorldQuest'),
  @('while (countQuest > 0 && !_wQS.empty())','CandidateLoop'))){

@@ -1,13 +1,15 @@
+param([string]$ReleaseDirectory)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$exe="$repo/build-extractors/bin/Release/worldserver.exe"
+if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"}
+$exe=Join-Path $ReleaseDirectory 'worldserver.exe'
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $release=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
 $relative=$release.Link.AdditionalDependencies.Split(';') | Where-Object {$_ -match 'game\\Release\\game.lib$'} | Select-Object -First 1
 if(!$relative){throw 'Missing actual game final-link input'}
 $lib=[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $relative))
 if((Get-Item "$repo/src/server/game/Globals/QuestData.cpp").LastWriteTimeUtc -gt (Get-Item $lib).LastWriteTimeUtc -or (Get-Item $lib).LastWriteTimeUtc -gt (Get-Item $exe).LastWriteTimeUtc){throw 'Canonical executable/core library predates quest activation source'}
-$map=Get-Content "$repo/build-extractors/bin/Release/worldserver.map" -Raw
+$map=Get-Content (Join-Path $ReleaseDirectory 'worldserver.map') -Raw
 function Symbol([string]$name){
  $index=$map.IndexOf(' '+$name)
  if($index -lt 0){throw "Missing canonical symbol $name"}
@@ -66,7 +68,10 @@ function Calls([string]$name){
   if($binary[$at+$i] -in @(0xe8,0xe9)){try{Resolve ($range[0]+$i+5+[BitConverter]::ToInt32($binary,$at+$i+1))}catch{}}
  }
 }
-$admission='?CanBeActivate@QuestDataStoreMgr@@';$range=Bounds $admission;$at=Offset $range[0];$markers=0
+$admission='?CanBeActivate@QuestDataStoreMgr@@'
+$conflict='?HasConflictingWorldQuestState@QuestDataStoreMgr@@'
+if(@(Calls $admission) -notcontains (Resolve (Symbol $conflict))){throw 'Deployed admission lacks the shared world-state check'}
+$range=Bounds $conflict;$at=Offset $range[0];$markers=0
 for($i=0;$i -lt $range[1]-$range[0]-3;$i++){
  if($binary[$at+$i] -eq 0x86 -and $binary[$at+$i+1] -eq 0x31 -and $binary[$at+$i+2] -eq 0 -and $binary[$at+$i+3] -eq 0){++$markers}
 }
@@ -87,6 +92,6 @@ if($markers -lt 2){
  New-Item -ItemType Directory -Force $out | Out-Null
  $listing | Set-Content "$out/admission-disassembly.txt"
 }
-if(@(Calls $admission) -notcontains (Resolve (Symbol '?GetGameTime@GameTime@@'))){throw 'Deployed admission lacks native time lookup'}
+if(@(Calls $conflict) -notcontains (Resolve (Symbol '?GetGameTime@GameTime@@'))){throw 'Deployed shared-state check lacks native time lookup'}
 if(@(Calls '?GenerateWorldQuestUpdate@QuestDataStoreMgr@@') -notcontains (Resolve (Symbol $admission))){throw 'Deployed automatic scheduler does not call admission'}
-'PASS: actual canonical game.lib source freshness; PE exception-bounded admission contains both shared-state12678 checks and clock call; deployed automatic scheduler calls it. Binary inspection supplements native behavioral tests; no live quest/client claim.'
+'PASS: actual game.lib source freshness; linked admission contains both shared-state12678 checks and clock call; automatic scheduler calls it. Binary inspection supplements native behavioral tests; no live quest/client claim.'

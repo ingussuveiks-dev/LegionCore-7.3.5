@@ -32688,10 +32688,28 @@ void Player::UpdateAreaQuestTasks(uint32 newAreaId, uint32 oldAreaId)
         }
     }
 
-    questAdd.clear();
+    UpdateWorldQuestAreaTasks(newAreaId, oldAreaId);
+}
 
+void Player::RefreshWorldQuestAreaTasks()
+{
+    if (!IsInWorld() || IsBeingTeleported())
+        return;
+
+    uint32 zoneId, areaId;
+    GetZoneAndAreaId(zoneId, areaId);
+    if (zoneId)
+        UpdateWorldQuestAreaTasks(zoneId, zoneId);
+    if (areaId && areaId != zoneId)
+        UpdateWorldQuestAreaTasks(areaId, areaId);
+}
+
+void Player::UpdateWorldQuestAreaTasks(uint32 newAreaId, uint32 oldAreaId)
+{
     if (!sWorld->getBoolConfig(CONFIG_WORLD_QUEST))
         return;
+
+    std::list<uint32> questAdd;
 
     if (std::set<Quest const*> const* qInfo = sQuestDataStore->GetWorldQuestTask(newAreaId))
     {

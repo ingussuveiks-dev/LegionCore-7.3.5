@@ -62,6 +62,7 @@ WorldQuestMap const* QuestDataStoreMgr::GetWorldQuestMap() const
 void QuestDataStoreMgr::LoadWorldQuestTemplates()
 {
     _worldQuestAreaTaskStore.clear();
+    _worldQuestAreasToRefresh.clear();
     _worldQuestTemplate.clear();
     for (uint8 i = 0; i < QUEST_INFO_MAX; ++i)
     {
@@ -2961,7 +2962,8 @@ WorldQuest const* QuestDataStoreMgr::GetWorldQuest(Quest const* quest)
     if (!quest)
         return nullptr;
 
-    return Trinity::Containers::MapGetValuePtr(_worldQuest[quest->QuestSortID], quest->GetQuestId());
+    auto zone = _worldQuest.find(quest->QuestSortID);
+    return zone == _worldQuest.end() ? nullptr : Trinity::Containers::MapGetValuePtr(zone->second, quest->GetQuestId());
 }
 
 WorldQuest const* QuestDataStoreMgr::GenerateNewWorldQuest(uint32 QuestID, uint32 VariableID)
@@ -2975,7 +2977,7 @@ WorldQuest const* QuestDataStoreMgr::GenerateNewWorldQuest(uint32 QuestID, uint3
     if (!worldQuest)
         return nullptr;
     WorldQuestUpdate const* worldQuestU = GetWorldQuestUpdate(QuestID, quest->QuestInfoID, VariableID);
-    if (!worldQuestU)
+    if (!worldQuestU || (worldQuestU->VariableID != 12678 && HasConflictingWorldQuestState(*worldQuestU)))
         return nullptr;
 
     auto result = GenerateWorldQuest(worldQuestU, worldQuest);
@@ -3075,11 +3077,17 @@ uint32 QuestDataStoreMgr::GetWorldQuestFactionAnalog(uint32 questId, bool findAl
 
 void QuestDataStoreMgr::AddWorldQuestTask(Quest const* quest)
 {
+    auto addAreaTask = [this, quest](uint32 areaId)
+    {
+        if (_worldQuestAreaTaskStore[areaId].insert(quest).second && areaId)
+            _worldQuestAreasToRefresh.insert(areaId);
+    };
+
     if (quest->AreaGroupID > 0)
     {
         std::vector<uint32> areaGroupMembers = sDB2Manager.GetAreasForGroup(quest->AreaGroupID);
         for (uint32 areaId : areaGroupMembers)
-            _worldQuestAreaTaskStore[areaId].insert(quest);
+            addAreaTask(areaId);
     }
     else
     {
@@ -3087,7 +3095,7 @@ void QuestDataStoreMgr::AddWorldQuestTask(Quest const* quest)
         if (worldQuest && !worldQuest->AreaIDs.empty())
         {
             for (std::vector<uint32>::const_iterator itr = worldQuest->AreaIDs.begin(); itr != worldQuest->AreaIDs.end(); ++itr)
-                _worldQuestAreaTaskStore[*itr].insert(quest);
+                addAreaTask(*itr);
             return;
         }
 
@@ -3100,7 +3108,7 @@ void QuestDataStoreMgr::AddWorldQuestTask(Quest const* quest)
                     {
                         do
                         {
-                            _worldQuestAreaTaskStore[(*result)[0].GetUInt16()].insert(quest);
+                            addAreaTask((*result)[0].GetUInt16());
                         } while (result->NextRow());
                     }
                     break;
@@ -3109,7 +3117,7 @@ void QuestDataStoreMgr::AddWorldQuestTask(Quest const* quest)
                     {
                         do
                         {
-                            _worldQuestAreaTaskStore[(*result)[0].GetUInt16()].insert(quest);
+                            addAreaTask((*result)[0].GetUInt16());
                         } while (result->NextRow());
                     }
                     break;
@@ -3118,6 +3126,24 @@ void QuestDataStoreMgr::AddWorldQuestTask(Quest const* quest)
             }
         }
     }
+}
+
+void QuestDataStoreMgr::QueueWorldQuestTaskRefreshes()
+{
+    if (_worldQuestAreasToRefresh.empty())
+        return;
+
+    // The world thread publishes a batch. Map threads own each player's
+    // location check and admission, including any transition since publication.
+    auto areas = std::make_shared<std::unordered_set<uint32>>();
+    areas->swap(_worldQuestAreasToRefresh);
+    for (auto const& session : sWorld->GetAllSessions())
+        if (Player* player = session.second->GetPlayer())
+            player->AddDelayedEvent(0, [player, areas]
+            {
+                if (areas->count(player->GetCurrentZoneID()) || areas->count(player->GetCurrentAreaID()))
+                    player->RefreshWorldQuestAreaTasks();
+            });
 }
 
 void QuestDataStoreMgr::RemoveWorldQuestTask(Quest const* quest)
@@ -3146,24 +3172,8 @@ bool QuestDataStoreMgr::CanBeActivate(WorldQuestTemplate const* qTemplate, World
     if (questUpdate->EventID)
         return false;
 
-    // The native Helarjar tasks share world state12678: Grey Shoals=1,
-    // Rockaway Coast=2, Vrekt=3. A second zone must not overwrite the
-    // still-active landing's client visibility expression.
-    if (questUpdate->VariableID == 12678)
-    {
-        auto now = GameTime::GetGameTime();
-        for (auto const& zone : _worldQuest)
-            for (auto const& entry : zone.second)
-            {
-                WorldQuest const& active = entry.second;
-                if (active.ResetTime <= now)
-                    continue;
-
-                for (auto const& state : active.State)
-                    if (state.first == 12678 && state.second && state.second != questUpdate->Value)
-                        return false;
-            }
-    }
+    if (HasConflictingWorldQuestState(*questUpdate))
+        return false;
 
     switch (qTemplate->QuestInfoID)
     {
@@ -3189,6 +3199,53 @@ bool QuestDataStoreMgr::CanBeActivate(WorldQuestTemplate const* qTemplate, World
             break;
     }
     return true;
+}
+
+bool QuestDataStoreMgr::HasConflictingWorldQuestState(WorldQuestUpdate const& questUpdate) const
+{
+    uint32 variableId = questUpdate.VariableID;
+    uint32 alternativeVariable = 0;
+    uint32 alternativeValue = 0;
+    switch (variableId)
+    {
+        case 12678: // Helarjar landings share one state selector.
+            break;
+        case 13114: // An active lich quest hides the Wailing Dead's phase 7061.
+            if (questUpdate.Value == 2)
+                alternativeVariable = 13071;
+            break;
+        case 13071:
+            alternativeVariable = 13114;
+            alternativeValue = 2;
+            break;
+        case 12978: // An active Felskorn quest hides the garrison's phase 7147.
+            if (questUpdate.Value == 3)
+                alternativeVariable = 12979;
+            break;
+        case 12979:
+            alternativeVariable = 12978;
+            alternativeValue = 3;
+            break;
+        default:
+            return false;
+    }
+
+    auto now = GameTime::GetGameTime();
+    for (auto const& zone : _worldQuest)
+        for (auto const& entry : zone.second)
+        {
+            WorldQuest const& active = entry.second;
+            // A Broken Shore variant still registered for cleanup can clear
+            // the shared variable when it is removed, even after it expires.
+            if (variableId == 12678 && active.ResetTime <= now)
+                continue;
+
+            for (auto const& state : active.State)
+                if (state.second && ((state.first == variableId && state.second != questUpdate.Value) ||
+                    (alternativeVariable && state.first == alternativeVariable && (!alternativeValue || state.second == alternativeValue))))
+                    return true;
+        }
+    return false;
 }
 
 WorldQuestRecipe const* QuestDataStoreMgr::GetRecipesForQuest(uint32 QuestID)

@@ -2503,6 +2503,7 @@ void World::Update(uint32 diff)
 
     /// <li> Handle all other objects
     ///- Update objects when the timer has passed (maps, transport, creatures, ...)
+    sQuestDataStore->QueueWorldQuestTaskRefreshes();
     sMapMgr->Update(diff);
 
     if (sWorld->getBoolConfig(CONFIG_AUTOBROADCAST))

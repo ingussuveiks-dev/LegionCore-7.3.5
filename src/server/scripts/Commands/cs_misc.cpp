@@ -4369,9 +4369,14 @@ public:
 
         if (!QuestId)
             return false;
-        handler->PSendSysMessage("Add %u World Quest", QuestId);
+        if (!sQuestDataStore->GenerateNewWorldQuest(QuestId))
+        {
+            handler->PSendSysMessage("Could not activate World Quest %u. Check its rotation data and active world states.", QuestId);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
-        sQuestDataStore->GenerateNewWorldQuest(QuestId);
+        handler->PSendSysMessage("Add %u World Quest", QuestId);
         return true;
     }
 

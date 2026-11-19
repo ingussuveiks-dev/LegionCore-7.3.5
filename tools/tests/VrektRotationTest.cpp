@@ -7,6 +7,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 using uint32=uint32_t;using uint16=uint16_t;using uint8=uint8_t;using int16=int16_t;
 #define TC_LOG_DEBUG(...) ((void)0)
@@ -65,6 +66,7 @@ struct QuestDataStoreMgr {
  std::map<uint32,std::map<uint32,std::vector<WorldQuestUpdate>>> _worldQuestUpdate;
  std::map<uint32,std::map<uint32,WorldQuest>> _worldQuest;
  std::map<uint32,std::set<Quest const*>> _worldQuestAreaTaskStore;
+ std::unordered_set<uint32> _worldQuestAreasToRefresh;
  uint32 WorldLegionInvasionZoneID=0,generated=0,saved=0;
  Quest const* GetQuestTemplate(uint32 id){return Trinity::Containers::MapGetValuePtr(quests,id);}
  WorldQuestTemplate const* GetWorldQuestTemplate(Quest const*);
@@ -74,6 +76,7 @@ struct QuestDataStoreMgr {
  WorldQuest const* GetWorldQuest(Quest const*);
  std::set<Quest const*> const* GetWorldQuestTask(uint32 area){return Trinity::Containers::MapGetValuePtr(_worldQuestAreaTaskStore,area);}
  bool CanBeActivate(WorldQuestTemplate const*,WorldQuestUpdate const*);
+ bool HasConflictingWorldQuestState(WorldQuestUpdate const&)const;
  void CalculateWorldQuestReward(WorldQuestTemplate const*,WorldQuest*){++generated;}
  void AddWorldQuestTask(Quest const*);void SaveWorldQuest(){++saved;}
  void Candidate(WorldQuestUpdate const* update){
@@ -87,6 +90,7 @@ struct QuestDataStoreMgr {
 #include "GenerateNew.inc"
 #include "Generate.inc"
 #include "CanActivate.inc"
+#include "WorldStateConflict.inc"
 #include "AddWorldQuestTask.inc"
 #include "GetWorldQuest.inc"
 
@@ -94,6 +98,12 @@ constexpr uint32 MAX_QUEST_LOG_SIZE=25,QUEST_REQUIRED=3,QUEST_STATUS_REWARDED=6;
 struct Group {bool raid=false;bool isRaidGroup()const{return raid;}};
 struct Map {uint32 GetDifficultyID()const{return 0;}};
 struct Player;
+static bool MeetsQuestTaskPrerequisites(Player const&, QuestV2CliTaskEntry const& task)
+{
+ Require(std::none_of(std::begin(task.FiltCompletedQuest),std::end(task.FiltCompletedQuest),[](uint32 id){return id!=0;}),
+  "Fixture must use the real landing condition for prerequisites");
+ return true;
+}
 struct ConditionMgr {bool IsPlayerMeetingCondition(Player*,uint32); } conditionMgr;
 auto sConditionMgr=&conditionMgr;
 QuestDataStoreMgr* sQuestDataStore=nullptr;

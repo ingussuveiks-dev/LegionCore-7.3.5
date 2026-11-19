@@ -209,6 +209,7 @@ public:
     WorldQuestMap const* GetWorldQuestMap() const;
     WorldQuest const* GetWorldQuest(Quest const* Quest);
     std::set<Quest const*> const* GetWorldQuestTask(uint32 areaId) const;
+    void QueueWorldQuestTaskRefreshes();
     void LoadWorldQuestTemplates();
     void GenerateWorldQuestUpdate();
     void GenerateInvasionPointUpdate();
@@ -277,11 +278,13 @@ private:
     void SaveWorldQuest();
     void ResetWorldQuest();
     bool CanBeActivate(WorldQuestTemplate const* qTemplate, WorldQuestUpdate const* questUpdate);
+    bool HasConflictingWorldQuestState(WorldQuestUpdate const& questUpdate) const;
     WorldQuestRecipe const* GetRecipesForQuest(uint32 QuestID);
     uint32 GetWorldQuestFactionAnalog(uint32 questId, bool findAllianceQuest) const;
     WorldQuest const* GenerateWorldQuest(WorldQuestUpdate const* worldQuestU, WorldQuestTemplate const* wqTemplate);
 
     QuestAreaTaskMap _worldQuestAreaTaskStore;
+    std::unordered_set<uint32> _worldQuestAreasToRefresh;
     WorldQuestTemplateMap _worldQuestTemplate;
     WorldQuestUpdateMap _worldQuestUpdate[QUEST_INFO_MAX];
     WorldQuestUpdateSet _worldQuestSet[QUEST_INFO_MAX];
