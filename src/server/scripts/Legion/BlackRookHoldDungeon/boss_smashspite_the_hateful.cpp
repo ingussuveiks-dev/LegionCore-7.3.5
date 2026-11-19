@@ -239,6 +239,7 @@ struct npc_brh_fel_bat : public ScriptedAI
     npc_brh_fel_bat(Creature* creature) : ScriptedAI(creature) {}
 
     ObjectGuid targetGUID;
+    ObjectGuid commandCasterGUID;
     bool wpRun = false;
     uint32 despawnTimer = 0;
     uint32 findTargetTimer = 0;
@@ -247,6 +248,8 @@ struct npc_brh_fel_bat : public ScriptedAI
     {
         me->SetReactState(REACT_AGGRESSIVE);
         targetGUID.Clear();
+        commandCasterGUID.Clear();
+        findTargetTimer = 0;
 
         if (me->isSummon() && !wpRun)
         {
@@ -269,6 +272,28 @@ struct npc_brh_fel_bat : public ScriptedAI
             findTargetTimer = 200;
         }
     }
+
+    void SetGUID(ObjectGuid const& guid, int32 id) override
+    {
+        if (me->GetMapId() != 1501)
+            return;
+        if (id == -203163)
+        {
+            auto commander = Unit::GetUnit(*me, guid);
+            commandCasterGUID = commander && commander->GetEntry() == 102788 && commander->IsAlive() && commander->GetMap() == me->GetMap() ? guid : ObjectGuid::Empty;
+        }
+        else if (id == 203163 && !commandCasterGUID.IsEmpty())
+        {
+            auto target = Unit::GetUnit(*me, guid);
+            if (target && target->IsPlayer() && target->IsAlive() && target->HasAura(SPELL_SIC_BATS, commandCasterGUID) && me->IsValidAttackTarget(target))
+            {
+                targetGUID = guid;
+                findTargetTimer = 200;
+            }
+        }
+    }
+
+    ObjectGuid GetGUID(int32 id) override { return id == 203163 ? targetGUID : ObjectGuid::Empty; }
 
     void UpdateAI(uint32 diff) override
     {
@@ -294,8 +319,18 @@ struct npc_brh_fel_bat : public ScriptedAI
                 findTargetTimer = 0;
                 auto target = Unit::GetUnit(*me, targetGUID);
 
-                if (target && target->HasAura(SPELL_SIC_BATS))
+                if (target && target->IsAlive() && target->HasAura(SPELL_SIC_BATS, commandCasterGUID))
+                {
+                    if (me->getVictim() != target)
+                        SetGazeOn(target);
                     findTargetTimer = 1000;
+                }
+                else if (!commandCasterGUID.IsEmpty())
+                {
+                    targetGUID.Clear();
+                    commandCasterGUID.Clear();
+                    me->SetReactState(REACT_AGGRESSIVE);
+                }
                 else if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true, SPELL_SIC_BATS))
                 {
                     targetGUID = target->GetGUID();
@@ -305,6 +340,7 @@ struct npc_brh_fel_bat : public ScriptedAI
                 else
                 {
                     targetGUID.Clear();
+                    commandCasterGUID.Clear();
                     me->SetReactState(REACT_AGGRESSIVE);
                 }
             }

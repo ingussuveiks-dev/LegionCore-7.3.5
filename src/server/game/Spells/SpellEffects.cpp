@@ -5378,6 +5378,19 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
 
             switch (m_spellInfo->Id)
             {
+                case 203163: // Sic Bats!: the native allied-area effect reaches each real bat.
+                {
+                    Unit* marked = m_targets.GetUnitTarget();
+                    if (effIndex == EFFECT_2 && m_caster->GetMapId() == 1501 && m_caster->GetEntry() == 102788 &&
+                        unitTarget && unitTarget->GetEntry() == 102781 && unitTarget->IsCreature() && unitTarget->IsAIEnabled &&
+                        marked && marked->IsPlayer() && marked->IsAlive() &&
+                        marked->GetMap() == m_caster->GetMap() && marked->HasAura(203163, m_caster->GetGUID()))
+                    {
+                        unitTarget->ToCreature()->AI()->SetGUID(m_caster->GetGUID(), -203163);
+                        unitTarget->ToCreature()->AI()->SetGUID(marked->GetGUID(), 203163);
+                    }
+                    break;
+                }
                 case 241856: // Slayer's Felbroken Shrieker
                 {
                     if (Player* player = m_caster->ToPlayer())

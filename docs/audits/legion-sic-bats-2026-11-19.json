@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "cause": "Commander102788 referenced absent SmartAI LINK2; actual bat102781 accepted its first203163 mark but retained the old target after a second command and stopped rearming target lookup.",
+  "repair": "Native203163/effect2 hands each actual nearby102781 its live commander and selected marked player; bounded native reacquisition and latest-mark expiry/reset. Remove only the orphan LINK,retain both authored casts/timers/native area targeting.",
+  "native": "Three actual bats switch between two real marked players,ignore stale older mark after latest expires,and clear on evade. Pinned bbeed94c5 old bat body reproduces old target retention (11 expected-broken checks),not an ordinary passing run. No modern four-bat cap copied.",
+  "files": [
+    "src/server/game/Spells/SpellEffects.cpp",
+    "src/server/scripts/Legion/BlackRookHoldDungeon/boss_smashspite_the_hateful.cpp",
+    "sql/updates/world/2026_11_19_04_brh_sic_bats.sql"
+  ],
+  "regression_audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json"
+}
