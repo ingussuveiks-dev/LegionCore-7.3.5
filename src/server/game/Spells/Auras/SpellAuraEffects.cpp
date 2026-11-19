@@ -7729,6 +7729,15 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster, 
 
     if (triggeredSpellInfo)
     {
+        // Nightmares is anchored on its afflicted player, but its hazards are
+        // still the Felsworn Infester's hostile spell. Preserve that owner while
+        // the native player-only damage condition selects eligible recipients.
+        ObjectGuid originalTriggerCaster;
+        if (caster && target && caster->GetMapId() == 1493 && caster->GetEntry() == 96587 &&
+            target->IsPlayer() && caster->GetMap() == target->GetMap() && triggerSpellId == 191641 &&
+            ((auraId == 191639 && GetEffIndex() == EFFECT_0) || (auraId == 193069 && GetEffIndex() == EFFECT_2)))
+            originalTriggerCaster = caster->GetGUID();
+
         if (Unit* triggerCaster = triggeredSpellInfo->NeedsToBeTriggeredByCaster(m_spellInfo, target->GetMap()->GetDifficultyID()) ? caster : target)
         {
             std::list<DynamicObject*> list;
@@ -7744,14 +7753,14 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster, 
             {
                 SpellCastResult checkResult = triggeredSpellInfo->CheckExplicitTarget(triggerCaster, target);
                 if (checkResult == SPELL_CAST_OK)
-                    triggerCaster->CastSpell(target, triggeredSpellInfo, true, castItem, this);
+                    triggerCaster->CastSpell(target, triggeredSpellInfo, true, castItem, this, originalTriggerCaster);
                 else if (Unit* _target = (triggerCaster->ToPlayer() ? triggerCaster->ToPlayer()->GetSelectedUnit() : triggerCaster->getVictim()))
                 {
                     checkResult = triggeredSpellInfo->CheckExplicitTarget(triggerCaster, _target);
                     if (checkResult == SPELL_CAST_OK)
-                        triggerCaster->CastSpell(_target, triggeredSpellInfo, true, castItem, this);
+                        triggerCaster->CastSpell(_target, triggeredSpellInfo, true, castItem, this, originalTriggerCaster);
                     else
-                        triggerCaster->CastSpell(triggerCaster, triggeredSpellInfo, true, castItem, this);
+                        triggerCaster->CastSpell(triggerCaster, triggeredSpellInfo, true, castItem, this, originalTriggerCaster);
                 }
             }
         }
