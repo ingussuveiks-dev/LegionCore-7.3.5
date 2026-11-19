@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "b06367587f11452698953a64628a573cf8cbf572",
+  "status": "Deployed and verified in the native server. Client traversal remains open.",
+  "cause": "Six outdoor EventObjects dispatch through SmartScript source 13. Seven conditions were stored under scene source 10, so the entry actions skipped their intended quest-state checks. EventObject 323 also pointed at a missing LINK 1.",
+  "repair": "Move the seven authored gates to source 13 and clear the dangling link on the checked EO323 conversation root. The native actions use their existing quest objective and group credit dispatch. The migration guards against removing a real continuation.",
+  "routes": [
+    {
+      "event": 199,
+      "quest": 43958,
+      "credit": 112029,
+      "conversation": 3423,
+      "gate": "Active quest and objective absent. Native credit precedes the conversation that requires nearby actor 112248."
+    },
+    {
+      "event": 234,
+      "quest": 46107,
+      "credit": 118968,
+      "conversation": 4504,
+      "gate": "Active quest."
+    },
+    {
+      "event": 236,
+      "quest": 45796,
+      "credit": 118047,
+      "conversation": 4325,
+      "gate": "Active quest."
+    },
+    {
+      "event": 250,
+      "quest": 42224,
+      "credit": 107446,
+      "conversation": 2306,
+      "gate": "Active quest."
+    },
+    {
+      "event": 322,
+      "quest": 45065,
+      "credit": 116020,
+      "conversation": 4023,
+      "gate": "Active quest."
+    },
+    {
+      "event": 323,
+      "quest": 45065,
+      "conversation": 4024,
+      "gate": "Complete quest pending reward."
+    }
+  ],
+  "checks": {
+    "counterfactual": "60 native cases reproduced the wrong-source behavior. The temporary counterfactual neutralized EO323 LINK 1 to isolate the admission defect. The original live row and absence of an EO323 link target were verified before migration.",
+    "native": "60 actual EventObject entry, phase, step, credit-cap and re-entry cases across Human and Orc. 30 actual native group cases cover an eligible near member, a member without the quest and an eligible distant member. EO199 also retains credit if its presentation actor is missing. Four controller cases cover both EO322/323 scheduling orders, including retry after leaving the area.",
+    "retained": "132 previous story dialogue cases and six actual NPC admission and re-entry cases passed.",
+    "deployment": "Both InnoDB tables were updated in one transaction while game processes were stopped. Readback verified seven source changes and one link change. Original rows were backed up. Hash comparisons covered all remaining conditions, SmartScripts and presentation and actor data.",
+    "startup": "Owned canonical worldserver PID 29488 reached ready and exited 0 on server shutdown 0. No new crashes, errors, warnings or assertions. Standard error was empty. The 162eb5 canonical binary was used directly for this data-only fix."
+  },
+  "remaining": [
+    "EO197 and EO501 have additional objective or aura gates. EO367 has a negative objective check whose intended standalone eligibility needs confirmation. EO533 has a delayed invoker cast. They require their own sequence verification.",
+    "If EO323 processes entry before quest 45065 completes, the entry is consumed and the dialogue can start on the next entry. Both orders were tested.",
+    "Client audio, real quest routes and phase placement remain separate. Native fixtures publish controlled accepted quest states and test actors. The area credit actions consume an entering player and do not require killing a creature. Pet or guardian kills in the surrounding quest chain were outside this change.",
+    "The first fixture invocation hit a case-insensitive PowerShell variable collision before starting any native test. The wrapper now keeps the previous environment value separate and writes its private config inside the cleanup scope."
+  ],
+  "canonical": {
+    "worldserver_sha256": "162eb5cacc0109bb7c7336ff23010a2333bb0a0fda6c37854138360d35f1412f"
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-linked-area-credit",
+    "status": "Pending hash verification and test build cleanup"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-192942-849/native.tsv": "39f0ce1a693a44e193a61aab0dac02a68be468b07e70b62c7dc4f4a738ef7071",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-192942-849/evidence/diagnostics-after.json": "2b035605a2b17092ab0e54a0ded8e3a660cbebb2e9a5fed28bfeaa521f12ada4",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-193130-729/native.tsv": "b1c5653ee587932f03d7a0e70071326ff11738848af96b1c7ea544ee625a6286",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-193130-729/evidence/diagnostics-after.json": "b26479ef3dde4308b2beb26c2b1655ddf23e6eb922725b5c8f1fd637e11d55a4",
+    "build-extractors/runtime-test/legion-story-dialogue/20261119-193152-651/native.tsv": "0a8737bb738ad44da9e1c3355974c1e9b239f496bc0c50fae87d59983f977ecc",
+    "build-extractors/runtime-test/legion-story-dialogue/20261119-193152-651/evidence/diagnostics-after.json": "0729d74b584e27e2be364ac3f6cf220c6696ad9fb6c47e268ecbed79833246f6",
+    ".codex/linked-area-20261119/area-linked-trace.tsv": "99a4fb840dbcfbefd2435df2ecf04c476e02aa3529ec340bf9769f162469a364",
+    ".codex/linked-area-20261119/area-credit-objectives.tsv": "bc9caa4fc418da7cc2f14af49376ca167dde7ffa150194a399ff8e21ffad14cb",
+    ".codex/linked-area-20261119/area-linked-neighbors.tsv": "e336c935fdac75f9341ce2993ba205483fd49fc96ccc89e54be6b83fbcb661f8",
+    ".codex/linked-area-20261119/live-conditions-before.tsv": "fa70168c87cf50d8f1add742dc0daf2d829fd22e0012ab2448fadb6092b9541a",
+    ".codex/linked-area-20261119/live-conditions-after.tsv": "c97e646968640ab30adf8b42d6bcb71cfc1b43c33fc96540f554c10e749aa9db",
+    ".codex/linked-area-20261119/live-root-before.tsv": "dc1d0b5bf9350d48e359238c8a9f2ed74c173245a080e2edd6f518a9301dd108",
+    ".codex/linked-area-20261119/live-root-after.tsv": "53b7767aba62d78633374cf24b805afdfac5b174777b852e429b44ef1d07daaf",
+    ".codex/linked-area-20261119/live-deployment.json": "1575a802f956937e3eabe1d3104d6b36e1e5987d0b20b4b6f277d6c19ddb0018",
+    ".codex/linked-area-20261119/canonical-startup.log": "5a049eb797c18371cc379e0130591b3ecdff7ff8b4ebcb82d0fff6765a2a389b"
+  }
+}

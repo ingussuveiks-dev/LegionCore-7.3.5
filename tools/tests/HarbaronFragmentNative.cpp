@@ -65,9 +65,9 @@ static void InitializeDungeon(int argc,char**argv,bool allDungeons=false)
 }
 struct DungeonPlayer:Player
 {
-    DungeonPlayer(Map& map,uint8 race):Player(new WorldSession(0,"Isolated dungeon fixture",{},SEC_PLAYER,6,0,"Win",LOCALE_enUS,0,false,AT_AUTH_FLAG_NONE,{}))
+    DungeonPlayer(Map& map,uint8 race,uint32 low=101):Player(new WorldSession(0,"Isolated dungeon fixture",{},SEC_PLAYER,6,0,"Win",LOCALE_enUS,0,false,AT_AUTH_FLAG_NONE,{}))
     {
-        _Create(ObjectGuid::Create<HighGuid::Player>(101));SetByteValue(UNIT_FIELD_BYTES_0,0,race);SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_HUNTER);SetLevel(110);setFactionForRace(race);auto definition=sChrRacesStore.LookupEntry(race);Require(definition,"Native race missing");SetDisplayId(definition->MaleDisplayID);SetNativeDisplayId(definition->MaleDisplayID);SetObjectScale(1.f);SetFloatValue(UNIT_FIELD_BOUNDING_RADIUS,DEFAULT_WORLD_OBJECT_SIZE);SetFloatValue(UNIT_FIELD_COMBAT_REACH,DEFAULT_COMBAT_REACH);SetMaxHealth(1000000);SetHealth(1000000);
+        _Create(ObjectGuid::Create<HighGuid::Player>(low));SetByteValue(UNIT_FIELD_BYTES_0,0,race);SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_HUNTER);SetLevel(110);setFactionForRace(race);auto definition=sChrRacesStore.LookupEntry(race);Require(definition,"Native race missing");SetDisplayId(definition->MaleDisplayID);SetNativeDisplayId(definition->MaleDisplayID);SetObjectScale(1.f);SetFloatValue(UNIT_FIELD_BOUNDING_RADIUS,DEFAULT_WORLD_OBJECT_SIZE);SetFloatValue(UNIT_FIELD_COMBAT_REACH,DEFAULT_COMBAT_REACH);SetMaxHealth(1000000);SetHealth(1000000);
         SetMap(&map);Relocate(2934.49f,711.757f,554.286f,1.55255f);GetZoneAndAreaId(m_zoneId,m_areaId);GetSession()->SetPlayer(this);sWorld->IncreasePlayerCount();sObjectAccessor->AddObject(static_cast<Player*>(this));map.LoadGrid(GetPositionX(),GetPositionY());map.AddToGrid(static_cast<Player*>(this),Cell(Trinity::ComputeCellCoord(GetPositionX(),GetPositionY())));Unit::AddToWorld();GetMotionMaster()->Initialize();GetMapRef().link(&map,this);
     }
     ~DungeonPlayer(){CombatStop(true);CastStop();RemoveAllAuras();m_Events.KillAllEvents(true);UnbindInstance(1492,GetMap()->GetDifficultyID(),true);GetMapRef().unlink();Unit::RemoveFromWorld();RemoveFromGrid();sObjectAccessor->RemoveObject(static_cast<Player*>(this));GetSession()->SetPlayer(nullptr);ResetMap();}

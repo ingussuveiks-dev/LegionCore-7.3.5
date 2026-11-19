@@ -14,6 +14,7 @@ struct StoryActor:Creature{
  void AddToWorld()override{sObjectAccessor->AddObject(static_cast<Creature*>(this));Unit::AddToWorld();Require(AIM_Initialize(new NullCreatureAI(this)),"Controlled story actor AI failed");}
  ~StoryActor(){CombatStop(true);CastStop();RemoveAllAuras();m_Events.KillAllEvents(true);if(IsInWorld())GetMap()->RemoveFromMap(static_cast<Creature*>(this),false);ResetMap();}
 };
+#ifndef STORY_DIALOGUE_SUPPORT_ONLY
 int main(int argc,char**argv){try{
  InitializeDungeon(argc,argv,true);DisableMgr::LoadDisables();sObjectMgr->LoadItemTemplates();sObjectMgr->LoadItemTemplateAddon();sQuestDataStore->LoadQuests();
  std::unordered_map<uint32,std::vector<uint32>> outdoor{{1220,{}}};dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe(outdoor);MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe(outdoor);
@@ -86,3 +87,4 @@ int main(int argc,char**argv){try{
 #endif
  CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
+#endif
