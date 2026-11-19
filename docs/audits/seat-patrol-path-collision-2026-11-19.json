@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "APPLIED_NATIVE_SCHEMA_VERIFIED_CLIENT_TRAVERSAL_PENDING",
+  "cause": "Native path12961265 combines6 Seat1753/122404 points0..5 with13 outdoor1220/118786 points6..18. Native addon owners14505201,342743,342793 share the ID.",
+  "fix": "Clone exactly the6 surviving authored Seat nodes to reserved1467062100 and repoint only14505201. Remove those foreign6 from the old path,retaining every field and point ID of the13 surviving outdoor nodes. All3 owner/entry/map receipts and source values are guarded;idempotent.",
+  "provenance": "Matching local World plus immutable Git blob58fc6420b586d964fb552c30f9e44bc3bd845b88 in levrules/legioncore;also reproduced in reviewed packaged World. Fixture preserves the actual19 source records.",
+  "limits": "The original overwritten6 outdoor nodes were not recovered. The retained13-node outdoor flight loop is a bounded reconstruction from surviving native nodes,not recovered full original route fidelity. Outdoor template has no AIName/ScriptName and no118786/negative-owner SmartScript rows or waypoint callbacks. Seat voidbender has no waypoint callback and retains its shared C++ combat script.",
+  "checks": {
+    "sql_shadow": "Exact migration twice;Seat6/outdoor13,retained outdoor bytes/fields and persistent original source paths/addons unchanged during shadow test.",
+    "native_geometry": "6 complete native ground corridors in Seat.13 native flying paths for the outdoor template,CanFly1/type209;not represented as ground navigation or client flight verification.",
+    "canonical_readback": "New Seat6 and old outdoor13;native updater RELEASED hash matches tested LF SQL."
+  },
+  "evidence": [
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/seat-path-fixture-final-run.log",
+      "sha256": "193bfc3012e3ab4114fff38bb7dfd7a994349be76b6276aa7402791d59ae934d"
+    },
+    {
+      "path": "tools/tests/fixtures/SeatPatrolCollision.json",
+      "sha256": "6317769b467a8361011b5ca63cdd11d3e015185ea52ab4dff83eebf099e71eae"
+    },
+    {
+      "path": "build-extractors/runtime-test/legion-teeming-geometry/20261119-011459-738/surfaces.tsv",
+      "sha256": "98fe429e3a0e92b4eaaecb26013fb3a3b96ecf7ba0765a89972ce30d4a4cb596"
+    },
+    {
+      "path": ".codex/teeming-placement-20261118/path-script-guards.tsv",
+      "sha256": "d3499b7254953015ea59e318fafb6f01ad1290ae3d0953e47aaf284b5d7fdf58"
+    }
+  ],
+  "runtime": {
+    "worldserver_sha256": "307bb7ba80bf7d503ba41d30de3c5111e884175e394aab743da5e5f72a1c97b4",
+    "worldserver_map_sha256": "da1565df6ecbcd314e02d12ea534b981e21d1cf90f4c324168077783f13cf15d",
+    "directory": "build-extractors/bin/Release",
+    "model_assets_unchanged": {
+      "go31852.mmap": "700e4ff837fa373cdc9db6cc14183a98fbc0945ce12484518d73344ee77c2dce",
+      "go31853.mmap": "4f65c4f380f32355b2206cfcd8de11e8cd3dcaa10da5be60ad581211bf9afd7f"
+    },
+    "final_libraries": {
+      "scripts.lib": "e982a0ed3eba169c535331f6eec644f5c7c8973869bdd96b247b9108f58e940c",
+      "game.lib": "68f906a7f5a88e4be14ce43ef7f5da3f149c331ea4e994a871c2860febbe0420",
+      "common.lib": "114b9344112af0faf8ce230188d516d05c977f1f3a1d1f49d1179d2dd7c3d32e",
+      "shared.lib": "3678aef780de7db6687624fea80684c353b45c77644cf0e9e032ecc150ef4da6"
+    },
+    "final_link": "Original CMake GAME/SCRIPTS/SHARED/COMMON static-library paths;no global OutDir. Final PE selected implementations checked;canonical copies match staged hashes.",
+    "startup": {
+      "owned_pid": 14276,
+      "ready": true,
+      "shutdown": "server shutdown0",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "new_crashes": 0,
+      "new_DBErrors_bytes": 0,
+      "new_unexplained_server_diagnostics": 0,
+      "owned_background_server_retained": false
+    },
+    "protected_runtime_files": 20
+  },
+  "archive": "See legion-teeming-cleanup-2026-11-19.json.",
+  "fix_commit": "Commit containing this fix/audit;actual hash is also recorded in ignored archive manifests."
+}

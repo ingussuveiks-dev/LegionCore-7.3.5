@@ -11,7 +11,7 @@
 
 struct PhysicalSupportShip : GameObject
 {
-    explicit PhysicalSupportShip(InstanceMap& map)
+    explicit PhysicalSupportShip(Map& map)
     {
         auto row=WorldDatabase.Query("SELECT guid,position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3,phaseMask FROM gameobject WHERE map=1492 AND id=246919 AND (spawnMask&256)<>0 ORDER BY guid LIMIT 1");
         Require(bool(row),"Actual Maw ship DB placement absent");auto f=row->Fetch();
@@ -71,6 +71,7 @@ static void Surface(Map& map,char kind,uint64 id,uint32 entry,float x,float y,fl
     std::cout<<"SURFACE\t"<<kind<<'\t'<<id<<'\t'<<map.GetId()<<'\t'<<entry<<'\t'<<x<<'\t'<<y<<'\t'<<z<<'\t'<<area<<'\t'<<adt<<'\t'<<root<<'\t'<<group<<'\t'<<flags<<'\t'<<bool(query)<<'\t'<<nav<<'\t'<<nearest[2]<<'\t'<<nearest[0]<<'\t'<<nearest[1]<<'\t'<<polyFlags<<'\t'<<height<<'\t'<<radius<<'\t'<<body<<'\t'<<center<<'\t'<<foot<<'\t'<<footDelta<<'\t'<<supportEntry<<'\t'<<bool(modelQuery)<<'\t'<<modelNav<<'\t'<<modelNearest.x<<'\t'<<modelNearest.y<<'\t'<<modelNearest.z<<'\t'<<modelFlags<<'\n';
 }
 
+#ifndef LEGION_TEEMING_GEOMETRY_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     try
@@ -78,7 +79,13 @@ int main(int argc,char** argv)
         InitializeDungeon(argc,argv,true);auto path=std::getenv("LEGION_TEEMING_POINTS");Require(path,"Physical survey input missing");
         if(auto data=std::getenv("LEGION_MAW_MODEL_DATA"))for(uint32 id:{31852u,31853u})Require(MMAP::MMapFactory::createOrGetMMapManager()->loadGameObject(id,std::string(data)+'/'),"Explicit staged model navigation unavailable");
         std::ifstream input(path);Require(bool(input),"Physical survey input unreadable");std::string line;
-        std::map<uint32,std::unique_ptr<MapInstanced>> parents;std::map<uint32,std::unique_ptr<InstanceMap>> maps;
+        // Also admit explicitly requested native world maps when investigating
+        // a path-ID collision shared by dungeon and outdoor actors.
+        std::unordered_map<uint32,std::vector<uint32>> physicalMaps;
+        for(auto entry:sMapStore)if(entry->ExpansionID==6&&entry->InstanceType==MAP_INSTANCE)physicalMaps.emplace(entry->ID,std::vector<uint32>{});
+        {std::ifstream scan(path);std::string record;while(std::getline(scan,record)){std::istringstream fields(record);char kind;uint64 id;uint32 mapId;Require(bool(fields>>kind>>id>>mapId)&&sMapStore.LookupEntry(mapId),"Physical survey map absent in matching client");physicalMaps.emplace(mapId,std::vector<uint32>{});}}
+        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe(physicalMaps);MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe(physicalMaps);
+        std::map<uint32,std::unique_ptr<MapInstanced>> parents;std::map<uint32,std::unique_ptr<Map>> maps;
         std::unique_ptr<PhysicalSupportShip> ship;
         std::cout.precision(10);unsigned candidates=0,anchors=0;
         while(std::getline(input,line))
@@ -87,9 +94,12 @@ int main(int argc,char** argv)
             Require(bool(row>>kind>>id>>mapId>>entry>>x>>y>>z),"Physical survey row shape changed");
             if(!maps.count(mapId))
             {
-                parents[mapId]=std::make_unique<MapInstanced>(mapId,300);
-                maps[mapId]=std::make_unique<InstanceMap>(mapId,300,9947000+uint32(maps.size()),DIFFICULTY_MYTHIC_KEYSTONE,parents[mapId].get());
-                maps[mapId]->CreateInstanceData(nullptr);
+                if(sMapStore.LookupEntry(mapId)->Instanceable())
+                {
+                    parents[mapId]=std::make_unique<MapInstanced>(mapId,300);
+                    auto instance=std::make_unique<InstanceMap>(mapId,300,9947000+uint32(maps.size()),DIFFICULTY_MYTHIC_KEYSTONE,parents[mapId].get());instance->CreateInstanceData(nullptr);maps[mapId]=std::move(instance);
+                }
+                else maps[mapId]=std::make_unique<Map>(mapId,300,0,DIFFICULTY_NONE);
                 if(mapId==1492)ship=std::make_unique<PhysicalSupportShip>(*maps[mapId]);
             }
             auto& map=*maps[mapId];map.LoadGrid(x,y);
@@ -101,6 +111,7 @@ int main(int argc,char** argv)
             if(kind=='T')
             {
                 float dx,dy,dz;Require(bool(row>>dx>>dy>>dz),"Native path endpoint missing");
+                map.LoadGrid(dx,dy);
                 Require(map.AddToMap(static_cast<Creature*>(&actor)),"Native path survey publication failed");
                 PathGenerator path(&actor);bool accepted=path.CalculatePath(dx,dy,dz,false);
                 std::cout<<"PATH\t"<<id<<'\t'<<accepted<<'\t'<<uint32(path.GetPathType())<<'\t'<<path.GetPath().size()<<'\t'<<actor.CanFly()<<'\t'<<actor.CanSwim()<<'\n';
@@ -126,3 +137,4 @@ int main(int argc,char** argv)
         CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
     }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif
