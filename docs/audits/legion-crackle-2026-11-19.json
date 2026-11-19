@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "cause": "199805 dummy BasePoints0 and spell_trigger0 cast nonexistent spell0; player-host199818 also lost native96574 ownership and unscoped removal discarded overlapping/foreign fields.",
+  "repair": "Explicit native199807 missile ->199808/AT5578; scoped map1477/NPC96574 ownership for199818 and same-caster live-field overlap/removal guard.",
+  "native": "Actual parent/missile/area/ticks damage players; two same-caster fields and a second actual96574 caster preserve independent damage auras and cleanup.",
+  "files": [
+    "src/server/game/Entities/AreaTrigger/AreaTrigger.cpp",
+    "sql/updates/world/2026_11_19_02_hov_crackle.sql"
+  ],
+  "regression_audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json"
+}

@@ -1016,6 +1016,8 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
         return; // Missing/busy kit or pending native join; never replace that join.
 
     bool CallScriptAreaTriggerCast = false;
+    bool nativeCrackle = GetMapId() == 1477 && GetRealEntry() == 5578 && GetSpellId() == 199808 &&
+        _caster && _caster->GetEntry() == 96574 && unit->IsPlayer() && action.action->spellId == 199818;
 
     switch (action.action->actionType)
     {
@@ -1035,7 +1037,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
                 if (action.action->targetFlags & AT_TARGET_FLAG_CAST_AT_SRC)
                     caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZ(), action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
                 else
-                    caster->CastSpell(unit, action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
+                    caster->CastSpell(unit, action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem, nullptr, nativeCrackle ? _caster->GetGUID() : ObjectGuid::Empty);
 
                 CallScriptAreaTriggerCast = true;
             }
@@ -1043,6 +1045,16 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
         }
         case AT_ACTION_TYPE_REMOVE_AURA: // 1
         {
+            if (nativeCrackle)
+            {
+                std::list<AreaTrigger*> fields;
+                _caster->GetAreaObjectList(fields, 199808);
+                for (auto field : fields)
+                    if (field != this && field->IsInWorld() && !field->_on_remove && !field->_on_unload && field->IsUnitAffected(unit->GetGUID()))
+                        return; // Another actual field from this caster still contributes.
+                unit->RemoveAura(199818, _caster->GetGUID());
+                break;
+            }
             unit->RemoveAura(action.action->spellId);       //only one aura should be removed.
             break;
         }
