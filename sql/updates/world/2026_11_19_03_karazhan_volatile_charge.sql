@@ -1,0 +1,9 @@
+-- Native228320 uses an entry-area target;mark real players and burst at the actual228331 aura recipient.
+DROP TEMPORARY TABLE IF EXISTS combat_charge_guard;
+CREATE TEMPORARY TABLE combat_charge_guard (valid TINYINT NOT NULL CHECK (valid=1));
+INSERT INTO combat_charge_guard SELECT IF((SELECT COUNT(*) FROM spell_linked_spell WHERE spell_trigger=-228331)=1 AND (SELECT COUNT(*) FROM spell_linked_spell WHERE spell_trigger=-228331 AND spell_effect=228333 AND type=0 AND caster IN(0,5) AND target=0)=1,1,0);
+INSERT INTO combat_charge_guard SELECT IF(NOT EXISTS(SELECT 1 FROM conditions WHERE SourceTypeOrReferenceId=13 AND SourceEntry IN(228320,228333) AND NOT(SourceGroup=1 AND SourceId=0 AND ElseGroup=0 AND ConditionTypeOrReference=31 AND ConditionTarget=0 AND ConditionValue1=4 AND ConditionValue2=0 AND ConditionValue3=0 AND NegativeCondition=0 AND ErrorTextId=0 AND ScriptName='')),1,0);
+UPDATE spell_linked_spell SET caster=5 WHERE spell_trigger=-228331 AND spell_effect=228333 AND type=0 AND caster=0 AND target=0;
+INSERT INTO conditions (SourceTypeOrReferenceId,SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition,ErrorTextId,ScriptName,Comment) SELECT 13,1,228320,0,0,31,0,4,0,0,0,0,'','Volatile Charge: actual player mark targets' WHERE NOT EXISTS(SELECT 1 FROM conditions WHERE SourceTypeOrReferenceId=13 AND SourceGroup=1 AND SourceEntry=228320);
+INSERT INTO conditions (SourceTypeOrReferenceId,SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition,ErrorTextId,ScriptName,Comment) SELECT 13,1,228333,0,0,31,0,4,0,0,0,0,'','Volatile Charge: player-centred explosion recipients' WHERE NOT EXISTS(SELECT 1 FROM conditions WHERE SourceTypeOrReferenceId=13 AND SourceGroup=1 AND SourceEntry=228333);
+DROP TEMPORARY TABLE combat_charge_guard;

@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "cause": "228320/228333 entry-area selectors admitted NPCs; -228331 removal cast explosion228333 from the NPC rather than the actual marked recipient.",
+  "repair": "Exact native aura-target linked caster5 and player-only effect0 conditions for228320/228333; preserve original caster and payload.",
+  "native": "Actual mark/aura removal/explosion reaches players without NPC selfmark/selfdamage; exact SQL applied twice to TEMP catalogs.",
+  "files": [
+    "sql/updates/world/2026_11_19_03_karazhan_volatile_charge.sql"
+  ],
+  "regression_audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json"
+}
