@@ -67,12 +67,26 @@
     "video": "No footage reviewed for this repair. Two-hit semantics and child ID come from native data;100ms post-ack dispatch and bounded retry are implementation policy,not recovered original timing."
   },
   "archive": {
-    "status": "PENDING_FINAL_ARCHIVE_CLEANUP",
-    "directory": "build-extractors/bin/Release/fixed/2026-11-19-dark-hunt"
+    "status": "COMPLETE",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-dark-hunt",
+    "regression_commit": "b97eca3ee35be8dcfb1894bf18882c52380b37ca",
+    "manifest_sha256": "d305c1c36f5352d86fc01d3d74029dffa694d0c887c127d3da9e277c2fabab0d",
+    "deletion_manifest_sha256": "ac9868c26fb72250acdc0292fb9eeb8e3568c7bc4851ddb8c933fdba3c930493",
+    "archived_records": 270,
+    "removed_files": 230,
+    "removed_bytes": 2409354848.0,
+    "freed_bytes": 2409631744,
+    "verification": "Source/archive/source SHA256 and length verified before deletion;all recorded archived files reverified after cleanup and again while recording this audit. Native/driver evidence is under this archive at its original repository-relative path. Counterfactuals and fixture failures preserved,not mislabeled as ordinary passing runs. No private configuration bytes archived."
   },
   "remaining": [
     "Actual client animation/audio/shadow teleport presentation,player movement under real latency,multi-client party/pet positioning,reconnect and earned whole-dungeon boss/forces/loot traversal remain OPEN. No client used.",
     "All222 Teeming additions remain reconstructions,not recovered Blizzard/sniff SQL.",
     "The concrete99365 zero-cast gap is closed with native range/timer/pair/lifecycle checks.100364 and119978 are melee-only in their reviewed isolated script scope;their lack of timed casts is not evidence of a missing heal. No newly discovered repair remains unresolved in this follow-up."
-  ]
+  ],
+  "cleanup": {
+    "removed": "All current-task dated combat metadata/discovery/final runtimes,one staged Dark Hunt EXE/map/PDB/link output,the LegionDungeonCombatNative shared EXE/OBJ/compiler-PDB/ILK scratch,and freshly generated Scepter extracts/test EXE/OBJ/run script. Exact absolute paths/reparse boundaries checked;deletion manifest lists every removed file.",
+    "retained": "Canonical runtime/configuration/DLLs/shared extracted data and original required Release libraries preserved. Verified pre-Dark-Hunt8027 rollback retained for this repair;pre-combat307 and pre-Teeming reconstruction rollback retain their separate pending client recovery purposes. Older mixed completion/scepter/shared history left untouched.",
+    "deferred": "Older mixed completion/scepter/shared runtime history was not reviewed for disposal in this follow-up;left intact for separate diagnostic review. No current-task executable,symbol,isolated runtime or staged deployment is deferred.",
+    "canonical": "Protected canonical EXE/map/configuration/certificates/DLLs and rollback hashes identical after cleanup;Crashes empty,DBErrors0 bytes;no worldserver,bnetserver or task probe left running. Server.log history retained;no active log truncated."
+  }
 }
