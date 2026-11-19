@@ -1,0 +1,125 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "OFFLINE_FOCUSED_REPAIRS_COMPLETE_CLIENT_WHOLE_DUNGEONS_OPEN",
+  "scope": "Continue remaining Teeming timed-combat/evade and Mythic+ completion-to-inventory checks;13 routes/12 challenge maps. Controlled native endpoints are separate from an earned full dungeon.",
+  "issues": {
+    "crackle": "docs/audits/legion-crackle-2026-11-19.json",
+    "nightmares-ownership": "docs/audits/legion-nightmares-ownership-2026-11-19.json",
+    "volatile-charge": "docs/audits/legion-volatile-charge-2026-11-19.json",
+    "sic-bats": "docs/audits/legion-sic-bats-2026-11-19.json",
+    "demolisher-reset": "docs/audits/legion-demolisher-reset-2026-11-19.json",
+    "scavenger-reset": "docs/audits/legion-scavenger-reset-2026-11-19.json",
+    "challenge-gear-keystone": "docs/audits/legion-challenge-gear-keystone-2026-11-19.json",
+    "challenge-chest-links": "docs/audits/legion-challenge-chest-links-2026-11-19.json"
+  },
+  "tests": {
+    "combat": {
+      "directory": "build-extractors/runtime-test/legion-dungeon-combat/20261119-101811-690",
+      "result": "PASS 93155 native timed combat checks;contexts=103 interrupt attempts=71 repulls=103 damage contexts=103;up to90s rotation/native Frenzy self-death,actual corpse/respawn+evade+up to15s repull,stationary synthetic party/health checkpoints,not whole dungeon/client gameplay",
+      "post_test_diagnostics": "PASS;exit0,no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions"
+    },
+    "loot": {
+      "directory": "build-extractors/runtime-test/legion-challenge-loot-native/20261119-101147-615",
+      "result": "PASS 938 native challenge loot checks across52 controlled completion contexts/13 routes,solo+party,timed+late;actual SendLoot/StoreLootItem/reopen. No earned dungeon/client claim",
+      "post_test_diagnostics": "PASS;exit0,no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions"
+    },
+    "completion": {
+      "directory": "build-extractors/runtime-test/legion-challenge-completion-native/20261119-095829-907",
+      "result": "PASS 1005 native completion endpoint checks across104 contexts/13 routes/solo+party/all4 timer tiers:actual stored key upgrade/depletion,real placed chest and2/3 entitlement allocation,async prepared record/member persistence and idempotency. No real earned combat/forces,loot opening or client traversal claim",
+      "post_test_diagnostics": "PASS;exit0,no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions"
+    }
+  },
+  "tools": [
+    "tools/tests/LegionDungeonCombatNative.cpp",
+    "tools/tests/Test-LegionDungeonCombatNative.ps1",
+    "tools/tests/verify_legion_dungeon_combat_release.py",
+    "tools/tests/LegionChallengeLootNative.cpp",
+    "tools/tests/Test-LegionChallengeLootNative.ps1"
+  ],
+  "native_scope": {
+    "combat": "103 actual Teeming template representatives;real Creature/Unit/spell/aura/area/dynamic/summon updates in100ms steps,up to90s rotation+native evade/home+up to15s repull;actual Frenzy5% self-damage death/corpse/respawn is an authored endpoint. Two synthetic stationary player actors,controlled50%/25% health checkpoints,actual Counterspell attempts (count in the run result);do not equate attempt with successful interrupt.",
+    "loot": "52 registered native completion contexts/78 personal containers,13 routes,solo+party,timed+late. Actual DB chest poses/rotations and negative spawn semantics. Class/spec/skills controlled Hunter setup. All item pickups and pending/full-bag retries;native random legendary extras retained,excluded only from fixed gear entitlement assertion.",
+    "completion": "Retained1005 checks/104 contexts:all4 timer tiers,solo+party,2/3 gear entitlements,key upgrade/depletion,async TEMP prepared writes,idempotency and public record reload including split Karazhan."
+  },
+  "safety": {
+    "database": "World and permanent character/login/hotfix connections READ ONLY;only connection-local TEMP catalogs and empty completion/item_soulbound_trade_data tables writable. No real characters/items/keys/history modified by native probes.",
+    "processes": "Only task-owned canonical startup;fresh ready,graceful shutdown0,exit0,stderr empty. No user/unknown process stopped;none left.",
+    "deployment": "Original generated final-link library paths verified;staged separately then promoted while worldserver/bnetserver stopped;canonical EXE/map hashes verified,configuration/certificates/DLLs preserved. Canonical PE selected combat/health implementation and Scepter verifier pass."
+  },
+  "fixture_findings": [
+    "Native201061/effect2 is5% periodic max-health self-damage. A blanket90s survival assertion was invalid for the randomly selected Frenzy potion. Keep native damage/death,verify it with a controlled actual201061 cast and actual corpse/respawn,then exercise independent evade/re-pull. No production damage suppressed.",
+    "Initial native bootstrap omitted191642 player-only condition;early NPC selfdamage is a fixture artifact and is not production Nightmares evidence. Corrected full condition closure uses matching source13/17 rows.",
+    "Register actual AddSC_challenge_scripts and AddSC_generic_spell_scripts;Teeming is not default Quaking. Raw unbound Might caused spurious209858 casts in early probes;qualified registered runs supersede those counts.",
+    "Load DisableMgr before items/quests as actual startup;known-DB2-ID guard avoids interpreting dummy damage numbers as spell IDs. Reload actual dummy/triggered catalog as well as linked spells after TEMP migrations.",
+    "Creature respawn writes and item soulbound trade writes require TEMP tables on both synchronous/asynchronous character connections. Early READ ONLY rejections preserved as fixture failures and paired with passing scoped reruns;no persistent write permission granted.",
+    "CompletionChest earlier Create-only support omitted negative spawn semantics;new support copies actual DB spawntimesecs sign before native reward/loot. Loot fixture uses registered ScenarioMgr factory,not unregistered stack Scenario.",
+    "Per-player free-for-all loot uses native LootItemInSlot receipt rather than shared item.is_looted;random legendary drops and artifact-power items are legitimate extras;relics count as regular gear. Keystone138019 is handled by its separate native eligibility grant."
+  ],
+  "sources": {
+    "primary": "Matching local26972 DB2/spell effects,actual MariaDB data/native scripts/core;local newer TrinityCore reviewed as reference only.",
+    "github": [
+      {
+        "url": "https://github.com/BigWigsMods/LittleWigs/blob/master/Legion/HallsOfValor/Trash.lua",
+        "use": "Crackle spell-name/periodic-damage association only;modern addon is not recovered7.3.5 timing data."
+      },
+      {
+        "url": "https://github.com/BigWigsMods/LittleWigs/blob/master/Legion/BlackRookHold/Trash.lua",
+        "use": "Sic Bats names/target warnings only;no modern targeting cap copied."
+      }
+    ],
+    "video": "No new footage reviewed in this follow-up;no claim to have watched unseen sequences."
+  },
+  "canonical": {
+    "worldserver_sha256": "8027a89a8f23f54b4acf483844e7ea8c441edf15516e6cd2d4b0be62bfaf57aa",
+    "worldserver_map_sha256": "2ef629325e05e09452a3a341ff36f97af9a3cdbbe22d7d2cf4d98f5a2a01cb09",
+    "startup_log": ".codex/dungeon-combat-20261119/canonical-key-startup.log",
+    "startup_pid": 34776,
+    "post_test": "Crashes empty;DBErrors0 bytes;new warnings/errors/assertions0;PE+Scepter pass",
+    "selected_pe_log": ".codex/dungeon-combat-20261119/key-canonical-pe.log",
+    "scepter_log": ".codex/dungeon-combat-20261119/key-scepter.log",
+    "live_readback": ".codex/dungeon-combat-20261119/final-live-readback.tsv;all4 exact update hashes RELEASED;all5 live chest links match existing loot/encounters/personal fields."
+  },
+  "archive": {
+    "status": "PENDING_FINAL_VERIFIED_ARCHIVE_AND_CLEANUP",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-dungeon-combat-loot"
+  },
+  "remaining": [
+    "Actual client traversal,visuals/audio,real party/pet positioning,reconnect,network loot/money packets and earned boss/forces/timed full dungeon run remain OPEN. No client used.",
+    "One stationary two-player90s sample is not exhaustive every NPC target/conditional ability.99365 friendly-range heal201517 lacks an injured friendly-NPC fixture;100364 and119978 have no timed cast in this isolated sample. Interrupt attempts are reported with their actual outcomes.",
+    "All222 Teeming additions remain reconstructions,not recovered original Blizzard/sniff SQL. Prior full boss/formation/criteria audits retain their own boundaries.",
+    "No fresh inferred repair remains unverified in this focused follow-up;future client observations can expose additional issues."
+  ],
+  "fix_commits": {
+    "demolisher-reset": "17c36208cb013d51a0baf92724199d827d24c914",
+    "scavenger-reset": "23e71c48a580acf0b82853f2c14821ac43bb0d4a",
+    "nightmares-ownership": "d3b273a92d0035c535d7e1b263eb2298f3ea9add",
+    "volatile-charge": "c350b68067a03c3a9513f3aff246daa160a8ab15",
+    "challenge-gear-keystone": "2e2ab82f1b56225ffcfa3fce525ac5655df35721",
+    "sic-bats": "410445ad2731e8df8b52ce55ec3aa0862f33ee2b",
+    "challenge-chest-links": "f4cfa55c2b196e97f2e1c6007b4dce9b82b90178",
+    "crackle": "b4d0aac3db480d22d836993d9de89afb24b11ec7"
+  },
+  "combat_observations": {
+    "case_count": 103,
+    "prepares": 3583,
+    "templates_with_prepares": 100,
+    "no_prepare_entries": [
+      99365,
+      100364,
+      119978
+    ],
+    "interrupts": {
+      "result=0,stillCasting=1": 39,
+      "result=0,stillCasting=0": 30,
+      "result=13,stillCasting=1": 2
+    }
+  },
+  "counterfactual_evidence": {
+    "sic_bats": ".codex/dungeon-combat-20261119/sic-registered-baseline.log;11 checks reproduce stale target with exact bbeed94c5 body;expected broken,not an ordinary passing run.",
+    "demolisher": ".codex/dungeon-combat-20261119/health-baseline-discovery.log and runtime20261119-094103-085;actual first threshold casts188587,after native evade/repull receipt0;expected-broken pre-fix native discovery.",
+    "gear_keystone": ".codex/dungeon-combat-20261119/final-loot-3.log and runtime20261119-101035-058;actual upper Karazhan personal loot contains two138019 and no gear for entitlement1. Failed pre-fix native assertion is expected-broken counterfactual,paired with repaired938 checks."
+  },
+  "compiler_diagnostics": "Build succeeded at original generated Release library paths. Existing unchanged enum/floating arithmetic emits MSVC C5055 at SpellAuraEffects.cpp9619/9622;not a new runtime warning or newly introduced code. No runtime diagnostics suppressed.",
+  "regression_series": "Eight focused implementation/audit commits followed by this shared native/PE regression and evidence commit;tests qualify the final combined tree,not arbitrary partial cherry-picks."
+}

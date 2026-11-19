@@ -18,7 +18,7 @@ struct RegisteredCompletionGroup{
 };
 static void ShadowChallengeWrites(){
  CharacterDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");CharacterDatabase.Execute("SET SESSION TRANSACTION READ WRITE");
- for(auto table:{"challenge","challenge_member","challenge_key","groups","challenge_oplote_loot","worldstates"}){
+ for(auto table:{"challenge","challenge_member","challenge_key","groups","challenge_oplote_loot","worldstates","item_soulbound_trade_data"}){
   std::string seed=std::string("CREATE TEMPORARY TABLE completion_seed_")+table+" LIKE `"+table+"`";
   std::string target=std::string("CREATE TEMPORARY TABLE `")+table+"` LIKE completion_seed_"+table;
   CharacterDatabase.DirectExecute(seed.c_str());CharacterDatabase.Execute(seed.c_str());CharacterDatabase.DirectExecute(target.c_str());CharacterDatabase.Execute(target.c_str());
@@ -55,10 +55,11 @@ static void ReplayPublicRecords(std::vector<ExpectedHistory>const& expected,unsi
 }
 struct CompletionChest:GameObject{
  CompletionChest(InstanceMap&map,uint32 route){
-  auto row=WorldDatabase.PQuery("SELECT id,position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3 FROM gameobject WHERE map=%u AND id IN(252674,252677,252686,252668,252665,252056,252680,252671,252683,269852,269871,269843,272689) AND (%u<>1651 OR id=%u) ORDER BY guid LIMIT 1",map.GetId(),map.GetId(),route==227?269852:269871);Require(bool(row),"Native challenge chest placement missing");auto f=row->Fetch();Position pose{f[1].GetFloat(),f[2].GetFloat(),f[3].GetFloat(),f[4].GetFloat()};Require(Create(161000+route,f[0].GetUInt32(),&map,1,pose,G3D::Quat(f[5].GetFloat(),f[6].GetFloat(),f[7].GetFloat(),f[8].GetFloat()),255,GO_STATE_READY),"Native reward chest create failed");map.LoadGrid(pose.GetPositionX(),pose.GetPositionY());Require(map.AddToMap(static_cast<GameObject*>(this)),"Native reward chest publish failed");
+  auto row=WorldDatabase.PQuery("SELECT id,position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3,spawntimesecs FROM gameobject WHERE map=%u AND id IN(252674,252677,252686,252668,252665,252056,252680,252671,252683,269852,269871,269843,272689) AND (%u<>1651 OR id=%u) ORDER BY guid LIMIT 1",map.GetId(),map.GetId(),route==227?269852:269871);Require(bool(row),"Native challenge chest placement missing");auto f=row->Fetch();Position pose{f[1].GetFloat(),f[2].GetFloat(),f[3].GetFloat(),f[4].GetFloat()};Require(Create(161000+route,f[0].GetUInt32(),&map,1,pose,G3D::Quat(f[5].GetFloat(),f[6].GetFloat(),f[7].GetFloat(),f[8].GetFloat()),255,GO_STATE_READY),"Native reward chest create failed");SetSpawnedByDefault(f[9].GetInt32()>=0);map.LoadGrid(pose.GetPositionX(),pose.GetPositionY());Require(map.AddToMap(static_cast<GameObject*>(this)),"Native reward chest publish failed");
  }
  ~CompletionChest(){if(IsInWorld())GetMap()->RemoveFromMap(static_cast<GameObject*>(this),false);ResetMap();}
 };
+#ifndef CHALLENGE_COMPLETION_SUPPORT_ONLY
 int main(int argc,char**argv){try{
  InitializeDungeon(argc,argv,true);sObjectMgr->LoadItemTemplates();sObjectMgr->LoadItemTemplateAddon();sObjectMgr->LoadScenarioData();(sQuestDataStore->*Access(QuestVectorTag{})).resize(1,nullptr);sQuestDataStore->*Access(QuestMaxTag{})=0;auto live=CharacterDatabase.Query("SELECT COUNT(*),COALESCE(SUM(ChallengeID=0),0) FROM challenge");Require(bool(live),"Existing challenge history aggregate unavailable");std::cout<<"LIVE_HISTORY rows="<<live->Fetch()[0].GetUInt32()<<" missingRoute="<<live->Fetch()[1].GetUInt32()<<";read-only aggregate,no character rows copied\n";ShadowChallengeWrites();unsigned contexts=0,records=0,members=0;std::vector<ExpectedHistory> expected;
  for(auto route:sMapChallengeModeStore)if(route->ID==197||route->ID==198||route->ID==199||route->ID==200||route->ID==206||route->ID==207||route->ID==208||route->ID==209||route->ID==210||route->ID==227||route->ID==233||route->ID==234||route->ID==239)for(bool grouped:{false,true})for(unsigned tier=0;tier<4;++tier){
@@ -95,3 +96,4 @@ int main(int argc,char**argv){try{
 #endif
  CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
+#endif

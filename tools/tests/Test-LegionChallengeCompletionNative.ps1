@@ -21,4 +21,4 @@ try{
   if(!$? -or $LASTEXITCODE){throw "Native challenge verification failed: $out/compiler.log"}
   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(PASS|ROUTE|COUNTERFACTUAL|CATALOG)'}
  }}finally{Pop-Location}
-}finally{$env:LEGION_DIALOGUE_CONFIG=$previous;$env:CL=$compiler;$env:_LINK_=$link;foreach($input in $sealed){if((Get-FileHash -LiteralPath $input.Path).Hash -ne $input.Hash){throw 'Native challenge probe input changed while running'}}}
+}finally{if(Test-Path -LiteralPath "$out/worldserver.conf"){Remove-Item -LiteralPath "$out/worldserver.conf" -Force};$env:LEGION_DIALOGUE_CONFIG=$previous;$env:CL=$compiler;$env:_LINK_=$link;foreach($input in $sealed){if((Get-FileHash -LiteralPath $input.Path).Hash -ne $input.Hash){throw 'Native challenge probe input changed while running'}}}

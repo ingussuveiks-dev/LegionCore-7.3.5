@@ -55,5 +55,11 @@
     "No timed Creature::Update/combat rotations,real damage,casts completing over time,interrupts,threat rotations,evade/wipes,boss encounter progression,loot or full dungeon completion were exercised. Spawn/reset/aggro callbacks can issue native immediate spells;these are not a complete spell targeting/condition/rotation verification.",
     "Actual client traversal,visuals/audio,real pet movement,multi-client play,reconnect and whole-dungeon fidelity remain open.",
     "The222 additions remain reviewed reconstructions,not recovered original server/sniff spawn SQL."
-  ]
+  ],
+  "timed_combat_and_loot_followup": {
+    "date": "2026-11-19",
+    "audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json",
+    "status": "OFFLINE_FOCUSED_REPAIRS_COMPLETE_CLIENT_WHOLE_DUNGEONS_OPEN",
+    "note": "Historical proof and limitations above remain unchanged;see follow-up for actual timed combat/evade,focused repairs and native chest storage coverage."
+  }
 }

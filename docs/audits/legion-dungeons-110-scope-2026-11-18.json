@@ -702,5 +702,11 @@
       "audit": "legion-quaking-native-2026-11-18.json",
       "status": "EXISTING_IMPLEMENTATION_NATIVE_PE_PASS_CLIENT_OPEN"
     }
-  ]
+  ],
+  "timed_combat_and_loot_followup": {
+    "date": "2026-11-19",
+    "audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json",
+    "status": "OFFLINE_FOCUSED_REPAIRS_COMPLETE_CLIENT_WHOLE_DUNGEONS_OPEN",
+    "note": "Historical proof and limitations above remain unchanged;see follow-up for actual timed combat/evade,focused repairs and native chest storage coverage."
+  }
 }
