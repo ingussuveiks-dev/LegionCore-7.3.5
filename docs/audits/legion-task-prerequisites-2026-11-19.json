@@ -305,8 +305,16 @@
     "protected": "Configuration/certificates/DLLs/extracted data preserved;no SQL or character save. Canonical Crashes empty,DBErrors0 bytes."
   },
   "archive": {
-    "status": "PENDING verified archive/temporary build cleanup",
-    "directory": "build-extractors/bin/Release/fixed/2026-11-19-task-prerequisites"
+    "status": "COMPLETE",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-task-prerequisites",
+    "fix_commit": "d36db4fb93a575f7cdc33155a758fe8a9da07790",
+    "manifest_sha256": "2651ae35e162e9a86907ffc0b02ab6b31d4c0650f00df0488a25e70798222e96",
+    "deletion_manifest_sha256": "613c7a48d82e46e446678e949eb9fe5f36848e31237af1329643b4c52d387a45",
+    "archived_records": 217,
+    "removed_files": 168,
+    "removed_bytes": 2248984028.0,
+    "freed_bytes": 2249216000,
+    "verification": "Source/archive/source SHA256+length checked before removal;all217 archived files reverified after cleanup and again when recording audit. Original native/driver repository-relative evidence paths retained inside archive. Actual final-link response/commands retained. No private configuration bytes archived. Expected-broken counterfactuals and resolved fixture failures remain explicitly classified."
   },
   "evidence_sha256": {
     "build-extractors/runtime-test/legion-task-prerequisites/20261119-163239-182/native.tsv": "76a1d93f0c3eef0c20b7de709c9d6f54c0c48cbc16cbcfdb57ec1e1e4a7ee889",
@@ -319,5 +327,12 @@
     ".codex/task-prerequisites-20261119/canonical-release.log": "b9a27c408810db677026a961ad8191cc406c46ca53aff2e40ea126c2c9d0d0ee",
     ".codex/task-prerequisites-20261119/canonical-startup.log": "a545150c0f395aebb167db1bcadecc94fe4bec42423f78173666770ef86b459c",
     ".codex/task-prerequisites-20261119/promotion.json": "d2e0aa80572746efa5357f8fc935f4d1390aaeee47cb7c8c8bd45324222f0bc3"
+  },
+  "fix_commit": "d36db4fb93a575f7cdc33155a758fe8a9da07790",
+  "cleanup": {
+    "removed": "All7 dated prerequisite runtimes and1 retained area-admission runtime,one staged Release EXE/map/link output,new prerequisite and area shared EXE/OBJ/PDB/ILK scratch,only freshly generated Scepter extracts/test EXE/OBJ/run files. Exact absolute boundaries and every reparse point checked;full deletion manifest retained.",
+    "retained": "Canonical runtime/configuration/DLLs/shared extracted data and original required Release libraries preserved. Verified pre-prerequisite650a rollback retained for pending client alternative-route recovery;pre-area-task e459 retains its separate pending client recovery purpose;pre-Dark-Hunt8027,pre-combat307 and pre-Teeming rollback retain their separate pending client recovery purposes. Older mixed completion/scepter/shared history left untouched.",
+    "diagnostics": "Canonical EXE/map/configuration/certificates/DLLs and5 rollback sets rechecked unchanged. Canonical Crashes empty,DBErrors0 bytes;no server/task probe remains. Server.log history preserved.",
+    "deferred": "No current-task redundant binary/symbol/runtime deferred. Required original build inputs/shared data and distinct rollback copies retained for incremental builds or pending client recovery. Older mixed history not removed."
   }
 }
