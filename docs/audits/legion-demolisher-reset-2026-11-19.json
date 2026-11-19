@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_PE_STARTUP_PASS_CLIENT_OPEN",
+  "cause": "102253 consumed healthPct70 permanently after the first attempt; reset left the old target/threshold, and failed/interrupted188587 casts could consume its only request.",
+  "repair": "Reset threshold/target/react state; consume only actual self188587 SpellHit,keep native2500ms accepted-cast event origin and retry after interrupted casts without premature fixate.",
+  "native": "Real Player::DealDamage -> DamageTaken -> native cast/interrupt/retry/SpellHit/exactly-once receipt,then actual evade/home/re-pull and repeated damage. Pre-fix native discovery cast once and failed after evade.",
+  "files": [
+    "src/server/scripts/Legion/NeltharionsLair/boss_dargrul_the_underking.cpp"
+  ],
+  "regression_audit": "docs/audits/legion-dungeon-combat-loot-2026-11-19.json"
+}

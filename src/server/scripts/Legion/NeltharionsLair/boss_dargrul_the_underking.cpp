@@ -391,17 +391,27 @@ struct npc_nl_understone_demolisher : public ScriptedAI
     void Reset() override
     {
         events.Reset();
+        playerGuid.Clear();
+        healthPct = 70;
+        me->SetReactState(REACT_AGGRESSIVE);
     }
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
     {
-        if (HealthBelowPct(healthPct))
+        if (HealthBelowPct(healthPct) && !me->HasUnitState(UNIT_STATE_CASTING))
         {
-            healthPct = 0;
-            me->StopAttack(true);
-            me->CastSpell(me, 188587);
-            events.RescheduleEvent(EVENT_1, 2500);
+            if (me->CastSpell(me, 188587) == SPELL_CAST_OK)
+            {
+                me->StopAttack(true);
+                events.RescheduleEvent(EVENT_1, 2500);
+            }
         }
+    }
+
+    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    {
+        if (caster == me && spell->Id == 188587)
+            healthPct = 0;
     }
 
     void SpellHitTarget(Unit* target, const SpellInfo* spell) override
@@ -437,6 +447,8 @@ struct npc_nl_understone_demolisher : public ScriptedAI
                 case EVENT_1:
                 {
                     me->SetReactState(REACT_AGGRESSIVE);
+                    if (healthPct) // Interrupted enrage: retain the next damage retry.
+                        break;
                     Unit* player = Unit::GetUnit(*me, playerGuid);
                     if (!player || !player->IsAlive() || !player->HasAura(SPELL_FIXATE_PLR))
                     {
