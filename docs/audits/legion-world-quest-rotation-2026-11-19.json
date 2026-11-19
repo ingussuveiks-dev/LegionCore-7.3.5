@@ -33,6 +33,18 @@
     "readback": "MariaDB returned exactly the three tested rows and updater state RELEASED after deployment.",
     "diagnostics": "Task-owned canonical worldserver PID 23800 reached ready and exited 0 by server shutdown 0. Stderr was empty. No new crash, DBErrors, unexplained warning, error or assertion. Canonical Crashes is empty and DBErrors.log is 0 bytes."
   },
+  "evidence_and_cleanup": {
+    "implementation_commit": "51b5cb53c6b03a368bdaf29c9e3198f06548a35e",
+    "data_commit": "96c444d5acffa07c4fd9659c1332ac92d6291cdd",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-19-world-quest-rotation",
+    "archive_manifest_sha256": "9fd2cb94170aa44f3af4564845160a3dfb25849a2b041040a88eeca841f7bc4d",
+    "deletion_manifest_sha256": "8012f4884146d2b1b8d9440e3c0d9644a48ab0b5d83470755f0de8999cbec31b",
+    "archived_files": 400,
+    "removed_files": 197,
+    "removed_bytes": 2602998473,
+    "rollback": ".codex/world-quest-rotation-20261119/rollback-before-world-quest-rotation",
+    "post_cleanup": "Evidence, Release files and rollback hashes verified after removing staged executables, temporary runtimes and generated test builds. Canonical diagnostics still empty and no task-owned server or probe remains."
+  },
   "open": [
     "Actual online timer rollover, offer UI, voice/avatar playback and complete client kills/reward traversal are separate from native fixture verification.",
     "The optional Wailing Dead and Garrison target presentations remain outside this focused rotation repair. Only authored actor phases and local objective spawn evidence were checked."
