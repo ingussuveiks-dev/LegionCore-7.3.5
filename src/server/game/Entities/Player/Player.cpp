@@ -53,6 +53,7 @@
 #include "CombatPackets.h"
 #include "Common.h"
 #include "ConditionMgr.h"
+#include "QuestTaskPrerequisites.h"
 #include "Config.h"
 #include "ContributionMgr.h"
 #include "CreatureAI.h"
@@ -32623,21 +32624,7 @@ void Player::UpdateAreaQuestTasks(uint32 newAreaId, uint32 oldAreaId)
                 if (questTask->FiltMaxLevel != -1 && getLevel() > questTask->FiltMaxLevel)
                     continue;
 
-                bool needQuest = false;
-                bool canStart = true;
-                for (uint8 slot = 0; slot < QUEST_REQUIRED; ++slot)
-                    if (questTask->FiltCompletedQuest[slot])
-                        needQuest = true;
-
-                if (needQuest)
-                    for (uint8 slot = 0; slot < QUEST_REQUIRED; ++slot)
-                        if (questTask->FiltCompletedQuest[slot] && GetQuestStatus(questTask->FiltCompletedQuest[slot]) != QUEST_STATUS_REWARDED)
-                            canStart = false;
-
-                //if (questTask->StartItem && !HasAura(questTask->StartItem))
-                //    continue;
-
-                if (needQuest && !canStart)
+                if (!MeetsQuestTaskPrerequisites(*this, *questTask))
                     continue;
 
                 if (CanAddQuest(quest, true) && !IsQuestRewarded(quest->GetQuestId()))
@@ -32755,21 +32742,7 @@ void Player::UpdateAreaQuestTasks(uint32 newAreaId, uint32 oldAreaId)
                 if (questTask->FiltClasses && (questTask->FiltClasses & getClassMask()) == 0)
                     continue;
 
-                bool needQuest = false;
-                bool canStart = true;
-                for (uint8 slot = 0; slot < QUEST_REQUIRED; ++slot)
-                    if (questTask->FiltCompletedQuest[slot])
-                        needQuest = true;
-
-                if (needQuest)
-                    for (uint8 slot = 0; slot < QUEST_REQUIRED; ++slot)
-                        if (questTask->FiltCompletedQuest[slot] && GetQuestStatus(questTask->FiltCompletedQuest[slot]) != QUEST_STATUS_REWARDED)
-                            canStart = false;
-
-                //if (questTask->StartItem && !HasAura(questTask->StartItem))
-                //    continue;
-
-                if (needQuest && !canStart)
+                if (!MeetsQuestTaskPrerequisites(*this, *questTask))
                     continue;
 
                 if (CanAddQuest(quest, true))

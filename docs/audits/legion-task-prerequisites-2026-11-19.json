@@ -1,0 +1,323 @@
+{
+  "date": "2026-11-19",
+  "status": "REPAIRED and deployed;native server checks passed;actual client offers/traversal separate",
+  "base_commit": "9fdecb62c41e7717f4ec56aee185625f7037027a",
+  "request": "Continue checking automatically offered area tasks after the32 introduction gates and fallback admission repair.",
+  "cause": "Both bonus and world-task branches ignored QuestV2CliTask.FiltCompletedQuestLogic and treated every listed prerequisite as AND. Native26972 Retake Faronaar36811 encodes logic2:rewarded36920 OR40815. Actual pre-fix Player rejected both single-route cases,for both tested races.22 loaded task rows have multiple prerequisites:15 OR and7 AND;other0/single filters must retain their behavior.",
+  "repair": "Add MeetsQuestTaskPrerequisites in ConditionMgr.cpp to populate native completed-quest results using the existing GetQuestStatus==REWARDED rule and evaluate the authored logic with the existing PlayerConditionLogic. Both area admission branches call this helper. The shared evaluator is byte-for-byte unchanged. Keep level/skill/race/class/PlayerCondition,rotation,raid,capacity,reward and source19 admission boundaries at their existing callers. No SQL/configuration/character/template data patch.",
+  "multi_prerequisite_task_rows": [
+    {
+      "quest": 36811,
+      "logic": 2,
+      "prerequisites": [
+        36920,
+        40815
+      ],
+      "player_condition": 39583,
+      "title": "Retake Faronaar"
+    },
+    {
+      "quest": 37865,
+      "logic": 2,
+      "prerequisites": [
+        37946,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on Ironhold Harbor"
+    },
+    {
+      "quest": 37866,
+      "logic": 2,
+      "prerequisites": [
+        37886,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on Ironhold Harbor"
+    },
+    {
+      "quest": 37938,
+      "logic": 2,
+      "prerequisites": [
+        37939,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Ruins of Kra'nak"
+    },
+    {
+      "quest": 37966,
+      "logic": 2,
+      "prerequisites": [
+        37967,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Temple of Sha'naar"
+    },
+    {
+      "quest": 37970,
+      "logic": 2,
+      "prerequisites": [
+        38437,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Fel Forge"
+    },
+    {
+      "quest": 38009,
+      "logic": 2,
+      "prerequisites": [
+        38010,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Ruins of Kra'nak"
+    },
+    {
+      "quest": 38020,
+      "logic": 2,
+      "prerequisites": [
+        38021,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Temple of Sha'naar"
+    },
+    {
+      "quest": 38040,
+      "logic": 2,
+      "prerequisites": [
+        38041,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Bleeding the Bleeding Hollow"
+    },
+    {
+      "quest": 38043,
+      "logic": 2,
+      "prerequisites": [
+        38042,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Bleeding the Bleeding Hollow"
+    },
+    {
+      "quest": 38051,
+      "logic": 2,
+      "prerequisites": [
+        38039,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Battle At The Iron Front"
+    },
+    {
+      "quest": 38054,
+      "logic": 2,
+      "prerequisites": [
+        38038,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Battle At The Iron Front"
+    },
+    {
+      "quest": 38439,
+      "logic": 2,
+      "prerequisites": [
+        38438,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Fel Forge"
+    },
+    {
+      "quest": 38587,
+      "logic": 2,
+      "prerequisites": [
+        38583,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Throne of Kil'jaeden"
+    },
+    {
+      "quest": 38588,
+      "logic": 2,
+      "prerequisites": [
+        38584,
+        36666
+      ],
+      "player_condition": 0,
+      "title": "Assault on the Throne of Kil'jaeden"
+    },
+    {
+      "quest": 42373,
+      "logic": 5,
+      "prerequisites": [
+        39391,
+        39425,
+        39588
+      ],
+      "player_condition": 38892,
+      "title": "Vengeance for the Stonedark"
+    },
+    {
+      "quest": 46134,
+      "logic": 5,
+      "prerequisites": [
+        40559,
+        40560,
+        40561
+      ],
+      "player_condition": 38948,
+      "title": "Gemcutter Needed"
+    },
+    {
+      "quest": 46135,
+      "logic": 5,
+      "prerequisites": [
+        40559,
+        40560,
+        40561
+      ],
+      "player_condition": 38948,
+      "title": "Gemcutter Needed"
+    },
+    {
+      "quest": 46136,
+      "logic": 5,
+      "prerequisites": [
+        40559,
+        40560,
+        40561
+      ],
+      "player_condition": 38948,
+      "title": "Gemcutter Needed"
+    },
+    {
+      "quest": 46137,
+      "logic": 5,
+      "prerequisites": [
+        40559,
+        40560,
+        40561
+      ],
+      "player_condition": 38948,
+      "title": "Gemcutter Needed"
+    },
+    {
+      "quest": 46138,
+      "logic": 5,
+      "prerequisites": [
+        40559,
+        40560,
+        40561
+      ],
+      "player_condition": 38948,
+      "title": "Gemcutter Needed"
+    },
+    {
+      "quest": 46139,
+      "logic": 5,
+      "prerequisites": [
+        40559,
+        40560,
+        40561
+      ],
+      "player_condition": 38948,
+      "title": "Gemcutter Needed"
+    }
+  ],
+  "other_native_cli_rows": {
+    "rows": [
+      {
+        "quest": 36868,
+        "logic": 2,
+        "prerequisites": [
+          36548,
+          36666
+        ],
+        "player_condition": 0,
+        "title": "Battle in Ashran"
+      },
+      {
+        "quest": 36869,
+        "logic": 2,
+        "prerequisites": [
+          36536,
+          36666
+        ],
+        "player_condition": 0,
+        "title": "Battle in Ashran"
+      }
+    ],
+    "coverage": "These Ashran metadata rows are outside the cataloged QUEST_TYPE_TASK rows;not certified as traversed or offered."
+  },
+  "checks": {
+    "baseline": "build-extractors/runtime-test/legion-task-prerequisites/20261119-163239-182:8 actual pre-fix Player admission cases,Human/Orc and0/36920/40815/both rewards. Original code only admits both. Expected-broken counterfactual,not ordinary success. -Baseline requires the pre-fix linked library.",
+    "expressions": "build-extractors/runtime-test/legion-task-prerequisites/20261119-164333-442:1458 direct native evaluator cases across1278 actual loaded quest-task client rows. Explicit controlled native NONE/REWARDED statuses isolate no/single/OR/AND expression semantics,including prerequisite metadata that names repeatables. This is not1458 complete quest chains or proof of a real repeatable reward receipt.",
+    "controllers": "27 actual native area/controller fixtures:both Retake alternatives forHuman/Orc,98..109 client level range,full-log refusal/retry,duplicate suppression,native objective-service credit/retained counters on exit-reentry,abandon/fresh progress,rewarded denial. Real Gemcutter Needed46134 uses all8 combinations of its3 prerequisites and native38948/41694 completed-bit unlock;native WorldQuest/area stores contain a controlled in-memory rotation,not live scheduler rows. Missing and genuinely expired controlled rotation entries are denied.",
+    "retained": "build-extractors/runtime-test/legion-area-quest/20261119-164352-355:14 previous area-fallback admission fixtures pass. Canonical area-admission PE and Scepter -VerifyReleaseBinary pass;common10 scenario PE paths retained.",
+    "release": "Original game.lib Release path rebuilt;actual final-link dependencies verified. Staged and canonical PE/map resolve exactly2 UpdateAreaQuestTasks calls to the new evaluator,actual GetQuestStatus and packed26972 logic-byte45 load. Native offsetof completed34/logic45 matches. Exact shared PlayerConditionLogic source retained.",
+    "startup": "Task-owned canonical PID35588 fresh ready,server shutdown0/exit0,empty stderr;owned process gone. No user server stopped.",
+    "diagnostics": "Final native/controller/retained/PE/startup checks use before/after canonical+own crash/log snapshots. No new/changed crash,appended DBErrors or unexplained server warnings/errors/assertions. Existing unrelated compiler C4018/C5055/C4146 warnings retained;none originate in the new helper."
+  },
+  "resolved_fixture_failures": [
+    "First baseline assumed PlayerCondition39583 exists;native data has no row and the existing evaluator permits an absent condition. Fixture now records that absence and calls the real condition service. No condition was invented or production admission bypassed.",
+    "First expression matrix called RemoveRewardedQuest,a maintenance API that also issues persistent DELETE transactions. Read-only CharacterDatabase connections rejected every observed attempt with1792 before mutation;captured own DBErrors identify character_queststatus_rewarded. The original all-AND/OR fixture itself was independent. Repaired fixture uses only in-memory native SetQuestStatus;no database deletion/character save is needed. Failed logs retained and paired with passing final native run.",
+    "World controller initially lacked native Uniting the Isles41694 completion bit,so condition38948 correctly rejected it. Fixture now first asserts rejection,then prepares the native completed bit plus reward state;production unlock remains unchanged.",
+    "Initial PE invocation lacked Capstone on this Python path;used existing ignored .codex/pe-review-deps without installation or global environment changes. Final PE checks pass."
+  ],
+  "scope_limits": [
+    "Actual client UI/voice,quest completion,relog and real outdoor combat remain unobserved;do not call full Retake Faronaar or all world quests client-verified.",
+    "Pet/guardian/group kill dispatch,one-hit/scaling and reward distribution are unchanged;only prerequisite admission changed. Native credit/retry endpoints do not certify real pet/group outdoor traversal.",
+    "The native matrix preserves GetQuestStatus semantics;repeatable-history maintenance and every real reward receipt are separate checks.",
+    "World-state expressions remain a separate scheduler/data investigation;no blanket enabling of currently disabled expression evaluation. Other story/scenario EventObject source10 candidates remain in the earlier inventory and need their own route-specific checks.",
+    "Controlled in-memory WorldQuest/area publication tests admission,not the live rotation generator,actual quest-area placement or complete Gemcutter hand-in."
+  ],
+  "sources": [
+    {
+      "kind": "primary local",
+      "source": "Matching26972 DB2/World data,Player.cpp,ConditionMgr.cpp,QuestData.cpp and Git9fdecb62c;existing evaluator reused unchanged."
+    },
+    {
+      "kind": "reference only",
+      "source": "C:/wamp64/www/TrinityCore current condition logic/history inspected;newer schema not copied."
+    },
+    {
+      "kind": "primary GitHub comparison",
+      "url": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/blob/master/src/server/game/Entities/Player/Player.cpp",
+      "review": "Upstream26972 code also has the same all-AND loops and no FiltCompletedQuestLogic use. No ready-made upstream fix copied;local native metadata and existing evaluator establish this repair. Attempted obsolete TrinityCore7.3.5 raw branch was404."
+    }
+  ],
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "162eb5cacc0109bb7c7336ff23010a2333bb0a0fda6c37854138360d35f1412f",
+    "worldserver_map_sha256": "d409ff6d20993f4307a38eb5736c9c24226e5770dabf5a1535de37e18df11533",
+    "identity": "Staged/canonical copy hashes equal;both PE/map checks confirm implementation. Earlier generated build-banner revision is not implementation proof.",
+    "rollback": ".codex/task-prerequisites-20261119/rollback-before-task-prerequisites",
+    "protected": "Configuration/certificates/DLLs/extracted data preserved;no SQL or character save. Canonical Crashes empty,DBErrors0 bytes."
+  },
+  "archive": {
+    "status": "PENDING verified archive/temporary build cleanup",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-task-prerequisites"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-task-prerequisites/20261119-163239-182/native.tsv": "76a1d93f0c3eef0c20b7de709c9d6f54c0c48cbc16cbcfdb57ec1e1e4a7ee889",
+    "build-extractors/runtime-test/legion-task-prerequisites/20261119-163239-182/evidence/diagnostics-after.json": "df90383a9eef0f9981bfce1fa28002d5b4ab1e1d4af494d492102b62eb465be4",
+    "build-extractors/runtime-test/legion-task-prerequisites/20261119-164333-442/native.tsv": "e52ec045e01c8155bc1b5c2220b6b2ad75046c05ac5bb0fb8895067c7503120b",
+    "build-extractors/runtime-test/legion-task-prerequisites/20261119-164333-442/evidence/diagnostics-after.json": "088521f63c27b25fed19a53fed4f4222021983f328127a5cda912bf796fa084b",
+    "build-extractors/runtime-test/legion-area-quest/20261119-164352-355/native.tsv": "abc56d5d1a0608fd356ab1e2d5faa39727d6bbb719a7437773fa9e2815f14a15",
+    "build-extractors/runtime-test/legion-area-quest/20261119-164352-355/evidence/diagnostics-after.json": "52da273bea1652198fdf2a12b2defc056dc317f09624e5cdd35afbd0273df5b5",
+    ".codex/task-prerequisites-20261119/source-review.json": "4e82f2b9c12ec6eef54de648ed56a109028dd22eb2afaae608730d4c7c52f39f",
+    ".codex/task-prerequisites-20261119/canonical-release.log": "b9a27c408810db677026a961ad8191cc406c46ca53aff2e40ea126c2c9d0d0ee",
+    ".codex/task-prerequisites-20261119/canonical-startup.log": "a545150c0f395aebb167db1bcadecc94fe4bec42423f78173666770ef86b459c",
+    ".codex/task-prerequisites-20261119/promotion.json": "d2e0aa80572746efa5357f8fc935f4d1390aaeee47cb7c8c8bd45324222f0bc3"
+  }
+}

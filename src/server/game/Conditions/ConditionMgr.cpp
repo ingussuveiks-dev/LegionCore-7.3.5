@@ -18,6 +18,7 @@
 
 #include "CharacterPackets.h"
 #include "ConditionMgr.h"
+#include "QuestTaskPrerequisites.h"
 #include "GameEventMgr.h"
 #include "Garrison.h"
 #include "InstanceScript.h"
@@ -2843,6 +2844,19 @@ bool PlayerConditionLogic(uint32 logic, std::array<bool, N>& results)
     }
 
     return result;
+}
+
+bool MeetsQuestTaskPrerequisites(Player const& player, QuestV2CliTaskEntry const& task)
+{
+    static_assert(std::extent<decltype(QuestV2CliTaskEntry::FiltCompletedQuest)>::value == QUEST_REQUIRED,
+        "Client task prerequisite array must match the native quest bound");
+    std::array<bool, QUEST_REQUIRED> results;
+    results.fill(true);
+    for (std::size_t i = 0; i < results.size(); ++i)
+        if (task.FiltCompletedQuest[i])
+            results[i] = player.GetQuestStatus(task.FiltCompletedQuest[i]) == QUEST_STATUS_REWARDED;
+
+    return PlayerConditionLogic(task.FiltCompletedQuestLogic, results);
 }
 
 bool ConditionMgr::IsPlayerMeetingCondition(Unit* unit, int32 conditionID, bool send)
