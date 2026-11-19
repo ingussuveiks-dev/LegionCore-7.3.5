@@ -227,9 +227,20 @@
     "protected": "Configuration,certificates,DLLs and extracted data preserved;verified pre-area-task rollback retained for pending client recovery."
   },
   "archive": {
-    "status": "PENDING final verified archive/temporary-build cleanup",
+    "status": "COMPLETE",
     "directory": "build-extractors/bin/Release/fixed/2026-11-19-area-quests",
-    "policy": "Preserve counterfactuals and resolved fixture failures with source/archive/source SHA256+length before deleting redundant test executables/symbols/stage. Never archive private connection configurations."
+    "policy": "Preserve counterfactuals and resolved fixture failures with source/archive/source SHA256+length before deleting redundant test executables/symbols/stage. Never archive private connection configurations.",
+    "fix_commits": [
+      "3f33f5472",
+      "01fb68560"
+    ],
+    "manifest_sha256": "bd81c9ed007d3895f1a84e209ebb4d977ca06eaf871aa3cdf0a9528914be53f5",
+    "deletion_manifest_sha256": "9457c8cc4965181acacbc1074c9f90ad6768586a574a84419d26d2ca7f1b3693",
+    "archived_records": 281,
+    "removed_files": 229,
+    "removed_bytes": 2780401196.0,
+    "freed_bytes": 2780712960,
+    "verification": "Source/archive/source SHA256 and length checked before deleting stopped task artifacts;all281 archived records reverified after cleanup and again while recording this audit. Original repository-relative native/driver evidence paths are preserved inside the fixed archive. Counterfactuals and resolved fixture failures retained explicitly. No configuration bytes archived."
   },
   "evidence_sha256": {
     "build-extractors/runtime-test/legion-area-dialogue/20261119-132805-194/native.tsv": "44497240d8ddf538bfdbaaffeeaad96d7fa83b342dbca5e406662894cc250a6c",
@@ -241,5 +252,12 @@
     ".codex/area-quest-20261119/live-deployment.json": "9de0bf704e4c457aabb11c98952e276c4410d131a606cfb626001620625c4a2c",
     ".codex/area-quest-20261119/thunder-totem.log": "eebe2dd0ae0b6bcb741551f79af57a2eddd45ae186016f2bf2292f35fd44f124",
     ".codex/area-quest-20261119/canonical-startup.log": "638664e86f0d56149c7cba63aee9513bfd68847b66810369fa40be622e6a61c7"
+  },
+  "fix_commit": "01fb68560",
+  "cleanup": {
+    "removed": "All11 dated area-quest/dialogue runtimes,one staged Release EXE/map/link output,AreaQuestNative/AreaDialogueNative shared EXE/OBJ/PDB/ILK scratch,and only current ThunderTotem/Scepter generated extracts/test EXE/OBJ/run files. Exact absolute targets and every file/directory reparse boundary checked. Full deletion manifest retained.",
+    "retained": "Canonical runtime/configuration/DLLs/shared extracted data and original required Release libraries preserved. Verified pre-area-task e459 rollback retained for pending client recovery;pre-Dark-Hunt8027,pre-combat307 and pre-Teeming rollback retain their separate pending client recovery purposes. Older mixed completion/scepter/shared history left untouched.",
+    "diagnostics": "Canonical EXE/map/configuration/certificates/DLLs and4 rollback sets rechecked unchanged. Canonical Crashes empty,DBErrors0 bytes;no worldserver/bnetserver/task probe left. Server.log history preserved.",
+    "deferred": "No current-task redundant binary/symbol/runtime remains. Original required build libraries/objects and rollback copies retained for concrete incremental-build/client recovery needs;older mixed history belongs to separate review."
   }
 }
