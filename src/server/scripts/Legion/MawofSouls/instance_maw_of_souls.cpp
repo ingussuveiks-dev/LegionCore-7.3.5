@@ -6,6 +6,11 @@
 #include "ScriptPCH.h"
 #include "WorldPacket.h"
 #include "InstancePackets.h"
+#include "MawSkjalCrew.h"
+#include "ScenarioMgr.h"
+#include "Scenario.h"
+#include "Challenge.h"
+#include "WaypointManager.h"
 
 DoorData const doorData[] =
 {
@@ -33,6 +38,13 @@ public:
         {
             SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
+            for (auto const& pose : MawSkjalCrew::GuardPatrol)
+            {
+                WaypointData point;
+                point.id=uint32(skjalGuardPath.size());point.x=pose.GetPositionX();point.y=pose.GetPositionY();point.z=pose.GetPositionZ();
+                point.move_type=WAYPOINT_MOVE_TYPE_WALK;
+                skjalGuardPath.push_back(point);
+            }
         }
 
         WorldLocation loc_res_pla;
@@ -43,6 +55,83 @@ public:
         ObjectGuid shipGUID;
         ObjectGuid helyaChestGUID;
         ObjectGuid SkjalGUID;
+
+        struct CrewReceipt
+        {
+            ObjectGuid Guid;
+            bool Killed=false;
+            bool PatrolPending=false;
+            uint8 FailedPublications=0;
+        };
+        std::array<CrewReceipt,MawSkjalCrew::Count> skjalCrew;
+        WaypointPath skjalGuardPath;
+        bool skjalCrewRequested=false;
+        uint32 skjalCrewTimer=1000;
+
+        bool HasTeemingCrew() const
+        {
+            if(instance->GetDifficultyID()!=DIFFICULTY_MYTHIC_KEYSTONE)return false;
+            Scenario* scenario=sScenarioMgr->GetScenario(instance->GetInstanceId());
+            Challenge* challenge=scenario?scenario->GetChallenge():nullptr;
+            return challenge&&challenge->_canRun&&challenge->HasAffix(Affixes::Teeming);
+        }
+
+        void ClearSkjalCrew()
+        {
+            for(auto& receipt:skjalCrew)
+            {
+                if(auto creature=instance->GetCreature(receipt.Guid))creature->DespawnOrUnsummon();
+                receipt=CrewReceipt{};
+            }
+            skjalCrewRequested=false;
+        }
+
+        void EnsureSkjalCrew()
+        {
+            if(!skjalCrewRequested||GetBossState(DATA_HARBARON)!=DONE||instance->GetPlayers().isEmpty())return;
+            auto skjal=instance->GetCreature(SkjalGUID);
+            if(!skjal||skjal->GetEntry()!=NPC_SKJAL)return;
+            bool teeming=HasTeemingCrew();
+            for(size_t i=0;i<skjalCrew.size();++i)
+            {
+                auto& receipt=skjalCrew[i];
+                auto creature=instance->GetCreature(receipt.Guid);
+                if(i>=MawSkjalCrew::NormalCount&&!teeming)
+                {
+                    if(creature)creature->DespawnOrUnsummon();
+                    receipt.Guid.Clear();receipt.PatrolPending=false;
+                    continue;
+                }
+                if(receipt.Killed)continue;
+                if(creature)
+                {
+                    if(creature->isDead()){receipt.Killed=true;continue;}
+                    if(receipt.PatrolPending&&!creature->isInCombat()&&creature->GetExactDist(MawSkjalCrew::Spawns[i].Home)<1.f)
+                    {
+                        creature->GetMotionMaster()->MovePath(skjalGuardPath,true);
+                        receipt.PatrolPending=false;
+                    }
+                    continue;
+                }
+                if(receipt.FailedPublications>=3)continue;
+                auto const& spawn=MawSkjalCrew::Spawns[i];
+                if(auto summon=instance->SummonCreature(spawn.Entry,skjal->GetPosition()))
+                {
+                    receipt.Guid=summon->GetGUID();receipt.FailedPublications=0;
+                    receipt.PatrolPending=i==skjalCrew.size()-1;
+                    summon->SetHomePosition(spawn.Home);
+                    summon->GetMotionMaster()->MoveTargetedHome();
+                }
+                else if(++receipt.FailedPublications==3)
+                    TC_LOG_ERROR("scripts","Maw Skjal crew publication failed after 3 attempts: instance %u, slot %u, entry %u",instance->GetInstanceId(),uint32(i),spawn.Entry);
+            }
+        }
+
+        void OnUnitDeath(Unit* unit) override
+        {
+            if(!unit)return;
+            for(auto& receipt:skjalCrew)if(receipt.Guid==unit->GetGUID())receipt.Killed=true;
+        }
 
         void Initialize() override
         {
@@ -87,6 +176,7 @@ public:
                     break;
                 case NPC_SKJAL:
                     SkjalGUID = creature->GetGUID(); 
+                    if(GetBossState(DATA_HARBARON)==DONE)skjalCrewRequested=true;
                     break;
                 case NPC_HELYA:    
                     helyaGUID = creature->GetGUID(); 
@@ -127,6 +217,9 @@ public:
 
             switch (type)
             {
+                case DATA_HARBARON:
+                    if(state==NOT_STARTED)ClearSkjalCrew();
+                    break;
                 case DATA_HELYA:
                 {
                     if (state == DONE && instance->GetDifficultyID() != DIFFICULTY_MYTHIC_KEYSTONE)
@@ -154,6 +247,11 @@ public:
 
         void SetData(uint32 type, uint32 data) override
         {
+            if(type==MawSkjalCrew::Request&&data==1&&GetBossState(DATA_HARBARON)==DONE)
+            {
+                skjalCrewRequested=true;
+                EnsureSkjalCrew();
+            }
             /* switch (type)
             {
                 case DATA_:
@@ -165,6 +263,7 @@ public:
 
         ObjectGuid GetGuidData(uint32 type) const override
         {
+            if(type>=MawSkjalCrew::GuidFirst&&type<MawSkjalCrew::GuidFirst+skjalCrew.size())return skjalCrew[type-MawSkjalCrew::GuidFirst].Guid;
             switch (type)
             {
                 case DATA_YMIRON:
@@ -183,6 +282,8 @@ public:
 
         uint32 GetData(uint32 type) const override
         {
+            if(type==MawSkjalCrew::Request)return skjalCrewRequested;
+            if(type>=MawSkjalCrew::DeadFirst&&type<MawSkjalCrew::DeadFirst+skjalCrew.size())return skjalCrew[type-MawSkjalCrew::DeadFirst].Killed;
             return 0;
         }
 
@@ -207,7 +308,12 @@ public:
             return &loc_res_pla;
         }
 
-        void Update(uint32 diff) override {}
+        void Update(uint32 diff) override
+        {
+            if(diff<skjalCrewTimer){skjalCrewTimer-=diff;return;}
+            skjalCrewTimer=1000;
+            EnsureSkjalCrew();
+        }
     };
 };
 

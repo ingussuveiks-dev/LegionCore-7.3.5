@@ -1,0 +1,245 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_VERIFIED_CLIENT_TRAVERSAL_PENDING",
+  "result": "Restored222 explicitly reconstructed Teeming additions across13 routes/12 maps:215 native-profile DB spawns plus7 instance-owned upper-deck Skjal actors. Original server/sniff spawn SQL was not recovered;this is a reviewed reconstruction,not original provenance.",
+  "source_catalog": {
+    "path": "docs/research/legion-teeming-reconstruction-2026-11-19.json",
+    "sha256": "aa79f604cd691d2aaf046d7b255bd5eb218085eb3acf5ca2bef595b215658961"
+  },
+  "historical_source": "MDT aaabf806caac2cc519b692bce68c9ce38e934974,2018-05-27;matching native26972 DB2/World/runtime collision/navmesh. Earlier unapproved projection remains a dated research snapshot;this accepted catalog supersedes its missing-content status.",
+  "routes": {
+    "197": {
+      "total": 12,
+      "database": 12,
+      "instance_owned": 0
+    },
+    "198": {
+      "total": 14,
+      "database": 14,
+      "instance_owned": 0
+    },
+    "199": {
+      "total": 26,
+      "database": 26,
+      "instance_owned": 0
+    },
+    "200": {
+      "total": 9,
+      "database": 9,
+      "instance_owned": 0
+    },
+    "206": {
+      "total": 10,
+      "database": 10,
+      "instance_owned": 0
+    },
+    "207": {
+      "total": 11,
+      "database": 11,
+      "instance_owned": 0
+    },
+    "208": {
+      "total": 12,
+      "database": 5,
+      "instance_owned": 7
+    },
+    "209": {
+      "total": 14,
+      "database": 14,
+      "instance_owned": 0
+    },
+    "210": {
+      "total": 12,
+      "database": 12,
+      "instance_owned": 0
+    },
+    "227": {
+      "total": 46,
+      "database": 46,
+      "instance_owned": 0
+    },
+    "233": {
+      "total": 19,
+      "database": 19,
+      "instance_owned": 0
+    },
+    "234": {
+      "total": 14,
+      "database": 14,
+      "instance_owned": 0
+    },
+    "239": {
+      "total": 23,
+      "database": 23,
+      "instance_owned": 0
+    }
+  },
+  "data": {
+    "guid_range": [
+      900902000,
+      900902214
+    ],
+    "spawn_mask": 256,
+    "native_teeming_marker": 1,
+    "phase_mask": 1,
+    "PhaseId": "",
+    "paths": 10,
+    "waypoints": 98,
+    "formation_rows": 266,
+    "new_normal_single_leader_rows": 87,
+    "same_map_phase1_formation_members_verified": 266,
+    "policy": "Preserve actual same-NPC native equipment/addon/auras/flags/respawn settings and template AI. Native full health/mana initialization validated;native randomized size auras retained. Extra DB records use exact existing Keystone+Teeming admission;no fabricated phase IDs. Existing normal static leaders have no added published members outside Teeming.",
+    "forces": "No weight/threshold changes. Native13 force targets and effective source weights retained;Trickster122401 remains two distinct4-point leaves,effective8. No synthetic kill credit."
+  },
+  "skjal": {
+    "original_crew_retained": 16,
+    "teeming_additions": 7,
+    "admission": "Real HarbaronDONE,actual Skjal99307,real player presence,registered challenge,_canRun,Keystone8 and Teeming5. Map-owned publication/death receipts survive repeated actions,AI reset and alive unpublication recovery;new attempt cancels owned actors.",
+    "movement": "Native home movement;guard waits for real home arrival then instance-owned8-node native waypoint loop. No timer completion/credit.",
+    "failure_policy": "Missing prerequisite/owner defers without consuming attempts;failed publication stops after3 consecutive failures with a useful diagnostic. Failure-bound branch source-reviewed;three actual allocation/publication failures were not fault-injected."
+  },
+  "validation": {
+    "reconstruction_native_checks": 20891,
+    "db_earned_kills": 2580,
+    "script_earned_kills": 84,
+    "kill_scope": "Actual native Unit::DealDamage one-hit and Unit::Kill/reward/criterion dispatch;player/pet/guardian,solo/eligible native group references,both factions,repeated-death guards. DB actor combat AI controlled;actual seven Skjal actors retain native AI/templates/addons. Synthetic roster/no client sockets;character/account/respawn writes stay in connection-local temporary shadows.",
+    "admission": "215 actual loader/cache records across13 routes/4 modes/3 scenario-affix profiles;exact tested SQL twice in native-schema shadows.",
+    "skjal_scope": "144 mode/affix/killer/group/faction contexts;real action prerequisite,normal16/Teem23,duplicate action,real deaths,alive unpublication recovery,DONE reset and new-attempt cleanup;all homes and full guard loop traversed in12 Teeming contexts.",
+    "geometry": {
+      "spawn_size_waypoint_observations": 445,
+      "all_accepted": true,
+      "native_display_variants": "Every original model and other-gender variant;actual native loaded scale/hover receipts,all26 possible size draws for5 Halls actors,nine-point floor/body checks and complete native corridors.",
+      "sql_wire_waypoints": 98,
+      "formation_destinations": 140,
+      "closed_patrol_corridors": 108,
+      "formation_corridors": 140,
+      "all_corridor_types": "PATHFIND_NORMAL",
+      "reproducible_inputs": "prepare_legion_teeming_geometry_verification.py reproduces tested inputs byte-for-byte from catalog receipts."
+    },
+    "retained": {
+      "teeming_admission": 140,
+      "teeming_criteria": 5196,
+      "maw_navigation": 772,
+      "instance_lifetime": 15,
+      "scepter_login_release": true,
+      "selected_final_PE": true
+    },
+    "live_readback": "All32 fields of215 live creatures,215 addons,98 waypoints and266 formations match the reviewed catalog;validation only writes temporary tables."
+  },
+  "unchanged_original_fingerprints": [
+    {
+      "kind": "ordinary_creatures",
+      "count": 4294,
+      "hash": "50fcc8e08965fcd23de7f8a973bdbd6bb4a75b41d6fb53da12f99470db204063"
+    },
+    {
+      "kind": "ordinary_addons",
+      "count": 207,
+      "hash": "d25351b4645665dcf47bc26a7d28bde95590f49943d14605ffede71a138e67ff"
+    },
+    {
+      "kind": "other_formations",
+      "count": 750,
+      "hash": "798f5f765abc3e2b0198f45843320950ddb44d37645a1b334c891a23eb45687b"
+    },
+    {
+      "kind": "ordinary_waypoints",
+      "count": 923,
+      "hash": "f099e83e1267a1c86b0466884506308ad8f19552d608fb96d0c50f36f60fe8f0"
+    }
+  ],
+  "applied_updates": [
+    {
+      "kind": "applied_update",
+      "name": "2026_11_19_00_seat_patrol_path_collision.sql",
+      "hash": "38FD09C9292C9725BD61F57A0952AAFB72FDF610",
+      "state": "RELEASED"
+    },
+    {
+      "kind": "applied_update",
+      "name": "2026_11_19_01_legion_teeming_spawns.sql",
+      "hash": "28828AB0701073C2591096AAE40AE91F6DB3E04B",
+      "state": "RELEASED"
+    }
+  ],
+  "runtime": {
+    "worldserver_sha256": "307bb7ba80bf7d503ba41d30de3c5111e884175e394aab743da5e5f72a1c97b4",
+    "worldserver_map_sha256": "da1565df6ecbcd314e02d12ea534b981e21d1cf90f4c324168077783f13cf15d",
+    "directory": "build-extractors/bin/Release",
+    "model_assets_unchanged": {
+      "go31852.mmap": "700e4ff837fa373cdc9db6cc14183a98fbc0945ce12484518d73344ee77c2dce",
+      "go31853.mmap": "4f65c4f380f32355b2206cfcd8de11e8cd3dcaa10da5be60ad581211bf9afd7f"
+    },
+    "final_libraries": {
+      "scripts.lib": "e982a0ed3eba169c535331f6eec644f5c7c8973869bdd96b247b9108f58e940c",
+      "game.lib": "68f906a7f5a88e4be14ce43ef7f5da3f149c331ea4e994a871c2860febbe0420",
+      "common.lib": "114b9344112af0faf8ce230188d516d05c977f1f3a1d1f49d1179d2dd7c3d32e",
+      "shared.lib": "3678aef780de7db6687624fea80684c353b45c77644cf0e9e032ecc150ef4da6"
+    },
+    "final_link": "Original CMake GAME/SCRIPTS/SHARED/COMMON static-library paths;no global OutDir. Final PE selected implementations checked;canonical copies match staged hashes.",
+    "startup": {
+      "owned_pid": 14276,
+      "ready": true,
+      "shutdown": "server shutdown0",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "new_crashes": 0,
+      "new_DBErrors_bytes": 0,
+      "new_unexplained_server_diagnostics": 0,
+      "owned_background_server_retained": false
+    },
+    "protected_runtime_files": 20
+  },
+  "evidence": [
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/reconstruction-native-release-run.log",
+      "sha256": "cee9ac6beb553b67b457793dfb49eb4523b4e374854d48415b7c9ea963ebde6c"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/wire-placement-run.log",
+      "sha256": "4905e1b2c339c920f7d996f8b4eb1e13e59c24833ac9501fdc181a15a1dd4d57"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/final-wire-corridors-run.log",
+      "sha256": "c39ecccaa659481764eb5e4a0fae1023dc6cedfeffefbaaa7bf39357edc04a8e"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/retained-teeming-run.log",
+      "sha256": "4969579787c73f1bb516fd0df32101f05c9d0c67bdfdd37c0516bf923365a854"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/retained-criteria-run.log",
+      "sha256": "64dd4b7621e4cff7735bd26a5cbac62679193fdb1198afded521ad7d48c0fac9"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/retained-lifetime-run.log",
+      "sha256": "bc79eee52159e652bcaa04a66fa3515425f68d0151e77ffb31e1e33c2c11ef9a"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/scepter-run.log",
+      "sha256": "e8032109ceb25ca4adea1a81d806477a84080289e6e4714540e621020b079eca"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/live-data-run.log",
+      "sha256": "8b97700ed8ca89f354644b2d711a468c1d1b84b64e7de91fc1e003cf2de8943c"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/canonical-startup-driver.log",
+      "sha256": "ab96380e9da80c99ff7cd4b36074229bf6b3887af8471251301380e7db6a9372"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/canonical-teeming-pe.log",
+      "sha256": "9e7fb8bbcfb48c612606bd0059e29b52c433ae68816ddf63bf775351dad7e8b4"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/canonical-criteria-pe.log",
+      "sha256": "3fb7f686c510a397bfcb2d49b815daf94455309d96f85960585da6c9245a56d7"
+    }
+  ],
+  "resolved_test_setup_failures": "Captured and repaired fixture-only missing proc/criteria indexes,READ ONLY temporary-DDL ordering,SQL FLOAT wire precision expectation,and missing native SetMinion player-control registration. All are paired with the final passing20891 regression;their handled exception traces are not production crash reports. Geometry negative candidates/invalid preliminary bounds are retained as research observations,not successful ordinary runs.",
+  "client_remaining": "Actual full dungeon traversal,combat AI spells/interrupts/leashing,visuals/audio/camera,real multi-client group movement and outdoor flight remain unverified. Native checks and sampled videos do not certify whole13 client chains or all36 artifact acquisitions.",
+  "unresolved_new_runtime_errors": [],
+  "archive": "See legion-teeming-cleanup-2026-11-19.json;raw historical media/source evidence retained outside fixed.",
+  "fix_commit": "Commit containing this implementation/audit;actual hash is also recorded in ignored archive manifests."
+}

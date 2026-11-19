@@ -15,8 +15,8 @@ static void Metadata()
 
 static CreatureData SelectSpawn()
 {
-    // Live data currently has no Teeming markers. Use one real ordinary
-    // record with a controlled cache-only marker to exercise native admission;
+    // Use one real ordinary record independently of deployed reconstruction.
+    // A controlled cache-only marker exercises native admission;
     // this is not evidence for an original Teeming placement or a data repair.
     auto rows=WorldDatabase.Query("SELECT guid,id,map,position_x,position_y,position_z,orientation,phaseMask,spawnMask,spawntimesecs,spawndist FROM creature WHERE id=97043 AND map=1492 ORDER BY guid LIMIT 1");
     Require(rows&&rows->GetRowCount()==1,"Matching ordinary Maw spawn unavailable for controlled flag fixture");auto f=rows->Fetch();
@@ -78,7 +78,7 @@ int main(int argc,char**argv)
             if(scenario){map->m_scenarios.erase(scenario);sScenarioMgr->RemoveScenario(map->GetInstanceId());}
         }
 #ifdef TEEMING_BASELINE
-        std::cout<<"COUNTERFACTUAL "<<checked<<" native Teeming checks:cache-only flagged real ordinary record loads without scenario and on non-Keystone maps;live Teeming placements remain missing\n";
+        std::cout<<"COUNTERFACTUAL "<<checked<<" native Teeming checks:cache-only flagged real ordinary record loads without scenario and on non-Keystone maps;not a successful production run\n";
 #else
         // Before scenario publication rejection must be retryable. The key's
         // actual countdown is sufficient; the timed run need not have started.
@@ -97,7 +97,7 @@ int main(int argc,char**argv)
             data.isTeemingSpawn=false;sObjectMgr->NewOrExistCreatureData(data.guid)=data;Check(LoadSpawn(data,map),"Instance-zero ordinary DB path regressed");
         }
 
-        std::cout<<"PASS "<<checked<<" native Teeming admission checks;cache marker controlled,live placements still missing\n";
+        std::cout<<"PASS "<<checked<<" native Teeming admission checks;cache marker controlled,production reconstruction tested separately\n";
 #endif
         CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
     }catch(std::exception const&error){std::cerr<<error.what()<<'\n';return 1;}

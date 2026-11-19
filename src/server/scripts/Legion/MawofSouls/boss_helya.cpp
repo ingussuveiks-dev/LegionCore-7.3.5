@@ -5,6 +5,7 @@
 */
 
 #include "maw_of_souls.h"
+#include "MawSkjalCrew.h"
 #include "ScriptPCH.h"
 
 enum Says
@@ -1042,7 +1043,8 @@ struct npc_skyal : public ScriptedAI
 
     void Reset() override
     {
-        instance->SetBossState(DATA_SKJAL, NOT_STARTED);
+        if(instance->GetBossState(DATA_SKJAL)!=DONE)
+            instance->SetBossState(DATA_SKJAL, NOT_STARTED);
 
         if (instance->GetBossState(DATA_HARBARON) != DONE)
         {
@@ -1054,56 +1056,15 @@ struct npc_skyal : public ScriptedAI
 
     void DoAction(int32 const action) override
     {  
-        if (action == ACTION_1)
+        if (action == ACTION_1 && instance->GetBossState(DATA_HARBARON)==DONE)
         {
             me->SetVisible(true);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_AGGRESSIVE);
-            ZoneTalk(0);
-
-            for (uint8 i = 2; i < 18; ++i)
-            {
-                if (i < 6)
-                {
-                    if (auto summon = instance->instance->SummonCreature(NPC_HELARJAR_CHAMPION, me->GetPosition()))
-                    {
-                        summon->SetHomePosition(addsPos[i]);
-                        summon->GetMotionMaster()->MoveTargetedHome();
-                    }
-                }
-                else if (i < 10)
-                {
-                    if (auto summon = instance->instance->SummonCreature(NPC_SEACURSED_SWIFTBLADE, me->GetPosition()))
-                    {
-                        summon->SetHomePosition(addsPos[i]);
-                        summon->GetMotionMaster()->MoveTargetedHome();
-                    }
-                }
-                else if (i < 14)
-                {
-                    if (auto summon = instance->instance->SummonCreature(NPC_HELARJAR_MISTCALLER, me->GetPosition()))
-                    {
-                        summon->SetHomePosition(addsPos[i]);
-                        summon->GetMotionMaster()->MoveTargetedHome();
-                    }
-                }
-                else if (i < 16)
-                {
-                    if (auto summon = instance->instance->SummonCreature(NPC_SEACURSED_MISTMENDER, me->GetPosition()))
-                    {
-                        summon->SetHomePosition(addsPos[i]);
-                        summon->GetMotionMaster()->MoveTargetedHome();
-                    }
-                }
-                else if (i < 18)
-                {
-                    if (auto summon = instance->instance->SummonCreature(NPC_SEACURSED_SOULKEEPER, me->GetPosition()))
-                    {
-                        summon->SetHomePosition(addsPos[i]);
-                        summon->GetMotionMaster()->MoveTargetedHome();
-                    }
-                }
-            }
+            if(!instance->GetData(MawSkjalCrew::Request))ZoneTalk(0);
+            // The instance retains real death/publication receipts across AI
+            // reset and grid re-entry;repeated actions cannot duplicate packs.
+            instance->SetData(MawSkjalCrew::Request,1);
         }
     }
 

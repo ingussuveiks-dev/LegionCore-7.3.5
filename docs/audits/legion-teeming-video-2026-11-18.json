@@ -226,5 +226,16 @@
     "VerifiedCaptures": 32,
     "Retained": "Canonical binaries/config/DLLs/data/required libs/current Maw rollback;all reusable regression/research source;OPEN public-source/geometry evidence",
     "RemovedFiles": 209
+  },
+  "follow_up_2026_11_19": {
+    "source": "https://www.youtube.com/watch?v=OvRxmBZth80",
+    "channel": "Deswind",
+    "title": "Maw+23 - Teeming, Explosive, Fortified (7.3.5) Arms Warrior PoV",
+    "upload": "2018-03-12",
+    "duration_seconds": 1097,
+    "reviewed": "110 video-only sampled frames at roughly10-second intervals across the full timeline;all6 contact sheets reviewed. No audio or continuous playback review.",
+    "sequence": "Entrance/Ymiron,hold,stairs,Harbaron,upper-deck packs,Skjal route and Helya fight. Supports relative deck/pull sequence,not exact server GUID/phase/respawn coordinates. Final Helya victory/exit was not verified.",
+    "follow_up": "docs/audits/legion-teeming-reconstruction-2026-11-19.json",
+    "original_server_SQL_recovered": false
   }
 }

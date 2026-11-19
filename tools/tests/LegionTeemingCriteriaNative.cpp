@@ -63,6 +63,7 @@ static void CheckSeatTricksterWeight(TeemingCriteriaScenario& scenario,bool teem
     std::cout<<"WEIGHT route=239 teeming="<<teeming<<" parent="<<root->ID<<" criterion=37408 npc=122401 leaves="<<first->ID<<','<<second->ID<<" amounts=4+4 effective=8 threshold="<<root->Entry->Amount<<";native evaluator,controlled counters,no earned-kill claim\n";
 }
 
+#ifndef LEGION_TEEMING_CRITERIA_SUPPORT_ONLY
 int main(int argc,char**argv)
 {
     try
@@ -157,3 +158,4 @@ int main(int argc,char**argv)
         CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
     }catch(std::exception const&error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif
