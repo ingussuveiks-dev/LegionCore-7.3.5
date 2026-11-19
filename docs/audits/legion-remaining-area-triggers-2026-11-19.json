@@ -46,7 +46,14 @@
   },
   "archive": {
     "directory": "build-extractors/bin/Release/fixed/2026-11-19-remaining-area-triggers",
-    "status": "Pending end-of-task archival and cleanup."
+    "status": "Verified and complete",
+    "manifest_sha256": "5bfa9fa6c630225b3067b286e63a3e258c752750327aef51e36f213760e53b02",
+    "deletion_manifest_sha256": "26747103a655b917325337d04007033713538343f37173de59f179385a5a7eda",
+    "records": 317,
+    "removed_files": 238,
+    "removed_bytes": 2792310991.0,
+    "freed_bytes": 2792521728,
+    "cleanup": "Twelve task-owned fixture directories, two staging links, native probe build outputs and fresh Scepter-generated files were removed after verifying path and reparse boundaries. All copied diagnostics were verified by hash and length. The canonical runtime, original build libraries and six recovery sets were preserved. No private configuration was archived."
   },
   "evidence_sha256": {
     "build-extractors/runtime-test/legion-final-area/20261119-202218-157/native.tsv": "8dbd1ba81d18032cdd7514e5263371dfedbab29c7a074a024fca7a0c6641808b",
@@ -71,5 +78,6 @@
     ".codex/final-area-20261119/staged-final-pe.log": "9ce691e41cc1e71d8dfca122eb8c09ca761546cda75fa1387b5817d43ccd20b4",
     ".codex/final-area-20261119/canonical-startup.log": "a35c325843cc11af96cb64df804d9bad31157e2e7ebc253d48db216a4b9fbad9",
     ".codex/final-area-20261119/retained-release.log": "0137a9d1dd24eefc1e1da1659977e0cd5b0889781fd854b5f2c92b61df07b840"
-  }
+  },
+  "fix_commit": "957f0444d3bb741e744f3795b04107968874df38"
 }
