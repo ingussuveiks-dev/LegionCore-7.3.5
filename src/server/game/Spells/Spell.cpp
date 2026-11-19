@@ -782,6 +782,12 @@ void Spell::SelectImplicitNearbyTargets(SpellEffIndex effIndex, SpellImplicitTar
         case TARGET_OBJECT_TYPE_DEST:
         case TARGET_OBJECT_TYPE_OBJ_AND_DEST:
             m_targets.SetDst(*target);
+            // Deliver Solid Stone uses the selected receiver as destination.
+            // Its authored SPELLHIT dialogue also needs that same receiver
+            // in the spell's hit list. Keep the native destination and filter.
+            if (m_spellInfo->Id == 206157 && effIndex == EFFECT_0)
+                if (Creature* receiver = target->ToCreature(); receiver && receiver->GetEntry() == 104208)
+                    AddUnitTarget(receiver, effMask, false, false);
             break;
         case TARGET_OBJECT_TYPE_CORPSE:
             if (Unit* unitTarget = target->ToUnit())

@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "25f5aca404157417441abe7da3109bede9fdcc09",
+  "status": "Four remaining outdoor triggers repaired and deployed. Native server checks passed.",
+  "cause": "The original ten SmartEvent root conditions used scene source 10. All four originals dispatch as EventObjects on source 13. Per-player prerequisites were also absent from group recipient credit. The delayed delivery button could outlive the initiating quest or entry. Native spell 206157 selected a destination but did not send the configured SpellHit to the selected receiver.",
+  "routes": [
+    {
+      "event": 197,
+      "quest": 43686,
+      "scope": "Active attempt, credited 109923 and 111147, pending 112623. Keep original stage credit first and both 3237 and 3216 conversations. Party recipients meet their own stage and native distance and corpse rules."
+    },
+    {
+      "event": 367,
+      "quest": 44789,
+      "scope": "Require active quest and no 117311 credit in phase 7515 before conversation 3958. Phase 7515 is shared across multiple phase definitions. Native 118358 gossip and timed list 11835800 issue the separate 117311 credit and 229844 flight."
+    },
+    {
+      "event": 501,
+      "quest": 44041,
+      "scope": "Active attempt, native Stealth aura 1784, credited 112486 and pending 112488. Keep credit first and conversation 3477. Party recipients meet their own prerequisites, including Stealth."
+    },
+    {
+      "event": 533,
+      "quest": 41397,
+      "scope": "Active undelivered attempt in phase 6112, native conversation 1474. The 200 ms button cast stays bound to the active quest attempt, present source, distance and phase. Aura 206158/override 679 enables actual 206157 within Dalaran 7502. Keep the aura during the walk to 104208 and remove it on native delivery or loss of spell-area eligibility. The accepted nearby actor is retained as destination and receives the actual spell hit for 1473. Effect 1/90 gives personal 104180, then native effects 2 and 3 remove 206158 and 206057."
+    }
+  ],
+  "integration": "Only these four real map 1220 roots delay EventObject entry consumption until their original SmartEvent gates pass. The scoped actions leave general SmartEvent ordering, ordinary group credit and target selection on their existing routes.",
+  "verification": {
+    "counterfactual": "build-extractors/runtime-test/legion-final-area/20261119-202218-157 exercises all four roots and the old release library. Wrong-source admission, premature party credit, shared-phase dialogue and a stale delayed override reproduced. The expected response differs from the repaired run.",
+    "receiver_counterfactual": "build-extractors/runtime-test/legion-final-area/20261119-202600-882 isolates the remaining receiver failure after the admission fixes. Native 104180 credited and the override cleared, with both NPCs visible, zero receiver SpellHit callbacks and zero 1473 conversations.",
+    "actual": "build-extractors/runtime-test/legion-final-area/20261119-202712-441 and build-extractors/runtime-test/legion-final-area/20261119-202948-530 pass four staged entry, twenty party, twenty Black Rook and sixteen delivery cases each. Human and Orc, missing stage or aura, already counted objectives, same-area progression, re-entry, group distance, alternate phase, no quest and real receiver hit are covered. The normal 1500 ms delivery cast rejects a missing receiver without consuming the button. One valid hit credits once and publishes 1473.",
+    "rollback_and_live": "The original worldserver and maps were copied and hash verified as a rollback. The final link used the canonical game Release library. Staged and canonical PE checks located all three new code paths. Migration readback confirmed ten source changes, two new guards and one native spell-area row. Hashes of unrelated conditions, spells, SmartScripts and presentation records matched.",
+    "retained": "build-extractors/runtime-test/legion-linked-area-credit/20261119-203009-219 passes the previous 94 linked-root, group and completion cases. The selected canonical Scepter login verifier and shared scenario call-path checks pass.",
+    "server": "The task-owned canonical worldserver PID 15636 reached ready and exited 0 through server shutdown 0. No new crashes, DBErrors, server warnings, errors or assertions. Standard error was empty."
+  },
+  "limits": [
+    "Actual client traversal, voice, rendering, real class acceptance, saved aura recovery and entire quests remain client checks. Native tests control quest acceptance, stages, group membership and phased actors.",
+    "The new progression runs on a real entering Player. Combat and existing pet or guardian kill dispatch were outside the changed routes.",
+    "Resolved fixture issues included duplicate test includes, correcting effect 90 to personal credit, waiting for the ten millisecond aura removal and adding the real receiver SmartAI to the fixture. Read-only trace queries corrected legacy schema column-name assumptions. Passing native follow-ups and diagnostics are preserved."
+  ],
+  "canonical": {
+    "worldserver_sha256": "b361dda3b82b795f9efd67b9b11ddb059c73b35625173ab68a55b67e7370f120",
+    "worldserver_map_sha256": "0d2c1980bd59f730b89a6ff65c076c74848a754f6c18460951976ef4da9fb8df",
+    "rollback": ".codex/final-area-20261119/rollback-before-remaining-area"
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-remaining-area-triggers",
+    "status": "Pending end-of-task archival and cleanup."
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-final-area/20261119-202218-157/native.tsv": "8dbd1ba81d18032cdd7514e5263371dfedbab29c7a074a024fca7a0c6641808b",
+    "build-extractors/runtime-test/legion-final-area/20261119-202218-157/evidence/diagnostics-after.json": "81e44121efdaaf7a8f8bd79684a6b3c94c4145f6e64334064ed0cc03cfe5477b",
+    "build-extractors/runtime-test/legion-final-area/20261119-202712-441/native.tsv": "99ae4c738649bb7bbe4dad07769c233202277c1bf5048fd96aa0fbc869443ac2",
+    "build-extractors/runtime-test/legion-final-area/20261119-202712-441/evidence/diagnostics-after.json": "04acbe21e186b78d6670ff528c24c3feeb31bc6d2ef0080f85f0de2dc94b632d",
+    "build-extractors/runtime-test/legion-final-area/20261119-202948-530/native.tsv": "729e5f1fbb0915e10fbede9a125e16b26caed143286dc585f98957d1710235d9",
+    "build-extractors/runtime-test/legion-final-area/20261119-202948-530/evidence/diagnostics-after.json": "29a185909d4f32c28e3443ede9e03d890f248dfda3d58d62e16f226401a39f68",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-203009-219/native.tsv": "0bea0f4c4f34ccbcf57eaa4290c97a090034143b090ad1b47cecc7f1baf5b3ef",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-203009-219/evidence/diagnostics-after.json": "074420fac255286050b5234b7a581e48889415d3946b65a64ebf8f99d2c0d611",
+    "build-extractors/runtime-test/legion-final-area/20261119-202600-882/native.tsv": "d4b3b33af86f1ee3286fb65988706a569cedc6f1619ebab6d90474418417f813",
+    "build-extractors/runtime-test/legion-final-area/20261119-202600-882/evidence/diagnostics-after.json": "f03b29a895d47e1ca8e0c9b2219672d5e98d9f50e967b7898b638f590c10240d",
+    ".codex/final-area-20261119/final-area-trace.tsv": "4b23785fe8ad49a61f90a14c8569b84698d6cedfbca91b4e7c256fee16f8ec89",
+    ".codex/final-area-20261119/final-area-phase.tsv": "4391f3ab0d1aae9369a460a033f3ea25b3e0e39dd42522802a51a548b0beffc1",
+    ".codex/final-area-20261119/final-area-delivery.tsv": "fac2be91089f48a1decdf73190ddc3a8225cdb6d300118bbac920bb0e1cb48d7",
+    ".codex/final-area-20261119/final-area-followthrough.tsv": "6533400b3545d8a6ad1e6c550972d9c18ae75762e51ce93bab668d396ad866e6",
+    ".codex/final-area-20261119/live-gates-before.tsv": "0b0db1fd63a0033a227b9b63e2cdc015a62d4288d965865324b97b163e0c7cd1",
+    ".codex/final-area-20261119/live-gates-after.tsv": "a492b3854fff25a2479c134355560da0327fe792e32ca56e6c252b87d35f79f6",
+    ".codex/final-area-20261119/live-spell-area.tsv": "39a600172cefb0a3398e4d0d4c7c7e3cb7145e6f69d8e7e513dce1e6089e761b",
+    ".codex/final-area-20261119/live-deployment.json": "08fb4511a4de952a59ba5ca8b1fa207f8e3fedcb83dc3c694f6bb8e43ee5aea9",
+    ".codex/final-area-20261119/promotion.json": "6b29f014cac7ac9fa0a6815170ff13526f467e7b19419d5791667c856489d78a",
+    ".codex/final-area-20261119/staged-final-pe.log": "9ce691e41cc1e71d8dfca122eb8c09ca761546cda75fa1387b5817d43ccd20b4",
+    ".codex/final-area-20261119/canonical-startup.log": "a35c325843cc11af96cb64df804d9bad31157e2e7ebc253d48db216a4b9fbad9",
+    ".codex/final-area-20261119/retained-release.log": "0137a9d1dd24eefc1e1da1659977e0cd5b0889781fd854b5f2c92b61df07b840"
+  }
+}

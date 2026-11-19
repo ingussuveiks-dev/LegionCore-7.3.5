@@ -18,9 +18,11 @@
 #include "Cell.h"
 #include "CellImpl.h"
 #include "ChatTextBuilder.h"
+#include "ConditionMgr.h"
 #include "CreatureTextMgr.h"
 #include "CreatureTextMgrImpl.h"
 #include "DatabaseEnv.h"
+#include "EventObject.h"
 #include "GossipDef.h"
 #include "GridDefines.h"
 #include "GridNotifiers.h"
@@ -69,6 +71,58 @@ Unit* GetScriptCreditCaster(Unit* invoker, SpellInfo const* spell)
             return player;
     }
     return invoker;
+}
+
+// Each party recipient must reach their own quest stage before recording
+// these two proximity objectives. Keep the native party distance and corpse
+// rules and leave combat-triggered group credits on the ordinary path.
+void RewardStagedAreaCredit(Player* player, EventObject* source, uint32 credit)
+{
+    Group* group = player->GetGroup();
+    if (!group)
+    {
+        player->RewardPlayerAndGroupAtEvent(credit, player);
+        return;
+    }
+
+    if (!player->IsInWorld() || player->TalkedToCreature(credit, ObjectGuid::Empty))
+        return;
+
+    for (GroupReference* reference = group->GetFirstMember(); reference; reference = reference->next())
+    {
+        Player* member = reference->getSource();
+        if (!member || !member->IsInWorld() || member->GetMap() != player->GetMap() ||
+            !source->InSamePhase(member) || !member->IsAtGroupRewardDistance(player) ||
+            (!member->IsAlive() && member->GetCorpse()))
+            continue;
+
+        if (sConditionMgr->IsObjectMeetingSmartEventConditions(source->GetEntry(), 0, SMART_SCRIPT_TYPE_EVENTOBJECT, member, source))
+            member->KilledMonsterCredit(credit);
+    }
+}
+
+void ScheduleStoneDeliveryButton(Player* player, EventObject* source, bool triggered)
+{
+    if (!player || !player->IsInWorld() || player->GetMap() != source->GetMap() ||
+        !player->IsAlive() || player->GetQuestStatus(41397) != QUEST_STATUS_INCOMPLETE)
+        return;
+
+    ObjectGuid sourceGuid = source->GetGUID();
+    player->AddQuestDelayedEvent(41397, 200, [player, sourceGuid, triggered]
+    {
+        if (!player->IsInWorld() || !player->IsAlive() || player->GetMapId() != 1220 ||
+            player->GetQuestStatus(41397) != QUEST_STATUS_INCOMPLETE || player->HasAura(206158))
+            return;
+
+        EventObject* event = ObjectAccessor::GetEventObject(*player, sourceGuid);
+        if (!event || !event->IsInWorld() || event->GetEntry() != 533 ||
+            event->GetMap() != player->GetMap() || !event->InSamePhase(player) ||
+            !event->ActivatedForPlayer(player) || event->GetDistance(player) > event->eventTemplate->radius ||
+            !sConditionMgr->IsObjectMeetingSmartEventConditions(533, 0, SMART_SCRIPT_TYPE_EVENTOBJECT, player, event))
+            return;
+
+        player->CastSpell(player, 206158, triggered);
+    });
 }
 }
 
@@ -794,6 +848,14 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_INVOKER_CAST:
         {
+            if (event && event->GetMapId() == 1220 && event->GetEntry() == 533 &&
+                e.event_id == 1 && e.action.cast.spell == 206158 && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER)
+            {
+                ScheduleStoneDeliveryButton(unit ? unit->ToPlayer() : nullptr, event,
+                    (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0);
+                break;
+            }
+
             Unit* tempLastInvoker = GetLastInvoker();
             if (!tempLastInvoker)
                 break;
@@ -1238,6 +1300,16 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CALL_KILLEDMONSTER:
         {
+            if (event && event->GetMapId() == 1220 && e.event_id == 0 &&
+                e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
+                ((event->GetEntry() == 197 && e.action.killedMonster.creature == 112623) ||
+                 (event->GetEntry() == 501 && e.action.killedMonster.creature == 112488)))
+            {
+                if (Player* player = unit ? unit->ToPlayer() : nullptr)
+                    RewardStagedAreaCredit(player, event, e.action.killedMonster.creature);
+                break;
+            }
+
             Player* player = nullptr;
             if (me)
                 player = me->GetLootRecipient();

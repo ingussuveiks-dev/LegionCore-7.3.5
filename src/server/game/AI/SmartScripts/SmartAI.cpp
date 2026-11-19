@@ -18,6 +18,7 @@
 #include "SmartAI.h"
 #include "Cell.h"
 #include "CellImpl.h"
+#include "ConditionMgr.h"
 #include "CreatureGroups.h"
 #include "DatabaseEnv.h"
 #include "GridDefines.h"
@@ -1262,6 +1263,24 @@ class SmartEventObject : public EventObjectScript
 {
 public:
     SmartEventObject() : EventObjectScript("SmartEventObject") {}
+
+    bool IsTriggerMeets(Player* player, EventObject* event) override
+    {
+        if (event->GetMapId() != 1220)
+            return true;
+
+        switch (event->GetEntry())
+        {
+            case 197:
+            case 367:
+            case 501:
+            case 533:
+                return !sConditionMgr->GetConditionsForSmartEvent(event->GetEntry(), 0, SMART_SCRIPT_TYPE_EVENTOBJECT).empty() &&
+                    sConditionMgr->IsObjectMeetingSmartEventConditions(event->GetEntry(), 0, SMART_SCRIPT_TYPE_EVENTOBJECT, player, event);
+            default:
+                return true;
+        }
+    }
 
     bool OnTrigger(Player* player, EventObject* event, bool apply) override
     {
