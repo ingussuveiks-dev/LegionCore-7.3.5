@@ -233,6 +233,11 @@ void VerifyCompletionHandoff()
         {
             completedEvent.Update(1);
             ExpectConversation(player, completed, false);
+#ifdef LINKED_AREA_COMPLETION_BASELINE
+            Require(completedEvent.ActivatedForPlayer(&player), "Original premature entry consumption did not reproduce");
+#else
+            Require(!completedEvent.ActivatedForPlayer(&player), "Incomplete quest consumed the completion trigger");
+#endif
         }
         arrivalEvent.Update(1);
         ExpectConversation(player, arrival, true);
@@ -240,10 +245,9 @@ void VerifyCompletionHandoff()
             "Native arrival credit did not complete the staffed quest log");
         ClearConversations(map);
         completedEvent.Update(1);
+#ifdef LINKED_AREA_COMPLETION_BASELINE
         if (completionTriggerFirst)
         {
-            // Native area entry was already consumed before completion.
-            // A new entry checks the current quest state again.
             ExpectConversation(player, completed, false);
             player.Relocate(origin.GetPositionX() + completedEvent.eventTemplate->radius + 10,
                 origin.GetPositionY(), origin.GetPositionZ(), 0);
@@ -251,9 +255,23 @@ void VerifyCompletionHandoff()
             player.Relocate(origin);
             completedEvent.Update(1);
         }
+#endif
         ExpectConversation(player, completed, true);
         Require(player.GetQuestObjectiveData(arrival.Quest, arrival.Credit) == 1 && player.getRewardedQuests().empty(),
             "Completion introduction changed progress or granted rewards");
+        completedEvent.Update(1);
+        ExpectConversation(player, completed, true);
+        ClearConversations(map);
+        completedEvent.Update(1);
+        ExpectConversation(player, completed, false);
+
+        // A new entrance retains the original complete-quest gate.
+        player.Relocate(origin.GetPositionX() + completedEvent.eventTemplate->radius + 10,
+            origin.GetPositionY(), origin.GetPositionZ(), 0);
+        completedEvent.Update(1);
+        player.Relocate(origin);
+        completedEvent.Update(1);
+        ExpectConversation(player, completed, true);
         ClearConversations(map);
     }
 }
@@ -280,7 +298,11 @@ int main(int argc, char** argv)
         std::cout << "PASS " << count << " native linked area cases with original quest gates, objective caps and entry/re-entry\n";
         std::cout << "PASS " << VerifyGroupCredit() << " native party credit cases with nearby, absent-quest and distant members\n";
         VerifyCompletionHandoff();
-        std::cout << "PASS 4 native EO322 to EO323 handoffs in both orders, including entry retry after completion\n";
+#ifdef LINKED_AREA_COMPLETION_BASELINE
+        std::cout << "COUNTERFACTUAL EO323 consumes an incomplete player's entry before EO322 credit, requiring re-entry in both affected cases\n";
+#else
+        std::cout << "PASS 4 native EO322 to EO323 handoffs in both orders, with no duplicate inside and ordinary re-entry\n";
+#endif
 #endif
         CharacterDatabase.Close();
         LoginDatabase.Close();

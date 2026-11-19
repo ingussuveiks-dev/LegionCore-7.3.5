@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-19",
+  "status": "Deployed and verified in the server. Client playback remains separate.",
+  "base_commit": "aad1d6d9cc234eb9bade7c1029e8e26c30cdfc24",
+  "cause": "Native EO322 and EO323 share their real map 1220 point and 100-yard radius. EO323 consumed the player entry before evaluating its source 13 quest completion condition. If EO323 ran first, even real EO322 credit 116020 and the resulting completion of 45065 could not start dialogue 4024 until re-entry.",
+  "repair": "Include the single EO323 outdoor root in the existing pre-entry SmartEvent condition gate. An incomplete quest leaves the entry available. The next regular in-range update uses the same completion condition for quest 45065. Native entry suppression still limits playback while the player remains inside. Ordinary re-entry retains its original eligibility.",
+  "verification": {
+    "counterfactual": "build-extractors/runtime-test/legion-linked-area-credit/20261119-203956-939 uses the original game.lib and existing corrected source 13 data. Both race fixtures reproduce premature consumption when EO323 runs first. Both require a new entrance after completion.",
+    "native": "build-extractors/runtime-test/legion-linked-area-credit/20261119-204036-410 passes four Human and Orc and ordering combinations through actual EventObject, SmartScript, native credit and conversation publication. Both orders play 4024 upon completion inside the area. Repeated update after publication and after cleanup does not replay in the same entry. A fresh eligible entry can play normally. The check observes unchanged credit amount and zero rewards.",
+    "retained": "All 94 linked-area cases and the 60 four-root cases in build-extractors/runtime-test/legion-final-area/20261119-204058-560 pass. Canonical Scepter login and earlier area and delivery PE checks pass.",
+    "release": "The staged and canonical final PE/map verifier decodes the compiled area-entry switch and proves both EO323 and the four earlier opt-ins use the same condition branch. Final-link inputs use the original game Release library. Canonical copy identity and runtime configuration hashes were checked.",
+    "startup": "Owned worldserver PID 22472 reached ready and gracefully exited 0. No new crashes, database errors, warnings or assertions. Standard error was empty."
+  },
+  "scope": "Only the completion conversation admission changed. The actual link and map placement were read back. No SQL change. Quest-state fixtures drive native credit and conversation publication. Client travel, voice and rendering remain separate checks.",
+  "canonical": {
+    "worldserver_sha256": "2e8b039cc7f9876fe6ace094c849b53fbc8b1860763b8abc7f1735262351a634",
+    "rollback": ".codex/area-completion-20261119/rollback-before-area-completion"
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-area-completion",
+    "status": "Pending hash verification and cleanup"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-203956-939/native.tsv": "2d9c84f1e9d033f006b8d3882f1dac1d10fc60ddfae5f9f277ada069cce53152",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-203956-939/evidence/diagnostics-after.json": "b5d6fcb8bd0a511f0bd3454ecb5958d97bc992ca48b2c2c66fbf3a2961e8b08b",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-204036-410/native.tsv": "0ad9c94d4858483e2f50367cc30f396a94b883f4bad58d6346cb31b23f8f4f45",
+    "build-extractors/runtime-test/legion-linked-area-credit/20261119-204036-410/evidence/diagnostics-after.json": "d4ac16e52db05ef18ac723b7323678bd0a167d6ce0c5016875afeb80c923ec91",
+    "build-extractors/runtime-test/legion-final-area/20261119-204058-560/native.tsv": "1c3ec08c01f81053c423463153d2de1e0bf9c891764c41a3e84b6f59f3399f12",
+    "build-extractors/runtime-test/legion-final-area/20261119-204058-560/evidence/diagnostics-after.json": "8b4d65653808a816dec0108f93e123d48315496188106315ef723135220d7164",
+    ".codex/area-completion-20261119/area-completion-live.tsv": "7413f8b0e8c3526448f95d30411153b2f92b76188cc508dec1cae9592fa771af",
+    ".codex/area-completion-20261119/promotion.json": "6b1c53f409418900c0b47a3816ddb7b40a81b593a8b1fe1c472af1e1c3890868",
+    ".codex/area-completion-20261119/staged-pe.log": "d5690e502c365fdaaf972e7bf5afb3ea88ff1185d9d27da3dc1dad44d7fa3c96",
+    ".codex/area-completion-20261119/canonical-pe.log": "fd669b5860f1d27a370caa90b9589632862790104937dce1fdf1568dcd938c55",
+    ".codex/area-completion-20261119/canonical-startup.log": "fad569987f5a35aa0c8e5ea9cc7c5ee57e7515b20c2e416824bd6956780f120b"
+  }
+}

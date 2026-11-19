@@ -1272,6 +1272,7 @@ public:
         switch (event->GetEntry())
         {
             case 197:
+            case 323: // The nearby EO322 can complete quest 45065 after this entry poll.
             case 367:
             case 501:
             case 533:
