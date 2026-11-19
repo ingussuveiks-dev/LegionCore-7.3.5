@@ -57,6 +57,7 @@
     },
     "protected_runtime_files": 20
   },
-  "archive": "See legion-teeming-cleanup-2026-11-19.json.",
-  "fix_commit": "Commit containing this fix/audit;actual hash is also recorded in ignored archive manifests."
+  "archive": "docs/audits/legion-teeming-cleanup-2026-11-19.json",
+  "fix_commit": "Commit containing this fix/audit;actual hash is also recorded in ignored archive manifests.",
+  "implementation_commit": "1905be3852f24ccc4b9a7dd8b32db83fae071d5b"
 }

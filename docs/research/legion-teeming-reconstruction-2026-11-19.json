@@ -11,7 +11,8 @@
     "placement_evidence": "build-extractors/runtime-test/legion-teeming-placement/20261119-005324-030/surfaces.tsv",
     "placement_evidence_sha256": "0eb5dc9be6c629a5e8339923d72952fb90176ff73d1494b8ba6cb7b455f254b0",
     "patrol_leg_evidence": "build-extractors/runtime-test/legion-teeming-geometry/20261119-005236-978/surfaces.tsv",
-    "limits": "Reconstruction from historical addon,matching native profiles and physical navigation;not original sniffed server GUIDs or client traversal. Native normal16 Skjal crew retained,seven additions follow real Harbaron/Skjal publication."
+    "limits": "Reconstruction from historical addon,matching native profiles and physical navigation;not original sniffed server GUIDs or client traversal. Native normal16 Skjal crew retained,seven additions follow real Harbaron/Skjal publication.",
+    "placement_evidence_archived_at": "build-extractors/bin/Release/fixed/2026-11-19-teeming-reconstruction/content/records/build-extractors/runtime-test/legion-teeming-placement/20261119-005324-030/surfaces.tsv"
   },
   "counts": {
     "total": 222,
@@ -27624,13 +27625,16 @@
     "evidence": [
       {
         "path": "build-extractors/runtime-test/legion-teeming-placement/20261119-014035-485/surfaces.tsv",
-        "sha256": "f314f4da25185db750fa35702de8c24dcc1d3a3a9ec1f21ea1c3d0cf36ab57b6"
+        "sha256": "f314f4da25185db750fa35702de8c24dcc1d3a3a9ec1f21ea1c3d0cf36ab57b6",
+        "archived_at": "build-extractors/bin/Release/fixed/2026-11-19-teeming-reconstruction/content/records/build-extractors/runtime-test/legion-teeming-placement/20261119-014035-485/surfaces.tsv"
       },
       {
         "path": "build-extractors/runtime-test/legion-teeming-geometry/20261119-014332-960/surfaces.tsv",
-        "sha256": "aac218cf375ea9064c373c3a66589150567da849aea924b471dcf828e0f941cb"
+        "sha256": "aac218cf375ea9064c373c3a66589150567da849aea924b471dcf828e0f941cb",
+        "archived_at": "build-extractors/bin/Release/fixed/2026-11-19-teeming-reconstruction/content/records/build-extractors/runtime-test/legion-teeming-geometry/20261119-014332-960/surfaces.tsv"
       }
-    ]
+    ],
+    "native_loader_archived_at": "build-extractors/bin/Release/fixed/2026-11-19-teeming-reconstruction/content/records/build-extractors/runtime-test/legion-teeming-reconstruction/20261119-013741-558/native.tsv"
   },
   "deployment": {
     "date": "2026-11-19",

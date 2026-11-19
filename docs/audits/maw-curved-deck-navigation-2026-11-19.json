@@ -52,6 +52,7 @@
     }
   ],
   "remaining": "Actual client traversal/combat/camera and full dungeon chains were not performed.",
-  "archive": "See legion-teeming-cleanup-2026-11-19.json after resolved diagnostic archive/cleanup.",
-  "fix_commit": "Commit containing this fix/audit;actual hash is also recorded in ignored archive manifests."
+  "archive": "docs/audits/legion-teeming-cleanup-2026-11-19.json",
+  "fix_commit": "Commit containing this fix/audit;actual hash is also recorded in ignored archive manifests.",
+  "implementation_commit": "1fbe90a1585b271c9681e49d14d84e80c104044f"
 }

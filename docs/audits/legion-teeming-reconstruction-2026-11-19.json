@@ -5,7 +5,7 @@
   "result": "Restored222 explicitly reconstructed Teeming additions across13 routes/12 maps:215 native-profile DB spawns plus7 instance-owned upper-deck Skjal actors. Original server/sniff spawn SQL was not recovered;this is a reviewed reconstruction,not original provenance.",
   "source_catalog": {
     "path": "docs/research/legion-teeming-reconstruction-2026-11-19.json",
-    "sha256": "aa79f604cd691d2aaf046d7b255bd5eb218085eb3acf5ca2bef595b215658961"
+    "sha256": "2a839feb53dbb4bc2f23d96b525bb531ddeb7336e85d122dcc49cf9862f9effd"
   },
   "historical_source": "MDT aaabf806caac2cc519b692bce68c9ce38e934974,2018-05-27;matching native26972 DB2/World/runtime collision/navmesh. Earlier unapproved projection remains a dated research snapshot;this accepted catalog supersedes its missing-content status.",
   "routes": {
@@ -90,7 +90,8 @@
     "new_normal_single_leader_rows": 87,
     "same_map_phase1_formation_members_verified": 266,
     "policy": "Preserve actual same-NPC native equipment/addon/auras/flags/respawn settings and template AI. Native full health/mana initialization validated;native randomized size auras retained. Extra DB records use exact existing Keystone+Teeming admission;no fabricated phase IDs. Existing normal static leaders have no added published members outside Teeming.",
-    "forces": "No weight/threshold changes. Native13 force targets and effective source weights retained;Trickster122401 remains two distinct4-point leaves,effective8. No synthetic kill credit."
+    "forces": "No weight/threshold changes. Native13 force targets and effective source weights retained;Trickster122401 remains two distinct4-point leaves,effective8. No synthetic kill credit.",
+    "ordinary_formation_guard": "Live check:87 new normal leader rows have zero unrelated ordinary members;none is the shared Moroes formation-script boss. New extra members are denied outside native Teeming admission."
   },
   "skjal": {
     "original_crew_retained": 16,
@@ -240,6 +241,7 @@
   "resolved_test_setup_failures": "Captured and repaired fixture-only missing proc/criteria indexes,READ ONLY temporary-DDL ordering,SQL FLOAT wire precision expectation,and missing native SetMinion player-control registration. All are paired with the final passing20891 regression;their handled exception traces are not production crash reports. Geometry negative candidates/invalid preliminary bounds are retained as research observations,not successful ordinary runs.",
   "client_remaining": "Actual full dungeon traversal,combat AI spells/interrupts/leashing,visuals/audio/camera,real multi-client group movement and outdoor flight remain unverified. Native checks and sampled videos do not certify whole13 client chains or all36 artifact acquisitions.",
   "unresolved_new_runtime_errors": [],
-  "archive": "See legion-teeming-cleanup-2026-11-19.json;raw historical media/source evidence retained outside fixed.",
-  "fix_commit": "Commit containing this implementation/audit;actual hash is also recorded in ignored archive manifests."
+  "archive": "docs/audits/legion-teeming-cleanup-2026-11-19.json",
+  "fix_commit": "Commit containing this implementation/audit;actual hash is also recorded in ignored archive manifests.",
+  "implementation_commit": "95165b05f61569503d55902c46a4d76f20964960"
 }

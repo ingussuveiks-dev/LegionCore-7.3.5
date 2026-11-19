@@ -1,3 +1,4 @@
 # Keep these guarded updater scripts byte-stable across Windows checkouts.
 sql/updates/world/2026_11_19_00_seat_patrol_path_collision.sql text eol=lf
 sql/updates/world/2026_11_19_01_legion_teeming_spawns.sql text eol=lf
+docs/research/legion-teeming-reconstruction-2026-11-19.json text eol=lf

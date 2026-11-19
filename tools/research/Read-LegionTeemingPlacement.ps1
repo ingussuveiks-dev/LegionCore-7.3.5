@@ -32,4 +32,3 @@ try{
  foreach($item in $sealed){if((Get-FileHash -LiteralPath $item.Path).Hash -ne $item.Hash){throw 'Placement input changed'}}
 }
 "SURVEY_OUTPUT $out/surfaces.tsv"
-
