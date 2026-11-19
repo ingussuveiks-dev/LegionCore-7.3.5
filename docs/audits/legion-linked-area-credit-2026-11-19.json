@@ -56,7 +56,7 @@
   },
   "remaining": [
     "EO197, EO367, EO501 and EO533 were repaired in 957f0444d. Their native checks, canonical deployment and remaining client checks are in legion-remaining-area-triggers-2026-11-19.json.",
-    "If EO323 processes entry before quest 45065 completes, the entry is consumed and the dialogue can start on the next entry. Both orders were tested.",
+    "EO323 same-area completion was repaired in 3c02f9ab2. Both native orders now play the dialogue without re-entry. See legion-area-completion-2026-11-19.json for the original counterfactual and repaired checks.",
     "Client audio, real quest routes and phase placement remain separate. Native fixtures publish controlled accepted quest states and test actors. The area credit actions consume an entering player and do not require killing a creature. Pet or guardian kills in the surrounding quest chain were outside this change.",
     "The first fixture invocation hit a case-insensitive PowerShell variable collision before starting any native test. The wrapper now keeps the previous environment value separate and writes its private config inside the cleanup scope."
   ],

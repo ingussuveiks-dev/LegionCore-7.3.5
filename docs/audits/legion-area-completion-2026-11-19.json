@@ -18,7 +18,14 @@
   },
   "archive": {
     "directory": "build-extractors/bin/Release/fixed/2026-11-19-area-completion",
-    "status": "Pending hash verification and cleanup"
+    "status": "Verified and complete",
+    "records": 121,
+    "manifest_sha256": "6ddfcc413279090815f27b3d34696b3962bbb0bd882da0d20a32b844683142e6",
+    "deletion_manifest_sha256": "ede935e73485012b8c5b0aad5bda76dd230bd0ae53c440c9745ebbc76592a203",
+    "removed_files": 82,
+    "removed_bytes": 1368553998.0,
+    "freed_bytes": 1368657920,
+    "cleanup": "Removed three exact task-owned fixture runtimes, the staged link, two probe outputs and the freshly generated Scepter files. Verified all copied evidence, protected runtime files and existing rollback hashes. A new pre-EO323 rollback supports independent client recovery. No private configuration was archived."
   },
   "evidence_sha256": {
     "build-extractors/runtime-test/legion-linked-area-credit/20261119-203956-939/native.tsv": "2d9c84f1e9d033f006b8d3882f1dac1d10fc60ddfae5f9f277ada069cce53152",
@@ -32,5 +39,6 @@
     ".codex/area-completion-20261119/staged-pe.log": "d5690e502c365fdaaf972e7bf5afb3ea88ff1185d9d27da3dc1dad44d7fa3c96",
     ".codex/area-completion-20261119/canonical-pe.log": "fd669b5860f1d27a370caa90b9589632862790104937dce1fdf1568dcd938c55",
     ".codex/area-completion-20261119/canonical-startup.log": "fad569987f5a35aa0c8e5ea9cc7c5ee57e7515b20c2e416824bd6956780f120b"
-  }
+  },
+  "fix_commit": "3c02f9ab2f2f68f10deef48f037d22ac5efeff34"
 }
