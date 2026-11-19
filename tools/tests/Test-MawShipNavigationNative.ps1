@@ -13,6 +13,10 @@ $sealed|ConvertTo-Json|Set-Content "$out/inputs-before.json"
 try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:LEGION_MAW_MODEL_DATA=(Resolve-Path -LiteralPath $ModelDataDirectory).Path.Replace('\','/')
  $env:CL="$compiler /DNDEBUG /Zi /I`"$out`" /I`"$repo/src/server/scripts/Legion`" /I`"$repo/src/server/scripts/Legion/MawofSouls`""
+ $curved=(& git -C $repo show 35711df19713f0e90614c09f74c05312fbaa2480:src/server/game/Movement/MawShipGroundPath.h) -join "`n"
+ if(!$curved){throw 'Pinned curved-deck counterfactual missing'}
+ $curved=$curved.Replace('LEGION_MAW_SHIP_GROUND_PATH_H','LEGION_MAW_SHIP_GROUND_PATH_COUNTERFACTUAL_H').Replace('namespace Movement','namespace PreviousMawMovement').Replace('PointsArray','Movement::PointsArray')
+ [IO.File]::WriteAllText("$out/MawShipGroundPathCounterfactual.h",$curved)
  if($Baseline){$env:CL+=' /DMAW_SHIP_PATH_BASELINE';$original=(& git -C $repo show be9af5a45:src/server/game/Movement/PathGenerator.cpp) -join "`n";if(!$original){throw 'Pinned baseline source missing'};[IO.File]::WriteAllText("$out/PathGeneratorActual.inc",$original)}
  $env:_LINK_="$link /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
  Push-Location "$repo/build-extractors/bin/Release"

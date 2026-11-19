@@ -98,6 +98,21 @@ inline MawShipPathResult BuildMawShipGroundPath(WorldObject const* source,
         for (uint32 i = segment == 1 ? 0 : 1; i <= samples; ++i)
         {
             auto point = a + direction * (float(i) / samples);
+            // Detour's corner heights approximate the curved deck. Continue
+            // from the last physically supported floor at each half-yard step,
+            // using the same rise/drop limits checked below. Do not turn the
+            // approximated polygon plane into an airborne intermediate point.
+            // The actual actor and destination keep their strict support test.
+            if(!((segment==1&&i==0)||(segment==proposed.size()-1&&i==samples)))
+            {
+                float ground=map->GetHeight(actor->GetPhases(),point.x,point.y,previous.z,true,3.f,nullptr,actor);
+                if(std::isfinite(ground)&&ground-previous.z<=0.6f&&previous.z-ground<=1.f)
+                {
+                    auto projected=point;projected.z=ground;
+                    float supported;
+                    if(support(projected,supported)==ship)point.z=supported;
+                }
+            }
             float floor;
             if (support(point, floor) != ship ||
                 (!checked.empty() && (floor - previous.z > 0.6f || previous.z - floor > 1.f)))

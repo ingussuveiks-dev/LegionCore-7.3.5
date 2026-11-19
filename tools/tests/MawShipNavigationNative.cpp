@@ -2,6 +2,7 @@
 #include "HarbaronFragmentNative.cpp"
 #include "PathGenerator.h"
 #include "MawShipGroundPath.h"
+#include "MawShipGroundPathCounterfactual.h"
 #include "MoveSpline.h"
 #include <thread>
 #ifdef MAW_SHIP_PATH_BASELINE
@@ -38,9 +39,10 @@ int main(int argc,char**argv)
         {
             DungeonShip ship(map);
             struct Sample{uint32 entry;G3D::Vector3 start,end;};
-            std::array<Sample,3> cases={{{97365,{2906.87f,831.485f,515.16f},{2907.11f,826.473f,515.16f}},
+            std::array<Sample,4> cases={{{97365,{2906.87f,831.485f,515.16f},{2907.11f,826.473f,515.16f}},
                 {97182,{2951.01f,783.438f,515.276f},{2947.95f,758.559f,515.243f}},
-                {96754,{2934.49f,715.757f,554.286f},{2938.49f,715.757f,554.286f}}}};
+                {96754,{2934.49f,715.757f,554.286f},{2938.49f,715.757f,554.286f}},
+                {97182,{2918.389160f,755.961609f,538.552734f},{2917.191162f,799.169800f,535.346619f}}}};
             uint32 serial=0;
             for(uint32 display:{31852u,31853u})
             {
@@ -58,6 +60,13 @@ int main(int argc,char**argv)
 #else
                 Check(ok&&path.GetPathType()==PATHFIND_NORMAL&&path.GetPath().size()>=2,"Model-local native ship path incomplete");
                 Check((path.GetPath().back()-sample.end).length()<0.6f,"Ship path did not reach actual destination");
+                if(sample.entry==97182&&sample.start.z>530.f&&display==31852)
+                {
+                    Movement::PointsArray oldPoints;
+                    Check(PreviousMawMovement::BuildMawShipGroundPath(&actor,sample.start,sample.end,74,oldPoints)==PreviousMawMovement::MawShipPathResult::NoPath,
+                        "Pinned pre-fix curved-deck counterfactual no longer reproduces");
+                    std::cout<<"COUNTERFACTUAL curved deck: original rejected actual supported patrol; repaired native path accepted\n";
+                }
                 for(size_t i=1;i<path.GetPath().size();++i)Check((path.GetPath()[i]-path.GetPath()[i-1]).length()>=0.1f,"Model path contains vertices rejected by native spline admission");
                 PathGenerator repeated(&actor);Check(repeated.CalculatePath(sample.end.x,sample.end.y,sample.end.z,false)&&repeated.GetPathType()==PATHFIND_NORMAL,"Repeated model path changed outcome");
                 PathGenerator raycast(&actor);raycast.SetUseRaycast(true);raycast.CalculatePath(sample.end.x,sample.end.y,sample.end.z,false);Check(raycast.GetPathType()!=PATHFIND_NORMAL,"Native raycast query was replaced by a routed model path");

@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "DEPLOYED_NATIVE_VERIFIED_CLIENT_TRAVERSAL_PENDING",
+  "problem": "Soulguard97182 patrol from2918.389160,755.961609,538.552734 to2917.191162,799.169800,535.346619 was rejected on the curved native Maw deck. Detour corner-plane height drift exceeded physical support tolerance.",
+  "fix": "Intermediate half-yard samples continue from the last validated physical deck height. Existing up0.6/down1.0 step,3-yard search,actual shared246919 support,Map/direct-model agreement,body/LOS,strict original endpoints,point/distance/phase/movement-state limits remain. No terrain plane or unsupported endpoint is forced.",
+  "regression": {
+    "actual_native_checks": 772,
+    "scope": "Four routes including curved deck,4 modes,undamaged31852/damaged31853,repeated paths,real NPC splines,pet/guardian and movement/collision/endpoint/point-limit negatives.",
+    "counterfactual": "Pinned35711df19713f0e90614c09f74c05312fbaa2480 helper rejects the same real supported curved-deck path in all4 modes;repaired actual PathGenerator and motion arrive. Expected broken observations are not ordinary passing runs."
+  },
+  "runtime": {
+    "worldserver_sha256": "307bb7ba80bf7d503ba41d30de3c5111e884175e394aab743da5e5f72a1c97b4",
+    "worldserver_map_sha256": "da1565df6ecbcd314e02d12ea534b981e21d1cf90f4c324168077783f13cf15d",
+    "directory": "build-extractors/bin/Release",
+    "model_assets_unchanged": {
+      "go31852.mmap": "700e4ff837fa373cdc9db6cc14183a98fbc0945ce12484518d73344ee77c2dce",
+      "go31853.mmap": "4f65c4f380f32355b2206cfcd8de11e8cd3dcaa10da5be60ad581211bf9afd7f"
+    },
+    "final_libraries": {
+      "scripts.lib": "e982a0ed3eba169c535331f6eec644f5c7c8973869bdd96b247b9108f58e940c",
+      "game.lib": "68f906a7f5a88e4be14ce43ef7f5da3f149c331ea4e994a871c2860febbe0420",
+      "common.lib": "114b9344112af0faf8ce230188d516d05c977f1f3a1d1f49d1179d2dd7c3d32e",
+      "shared.lib": "3678aef780de7db6687624fea80684c353b45c77644cf0e9e032ecc150ef4da6"
+    },
+    "final_link": "Original CMake GAME/SCRIPTS/SHARED/COMMON static-library paths;no global OutDir. Final PE selected implementations checked;canonical copies match staged hashes.",
+    "startup": {
+      "owned_pid": 14276,
+      "ready": true,
+      "shutdown": "server shutdown0",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "new_crashes": 0,
+      "new_DBErrors_bytes": 0,
+      "new_unexplained_server_diagnostics": 0,
+      "owned_background_server_retained": false
+    },
+    "protected_runtime_files": 20
+  },
+  "evidence": [
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/maw-navigation-run.log",
+      "sha256": "fd123dea28d2d09a06a41fc6d6400749a83bb2070fa38a43c9ebd876403259c7"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/canonical-maw-pe.log",
+      "sha256": "cea159b116eafd4d40d6b2ba7f3b1428622f22c070ccf7e63c83be3500c6bc97"
+    },
+    {
+      "path": "C:/wamp64/www/LegionCore-7.3.5/.codex/teeming-completion-20261118/stage-reconstruction-pe-final.log",
+      "sha256": "0d50f8693f0a799b4822463800a3ccf0244703bb986877c4e176d3fc3a4d6e79"
+    }
+  ],
+  "remaining": "Actual client traversal/combat/camera and full dungeon chains were not performed.",
+  "archive": "See legion-teeming-cleanup-2026-11-19.json after resolved diagnostic archive/cleanup.",
+  "fix_commit": "Commit containing this fix/audit;actual hash is also recorded in ignored archive manifests."
+}
