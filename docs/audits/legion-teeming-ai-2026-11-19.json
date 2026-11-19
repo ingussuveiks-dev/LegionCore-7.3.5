@@ -41,7 +41,15 @@
   },
   "archive": {
     "directory": "build-extractors/bin/Release/fixed/2026-11-19-teeming-ai",
-    "status": "Pending verified archive and redundant probe cleanup after the regression commit."
+    "status": "COMPLETE",
+    "regression_commit": "1fb7a938d7e4f9d9d97adeaaab3cf23f6bc4904d",
+    "manifest_sha256": "0a72555a3ce94f1961ba8919087adccae3f84282fa698114a08d45b4fc65e25d",
+    "deletion_manifest_sha256": "9b243591fef123f2d6526273261a1e9615180a5cd645fb7420fb1c0c6625c58d",
+    "archived_records": 38,
+    "verification": "Source/archive/source SHA256 and lengths verified before deletion;all38 archived files reverified afterward. Repository-relative source paths locate the evidence inside this archive. No private configuration copied.",
+    "removed_files": 42,
+    "removed_bytes": 687100653,
+    "cleanup": "Removed both dated AI runtime directories and only LegionTeemingAINative executable/object/compiler-PDB/ILK scratch files. Preserved source/tests,canonical runtime/configuration,shared original Release libraries/data,latest Teeming rollback and previous diagnostic/research archives. Protected runtime/rollback hashes matched afterward. Canonical Crashes empty,DBErrors0 bytes,no worldserver/bnetserver/probe processes left."
   },
   "remaining": [
     "No timed Creature::Update/combat rotations,real damage,casts completing over time,interrupts,threat rotations,evade/wipes,boss encounter progression,loot or full dungeon completion were exercised. Spawn/reset/aggro callbacks can issue native immediate spells;these are not a complete spell targeting/condition/rotation verification.",
