@@ -65,7 +65,14 @@
   },
   "archive": {
     "directory": "build-extractors/bin/Release/fixed/2026-11-19-linked-area-credit",
-    "status": "Pending hash verification and test build cleanup"
+    "status": "Verified and complete",
+    "manifest_sha256": "ea22e2b106a5aa32e4d7f1cc216d62cadf135f0f317f10178434faf72e0e3afd",
+    "deletion_manifest_sha256": "8b85964e6791807b5e6e78bc6b15b9b50cf999799e45a93530bf9fe0fd26f428",
+    "archived_records": 107,
+    "removed_files": 81,
+    "removed_bytes": 1365543674.0,
+    "freed_bytes": 1365508096,
+    "cleanup": "Five task-owned temporary run directories and both probe build outputs were removed after checking absolute paths, reparse boundaries and process ownership. The private runtime config from the failed setup was removed and excluded from the archive. Canonical binaries and existing recovery copies were hash checked."
   },
   "evidence_sha256": {
     "build-extractors/runtime-test/legion-linked-area-credit/20261119-192942-849/native.tsv": "39f0ce1a693a44e193a61aab0dac02a68be468b07e70b62c7dc4f4a738ef7071",
@@ -83,5 +90,6 @@
     ".codex/linked-area-20261119/live-root-after.tsv": "53b7767aba62d78633374cf24b805afdfac5b174777b852e429b44ef1d07daaf",
     ".codex/linked-area-20261119/live-deployment.json": "1575a802f956937e3eabe1d3104d6b36e1e5987d0b20b4b6f277d6c19ddb0018",
     ".codex/linked-area-20261119/canonical-startup.log": "5a049eb797c18371cc379e0130591b3ecdff7ff8b4ebcb82d0fff6765a2a389b"
-  }
+  },
+  "fix_commit": "f09ad7e576bea785faca6063f6422f87c79b0ba0"
 }
