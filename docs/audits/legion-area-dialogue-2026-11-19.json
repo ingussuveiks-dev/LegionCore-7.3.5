@@ -1,0 +1,245 @@
+{
+  "date": "2026-11-19",
+  "status": "REPAIRED32 outdoor world-quest introduction gates and deployed;client playback separate",
+  "base_commit": "1c42d2838f17c146028e7ba2c5a23d5bbcc42ed4",
+  "cause": "32 map1220 EventObject roots dispatch SmartScript source13 but their active-quest conditions were stored under Scene source10. Native lookup returned an empty condition list and conversations/linked auras executed without the corresponding task.",
+  "repair": "Move only conditions.SourceId10->13 for the explicit32 SourceType22/SourceGroup1 roots. Preserve original quest IDs,ElseGroups,target filters,links,auras,radius,phase,flags and conversation data. No quest offered/granted/completed by this migration.",
+  "introductions": [
+    {
+      "event": 200,
+      "quest": 45035,
+      "conversation": 4585,
+      "title": "The Call of Battle"
+    },
+    {
+      "event": 203,
+      "quest": 46933,
+      "conversation": 4874,
+      "title": "Felrglrglrglrgl"
+    },
+    {
+      "event": 204,
+      "quest": 44748,
+      "conversation": 4569,
+      "title": "Winged Terrors"
+    },
+    {
+      "event": 205,
+      "quest": 45473,
+      "conversation": 4345,
+      "title": "A Giant Problem"
+    },
+    {
+      "event": 208,
+      "quest": 46325,
+      "conversation": 4631,
+      "title": "The United Front"
+    },
+    {
+      "event": 209,
+      "quest": 46825,
+      "conversation": 4840,
+      "title": "Mud Mucking"
+    },
+    {
+      "event": 210,
+      "quest": 45934,
+      "conversation": 4412,
+      "title": "Fowl Play"
+    },
+    {
+      "event": 211,
+      "quest": 45797,
+      "conversation": 4326,
+      "title": "Playing with Green Fire"
+    },
+    {
+      "event": 212,
+      "quest": 46932,
+      "conversation": 4872,
+      "title": "A Tad More Corruption"
+    },
+    {
+      "event": 213,
+      "quest": 46184,
+      "conversation": 4620,
+      "title": "Gelgothar"
+    },
+    {
+      "event": 214,
+      "quest": 46188,
+      "conversation": 4615,
+      "title": "Orgrokk"
+    },
+    {
+      "event": 215,
+      "quest": 46185,
+      "conversation": 4615,
+      "title": "Iroxus"
+    },
+    {
+      "event": 217,
+      "quest": 46191,
+      "conversation": 4618,
+      "title": "Balinar"
+    },
+    {
+      "event": 218,
+      "quest": 46162,
+      "conversation": 4602,
+      "title": "Subjugator Val'rek"
+    },
+    {
+      "event": 219,
+      "quest": 46021,
+      "conversation": 4603,
+      "title": "Thel'draz"
+    },
+    {
+      "event": 220,
+      "quest": 46163,
+      "conversation": 4601,
+      "title": "Thaz'gul"
+    },
+    {
+      "event": 221,
+      "quest": 46164,
+      "conversation": 4601,
+      "title": "Mal'serus"
+    },
+    {
+      "event": 222,
+      "quest": 46166,
+      "conversation": 4601,
+      "title": "Garthulak the Crusher"
+    },
+    {
+      "event": 223,
+      "quest": 46170,
+      "conversation": 4602,
+      "title": "Thar'gokk"
+    },
+    {
+      "event": 224,
+      "quest": 46168,
+      "conversation": 4602,
+      "title": "Commander Vorlax"
+    },
+    {
+      "event": 225,
+      "quest": 44759,
+      "conversation": 3925,
+      "title": "The Vale of Dread"
+    },
+    {
+      "event": 226,
+      "quest": 45923,
+      "conversation": 4615,
+      "title": "Gloth"
+    },
+    {
+      "event": 227,
+      "quest": 46766,
+      "conversation": 4618,
+      "title": "Ulgthax"
+    },
+    {
+      "event": 229,
+      "quest": 45921,
+      "conversation": 4618,
+      "title": "Thal'xur"
+    },
+    {
+      "event": 230,
+      "quest": 46063,
+      "conversation": 4429,
+      "title": "The Wailing Dead"
+    },
+    {
+      "event": 231,
+      "quest": 45472,
+      "conversation": 4340,
+      "title": "Kraken Eggs"
+    },
+    {
+      "event": 232,
+      "quest": 46073,
+      "conversation": 4439,
+      "title": "Break Their Garrison"
+    },
+    {
+      "event": 233,
+      "quest": 45988,
+      "conversation": 4451,
+      "title": "Ancient Bones"
+    },
+    {
+      "event": 307,
+      "quest": 42150,
+      "conversation": 3454,
+      "title": "Kal'delar Naga Incursion"
+    },
+    {
+      "event": 308,
+      "quest": 44033,
+      "conversation": 3456,
+      "title": "Aw, Nuts!"
+    },
+    {
+      "event": 331,
+      "quest": 44856,
+      "conversation": 4152,
+      "title": "Cut the Cattitude"
+    },
+    {
+      "event": 332,
+      "quest": 44817,
+      "conversation": 4111,
+      "title": "Stirring the Swarm"
+    }
+  ],
+  "checks": {
+    "baseline": "build-extractors/runtime-test/legion-area-dialogue/20261119-132805-194:128 real native cases prove all32 original roots create the introduction for NONE/INCOMPLETE/COMPLETE/REWARDED. Expected-broken counterfactual. Original cohort reconstructed only inside connection-local TEMP tables;original live snapshots retained.",
+    "repaired": "build-extractors/runtime-test/legion-area-dialogue/20261119-132915-775:128 real native cases after two TEMP migration replays;actual EventObject.Update range discovery -> registered SmartEventObject -> actual source13 condition evaluation -> actual private player-cast Conversation publication/accessor identity. Only INCOMPLETE accepted;inside repeat suppressed;actual leave/reentry restored admission;cleanup frees real objects;quest/reward status unchanged.",
+    "live": "apply-data.ps1 verified original32 source10 rows,backed them up and applied the checked migration while both servers stopped. Every selected column except SourceId matches the backup. Entire other conditions and smart_scripts have unchanged hashes. Character data and world rotation untouched.",
+    "retained": "Test-ThunderTotemAdmission.ps1 passed:309/41705 and368/45572 existing gates,links,rescue/spellclick retained.",
+    "startup": "Canonical owned PID22416 ready,graceful exit0,empty stderr;all post-test diagnostics clean."
+  },
+  "admission_limits": [
+    "Accepted quest statuses are controlled fixture inputs;this does not certify the scheduler,unlock or actual client acceptance for every world quest.",
+    "Current EventObject marks an entering player even if a SmartEvent condition rejects it. If task activation arrives later while the player stays inside,re-entry is the retained retrigger;no new automatic replay behavior is claimed.",
+    "Original native group personal-visibility handling remains;two-client/group audio and real phase/terrain traversal not tested.",
+    "Other source10 story/artifact/scenario conversations were inventoried but are outside this scoped WQ repair;do not migrate them blindly."
+  ],
+  "resolved_fixture_failures": [
+    "First dialogue bootstrap omitted DisableMgr before LoadQuests,so152 loader errors described intentionally disabled legacy quests;proper native disable initialization restored and passing reruns have no appended errors. This was a fixture error,not production log suppression.",
+    "The core HashMapHolder map contains only Players;first dialogue fixture incorrectly counted conversations there. Corrected to actual public GUID-vector accessor plus allocation/world/caster receipts and cleanup.",
+    "EO224 target0 initially looked suspicious. Real native lookup shows target0 and target7 both resolve the invoker;all32 original roots actually played. False hypothesis retained in evidence;no target-field repair made.",
+    "Two read-only exploratory queries had SQL syntax/table-name mistakes;captured and corrected,with no mutation."
+  ],
+  "sources": "Matching local26972/World/SmartScript/Condition/EventObject/Conversation data and native dispatch. No unseen video/audio/client behavior claimed.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "650a98b20673c9f97e72427f7ca9eb663f5afb8f22305ca49559dd7f3be338bf",
+    "worldserver_map_sha256": "aab2183a87e76969aad5a2f88b479d6ec4c1819730fd8010bfdb5bf9532c784a",
+    "binary_identity": "Original game.lib Release path rebuilt;staged final link inspected original dependency paths;staged/canonical PE+map checked and copied hashes verified. Build banner embeds an earlier generated revision and is not used as proof of the new implementation.",
+    "startup": "Task-owned PID22416 reached fresh ready;server shutdown0,exit0,empty stderr,no new DBErrors or server warnings/errors/assertions;owned process gone. No user server stopped.",
+    "protected": "Configuration,certificates,DLLs and extracted data preserved;verified pre-area-task rollback retained for pending client recovery."
+  },
+  "archive": {
+    "status": "PENDING final verified archive/temporary-build cleanup",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-area-quests",
+    "policy": "Preserve counterfactuals and resolved fixture failures with source/archive/source SHA256+length before deleting redundant test executables/symbols/stage. Never archive private connection configurations."
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-area-dialogue/20261119-132805-194/native.tsv": "44497240d8ddf538bfdbaaffeeaad96d7fa83b342dbca5e406662894cc250a6c",
+    "build-extractors/runtime-test/legion-area-dialogue/20261119-132805-194/evidence/diagnostics-after.json": "f60e654a91994cacb464f4ef27be5a009d64223773c5d21c4b9221bce5c6e205",
+    "build-extractors/runtime-test/legion-area-dialogue/20261119-132915-775/native.tsv": "4fe2a536fbef7281b4b018d8e2378d0e1a35fa62c792f927b0019fb67836d81e",
+    "build-extractors/runtime-test/legion-area-dialogue/20261119-132915-775/evidence/diagnostics-after.json": "5c9b491a944270da114046b921e0b9cd7b0a26292f775b39032db437ddc91a55",
+    ".codex/area-quest-20261119/live-conditions-before.tsv": "82bb92a48e201b4ef4596201d0dbf94752551e770368b7918af48fd088b2548f",
+    ".codex/area-quest-20261119/live-conditions-after.tsv": "353ef47ccee523af3aaa5d822fcc4d6c4592b9654ee0b39b811e2070ebe7fb93",
+    ".codex/area-quest-20261119/live-deployment.json": "9de0bf704e4c457aabb11c98952e276c4410d131a606cfb626001620625c4a2c",
+    ".codex/area-quest-20261119/thunder-totem.log": "eebe2dd0ae0b6bcb741551f79af57a2eddd45ae186016f2bf2292f35fd44f124",
+    ".codex/area-quest-20261119/canonical-startup.log": "638664e86f0d56149c7cba63aee9513bfd68847b66810369fa40be622e6a61c7"
+  }
+}
