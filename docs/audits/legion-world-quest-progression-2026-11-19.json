@@ -21,6 +21,16 @@
     "final": "Native and retained checks passed with no new crashes, appended DB errors, server warnings, errors or assertions. The task-owned MariaDB shut down with exit 0 and no startup/runtime warning or error.",
     "resolved_probe_attempts": "Early failures came from fixture template linkage, base damage vs attacker-scaled death threshold, late application of ordinary kill gold, and unloaded native loot/random-enchantment catalogs. The live schema account was denied CREATE DATABASE; the final test used a disposable service instead. The retained source-derived reward fixture also needed a fail-fast declaration for unrelated newer quest gates."
   },
+  "evidence_and_cleanup": {
+    "checks_commit": "867330d89a9882d84259c0c243bdc43f747eda4c",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-19-world-quest-progression",
+    "archive_manifest_sha256": "1bed65da25239d316aa5c766eebc01e3e5d819dae8dbb811838dd8f8719af86d",
+    "deletion_manifest_sha256": "86f2e662ed4d3a12792f6e8291fea60452a85a10b35975bf1afd66d26c832b07",
+    "archived_files": 227,
+    "removed_files": 1149,
+    "removed_bytes": 1930810661,
+    "post_cleanup": "Verified archive, canonical runtime hash and active empty crash/DB error diagnostics after removing only task probes, symbols and disposable MariaDB data. No task-owned process or private client configuration remains."
+  },
   "open": [
     "Real player and party traversal, live respawn timing, network offer UI, audio/avatar playback and the live rotation timer still require a client check.",
     "The local Garrison area has no static Felfire Imp 117555, Imp Mother Flaz 118720 or Libram 269154 there. Their dynamic appearance and original positions were not established. The tested path uses only the two currently spawned demon types."
