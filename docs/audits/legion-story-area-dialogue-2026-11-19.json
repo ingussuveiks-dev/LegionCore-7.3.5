@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-19",
+  "status": "REPAIRED9 single-action story conversation roots and deployed;actual client voice/full quests separate",
+  "base_commit": "baa0bfa67c91879d2fe79d869f39898828488715",
+  "request": "Continue investigating area-triggered quest introductions beyond the32 world-task gates and completed-quest expression repair.",
+  "cause": "9 outdoor1220 story EventObjects dispatch SmartScripts source13 while10 authored quest-state conditions were under Scene source10. Native dispatch therefore ignored active/complete/not-started and alternative-quest gates. A matching nearby creature is still required by3 conversations independently;its absence must not be bypassed.",
+  "repair": "Only conditions.SourceId10->13 for SourceType22/SourceGroup1 and explicit9 entries. Preserve every other field,ElseGroup and native state predicate. Seven roots require an INCOMPLETE quest,EO238 requires COMPLETE and no reward history,EO532 requires NONE;EO530 admits either45629 or45628. This is dialogue admission,not a new automatic quest grant/offer implementation.",
+  "introductions": [
+    {
+      "event": 127,
+      "quest": 42166,
+      "alternative": 0,
+      "conversation": 2203,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 237,
+      "quest": 40747,
+      "alternative": 0,
+      "conversation": 1048,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 238,
+      "quest": 40956,
+      "alternative": 0,
+      "conversation": 1200,
+      "quest_state": "COMPLETE"
+    },
+    {
+      "event": 305,
+      "quest": 44084,
+      "alternative": 0,
+      "conversation": 2768,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 321,
+      "quest": 45063,
+      "alternative": 0,
+      "conversation": 4146,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 366,
+      "quest": 44789,
+      "alternative": 0,
+      "conversation": 3941,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 515,
+      "quest": 46000,
+      "alternative": 0,
+      "conversation": 4561,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 530,
+      "quest": 45629,
+      "alternative": 45628,
+      "conversation": 4270,
+      "quest_state": "INCOMPLETE"
+    },
+    {
+      "event": 532,
+      "quest": 46278,
+      "alternative": 0,
+      "conversation": 4551,
+      "quest_state": "NONE"
+    }
+  ],
+  "native_actor_requirements": [
+    {
+      "event": 127,
+      "conversation": 2203,
+      "creature": 106514,
+      "original_data_guid": 38729479
+    },
+    {
+      "event": 515,
+      "conversation": 4561,
+      "creature": 118242,
+      "original_data_guid": 2474749
+    },
+    {
+      "event": 532,
+      "conversation": 4551,
+      "creature": 103976,
+      "original_data_guid": 2886856
+    }
+  ],
+  "checks": {
+    "counterfactual": "build-extractors/runtime-test/legion-story-dialogue/20261119-185143-849:130 actual native quest-state/alternative/race contexts show all9 original wrong-source roots create conversations whenever their required actors exist,including disallowed stages. Expected-broken counterfactual,not ordinary passing gameplay. Six additional actor-refusal/re-entry controls pass.",
+    "repaired": "build-extractors/runtime-test/legion-story-dialogue/20261119-185338-694:132 actual native EventObject.Update -> registered SmartEventObject -> native ConditionMgr -> native Conversation publication/accessor cases. Five statuses including FAILED,Human/Orc,all25 alternative-state pairs,phase/dead refusal,inside suppression,real exit/re-entry,and COMPLETE+reward-history denial. Six actual missing-creature/entry-suppression/re-entry cases retain native actor GUID binding. No objective/source-item/reward grants or character save.",
+    "migration": "Two connection-local TEMP table replays pass. Exact original graph is9 roots,each id0/event89/action206/invoker7/link0/chance100/flags0;no real Scene scripts at these IDs. Original10 conditions are preserved except their source discriminator.",
+    "retained": "build-extractors/runtime-test/legion-area-dialogue/20261119-185402-462:128 prior32-world-introduction native cases pass with reused support. Existing fixture only gains a support-only main guard;its original ordinary entry remains covered.",
+    "live": "Stopped-process deployment backed up all10 original rows and changed exactly SourceId. Every other selected byte is identical. Entire other conditions,smart_scripts,eventobject_template,conversation_data,conversation_actor and conversation_creature hashes unchanged. No character,rotation,quest or presentation data changed.",
+    "startup": "Canonical task-owned PID32092 fresh ready,server shutdown0/exit0,empty stderr;no new DBErrors,warnings/errors/assertions or crash;owned process gone. No user server stopped.",
+    "diagnostics": "Every native/live/startup check includes before/after canonical+own crash/log snapshots. Final checks have no new/changed crashes or appended errors. Initial fixture failures are explicitly resolved below,not ordinary success."
+  },
+  "resolved_fixture_failures": [
+    "Initial baseline omitted nearby creatures for creature-backed conversations,so native GenerateDynamicFieldData correctly refused EO127/2203. Corrected fixture publishes the actual matching templates under controlled NullAI and verifies real actor GUID binding. Added6 missing-actor controls;no production actor fallback or relaxed admission.",
+    "First controlled actor linked HashMapHolder<StoryActor> because AddObject inferred the fixture type. Cast to native Creature for its real accessor vector;native actor setup now links and all final cases pass."
+  ],
+  "scope_limits": [
+    "Synthetic accepted quest states and controlled actor templates/positions under NullAI isolate admission. Actual class eligibility,actor movement,original NPC AI,world spawn visibility,quest acceptance or whole artifact/story chains are not certified.",
+    "Actual client packet/UI/audio/visual playback and full quest completion remain separate. No video was needed or watched;matching native data and dispatch establish these discriminator repairs.",
+    "Native EventObject still consumes an entry even when a later SmartEvent condition/actor lookup rejects it. An eligible state or actor arriving while inside does not automatically replay;native leave/re-entry is retained and tested.",
+    "Pet/guardian/group combat credit and progression paths are unchanged;these9 roots contain only conversation actions. Two race contexts do not certify two-client/group voice traversal.",
+    "Other inventoried roots197/199/234/236/250/322/323/367/501/533 include credit,spell,objective or linked-action issues and need separate sequence checks. EO612 already uses a scoped Stormheim Winter delegate;do not blanket-migrate its older source10 rows. World-state expressions remain separate research."
+  ],
+  "sources": "Matching local26972 DB2/World/native SmartEvent/Condition/Conversation data and existing Git/audits. Root classification and original predicates resolved this scoped data repair;no newer-core behavior or external implementation copied.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "162eb5cacc0109bb7c7336ff23010a2333bb0a0fda6c37854138360d35f1412f",
+    "worldserver_map_sha256": "d409ff6d20993f4307a38eb5736c9c24226e5770dabf5a1535de37e18df11533",
+    "binary": "Unchanged tested162eb5 Release implementation;no production C++ change or new ScriptName,therefore no rebuild or executable replacement. Configuration/certificates/DLLs/shared extracted data preserved.",
+    "diagnostics": "Crashes empty,DBErrors0 bytes;Server.log history retained."
+  },
+  "archive": {
+    "status": "PENDING verified archive and temporary native cleanup",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-story-area-dialogue"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-story-dialogue/20261119-185143-849/native.tsv": "a1e59d75097bee7b731a4f7e3cf6e56aff274fc7287062eeb3ed5f08cd985ea0",
+    "build-extractors/runtime-test/legion-story-dialogue/20261119-185143-849/evidence/diagnostics-after.json": "e6b5a739515a59cea9d00d416c7dafd84b4dd1d19b4d5698a240b8d1838256cc",
+    "build-extractors/runtime-test/legion-story-dialogue/20261119-185338-694/native.tsv": "00c004ae250084427f04bbceafd432ba530c656910b3dfa65f75e38ee637efea",
+    "build-extractors/runtime-test/legion-story-dialogue/20261119-185338-694/evidence/diagnostics-after.json": "067e2da5529dda0026b4a00038c60a01802fa286503f093f2da1d8f932aeb132",
+    "build-extractors/runtime-test/legion-area-dialogue/20261119-185402-462/native.tsv": "56fe69b18f17d88b12d55a851e8bd714bc49566463fbf3748f21a2808a6503d6",
+    "build-extractors/runtime-test/legion-area-dialogue/20261119-185402-462/evidence/diagnostics-after.json": "f33dcc0c37c4d9873f4c4fd800c0803bb814cb23beb1d72cc6efde6830f33296",
+    ".codex/area-story-dialogue-20261119/live-conditions-before.tsv": "e49691e4e7bdd217703629e6c537c7d2ba64a5f566223ada29e68156f29100e3",
+    ".codex/area-story-dialogue-20261119/live-conditions-after.tsv": "7ae8bbef09f17772565563326c189310960a55c4c0ace4c1a01fdb563f69787e",
+    ".codex/area-story-dialogue-20261119/live-deployment.json": "2e7ef29672e3cf3cb74df6d6f61f9ec01cb2aae6f084ca31fb30aa599fd579fb",
+    ".codex/area-story-dialogue-20261119/canonical-startup.log": "4b5f001932703228273e816ef63ab63fdfdb4cdd83677f6203cac595d9955e3b"
+  }
+}
