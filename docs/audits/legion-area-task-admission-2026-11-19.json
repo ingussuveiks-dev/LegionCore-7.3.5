@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-19",
+  "status": "REPAIRED and deployed;native server checks pass;client traversal separate",
+  "base_commit": "1c42d2838f17c146028e7ba2c5a23d5bbcc42ed4",
+  "request": "Investigate quests automatically offered while in an area,with dialogue/scenario-like objectives;no specific zone was supplied.",
+  "cause": "UpdateAreaQuestTasks non-world task fallback without QuestV2CliTask called CanAddQuest only. That checks capacity/source-item storage,not race/level/class/ordinary start admission. Real Horde-only38321/area7603 Blackbeak Overlook/MinLevel98 was added to a Human level1 while native CanTakeQuest returned false.",
+  "repair": "Fresh fallback tasks require native CanTakeQuest plus CanAddQuest and unrewarded status. Area exit keeps accepted task data but removes the log slot;INCOMPLETE/COMPLETE tasks resume through native disable/class/race/level guards without reapplying start-only conditions or the new-acceptance status gate. Preserve completed status/log marker and objective counters. FAILED/rewarded tasks do not restart. Already logged tasks retain their existing admission semantics.",
+  "scope": "Only non-world bonus/task fallback lacking a native client-task row changed. Client-filtered task admission,world-quest rotation,invasion wrappers,source19 turn-in semantics and combat/credit dispatch are unchanged.",
+  "checks": {
+    "baseline": "Actual pre-fix native Player implementation added38321 despite ordinary refusal:admission-baseline-registered.log,20261119-131044-700. Expected-broken counterfactual,not ordinary success. -AdmissionBaseline requires original linked game.lib;it is not a repaired-mode test.",
+    "native": "build-extractors/runtime-test/legion-area-quest/20261119-133149-411:14 native fixtures use actual loaded38321 objectives/area4416->7603 and real Player method. Human/Orc levels1/97/98/110,fresh and invalid saved admission,signed in-memory class-mask variants,temporary-table disable,failing-full-log retry,native objective credit,three repeats/exit-reentries,retained COMPLETE/log flag,FAILED denial,abandon/fresh-counter retry and rewarded denial. No character save,reward or live disable/template mutation.",
+    "release": "verify_area_task_admission_release.py on staged and canonical PE/map;CanTake/CanAdd/status/disable/reward/AddQuest/SetQuestStatus/UpdateQuestObjectiveData dependencies resolved. Small class/race/level guards inline;their behavior is checked by the real native fixtures.",
+    "retained": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passed;shared scenario PE links retained.",
+    "diagnostics": "All final native/release/startup checks snapshot canonical+own crashes/log offsets before/after;no new/changed crashes,appended DBErrors or unexplained warnings/errors/assertions. Existing unrelated C4018/C5055/C4146 compilation warnings are retained in build.log;changed lines introduce none."
+  },
+  "inventory": {
+    "all_task_rows": 1517,
+    "world_task_rows": 1307,
+    "identified_legion_by_expansion_or_area_group_map": 883,
+    "identified_legion_nonworld": 35,
+    "area_group_member_areas": 559,
+    "limitation": "Static native26972/World inventory,not1517 gameplay completions. AreaGroup0 tasks inferred only from rotation/update/objective spawns can add Legion candidates;883 is not an exhaustive Legion count."
+  },
+  "coverage_limits": [
+    "Actual client offer/objective UI,voice,logout/login and full quest completion not traversed.",
+    "Combat/kill/group/pet/guardian credit paths untouched;native admission tests exercise objective service rather than real outdoor kills.",
+    "Client-task completed-quest logic bits and currently disabled world-state expressions remain research candidates;no blanket change or whole-world-quest certification.",
+    "PrepareAreaQuest uses ordinary CanTakeQuest;AdventureJournal self-offers and invasion scenario wrappers are separate dispatch paths."
+  ],
+  "resolved_fixture_failures": [
+    "Initial outdoor native fixture lacked map1220 MMAP registration;assertion captured,correct startup map registration added and passing reruns paired.",
+    "Initial PE verifier expected out-of-line class/race calls;MSVC inlines them. Verifier now checks actual non-inlined dependencies and delegates those semantics to native behavioral cases;no production check disabled."
+  ],
+  "sources": "Matching local26972 DB2,static World records,core/scripts and previous Git audits/history resolved these defects. Local newer TrinityCore references inspected only;no modern behavior copied. No video or internet evidence used or claimed.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "650a98b20673c9f97e72427f7ca9eb663f5afb8f22305ca49559dd7f3be338bf",
+    "worldserver_map_sha256": "aab2183a87e76969aad5a2f88b479d6ec4c1819730fd8010bfdb5bf9532c784a",
+    "binary_identity": "Original game.lib Release path rebuilt;staged final link inspected original dependency paths;staged/canonical PE+map checked and copied hashes verified. Build banner embeds an earlier generated revision and is not used as proof of the new implementation.",
+    "startup": "Task-owned PID22416 reached fresh ready;server shutdown0,exit0,empty stderr,no new DBErrors or server warnings/errors/assertions;owned process gone. No user server stopped.",
+    "protected": "Configuration,certificates,DLLs and extracted data preserved;verified pre-area-task rollback retained for pending client recovery."
+  },
+  "archive": {
+    "status": "PENDING final verified archive/temporary-build cleanup",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-area-quests",
+    "policy": "Preserve counterfactuals and resolved fixture failures with source/archive/source SHA256+length before deleting redundant test executables/symbols/stage. Never archive private connection configurations."
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/legion-area-quest/20261119-133149-411/native.tsv": "53ff5486d36169b523318c24988416534d1ced065818a24b61776300806d03ec",
+    "build-extractors/runtime-test/legion-area-quest/20261119-133149-411/evidence/diagnostics-after.json": "6ad3b2cc944f442fcbda503074438eeade395830259f3ccbaf628efcca154452",
+    ".codex/area-quest-20261119/admission-baseline-registered.log": "bad6ecbc10f2b22605a13456cfe1f5414c382c6aa24959b6c5d5cc07e5502329",
+    ".codex/area-quest-20261119/canonical-release.log": "3638cd09b51b795882dc366764bc0836d9a98aa1002493c15e87c8c21d7d2b85",
+    ".codex/area-quest-20261119/canonical-startup.log": "638664e86f0d56149c7cba63aee9513bfd68847b66810369fa40be622e6a61c7",
+    ".codex/area-quest-20261119/promotion.json": "786f76765e7842eb3ed7c692b91cd49925b8012a221b2cb98d1b291de07e6f23"
+  }
+}

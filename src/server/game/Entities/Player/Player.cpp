@@ -32649,9 +32649,24 @@ void Player::UpdateAreaQuestTasks(uint32 newAreaId, uint32 oldAreaId)
             }
             else
             {
-                if (CanAddQuest(quest, true))
+                // A missing client task row does not waive ordinary quest admission.
+                // Leaving an area only removes the log slot, so a previously accepted
+                // task must be able to resume without reapplying start-only conditions.
+                QuestStatus status = GetQuestStatus(quest->GetQuestId());
+                bool resume = status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE;
+                bool eligible = resume
+                    ? !DisableMgr::IsDisabledFor(DISABLE_TYPE_QUEST, quest->GetQuestId(), this)
+                        && SatisfyQuestClass(quest, false) && SatisfyQuestRace(quest, false) && SatisfyQuestLevel(quest, false)
+                    : CanTakeQuest(quest, false);
+
+                if (eligible && !IsQuestRewarded(quest->GetQuestId()) && CanAddQuest(quest, true))
                 {
                     AddQuest(quest, NULL);
+                    if (status == QUEST_STATUS_COMPLETE)
+                    {
+                        SetQuestStatus(quest->GetQuestId(), status);
+                        SetQuestSlotState(FindQuestSlot(quest->GetQuestId()), QUEST_STATE_COMPLETE);
+                    }
                     UpdateQuestObjectiveData(quest);
                     questAdd.push_back(quest->GetQuestId());
                 }
