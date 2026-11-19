@@ -619,9 +619,10 @@
       "status": "DEPLOYED_NATIVE_PE_PASS_CLIENT_OPEN"
     },
     {
-      "issue": "Teeming DB-spawn fail-open admission;missing extra placement data remains OPEN",
+      "issue": "Teeming DB-spawn fail-open admission;subsequent reviewed reconstruction deployed separately",
       "audit": "legion-teeming-admission-2026-11-18.json",
-      "status": "DEPLOYED_SPAWN_ADMISSION_NATIVE_PE_PASS_TEEMING_CONTENT_OPEN"
+      "status": "DEPLOYED_SPAWN_ADMISSION_NATIVE_PE_PASS_CLIENT_OPEN",
+      "content_followup": "legion-teeming-reconstruction-2026-11-19.json"
     },
     {
       "issue": "Teeming Cathedral/Seat criterion lookup and completion order",
@@ -650,7 +651,8 @@
       "ReclaimedBytes": 2872945793.0
     },
     "superseded_by": "maw-ship-navigation-2026-11-18.json",
-    "current_rollback": ".codex/maw-ship-navigation-20261118/rollback-before-maw-navigation",
+    "current_rollback": ".codex/teeming-completion-20261118/rollback-before-teeming",
+    "current_cleanup_followup": "legion-teeming-cleanup-2026-11-19.json",
     "compiler_output_followup": "native-catalog-compiler-pdb-2026-11-18.json"
   },
   "progress_verification": {
@@ -674,7 +676,13 @@
     "quaking_native_checks": 225,
     "quaking_audit": "legion-quaking-native-2026-11-18.json",
     "teeming_admission_native_checks": 140,
-    "teeming_content": "OPEN:222 historical addon points/105 native templates;native targets13/13,effective weight metadata106/106;211 surface/nav/body observations,186 conservative proximity-screen candidates,0 approved server spawns/live markers. Court bridge group25 composition supported by7.3.5 video;raw icon poses451/463 rejected,original formation/spawn receipts unrecovered.",
+    "teeming_content": "2026-11-19 followup:222 reviewed reconstructed additions deployed across13 routes:215 DB spawns plus7 instance-owned Skjal extras. Actual native admission,earned kill/forces endpoints,geometry and formation movement checked;initial AI/group attack-entry checked separately. Original server/sniff SQL and full client traversal remain unrecovered/unverified;the dated projection/video/GitHub research remains provenance history.",
+    "teeming_reconstruction_audit": "legion-teeming-reconstruction-2026-11-19.json",
+    "teeming_reconstruction_native_checks": 20891,
+    "teeming_formation_audit": "legion-teeming-formations-2026-11-19.json",
+    "teeming_formation_native_checks": 2161,
+    "teeming_ai_entry_audit": "legion-teeming-ai-2026-11-19.json",
+    "teeming_ai_entry_native_checks": 21437,
     "teeming_criteria_native_checks": 5196,
     "teeming_criteria_audit": "legion-teeming-criteria-2026-11-18.json",
     "teeming_github_research": "legion-teeming-github-research-2026-11-18.json",

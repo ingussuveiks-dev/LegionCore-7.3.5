@@ -61,6 +61,7 @@ static void ExecuteFixture()
     }
 }
 
+#ifndef LEGION_TEEMING_FORMATION_SUPPORT_ONLY
 int main(int argc,char**argv)
 {
     try
@@ -154,3 +155,4 @@ int main(int argc,char**argv)
         CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
     }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif

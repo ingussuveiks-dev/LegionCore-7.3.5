@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "NATIVE_AI_INITIALIZATION_AND_COMBAT_ENTRY_PASS_CLIENT_GAMEPLAY_OPEN",
+  "purpose": "Close the actual template-AI initialization and formation attack-entry gap left by the controlled-AI movement/kill probes. No production source,SQL or deployed binary changed.",
+  "implementation": ["tools/tests/LegionTeemingAINative.cpp", "tools/tests/Test-LegionTeemingAINative.ps1"],
+  "reused_support": "LegionTeemingFormationNative.cpp now has an optional support-only main guard. Its ordinary movement test logic is unchanged. NativeAIActor calls Creature::AddToWorld directly,retaining real SearchFormation,AIM_Initialize,template AI selection and instance creation callbacks.",
+  "scope": {
+    "native_checks": 21437,
+    "contexts": 2520,
+    "group_scopes": 104,
+    "ungrouped_extra_scopes": 36,
+    "profiles": ["Mythic dungeon", "Keystone without Teeming", "Keystone with Teeming"],
+    "player_races": ["Human", "Orc"],
+    "initial_attack_targets": ["actual Player", "owned Hunter Pet", "owned Guardian"],
+    "published_actors": 3180,
+    "extra_db_spawns": 215,
+    "extra_publications": 1290,
+    "extra_db_templates": 103,
+    "extra_ai_types": {"SmartAI": 78, "registered_cpp_ai": 15, "native_AggressorAI": 10},
+    "actual_initial_pulls": 1964,
+    "actual_eligible_member_assists": 1168,
+    "loaded_native_formation_rows": 284,
+    "loaded_native_smart_script_groups": 98,
+    "loaded_native_smart_conditions": 4
+  },
+  "checks": "Actual native Creature loaders and template AI factories initialize and reset each published actor. Native mask/Teeming admission and C++/SmartAI selection are asserted. The initial seed must satisfy native canStartAttack against the actual target;its actual AI::AttackStart invokes Unit::Attack,SetInCombatWith,EnterCombat and CreatureGroup::MemberAttackStart. Every initially eligible formation member must acquire that actual target and combat state. Repeated attack may not duplicate membership. Native CombatStop clears victim/combat state,and actor removal empties the map's formation holder. The final counts are pinned to detect silently lost attack/publication coverage.",
+  "native_guards": "Native attack accessibility,LOS,faction/target,alive/world,evade,existing-victim and groupAI restrictions are retained. Empty non-Teeming contexts and unmet native target guards are not forced into combat. All populated Teeming Human-player scopes found an eligible seed;the final NO_PULL output for that subset is empty. Pet/guardian tests use genuine owner GUIDs,types,faction and owner pose;their own AI is controlled because the test targets the dungeon NPC's reaction.",
+  "local_source_review": "Reviewed matching runtime World/template records and local CreatureAISelector,SmartAI/SmartScript,CreatureGroups,Unit attack dispatch and selected registered C++ delegates. The105 reconstruction-catalog NPC types have197 entry-based SmartAI rows and no GUID-specific SmartAI overrides on their copied source profiles. This does not imply105 active SmartAI factories:registered C++ names take precedence,and inherited empty SmartAI/default melee definitions remain native. The separate seven instance-owned Skjal additions remain covered by the existing reconstruction/crew audit rather than counted among these215 DB actors.",
+  "database_safety": "Connection-local TEMPORARY creature/addon/waypoint/formation and SmartAI/conditions shadows only. Indexed GUID/path/entry closures preserve all existing members plus215 extra DB records. Native SHOW CREATE proves loader shadows. The selected creature-event condition rows retain their actual native map predicates. No permanent World/account/character data write,no process/server start or stop,and no user gameplay involved.",
+  "final_run": {
+    "directory": "build-extractors/runtime-test/legion-teeming-ai/20261119-075736-266",
+    "exit_status": 0,
+    "diagnostics": "Completed=true;no new/changed canonical or test crash reports,no appended DBErrors and no unexplained appended server warnings/errors/assertions.",
+    "earlier_run": "The preceding complete run also passed21437 checks with clean post-test diagnostics. The final run adds actual AI type receipts and pins the observed native coverage counts;there were no failing baselines or new runtime errors in this task."
+  },
+  "canonical": {
+    "worldserver_sha256": "307bb7ba80bf7d503ba41d30de3c5111e884175e394aab743da5e5f72a1c97b4",
+    "worldserver_map_sha256": "da1565df6ecbcd314e02d12ea534b981e21d1cf90f4c324168077783f13cf15d",
+    "deployment": "Unchanged previously deployed/startup-verified Release binary;no rebuild or promotion needed. Native probe links the actual original Release libraries with sealed input hashes."
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-teeming-ai",
+    "status": "Pending verified archive and redundant probe cleanup after the regression commit."
+  },
+  "remaining": [
+    "No timed Creature::Update/combat rotations,real damage,casts completing over time,interrupts,threat rotations,evade/wipes,boss encounter progression,loot or full dungeon completion were exercised. Spawn/reset/aggro callbacks can issue native immediate spells;these are not a complete spell targeting/condition/rotation verification.",
+    "Actual client traversal,visuals/audio,real pet movement,multi-client play,reconnect and whole-dungeon fidelity remain open.",
+    "The222 additions remain reviewed reconstructions,not recovered original server/sniff spawn SQL."
+  ]
+}
