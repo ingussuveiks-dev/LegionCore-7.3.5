@@ -81,8 +81,16 @@
     "live_readback": ".codex/dungeon-combat-20261119/final-live-readback.tsv;all4 exact update hashes RELEASED;all5 live chest links match existing loot/encounters/personal fields."
   },
   "archive": {
-    "status": "PENDING_FINAL_VERIFIED_ARCHIVE_AND_CLEANUP",
-    "directory": "build-extractors/bin/Release/fixed/2026-11-19-dungeon-combat-loot"
+    "status": "COMPLETE",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-dungeon-combat-loot",
+    "regression_commit": "b8c59278535163e32555937440929a3799e3f15f",
+    "manifest_sha256": "82a2776db62a5d64a4ec8b2dd8b5b9bda1a747241aa2882f1c6aae765f812148",
+    "deletion_manifest_sha256": "1d78b51545cbbb3b39a1a090677a23282f0d533d3c318567f3d62864995980ef",
+    "archived_records": 1090,
+    "removed_files": 954,
+    "removed_bytes": 10727842399.0,
+    "freed_bytes": 10729017344,
+    "verification": "Source/archive/source SHA256 and length verified before deletion;all1090 archived files reverified after cleanup and again while recording this audit. Native/driver evidence is under this archive at its original repository-relative path. Counterfactuals and fixture failures preserved,not mislabeled as ordinary passing runs. No private configuration bytes archived."
   },
   "remaining": [
     "Actual client traversal,visuals/audio,real party/pet positioning,reconnect,network loot/money packets and earned boss/forces/timed full dungeon run remain OPEN. No client used.",
@@ -121,5 +129,11 @@
     "gear_keystone": ".codex/dungeon-combat-20261119/final-loot-3.log and runtime20261119-101035-058;actual upper Karazhan personal loot contains two138019 and no gear for entitlement1. Failed pre-fix native assertion is expected-broken counterfactual,paired with repaired938 checks."
   },
   "compiler_diagnostics": "Build succeeded at original generated Release library paths. Existing unchanged enum/floating arithmetic emits MSVC C5055 at SpellAuraEffects.cpp9619/9622;not a new runtime warning or newly introduced code. No runtime diagnostics suppressed.",
-  "regression_series": "Eight focused implementation/audit commits followed by this shared native/PE regression and evidence commit;tests qualify the final combined tree,not arbitrary partial cherry-picks."
+  "regression_series": "Eight focused implementation/audit commits followed by this shared native/PE regression and evidence commit;tests qualify the final combined tree,not arbitrary partial cherry-picks.",
+  "cleanup": {
+    "removed": "All current-task dated combat/loot runtimes,the one retained-completion rerun,three staged EXE/map/PDB/link outputs,three named native probe EXE/OBJ/compiler-PDB/ILK prefixes,and freshly generated Scepter extracts/test EXE/OBJ/run script. Exact absolute paths/reparse boundaries checked;deletion manifest lists every removed file.",
+    "retained": "Canonical runtime/configuration/DLLs/shared extracted data,original required Release libraries,pre-combat rollback307bb7 and earlier Teeming reconstruction rollback retained for pending client recovery. Old mixed completion/scepter/shared runtime history left untouched.",
+    "deferred": "Older mixed completion/scepter/shared runtime history was not reviewed for disposal in this follow-up;left intact for separate diagnostic review. No current-task executable,symbol,isolated runtime or staged deployment is deferred.",
+    "canonical": "Protected canonical EXE/map/configuration/certificates/DLLs and rollback hashes identical after cleanup;Crashes empty,DBErrors0 bytes;no worldserver,bnetserver or task probe left running. Server.log history retained;no active log truncated."
+  }
 }
