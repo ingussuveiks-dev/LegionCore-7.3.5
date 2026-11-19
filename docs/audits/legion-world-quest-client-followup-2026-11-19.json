@@ -39,6 +39,30 @@
       { "source": "https://www.youtube.com/watch?v=8InVRLd7_I8", "finding": "Only the 2017 video description was accessible. No footage was reviewed." }
     ]
   },
+  "source_followup": {
+    "method": "Reviewed visual samples across both complete March 2017 recordings, every two seconds for the 35-second video and every three seconds for the 3 minute 21 second video, with half-second samples around the book interactions. Checked contemporaneous player reports, historical TrinityCore templates, and the GitHub Legion Preservation world archive. Cross-checked the findings with the local 26972 DB2 reader and read-only world SQL. The videos are edited, and audio was not evaluated.",
+    "video_evidence": [
+      {
+        "source": "https://www.youtube.com/watch?v=8InVRLd7_I8",
+        "observed": "The quest tracker is already active at the start. Named Felfire Imps and Felblade Devastators are visible, with the bar changing during combat in Garrison of the Fel. At approximately 00:32 the final group of imps is defeated and the world quest completes in place. The edit omits parts of combat and starts after activation, so it cannot establish individual heavy-target weights, initial entry behavior, or respawn timing. The introductory-looking Illidan chat line was already present beside rewards from preceding activity."
+      },
+      {
+        "source": "https://www.youtube.com/watch?v=ovrpwyScFw8",
+        "observed": "Around 00:05 the map cursor is at 59.2, 44.8 over the quest marker. The map shows 17 hours remaining. Around 01:03 the player approaches a hovering Libram next to a fel-lit pillar. Around 01:37–02:26 the player fights a large imp mother in a raised green pool with named Felfire Imps around it. The edit does not show a readable name for the mother. Around 03:10 the player uses a second book between three obelisks. The world quest completes and Illidan's closing portrait and line appear. The map marker and landmarks do not identify the actors' exact spawn coordinates, orientation, or phase."
+      }
+    ],
+    "placement": {
+      "contemporary": "A June 2017 player reports Imp Mother Flaz around Broken Shore 58, 45 and recurring imp packs. A Wowhead player report gives 59.29, 45.39 for the same vicinity. On the matching client map the latter is world XY approximately (-1169.18, 2634.00). These are player-reported hunting locations.",
+      "references": ["https://forums.whirlpool.net.au/archive/9q6krm03-2", "https://www.wowhead.com/quest=46246/strike-them-down"],
+      "existing_actors": "Bruva 119718 is a separate locally placed actor at 60.46, 45.03 on the 26972 map. Her existing Imps! chain 242071 → 242073 → 242075 summons Felfire Imp 121337. That entry has no kill-credit alias and is not objective 288855/117555. The five local placements of another same-name imp, 117560, are in area 8552. Neither entry establishes the original placements of 117555.",
+      "libram": "The local 269154 template has the display model 26998 and native 241545, but its stored English-facing name is inconsistent with the later TrinityCore name Libram of Fel Knowledge. The two exact-name local templates 240323 and 249412 share the model and instead use 180938. Read-only checks found no placements for any of the three. The 26972 duration table gives 120 seconds for 180938, 180941 and 241545. The active Garrison quest objective names entry 269154 and its data weight is 6.",
+      "archive": "The Legion Preservation TDB735.25051 world SQL (asset SHA256 cdc0b9c725d9e712c2d28bce4dec76d1008678bb8b02c74afd7ef2d1a9df9df2) supplied creature templates and the same-name Libram templates, with zero matching creature or gameobject placement rows for the searched entries. The local modern TrinityCore dump also had zero matching placement rows. Its creature GUIDs that happen to equal 117555 and 118720 belong to unrelated entries on map 571.",
+      "archive_source": "https://github.com/The-Legion-Preservation-Project/TrinityCore/releases/tag/TDB735.25051"
+    },
+    "conversations": "Matching 26972 spells and live SQL pair intro spell 235643 with conversation 4439, line 10022 and BroadcastText 126940. The configured reward spell 235644 resolves to conversation 4440, line 10023 and BroadcastText 126941, matching the closing visual in the longer video. The chat already visible at the opening of the shorter video belongs to text 127281, line 10098, which the 26972 data associates with another spell explicitly named Outro Conversation (236105). That opening chat frame does not verify Garrison's intro or justify replacing 4439. The prior fixture's spell IDs 239269 and 239270 resolve to Venom Storm and Aquaclease, so their absence does not diagnose presentation.",
+    "diagnostics": "The native catalog read passed with no new crashes, appended database errors or server diagnostics. No additional client run was performed. The new evidence narrows the search area and documents the behavior but does not establish complete original placement, the actual imp respawn mechanism, or the cause of the delayed updates on the local server.",
+    "local_evidence": "The two reference videos, selected frames, SQL readbacks and catalog diagnostics are retained locally under the ignored research directories. Removed only the downloaded preservation archive, its extracted world SQL and the dedicated probe executable and object file (445091717 bytes)."
+  },
   "diagnostics": {
     "resolved_setup_error": "The first isolated client startup logged a GM.StartLevel range error because the fixture set StartPlayerLevel to 110. Setting GM.StartLevel to 110 resolved it on the subsequent startup. The original log is archived.",
     "final": "Native and client checks yielded no new or changed crash dumps and no appended DB errors or unexplained server warnings, errors or assertions. Task-owned worldserver and bnetserver stopped gracefully with exit 0 at the fixture time limit. The client showed the resulting disconnect. The separate MariaDB completed shutdown.",
