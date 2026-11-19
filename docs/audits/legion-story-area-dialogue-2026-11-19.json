@@ -119,8 +119,16 @@
     "diagnostics": "Crashes empty,DBErrors0 bytes;Server.log history retained."
   },
   "archive": {
-    "status": "PENDING verified archive and temporary native cleanup",
-    "directory": "build-extractors/bin/Release/fixed/2026-11-19-story-area-dialogue"
+    "status": "COMPLETE",
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-story-area-dialogue",
+    "fix_commit": "af52a171822fe59fb3b4b333ac95e9cfad4fd5ee",
+    "manifest_sha256": "ddf5c521250d5e70abb6828bd9c0366c7569903c1496adfd5d9a1297a0526a6c",
+    "deletion_manifest_sha256": "970815cc24a65409840e2f150002546d0b198fc9bb6f94293f3c6328c8c1081c",
+    "archived_records": 115,
+    "removed_files": 93,
+    "removed_bytes": 1383385721.0,
+    "freed_bytes": 1383493632,
+    "verification": "Source/archive/source SHA256+length verified before cleanup;all115 archived records reverified after deletion and again when recording this audit. Original repository-relative native/driver evidence paths retained inside archive. Counterfactuals and resolved fixture failures classified explicitly;no private configuration bytes archived."
   },
   "evidence_sha256": {
     "build-extractors/runtime-test/legion-story-dialogue/20261119-185143-849/native.tsv": "a1e59d75097bee7b731a4f7e3cf6e56aff274fc7287062eeb3ed5f08cd985ea0",
@@ -133,5 +141,12 @@
     ".codex/area-story-dialogue-20261119/live-conditions-after.tsv": "7ae8bbef09f17772565563326c189310960a55c4c0ace4c1a01fdb563f69787e",
     ".codex/area-story-dialogue-20261119/live-deployment.json": "2e7ef29672e3cf3cb74df6d6f61f9ec01cb2aae6f084ca31fb30aa599fd579fb",
     ".codex/area-story-dialogue-20261119/canonical-startup.log": "4b5f001932703228273e816ef63ab63fdfdb4cdd83677f6203cac595d9955e3b"
+  },
+  "fix_commit": "af52a171822fe59fb3b4b333ac95e9cfad4fd5ee",
+  "cleanup": {
+    "removed": "All4 dated story runtimes and1 retained area-world-dialogue runtime,plus only this task StoryDialogueNative/AreaDialogueNative shared EXE/OBJ/PDB/ILK scratch. Exact absolute targets and file/directory reparse boundaries checked. Full deletion manifest retained. No staged server or new production binary existed.",
+    "retained": "Canonical runtime/configuration/DLLs/shared extracted data and original required Release libraries preserved. Verified pre-prerequisite650a rollback retained for pending client alternative-route recovery;pre-area-task e459 retains its separate pending client recovery purpose;pre-Dark-Hunt8027,pre-combat307 and pre-Teeming rollback retain their separate pending client recovery purposes. Older mixed completion/scepter/shared history left untouched.",
+    "diagnostics": "Canonical162eb5 executable/map/configuration/certificates/DLLs and5 existing rollback sets verified unchanged. Canonical Crashes empty,DBErrors0 bytes;no worldserver/bnetserver/native probe remains. Server.log retained. Original10-row data backup and deployment integrity hashes archived.",
+    "deferred": "No current-task redundant executable/symbol/runtime deferred. Older mixed history and shared required build/data/rollback inputs retained for their separate purposes."
   }
 }

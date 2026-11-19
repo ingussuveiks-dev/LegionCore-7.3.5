@@ -259,5 +259,22 @@
     "retained": "Canonical runtime/configuration/DLLs/shared extracted data and original required Release libraries preserved. Verified pre-area-task e459 rollback retained for pending client recovery;pre-Dark-Hunt8027,pre-combat307 and pre-Teeming rollback retain their separate pending client recovery purposes. Older mixed completion/scepter/shared history left untouched.",
     "diagnostics": "Canonical EXE/map/configuration/certificates/DLLs and4 rollback sets rechecked unchanged. Canonical Crashes empty,DBErrors0 bytes;no worldserver/bnetserver/task probe left. Server.log history preserved.",
     "deferred": "No current-task redundant binary/symbol/runtime remains. Original required build libraries/objects and rollback copies retained for concrete incremental-build/client recovery needs;older mixed history belongs to separate review."
+  },
+  "story_follow_up": {
+    "date": "2026-11-19",
+    "commit": "af52a1718",
+    "audit": "docs/audits/legion-story-area-dialogue-2026-11-19.json",
+    "repaired_pure_roots": [
+      127,
+      237,
+      238,
+      305,
+      321,
+      366,
+      515,
+      530,
+      532
+    ],
+    "coverage": "132 native state contexts,6 actual actor/re-entry cases and128 retained world-intro contexts pass. Linked credit/spell/objective roots still require their own sequence checks;no whole-story/client certification."
   }
 }
