@@ -548,9 +548,11 @@ struct npc_brh_wyrmtongue_scavenger : public ScriptedAI
     uint32 indigestionTimer = 0;
     uint32 hyperactiveTimer = 0;
 
-    void Reset()
+    void Reset() override
     {
         fixateGUID.Clear();
+        ancientEvent = 0;
+        healthPct = 66;
         me->SetReactState(REACT_AGGRESSIVE);
         indigestionTimer = 0;
         hyperactiveTimer = 0;
@@ -563,17 +565,17 @@ struct npc_brh_wyrmtongue_scavenger : public ScriptedAI
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
     {
-        if (HealthBelowPct(healthPct))
+        if (HealthBelowPct(healthPct) && !me->HasUnitState(UNIT_STATE_CASTING))
         {
-            healthPct = 0;
             me->CastSpell(me, SPELL_DRINK_ANCIENT_POTION);
         }
     }
 
     void SpellHit(Unit* caster, SpellInfo const* spell) override
     {
-        if (spell->Id == SPELL_DRINK_ANCIENT_POTION && !ancientEvent)
+        if (caster == me && spell->Id == SPELL_DRINK_ANCIENT_POTION && !ancientEvent)
         {
+            healthPct = 0;
             ancientEvent = urand(1, 3);
             SetAncientEvent();
         }
