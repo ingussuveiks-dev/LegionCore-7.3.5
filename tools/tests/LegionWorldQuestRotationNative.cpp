@@ -169,6 +169,53 @@ public:
     }
 };
 
+static void CheckPartyKill(Map& map, Position const& origin, uint32 area)
+{
+    constexpr uint32 questId = 46073;
+    constexpr uint32 victimEntry = 117559;
+    RotationPlayer owner(map, 106, origin);
+    RotationPlayer nearby(map, 107, origin);
+    RotationPlayer distant(map, 108, origin);
+    RotationPlayer unqualified(map, 109, origin);
+    for (RotationPlayer* player : {&owner, &nearby, &distant})
+    {
+        player->UnlockBrokenShore();
+        player->UpdateAreaQuestTasks(area, 0);
+        Require(player->FindQuestSlot(questId) < MAX_QUEST_LOG_SIZE, "Party fixture did not accept the real world task");
+    }
+
+    distant.Relocate(origin.GetPositionX() + sWorld->getFloatConfig(CONFIG_GROUP_XP_DISTANCE) + 30,
+        origin.GetPositionY(), origin.GetPositionZ(), 0);
+    Group party;
+    struct PartyMembers
+    {
+        std::array<RotationPlayer*, 4> Players;
+        ~PartyMembers() { for (RotationPlayer* player : Players) player->SetGroup(nullptr); }
+    } members{{&owner, &nearby, &distant, &unqualified}};
+    for (RotationPlayer* player : members.Players)
+        player->SetGroup(&party, 0);
+
+    DungeonPet pet(owner, map);
+    pet.*Access(RotationControlledTag{}) = true;
+    RotationVictim victim(owner, victimEntry, 190090);
+    Require(nearby.IsAtGroupRewardDistance(&victim) && !distant.IsAtGroupRewardDistance(&victim),
+        "Party distance counterfactual is invalid");
+    uint64 health = victim.GetHealth(&pet);
+    float multiplier = victim.GetHealthMultiplierForTarget(&pet);
+    double lethalDamage = std::ceil(double(health) * multiplier * 1.001);
+    Require(lethalDamage > 0 && lethalDamage <= std::numeric_limits<uint32>::max(), "Invalid scaled pet damage");
+    pet.DealDamage(&victim, uint32(lethalDamage), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+    Require(victim.isDead(), "Party pet did not kill the native quest target");
+    pet.Kill(&victim);
+    for (RotationPlayer* player : members.Players)
+        player->PumpCallbacks(50);
+
+    Require(owner.GetQuestObjectiveData(questId, victimEntry) == 1 && nearby.GetQuestObjectiveData(questId, victimEntry) == 1 &&
+        !distant.GetQuestObjectiveData(questId, victimEntry) && !unqualified.GetQuestObjectiveData(questId, victimEntry),
+        "Pet kill failed exactly-once owner/nearby eligible party credit or leaked credit");
+    std::cout << "PROGRESSION 46073 pet party credit owner=1 nearby=1 distant=0 without_task=0\n";
+}
+
 static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locked, Quest const* quest, WorldQuest& active)
 {
     Require(!quest->RewardMailTemplateId, "Review new reward mail before exercising shadow persistence");
@@ -408,6 +455,8 @@ int main(int argc, char** argv)
 
 #ifdef LEGION_ROTATION_PROGRESSION
             CheckProgressAndReward(eligible, locked, quest, (*rotations)[quest->QuestSortID][test.QuestId]);
+            if (test.QuestId == 46073)
+                CheckPartyKill(map, origin, test.Area);
 #endif
             (*rotations)[quest->QuestSortID][test.QuestId].ResetTime = GameTime::GetGameTime();
             late.PumpCallbacks();

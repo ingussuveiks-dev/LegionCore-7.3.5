@@ -1,0 +1,56 @@
+{
+  "scope": "Break Their Garrison (46073) party credit, missing objectives and Legion 7.3.5 client behavior",
+  "tested_release": {
+    "worldserver_sha256": "ff80e0e90c65df9a4469cdb5f6a4394990f3397bf75e8c5096e49296d83de119",
+    "bnetserver_sha256": "38c0d987094e32bb43d3b6c81c6fd89652a7ba248ff630a24048068c6e22ae4a",
+    "client_build": 26972,
+    "isolation": "Identical copies of the Release executables used separate loopback ports and a disposable MariaDB instance for login and characters. The fixture used the current world and hotfix data with its updater disabled. Only the two prerequisite receipts were seeded for the synthetic level-110 character. Publication and acceptance of 46073 used the actual server paths."
+  },
+  "party_credit": {
+    "driver": "tools/tests/Test-LegionWorldQuestRotationNative.ps1 -Progression",
+    "result": "PASS. An eligible player's pet dealt the lethal native hit to Wrathguard Dreadblade 117559. Credit was owner 1, nearby eligible party member 1, distant eligible party member 0 and nearby member without the task 0. Repeated kill dispatch left the same counts. The existing progression and one-time reward checks for 46021, 46063 and 46073 also passed.",
+    "coverage": "The native fixture pumped the asynchronous kill callbacks and used the native reward-distance predicate. Client party traversal and a guardian's final blow in a party were outside this added case."
+  },
+  "client_observations": [
+    {
+      "check": "Publication while stationary",
+      "result": "The player remained beside EventObject spawn 232 on map 1220. The native worldquest add command published 46073 and the world quest row persisted. The offer and tracker stayed absent, including after opening the map. A saved character readback had no quest 46073 entry. This test used manual publication and did not exercise the scheduled rotation timer."
+    },
+    {
+      "check": "Area entry and introduction",
+      "result": "Moving to existing Dreadblade spawn 341391 with the native travel command showed the quest banner and 0 percent tracker. A saved readback had 46073 INCOMPLETE. Visiting the introduction trigger coordinates again showed no Illidan conversation or avatar during the observed window. Voice playback was not checked."
+    },
+    {
+      "check": "One kill and map transition",
+      "result": "The selected Dreadblade died through the native GM damage command. The tracker and saved counter stayed at zero in Broken Shore. After transferring to Stormwind the tracker showed 2 percent without another kill. The aura and zone admission checks in the controlled native test did not cover this networked timing."
+    },
+    {
+      "check": "Natural respawn",
+      "result": "Spawn 341391 reported a 180-second delay. The observed corpse was still present more than six minutes after the controlled kill, including after a short departure and revisit within Broken Shore. The isolated respawn table was empty at inspection. Natural respawn and corpse-plus-respawn timing remain unverified."
+    }
+  ],
+  "alternative_objectives": {
+    "entries": { "felfire_imp": 117555, "imp_mother_flaz": 118720, "libram_of_fel_knowledge": 269154 },
+    "local": "The current world database had no direct creature or gameobject placements for these IDs and no matching direct SmartAI rows. The type-10 Libram template references spell 241545. Matching 26972 SpellEffect data binds its effects to 180941 and 175864 and contains no direct misc-value placement links for the three IDs. The 26972 GameObjects table produced no Libram placement entry by ID or exact name.",
+    "references": [
+      { "source": "Local TrinityCore history", "finding": "Corroborates the objective IDs. Original spawn coordinates were unavailable." },
+      { "source": "https://www.wowhead.com/quest=46073/break-their-garrison", "finding": "Corroborates the additional objectives. Public map listings do not identify verified original build-26972 placements." },
+      { "source": "https://arguswow.com/38-update-pack-15.html", "finding": "Lists the IDs without placement SQL or coordinates. Targeted GitHub searches also returned no matching placements." },
+      { "source": "https://www.youtube.com/watch?v=8InVRLd7_I8", "finding": "Only the 2017 video description was accessible. No footage was reviewed." }
+    ]
+  },
+  "diagnostics": {
+    "resolved_setup_error": "The first isolated client startup logged a GM.StartLevel range error because the fixture set StartPlayerLevel to 110. Setting GM.StartLevel to 110 resolved it on the subsequent startup. The original log is archived.",
+    "final": "Native and client checks yielded no new or changed crash dumps and no appended DB errors or unexplained server warnings, errors or assertions. Task-owned worldserver and bnetserver stopped gracefully with exit 0 at the fixture time limit. The client showed the resulting disconnect. The separate MariaDB completed shutdown.",
+    "open": "The reason for delayed in-zone processing remains unresolved. The player update and nearby cell visitation gates in Map::Update are a lead and were not instrumented in the client run. Original objective placement, expected Illidan presentation, natural respawn, scheduled rotation and full client completion remain open."
+  },
+  "evidence_and_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/2026-11-19-world-quest-client-followup",
+    "archive_manifest_sha256": "274bcbe5ab2c52f9d940e6957b9a49bacb647e3df2f7d4d63c8173b8d2467191",
+    "deletion_manifest_sha256": "9ad6e1b1b05bd68a4e777b27f8d288d0ed34cde36932603ec11efcc41fdd13f0",
+    "archived_files": 108,
+    "removed_files": 1709,
+    "removed_bytes": 1229371064,
+    "post_cleanup": "Confirmed the canonical executable hashes, unchanged canonical DBErrors.log and empty active Crashes directory. Removed isolated server binaries, symbols, disposable data and the copied client. Verified the original client data remained present after unlinking test junctions. No task-owned process remains. Unresolved client logs remain in the ignored task evidence directory. This change adds test coverage and an audit only."
+  }
+}
