@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-19",
+  "client_build": 26972,
+  "status": "NATIVE_FORMATION_MOVEMENT_VERIFIED_CLIENT_TRAVERSAL_PENDING",
+  "purpose": "Exercise the native formation membership and movement that the earlier placement/corridor checks did not execute. No production source, SQL, persistent character data or deployed executable changed.",
+  "implementation": [
+    "tools/tests/LegionTeemingFormationNative.cpp",
+    "tools/tests/Test-LegionTeemingFormationNative.ps1"
+  ],
+  "reference_implementation_commit": "95165b05f61569503d55902c46a4d76f20964960",
+  "native_scope": {
+    "formation_records": 284,
+    "reconstructed_records": 266,
+    "retained_original_guard_records": 18,
+    "groups": 104,
+    "profiles": ["Mythic dungeon", "Keystone without Teeming", "Keystone with Teeming"],
+    "contexts": 312,
+    "moving_contexts": 25,
+    "leader_routes": 9,
+    "follower_arrival_checks": 51,
+    "distinct_reconstructed_moving_followers": 18,
+    "static_or_absent_contexts": 287,
+    "assertions": 2161
+  },
+  "behavior": "Actual ObjectMgr/WaypointMgr/FormationMgr SQL loaders and Creature::LoadCreatureFromDB, SearchFormation, Motion_Initialize, Unit::Update, WaypointMovementGenerator, CreatureGroup::LeaderMoveTo and follower PointMovementGenerator run against matching native terrain/collision/navigation. Each moving leader must physically reach every native waypoint; each moving follower must report a real point arrival and settle within1.5 yards of its last actually issued home target. Observed final home distances were approximately0.08 yards. Every group must disappear after its actors are removed from the still-live map.",
+  "controlled_boundaries": "A stationary synthetic player owns an actual native challenge/key/scenario when applicable. Native mask/affix publication is checked. Controlled NullCreatureAI observers preserve actual membership/default motion and arrival callbacks; full combat AI is not pumped. Route grids and32-yard neighbouring positions are explicitly loaded to provide the grids that nearby traversal normally keeps available. One complete leader loop is exercised, then its motion is paused and followers receive60 simulated seconds to settle. The earlier separate native admission/death/progression checks remain separate evidence.",
+  "database_safety": "Only the reviewed leader/member closure is copied into connection-local TEMPORARY creature, creature_addon, waypoint_data and creature_formations shadows. Indexed GUID/path seed tables avoid correlated full-table UNION scans. SHOW CREATE proves all four loader targets are temporary. World switches back to READ ONLY before loaders/publication; other pools retain the support harness's read-only protections. No worldserver or bnetserver process was started or stopped.",
+  "final_run": {
+    "directory": "build-extractors/runtime-test/legion-teeming-formations/20261119-054713-718",
+    "exit_status": 0,
+    "diagnostics": "Completed=true;no new/changed crash files,no appended DBErrors and no unexplained server warnings/errors/assertions in canonical or test runtime directories.",
+    "live_readback_directory": "build-extractors/runtime-test/legion-teeming-live-data/20261119-054729-964",
+    "live_readback": "All32 creature fields on215 spawns,215 addons,98 waypoints and266 new formation rows match the reviewed catalog;exit0 and clean post-test diagnostics."
+  },
+  "resolved_test_setup_failures": [
+    {
+      "run": "20261119-053924-698",
+      "cause": "The initial temporary creature closure used a correlated IN(SELECT ... UNION ...) scan. Read-only PROCESSLIST and a captured native stack identified the task-owned query10819. It was explicitly cancelled; the following missing temporary-table operation triggered the native database abort handler.",
+      "resolution": "Replaced the correlated creature/path closures with primary-key seed tables and indexed joins. Subsequent fixtures and the final regression pass. The interrupted run's1317/1146 errors and handled exception trace are retained as failed harness setup,not a successful test or a production database defect. No crash file was generated."
+    },
+    {
+      "runs": ["20261119-054256-125", "20261119-054407-758", "20261119-054458-463"],
+      "cause": "The stationary controlled owner left an adjacent route grid unloaded. Native Map::CreatureCellRelocation correctly refused the crossing and CreatureRespawnRelocation returned leader263346 to its spawn. A captured spline/position trace identified this setup boundary.",
+      "resolution": "Explicitly load the native route/nearby grids before controlled movement. Production movement code/data were unchanged. Both subsequent complete runs pass;these failed coverage assertions had clean post-test runtime diagnostics."
+    }
+  ],
+  "canonical_identity": {
+    "worldserver_sha256": "307bb7ba80bf7d503ba41d30de3c5111e884175e394aab743da5e5f72a1c97b4",
+    "worldserver_map_sha256": "da1565df6ecbcd314e02d12ea534b981e21d1cf90f4c324168077783f13cf15d",
+    "deployment": "Unchanged previously deployed and startup-verified executable;this validation-only task requires no rebuild/promotion. The new native probe links the actual original Release libraries,whose hashes are sealed before/after each run."
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-19-teeming-formations",
+    "status": "Pending verified evidence archive and redundant probe cleanup after this regression commit."
+  },
+  "remaining": [
+    "Actual client dungeon traversal,formation appearance,combat pulls/spells,pet behaviour,wipes/re-entry and full timed completion remain unverified by this controlled movement test.",
+    "The222 additions remain reviewed reconstructions;original server/sniff spawn SQL was not recovered."
+  ]
+}
