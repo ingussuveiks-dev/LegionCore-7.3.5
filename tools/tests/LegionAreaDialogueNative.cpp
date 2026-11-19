@@ -31,8 +31,12 @@ int main(int argc,char**argv){try{
  InitializeDungeon(argc,argv,true);DisableMgr::LoadDisables();sObjectMgr->LoadItemTemplates();sObjectMgr->LoadItemTemplateAddon();sQuestDataStore->LoadQuests();
  std::unordered_map<uint32,std::vector<uint32>> outdoor{{1220,{}}};dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe(outdoor);MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe(outdoor);
  WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
- ShadowDialogue("smart_scripts",std::string("source_type IN(10,13) AND entryorguid IN(")+Entries+")");
- ShadowDialogue("conditions",std::string("SourceTypeOrReferenceId=22 AND SourceId IN(10,13) AND SourceEntry IN(")+Entries+")");
+ std::string entries=Entries;
+#ifndef AREA_DIALOGUE_BASELINE
+ entries+=",309"; // The previously repaired Thunder Totem root uses the same admission.
+#endif
+ ShadowDialogue("smart_scripts","source_type IN(10,13) AND entryorguid IN("+entries+")");
+ ShadowDialogue("conditions","SourceTypeOrReferenceId=22 AND SourceId IN(10,13) AND SourceEntry IN("+entries+")");
  auto scene=WorldDatabase.Query("SELECT COUNT(*) FROM smart_scripts WHERE source_type=10");Require(scene&&!scene->Fetch()[0].GetUInt32(),"Scoped IDs contain a real scene script;review collision before migration");
 #ifdef AREA_DIALOGUE_BASELINE
  // Exact original cohort captured before promotion; keep baseline reproducible
@@ -46,7 +50,11 @@ int main(int argc,char**argv){try{
  }
 #endif
  auto rows=WorldDatabase.Query("SELECT SourceEntry,ConditionValue1,SourceId FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceGroup=1 AND ConditionTypeOrReference=9 ORDER BY SourceEntry");
- Require(rows&&rows->GetRowCount()==32,"Actual world-quest intro cohort changed");
+#ifdef AREA_DIALOGUE_BASELINE
+ Require(rows&&rows->GetRowCount()==32,"Original world-quest intro cohort changed");
+#else
+ Require(rows&&rows->GetRowCount()==33,"Actual world-quest intro cohort changed");
+#endif
  std::map<uint32,uint32> quests;do{auto f=rows->Fetch();quests[f[0].GetUInt32()]=f[1].GetUInt32();
 #ifdef AREA_DIALOGUE_BASELINE
   Require(f[2].GetUInt32()==10,"Original wrong-source fixture differs");
@@ -78,11 +86,41 @@ int main(int argc,char**argv){try{
    Require(player.GetQuestStatus(questId)==status&&player.getRewardedQuests().empty(),"Introduction granted or changed quest progression");
    player.RemoveAllAuras();++cases;
   }
+#ifndef AREA_DIALOGUE_BASELINE
+  Map map(1220,300,0,DIFFICULTY_NONE);
+  DungeonPlayer player(map,RACE_HUMAN);
+  AreaDialogueEvent event(map,player,entry);
+  event.Update(1);
+  Require(LiveConversations().empty(),"Unavailable world task played its introduction");
+#ifdef AREA_DIALOGUE_LATE_BASELINE
+  Position origin=player.GetPosition();
+#else
+  Require(!event.ActivatedForPlayer(&player),"Unavailable task consumed this player's entry");
+#endif
+  player.SetQuestStatus(questId,QUEST_STATUS_INCOMPLETE);
+  event.Update(1);
+#ifdef AREA_DIALOGUE_LATE_BASELINE
+  Require(event.ActivatedForPlayer(&player)&&LiveConversations().empty(),"Expected old code to consume the trigger before acceptance");
+  player.Relocate(origin.GetPositionX()+event.eventTemplate->radius+10,origin.GetPositionY(),origin.GetPositionZ(),0);
+  event.Update(1);
+  player.Relocate(origin);
+  event.Update(1);
+#endif
+  auto conversations=LiveConversations();
+  Require(conversations.size()==1&&conversations[0]->GetEntry()==conversation&&conversations[0]->GetCasterGUID()==player.GetGUID(),"Late world task introduction did not reach its entering player");
+  ClearConversations(map);
+  event.Update(1);
+  Require(LiveConversations().empty(),"Late world task introduction repeated within one stay");
+  Require(player.GetQuestStatus(questId)==QUEST_STATUS_INCOMPLETE&&player.getRewardedQuests().empty(),"Late introduction changed quest progression");
+  ++cases;
+#endif
  }
 #ifdef AREA_DIALOGUE_BASELINE
  std::cout<<"COUNTERFACTUAL "<<cases<<" actual native outdoor intro cases:32 wrong-source roots play without quest;native EO224 target0 also correctly resolves the player;expected broken,not passing gameplay\n";
+#elif defined(AREA_DIALOGUE_LATE_BASELINE)
+ std::cout<<"COUNTERFACTUAL "<<cases<<" native cases:33 world task introductions require a second entry after late acceptance in the old binary\n";
 #else
- std::cout<<"PASS "<<cases<<" actual native outdoor intro cases across32 roots:quest states,inside suppression,exit/reentry,real player conversation,no quest/reward grants;two temporary migration replays;client audio/visual/traversal separate\n";
+ std::cout<<"PASS "<<cases<<" actual native outdoor intro cases across33 roots:quest states,inside suppression,late acceptance in place,exit/reentry,real player conversation,no quest/reward grants;two temporary migration replays;client audio/visual/traversal separate\n";
 #endif
  CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}

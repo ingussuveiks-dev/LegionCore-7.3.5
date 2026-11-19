@@ -1,4 +1,4 @@
-param([switch]$Baseline)
+param([switch]$Baseline,[switch]$LateBaseline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/legion-area-dialogue/$(Get-Date -Format yyyyMMdd-HHmmss-fff)";New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
@@ -11,6 +11,7 @@ try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:LEGION_AREA_DIALOGUE_MIGRATION="$repo/sql/updates/world/2026_11_19_05_world_quest_area_dialogue.sql"
  $env:CL="$compiler /DNDEBUG /Zi /I`"$repo/src/server/scripts/Legion`" /I`"$repo/src/server/scripts/Legion/MawofSouls`"";$env:_LINK_="$link /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
  if($Baseline){$env:CL+=' /DAREA_DIALOGUE_BASELINE'}
+ if($LateBaseline){$env:CL+=' /DAREA_DIALOGUE_LATE_BASELINE'}
  Push-Location "$repo/build-extractors/bin/Release"
  try{& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
   & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/LegionAreaDialogueNative.cpp -ProbeName LegionAreaDialogueNative -OutputFile "$out/native.tsv" *> "$out/compiler.log"

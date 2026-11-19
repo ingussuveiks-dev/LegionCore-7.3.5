@@ -31,6 +31,7 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellMgr.h"
+#include <algorithm>
 
 struct DarkHuntCastSequence
 {
@@ -1269,18 +1270,19 @@ public:
         if (event->GetMapId() != 1220)
             return true;
 
-        switch (event->GetEntry())
-        {
-            case 197:
-            case 323: // The nearby EO322 can complete quest 45065 after this entry poll.
-            case 367:
-            case 501:
-            case 533:
-                return !sConditionMgr->GetConditionsForSmartEvent(event->GetEntry(), 0, SMART_SCRIPT_TYPE_EVENTOBJECT).empty() &&
-                    sConditionMgr->IsObjectMeetingSmartEventConditions(event->GetEntry(), 0, SMART_SCRIPT_TYPE_EVENTOBJECT, player, event);
-            default:
-                return true;
-        }
+        // Each of these entries has a single gated on-enter root. Recheck it
+        // until the player qualifies so an earlier poll cannot consume entry.
+        static constexpr uint32 gatedEntries[] = {
+            197, 200, 203, 204, 205, 208, 209, 210, 211, 212, 213, 214,
+            215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227,
+            229, 230, 231, 232, 233, 307, 308, 309, 323, 331, 332, 367, 501, 533
+        };
+        uint32 entry = event->GetEntry();
+        if (!std::binary_search(std::begin(gatedEntries), std::end(gatedEntries), entry))
+            return true;
+
+        return !sConditionMgr->GetConditionsForSmartEvent(entry, 0, SMART_SCRIPT_TYPE_EVENTOBJECT).empty() &&
+            sConditionMgr->IsObjectMeetingSmartEventConditions(entry, 0, SMART_SCRIPT_TYPE_EVENTOBJECT, player, event);
     }
 
     bool OnTrigger(Player* player, EventObject* event, bool apply) override

@@ -1,0 +1,35 @@
+{
+  "scope": "Outdoor Legion map 1220, 33 existing world quest EventObject introductions",
+  "world_quest_events": [
+    200, 203, 204, 205, 208, 209, 210, 211, 212, 213, 214,
+    215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227,
+    229, 230, 231, 232, 233, 307, 308, 309, 331, 332
+  ],
+  "previously_gated_events": [197, 323, 367, 501, 533],
+  "data": {
+    "source": "Deployed Legion 7.3.5 World smart_scripts and conditions, plus loaded Quest and Conversation data",
+    "original_cohort": "32 roots corrected to source 13 by 2026_11_19_05_world_quest_area_dialogue.sql",
+    "thunder_totem": "Event 309, quest 41705, native conversation 1580",
+    "links": "Events 200, 203 and 225 retain the original LINK rows after the single on-enter conversation root",
+    "migration": "No new SQL required"
+  },
+  "cause": "EventObject recorded the entry even when the native SmartEvent quest condition initially rejected the conversation. Accepting the quest while inside then required a second entry.",
+  "repair": "Check the existing source-13 conditions for root 0 before recording entry on the scoped outdoor events. Keep the native SmartScript dispatch, range, player admission, linked actions and per-stay suppression.",
+  "native_checks": {
+    "counterfactual": "Test-LegionAreaDialogueNative.ps1 -LateBaseline linked against the pre-fix game.lib. All 33 accepted-in-place introductions were suppressed until the simulated player actually left and re-entered the trigger radius.",
+    "regression": "165 cases over 33 roots using the loaded EventObject, SmartScript, Condition and Conversation dispatch. Covered unavailable, incomplete, complete and rewarded states, late acceptance, repeat polling, exit/re-entry, native conversation ownership and no progress changes. Two temporary migration replays.",
+    "historical_baseline": "The earlier -Baseline counterfactual for the incorrect source-10 conditions also requires the old game.lib because the repaired entry guard requires the source-13 root conditions.",
+    "retained": "94 linked area credit/party/EO322-to-323 ordering cases and 60 additional area, party, Black Rook and real receiver delivery cases passed."
+  },
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "d2ae095bafdfb98774ab8e15e1ccac17505fab90fec100b0dcbe7953fd71ecb5",
+    "pe_check": "The original final-link inputs were checked. verify_area_completion_release.py verified the 38 scoped entries in both staged and canonical binaries. The canonical Scepter login PE check passed.",
+    "startup": "The task-owned canonical worldserver PID 18984 reported ready and exited 0 via server shutdown 0.",
+    "diagnostics": "No new or changed crash reports, DBErrors or unexplained server warnings, errors or assertions. Owned server stderr was empty. Canonical DBErrors.log is 0 bytes and Crashes is empty."
+  },
+  "open": {
+    "client": "Actual introduction playback, audio and traversal remain unverified.",
+    "rotation": "Native tests change the quest status in the fixture. Hourly rotation registers active tasks in QuestDataStoreMgr, while Player::Update only calls UpdateArea on an area transition. Stationary world task publication therefore needs a separate repair and a test using actual rotation eligibility."
+  }
+}

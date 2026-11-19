@@ -1,10 +1,11 @@
-"""Verify EO323 joins the scoped SmartEvent admission in the linked MSVC PE."""
+"""Verify the linked SmartEvent admission references all of its outdoor entries."""
 import bisect
 from pathlib import Path
 import runpy
+import struct
 
-from capstone import CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_REG, Cs
-from capstone.x86_const import X86_REG_EAX
+from capstone import CS_ARCH_X86, CS_MODE_64, CS_OP_MEM, Cs
+from capstone.x86_const import X86_REG_RIP
 
 native = runpy.run_path(str(Path(__file__).with_name("verify_remaining_area_release.py")))["native"]
 address = native["symbol"]("?IsTriggerMeets@SmartEventObject@@")
@@ -14,27 +15,19 @@ assert begin <= address - native["base"] < end
 offset = native["offset"](address)
 decoder = Cs(CS_ARCH_X86, CS_MODE_64)
 decoder.detail = True
-instructions = list(decoder.disasm(native["binary"][offset:offset + native["base"] + end - address], address))
+instructions = decoder.disasm(native["binary"][offset:offset + native["base"] + end - address], address)
 
-# MSVC compiles the sparse entry switch as a chain of subtracts and zero tests.
-entry = 0
-accepted = []
-destinations = set()
-for i, instruction in enumerate(instructions[:-1]):
-    operands = instruction.operands
-    if instruction.mnemonic not in ("cmp", "sub") or len(operands) != 2:
-        continue
-    if operands[0].type != CS_OP_REG or operands[0].reg != X86_REG_EAX or operands[1].type != CS_OP_IMM:
-        continue
-    branch = instructions[i + 1]
-    if instruction.mnemonic == "sub" and branch.mnemonic == "je":
-        entry += operands[1].imm
-        accepted.append(entry)
-        destinations.add(branch.operands[0].imm)
-    elif instruction.mnemonic == "cmp" and branch.mnemonic == "jne" and accepted:
-        accepted.append(entry + operands[1].imm)
-        destinations.add(branch.address + branch.size)
-        break
-
-assert accepted == [197, 323, 367, 501, 533] and len(destinations) == 1
-print("PASS Release EO323 joins the existing condition admission branch before entry consumption.")
+entries = [
+    197, 200, 203, 204, 205, 208, 209, 210, 211, 212, 213, 214,
+    215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227,
+    229, 230, 231, 232, 233, 307, 308, 309, 323, 331, 332, 367, 501, 533,
+]
+table = struct.pack(f"<{len(entries)}I", *entries)
+references = {
+    instruction.address + instruction.size + operand.mem.disp
+    for instruction in instructions
+    for operand in instruction.operands
+    if operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP
+}
+assert any(native["binary"].startswith(table, native["offset"](target)) for target in references)
+print("PASS Release SmartEvent admission references the 33 world task roots and five existing quest roots.")
