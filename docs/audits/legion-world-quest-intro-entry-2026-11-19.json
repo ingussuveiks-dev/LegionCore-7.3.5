@@ -30,6 +30,18 @@
   },
   "open": {
     "client": "Actual introduction playback, audio and traversal remain unverified.",
-    "rotation": "Native tests change the quest status in the fixture. Hourly rotation registers active tasks in QuestDataStoreMgr, while Player::Update only calls UpdateArea on an area transition. Stationary world task publication therefore needs a separate repair and a test using actual rotation eligibility."
+    "rotation": "Native tests change the quest status in the fixture. Hourly rotation registers active tasks in QuestDataStoreMgr, while Player::Update only calls UpdateArea on an area transition. Stationary world task publication therefore needs a separate repair and a test using actual rotation eligibility.",
+    "rotation_data": "A read-only join of conditions, eventobject and world_quest_update confirmed all 33 spawns on map 1220. Thirty quests have world_quest_update rows. Quests 46021 (Thel'draz), 46063 (The Wailing Dead) and 46073 (Break Their Garrison) lack rows. The introduction test does not prove availability of those tasks."
+  },
+  "evidence_and_cleanup": {
+    "fix_commit": "f5ad11c98fe896d19cc0d289551c6f90344ebfdb",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-19-world-quest-intro",
+    "archive_manifest_sha256": "6a5096085678068e6e139982d9ebcaa67d878f8308fe59c6f2b1eb1e86bd428b",
+    "deletion_manifest_sha256": "867406daf3b9c9f199bbd59d28a409054ba2b0990a6c99ca799e515588dd86c",
+    "archived_files": 152,
+    "removed_files": 122,
+    "removed_bytes": 2049206759,
+    "rollback": ".codex/world-quest-intro-20261119/rollback-before-world-quest-intro",
+    "post_cleanup": "Verified archive, rollback, runtime binaries, configuration and DLL hashes. No unresolved crash, DB error, test executable or server process remains from this task."
   }
 }
