@@ -2140,7 +2140,13 @@ class TC_GAME_API WorldSession
         LockedQueue<WorldPacket*> _recvQueue;
         uint8 playerLoginCounter;
         uint8 m_loginCompletionSerial;
-        enum MapLoadingState : uint8 { MAP_LOADING_WAITING, MAP_LOADING_FINISHED, MAP_LOADING_INITIALIZED };
+        enum MapLoadingState : uint8
+        {
+            MAP_LOADING_WAITING,
+            MAP_LOADING_FINISHED,
+            MAP_LOADING_INITIALIZED,
+            MAP_LOADING_LOGIN_WAITING,
+        };
         uint8 m_mapLoadingState = MAP_LOADING_WAITING;
         uint32 expireTime;
         bool forceExit;

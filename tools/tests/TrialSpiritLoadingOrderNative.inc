@@ -51,7 +51,14 @@ static void SpiritLoadingOrderLogin(ObjectGuid guid,WorldLocation const& expecte
         SpiritRequestLogin(session,guid);SpiritLinkSocket(instanceSocket,session->GetConnectToInstanceKey());auto response=SpiritTakeLinkQuery(session);SpiritDeliverQuery(session,std::move(response));auto player=session->GetPlayer();Require(player,"Loading-order SQL did not construct Player");auto final=expected;
         static bool abi=false;if(!abi){abi=true;std::cout<<"SPIRIT_LOADING_ORDER_ABI state="<<(reinterpret_cast<char*>(&(session->*Access(SpiritLoadingStateTag{})))-reinterpret_cast<char*>(session))<<" changing="<<(reinterpret_cast<char*>(&(player->*Access(SpiritOrderChangeTag{})))-reinterpret_cast<char*>(player))<<" world="<<(reinterpret_cast<char*>(&(player->*Access(SpiritOrderWorldTag{})))-reinterpret_cast<char*>(player))<<std::endl;}
         if(mode==0){
-            SpiritReadInitialization(session);SpiritLoadingScreen(session,expected.GetMapId(),false);auto early=SpiritReadInitialization(session);Require(!early.total,"Early login completion dispatched initialization before map admission");
+            SpiritReadInitialization(session);
+            if (expected.GetMapId() != 0)
+                SpiritWrongMap(session, 0, true);
+            SpiritLoadingScreen(session, 0, false);
+            auto early=SpiritReadInitialization(session);
+            Require(!early.total,"Early login completion dispatched initialization before map admission");
+            Require(!session->PlayerLoading() && player->*Access(SpiritArrivalLoadedTag{}) == int32(expected.GetMapId()),
+                "Character-selection finish did not acknowledge the server-selected login map");
             auto map=player->GetMap();SpiritFarFreeze(player->GetMapId());map->UpdateSessions(99);Require(SpiritReadInitialization(session).difficulties.empty(),"Login initialization ran before100ms");map->UpdateSessions(1);SpiritFarFreeze(expected.GetMapId());(player->*Access(SpiritOrderFunctionsTag{})).Update(300);SpiritInitializationContext(SpiritReadInitialization(session),*player,1);
         }else SpiritCancelComplete(session,guid,expected,itemGuid,durability);
         (player->*Access(SpiritOrderFunctionsTag{})).Update(300);SpiritReadInitialization(session);

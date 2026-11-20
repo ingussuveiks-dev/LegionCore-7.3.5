@@ -57,7 +57,7 @@ static void SpiritMapLoadingLogin(ObjectGuid guid,WorldLocation const& expected,
         if(found!=sessions.end()){previous=found->second;Require(previous.get()==oldSession,"Map-loading fixture would replace unrelated session");}sessions[0]=shared;
         SpiritRequestLogin(session,guid);SpiritLinkSocket(instanceSocket,session->GetConnectToInstanceKey());auto response=SpiritTakeLinkQuery(session);SpiritDeliverQuery(session,std::move(response));auto player=session->GetPlayer();Require(player,"Map-loading SQL did not construct Player");
         static bool abi=false;if(!abi){abi=true;std::cout<<"SPIRIT_MAP_LOADING_ABI far="<<(reinterpret_cast<char*>(&(player->*Access(SpiritMapFarTag{})))-reinterpret_cast<char*>(player))<<" destination="<<(reinterpret_cast<char*>(&(player->*Access(SpiritMapDestTag{})).m_mapId)-reinterpret_cast<char*>(player))<<" current="<<(reinterpret_cast<char*>(&player->m_mapId)-reinterpret_cast<char*>(player))<<std::endl;}
-        auto wrong=expected.GetMapId()==0?1u:0u;auto final=expected;
+        auto wrong=expected.GetMapId()==1?530u:1u;auto final=expected;
         if(mode==0)SpiritWrongMap(session,wrong,false);
         if(mode==1){SpiritValidMap(session,expected.GetMapId());SpiritWrongMap(session,wrong,true);SpiritWrongMap(session,wrong,false);}
         SpiritCancelComplete(session,guid,expected,itemGuid,durability);
@@ -72,7 +72,7 @@ static void SpiritMapLoadingLogin(ObjectGuid guid,WorldLocation const& expected,
             auto source=player->GetMapId();final=WorldLocation(destination->MapID,destination->Loc.X,destination->Loc.Y,destination->Loc.Z,1.25f);
             Require(player->TeleportTo(final),"Native map-loading far teleport failed");SpiritFarFreeze(final.GetMapId());
             Require(player->IsBeingTeleportedFar()&&player->GetMapId()==source&&player->GetTeleportDest().GetMapId()==final.GetMapId(),"Far map-loading fixture did not retain old current map");
-            if(mode==3){SpiritWrongMap(session,source,false);SpiritWrongMap(session,uint32(-1),true);}
+            if(mode==3){SpiritWrongMap(session,source,false);SpiritWrongMap(session,uint32(-1),true);if(final.GetMapId()!=0)SpiritWrongMap(session,0,false);}
             if(mode!=5){SpiritValidMap(session,final.GetMapId());SpiritWrongMap(session,source,true);SpiritWrongMap(session,source,false);}
             session->HandleWorldPortAck();SpiritFarFreeze(final.GetMapId());player->UpdateZone(player->GetCurrentZoneID(),player->GetCurrentAreaID());SpiritFarFreeze(final.GetMapId());
             if(player->IsBeingTeleportedFar()&&player->IsChangeMap())session->m_Functions.Update(500);

@@ -7,18 +7,27 @@
 #include <iostream>
 #include <vector>
 using uint32=uint32_t;
+using int32=int32_t;
 struct Player;struct Map;
 struct ObjectGuid{bool IsEmpty(){return true;}};
 constexpr unsigned MOVEMENTFLAG_FALLING=1,MOVEMENTFLAG_FALLING_FAR=2,PLAYER_FIELD_PLAYER_FLAGS=3,PLAYER_FLAGS_RESTING=4,CONFIG_INSTANT_LOGOUT=5,UNIT_STAND_STATE_SIT=6,UNIT_FIELD_FLAGS=7,UNIT_FLAG_STUNNED=8;
 using AccountTypes=unsigned;
 struct World{unsigned getIntConfig(unsigned value){assert(value==CONFIG_INSTANT_LOGOUT);return 3;}} world;auto sWorld=&world;
-namespace WorldPackets {namespace Character {struct LogoutRequest{};struct LogoutResponse{uint32 LogoutResult=0;bool Instant=false;LogoutResponse* Write(){return this;}};}}
+namespace WorldPackets {namespace Character {struct LogoutRequest{};struct LogoutResponse{uint32 LogoutResult=0;bool Instant=false;LogoutResponse* Write(){return this;}};struct LoadingScreenNotify{int32 MapID;bool Showing;};}}
 uint32 getMSTime(){return 1;}uint32 GetMSTimeDiffToNow(uint32){return 0;}
 namespace GameTime {time_t now=100;time_t GetGameTime(){return now;}}
 struct Log {template<class... T>void outDiff(T...){assert(false);}template<class... T>void outTryCatch(T...){assert(false);}} logObject;
 auto sLog=&logObject;
-struct Loading {bool pending=true;bool IsEmpty(){return !pending;}};
+struct Loading {
+ bool pending=true;
+ unsigned guid=1;
+ bool IsEmpty(){return !pending;}
+ void Clear(){pending=false;}
+ bool operator==(unsigned value) const{return pending&&guid==value;}
+};
 struct WorldSession {
+ enum MapLoadingState {MAP_LOADING_WAITING,MAP_LOADING_FINISHED,MAP_LOADING_INITIALIZED,MAP_LOADING_LOGIN_WAITING};
+ MapLoadingState m_mapLoadingState=MAP_LOADING_WAITING;
  Player* player=nullptr;Map* map=nullptr;bool canLogout=false,loggingOut=false,kicked=false;unsigned completed=0;
  time_t _logoutTime=0;Loading m_playerLoading;
  WorldPackets::Character::LogoutResponse response;unsigned sent=0;
@@ -27,6 +36,9 @@ struct WorldSession {
  void KickPlayer(){kicked=true;}void LogoutPlayer(bool save){assert(save);++completed;player=nullptr;m_playerLoading.pending=false;_logoutTime=0;}
  unsigned GetSecurity(){return 0;}void DoLootRelease(ObjectGuid){}void SendPacket(WorldPackets::Character::LogoutResponse* value){response=*value;++sent;}
  void LogoutRequest(time_t time){_logoutTime=time;}void HandleLogoutRequest(WorldPackets::Character::LogoutRequest&);
+ void HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreenNotify&);
+ void SendInitialPacketsAfterMapLoading();
+ void ResetMapLoadingScreen(){m_mapLoadingState=MAP_LOADING_WAITING;}
  bool ShouldLogOut(time_t currTime)const{
 #include "ShouldLogOut.inc"
  }
@@ -39,10 +51,22 @@ struct Player {
  struct Movement{bool falling=false;bool HasMovementFlag(unsigned){return falling;}}m_movementInfo;
  struct Instance{bool active=false;bool IsEncounterInProgress(){return active;}} instance;
  bool hasInstance=false;
+ uint32 mapId=1;
+ unsigned initialPackets=0;
+ int32 loadedMap=-1;
+ bool teleportNear=false,teleportFar=false;
+ struct Destination{uint32 GetMapId() const{return 1648;}} destination;
+ Destination const& GetTeleportDest() const{return destination;}
+ unsigned GetGUID() const{return 1;}
+ bool IsBeingTeleportedFar() const{return teleportFar;}
+ bool IsBeingTeleported() const{return teleportNear||teleportFar;}
+ void NotifyMapObjectArrivalLoading(int32){loadedMap=-1;}
+ void NotifyMapObjectArrivalLoaded(int32 acknowledgedMap){loadedMap=acknowledgedMap;}
+ void SendInitialPacketsAfterAddToMap(bool afterLoading){assert(afterLoading);++initialPackets;}
  ObjectGuid GetLootGUID(){return {};}bool isInCombat(){return combat;}bool HasAura(unsigned value){assert(value==9454);return frozen;}
  Instance* GetInstanceScript(){return hasInstance?&instance:nullptr;}bool isGameMaster(){return gm;}
  bool HasFlag(unsigned field,unsigned value){assert(field==PLAYER_FIELD_PLAYER_FLAGS&&value==PLAYER_FLAGS_RESTING);return resting;}
- bool isInFlight(){return flight;}uint32 GetMapId(){return 1;}bool CanFreeMove(){return free;}
+ bool isInFlight(){return flight;}uint32 GetMapId(){return mapId;}bool CanFreeMove(){return free;}
  void SetStandState(uint32 value){stand=value;}void SetRooted(bool value){rooted=value;}void SetFlag(unsigned field,unsigned value){assert(field==UNIT_FIELD_FLAGS&&value==UNIT_FLAG_STUNNED);stunned=true;}
  bool IsDelete(){return deleted;}bool IsPreDelete(){return preDelete;}WorldSession* GetSession(){return session;}
  bool IsChangeMap(){return changing;}Map* GetMap(){return map;}bool IsInWorld(){return world;}
@@ -64,12 +88,66 @@ void WorldSession::Schedule(){
 #include "Schedule.inc"
 }
 #include "LogoutRequest.inc"
+#include "MapLoading.inc"
 struct Fixture {
  Map map,other;WorldSession session;Player player;
  Fixture(){session.player=&player;session.map=&map;player.session=&session;player.map=&map;map.m_mapRefManager.push_back({&player});}
  void Requested(bool instant){player.resting=instant;WorldPackets::Character::LogoutRequest request;session.HandleLogoutRequest(request);assert(session.sent==1&&session.response.LogoutResult==0&&session.response.Instant==instant);}
+ void Notify(int32 mapId,bool showing=false){WorldPackets::Character::LoadingScreenNotify notification{mapId,showing};session.HandleLoadScreenOpcode(notification);}
 };
+
+static void CheckCharacterSelectionLoadingScreen()
+{
+    Fixture fixture;
+    fixture.player.mapId = 1220;
+    fixture.session.player = nullptr;
+    fixture.Notify(0);
+    assert(fixture.session.PlayerLoading() && fixture.player.loadedMap == -1);
+
+    fixture.session.player = &fixture.player;
+    fixture.session.m_mapLoadingState = WorldSession::MAP_LOADING_LOGIN_WAITING;
+    fixture.Notify(0, true);
+    fixture.Notify(1);
+    assert(fixture.session.PlayerLoading() && fixture.player.loadedMap == -1);
+
+    fixture.player.changing = true;
+    fixture.player.world = false;
+    fixture.Notify(0);
+#ifdef COUNTERFACTUAL
+    assert(fixture.session.PlayerLoading() && fixture.player.loadedMap == -1 && !fixture.player.initialPackets);
+    std::cout << "COUNTERFACTUAL: map-zero character selection finish is rejected for a map-1220 login.\n";
+#else
+    assert(!fixture.session.PlayerLoading() && fixture.player.loadedMap == 1220 && !fixture.player.initialPackets);
+    fixture.player.world = true;
+    fixture.player.changing = false;
+    fixture.session.SendInitialPacketsAfterMapLoading();
+    fixture.Notify(0);
+    fixture.Notify(1220);
+    fixture.map.Tick();
+    assert(fixture.player.initialPackets == 1 && fixture.player.updates == 1 && fixture.map.visits == 1);
+
+    fixture.session.ResetMapLoadingScreen();
+    fixture.player.teleportFar = true;
+    fixture.Notify(0);
+    assert(fixture.player.loadedMap == 1220 && fixture.player.initialPackets == 1);
+    fixture.Notify(1648);
+    assert(fixture.player.loadedMap == 1648 && fixture.player.initialPackets == 1);
+    fixture.player.teleportFar = false;
+    fixture.player.mapId = 1648;
+    fixture.session.SendInitialPacketsAfterMapLoading();
+    assert(fixture.player.initialPackets == 2);
+
+    Fixture wrongGuid;
+    wrongGuid.session.m_mapLoadingState = WorldSession::MAP_LOADING_LOGIN_WAITING;
+    wrongGuid.session.m_playerLoading.guid = 2;
+    wrongGuid.Notify(0);
+    assert(wrongGuid.session.PlayerLoading() && wrongGuid.player.loadedMap == -1);
+    std::cout << "PASS map-zero login acknowledgement is scoped to the accepted character and initializes once after map admission.\n";
+#endif
+}
+
 int main(){
+ CheckCharacterSelectionLoadingScreen();
  // Existing ordinary loading protection is retained, with no fake loading
  // acknowledgement, progression, actor update or initialization callback.
  {Fixture f;f.map.Tick();assert(!f.player.updates&&!f.map.removed&&f.session.PlayerLoading());}

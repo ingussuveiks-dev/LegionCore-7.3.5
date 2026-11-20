@@ -12,6 +12,7 @@ $out="$repo/build-extractors/runtime-test/loading-logout"
   [IO.File]::WriteAllText("$target/MapIteration.inc",(Section $sources['Maps/Map.cpp'] '    // update worldsessions for existing players' '    uint32 _ms = GetMSTimeDiffToNow(_s);'))
   [IO.File]::WriteAllText("$target/Schedule.inc",(Section $sources['Server/WorldSession.cpp'] '        if (canLogout) // Logout only if remove from map' '        ///- Cleanup socket pointer if need'))
   [IO.File]::WriteAllText("$target/LogoutRequest.inc",(Section $sources['Handlers/CharacterHandler.cpp'] 'void WorldSession::HandleLogoutRequest(' 'void WorldSession::HandleLogoutInstant('))
+  [IO.File]::WriteAllText("$target/MapLoading.inc",(Section $sources['Handlers/CharacterHandler.cpp'] 'void WorldSession::HandleLoadScreenOpcode(' 'void WorldSession::HandlePlayerLogin(LoginQueryHolder'))
   $should=Section $sources['Server/WorldSession.h'] '        bool ShouldLogOut(time_t currTime) const' '        void LogoutPlayer(bool Save);'
   $a=$should.IndexOf('{');$b=$should.LastIndexOf('}');[IO.File]::WriteAllText("$target/ShouldLogOut.inc",$should.Substring($a+1,$b-$a-1))
   $define=if($kind -eq 'baseline'){'/DCOUNTERFACTUAL'}else{''}

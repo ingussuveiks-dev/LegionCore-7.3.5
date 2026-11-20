@@ -619,7 +619,12 @@ void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreen
     // WorldPortAck. Only the destination screen can acknowledge that transfer.
     int32 expectedMap = int32(player->IsBeingTeleportedFar()
         ? player->GetTeleportDest().GetMapId() : player->GetMapId());
-    if (loadingScreenNotify.MapID != expectedMap)
+    // Legion can finish the screen opened by character selection with map 0
+    // after LOGIN_VERIFY_WORLD placed the character on a different map.
+    bool finishesLoginScreen = !loadingScreenNotify.Showing && loadingScreenNotify.MapID == 0
+        && m_mapLoadingState == MAP_LOADING_LOGIN_WAITING && m_playerLoading == player->GetGUID()
+        && !player->IsBeingTeleported();
+    if (loadingScreenNotify.MapID != expectedMap && !finishesLoginScreen)
         return;
 
     // A screen cannot initialize the same native arrival twice. A late start
@@ -629,13 +634,13 @@ void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreen
 
     if (loadingScreenNotify.Showing)
     {
-        if (m_mapLoadingState == MAP_LOADING_WAITING)
-            player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
+        if (m_mapLoadingState == MAP_LOADING_WAITING || m_mapLoadingState == MAP_LOADING_LOGIN_WAITING)
+            player->NotifyMapObjectArrivalLoading(expectedMap);
     }
     else
     {
         m_mapLoadingState = MAP_LOADING_FINISHED;
-        player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);
+        player->NotifyMapObjectArrivalLoaded(expectedMap);
         m_playerLoading.Clear();
         SendInitialPacketsAfterMapLoading();
     }
@@ -692,6 +697,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     WorldPackets::Character::LoginVerifyWorld loginVerifyWorld;
     loginVerifyWorld.MapID = pCurrChar->GetMapId();
     loginVerifyWorld.Pos = pCurrChar->GetPosition();
+    m_mapLoadingState = MAP_LOADING_LOGIN_WAITING;
     SendPacket(loginVerifyWorld.Write());
 
     // load player specific part before send times
