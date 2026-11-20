@@ -18,7 +18,8 @@ constexpr uint32 MOVEMENTFLAG_CAN_FLY=1, MOVEMENTFLAG_DISABLE_GRAVITY=2,
     MOVEMENTFLAG_ROOT=4, MOVEMENTFLAG_MASK_MOVING=8, MOVEMENTFLAG_FALLING=16, MOVEMENTFLAG_FALLING_FAR=32;
 constexpr uint32 UNIT_STATE_ROOT=1;
 constexpr int SPELL_AURA_DISABLE_GRAVITY=1, GAMEOBJECT_FIELD_FLAGS=1, GO_FLAG_MAP_OBJECT=0x100000;
-struct Player; struct Map;
+constexpr float INVALID_HEIGHT=-100000.0f;
+struct Player; struct Map; struct Transport;
 struct Position {
     float x=0,y=0,z=747.6f;
     float GetPositionX() const{return x;} float GetPositionY() const{return y;} float GetPositionZ() const{return z;}
@@ -47,14 +48,18 @@ struct Model {
 struct GameObject:WorldObject {
     using WorldObject::WorldObject;
     bool mapObject=true;
+    bool movingDeck=false, staticDeck=false;
     Model* m_model=nullptr;
     bool HasFlag(int,int)const{return mapObject;}
     bool CanCollideWith(WorldObject const*)const{return true;} // Ordinary shared supporting geometry.
     float GetVisibilityRange()const{return 90;}
+    GameObject const* ToTransport()const{return movingDeck?this:nullptr;}
+    GameObject const* ToStaticTransport()const{return staticDeck?this:nullptr;}
 };
 using StaticTransport=GameObject;
 struct Transport:GameObject {
-    using GameObject::GameObject; std::vector<WorldObject*> passengers;
+    explicit Transport(int id):GameObject(id){movingDeck=true;}
+    std::vector<WorldObject*> passengers;
     auto const& GetPassengers()const{return passengers;}
 };
 struct Session {std::vector<WorldPacket> packets;void SendPacket(WorldPacket* p){packets.push_back(*p);}};
@@ -62,17 +67,18 @@ struct Destination {int map=0;int GetMapId()const{return map;}};
 struct Player:WorldObject {
     Player():WorldObject(1){}
     Session session; Transport* transport=nullptr;
-    std::set<int> known; int mapId=0;
+    std::set<int> known; int currentMapId=0;
     uint32 flags=0,state=0;
-    bool alive=true,vehicle=false,rootAura=false,gravityAura=false,selfCreateProtected=false,farTeleport=false;
+    bool alive=true,vehicle=false,rootAura=false,gravityAura=false,selfCreateProtected=false,farTeleport=false,nearTeleport=false;
     int visibilityRefreshes=0,gravityOrders=0,rootOrders=0;
     Destination dest;
     int32 _mapObjectArrivalMap=-1,_mapObjectArrivalLoadedMap=-1;
     uint32 _mapObjectArrivalWait=0,_mapObjectArrivalSettle=0;
     bool _mapObjectArrivalOwnRoot=false;
     ObjectGuid _mapObjectArrivalTransport=0;
-    int GetMapId()const{return mapId;} bool IsAlive()const{return alive;}
+    int GetMapId()const{return currentMapId;} bool IsAlive()const{return alive;}
     bool IsBeingTeleportedFar()const{return farTeleport;} auto const& GetTeleportDest()const{return dest;}
+    bool IsBeingTeleportedNear()const{return nearTeleport;}
     void UpdateVisibilityForPlayer(){assert(_mapObjectArrivalMap==-1);++visibilityRefreshes;}
     bool CanFly()const{return flags&MOVEMENTFLAG_CAN_FLY;} bool IsLevitating()const{return flags&MOVEMENTFLAG_DISABLE_GRAVITY;}
     bool GetVehicle()const{return vehicle;} Transport* GetTransport()const{return transport;}
@@ -111,9 +117,12 @@ struct Tree {
         return height;
     }
 };
-struct CellCoord{};
+struct CellCoord {
+    int x, y;
+    bool operator==(CellCoord const& other)const{return x==other.x&&y==other.y;}
+};
 namespace Trinity {
-    CellCoord ComputeCellCoord(float,float){return {};}
+    CellCoord ComputeCellCoord(float x,float y){return {int(std::floor(x/66.f)),int(std::floor(y/66.f))};}
     struct GameObjectInRangeCheck {
         Position dest;float range;
         GameObjectInRangeCheck(float x,float y,float z,float r):range(r){dest.x=x;dest.y=y;dest.z=z;}
@@ -129,18 +138,22 @@ struct Map {
     std::map<int,StaticTransport*> m_StaticTransports;
     std::vector<Transport*> _transports;
     std::vector<GameObject*> grid;bool gridLoaded=false;Tree _dynamicTree;
+    unsigned loadingVisits=0;
     int id=0;float staticFloor=-std::numeric_limits<float>::infinity();
     Map(){_dynamicTree.gridLoaded=&gridLoaded;}
     int GetId()const{return id;}
+    bool IsGridLoaded(float,float)const{return gridLoaded;}
     float GetHeight(float,float,float,bool,float)const{return staticFloor;}
     float GetHeight(std::set<uint32>const& phases,float x,float y,float z,bool vmap=true,float range=50,DynamicTreeCallback* callback=nullptr,WorldObject const* requester=nullptr)const;
     void BuildPlayerArrivalObjects(Player*,Position const&,UpdateData&,bool notifyMovement=false);
     void SendInitSelf(Player*);
 };
 struct Cell {
+    bool noCreate=false;
     explicit Cell(CellCoord){}
+    void SetNoCreate(){noCreate=true;}
     template<class T>void Visit(CellCoord,T& visitor,Map& map,float,float,float){
-        map.gridLoaded=true;
+        if(!noCreate){++map.loadingVisits;map.gridLoaded=true;}
         for(auto go:map.grid)if(visitor.check(go))visitor.objects.push_back(go);
     }
 };
@@ -164,6 +177,11 @@ struct WorldSession {
     }
 };
 int main(){
+#ifdef EXPECT_OLD_ARRIVAL
+    constexpr bool oldArrival = true;
+#else
+    constexpr bool oldArrival = false;
+#endif
     Map map;Player player;GameObject floor(777),phasedOut(2),despawned(3);
     StaticTransport city(246854);phasedOut.visible=false;despawned.inWorld=false;
     map.grid={&floor,&phasedOut,&despawned};map.m_StaticTransports.emplace(city.id,&city);
@@ -182,12 +200,38 @@ int main(){
     assert((player.session.packets.back().objects==std::vector<int>{1})&&player.selfCreateProtected);
     // An ordinary GO on an unrelated map, not the old entry/map special case.
     Map other;other.id=1220;other.grid={&floor};other._dynamicTree.floor=&floor;
-    Player otherPlayer;otherPlayer.mapId=1220;other.SendInitSelf(&otherPlayer);
+    Player otherPlayer;otherPlayer.currentMapId=1220;other.SendInitSelf(&otherPlayer);
     assert((otherPlayer.session.packets.back().objects==std::vector<int>{777,1})&&otherPlayer.selfCreateProtected);
+
+    // A static landing a fraction below a GO provides independent support.
+    // A large drop, invalid terrain and a moving deck still require the hold.
+    for(float offset : {0.0f, 0.125f, 0.3f, 1.5f, 190.f}){
+        Map landing;Player p;landing.grid={&floor};landing._dynamicTree.floor=&floor;
+        landing.staticFloor=p.z-offset;
+        landing.SendInitSelf(&p);
+        assert((p.session.packets.back().objects==std::vector<int>{777,1}));
+        assert(p.selfCreateProtected==(oldArrival||offset>0.25f));
+    }
+    Map raisedFloor;Player raisedPlayer;raisedFloor.staticFloor=raisedPlayer.z;
+    raisedFloor._dynamicTree.floor=&floor;raisedFloor._dynamicTree.height+=1.f;
+    raisedFloor.SendInitSelf(&raisedPlayer);
+    assert(raisedPlayer.selfCreateProtected);
+
+    Map staticDeck;Player deckPlayer;StaticTransport platform(56);platform.staticDeck=true;
+    staticDeck.staticFloor=deckPlayer.z-0.125f;staticDeck._dynamicTree.floor=&platform;
+    staticDeck.SendInitSelf(&deckPlayer);
+    assert(deckPlayer.selfCreateProtected);
+
+    Map seamless;Player seamlessPlayer;seamless.staticFloor=seamlessPlayer.z-0.125f;
+    seamless._dynamicTree.floor=&floor;
+    UpdateData seamlessObjects(0);seamless.BuildPlayerArrivalObjects(&seamlessPlayer,seamlessPlayer,seamlessObjects,true);
+    assert(seamlessPlayer.IsMapObjectArrivalProtected());
+
     // Supporting geometry with a distant origin must still precede self.
-    GameObject large(88);large.x=500;Map big;big._dynamicTree.floor=&large;
+    GameObject large(88), decorative(89);large.x=500;Map big;big.grid={&decorative};big._dynamicTree.floor=&large;
     Player bigPlayer;big.SendInitSelf(&bigPlayer);
-    assert((bigPlayer.session.packets.back().objects==std::vector<int>{88,1})&&bigPlayer.selfCreateProtected);
+    auto expectedBig = oldArrival ? std::vector<int>{89,88,1} : std::vector<int>{88,89,1};
+    assert(bigPlayer.session.packets.back().objects==expectedBig&&bigPlayer.selfCreateProtected);
     // No floor / an airborne destination must not grant levitation.
     for(int mode=0;mode<4;++mode){
         Map air;Player p;GameObject hidden(55);air._dynamicTree.floor=&hidden;
@@ -198,7 +242,7 @@ int main(){
         air.SendInitSelf(&p);assert(!p.selfCreateProtected&&p.flags==0);
     }
     // Same-map teleport: objects first, explicit movement orders for known self.
-    Player near;Position dest;dest.x=1000;floor.x=1000;Map nearMap;nearMap.grid={&floor};nearMap._dynamicTree.floor=&floor;
+    Player near;near.nearTeleport=true;Position dest;dest.x=1000;floor.x=1000;Map nearMap;nearMap.grid={&floor};nearMap._dynamicTree.floor=&floor;
     UpdateData data(0);nearMap.BuildPlayerArrivalObjects(&near,dest,data,true);
     assert(data.objects==std::vector<int>{777}&&near.gravityOrders==1&&near.rootOrders==1);
     assert(near.IsMapObjectArrivalProtected());
@@ -209,8 +253,20 @@ int main(){
     near.UpdateMapObjectArrival(8000);session.RelocateMover(stale);assert(!session.relocations);
     near.movieHeld=false;session.RelocateMover(stale);assert(session.relocations==1);
     // Short movement on an already-visible platform must not root combat blinks.
-    near.x=dest.x;UpdateData shortBlink(0);nearMap.BuildPlayerArrivalObjects(&near,dest,shortBlink,true);
+    near.x=dest.x;auto visits=nearMap.loadingVisits;UpdateData shortBlink(0);nearMap.BuildPlayerArrivalObjects(&near,dest,shortBlink,true);
     assert(!near.IsMapObjectArrivalProtected()&&shortBlink.objects.empty());
+    assert(nearMap.loadingVisits==visits+(oldArrival?1:0));
+
+    Map warmTerrain;Player onTerrain;onTerrain.nearTeleport=true;warmTerrain.gridLoaded=true;warmTerrain.staticFloor=onTerrain.z;
+    Position withinCell=onTerrain;withinCell.x=20;
+    UpdateData warmObjects(0);warmTerrain.BuildPlayerArrivalObjects(&onTerrain,withinCell,warmObjects,true);
+    assert(warmTerrain.loadingVisits==(oldArrival?1:0)&&!onTerrain.IsMapObjectArrivalProtected());
+
+    Map coldPlatform;Player approaching;approaching.nearTeleport=true;coldPlatform.gridLoaded=true;
+    coldPlatform.grid={&decorative};coldPlatform._dynamicTree.floor=&decorative;
+    UpdateData earlyObjects(0);coldPlatform.BuildPlayerArrivalObjects(&approaching,withinCell,earlyObjects,true);
+    assert(coldPlatform.loadingVisits==1&&approaching.IsMapObjectArrivalProtected());
+    assert(earlyObjects.objects==std::vector<int>{89});
     // A known model may stream again after a long teleport within the same map.
     near.x=0;UpdateData longBlink(0);nearMap.BuildPlayerArrivalObjects(&near,dest,longBlink,true);
     assert(near.IsMapObjectArrivalProtected()&&longBlink.objects.empty());near.EndMapObjectArrival();
@@ -237,7 +293,7 @@ int main(){
     }
     for(int mode=0;mode<6;++mode){
         Player p;p.BeginMapObjectArrival();Transport boat(10);
-        if(mode==0)p.EndMapObjectArrival();if(mode==1)p.mapId=1220;if(mode==2)p.alive=false;if(mode==3)p.vehicle=true;
+        if(mode==0)p.EndMapObjectArrival();if(mode==1)p.currentMapId=1220;if(mode==2)p.alive=false;if(mode==3)p.vehicle=true;
         if(mode==4){p.inWorld=false;p.EndMapObjectArrival(true);}if(mode==5)p.transport=&boat;
         p.UpdateMapObjectArrival(1);assert(p.flags==0&&p._mapObjectArrivalMap==-1&&p.visibilityRefreshes==0);
     }
@@ -251,6 +307,7 @@ int main(){
     // A moving ship can be pending insertion into the dynamic tree on the
     // first map update. Its real model still identifies the supporting floor.
     Map shipMap;Player sailor;Transport ship(55);Model deck;
+    shipMap.staticFloor=sailor.z-0.125f;
     ship.m_model=&deck;shipMap._transports.push_back(&ship);sailor.transport=&ship;
     shipMap.SendInitSelf(&sailor);
     assert(sailor.selfCreateProtected);
@@ -276,5 +333,8 @@ int main(){
         if(mode==0)model.enabled=false;if(mode==1)t.visible=false;if(mode==2)p.z+=20;
         m.SendInitSelf(&p);assert(!p.IsMapObjectArrivalProtected());
     }
-    std::cout<<"PASS: extracted native geometry-before-self, actual floor callback, ordinary/distant/known/hidden floors, same-map explicit gravity/root, stale ACK rejection, early/late/duplicate loading, timeouts, movement and aura ownership cleanup.\n";
+    if(oldArrival)
+        std::cout<<"COUNTERFACTUAL: old arrival roots terrain-backed landings and visits cold grid boundaries for known near floors.\n";
+    else
+        std::cout<<"PASS: supporting geometry first, warm near arrivals without cold grid creation, terrain backing without a hold, dynamic/transport holds, loading order, stale ACK and aura cleanup.\n";
 }

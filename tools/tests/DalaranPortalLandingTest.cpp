@@ -1,7 +1,11 @@
 #include <set>
 #include "GameObjectModel.h"
 #include "DynamicTree.h"
+#include "GridDefines.h"
+#include "GridMap.h"
+#include "VMapManager2.h"
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 
@@ -36,6 +40,24 @@ int main(int argc, char** argv)
         return 2;
     model->enableCollision(true);
     float x = std::strtof(argv[2], nullptr), y = std::strtof(argv[3], nullptr), z = std::strtof(argv[4], nullptr);
+
+    std::string dataDir = argv[1];
+    int gx = static_cast<int>(CENTER_GRID_ID - x / SIZE_OF_GRIDS);
+    int gy = static_cast<int>(CENTER_GRID_ID - y / SIZE_OF_GRIDS);
+    char tile[64];
+    std::snprintf(tile, sizeof(tile), "maps/0000_%02d_%02d.map", gx, gy);
+    GridMap terrain;
+    if (terrain.loadData((dataDir + tile).c_str()) != GridMap::LoadResult::Ok)
+        return 8;
+    VMAP::VMapManager2 staticModels;
+    if (staticModels.loadMap((dataDir + "vmaps").c_str(), 0, gx, gy) != VMAP::VMAP_LOAD_RESULT_OK)
+        return 9;
+    float terrainZ = terrain.getHeight(x, y);
+    float staticWmoZ = staticModels.getHeight(0, x, y, z + 2.f, 5.f);
+    auto supportsLanding = [z](float floor) { return floor <= z && z - floor <= 0.25f; };
+    if (supportsLanding(terrainZ) || supportsLanding(staticWmoZ))
+        return 10;
+
     for (int dx = -1; dx <= 1; ++dx)
         for (int dy = -1; dy <= 1; ++dy)
         {
@@ -69,4 +91,6 @@ int main(int argc, char** argv)
     tree.remove(*model);
     std::cout << "PASS: nine landing samples within 1 unit of the city floor; old landing gap=" << 792 - oldFloor << '\n';
     std::cout << "PASS: actual Dalaran WMO/dynamic-tree arrival support callback, 5-yard ray, phase rejection and disabled collision\n";
+    std::cout << "PASS: Dalaran landing " << z << " requires the dynamic city floor, terrain=" << terrainZ
+        << ", baked WMO=" << staticWmoZ << '\n';
 }

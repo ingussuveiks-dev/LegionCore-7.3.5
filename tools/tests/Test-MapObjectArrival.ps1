@@ -1,9 +1,14 @@
-param()
+param([switch]$Baseline)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $output="$repo/build-extractors/runtime-test/map-object-arrival"
+if($Baseline){$output += '-baseline'}
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $source=[IO.File]::ReadAllText("$repo/src/server/game/Maps/Map.cpp")
+if($Baseline){
+ $source=(& git -C $repo show c7de13c90:src/server/game/Maps/Map.cpp) -join "`n"
+ if($LASTEXITCODE){throw 'Missing pinned map arrival baseline'}
+}
 $query=[IO.File]::ReadAllText("$repo/src/server/game/Maps/QuestCollisionQuery.h")
 $query=$query.Substring($query.IndexOf('class QuestCollisionQuery'))
 $query=$query.Substring(0,$query.LastIndexOf('#endif'))
@@ -34,8 +39,8 @@ foreach($method in @('BeginMapObjectArrival','NotifyMapObjectArrivalLoading','No
  [IO.File]::WriteAllText("$output/$method.inc",$player.Substring($start,$end-$start))
 }
 $handler=[IO.File]::ReadAllText("$repo/src/server/game/Handlers/CharacterHandler.cpp")
-if(!$handler.Contains('player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);') -or !$player.Contains('UpdateMapObjectArrival(p_time);') -or $player -notmatch 'void Player::RemoveFromWorld\(\)\s*\{\s*EndMapObjectArrival\(\);'){throw 'Arrival lifecycle hook missing'}
-if(!$handler.Contains('player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);')){throw 'Loading begin hook missing'}
+if(!$handler.Contains('player->NotifyMapObjectArrivalLoaded(expectedMap);') -or !$player.Contains('UpdateMapObjectArrival(p_time);') -or $player -notmatch 'void Player::RemoveFromWorld\(\)\s*\{\s*EndMapObjectArrival\(\);'){throw 'Arrival lifecycle hook missing'}
+if(!$handler.Contains('player->NotifyMapObjectArrivalLoading(expectedMap);')){throw 'Loading begin hook missing'}
 $movement=[IO.File]::ReadAllText("$repo/src/server/game/Handlers/MovementHandler.cpp")
 $a=$movement.IndexOf('void WorldSession::RelocateMover(');$a=$movement.IndexOf('{',$a)+1
 $b=$movement.IndexOf('    Map* map = mover->GetMap();',$a)
@@ -51,11 +56,12 @@ foreach($signature in @('void Player::UpdateVisibilityOf(WorldObject* target)', 
 }
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if(!$vs){throw 'MSVC not found'}
+$define = if($Baseline){'/DEXPECT_OLD_ARRIVAL'}else{''}
 $commands=@"
 @echo off
 call "$vs/VC/Auxiliary/Build/vcvars64.bat" >nul
 if errorlevel 1 exit /b 1
-cl /nologo /EHsc /std:c++17 /W4 /I"$output" "$PSScriptRoot/MapObjectArrivalTest.cpp" /Fe"$output/MapObjectArrivalTest.exe" /Fo"$output/MapObjectArrivalTest.obj"
+cl /nologo /EHsc /std:c++17 /W4 $define /I"$output" "$PSScriptRoot/MapObjectArrivalTest.cpp" /Fe"$output/MapObjectArrivalTest.exe" /Fo"$output/MapObjectArrivalTest.obj"
 if errorlevel 1 exit /b 1
 "$output/MapObjectArrivalTest.exe"
 exit /b %errorlevel%

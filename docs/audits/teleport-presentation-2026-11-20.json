@@ -1,0 +1,33 @@
+{
+  "scope": "Teleport initiation and the movement hold during login, near teleports and world transfers on Legion 7.3.5 build 26972.",
+  "findings": [
+    "A near teleport builds destination object updates before sending its movement packet. The cell visit can synchronously load adjacent server grids even for a short move inside an active cell.",
+    "For a newly seen dynamic floor the server can disable gravity, root the player and defer new creature visibility for 8000 ms after the loading notification or near ACK. It also retains a 30000 ms bound when a finish notification is missing. Neither packet confirms individual model streaming or tells the server what the renderer has drawn.",
+    "At the map-zero Dalaran entrance from spell 228327, the verified arrival Z is 747.6 and the static terrain height is 47.025. No baked WMO surface was found by the 5-yard ray. GO 246854 provides the actual platform. Disabling protection there based on the loading notification alone can reintroduce the original fall."
+  ],
+  "candidate": [
+    "In the current active cell, a short near teleport with a known phase-visible supporting object or a verified static landing visits loaded grids only. Other near arrivals and world transfers keep the full geometry discovery path.",
+    "Write the verified supporting object before other gameobject creates. Keep all destination creates before the self-create or near-teleport coordinates.",
+    "Skip a new arrival hold for normal login, normal far and near arrivals only when independent baked terrain or static WMO is within 0.25 units below the landing point and within 0.25 units of the dynamic surface. Retain the existing hold policy for dynamic-only support, moving or static transport decks, and the seamless transfer path."
+  ],
+  "verification": {
+    "map_arrival": "Pinned c7de13c90 counterfactual performed a loading visit for both known near landings and rooted co-planar terrain-backed arrivals. The revised extracted production handler avoided both, sent the floor first and retained the correct holds for raised dynamic floors, unknown neighbors, seamless transfers and moving decks. Existing phase visibility, early/duplicate acknowledgements, stale movement, timeout, and aura ownership cases passed.",
+    "dalaran": "Production GridMap and VMapManager2 read the extracted terrain and baked WMO tiles. The production dynamic tree populated the correct supporting GO callback, checked nine WMO floor samples, and rejected wrong phase and disabled collision. The existing portal migration was applied twice only to disposable temporary tables and the separate cinematic destination was preserved.",
+    "retained": "Both factions passed the boost ship arrival fixture. The linked boost ship check passed when run directly with the bundled interpreter after the script selected the local Microsoft Store Python alias. The loading/logout ASAN counterfactual and repaired fixture passed their intended checks. Linked boost, loading/logout and scenario transfer paths passed against the final staged PE.",
+    "build": "Rebuilt Release game.lib with Map.cpp and linked the staged worldserver with the generated game.lib, scripts.lib and shared.lib paths. The map attributes Map::BuildPlayerArrivalObjects to game:Map.obj. The final staged Release reached readiness with a private MariaDB snapshot and disposable auth/character schemas, then shut down gracefully with exit 0 and empty stderr. No new crashes or unexplained appended DBErrors, warnings, errors or assertions were observed."
+  },
+  "staged": {
+    "directory": ".codex/teleport-presentation-20261120/stage",
+    "worldserver_sha256": "482789c041f57f143c63ef9f008e65773413783e8f0684bef6f091ed7183e071",
+    "linker_map_sha256": "f07fc18b8f808d5f28c1b5d3047992b5ca26d4d2344a087e77df747081f50731",
+    "production_worldserver_sha256": "65f5dbde2c2514f4b6c7751c0cfbee7297ff8bb85b44dd5be69b43dcd1515993",
+    "deployment": "Staged for a client comparison. No canonical executable or SQL change."
+  },
+  "diagnostics": {
+    "archive": "build-extractors/bin/Release/fixed/2026-11-20-teleport-presentation",
+    "manifest_sha256": "0487208ed2018ed727848b1f3891b9b8925f8a39d0ba81e85f7dc9064687af55",
+    "cleanup": "Archived 83 files with byte-identical checks. After the owned worldserver and MariaDB exited, removed the disposable schemas and generated native test binaries and symbols, 15 paths totaling 1539708210 bytes. Retained the staged executable and map for the client check. Canonical Crashes remained empty and DBErrors.log was zero bytes."
+  },
+  "client_comparison_pending": "Measure request-to-first-transfer packet, screen duration, first visible player and terrain/model frame, landing Z and first accepted movement. Compare a fresh login, a short near teleport, a long same-map teleport to a dynamic platform and a far map transfer onto Dalaran's verified city floor. Include the moving boost ships before reducing any dynamic-floor hold. The near teleport packet exposes a PreloadWorld byte, but its effect on cold model streaming has not been measured in client build 26972.",
+  "protocol_reference": "https://github.com/TrinityCore/WowPacketParser/blob/master/WowPacketParserModule.V7_0_3_22248/Parsers/MovementHandler.cs#L303-L334"
+}

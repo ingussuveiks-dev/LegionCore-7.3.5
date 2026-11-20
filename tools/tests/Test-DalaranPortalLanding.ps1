@@ -1,4 +1,4 @@
-param()
+param([string]$FixtureOptionsFile)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $output=Join-Path $repo "build-extractors/runtime-test/dalaran-portal-landing"
@@ -20,8 +20,7 @@ $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($args 
 & "$output/build-item.cmd"
 if($LASTEXITCODE){throw 'Dalaran collision test build failed'}
 
-# Apply twice to a connection-local copy, preserving the live server data.
-$connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object{$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
+# Apply twice to a connection-local copy, preserving the server data.
 $migration=[IO.File]::ReadAllText("$repo/sql/updates/world/2026_10_12_11_dalaran_portal_landing.sql")
 $sql=@"
 CREATE TEMPORARY TABLE landing_copy AS SELECT * FROM spell_target_position WHERE id IN (228327,230156);
@@ -36,8 +35,16 @@ SELECT position_x,position_y,position_z,orientation,PhaseId FROM gameobject WHER
 "@
 $previousPassword=$env:MYSQL_PWD
 try {
- $env:MYSQL_PWD=$connection[3]
- $rows=$sql | & 'C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe' --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --skip-column-names
+ $maria = 'C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mariadb.exe'
+ if($FixtureOptionsFile){
+  $options = (Resolve-Path -LiteralPath $FixtureOptionsFile).Path
+  $databaseArgs = @("--defaults-extra-file=$options",'--database=legion_world')
+ }else{
+  $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object{$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
+  $env:MYSQL_PWD=$connection[3]
+  $databaseArgs = @("--host=$($connection[0])","--port=$($connection[1])","--user=$($connection[2])","--database=$($connection[4])")
+ }
+ $rows=$sql | & $maria @databaseArgs --batch --skip-column-names
  if($LASTEXITCODE){throw 'Isolated landing SQL test failed'}
 } finally {$env:MYSQL_PWD=$previousPassword}
 if($rows.Count -ne 4){throw 'Missing portal/city data'}

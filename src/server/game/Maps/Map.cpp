@@ -2876,15 +2876,42 @@ bool Map::HavePlayers() const
 
 void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination, UpdateData& data, bool notifyMovement)
 {
-    // Load the destination's visible grid objects before checking its floor.
-    // A supporting GO can be in an adjacent grid or have a distant origin.
+    constexpr float FloorSearchDistance = 5.0f;
+    constexpr float StaticFloorTolerance = 0.25f;
+    float x = destination.GetPositionX();
+    float y = destination.GetPositionY();
+    float z = destination.GetPositionZ();
     float range = player->GetSightRange();
+    bool close = player->GetExactDist(&destination) <= range;
+    CellCoord coord = Trinity::ComputeCellCoord(x, y);
+    Cell cell(coord);
+
+    auto hasStaticLanding = [&](float floorHeight)
+    {
+        float ground = GetHeight(x, y, z, true, FloorSearchDistance);
+        return ground > INVALID_HEIGHT && ground <= z && z - ground <= StaticFloorTolerance
+            && std::fabs(floorHeight - ground) <= StaticFloorTolerance;
+    };
+
+    // A near teleport on a known floor within the active cell does not need
+    // to load adjacent grids on the packet's critical path. An unknown floor
+    // still needs the full visit: its origin can be in a neighboring grid.
+    bool nearTeleport = notifyMovement && player->IsBeingTeleportedNear();
+    if (nearTeleport && close && !player->GetTransport()
+        && coord == Trinity::ComputeCellCoord(player->GetPositionX(), player->GetPositionY()) && IsGridLoaded(x, y))
+    {
+        DynamicTreeCallback warmFloor;
+        float height = GetHeight(player->GetPhases(), x, y, z + 2.0f, true, FloorSearchDistance, &warmFloor, player);
+        bool knownFloor = warmFloor.go && std::fabs(height - z) <= 2.0f && player->HaveAtClient(warmFloor.go)
+            && warmFloor.go->IsInWorld() && player->canSeeOrDetect(warmFloor.go, false, false);
+        if (knownFloor || (!warmFloor.go && hasStaticLanding(z)))
+            cell.SetNoCreate();
+    }
+
     std::list<GameObject*> objects;
-    Trinity::GameObjectInRangeCheck check(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ(), range);
+    Trinity::GameObjectInRangeCheck check(x, y, z, range);
     Trinity::GameObjectListSearcher<Trinity::GameObjectInRangeCheck> searcher(player, objects, check);
-    CellCoord coord = Trinity::ComputeCellCoord(destination.GetPositionX(), destination.GetPositionY());
-    Cell cell(coord); // Deliberately allow grid creation at the destination.
-    cell.Visit(coord, Trinity::makeGridVisitor(searcher), *this, range, destination.GetPositionX(), destination.GetPositionY());
+    cell.Visit(coord, Trinity::makeGridVisitor(searcher), *this, range, x, y);
 
     // Large map-object transports are not ordinary grid objects.
     for (auto const& entry : m_StaticTransports)
@@ -2893,8 +2920,7 @@ void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination,
             objects.push_back(entry.second);
 
     DynamicTreeCallback floor;
-    float height = GetHeight(player->GetPhases(), destination.GetPositionX(), destination.GetPositionY(),
-        destination.GetPositionZ() + 2.0f, true, 5.0f, &floor, player);
+    float height = GetHeight(player->GetPhases(), x, y, z + 2.0f, true, FloorSearchDistance, &floor, player);
     // Moving transports are outside the ordinary grid visitor and can still
     // be waiting for their first dynamic-tree insertion. Query their actual
     // phase-visible models rather than guessing a floor from an entry/map ID.
@@ -2906,8 +2932,7 @@ void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination,
             objects.push_back(transport);
         if (transport->m_model)
         {
-            float deck = transport->m_model->getHeight(destination.GetPositionX(), destination.GetPositionY(),
-                destination.GetPositionZ() + 2.0f, 5.0f, player->GetPhases(), true);
+            float deck = transport->m_model->getHeight(x, y, z + 2.0f, FloorSearchDistance, player->GetPhases(), true);
             if (std::isfinite(deck) && (!std::isfinite(height) || deck > height))
             {
                 height = deck;
@@ -2915,12 +2940,18 @@ void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination,
             }
         }
     }
-    bool supported = floor.go && std::isfinite(height) && std::fabs(height - destination.GetPositionZ()) <= 2.0f
+    bool supported = floor.go && std::isfinite(height) && std::fabs(height - z) <= 2.0f
         && floor.go->IsInWorld() && player->canSeeOrDetect(floor.go, false, false);
-    bool needsArrivalHold = supported && (!notifyMovement || !player->HaveAtClient(floor.go)
-        || player->GetExactDist(&destination) > range);
     if (supported)
-        objects.push_back(floor.go);
+        objects.push_front(floor.go);
+
+    bool needsArrivalHold = supported && (!notifyMovement || !player->HaveAtClient(floor.go) || !close);
+    // Normal client map loading covers baked terrain/WMO. A nearly coincident
+    // static floor can catch this landing if the GO streams late.
+    // Transport decks keep their own support as they move away from that spot.
+    if (needsArrivalHold && (!notifyMovement || nearTeleport) && !player->GetTransport() && !floor.go->ToTransport()
+        && !floor.go->ToStaticTransport() && hasStaticLanding(height))
+        needsArrivalHold = false;
 
     for (GameObject* object : objects)
     {
