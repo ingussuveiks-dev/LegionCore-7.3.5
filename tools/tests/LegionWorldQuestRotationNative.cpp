@@ -564,6 +564,7 @@ static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locke
 }
 #endif
 
+#ifndef LEGION_ROTATION_SUPPORT_ONLY
 int main(int argc, char** argv)
 {
     try
@@ -782,3 +783,4 @@ int main(int argc, char** argv)
         return 1;
     }
 }
+#endif

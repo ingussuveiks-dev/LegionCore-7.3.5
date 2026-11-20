@@ -1,3 +1,4 @@
+param([string]$RuntimeConfig)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/rockaway-completion"
@@ -44,7 +45,10 @@ foreach($pair in @(@('inline bool Active()','Active'),@('inline bool Eligible(',
 $old=(& git -C $repo show 65c7ac0a:src/server/scripts/Legion/rockaway_coast.h) -join "`n"
 if($LASTEXITCODE){throw 'Missing pinned pre-eligibility-fix source'}
 [IO.File]::WriteAllText("$out/EligibleBaseline.inc",(Block $old 'inline bool Eligible('))
-$connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
+if(!$RuntimeConfig){$RuntimeConfig="$repo/build-extractors/bin/Release/worldserver.conf"}
+$connection=(Get-Content -LiteralPath $RuntimeConfig | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
+$transport=@('--no-defaults','--protocol=TCP')
+if($connection[0] -eq '127.0.0.1'){$transport+='--skip-ssl'}
 $previous=$env:MYSQL_PWD
 try{
  $env:MYSQL_PWD=$connection[3]
@@ -63,7 +67,7 @@ RewardDisplaySpell1+RewardDisplaySpell2+RewardDisplaySpell3,
 RewardHonor+RewardArtifactXP+RewardArtifactCategoryID+RewardTitle+RewardSkillLineID+RewardNumSkillUps,
 RewardMoney,RewardBonusMoney,RewardXPDifficulty,RewardXPMultiplier FROM quest_template WHERE ID=44746;
 SELECT 'addon',RewardMailTemplateID,RewardMailDelay,SpecialFlags FROM quest_template_addon WHERE ID=44746;"
- $rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
+ $rows=@($sql | & C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mariadb.exe @transport --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
  if($LASTEXITCODE){throw 'Read-only Rockaway snapshot failed'}
 }finally{$env:MYSQL_PWD=$previous}
 $rows | Set-Content "$out/data.tsv"

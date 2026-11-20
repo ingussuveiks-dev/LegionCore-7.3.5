@@ -29,6 +29,37 @@
 
 #define _TRINITY_CORE_CONFIG  "worldserver.conf"
 
+namespace
+{
+void RemoveExpiredGarrisonProgress(CharacterDatabaseTransaction& trans, uint32 questId, uint32 start)
+{
+    if (questId != QUEST_BREAK_THEIR_GARRISON)
+        return;
+
+    uint32 const retiredAt = uint32(GameTime::GetGameTime());
+    // A newly published rotation can be accepted while this asynchronous
+    // transaction is still outstanding. Only delete older progress.
+    trans->PAppend("DELETE obj FROM character_queststatus_objectives obj INNER JOIN character_queststatus qs "
+        "ON qs.guid=obj.guid AND qs.account=obj.account AND qs.quest=obj.quest "
+        "WHERE qs.quest=%u AND qs.timer<%u", questId, retiredAt);
+    trans->PAppend("DELETE FROM character_queststatus WHERE quest=%u AND timer<%u", questId, retiredAt);
+
+    for (auto const& session : sWorld->GetAllSessions())
+        if (Player* player = session.second->GetPlayer())
+            player->AddDelayedEvent(0, [player, start]
+            {
+                QuestStatusData const* progress = player->getQuestStatus(QUEST_BREAK_THEIR_GARRISON);
+                if (!progress || progress->WorldQuestStartTime != start)
+                    return;
+
+                uint16 const slot = player->FindQuestSlot(QUEST_BREAK_THEIR_GARRISON);
+                if (slot < MAX_QUEST_LOG_SIZE)
+                    player->SetQuestSlot(slot, 0);
+                player->RemoveActiveQuest(QUEST_BREAK_THEIR_GARRISON);
+            });
+}
+}
+
 QuestPOI::QuestPOI() : BlobIndex(0), ObjectiveIndex(0), QuestObjectiveID(0), QuestObjectID(0), MapID(0), WorldMapAreaID(0), Floor(0), Priority(0), Flags(0), WorldEffectID(0), PlayerConditionID(0), SpawnTrackingID(0), AlwaysAllowMergingBlobs{false} { }
 
 QuestPOI::QuestPOI(int32 _BlobIndex, int32 _ObjectiveIndex, int32 _QuestObjectiveID, int32 _QuestObjectID, int32 _MapID, int32 _WorldMapAreaID, int32 _Foor, int32 _Priority, int32 _Flags, int32 _WorldEffectID, int32 _PlayerConditionID, int32 _SpawnTrackingID, bool _AlwaysAllowMergingBlobs):
@@ -2882,6 +2913,8 @@ void QuestDataStoreMgr::ResetWorldQuest()
             WorldQuest* worldQuest = &iter->second;
             if (worldQuest->ResetTime <= (GameTime::GetGameTime() + MINUTE * 5))
             {
+                uint32 const finishedId = worldQuest->QuestID;
+                uint32 const finishedStart = worldQuest->StartTime;
                 if (worldQuest->quest && (worldQuest->quest->IsEmissary() || worldQuest->quest->IsLegionInvasion()))
                 {
                     ss.str("");
@@ -2898,6 +2931,7 @@ void QuestDataStoreMgr::ResetWorldQuest()
                 RemoveWorldQuestTask(worldQuest->quest);
                 TC_LOG_DEBUG("worldquest", "ResetWorldQuest() >> QuestID %u ResetTime %u GameTime::GetGameTime() %ld", worldQuest->QuestID, worldQuest->ResetTime, GameTime::GetGameTime());
                 itr->second.erase(iter++);
+                RemoveExpiredGarrisonProgress(trans, finishedId, finishedStart);
                 continue;
             }
             ++iter;
@@ -2933,6 +2967,8 @@ void QuestDataStoreMgr::ClearWorldQuest()
         for (std::map<uint32 /*QuestID*/, WorldQuest>::iterator iter = itr->second.begin(); iter != itr->second.end();)
         {
             WorldQuest* worldQuest = &iter->second;
+            uint32 const finishedId = worldQuest->QuestID;
+            uint32 const finishedStart = worldQuest->StartTime;
             if (worldQuest->quest && (worldQuest->quest->IsEmissary() || worldQuest->quest->IsLegionInvasion()))
             {
                 std::ostringstream ss;
@@ -2952,6 +2988,7 @@ void QuestDataStoreMgr::ClearWorldQuest()
             RemoveWorldQuestTask(worldQuest->quest);
             TC_LOG_DEBUG("worldquest", "ClearWorldQuest() >> QuestID %u ResetTime %u GameTime::GetGameTime() %ld", worldQuest->QuestID, worldQuest->ResetTime, GameTime::GetGameTime());
             itr->second.erase(iter++);
+            RemoveExpiredGarrisonProgress(trans, finishedId, finishedStart);
         }
         CharacterDatabase.CommitTransaction(trans);
     }
@@ -3041,6 +3078,7 @@ void QuestDataStoreMgr::ResetWorldQuest(uint32 QuestID)
             WorldQuest* worldQuest = &iter->second;
             if (worldQuest->QuestID == QuestID)
             {
+                uint32 const finishedStart = worldQuest->StartTime;
                 if (worldQuest->quest && (worldQuest->quest->IsEmissary() || worldQuest->quest->IsLegionInvasion()))
                 {
                     ss.str("");
@@ -3057,6 +3095,7 @@ void QuestDataStoreMgr::ResetWorldQuest(uint32 QuestID)
                 RemoveWorldQuestTask(worldQuest->quest);
                 TC_LOG_DEBUG("worldquest", "ResetWorldQuest() >> QuestID %u ResetTime %u GameTime::GetGameTime() %ld", worldQuest->QuestID, worldQuest->ResetTime, GameTime::GetGameTime());
                 itr->second.erase(iter++);
+                RemoveExpiredGarrisonProgress(trans, QuestID, finishedStart);
                 continue;
             }
             ++iter;

@@ -16,6 +16,7 @@ using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int3
 #include "WorldQuestInfo.inc"
 constexpr uint16 MAX_QUEST_LOG_SIZE=25,QUEST_STATE_COMPLETE=1;
 constexpr uint32 MINUTE=60,EQUIP_ERR_ITEM_NOT_FOUND=1,CHAR_INS_CHARACTER_WORLDQUESTSTATUS=1;
+constexpr uint32 QUEST_BREAK_THEIR_GARRISON=46073;
 #define TC_LOG_DEBUG(...) ((void)0)
 void Check(bool v,char const*why){if(!v)throw std::runtime_error(why);}
 namespace GameTime{uint32 now=1000;uint32 GetGameTime(){return now;}}
@@ -32,7 +33,7 @@ struct Quest{
  bool IsWeekly()const{return false;}bool IsSeasonal()const{return false;}bool IsRepeatable()const{return false;}
  auto const&GetObjectives()const{return objectives;}
 };
-struct WorldQuest{void*worldQuest=reinterpret_cast<void*>(1);uint32 ResetTime=2000;};
+struct WorldQuest{void*worldQuest=reinterpret_cast<void*>(1);uint32 ResetTime=2000,StartTime=900;};
 struct Store{
  Quest quest;WorldQuest active;bool present=true;
  Quest const*GetQuestTemplate(uint32 id){return id==quest.id?&quest:nullptr;}
@@ -50,13 +51,14 @@ using CharacterDatabaseTransaction=std::shared_ptr<Transaction>;
 struct Database{CharacterDatabasePreparedStatement*GetPreparedStatement(uint32 id){Check(id==CHAR_INS_CHARACTER_WORLDQUESTSTATUS,"wrong statement");return new CharacterDatabasePreparedStatement;}} CharacterDatabase;
 struct DB2{uint32 GetQuestUniqueBitFlag(uint32 id){return id;}}sDB2Manager;
 struct Session{uint32 GetAccountId()const{return 77;}};
-struct QuestStatusData{QuestStatus Status=QUEST_STATUS_INCOMPLETE;uint32 Timer=1;};
+struct QuestStatusData{QuestStatus Status=QUEST_STATUS_INCOMPLETE;uint32 Timer=1,WorldQuestStartTime=0;};
 struct Object{};struct Player;
 struct Scripts{int completions=0;void OnQuestComplete(Player*,Quest const*){++completions;}}scripts;
 auto sScriptMgr=&scripts;
 struct Player:Object{
  using WorldQuestStatusMap=std::map<uint32,WorldQuestInfo>;
  WorldQuestStatusMap m_worldquests;std::set<uint32>m_RewardedQuests,bits;
+ std::map<uint32,QuestStatusData> m_QuestStatus;
  QuestStatusData state;Session session;bool accepted=true;
  int statusWrites=0,slotWrites=0,enteredReward=0;
  uint64 GetGUIDLow()const{return 0xF1234567ULL;}Session*GetSession(){return &session;}
@@ -113,6 +115,17 @@ int Run(){
  {Player p;Check(p.CanRewardWorldQuest(&store.quest)&&p.CanCompleteQuest(44923),"one second before expiry");
   p.CompleteQuest(44923);Check(p.statusWrites==1&&p.slotWrites==1&&p.enteredReward==1,"valid auto task dispatch");}
  {Player p;p.m_worldquests[44923]={44923,1000,false};Check(p.CanRewardWorldQuest(&store.quest),"old personal rotation blocks next rotation");}
+ {
+  Quest garrison=store.quest;garrison.id=QUEST_BREAK_THEIR_GARRISON;
+  Player p;
+  Check(!p.CanRewardWorldQuest(&garrison),"missing Garrison attempt was eligible");
+  p.m_QuestStatus[garrison.id].WorldQuestStartTime=store.active.StartTime-1;
+  Check(!p.CanRewardWorldQuest(&garrison),"previous Garrison attempt was eligible");
+  p.m_QuestStatus[garrison.id].WorldQuestStartTime=store.active.StartTime;
+  Check(p.CanRewardWorldQuest(&garrison),"current Garrison attempt was rejected");
+  p.m_QuestStatus[garrison.id].Status=QUEST_STATUS_FAILED;
+  Check(!p.CanRewardWorldQuest(&garrison),"failed Garrison attempt was eligible");
+ }
  // Save parameters through the native methods, then project the emitted
  // fields into the native SELECT column order. SQL execution is a fixture leaf.
  {Player p;p.m_worldquests[44923]={44923,2000,true};auto tx=std::make_shared<Transaction>();p._SaveWorldQuestStatus(tx);

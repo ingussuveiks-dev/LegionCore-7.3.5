@@ -19383,8 +19383,22 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
 
     uint32 quest_id = quest->GetQuestId();
 
+    uint32 garrisonStart = 0;
+    if (quest_id == QUEST_BREAK_THEIR_GARRISON)
+    {
+        WorldQuest const* active = sQuestDataStore->GetWorldQuest(quest);
+        if (!active || active->ResetTime <= GameTime::GetGameTime())
+            return;
+
+        garrisonStart = active->StartTime;
+        if (QuestStatusData const* previous = getQuestStatus(quest_id))
+            if (previous->WorldQuestStartTime != garrisonStart)
+                RemoveActiveQuest(quest_id);
+    }
+
     // if not exist then created with set uState == NEW and rewarded=false
     QuestStatusData& status_q = m_QuestStatus[quest_id];
+    status_q.WorldQuestStartTime = garrisonStart;
     status_q.ScriptLifetime.reset();
     CancelQuestObjects(quest_id);
     (*m_QuestStatusVector)[quest_id] = &status_q;
@@ -19687,9 +19701,19 @@ bool Player::CanRewardWorldQuest(Quest const* quest) const
     if (!quest->IsWorld() && !quest->IsEmissary())
         return true;
 
+    uint32 const questId = quest->GetQuestId();
     WorldQuest const* active = sQuestDataStore->GetWorldQuest(quest);
-    return active && active->worldQuest && active->ResetTime > GameTime::GetGameTime() &&
-        !WorldQuestCompleted(quest->GetQuestId());
+    if (!active || !active->worldQuest || active->ResetTime <= GameTime::GetGameTime() || WorldQuestCompleted(questId))
+        return false;
+
+    if (questId == QUEST_BREAK_THEIR_GARRISON)
+    {
+        auto progress = m_QuestStatus.find(questId);
+        return progress != m_QuestStatus.end() && progress->second.WorldQuestStartTime == active->StartTime &&
+            (progress->second.Status == QUEST_STATUS_INCOMPLETE || progress->second.Status == QUEST_STATUS_COMPLETE);
+    }
+
+    return true;
 }
 
 void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce)
@@ -21403,6 +21427,9 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (real_entry == 103739 && !SkyholdArtifactReturn::CanCredit(this, qInfo))
             continue;
 
+        if (questid == QUEST_BREAK_THEIR_GARRISON && !CanRewardWorldQuest(qInfo))
+            continue;
+
         if (q_status->Status == QUEST_STATUS_INCOMPLETE && (!GetGroup() || !GetGroup()->isRaidGroup() || qInfo->IsAllowedInRaid(GetMap()->GetDifficultyID())))
         {
             if (qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST))
@@ -21498,6 +21525,8 @@ void Player::KillCreditGO(uint32 entry, ObjectGuid const& guid)
 
         Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);
         if (!qInfo)
+            continue;
+        if (questid == QUEST_BREAK_THEIR_GARRISON && !CanRewardWorldQuest(qInfo))
             continue;
 
         QuestStatusData* q_status = getQuestStatus(questid);
@@ -24751,8 +24780,25 @@ void Player::_LoadQuestStatus(PreparedQueryResult result)
                 if (quest->QuestInfoID != QUEST_INFO_ACCOUNT && guid != GetGUIDLow()) //check account quest
                     continue;
 
+                time_t quest_time = time_t(fields[2].GetUInt32());
+                uint32 garrisonStart = 0;
+                if (quest_id == QUEST_BREAK_THEIR_GARRISON)
+                {
+                    WorldQuest const* active = sQuestDataStore->GetWorldQuest(quest);
+                    // Older rows stored their last save time. Accept those only
+                    // if they were saved during this same live rotation.
+                    if (!active || active->ResetTime <= GameTime::GetGameTime() ||
+                        quest_time < active->StartTime || quest_time >= active->ResetTime)
+                    {
+                        m_QuestStatusSave[quest_id] = QUEST_DELETE_SAVE_TYPE;
+                        continue;
+                    }
+                    garrisonStart = active->StartTime;
+                }
+
                 // find or create
                 QuestStatusData& q_status = m_QuestStatus[quest_id];
+                q_status.WorldQuestStartTime = garrisonStart;
                 (*m_QuestStatusVector)[quest_id] = &q_status;
 
                 uint8 qstatus = fields[1].GetUInt8();
@@ -24764,8 +24810,6 @@ void Player::_LoadQuestStatus(PreparedQueryResult result)
                     TC_LOG_ERROR("entities.player", "Player %s (GUID: %u) has invalid quest %d status (%u), replaced by QUEST_STATUS_INCOMPLETE(3).",
                         GetName(), GetGUIDLow(), quest_id, qstatus);
                 }
-
-                time_t quest_time = time_t(fields[2].GetUInt32());
 
                 if (quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_TIMED) && !GetQuestRewardStatus(quest_id))
                 {
@@ -26803,7 +26847,10 @@ void Player::_SaveQuestStatus(CharacterDatabaseTransaction& trans)
                 stmt->setUInt64(index++, guid);
                 stmt->setUInt32(index++, saveItr->first);
                 stmt->setUInt8(index++, uint8(status->Status));
-                stmt->setUInt32(index++, uint32(status->Timer / IN_MILLISECONDS + GameTime::GetGameTime()));
+                // Persist the Garrison rotation's start in the existing timer
+                // column so an old attempt cannot be restored into a new one.
+                stmt->setUInt32(index++, saveItr->first == QUEST_BREAK_THEIR_GARRISON ? status->WorldQuestStartTime :
+                    uint32(status->Timer / IN_MILLISECONDS + GameTime::GetGameTime()));
                 stmt->setUInt32(index, GetSession()->GetAccountId());
                 trans->Append(stmt);
 
@@ -32715,6 +32762,15 @@ void Player::UpdateWorldQuestAreaTasks(uint32 newAreaId, uint32 oldAreaId)
     {
         for (Quest const* quest : *qInfo)
         {
+            if (quest->GetQuestId() == QUEST_BREAK_THEIR_GARRISON &&
+                getQuestStatus(QUEST_BREAK_THEIR_GARRISON) && !CanRewardWorldQuest(quest))
+            {
+                uint16 const slot = FindQuestSlot(QUEST_BREAK_THEIR_GARRISON);
+                if (slot < MAX_QUEST_LOG_SIZE)
+                    SetQuestSlot(slot, 0);
+                RemoveActiveQuest(QUEST_BREAK_THEIR_GARRISON);
+            }
+
             // TC_LOG_DEBUG("worldquest", "UpdateAreaQuestTasks GetQuestId %u", quest->GetQuestId());
 
             if (FindQuestSlot(quest->GetQuestId()) < MAX_QUEST_LOG_SIZE)

@@ -1,0 +1,40 @@
+{
+  "scope": "Break Their Garrison (46073) progress across restart, wall-clock respawns, and expiration when the Felskorn replacement is published",
+  "restart_before_repair": {
+    "method": "The native player recorded 26 Wrathguard Dreadblade kills, a Felfire Imp kill, a Flaz kill and one placed Libram. The native character transaction saved the active status, objective data and 20000 copper baseline. The rotation manager persisted the active rotation.",
+    "result": "Two starts of the installed Release using the isolated MariaDB snapshot reached ready. A new native player loaded the original status and counters through the prepared login queries. The final placed Libram produced one personal Illidan conversation 4440, one completion receipt and 1234 copper. The next process loaded exactly one receipt, zero active rows and 21234 copper. An additional Libram and direct reward call were rejected."
+  },
+  "wall_clock": {
+    "method": "The real DB spawn rows and the placed Libram were loaded into a Broken Shore zone instance of map 1220. Native map updates used real system time and steady-clock tick lengths. Active anchors held the relevant cells while the two creature deaths and the native Libram use were observed in parallel.",
+    "imp": "The corpse was removed at 60 seconds. The same spawn returned alive at full health at 105 seconds, 45 seconds after corpse removal.",
+    "flaz": "The corpse was removed at 120 seconds. The same spawn returned alive at full health at 360 seconds, 240 seconds after corpse removal.",
+    "libram": "The book went out of visibility at 65 seconds. Use while hidden gave no credit. The book became ready again after 122 observed seconds against its 120-second native deadline and the map object's update cadence. A second eligible use credited the book.",
+    "scope_limit": "These were native map updates with a synthetic player and controlled death. No 26972 client observation of these timings was made in this run."
+  },
+  "expiry": {
+    "root_cause": "The ordinary scheduled world-quest reset withdrew the active rotation and its area publication. The online player's active Garrison status and slot remained, both players' saved status and objective rows survived, and the kill credit path did not check expiry against the published rotation.",
+    "evidence": "With the previous native implementation a kill at the deadline still increased the old quest, and the same online player accepted Felskorn 45744 while retaining the old log slot. Two stale active status rows and twelve objective rows remained in the disposable database. The already deployed Libram use gate rejected the expired book.",
+    "repair": "Scope the change to 46073. Bind a character's acceptance to the live rotation start, preserve that stamp using the existing status timer field, and check it before accepting objective credit or entering reward. Login accepts legacy saves from within the same live rotation. Scheduled, targeted and clear-all rotation removal queue cleanup on each owning map thread after the old task has been withdrawn and delete the older status and objective rows together. A delayed cleanup identifies the old rotation and leaves a fresh acceptance alone. Persistence uses the existing schema.",
+    "verified": "The exact deadline blocked the native kill and Libram paths before the scheduled reset even while the old log slot existed. After reset and native publication, the same player entered Felskorn 45744 phase 7148, the old Garrison slot was absent, and both previous characters had zero stale status/objective rows. A modeled late disconnect write was rejected on login before and after republishing 46073. The fresh attempt accepted new book credit and a valid legacy save from within its active rotation retained one book. The delayed cleanup left the fresh attempt in the log with zero old progress.",
+    "retained": "The native rotation/placement suite passed for 46021, 46063 and 46073, including pet/guardian contribution, party distance, one-time reward, both Felskorn class variants, book cooldown and the personal outro. The extracted reward-state baseline/current tests and Rockaway reward path passed. Staged Vrekt scheduler and source-freshness checks passed against the real linked executable."
+  },
+  "diagnostics": {
+    "resolved_fixture_issues": "The first checkpoint insert encountered the base world's already-present next-rotation row. Updated the disposable setup to preserve correct key semantics. The first wall-clock fixtures required zone routing on synthetic book anchors and an active anchor in the imp's exact cell. The first expiry fixture enabled combat achievement processing even though that test did not load all achievement data. This fixture exception caused connection-abort warnings in the copied database. Enabled the necessary achievement condition handling only around Felskorn admission, reproduced the original gameplay failure without a crash, and completed the repaired regression.",
+    "verified": "Passing checkpoint, wall-clock, expiry and retained runs produced no new core crash reports, appended DBErrors or unexplained server warnings, errors or assertions. The database copy shut down normally. Its warning history contains only the connection aborts at the earlier synthetic achievement failure. Installed Release Crashes stayed empty and DBErrors.log stayed at zero bytes."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "65f5dbde2c2514f4b6c7751c0cfbee7297ff8bb85b44dd5be69b43dcd1515993",
+    "worldserver_map_sha256": "405c3ebd58a359c84e8a54c7269927feec70ab1fd6730b5fe85c118e9d101d22",
+    "build": "Rebuilt both game and scripts libraries after the status structure change. Recompiled and linked the worldserver project with its project references already built at the native Release paths. Applied the staging output path only to that executable project and verified the actual final link read those libraries and used the established non-incremental Release mode. The linker map locates the new expiration logic in GAME:QuestData.obj and the restored progress and credit guards in GAME:Player.obj.",
+    "deployment": "Promoted the verified executable and linker map while no game server was running. Verified auth executable, configuration, libraries and certificates by hash and retained the previous executable and map under .codex/garrison-deploy-20261120/expiry-rollback. This code reuses the existing schema. The runtime tests used the snapshot and did not write to the primary realm databases.",
+    "verification": "Installed PE inspection confirmed rotation admission, completion and reward-before-mutation order, plus the guard in the native creature and gameobject objective credit functions. Restarted the installed executable with private configuration before the final Libram and again afterward. Both runs reached ready and stopped normally with empty stderr. The native login readback and interaction repeated successfully on the new build. The saved result was 21234 copper, one matching world-quest receipt and zero active quest rows.",
+    "client_limit": "Server tests used actual native quest load, save and use handlers with a synthetic player. The prior open client check of the final Libram's visible portrait and audible line remains separate."
+  },
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-garrison-continuous",
+    "manifest_sha256": "064f310fc104653ecf9752b8e4b0cbc0664bca3e9604ec73f5950fc334f8568a",
+    "removal_manifest_sha256": "c65ef923496d6a4afc62485d582c2c308acf0e937b2cb985f88db10e8178cc27",
+    "cleanup": "Preserved and hash-verified 386 diagnostic files. Removed 37 temporary paths totaling 4283739018 bytes, including the private database snapshot, staged executable and test executables and symbols. Verified the canonical binaries, configuration and diagnostic paths after cleanup. No task-owned processes remain."
+  }
+}

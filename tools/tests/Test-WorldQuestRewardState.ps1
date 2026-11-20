@@ -1,3 +1,4 @@
+param([string]$RuntimeConfig)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/world-quest-reward-state"
@@ -58,7 +59,10 @@ if($savedRow.Count -ne 1){throw 'Missing native prepared-statement field snapsho
 $values=($savedRow[0] -split ' ')[1..4]
 $insert=[regex]::Match($sql,'CHAR_INS_CHARACTER_WORLDQUESTSTATUS, "([^"]+)"').Groups[1].Value
 $select=[regex]::Match($sql,'CHAR_SEL_CHARACTER_WORLDQUESTSTATUS, "([^"]+)"').Groups[1].Value
-$connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^CharacterDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
+if(!$RuntimeConfig){$RuntimeConfig="$repo/build-extractors/bin/Release/worldserver.conf"}
+$connection=(Get-Content -LiteralPath $RuntimeConfig | Where-Object {$_ -match '^CharacterDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
+$transport=@('--no-defaults','--protocol=TCP')
+if($connection[0] -eq '127.0.0.1'){$transport+='--skip-ssl'}
 $previous=$env:MYSQL_PWD
 try{
  $env:MYSQL_PWD=$connection[3]
@@ -76,7 +80,7 @@ EXECUTE nativeLoad USING @account,@guid;
 SET @account=78;
 EXECUTE nativeLoad USING @account,@guid;
 "@
- $rows=@($roundTrip | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
+ $rows=@($roundTrip | & C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mariadb.exe @transport --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
  if($LASTEXITCODE){throw 'Temporary native character status SQL round trip failed'}
 }finally{$env:MYSQL_PWD=$previous}
 if(($rows -join '|') -ne "1|$($values[1])`t$($values[0])`t$($values[3])"){throw 'Native character status SQL changed rows, widths or account isolation'}

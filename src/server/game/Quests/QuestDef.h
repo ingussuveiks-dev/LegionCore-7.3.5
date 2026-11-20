@@ -556,12 +556,16 @@ class TC_GAME_API Quest
 
 typedef std::map<int32/*idx*/, int32/*data*/> QuestStatusDatas;
 
+constexpr uint32 QUEST_BREAK_THEIR_GARRISON = 46073;
+
 struct QuestStatusData
 {
     QuestStatusData(): Status(QUEST_STATUS_NONE), Timer(0) { }
 
     QuestStatus Status;
     uint32 Timer;
+    // For world tasks whose progress belongs to one published rotation.
+    uint32 WorldQuestStartTime = 0;
     QuestStatusDatas ObjectiveData;
     // Allocated only for scripts with delayed actions. Removing/restarting the
     // quest expires their weak guards, even if it is reaccepted in the same tick.

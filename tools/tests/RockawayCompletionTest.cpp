@@ -27,6 +27,8 @@ using uint8=uint8_t;using int8=int8_t;using uint16=uint16_t;using uint32=uint32_
 #include "QUEST_ITEM_DROP_COUNT.inc"
 #include "QUEST_REWARD_DISPLAY_SPELL_COUNT.inc"
 constexpr uint32 MAX_QUEST_LOG_SIZE=25,QUEST_STATE_COMPLETE=1,NULL_BAG=255,NULL_SLOT=255,CLASS_NONE=0,TEAM_HORDE=1;
+constexpr uint32 QUEST_BREAK_THEIR_GARRISON=46073;
+constexpr uint32 CLASS_PRIEST=5,CLASS_SHAMAN=7;
 // Identifiers on controlled services; they do not model the underlying systems.
 enum {CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CRITERIA_TYPE_KILL_CREATURE,CRITERIA_TIMED_TYPE_CREATURE,
  CRITERIA_TYPE_COMPLETE_WORLD_QUEST,CRITERIA_TYPE_MONEY_FROM_QUEST_REWARD,CRITERIA_TYPE_COMPLETE_DAILY_QUEST,CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY,
@@ -37,6 +39,8 @@ enum {CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CR
 namespace ToastType {enum {ITEM,CURRENCY,MONEY,HONOR};}
 namespace DisplayToastMethod {constexpr int DISPLAY_TOAST_SPECIAL_UNK=0;}
 #define TC_LOG_DEBUG(...) ((void)0)
+#define TC_LOG_INFO(...) ((void)0)
+#define TC_LOG_WARN(...) ((void)0)
 static void Check(bool ok,char const* why){if(!ok)throw std::runtime_error(why);}
 namespace GameTime {uint32 now=1000;uint32 GetGameTime(){return now;}}
 struct ObjectGuid {
@@ -46,6 +50,10 @@ struct ObjectGuid {
 };
 ObjectGuid const ObjectGuid::Empty{};using GuidSet=std::set<uint64>;
 struct Player;struct Creature;struct Unit;
+namespace SkyholdArtifactReturn {
+bool HasPendingFuryReturn(Player*){throw std::runtime_error("Unexpected Fury predicate in Rockaway credit");}
+template<typename QuestType> bool CanCredit(Player*,QuestType const*){throw std::runtime_error("Unexpected Skyhold credit in Rockaway");}
+}
 struct Object {virtual ~Object()=default;virtual bool IsUnit()const{return true;}virtual Unit*ToUnit(){return nullptr;}virtual Creature*ToCreature(){return nullptr;}};
 struct Unit:Object {uint32 casts=0;void CastSpell(Player*,uint32 id,bool){Check(id==230020,"wrong reward spell");++casts;}Unit*ToUnit()override{return this;}};
 struct Creature:Unit {
@@ -123,7 +131,7 @@ struct Target {uint32 GetTarget()const{return 18;}};struct SpellEffect {Target T
 struct SpellInfo {SpellEffect effect;SpellEffect*Effects[1]={&effect};bool HasEffect(uint32)const{return false;}};
 struct SpellMgr {SpellInfo spell;SpellInfo const*GetSpellInfo(uint32 id){return id==230020?&spell:nullptr;}}spellMgr;auto sSpellMgr=&spellMgr;
 struct PhaseUpdateData {void AddQuestUpdate(uint32){}};struct PhaseMgr {void NotifyConditionChanged(PhaseUpdateData const&){}};
-struct QuestStatusData {QuestStatus Status=QUEST_STATUS_INCOMPLETE;uint32 Timer=1;};
+struct QuestStatusData {QuestStatus Status=QUEST_STATUS_INCOMPLETE;uint32 Timer=1,WorldQuestStartTime=0;};
 using ItemPosCountVec=std::vector<uint32>;
 struct LootStore{};LootStore LootTemplates_Spell;
 struct LootItem {struct {uint32 ItemID=142487,CurrencyID=0,RandomPropertiesID=0;struct {std::vector<uint32>BonusListIDs;uint32 Context=0;}ItemBonus;}item;
@@ -137,6 +145,7 @@ uint32 rolledFragments=10;
 struct Player:Unit {
  using WorldQuestStatusMap=std::map<uint32,WorldQuestInfo>;
  WorldQuestStatusMap m_worldquests;std::set<uint32>m_RewardedQuests,m_accuntQuests,bits;std::map<uint32,uint32>m_RewardedQuestsSave;
+ std::map<uint32,QuestStatusData> m_QuestStatus;
  QuestStatusData status;bool accepted=true,alive=true,phase=true,inRange=true,contributor=true,lostArmy=true,horde=false;
  InventoryResult admission=EQUIP_ERR_OK;bool partial=false,storeFails=false;
  Group*group=nullptr;Map map;Session session;PhaseMgr phaseMgr;Achievements achievements;Achievements*m_achievementMgr=&achievements;
@@ -145,6 +154,7 @@ struct Player:Unit {
  bool delayTeleport=false;std::vector<std::string>order;std::vector<std::function<void()>>pending;
  ObjectGuid GetGUID()const{return {4045620583ULL};}uint64 GetGUIDLow()const{return GetGUID().value;}
  char const*GetName()const{return "fixture";}Session*GetSession(){return &session;}Map*GetMap(){return &map;}Group*GetGroup(){return group;}
+ uint32 GetMapId()const{return 1220;}
  bool IsAlive()const{return alive;}uint32 GetGuildId()const{return 0;}
  uint32 getLevel()const{return 110;}uint32 GetLootSpecID()const{return 0;}uint32 GetTeamId()const{return horde?TEAM_HORDE:0;}uint32 getClass()const{return 3;}
  bool HasSpell(uint32)const{return false;}bool HasCurrency(uint32,uint32)const{return true;}bool HasEnoughMoney(uint64)const{return true;}
@@ -154,6 +164,7 @@ struct Player:Unit {
  uint32 GetQuestSlotQuestId(uint8 slot)const{return slot==0&&accepted?44746:0;}
  QuestStatus GetQuestStatus(uint32)const{return accepted?status.Status:QUEST_STATUS_NONE;}
  QuestStatusData*getQuestStatus(uint32){return accepted?&status:nullptr;}
+ int32 GetQuestObjectiveData(uint32,int32)const{throw std::runtime_error("Unexpected other quest objective in Rockaway credit");}
  uint16 FindQuestSlot(uint32)const{return accepted?0:MAX_QUEST_LOG_SIZE;}
  int32 GetQuestObjectiveData(Quest const*,int8 index){Check(index==0,"wrong objective index");return credit;}
  void SetQuestObjectiveData(Quest const*,QuestObjective const*,int32 n){credit=n;}

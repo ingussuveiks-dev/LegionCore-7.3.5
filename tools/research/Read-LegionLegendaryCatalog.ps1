@@ -1,4 +1,4 @@
-param([string]$OutputFile="",[string]$DbcDirectory="",[string]$SourceFile='LegionLegendaryCatalog.cpp',[string]$ProbeName='LegionLegendaryCatalog')
+param([string]$OutputFile="",[string]$DbcDirectory="",[string]$SourceFile='LegionLegendaryCatalog.cpp',[string]$ProbeName='LegionLegendaryCatalog',[switch]$BuildOnly)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $output=Join-Path $repo "build-extractors/runtime-test/legion-legendary-catalog"
@@ -20,6 +20,7 @@ $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($args 
 [IO.File]::WriteAllText("$output/build-item.cmd",$cmd)
 & "$output/build-item.cmd"
 if($LASTEXITCODE){throw 'Native ItemSparse probe build failed'}
+if($BuildOnly){return}
 
 $previousPath=$env:PATH
 try {
