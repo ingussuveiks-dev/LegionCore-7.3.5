@@ -40,6 +40,18 @@
     "cleanup": "Archived and verified 182 diagnostic files, then removed 15 temporary paths totaling 4398415257 bytes, including the database copy, native test executables and symbols. No fixture processes remain.",
     "remaining_client_check": "The latest follow-up used a controlled server clock and synthetic players. The earlier 26972 client verified completion and Illidan's outro using a Dreadblade. The final click of the second Libram, its closing audio and wall-clock respawns for the new targets remain unobserved on the client."
   },
+  "outro_asset_followup": {
+    "source": "The matching 26972 client and copied hotfix and world data resolve reward spell 235644 to conversation 4440, line 10023 and BroadcastText 126941. Actor 51685 uses entry 117530 and display 74146. The stored actor duration is 6241 ms.",
+    "portrait": "Display 74146 resolves to FileDataID 1248139. The existing 26972 storage returned all 2331896 bytes of the model.",
+    "voice": "The line's sound kit 80642 resolves to FileDataID 1581502. Read all 38563 bytes from the existing enUS client and decoded the complete 5793 ms Vorbis stream with no errors. The local client storage index hashes matched before and after the audio probe.",
+    "framexml": "The existing 26972 TalkingHead model XML refers to an undefined initial animation-finished callback. The client Lua sets the actual animation-finished script during model setup and has independent functions for voice playback and closing the frame. This accounts for the earlier load-time FrameXML diagnostic. Direct client closure and sound still require observation.",
+    "client_attempt": "The installed Release started in a private loopback realm backed by the world and hotfix snapshot and synthetic character and login schemas. Manually staged the synthetic character beside the western Libram with 26 Dreadblade credits, one imp, one Flaz and one book on active quest 46073. The real 26972 client reached its login screen. The requested manual login did not occur during the available session. The final readback still showed the expected active quest, seeded counters and zero reward receipts, so no gameplay or audible playback is claimed from this run.",
+    "diagnostics": "The catalog, CASC and FrameXML probes and the isolated server startup and shutdown reported no new crashes, appended DBErrors or server warnings, errors or assertions. The owned worldserver, bnetserver and MariaDB exited normally. The canonical executables and configuration were verified by hash after cleanup.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-garrison-outro",
+    "archive_manifest_sha256": "914ea717fb99f01eed2e16ff22ff07fd71ba7267bebab02727e6927c8eec6d8b",
+    "removal_manifest_sha256": "79efcf54e79fd5fe5878ce4847d512eeaced35dc258c2104e318ac5eb2d6b441",
+    "cleanup": "Archived and verified 86 diagnostic files. Removed the disposable realm and client copies, catalog binaries and temporary extracted local assets across six paths totaling 1648176108 bytes. The existing shared client storage was preserved. No task-owned process remains."
+  },
   "diagnostics_and_cleanup": {
     "archive": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-garrison-targets",
     "archived_files": 202,
