@@ -33,6 +33,14 @@ constexpr uint32 BurrowedDisplay = 75542;
 constexpr uint32 BurrowDuration = 239942;
 constexpr uint32 ChargeWarning = 243242;
 constexpr uint32 JormogsFury = 241719;
+constexpr uint32 BileEgg = 121459;
+constexpr uint32 BileSpitter = 121460;
+constexpr uint32 EggMissile = 242384;
+constexpr uint32 EggSummon = 242378;
+constexpr uint32 HatchBileSpitter = 242379;
+constexpr uint32 SummonBileSpitter = 243167;
+constexpr uint32 SpitBile = 242468;
+constexpr uint32 BileMissile = 242566;
 
 constexpr uint32 ChargeMovement = 1;
 constexpr float RockRadius = 2.75f;
@@ -41,6 +49,10 @@ Position const RockSites[] = {
     { 5207.0f, 5057.0f, 626.0f },
     { 5216.0f, 5049.0f, 626.0f },
     { 5218.0f, 5061.0f, 627.0f }
+};
+Position const EggSites[] = {
+    { 5211.0f, 5069.0f, 628.0f },
+    { 5224.0f, 5054.0f, 626.0f }
 };
 
 bool SegmentTouches(Position const& start, Position const& end, Position const& point, float radius)
@@ -100,6 +112,27 @@ struct TugarAI : SmartAI
     }
 
     uint64 ActiveAttempt() const { return Participant() ? _attempt : 0; }
+    uint64 EggAttempt() const { return _earthquakeTimer ? ActiveAttempt() : 0; }
+
+    void FinishEggWave(uint64 attempt, bool expired)
+    {
+        if (!_eggWave || attempt != _eggWave || attempt != EggAttempt())
+            return;
+        _eggWave = 0;
+        if (!expired || _eggInterrupted || me->HasUnitState(UNIT_STATE_CONTROLLED))
+            return;
+
+        for (Position position : EggSites)
+        {
+            float const z = me->GetHeight(position.GetPositionX(), position.GetPositionY(),
+                position.GetPositionZ() + 1.0f, true, 5.0f);
+            if (z <= INVALID_HEIGHT)
+                continue;
+            position.m_positionZ = z;
+            if (me->CastSpell(position, EggMissile, true) != SPELL_CAST_OK)
+                TC_LOG_WARN("scripts", "Feltotem's Fall: Bile Spitter Egg missile failed in instance %u", me->GetInstanceId());
+        }
+    }
 
     void JustDied(Unit* killer) override
     {
@@ -109,6 +142,8 @@ struct TugarAI : SmartAI
 
     void UpdateAI(uint32 diff) override
     {
+        if (_eggWave && me->HasUnitState(UNIT_STATE_CONTROLLED))
+            _eggInterrupted = true;
         SmartAI::UpdateAI(diff);
         UpdateEarthquake(diff);
         if (!_totemTimer || !ActiveAttempt())
@@ -129,6 +164,7 @@ struct TugarAI : SmartAI
     {
         _earthquakeTimer = 0;
         _rockFall = 0;
+        _eggWave = 0;
         RemoveRocks();
     }
 
@@ -145,9 +181,11 @@ private:
     }
 
     uint64 _attempt = 0;
+    uint64 _eggWave = 0;
     uint32 _totemTimer = 0;
     uint32 _earthquakeTimer = 0;
     uint32 _rockFall = 0;
+    bool _eggInterrupted = false;
     std::array<Position, 3> _rockPositions;
     std::array<ObjectGuid, 3> _rocks;
 };
@@ -384,6 +422,8 @@ void TugarAI::UpdateEarthquake(uint32 diff)
     if (!ai->Burrow(me, attempt))
         return;
 
+    _eggWave = attempt;
+    _eggInterrupted = false;
     RemoveRocks();
     _rockFall = 2200;
     for (std::size_t i = 0; i < _rocks.size(); ++i)
@@ -427,6 +467,245 @@ class npc_mage_tower_jormog : public CreatureScript
 public:
     npc_mage_tower_jormog() : CreatureScript("npc_mage_tower_jormog") {}
     CreatureAI* GetAI(Creature* creature) const override { return new Feltotem::JormogAI(creature); }
+};
+
+class spell_mage_tower_earthquake_eggs : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_earthquake_eggs);
+
+    bool Load() override
+    {
+        auto* tugar = Feltotem::FindTugarAI(GetCaster());
+        _attempt = tugar ? tugar->EggAttempt() : 0;
+        return _attempt != 0;
+    }
+
+    void ReleaseEggs(AuraEffect const*, AuraEffectHandleModes)
+    {
+        if (auto* tugar = Feltotem::FindTugarAI(GetCaster()))
+            tugar->FinishEggWave(_attempt, GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_tower_earthquake_eggs::ReleaseEggs,
+            EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+
+    uint64 _attempt = 0;
+};
+
+class spell_mage_tower_earthquake_egg_missile : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_earthquake_egg_missile);
+
+    bool Load() override
+    {
+        auto* tugar = Feltotem::FindTugarAI(GetCaster());
+        _attempt = tugar ? tugar->EggAttempt() : 0;
+        return true;
+    }
+
+    void Land(SpellEffIndex effect)
+    {
+        auto* tugar = Feltotem::FindTugarAI(GetCaster());
+        if (!_attempt || !tugar || _attempt != tugar->EggAttempt())
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override
+    {
+        OnEffectHit += SpellEffectFn(spell_mage_tower_earthquake_egg_missile::Land, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE);
+    }
+
+    uint64 _attempt = 0;
+};
+
+struct npc_mage_tower_bile_egg : ScriptedAI
+{
+    explicit npc_mage_tower_bile_egg(Creature* creature) : ScriptedAI(creature)
+    {
+        SetCombatMovement(false);
+    }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        auto* tugar = Feltotem::FindTugarAI(summoner);
+        if (tugar && me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == Feltotem::EggSummon)
+        {
+            _tugar = summoner->GetGUID();
+            _attempt = tugar->EggAttempt();
+            me->SetReactState(REACT_PASSIVE);
+        }
+    }
+
+    bool IsActive() const
+    {
+        auto* tugar = Feltotem::FindTugarAI(ObjectAccessor::GetCreature(*me, _tugar));
+        return _attempt && tugar && _attempt == tugar->EggAttempt() && me->IsAlive();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!IsActive())
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+        if (_published || me->HasAura(Feltotem::HatchBileSpitter) || me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+        if (diff < _retryCast)
+        {
+            _retryCast -= diff;
+            return;
+        }
+        _retryCast = 750;
+        me->CastSpell(me, Feltotem::HatchBileSpitter, false);
+    }
+
+    void Hatch()
+    {
+        if (_hatching || !IsActive())
+            return;
+
+        _hatching = true;
+        me->CastSpell(me->GetPosition(), Feltotem::SummonBileSpitter, true);
+        if (_published)
+            me->DespawnOrUnsummon(1);
+        else if (++_failedHatches < 3)
+            _hatching = false;
+        else
+        {
+            TC_LOG_WARN("scripts", "Feltotem's Fall: Bile Spitter Egg could not hatch in instance %u", me->GetInstanceId());
+            me->DespawnOrUnsummon(1);
+        }
+    }
+
+    void JustSummoned(Creature* creature) override
+    {
+        if (_hatching && creature->GetEntry() == Feltotem::BileSpitter &&
+            creature->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == Feltotem::SummonBileSpitter)
+            _published = true;
+    }
+
+    uint64 HatchAttempt() const { return _published && IsActive() ? _attempt : 0; }
+    ObjectGuid GetTugar() const { return _tugar; }
+
+private:
+    ObjectGuid _tugar;
+    uint64 _attempt = 0;
+    uint32 _retryCast = 0;
+    uint8 _failedHatches = 0;
+    bool _hatching = false;
+    bool _published = false;
+};
+
+class spell_mage_tower_bile_egg_hatch : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_bile_egg_hatch);
+
+    void Hatch(AuraEffect const*)
+    {
+        Creature* creature = GetTarget()->ToCreature();
+        auto* egg = creature && creature->IsAIEnabled ? dynamic_cast<npc_mage_tower_bile_egg*>(creature->AI()) : nullptr;
+        if (egg)
+            egg->Hatch();
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_mage_tower_bile_egg_hatch::Hatch, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+struct npc_mage_tower_bile_spitter : ScriptedAI
+{
+    explicit npc_mage_tower_bile_spitter(Creature* creature) : ScriptedAI(creature) {}
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        Creature* creature = summoner->ToCreature();
+        auto* egg = creature && creature->IsAIEnabled ? dynamic_cast<npc_mage_tower_bile_egg*>(creature->AI()) : nullptr;
+        if (!egg || me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != Feltotem::SummonBileSpitter)
+            return;
+        _attempt = egg->HatchAttempt();
+        _tugar = egg->GetTugar();
+        if (!_attempt || !summoner->GetMaxHealth())
+            return;
+
+        auto const health = uint64(me->GetMaxHealth() * (double(summoner->GetHealth()) / summoner->GetMaxHealth()));
+        me->SetHealth(std::max<uint64>(1, health));
+    }
+
+    Player* Participant() const
+    {
+        auto* tugar = Feltotem::FindTugarAI(ObjectAccessor::GetCreature(*me, _tugar));
+        return _attempt && tugar && _attempt == tugar->EggAttempt() ? tugar->Participant() : nullptr;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        Player* player = Participant();
+        if (!player)
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+        if (!UpdateVictim())
+        {
+            AttackStart(player);
+            return;
+        }
+        if (diff < _spit)
+            _spit -= diff;
+        else if (me->CastSpell(me, Feltotem::SpitBile, false) == SPELL_CAST_OK)
+            _spit = urand(8000, 11000);
+        else
+            _spit = 500;
+        DoMeleeAttackIfReady();
+    }
+
+private:
+    ObjectGuid _tugar;
+    uint64 _attempt = 0;
+    uint32 _spit = 5000;
+};
+
+class spell_mage_tower_spit_bile : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_spit_bile);
+
+    void Launch(SpellEffIndex)
+    {
+        Creature* creature = GetCaster()->ToCreature();
+        auto* spitter = creature && creature->IsAIEnabled ? dynamic_cast<npc_mage_tower_bile_spitter*>(creature->AI()) : nullptr;
+        Unit* target = GetHitUnit();
+        if (target && spitter && target == spitter->Participant())
+            creature->CastSpell(target->GetPosition(), Feltotem::BileMissile, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_tower_spit_bile::Launch, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+class spell_mage_tower_bile_missile : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_bile_missile);
+
+    void Land(SpellEffIndex effect)
+    {
+        Creature* creature = GetCaster()->ToCreature();
+        auto* spitter = creature && creature->IsAIEnabled ? dynamic_cast<npc_mage_tower_bile_spitter*>(creature->AI()) : nullptr;
+        if (!spitter || !spitter->Participant())
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override
+    {
+        OnEffectHit += SpellEffectFn(spell_mage_tower_bile_missile::Land, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE);
+    }
 };
 
 class spell_mage_tower_stalactite_impact : public SpellScript
@@ -1655,6 +1934,13 @@ void AddSC_broken_shore()
 {
     new npc_mage_tower_tugar();
     new npc_mage_tower_jormog();
+    RegisterCreatureAI(npc_mage_tower_bile_egg);
+    RegisterCreatureAI(npc_mage_tower_bile_spitter);
+    RegisterAuraScript(spell_mage_tower_earthquake_eggs);
+    RegisterSpellScript(spell_mage_tower_earthquake_egg_missile);
+    RegisterAuraScript(spell_mage_tower_bile_egg_hatch);
+    RegisterSpellScript(spell_mage_tower_spit_bile);
+    RegisterSpellScript(spell_mage_tower_bile_missile);
     RegisterSpellScript(spell_mage_tower_stalactite_impact);
     RegisterAreaTriggerAI(at_mage_tower_broken_stalactite);
     new npc_mage_tower_fel_surge_totem();
