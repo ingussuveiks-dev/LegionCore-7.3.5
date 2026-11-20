@@ -1,0 +1,5 @@
+# Jormog's Fel Rage
+
+The installed Legion 26972 effects distinguish two Fel Rage auras. `241932` increases Tugar's damage by 150% after Jormog dies. `241933` provides the corresponding 150% aura to Jormog after Tugar dies. Jormog's SmartAI used `241932` for both branches, which exposed the wrong spell and description. Migration `2026_11_21_02_mage_tower_jormog_fel_rage.sql` switches only Jormog's existing death notification to `241933`. [Original Legion spell changes](https://www.wowhead.com/news/7-2-ptr-build-23708-music-class-weapon-arsenals-class-changes-260989).
+
+Two applications in the isolated MariaDB gave identical results. Exact-row readback preserved Tugar's spell `241932`, the nine-scale initialization chain and both bosses' owner-credit paths. Production received the migration manually and the canonical build reached readiness and stopped with no new crash, warning, error or assertion. The evidence is under `build-extractors/bin/Release/fixed/2026-11-21-mage-tower-jormog-events/`. Client confirmation remains open for both boss death orders.
