@@ -1,11 +1,219 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "AreaTriggerAI.h"
+#include "Log.h"
 #include "Player.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SmartAI.h"
+#include "SpellScript.h"
 #include "TemporarySummon.h"
+
+namespace Feltotem
+{
+constexpr uint32 Tugar = 117230;
+constexpr uint32 TotemMissile = 243224;
+constexpr uint32 TotemSummon = 237903;
+constexpr uint32 FelSurge = 242496;
+
+struct TugarAI : SmartAI
+{
+    explicit TugarAI(Creature* creature) : SmartAI(creature) {}
+
+    void Reset() override
+    {
+        ++_attempt;
+        _totemTimer = 0;
+        SmartAI::Reset();
+    }
+
+    void EnterCombat(Unit* enemy) override
+    {
+        ++_attempt;
+        // Legion DBM observed the first Fel Surge cast near 62s. The original
+        // 15-yard missile travels at 2 yards/sec before the totem begins it.
+        _totemTimer = 54500;
+        SmartAI::EnterCombat(enemy);
+    }
+
+    uint64 ActiveAttempt() const
+    {
+        if (!me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1702 || me->HasUnitState(UNIT_STATE_EVADE))
+            return 0;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1266 || scenario->GetCurrentStep() != 1 || scenario->IsCompleted(false))
+            return 0;
+
+        Unit* victim = me->getVictim();
+        Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        if (!player || !player->IsAlive() || !player->IsInWorld() || player->HasPendingTeleport() ||
+            !me->IsInMap(player) || !me->InSamePhase(player))
+            return 0;
+
+        return _attempt;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        if (!_totemTimer || !ActiveAttempt())
+            return;
+        if (diff < _totemTimer)
+        {
+            _totemTimer -= diff;
+            return;
+        }
+
+        _totemTimer = urand(25000, 33000);
+        if (me->CastSpell(me, TotemMissile, true) != SPELL_CAST_OK)
+            TC_LOG_WARN("scripts", "Feltotem's Fall: Tugar's Fel Surge Totem missile cast failed in instance %u", me->GetInstanceId());
+    }
+
+private:
+    uint64 _attempt = 0;
+    uint32 _totemTimer = 0;
+};
+
+uint64 ActiveTugarAttempt(Unit* caster)
+{
+    Creature* boss = caster ? caster->ToCreature() : nullptr;
+    if (!boss || boss->GetEntry() != Tugar || !boss->IsAIEnabled)
+        return 0;
+    auto* ai = dynamic_cast<TugarAI*>(boss->AI());
+    return ai ? ai->ActiveAttempt() : 0;
+}
+}
+
+class npc_mage_tower_tugar : public CreatureScript
+{
+public:
+    npc_mage_tower_tugar() : CreatureScript("npc_mage_tower_tugar") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new Feltotem::TugarAI(creature); }
+};
+
+class npc_mage_tower_fel_surge_totem : public CreatureScript
+{
+public:
+    npc_mage_tower_fel_surge_totem() : CreatureScript("npc_mage_tower_fel_surge_totem") {}
+
+    struct TotemAI : ScriptedAI
+    {
+        explicit TotemAI(Creature* creature) : ScriptedAI(creature) {}
+
+        void InitializeAI() override
+        {
+            ScriptedAI::InitializeAI();
+            if (me->isTotem() && me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == Feltotem::TotemSummon)
+                _attempt = Feltotem::ActiveTugarAttempt(me->ToTempSummon()->GetSummoner());
+            if (_attempt)
+            {
+                me->SetCreateHealth(1);
+                me->SetMaxHealth(1);
+                me->SetHealth(1);
+            }
+        }
+
+        bool IsActive() const
+        {
+            return _attempt && me->IsAlive() &&
+                _attempt == Feltotem::ActiveTugarAttempt(me->ToTempSummon()->GetSummoner());
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (!IsActive())
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
+            if (_started)
+                return;
+            if (_retryTimer > diff)
+            {
+                _retryTimer -= diff;
+                return;
+            }
+
+            _started = me->CastSpell(me, Feltotem::FelSurge, false) == SPELL_CAST_OK;
+            if (!_started && ++_failedCasts == 3)
+            {
+                TC_LOG_WARN("scripts", "Feltotem's Fall: Fel Surge Totem could not start its cast in instance %u", me->GetInstanceId());
+                me->DespawnOrUnsummon();
+            }
+            _retryTimer = 250;
+        }
+
+        void SpellFinishCast(SpellInfo const* spell) override
+        {
+            if (spell->Id == Feltotem::FelSurge)
+                me->DespawnOrUnsummon(500);
+        }
+
+    private:
+        uint64 _attempt = 0;
+        uint32 _retryTimer = 0;
+        uint8 _failedCasts = 0;
+        bool _started = false;
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new TotemAI(creature); }
+};
+
+class spell_mage_tower_fel_surge_missile : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_fel_surge_missile);
+
+    bool Load() override
+    {
+        _attempt = Feltotem::ActiveTugarAttempt(GetCaster());
+        return true;
+    }
+
+    void Land(SpellEffIndex effect)
+    {
+        if (!_attempt || _attempt != Feltotem::ActiveTugarAttempt(GetCaster()))
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override { OnEffectHit += SpellEffectFn(spell_mage_tower_fel_surge_missile::Land, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE); }
+
+    uint64 _attempt = 0;
+};
+
+class spell_mage_tower_fel_surge_summon : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_fel_surge_summon);
+
+    void Summon(SpellEffIndex effect)
+    {
+        if (!Feltotem::ActiveTugarAttempt(GetCaster()))
+            PreventHitDefaultEffect(effect);
+        else
+            SetEffectValue(1);
+    }
+
+    void Register() override { OnEffectHit += SpellEffectFn(spell_mage_tower_fel_surge_summon::Summon, EFFECT_0, SPELL_EFFECT_SUMMON); }
+};
+
+class spell_mage_tower_fel_surge : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_fel_surge);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Creature* caster = GetCaster()->ToCreature();
+        auto* ai = caster && caster->IsAIEnabled ? dynamic_cast<npc_mage_tower_fel_surge_totem::TotemAI*>(caster->AI()) : nullptr;
+        if (!ai || !ai->IsActive())
+            targets.clear();
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_fel_surge::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_fel_surge::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+    }
+};
 
 class npc_mage_tower_agatha : public CreatureScript
 {
@@ -417,6 +625,11 @@ public:
 
 void AddSC_broken_shore()
 {
+    new npc_mage_tower_tugar();
+    new npc_mage_tower_fel_surge_totem();
+    RegisterSpellScript(spell_mage_tower_fel_surge_missile);
+    RegisterSpellScript(spell_mage_tower_fel_surge_summon);
+    RegisterSpellScript(spell_mage_tower_fel_surge);
     new npc_mage_tower_agatha();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
