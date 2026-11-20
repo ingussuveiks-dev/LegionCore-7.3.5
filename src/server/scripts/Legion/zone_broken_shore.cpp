@@ -93,6 +93,82 @@ public:
     CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::VictoriaAI(creature); }
 };
 
+namespace ClosingTheEye
+{
+constexpr uint32 Xylem = 115244;
+constexpr uint32 FocusingIris = 64693;
+constexpr uint32 DrawPowerChannel = 231522;
+constexpr uint32 DrawPowerStack = 231610;
+
+struct XylemAI : SmartAI
+{
+    explicit XylemAI(Creature* creature) : SmartAI(creature) {}
+
+    void Reset() override
+    {
+        me->RemoveAurasDueToSpell(DrawPowerStack);
+        SmartAI::Reset();
+    }
+
+    bool CanDrawPower(Creature const* focus)
+    {
+        if (!focus || focus->GetEntry() != FocusingIris || focus->GetDBTableGUIDLow() != 14534039 ||
+            !focus->IsAlive() || !focus->IsInWorld() || !me->IsInMap(focus) || !me->InSamePhase(focus) ||
+            !me->IsAlive() || !me->isInCombat())
+            return false;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1204 || scenario->GetCurrentStep() != 1 || scenario->IsCompleted(false))
+            return false;
+
+        Unit* victim = me->getVictim();
+        Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        if (!player || !player->IsAlive() || !player->IsInWorld() ||
+            player->HasPendingTeleport() || !me->IsInMap(player) || !me->InSamePhase(player))
+            return false;
+
+        Spell const* channel = me->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+        return channel && channel->GetSpellInfo()->Id == DrawPowerChannel;
+    }
+};
+}
+
+class npc_mage_tower_xylem : public CreatureScript
+{
+public:
+    npc_mage_tower_xylem() : CreatureScript("npc_mage_tower_xylem") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::XylemAI(creature); }
+};
+
+class spell_mage_tower_xylem_draw_power : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_xylem_draw_power);
+
+    bool Load() override
+    {
+        Unit* caster = GetCaster();
+        Creature* xylem = caster ? caster->ToCreature() : nullptr;
+        return xylem && xylem->GetEntry() == ClosingTheEye::Xylem && xylem->GetMapId() == ClosingTheEye::ScenarioMap &&
+            xylem->GetDBTableGUIDLow() == 14534036;
+    }
+
+    void DrawPower(AuraEffect const*)
+    {
+        PreventDefaultAction();
+        Unit* caster = GetCaster();
+        Creature* xylem = caster ? caster->ToCreature() : nullptr;
+        Unit* focus = GetTarget();
+        auto* ai = xylem && xylem->IsAIEnabled ? dynamic_cast<ClosingTheEye::XylemAI*>(xylem->AI()) : nullptr;
+        if (ai && focus && ai->CanDrawPower(focus->ToCreature()))
+            xylem->CastSpell(xylem, ClosingTheEye::DrawPowerStack, true);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_mage_tower_xylem_draw_power::DrawPower, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    }
+};
+
 namespace Feltotem
 {
 constexpr uint32 Tugar = 117230;
@@ -2152,6 +2228,8 @@ public:
 void AddSC_broken_shore()
 {
     new npc_mage_tower_victoria();
+    new npc_mage_tower_xylem();
+    RegisterAuraScript(spell_mage_tower_xylem_draw_power);
     new npc_mage_tower_tugar();
     new npc_mage_tower_jormog();
     RegisterCreatureAI(npc_mage_tower_bile_egg);

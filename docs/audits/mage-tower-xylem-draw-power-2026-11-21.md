@@ -1,0 +1,13 @@
+# Xylem Draw Power
+
+The Legion build 26972 spell record for Draw Power `231522` specifies an interruptible ten-second channel on the Focusing Iris. Effect 1 ticks once per second with an empty trigger field. Spell `231610` supplies the original 5% damage increase per stack and its native 99-stack cap. Both the installed SmartAI channel row and the July 2018 DBM module identify `231522`. [Original DBM Xylem module](https://github.com/DeadlyBossMods/DBM-Challenges/blob/cf9f66ea21818a6f503644599c5c4e1b28990a00/DBM-Challenges/LegionArtifacts/DPSXylem.lua).
+
+The registered aura hook casts `231610` on each active tick from Xylem spawn `14534036` into the actual Iris spawn `14534039` during stage 1 of scenario `1204`. It checks the current channeled spell, active combat, the focus's map and phase, and the alive player who owns the current victim, including pet and guardian victims. The registered Xylem AI clears the permanent stack aura on reset and delegates to the existing SmartAI. The channel scheduling, spell target conditions, Razor Ice and the surrender sequence remain native.
+
+## Verification
+
+- The recorded DB2 check verified the channel spell, empty periodic trigger, original duration, interrupt flags, stack size and cap. The source-extracted C++ regression with AddressSanitizer passed for ordinary ticks, interrupted and stale attempts, a missing or invalid focus, wrong scenario or stage, a pet's player owner and aura removal on reset.
+- Applying the migration twice to the isolated MariaDB fixture produced the same bindings and preserved the native channel and surrender rows. The actual final linker map contains the registered Xylem AI and aura loader and their callbacks in `zone_broken_shore.obj`. The exact migration was applied manually to the production world database and verified against its checksum and expected rows.
+- The tested and installed executable has SHA-256 `606C925B70CEE4EF804178ED3EEAE92A54631EA4857C044FF8D7C81A0D353B53`. The staged and canonical starts exited cleanly with no new crashes, DBErrors, warnings or assertions. The reviewed diagnostic archive `build-extractors/bin/Release/fixed/2026-11-21-mage-tower-xylem-draw-power/` contains 36 verified hashes and records 178,145,457 bytes of redundant outputs removed. The immediately preceding rollback build and original footage were kept for continuing work.
+
+The actual client interruption and final-tick timing, aura display, and full combat traversal remain pending. This change covers the existing Arcane phase's Draw Power spell. The timed Mirror Images intermissions and transitions are separate work.
