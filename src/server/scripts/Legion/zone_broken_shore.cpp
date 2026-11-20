@@ -2,6 +2,9 @@
 #include "ScriptedCreature.h"
 #include "AreaTriggerAI.h"
 #include "AreaTrigger.h"
+#include "ConditionMgr.h"
+#include "GossipData.h"
+#include "GossipDef.h"
 #include "Log.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
@@ -16,6 +19,79 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+
+namespace ClosingTheEye
+{
+constexpr uint32 VictoriaMenu = 20778;
+constexpr uint32 PaidEntry = 6;
+constexpr uint32 FreeEntry = 7;
+constexpr uint32 AdmissionCurrency = 1226;
+constexpr int32 AdmissionCost = 100;
+constexpr uint32 FirstAttemptMarker = 45635;
+constexpr uint32 TeleportSpell = 229196;
+constexpr uint32 ScenarioMap = 1673;
+
+bool IsAcceptedXylemEntry(bool farTransfer, WorldLocation const& actual, SpellTargetPosition const* destination)
+{
+    return farTransfer && destination && destination->target_mapId == ScenarioMap &&
+        actual.GetMapId() == ScenarioMap &&
+        std::abs(actual.GetPositionX() - destination->target_X) < 0.01f &&
+        std::abs(actual.GetPositionY() - destination->target_Y) < 0.01f &&
+        std::abs(actual.GetPositionZ() - destination->target_Z) < 0.01f;
+}
+
+struct VictoriaAI : SmartAI
+{
+    explicit VictoriaAI(Creature* creature) : SmartAI(creature) {}
+
+    void sGossipSelect(Player* player, uint32 menu, uint32 selection) override
+    {
+        if (menu != VictoriaMenu || (selection != PaidEntry && selection != FreeEntry))
+        {
+            SmartAI::sGossipSelect(player, menu, selection);
+            return;
+        }
+
+        if (!player || !player->IsAlive() || !player->IsInWorld() || player->HasPendingTeleport() ||
+            !me->IsInMap(player) || !me->InSamePhase(player) || me->GetMapId() != 1220 || me->GetDBTableGUIDLow() != 12742696)
+            return;
+
+        GossipMenu const& shown = player->PlayerTalkClass->GetGossipMenu();
+        if (shown.GetMenuId() != menu || !shown.GetItem(selection))
+            return;
+
+        auto const options = sGossipDataStore->GetGossipMenuItemsMapBounds(menu);
+        auto const option = std::find_if(options.first, options.second,
+            [selection](auto const& item) { return item.second.OptionIndex == selection; });
+        if (option == options.second || !sConditionMgr->IsObjectMeetToConditions(player, me, option->second.Conditions) ||
+            (selection == PaidEntry && !player->HasCurrency(AdmissionCurrency, AdmissionCost)))
+            return;
+
+        // Preserve the SmartAI specialization setup, scenario selection and native teleport.
+        uint16 const previousScenario = player->GetScenarioId();
+        SmartAI::sGossipSelect(player, menu, selection);
+        if (!IsAcceptedXylemEntry(player->IsBeingTeleportedFar(), player->GetTeleportDest(),
+            sSpellMgr->GetSpellTargetPosition(TeleportSpell)))
+        {
+            if (!player->HasPendingTeleport())
+                player->SetScenarioId(previousScenario);
+            return;
+        }
+
+        if (selection == PaidEntry)
+            player->ModifyCurrency(AdmissionCurrency, -AdmissionCost, false, true);
+        else if (!player->GetQuestRewardStatus(FirstAttemptMarker))
+            player->SetRewardedQuest(FirstAttemptMarker);
+    }
+};
+}
+
+class npc_mage_tower_victoria : public CreatureScript
+{
+public:
+    npc_mage_tower_victoria() : CreatureScript("npc_mage_tower_victoria") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::VictoriaAI(creature); }
+};
 
 namespace Feltotem
 {
@@ -2075,6 +2151,7 @@ public:
 
 void AddSC_broken_shore()
 {
+    new npc_mage_tower_victoria();
     new npc_mage_tower_tugar();
     new npc_mage_tower_jormog();
     RegisterCreatureAI(npc_mage_tower_bile_egg);
