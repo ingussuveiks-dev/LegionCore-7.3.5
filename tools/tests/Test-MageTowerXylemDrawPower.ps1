@@ -32,9 +32,26 @@ $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Xylem Draw Power DB2 catalog mismatch' }
 
 $source = Get-Content -LiteralPath "$repo/src/server/scripts/Legion/zone_broken_shore.cpp" -Raw
-$callback = [regex]::Match($source, '(?ms)^namespace ClosingTheEye\r?\n\{\r?\nconstexpr uint32 Xylem =.*?(?=^class npc_mage_tower_xylem)')
-if (!$callback.Success) { throw 'Xylem production Draw Power controller is absent' }
-[IO.File]::WriteAllText("$out/XylemDrawPower.inc", $callback.Value)
+$constants = [regex]::Match($source, '(?m)^constexpr uint32 FocusingIris[^\r\n]+\r?\nconstexpr uint32 DrawPowerChannel[^\r\n]+\r?\nconstexpr uint32 DrawPowerStack[^\r\n]+')
+$callback = [regex]::Match($source, '(?ms)^    // BEGIN Draw Power controller\r?\n(.*?)^    // END Draw Power controller')
+$reset = [regex]::Match($source, '(?ms)^    // BEGIN Draw Power reset\r?\n(.*?)^    // END Draw Power reset')
+if (!$constants.Success -or !$callback.Success -or !$reset.Success) { throw 'Xylem production Draw Power controller is absent' }
+$extracted = @"
+namespace ClosingTheEye
+{
+$($constants.Value)
+struct XylemAI : SmartAI
+{
+    using SmartAI::SmartAI;
+$($callback.Groups[1].Value)
+    void Reset() override
+    {
+$($reset.Groups[1].Value)
+    }
+};
+}
+"@
+[IO.File]::WriteAllText("$out/XylemDrawPower.inc", $extracted)
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd = @"

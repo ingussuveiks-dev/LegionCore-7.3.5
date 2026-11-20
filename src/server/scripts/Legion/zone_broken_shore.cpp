@@ -13,12 +13,14 @@
 #include "ScenarioMgr.h"
 #include "SmartAI.h"
 #include "Spell.h"
+#include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <set>
 
 namespace ClosingTheEye
 {
@@ -100,16 +102,38 @@ constexpr uint32 FocusingIris = 64693;
 constexpr uint32 DrawPowerChannel = 231522;
 constexpr uint32 DrawPowerStack = 231610;
 
+enum XylemIntermissionSpells : uint32
+{
+    MirrorImage = 115543,
+    MirrorPosition = 116492,
+    PrismaticShock = 231914,
+    TimeAcceleration = 231980,
+    ArcaneBarrier = 231982,
+    DarknessAura = 232006,
+    DarknessDamage = 232007,
+    ArcaneAnnihilation = 234728,
+    CloakOfGlitteringRunes = 241048,
+    GlitteringRunesVisual = 241062,
+    FrostPhase = 242394,
+    ArcanePhase = 242386,
+    CancelAnnihilation = 164393,
+    HunterFlare = 132950,
+    ArcaneBarrierTrigger = 9255,
+    ArcaneBarrierTemplate = 90231982,
+    SetCombatPhase = 2401
+};
+
 struct XylemAI : SmartAI
 {
     explicit XylemAI(Creature* creature) : SmartAI(creature) {}
 
-    void Reset() override
-    {
-        me->RemoveAurasDueToSpell(DrawPowerStack);
-        SmartAI::Reset();
-    }
+    void Reset() override;
+    void UpdateAI(uint32 diff) override;
+    void SummonedCreatureDies(Creature* summon, Unit* killer) override;
+    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override;
+    void MoveInLineOfSight(Unit* target) override;
 
+    // BEGIN Draw Power controller
     bool CanDrawPower(Creature const* focus)
     {
         if (!focus || focus->GetEntry() != FocusingIris || focus->GetDBTableGUIDLow() != 14534039 ||
@@ -130,6 +154,367 @@ struct XylemAI : SmartAI
         Spell const* channel = me->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
         return channel && channel->GetSpellInfo()->Id == DrawPowerChannel;
     }
+    // END Draw Power controller
+
+    bool OwnsMirror(Creature const* image) const;
+    bool CanHitInIntermission(Unit* target) const;
+    bool IsProtected(Unit const& target);
+    bool IsCastingAnnihilation() const;
+    bool IsInIntermission() const { return _phase == Phase::Intermission; }
+
+private:
+    enum class Phase : uint32
+    {
+        FirstFrost = 1,
+        Arcane,
+        Intermission,
+        Frost
+    };
+
+    Player* GetAttemptPlayer() const;
+    bool IsEncounterActive() const;
+    bool CanReveal(Player& player);
+    void StartIntermission(Player& player);
+    void ClearIntermission(Player* player);
+    void ResumeFight(Player& player);
+    void UpdateEncounter(uint32 diff);
+
+    ObjectGuid _player;
+    std::set<ObjectGuid> _images;
+    Phase _phase = Phase::FirstFrost;
+    Phase _nextPhase = Phase::Arcane;
+    uint32 _phaseRemaining = 90000;
+    ReactStates _previousReaction = REACT_AGGRESSIVE;
+};
+
+XylemAI* GetXylemAI(Unit* caster)
+{
+    Creature* xylem = caster ? caster->ToCreature() : nullptr;
+    if (!xylem || xylem->GetEntry() != Xylem || xylem->GetMapId() != ScenarioMap ||
+        xylem->GetDBTableGUIDLow() != 14534036 || !xylem->IsAIEnabled)
+        return nullptr;
+
+    return dynamic_cast<XylemAI*>(xylem->AI());
+}
+
+bool XylemAI::IsEncounterActive() const
+{
+    if (me->GetMapId() != ScenarioMap || me->GetDBTableGUIDLow() != 14534036 || !me->IsAlive() || !me->isInCombat())
+        return false;
+
+    Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 1204 && scenario->GetCurrentStep() == 1 && !scenario->IsCompleted(false);
+}
+
+Player* XylemAI::GetAttemptPlayer() const
+{
+    Player* player = ObjectAccessor::GetPlayer(*me, _player);
+    return player && player->IsAlive() && player->IsInWorld() && !player->IsPreDelete() &&
+        !player->IsBeingTeleportedFar() && me->IsInMap(player) && me->InSamePhase(player) &&
+        player->GetQuestStatus(44925) == QUEST_STATUS_INCOMPLETE ? player : nullptr;
+}
+
+bool XylemAI::IsCastingAnnihilation() const
+{
+    Spell const* cast = me->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+    return cast && cast->getState() != SPELL_STATE_FINISHED && cast->GetSpellInfo()->Id == ArcaneAnnihilation;
+}
+
+bool XylemAI::OwnsMirror(Creature const* image) const
+{
+    return IsInIntermission() && image && image->GetEntry() == MirrorImage &&
+        me->IsInMap(image) && _images.count(image->GetGUID()) && GetAttemptPlayer();
+}
+
+bool XylemAI::CanHitInIntermission(Unit* target) const
+{
+    Player* player = IsInIntermission() && IsEncounterActive() ? GetAttemptPlayer() : nullptr;
+    return player && target && target->IsAlive() && me->IsInMap(target) && me->InSamePhase(target) &&
+        target->GetCharmerOrOwnerPlayerOrPlayerItself() == player;
+}
+
+bool XylemAI::IsProtected(Unit const& target)
+{
+    std::list<AreaTrigger*> barriers;
+    me->GetAreaObjectList(barriers, ArcaneBarrier);
+    for (AreaTrigger const* barrier : barriers)
+    {
+        int32 const remaining = barrier->GetDuration();
+        if (remaining <= 0 || barrier->GetRealEntry() != ArcaneBarrierTrigger)
+            continue;
+
+        // The client scale animates down to 10% over the native ten-second life.
+        float const radius = 8.0f * (0.1f + 0.9f * std::min(remaining, 10000) / 10000.0f);
+        if (std::abs(barrier->GetPositionZ() - target.GetPositionZ()) < 4.0f &&
+            barrier->GetExactDist2d(target.GetPositionX(), target.GetPositionY()) <= radius)
+            return true;
+    }
+    return false;
+}
+
+bool XylemAI::CanReveal(Player& player)
+{
+    if (!IsCastingAnnihilation() || player.HasPendingTeleport() ||
+        std::abs(me->GetPositionZ() - player.GetPositionZ()) > 4.0f)
+        return false;
+
+    if (me->GetExactDist2d(player.GetPositionX(), player.GetPositionY()) <= 4.0f)
+        return true;
+
+    std::list<AreaTrigger*> flares;
+    player.GetAreaObjectList(flares, HunterFlare);
+    return std::any_of(flares.begin(), flares.end(), [this, &player](AreaTrigger const* flare)
+    {
+        return flare->GetCasterGUID() == player.GetGUID() && flare->GetRealEntry() == 510 && flare->GetDuration() > 0 &&
+            me->IsInMap(flare) && me->InSamePhase(flare) &&
+            std::abs(me->GetPositionZ() - flare->GetPositionZ()) < 4.0f &&
+            me->GetExactDist2d(flare->GetPositionX(), flare->GetPositionY()) <= 10.0f;
+    });
+}
+
+void XylemAI::StartIntermission(Player& player)
+{
+    std::list<Creature*> anchors;
+    me->GetCreatureListWithEntryInGrid(anchors, MirrorPosition, 105.0f);
+    anchors.remove_if([this](Creature const* anchor)
+    {
+        uint64 const spawn = anchor->GetDBTableGUIDLow();
+        return spawn < 14534029 || spawn > 14534043 || !me->InSamePhase(anchor);
+    });
+    std::vector<Creature const*> rim;
+    for (Creature const* anchor : anchors)
+        if (anchor->GetDBTableGUIDLow() < 14534039 && player.GetExactDist2d(anchor->GetPositionX(), anchor->GetPositionY()) >= 22.0f)
+            rim.push_back(anchor);
+
+    if (anchors.size() != 12 || rim.empty())
+    {
+        TC_LOG_ERROR("scripts", "Closing the Eye: expected 12 mirror positions with a usable rim location, found %u", uint32(anchors.size()));
+        SmartAI::EnterEvadeMode();
+        return;
+    }
+
+    Creature const* destination = rim[urand(0, uint32(rim.size() - 1))];
+    _nextPhase = _phase == Phase::Arcane ? Phase::Frost : Phase::Arcane;
+    _phase = Phase::Intermission;
+    SmartAI::SetData(SetCombatPhase, uint32(_phase));
+    me->InterruptNonMeleeSpells(true);
+    me->StopMoving();
+    me->GetMotionMaster()->Clear();
+    me->GetMotionMaster()->MoveIdle();
+    me->AttackStop();
+    _previousReaction = me->GetReactState();
+    me->SetReactState(REACT_ATTACK_OFF);
+    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+    me->NearTeleportTo(destination->GetPosition());
+
+    if (me->CastSpell(me, ArcaneAnnihilation, false) != SPELL_CAST_OK || !IsCastingAnnihilation())
+    {
+        TC_LOG_ERROR("scripts", "Closing the Eye: Xylem could not start Arcane Annihilation");
+        ClearIntermission(&player);
+        SmartAI::EnterEvadeMode();
+        return;
+    }
+
+    me->CastSpell(me, CloakOfGlitteringRunes, true);
+    me->CastSpell(me, DarknessAura, true);
+    for (Creature const* anchor : anchors)
+    {
+        if (anchor == destination)
+            continue;
+
+        if (TempSummon* image = me->SummonCreature(MirrorImage, anchor->GetPosition(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000))
+            _images.insert(image->GetGUID());
+    }
+
+    if (_images.size() != 11)
+    {
+        TC_LOG_ERROR("scripts", "Closing the Eye: expected 11 mirror images, published %u", uint32(_images.size()));
+        ClearIntermission(&player);
+        SmartAI::EnterEvadeMode();
+    }
+}
+
+void XylemAI::SummonedCreatureDies(Creature* summon, Unit* killer)
+{
+    if (!OwnsMirror(summon) || !_images.erase(summon->GetGUID()) || !CanHitInIntermission(killer))
+        return;
+
+    auto const* spell = sSpellMgr->GetSpellInfo(ArcaneBarrier);
+    if (!spell)
+        return;
+
+    auto barrier = std::make_unique<AreaTrigger>();
+    Position const pos = summon->GetPosition();
+    if (!barrier->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(),
+        ArcaneBarrierTrigger, me, spell, pos, pos, nullptr, ObjectGuid::Empty, ArcaneBarrierTemplate))
+    {
+        TC_LOG_ERROR("scripts", "Closing the Eye: Xylem could not publish the Arcane Barrier of Replenishment");
+        return;
+    }
+    barrier->SetSphereScale(-0.9f, barrier->GetDuration(), false, 0.05f);
+    barrier->UpdateOverrideScale();
+    barrier.release();
+}
+
+void XylemAI::ClearIntermission(Player* player)
+{
+    me->InterruptNonMeleeSpells(true, ArcaneAnnihilation);
+    me->RemoveAurasDueToSpell(DarknessAura);
+    me->RemoveAurasDueToSpell(CloakOfGlitteringRunes);
+    me->RemoveAurasDueToSpell(GlitteringRunesVisual);
+    me->RemoveAreaObject(ArcaneBarrier);
+    if (player)
+    {
+        player->RemoveAurasDueToSpell(TimeAcceleration, me->GetGUID());
+        player->RemoveAurasDueToSpell(DarknessDamage, me->GetGUID());
+    }
+
+    std::set<ObjectGuid> images;
+    images.swap(_images);
+    for (ObjectGuid const& guid : images)
+        if (Creature* image = ObjectAccessor::GetCreature(*me, guid))
+            image->DespawnOrUnsummon();
+
+    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+    me->SetReactState(_previousReaction);
+}
+
+void XylemAI::ResumeFight(Player& player)
+{
+    ClearIntermission(&player);
+    me->CastSpell(me, CancelAnnihilation, true);
+    _phase = _nextPhase;
+    _phaseRemaining = _phase == Phase::Arcane ? 60000 : 90000;
+    SmartAI::SetData(SetCombatPhase, uint32(_phase));
+    me->CastSpell(me, _phase == Phase::Arcane ? ArcanePhase : FrostPhase, true);
+    SmartAI::AttackStart(&player);
+}
+
+void XylemAI::UpdateEncounter(uint32 diff)
+{
+    if (!IsEncounterActive())
+    {
+        if (IsInIntermission())
+        {
+            ClearIntermission(ObjectAccessor::GetPlayer(*me, _player));
+            _phase = Phase::FirstFrost;
+        }
+        return;
+    }
+
+    if (_player.IsEmpty())
+    {
+        Unit* victim = me->getVictim();
+        Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        if (!player)
+            return;
+        _player = player->GetGUID();
+        me->CastSpell(me, FrostPhase, true);
+    }
+
+    Player* player = GetAttemptPlayer();
+    if (!player)
+    {
+        if (IsInIntermission())
+            ClearIntermission(ObjectAccessor::GetPlayer(*me, _player));
+        SmartAI::EnterEvadeMode();
+        return;
+    }
+
+    if (IsInIntermission())
+    {
+        if (IsProtected(*player))
+        {
+            if (Aura* shield = player->GetAura(TimeAcceleration, me->GetGUID()))
+            {
+                if (shield->GetDuration() < 500)
+                    shield->SetDuration(2000);
+            }
+            else
+                me->AddAura(TimeAcceleration, player, nullptr, 0, 2000, 2000);
+            player->RemoveAurasDueToSpell(DarknessDamage, me->GetGUID());
+        }
+        else
+            player->RemoveAurasDueToSpell(TimeAcceleration, me->GetGUID());
+
+        if (CanReveal(*player))
+            ResumeFight(*player);
+        else if (!IsCastingAnnihilation())
+        {
+            // The native cast deals its own damage. Surviving it does not reveal Xylem.
+            ClearIntermission(player);
+            SmartAI::EnterEvadeMode();
+        }
+        return;
+    }
+
+    if (me->GetHealthPct() < 11.0f)
+        return;
+    if (diff >= _phaseRemaining)
+        StartIntermission(*player);
+    else
+        _phaseRemaining -= diff;
+}
+
+void XylemAI::Reset()
+{
+    if (IsInIntermission())
+        ClearIntermission(ObjectAccessor::GetPlayer(*me, _player));
+    _player.Clear();
+    _phase = Phase::FirstFrost;
+    _phaseRemaining = 90000;
+    // BEGIN Draw Power reset
+    me->RemoveAurasDueToSpell(DrawPowerStack);
+    SmartAI::Reset();
+    // END Draw Power reset
+}
+
+void XylemAI::UpdateAI(uint32 diff)
+{
+    UpdateEncounter(diff);
+    SmartAI::UpdateAI(diff);
+}
+
+void XylemAI::DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type)
+{
+    if (IsInIntermission())
+        damage = 0;
+    else
+        SmartAI::DamageTaken(attacker, damage, type);
+}
+
+void XylemAI::MoveInLineOfSight(Unit* target)
+{
+    if (!IsInIntermission())
+        SmartAI::MoveInLineOfSight(target);
+}
+
+struct XylemMirrorAI : ScriptedAI
+{
+    explicit XylemMirrorAI(Creature* creature) : ScriptedAI(creature) {}
+
+    void UpdateAI(uint32 diff) override
+    {
+        TempSummon* image = me->ToTempSummon();
+        auto* xylem = GetXylemAI(image ? image->GetSummoner() : nullptr);
+        if (!xylem || !xylem->OwnsMirror(me))
+            return;
+
+        if (diff >= _shockRemaining)
+        {
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+            _shockRemaining = me->CastSpell(me, PrismaticShock, false) == SPELL_CAST_OK ? 4000 : 1000;
+        }
+        else
+            _shockRemaining -= diff;
+    }
+
+    void AttackStart(Unit*) override {}
+    void MoveInLineOfSight(Unit*) override {}
+
+private:
+    uint32 _shockRemaining = urand(1000, 3000);
 };
 }
 
@@ -138,6 +523,97 @@ class npc_mage_tower_xylem : public CreatureScript
 public:
     npc_mage_tower_xylem() : CreatureScript("npc_mage_tower_xylem") {}
     CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::XylemAI(creature); }
+};
+
+class npc_mage_tower_xylem_mirror : public CreatureScript
+{
+public:
+    npc_mage_tower_xylem_mirror() : CreatureScript("npc_mage_tower_xylem_mirror") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::XylemMirrorAI(creature); }
+};
+
+class spell_mage_tower_xylem_darkness : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_xylem_darkness);
+
+    bool Load() override { return ClosingTheEye::GetXylemAI(GetCaster()) != nullptr; }
+
+    void CastDarkness(AuraEffect const*)
+    {
+        PreventDefaultAction();
+        Unit* caster = GetCaster();
+        if (auto* ai = ClosingTheEye::GetXylemAI(caster))
+            if (ai->IsInIntermission() && ai->IsCastingAnnihilation())
+                caster->CastSpell(caster, ClosingTheEye::DarknessDamage, true);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_mage_tower_xylem_darkness::CastDarkness, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+class spell_mage_tower_xylem_intermission_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_xylem_intermission_damage);
+
+    ClosingTheEye::XylemAI* Source()
+    {
+        Unit* caster = GetCaster();
+        if (GetSpellInfo()->Id != ClosingTheEye::PrismaticShock)
+            return ClosingTheEye::GetXylemAI(caster);
+
+        TempSummon* image = caster ? caster->ToTempSummon() : nullptr;
+        auto* ai = ClosingTheEye::GetXylemAI(image ? image->GetSummoner() : nullptr);
+        return ai && ai->OwnsMirror(image) ? ai : nullptr;
+    }
+
+    bool Load() override { return Source() != nullptr; }
+
+    void Filter(std::list<WorldObject*>& targets)
+    {
+        auto* ai = Source();
+        bool const darkness = GetSpellInfo()->Id == ClosingTheEye::DarknessDamage;
+        targets.remove_if([ai, darkness](WorldObject* object)
+        {
+            Unit* target = object ? object->ToUnit() : nullptr;
+            return !ai || !ai->CanHitInIntermission(target) || (darkness && ai->IsProtected(*target));
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_xylem_intermission_damage::Filter, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_xylem_intermission_damage::Filter, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+    }
+};
+
+class spell_mage_tower_xylem_time_acceleration : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_xylem_time_acceleration);
+
+    bool Load() override { return ClosingTheEye::GetXylemAI(GetCaster()) != nullptr; }
+
+    void CalculateAbsorption(AuraEffect const*, float& amount, bool&)
+    {
+        amount = -1;
+    }
+
+    void Absorb(AuraEffect*, DamageInfo& damage, float& amount)
+    {
+        auto* ai = ClosingTheEye::GetXylemAI(GetCaster());
+        Unit* target = GetTarget();
+        SpellInfo const* spell = damage.GetSpellInfo();
+        if (ai && ai->CanHitInIntermission(target) && ai->IsProtected(*target) &&
+            (!spell || spell->Id != ClosingTheEye::ArcaneAnnihilation))
+            amount = damage.GetDamage();
+    }
+
+    void Register() override
+    {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_mage_tower_xylem_time_acceleration::CalculateAbsorption, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb += AuraEffectAbsorbFn(spell_mage_tower_xylem_time_acceleration::Absorb, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+    }
 };
 
 class spell_mage_tower_xylem_draw_power : public AuraScript
@@ -2229,6 +2705,10 @@ void AddSC_broken_shore()
 {
     new npc_mage_tower_victoria();
     new npc_mage_tower_xylem();
+    new npc_mage_tower_xylem_mirror();
+    RegisterAuraScript(spell_mage_tower_xylem_darkness);
+    RegisterSpellScript(spell_mage_tower_xylem_intermission_damage);
+    RegisterAuraScript(spell_mage_tower_xylem_time_acceleration);
     RegisterAuraScript(spell_mage_tower_xylem_draw_power);
     new npc_mage_tower_tugar();
     new npc_mage_tower_jormog();
