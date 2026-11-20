@@ -141,7 +141,7 @@ static void InitializeRewardFixture()
     CharacterDatabase.Execute("CREATE TEMPORARY TABLE characters (guid BIGINT UNSIGNED PRIMARY KEY, money BIGINT UNSIGNED NOT NULL, native_fixture TINYINT NOT NULL)");
     CharacterDatabase.Execute("INSERT INTO characters (guid,money,native_fixture) VALUES (101,0,1)");
     for (char const* table : {"character_queststatus", "character_queststatus_objectives", "character_queststatus_rewarded",
-         "character_queststatus_world", "character_currency"})
+         "character_queststatus_world", "character_currency", "creature_respawn"})
     {
         std::string name = table;
         CharacterDatabase.Execute(("CREATE TEMPORARY TABLE reward_schema LIKE " + name).c_str());
@@ -224,6 +224,85 @@ static void CheckPartyKill(Map& map, Position const& origin, uint32 area)
 }
 
 #ifdef LEGION_ROTATION_GARRISON_PLACEMENTS
+namespace GameTime
+{
+    extern time_t GameTime;
+}
+
+class RotationClock
+{
+public:
+    ~RotationClock() { GameTime::GameTime = start; }
+    void At(time_t deadline) const { GameTime::GameTime = deadline; }
+    time_t Start() const { return start; }
+
+private:
+    time_t const start = GameTime::GetGameTime();
+};
+
+static void CheckCreatureRespawn(Map& map, uint64 guid, uint32 entry, uint32 delay)
+{
+    auto row = WorldDatabase.PQuery("SELECT position_x,position_y,position_z,orientation,PhaseId,spawntimesecs "
+        "FROM creature WHERE guid=%llu AND id=%u AND map=1220 AND zoneId=7543 AND areaId=8551 "
+        "AND spawnMask=1 AND phaseMask=1", static_cast<unsigned long long>(guid), entry);
+    Require(row && row->Fetch()[4].GetString() == "7147" && row->Fetch()[5].GetUInt32() == delay,
+        "Placed creature respawn data differs");
+    auto fields = row->Fetch();
+    // The test's accessor is intentionally bounded. Keep the DB row's spawn data and use a test alias.
+    auto const runtimeGuid = 180200 + (guid - 146980460);
+    CreatureData& data = sObjectMgr->NewOrExistCreatureData(runtimeGuid);
+    data.guid = runtimeGuid;
+    data.id = entry;
+    data.mapid = 1220;
+    data.zoneId = 7543;
+    data.areaId = 8551;
+    data.posX = fields[0].GetFloat();
+    data.posY = fields[1].GetFloat();
+    data.posZ = fields[2].GetFloat();
+    data.orientation = fields[3].GetFloat();
+    data.PhaseID = {7147};
+    data.spawntimesecs = fields[5].GetUInt32();
+    map.LoadGrid(data.posX, data.posY);
+    Creature creature(false);
+    Require(creature.LoadCreatureFromDB(runtimeGuid, &map) && creature.HasPhaseId(7147) && creature.IsAlive()
+        && creature.GetRespawnDelay() == delay, "Native DB spawn did not load its phase and respawn settings");
+    struct UnpublishCreature
+    {
+        Creature& Spawn;
+        ~UnpublishCreature()
+        {
+            Spawn.CombatStop(true);
+            if (Spawn.IsInWorld())
+                Spawn.GetMap()->RemoveFromMap(&Spawn, false);
+            Spawn.ResetMap();
+        }
+    } cleanup{creature};
+
+    RotationClock clock;
+    creature.setDeathState(JUST_DIED);
+    auto const corpseEnd = clock.Start() + creature.GetCorpseDelay();
+    auto const deadline = creature.GetRespawnTime();
+    Require(creature.getDeathState() == CORPSE && deadline == corpseEnd + delay, "Death used the wrong native respawn deadline");
+    std::string const timerRow = " FROM creature_respawn WHERE guid=" + std::to_string(runtimeGuid) + " AND mapId=1220 AND instanceId=0";
+    CharacterDatabase.Execute(("INSERT INTO creature_respawn (guid,respawnTime,mapId,instanceId) VALUES (" +
+        std::to_string(runtimeGuid) + "," + std::to_string(deadline) + ",1220,0)").c_str());
+    clock.At(corpseEnd);
+    creature.Update(5000);
+    Require(creature.getDeathState() == DEAD && creature.GetRespawnTime() == deadline,
+        "Corpse removal did not preserve the scheduled respawn");
+    clock.At(deadline - 1);
+    creature.Update(5000);
+    auto saved = QueryRewardFixture(("SELECT respawnTime" + timerRow).c_str());
+    Require(creature.getDeathState() == DEAD && saved && saved->Fetch()[0].GetUInt32() == deadline,
+        "Creature appeared or cleared its saved respawn before its deadline");
+    clock.At(deadline);
+    creature.Update(5000);
+    Require(creature.IsAlive() && creature.GetHealth() == creature.GetMaxHealth() && creature.HasPhaseId(7147)
+        && creature.GetRespawnTime() == 0, "Placed creature did not respawn in its native phase");
+    Require(!QueryRewardFixture(("SELECT guid" + timerRow).c_str()), "Creature retained a stale saved respawn after returning");
+    std::cout << "GARRISON creature " << entry << " returned after corpse removal and " << delay << " seconds\n";
+}
+
 class RotationLibram : public GameObject
 {
 public:
@@ -240,6 +319,7 @@ public:
         // The native test reserves a small accessor vector. Use an in-range runtime GUID for the loaded pose.
         auto runtimeGuid = 180100 + (guid - 25760460);
         Require(Create(runtimeGuid, 269154, &map, 1, pose, rotation, 255, GO_STATE_READY), "Native Libram create failed");
+        SetRespawnDelayTime(fields[7].GetUInt32());
         SetPhaseId({7147}, false);
         SetLootState(GO_READY);
         map.LoadGrid(GetPositionX(), GetPositionY());
@@ -261,6 +341,48 @@ public:
         player.GetSession()->HandleGameObjectUse(packet);
     }
 };
+
+static void CheckLibramRespawn(RotationLibram& book, RotationPlayer& eligible)
+{
+    RotationClock clock;
+    clock.At(clock.Start() + std::max(60u, book.GetGOInfo()->GetAutoCloseTime()) + 1);
+    book.Update(5000);
+    Require(book.getLootState() == GO_JUST_DEACTIVATED, "The used Libram did not leave its active state");
+    book.Update(5000);
+    auto const deadline = book.GetRespawnTime();
+    Require(deadline == GameTime::GetGameTime() + 120 && !book.isSpawned(), "Native Libram did not schedule its hidden interval");
+    book.UseThroughSession(eligible);
+    Require(eligible.GetQuestObjectiveData(46073, 269154) == 1 && !book.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE),
+        "Using the hidden Libram changed progress or consumed it again");
+    clock.At(deadline - 1);
+    book.Update(5000);
+    Require(!book.isSpawned(), "Libram appeared before its deadline");
+    clock.At(deadline);
+    book.Update(5000);
+    Require(book.isSpawned() && book.getLootState() == GO_READY && book.GetGoState() == GO_STATE_READY && book.HasPhaseId(7147)
+        && !book.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE), "Libram did not respawn ready for interaction");
+    std::cout << "GARRISON Libram cooldown rejected interaction while hidden and restored the ready phase after 120 seconds\n";
+}
+
+static void CheckFelskornVisibility(Map& map, uint32 otherQuest)
+{
+    RotationLibram book(map, 25760463);
+    RotationPlayer visitor(map, 104, {book.GetPositionX() + 1, book.GetPositionY(), book.GetPositionZ(), 0});
+    // The native task separates Warriors (45743) from the other classes (45744).
+    visitor.SetByteValue(UNIT_FIELD_BYTES_0, 1, otherQuest == 45743 ? CLASS_WARRIOR : CLASS_HUNTER);
+    visitor.UnlockBrokenShore();
+    visitor.GetAchievementMgr()->m_canUpdateAchiev = 1; // Online characters finish achievement loading before area entry.
+    visitor.SetMovedUnit(&visitor);
+    Require(visitor.GetCurrentAreaID() == 8551, "Competing phase fixture is outside the shared objective area");
+    visitor.RefreshWorldQuestAreaTasks();
+    visitor.GetPhaseMgr().NotifyStoresReloaded();
+    Require(visitor.GetQuestStatus(otherQuest) == QUEST_STATUS_INCOMPLETE && visitor.HasPhaseId(7148)
+        && !visitor.HasPhaseId(7147) && !book.InSamePhase(&visitor),
+        "The other live rotation did not remove Garrison visibility through native phase conditions");
+    book.UseThroughSession(visitor);
+    Require(!book.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE), "Competing rotation consumed a Garrison Libram");
+    std::cout << "GARRISON competitor " << otherQuest << " switched the objective area from phase 7147 to 7148\n";
+}
 
 static void CheckLibramAdmission(RotationPlayer& eligible, RotationPlayer& locked, WorldQuest& active)
 {
@@ -325,6 +447,7 @@ static void CheckLibramAdmission(RotationPlayer& eligible, RotationPlayer& locke
     Aura const* libramAura = eligible.GetAura(241545);
     Require(libramAura && libramAura->GetMaxDuration() == 120000, "Native Libram use did not deliver its two-minute player aura");
     std::cout << "GARRISON Libram native packet rejected far, wrong phase, inactive player, expired rotation and immediate replay; eligible credit=1 and aura active\n";
+    CheckLibramRespawn(book, eligible);
 }
 #endif
 
@@ -388,6 +511,8 @@ static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locke
     else
     {
         CheckLibramAdmission(player, locked, active);
+        CheckCreatureRespawn(*player.GetMap(), 146980460, 117555, 45);
+        CheckCreatureRespawn(*player.GetMap(), 146980472, 118720, 240);
         kill(117555, 2);
         kill(118720, 1);
         for (uint32 index = 0; index < 26; ++index)
@@ -400,6 +525,12 @@ static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locke
         expectedMoney = player.GetMoney() + fixtureGold;
         finish.UseThroughSession(player);
         finish.UseThroughSession(player);
+        for (uint32 tick = 0; tick < 12; ++tick)
+            player.m_Events.Update(500);
+        auto outro = LiveConversations();
+        Require(quest->RewardSpell == 235644 && outro.size() == 1 && outro[0]->GetEntry() == 4440 &&
+            outro[0]->GetCasterGUID() == player.GetGUID(), "The second Libram did not send one personal Illidan outro");
+        ClearConversations(*player.GetMap());
         RotationLibram rewarded(*player.GetMap(), 25760462);
         player.PlaceInMap({rewarded.GetPositionX() + 1, rewarded.GetPositionY(), rewarded.GetPositionZ(), 0});
         rewarded.UseThroughSession(player);
@@ -448,6 +579,9 @@ int main(int argc, char** argv)
         sQuestDataStore->LoadQuests();
 #ifdef LEGION_ROTATION_PROGRESSION
         LoadLootTables();
+#endif
+#ifdef LEGION_ROTATION_GARRISON_PLACEMENTS
+        sAchievementMgr->LoadCriteriaList();
 #endif
 
         std::unordered_map<uint32, std::vector<uint32>> outdoor{{1220, {}}};
@@ -618,6 +752,10 @@ int main(int argc, char** argv)
                 auto other = (sQuestDataStore->*Access(RotationGenerateTag{}))(alternative, alternative->worldQuest);
                 Require(other && !(sQuestDataStore->*Access(RotationAdmissionTag{}))(update->worldQuest, update),
                     "The restored task could overwrite an active alternative state or phase");
+#ifdef LEGION_ROTATION_GARRISON_PLACEMENTS
+                if (test.QuestId == 46073)
+                    CheckFelskornVisibility(map, otherId);
+#endif
                 (sQuestDataStore->*Access(RotationRemoveTaskTag{}))(alternative->quest);
                 rotations->clear();
                 auto original = (sQuestDataStore->*Access(RotationGenerateTag{}))(update, update->worldQuest);
