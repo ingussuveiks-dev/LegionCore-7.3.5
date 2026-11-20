@@ -1,5 +1,6 @@
 #define AREA_DIALOGUE_SUPPORT_ONLY
 #include "LegionAreaDialogueNative.cpp"
+#include "GameObjectPackets.h"
 #include "ItemEnchantmentMgr.h"
 #include "LootMgr.h"
 #include "WorldStateMgr.h"
@@ -54,12 +55,18 @@ class RotationPlayer : public DungeonPlayer
 public:
     RotationPlayer(Map& map, uint32 low, Position const& location) : DungeonPlayer(map, RACE_HUMAN, low)
     {
+        PlaceInMap(location);
+        Require(Sessions().emplace(low, WorldSessionPtr(GetSession(), [](WorldSession*) {})).second, "Test session key collision");
+    }
+
+    void PlaceInMap(Position const& location)
+    {
         RemoveFromGrid();
         Relocate(location);
         GetZoneAndAreaId(m_zoneId, m_areaId);
+        Map& map = *GetMap();
         map.LoadGrid(GetPositionX(), GetPositionY());
         map.AddToGrid(static_cast<Player*>(this), Cell(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY())));
-        Require(Sessions().emplace(low, WorldSessionPtr(GetSession(), [](WorldSession*) {})).second, "Test session key collision");
     }
 
     ~RotationPlayer() { Sessions().erase(GetGUID().GetCounter()); }
@@ -216,6 +223,111 @@ static void CheckPartyKill(Map& map, Position const& origin, uint32 area)
     std::cout << "PROGRESSION 46073 pet party credit owner=1 nearby=1 distant=0 without_task=0\n";
 }
 
+#ifdef LEGION_ROTATION_GARRISON_PLACEMENTS
+class RotationLibram : public GameObject
+{
+public:
+    RotationLibram(Map& map, uint64 guid)
+    {
+        auto row = WorldDatabase.PQuery("SELECT position_x,position_y,position_z,orientation,rotation2,rotation3,PhaseId,spawntimesecs "
+            "FROM gameobject WHERE guid=%llu AND id=269154 AND map=1220 AND zoneId=7543 AND areaId=8551 "
+            "AND spawnMask=1 AND phaseMask=1 AND state=1", static_cast<unsigned long long>(guid));
+        Require(row && row->Fetch()[6].GetString() == "7147" && row->Fetch()[7].GetUInt32() == 120,
+            "A real Libram placement is missing its expected phase or lifecycle");
+        auto fields = row->Fetch();
+        Position pose{fields[0].GetFloat(), fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat()};
+        G3D::Quat rotation(0, 0, fields[4].GetFloat(), fields[5].GetFloat());
+        // The native test reserves a small accessor vector. Use an in-range runtime GUID for the loaded pose.
+        auto runtimeGuid = 180100 + (guid - 25760460);
+        Require(Create(runtimeGuid, 269154, &map, 1, pose, rotation, 255, GO_STATE_READY), "Native Libram create failed");
+        SetPhaseId({7147}, false);
+        SetLootState(GO_READY);
+        map.LoadGrid(GetPositionX(), GetPositionY());
+        Require(map.AddToMap(static_cast<GameObject*>(this)) && isSpawned(), "Native Libram publication failed");
+    }
+
+    ~RotationLibram()
+    {
+        if (IsInWorld())
+            GetMap()->RemoveFromMap(static_cast<GameObject*>(this), false);
+        ResetMap();
+    }
+
+    void UseThroughSession(Player& player)
+    {
+        Require(player.CanContact() && player.GetUnitBeingMoved() == &player, "Libram packet is not testing a live mover");
+        WorldPackets::GameObject::GameObjectUse packet{WorldPacket(CMSG_GAME_OBJ_USE, 0)};
+        packet.Guid = GetGUID();
+        player.GetSession()->HandleGameObjectUse(packet);
+    }
+};
+
+static void CheckLibramAdmission(RotationPlayer& eligible, RotationPlayer& locked, WorldQuest& active)
+{
+    auto cohort = WorldDatabase.Query("SELECT SUM(id=117555 AND spawntimesecs=45), SUM(id=118720 AND spawntimesecs=240) "
+        "FROM creature WHERE guid BETWEEN 146980460 AND 146980472 AND map=1220 AND zoneId=7543 AND areaId=8551 "
+        "AND spawnMask=1 AND phaseMask=1 AND PhaseId='7147'");
+    Require(cohort && cohort->Fetch()[0].GetUInt32() == 12 && cohort->Fetch()[1].GetUInt32() == 1, "Garrison creature placement cohort differs");
+    auto info = sObjectMgr->GetGameObjectTemplate(269154);
+    Require(info && info->type == GAMEOBJECT_TYPE_GOOBER && info->displayId == 26998 && info->goober.questID == 46073
+        && info->goober.spell == 241545 && info->goober.conditionID1 == 48995, "Libram lost its native data or task guard");
+
+    RotationLibram book(*eligible.GetMap(), 25760460);
+    auto noUse = [&] {
+        Require(eligible.GetQuestObjectiveData(46073, 269154) == 0 && !book.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE),
+            "Rejected Libram use changed objective or consumed the book");
+    };
+    eligible.SetMovedUnit(&eligible);
+    locked.SetMovedUnit(&locked);
+    Require(!book.IsWithinDistInMap(&eligible, book.GetInteractionDistance()), "Far test must start out of range");
+    book.UseThroughSession(eligible);
+    noUse();
+
+    Position close{book.GetPositionX() + 1, book.GetPositionY(), book.GetPositionZ(), 0};
+    eligible.PlaceInMap(close);
+    locked.PlaceInMap(close);
+    auto const eligiblePhases = eligible.GetPhases();
+    locked.SetPhaseId(eligiblePhases, false);
+    Require(book.IsWithinDistInMap(&eligible, book.GetInteractionDistance()) && book.IsWithinLOSInMap(&eligible),
+        "Selected Libram cannot be used from its real approach");
+
+    book.UseThroughSession(locked);
+    noUse();
+    eligible.SetPhaseId({8662}, false);
+    Require(!book.InSamePhase(&eligible), "Wrong phase fixture would see the Libram");
+    book.UseThroughSession(eligible);
+    noUse();
+    eligible.SetPhaseId(eligiblePhases, false);
+
+    auto resetTime = active.ResetTime;
+    active.ResetTime = GameTime::GetGameTime();
+    book.UseThroughSession(eligible);
+    noUse();
+    active.ResetTime = resetTime;
+
+    Require(eligible.CanRewardWorldQuest(sQuestDataStore->GetQuestTemplate(46073))
+        && eligible.GetQuestStatus(46073) == QUEST_STATUS_INCOMPLETE
+        && book.IsWithinDistInMap(&eligible, book.GetInteractionDistance()) && book.IsWithinLOSInMap(&eligible),
+        "Eligible Libram admission prerequisites changed after the negative checks");
+    Require(eligible.GetMap()->GetGameObject(book.GetGUID()) == &book && !eligible.IsSpectator(),
+        "The session cannot resolve the native Libram in the player's map");
+    book.UseThroughSession(eligible);
+    if (eligible.GetQuestObjectiveData(46073, 269154) != 1 || !book.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE))
+        std::cout << "GARRISON eligible credit=" << eligible.GetQuestObjectiveData(46073, 269154)
+                  << " flags=" << book.GetUInt32Value(GAMEOBJECT_FIELD_FLAGS) << " loot=" << unsigned(book.getLootState())
+                  << " ready=" << book.isSpawned() << " alive=" << eligible.IsAlive() << std::endl;
+    Require(eligible.GetQuestObjectiveData(46073, 269154) == 1 && book.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE),
+        "An eligible use did not consume and credit the book through native goober dispatch");
+    book.UseThroughSession(eligible);
+    Require(eligible.GetQuestObjectiveData(46073, 269154) == 1, "Repeated Libram use gave another credit before reset");
+    for (uint32 tick = 0; tick < 12; ++tick)
+        eligible.m_Events.Update(500);
+    Aura const* libramAura = eligible.GetAura(241545);
+    Require(libramAura && libramAura->GetMaxDuration() == 120000, "Native Libram use did not deliver its two-minute player aura");
+    std::cout << "GARRISON Libram native packet rejected far, wrong phase, inactive player, expired rotation and immediate replay; eligible credit=1 and aura active\n";
+}
+#endif
+
 static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locked, Quest const* quest, WorldQuest& active)
 {
     Require(!quest->RewardMailTemplateId, "Review new reward mail before exercising shadow persistence");
@@ -272,6 +384,29 @@ static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locke
     else if (questId == 46063)
         for (uint32 index = 0; index < 15; ++index)
             kill(118657, index % 3, index == 14);
+#ifdef LEGION_ROTATION_GARRISON_PLACEMENTS
+    else
+    {
+        CheckLibramAdmission(player, locked, active);
+        kill(117555, 2);
+        kill(118720, 1);
+        for (uint32 index = 0; index < 26; ++index)
+            kill(117559, index % 3);
+        Require(player.GetQuestObjectiveData(46073, 269154) == 1 && player.GetQuestObjectiveData(46073, 117555) == 1
+            && player.GetQuestObjectiveData(46073, 118720) == 1, "Mixed Garrison objective credits were lost");
+
+        RotationLibram finish(*player.GetMap(), 25760461);
+        player.PlaceInMap({finish.GetPositionX() + 1, finish.GetPositionY(), finish.GetPositionZ(), 0});
+        expectedMoney = player.GetMoney() + fixtureGold;
+        finish.UseThroughSession(player);
+        finish.UseThroughSession(player);
+        RotationLibram rewarded(*player.GetMap(), 25760462);
+        player.PlaceInMap({rewarded.GetPositionX() + 1, rewarded.GetPositionY(), rewarded.GetPositionZ(), 0});
+        rewarded.UseThroughSession(player);
+        Require(!rewarded.HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE), "A finished quest consumed another Libram");
+        std::cout << "GARRISON guardian imp, pet Flaz, Dreadblades and two real Librams finish through native progression\n";
+    }
+#else
     else
     {
         for (uint32 index = 0; index < 17; ++index)
@@ -283,6 +418,7 @@ static void CheckProgressAndReward(RotationPlayer& player, RotationPlayer& locke
         for (uint32 index = 0; index < 17; ++index)
             kill(117559, (index + 1) % 3, index == 16);
     }
+#endif
 
     Require(player.WorldQuestCompleted(questId) && player.FindQuestSlot(questId) == MAX_QUEST_LOG_SIZE &&
         player.GetMoney() == expectedMoney, "Final kill did not award the native world quest exactly once");

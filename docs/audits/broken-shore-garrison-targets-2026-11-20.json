@@ -1,0 +1,37 @@
+{
+  "scope": "Finish the missing Felfire Imp, Imp Mother Flaz and Libram objectives for Break Their Garrison (46073) on map 1220",
+  "placement": {
+    "provenance": "Locally authored placements in the evidenced Garrison of the Fel area. Earlier map observations from the 2017 and 2018 sources narrowed the survey. The documentary source and its limitations are recorded in broken-shore-garrison-placement-sources-2026-11-20.json.",
+    "survey": "The matching 26972 Map, VMAP and MMAP queries surveyed 110 candidate coordinates and two existing anchors. Chosen coordinates use walkable ground, with clear center and body rays and supported creature footprints. The book placement heights include a 0.20-yard offset above the measured surfaces for the open-book display.",
+    "felfire_imp": "Twelve 117555 creatures in four groups of three, with 45 seconds configured respawn time after the native corpse lifecycle. World coordinates span approximately x -1263 to -1184 and y 2634 to 2704.",
+    "flaz": "One 118720 at world (-1159,2638,27.585), approximately 59.19 / 45.00 on the Broken Shore map, with a 240-second respawn setting. The placement is 49 horizontal yards from existing Bruva spawn 341416. Bruva retains her existing placement, data and quest behavior.",
+    "librams": "Four 269154 objects at approximately 59.16 / 50.10, 57.73 / 48.03, 58.82 / 46.94 and 59.52 / 45.19. The native display 26998, spell 241545, condition metadata and objective 289938 stay in use. The matched template's incorrect English name was restored from the archival listing.",
+    "phasing": "All 17 new rows share the existing area 8551 phase 7147. The existing conflict guards exclude Felskorn state 12979. The visible area can still use this phase between rotations. Actual Libram usage requires an accepted, incomplete 46073 and an unexpired, unrewarded active world quest.",
+    "migration": "The expected GUIDs were free in the realm snapshot. Exact replay preserved counts and rows. A counterfactual in a separate disposable schema placed an unrelated book GUID and the migration refused it, retained that row and rolled back all earlier creature inserts."
+  },
+  "interaction": "The native gameobject use path checks an alive player, same map and phase through native interaction distance, line of sight, actual quest status and the ordinary world quest reward eligibility before consuming the book. The existing type-10 use handles native credit and the spell. The in-use flag prevents immediate duplicate credit. Unrelated gameobjects retain the ordinary handler.",
+  "verification": {
+    "native": "Test-LegionWorldQuestRotationNative.ps1 -Progression -VerifyGarrisonPlacements used a separate loopback configuration and isolated character persistence. The native gameobject packet refused out-of-range, wrong-phase, ineligible, expired and immediate repeat cases. Valid use granted objective credit and the 241545 player aura with maximum duration 120000 ms. A guardian's imp kill, a pet's Flaz kill, 26 Dreadblade kills and two distinct Librams completed and persisted one reward. A third Libram stayed unused after completion. Existing 46021 and 46063 and the eligible party kill case passed.",
+    "client": "The 26972 test client connected to the staged Release using a disposable synthetic Human Priest. Native GM publication activated the quest after the two prerequisites were seeded. The actual placed western Libram rendered and gave visible effects and 6 percent, with no increase on immediate re-use. A real Felfire Imp spawned, cast Felfire Bolt and its controlled lethal hit increased the tracker to 7 percent. Flaz spawned independently, spoke during combat, and its controlled lethal hit increased the tracker to 32 percent. The saved character data on map 1220 / zone 7543 contained one credit in each of the two new kill objectives and the book objective. Honor from the elite Flaz kill matches the realm's enabled Custom.GainHonorOnEliteKill option.",
+    "client_limit": "The visible client used controlled travel and damage. Computer input stalled before the client final-book test; the owned client was then closed and the final book and one-time reward were exercised by the native fixture. No complete unaided client route, timed imp or Flaz respawn or live competing phase traversal was claimed.",
+    "resolved_fixture_issues": "Corrected an initial synthetic account ID conflict and isolated realm port parsing and split the world and instance listeners. The native fixture needed a runtime-sized object accessor GUID and the actual player aura 241545 rather than the dependent spell 180941. The complete passing fixture used the real packet, aura and progression paths. Both owned networked fixture pairs shut down gracefully.",
+    "client_diagnostics": "The client logged a pre-existing Blizzard_TalkingHeadUI OnAnimFinished handler diagnostic, also present in the archived pre-repair loading baseline and the October 30 client logs. The game rendered the quest portrait, placed targets and objective updates in this run. The client UI diagnostic remains outside this world-data and interaction repair."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "a5bf27e7f642836c5754f5a54ca2e79c4bbbe93fc7e764535d6e3bb60ad7aafc5",
+    "migration": "sql/updates/world/2026_11_20_01_broken_shore_garrison_targets.sql",
+    "migration_sha256": "dfddbd64c10a8e1b834923a959510ccfc8a547fccd94847ee78a2c7148bd0429",
+    "link": "The original final link used the rebuilt game.lib. The linker map ties GameObject::Use to GAME:GameObject.obj and the installed binary and map match the hash-verified client stage. The updater file was delivered after the matching executable while the normal server was stopped.",
+    "canonical_startup": "The installed worldserver reached ready using a private configuration and a MariaDB snapshot with the World updater enabled. The updater recorded the migration as RELEASED with SHA1 FA1B0D7976878CA1C43CA51896279FC1C27702C5 and read back 13 creatures and four books. The world and private MariaDB stopped gracefully with exit code 0. Test stderr was empty and there were no changed crashes, appended DBErrors or unexplained server warnings, errors or assertions.",
+    "realm_database": "The normal Wamp MariaDB service was stopped. The standard updater directory now contains the matching migration so the next normal worldserver startup can apply the data to the realm database."
+  },
+  "diagnostics_and_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-garrison-targets",
+    "archived_files": 202,
+    "manifest_sha256": "353b1cb10401868d3b2aa90233a2833a5209a42607bbcc31bbe80addf846a936",
+    "removal_manifest_sha256": "a64dea4dfcd419fdeb62747eab1c25283be48e593d0453a2e0c830414121386c",
+    "removed_bytes": 4034153906,
+    "cleanup": "Removed the disposable MariaDB snapshot, runtime and client copies, staging link output and regenerable native fixture files after verifying the archived diagnostics. The two checked client Data junctions were detached without touching the shared client Data. Rechecked canonical binaries, configuration, certificates, DLLs, empty Crashes and zero-length DBErrors.log. Retained the prior worldserver and linker map in the local rollback directory .codex/garrison-deploy-20261120/rollback. No task-owned servers remain running."
+  }
+}

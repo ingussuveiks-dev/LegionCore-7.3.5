@@ -1663,6 +1663,18 @@ void GameObject::Use(Unit* user)
             sObjectMgr->GetScriptName(GetScriptId()).c_str(), AI() ? typeid(*AI()).name() : "none");
     if (IsQuestObjectExpired())
         return;
+
+    // Broken Shore's Libram uses the ordinary goober credit and spell paths.
+    // Check the actual interaction before either path can change player or object state.
+    if (GetEntry() == 269154 && GetMapId() == 1220)
+    {
+        Player const* player = user->ToPlayer();
+        if (!player || !player->IsAlive() || !IsWithinDistInMap(player, GetInteractionDistance())
+            || !IsWithinLOSInMap(player) || player->GetQuestStatus(46073) != QUEST_STATUS_INCOMPLETE
+            || !player->CanRewardWorldQuest(sQuestDataStore->GetQuestTemplate(46073)))
+            return;
+    }
+
     if (Player* player = user->ToPlayer())
         if (!CanUseAridenCampObject(this, player))
             return;

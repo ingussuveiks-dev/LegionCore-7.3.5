@@ -1,10 +1,13 @@
-param([string]$Migration="$PSScriptRoot/../../sql/updates/world/2026_11_19_12_restore_legion_world_quest_rotation.sql",[switch]$Progression)
+param([string]$Migration="$PSScriptRoot/../../sql/updates/world/2026_11_19_12_restore_legion_world_quest_rotation.sql",
+ [switch]$Progression,[switch]$VerifyGarrisonPlacements,[string]$RuntimeConfig)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $migrationPath=(Resolve-Path -LiteralPath $Migration).Path
 $out="$repo/build-extractors/runtime-test/legion-world-quest-rotation/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
-$config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
+if($VerifyGarrisonPlacements -and !$Progression){throw 'Garrison placement verification requires -Progression'}
+if(!$RuntimeConfig){$RuntimeConfig="$repo/build-extractors/bin/Release/worldserver.conf"}
+$config=Get-Content -LiteralPath $RuntimeConfig -Raw
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'/logs"'))
 $previous=$env:LEGION_DIALOGUE_CONFIG
 $previousMigration=$env:LEGION_ROTATION_MIGRATION
@@ -72,12 +75,13 @@ try{
  $env:LEGION_ROTATION_MIGRATION=$migrationPath
  $env:CL="$compiler /DNDEBUG /Zi /I`"$repo/src/server/scripts/Legion`" /I`"$repo/src/server/scripts/Legion/MawofSouls`""
  if($Progression){$env:CL+=' /DLEGION_ROTATION_PROGRESSION'}
+ if($VerifyGarrisonPlacements){$env:CL+=' /DLEGION_ROTATION_GARRISON_PLACEMENTS'}
  $env:_LINK_="$link /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
  Push-Location "$repo/build-extractors/bin/Release"
  try{
   & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
    & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/LegionWorldQuestRotationNative.cpp -ProbeName LegionWorldQuestRotationNative -OutputFile "$out/native.tsv" *> "$out/compiler.log"
-   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(PASS|ROTATION|PROGRESSION)'}
+   Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(PASS|ROTATION|PROGRESSION|GARRISON)'}
   }
  }finally{Pop-Location}
 }finally{
