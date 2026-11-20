@@ -2423,6 +2423,49 @@ void DB2Manager::LoadingExtraHotfixData()
     // Append after existing generated notices to preserve their stable IDs.
     if (!StromkarBladeVisual::Apply(sSpellVisualKitModelAttachStore))
         TC_LOG_ERROR("sql.sql", "Stromkar embedded blade attachment318611 does not match native64756; scale correction not applied");
+
+    // The native tint trees also check the challenge quest, but their quest
+    // state operators are not implemented by the Legion modifier evaluator.
+    // Require the same completed quest as the base look and retain the native
+    // tree and each tint's separate achievement requirements.
+    std::map<uint32, uint32> mageTowerQuestBySet;
+    for (ArtifactAppearanceEntry const* appearance : sArtifactAppearanceStore)
+    {
+        if (appearance->DisplayIndex != 1)
+            continue;
+        ArtifactAppearanceSetEntry const* set = sArtifactAppearanceSetStore.LookupEntry(appearance->ArtifactAppearanceSetID);
+        if (!set || set->DisplayIndex != 5)
+            continue;
+        PlayerConditionEntry const* base = sPlayerConditionStore.LookupEntry(appearance->UnlockPlayerConditionID);
+        if (base && !base->ModifierTreeID && base->PrevQuestID[0])
+            mageTowerQuestBySet.emplace(set->ID, base->PrevQuestID[0]);
+    }
+
+    std::map<uint32, void(*)(PlayerConditionEntry*)> const setChallengeQuest =
+    {
+        { 45902, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45902; } },
+        { 45904, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45904; } },
+        { 45905, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45905; } },
+        { 45906, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45906; } },
+        { 45908, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45908; } },
+        { 45909, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45909; } },
+        { 45910, [](PlayerConditionEntry* entry) { entry->PrevQuestID[0] = 45910; } }
+    };
+    for (ArtifactAppearanceEntry const* appearance : sArtifactAppearanceStore)
+    {
+        if (appearance->DisplayIndex < 2 || appearance->DisplayIndex > 4)
+            continue;
+        auto base = mageTowerQuestBySet.find(appearance->ArtifactAppearanceSetID);
+        if (base == mageTowerQuestBySet.end())
+            continue;
+        auto setQuest = setChallengeQuest.find(base->second);
+        if (setQuest == setChallengeQuest.end())
+            continue;
+        PlayerConditionEntry const* tint = sPlayerConditionStore.LookupEntry(appearance->UnlockPlayerConditionID);
+        if (tint && tint->ModifierTreeID && !tint->PrevQuestLogic &&
+            std::all_of(std::begin(tint->PrevQuestID), std::end(tint->PrevQuestID), [](uint32 quest) { return !quest; }))
+            playerConditionHotfixes.ApplyHotfix(tint->ID, setQuest->second, true);
+    }
 }
 
 void DB2Manager::LoadHotfixData()
