@@ -71,7 +71,7 @@ def root(begin, unwind):
     raise ValueError("Unwind chain cycle")
 
 
-def calls(prefix):
+def calls(prefix, *, ordered=False):
     address = symbol(prefix)
     index = bisect.bisect_right(starts, address - base) - 1
     begin, end, unwind = functions[index]
@@ -89,14 +89,14 @@ def calls(prefix):
                 break
             end = tail_end
     at = offset(address)
-    result = set()
+    result = []
     for i in range(base + end - address - 4):
         if binary[at + i] in (0xE8, 0xE9):
             try:
-                result.add(resolve(address + i + 5 + struct.unpack_from("<i", binary, at + i + 1)[0]))
+                result.append(resolve(address + i + 5 + struct.unpack_from("<i", binary, at + i + 1)[0]))
             except (ValueError, struct.error, IndexError):
                 pass
-    return result
+    return result if ordered else set(result)
 
 
 cleanup = "?CleanupFinishedSoloScenario@LFGMgr@lfg@@"

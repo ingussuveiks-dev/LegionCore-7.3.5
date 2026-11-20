@@ -1910,7 +1910,6 @@ void World::SetInitialWorldSettings()
     sWorldStateMgr.Initialize();
     sContributionMgr.Initialize();
 
-    InitWorldQuestHourlyResetTime();
     InitWorldQuestDailyResetTime();
     InitInvasionPointResetTime();
     sQuestDataStore->LoadWorldQuestTemplates();
@@ -2096,6 +2095,7 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO("server.loading", "Loading World States...");              // must be loaded before battleground, outdoor PvP and conditions
     LoadWorldStates();
+    InitWorldQuestHourlyResetTime();
 
     TC_LOG_INFO("server.loading", "Loading Phase definitions...");
     sObjectMgr->LoadPhaseDefinitions();

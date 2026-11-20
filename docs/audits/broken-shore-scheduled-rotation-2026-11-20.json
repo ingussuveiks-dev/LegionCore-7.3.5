@@ -1,0 +1,43 @@
+{
+  "scope": "Automatic Legion world quest rotation and Break Their Garrison (46073)",
+  "root_cause": "World::SetInitialWorldSettings called InitWorldQuestHourlyResetTime before LoadWorldStates. The in-memory worldstates map was empty, so initialization recalculated the clock from the default anchor and overwrote the persisted next rotation time (worldstates entry 20019). After a restart, a due rotation could be skipped until the next anchor.",
+  "repair": "Initialize the normal hourly world quest deadline after loading saved world states, before phase definitions and conditions. The World::Update timer, missed-deadline catch-up, fallback for an absent or zero deadline, template limits, reward selection and candidate conflicts retain their existing behavior. The separate daily and Invasion Point timers are outside this change.",
+  "runtime_fixture": {
+    "isolation": "Started only isolated, loopback-bound processes. Wamp MariaDB was stopped and the session could not start its Windows service. Copied only its offline world, hotfix, historical reference and database system files to a separate MariaDB data directory. Created empty fixture login and character schemas from tracked SQL with the required character migrations. Neither production login nor character schema was copied. Used the canonical client data and the realm's ordinary world quest candidate pool.",
+    "setup_error": "The first fixture startup used a base-only character schema. The native prepared statements identified missing scenarioResume and character_stormheim_mission, resolved by applying the existing character migrations 2026_10_15_00 and 2026_10_13_01 in the disposable schema. The snapshot's system accounts also produced hostname warnings with skip-name-resolve. Used normal hostname resolution inside the loopback-bound copied database. The first canonical readback stopped early because its polling script read an uninitialized variable, while the server itself reached ready with clean diagnostics. Corrected the script and repeated the readback. Production data and configuration were untouched.",
+    "counterfactual": "The prior Release executable aed5d55b7d6ad19e7788a4858fd1862d75601edf1751e53c18b27b05d0d99a57 reached ready. It replaced the seeded deadline 1795146750 with 1795161600 and still had zero active quests at 1795146777, after the seeded deadline. The linked PE verifier independently found initialization before state loading.",
+    "regression": {
+      "overdue": "The repaired build caught up from saved deadline 1795146914. It published 116 active quests and persisted the next deadline 1795168514, exactly six hours after the seeded time.",
+      "online": "The same build handled future deadline 1795147028 while running. It generated 100 active quests at the natural tick, with sampled Broken Shore start time 1795147029 and next deadline 1795168628.",
+      "garrison": "The fourth sample used the full, unchanged candidate pool. While the server was running, worldstates entry 20019 advanced from 1795147174 to 1795168774. The scheduler persisted 97 active quests, including one 46073 row with state 12978=3, start 1795147175, expiry 1795233575 and duration 86400. The test used no GM publication and did not insert an active quest. The 24-hour lifetime and 6-hour schedule are this realm's settings."
+    }
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "8b310ab405eb4d0eb30b721b4f817a1524dcde093b997fd26000b623630a2720",
+    "build_and_link": "Built Release game.lib, inspected the actual final-link response and located both functions in GAME:World.obj. The linked order check failed as expected on the old Release and passed on the staged and installed executable. The existing publication, admission, conflict and LFG verifier checks passed. The deployed executable and linker map matched the staged pair. Configuration, certificates, DLLs and bnetserver verified by hash.",
+    "restart": "Launched the installed executable from its canonical directory using a temporary configuration pointing to the isolated MariaDB copy. Reached ready and retained the same 97 saved world quests, including 46073, and next deadline 1795168774. The owned server and database exited gracefully with status 0. The production Windows MariaDB service remained stopped. There was no new client traversal in this follow-up.",
+    "diagnostics": "The valid old-build counterfactual, repaired scheduler samples, retried canonical startup and linked checks produced no new crashes or unexplained server warnings, assertions or database errors. Canonical Crashes remained empty and DBErrors.log remained 0 bytes. The initial fixture schema errors and hostname warnings are archived with the passing retry. No task-owned server process remained.",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-scheduled-rotation",
+    "archive_manifest_sha256": "48b5884695a2706c4239f641fe7c642a17b2f0646b395782a5f3aba128cfa2f6",
+    "cleanup": "Verified 109 archived evidence files against their source bytes. removed.csv records six deleted paths totaling 3323863366 bytes, including the temporary database copy, isolated runtime binaries and staged linker artifacts. The latest verified rollback pair remains in the ignored task workspace."
+  },
+  "placement_research": {
+    "local": "Read the live realm world snapshot and the local 2020 Legion research snapshot (codex_research_legion_world_2020). Neither had creature spawn rows for Felfire Imp 117555 or Imp Mother Flaz 118720, or gameobject spawn rows for Libram of Fel Knowledge 269154. The archived 24330 TrinityCore updates corroborate the creature template names. Some older references to 269154 refer to an unrelated battle-pet quest objective ID.",
+    "external": [
+      {
+        "sources": ["https://github.com/frostwolfcore/Legion7.3.5", "https://github.com/Titans-Project/LegionCore-Reforged", "https://github.com/pac374/AshamaneCore-Legion735"],
+        "finding": "Checked the available Broken Shore implementation and SQL files and the Ashamane world quest manager. None of the checked files supplied Garrison placements. AshamaneCore-Legion735 documents that its matching world data is private."
+      },
+      {
+        "sources": ["https://legionbugs.com/post/ispravleniya-maj-2019", "https://www.wowhead.com/npc=117555/felfire-imp", "https://www.wowhead.com/object=269154/libram-of-fel-knowledge"],
+        "finding": "The 2019 changelog lists the quest and both creatures but contains no placement SQL or movement, phase or respawn details. The current Wowhead pages report both target types in Broken Shore but did not supply original build-26972 placements."
+      },
+      {
+        "sources": ["https://www.wowhead.com/quest=46246/strike-them-down", "https://www.warcrafttavern.com/legion-remix/guides/broken-shore-legionfall-campaign-guide/"],
+        "finding": "A Legion-era player described quickly recurring imps around 59.29,45.39. The much later Remix guide identifies a hunting location around 60.2,44.9. These observations do not resolve exact original coordinates, phase, orientation or the imp respawn mechanism."
+      }
+    ],
+    "open": "No placement SQL was added. Original build-26972 spawn records and the original Blizzard rotation cadence remain unverified. Prior sampled footage is documented in legion-world-quest-client-followup-2026-11-19.json."
+  }
+}
