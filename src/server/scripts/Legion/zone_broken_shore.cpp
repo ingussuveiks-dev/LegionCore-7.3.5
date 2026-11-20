@@ -645,6 +645,212 @@ class spell_mage_tower_xylem_draw_power : public AuraScript
     }
 };
 
+namespace ClosingTheEye
+{
+constexpr uint32 CorruptingShadows = 116839;
+constexpr uint32 GrowingDarkness = 231817;
+constexpr uint32 CreepingShadowsArea = 232664;
+constexpr uint32 CreepingShadowsDamage = 232672;
+constexpr uint32 CreepingShadowsTrigger = 9346;
+constexpr uint32 CreepingShadowsTemplate = 90232664;
+constexpr float CreepingShadowsInitialRadius = 5.0f;
+
+float CreepingShadowsRadius(uint32 age)
+{
+    return std::min(100.0f, CreepingShadowsInitialRadius + float(age) * 0.00038f);
+}
+
+bool IsInCreepingShadows(AreaTrigger const& ground, Unit const& target, float radius)
+{
+    return target.IsAlive() && target.IsInMap(&ground) && target.InSamePhase(&ground) &&
+        std::abs(ground.GetPositionZ() - target.GetPositionZ()) <= 4.0f &&
+        ground.GetExactDist2d(target.GetPositionX(), target.GetPositionY()) <= radius;
+}
+
+struct CorruptingShadowsAI : SmartAI
+{
+    explicit CorruptingShadowsAI(Creature* creature) : SmartAI(creature) {}
+
+    void Reset() override
+    {
+        ClearGround();
+        SmartAI::Reset();
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        ClearGround();
+        SmartAI::JustDied(killer);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        if (!IsGroundEncounter())
+        {
+            if (!_player.IsEmpty())
+                ClearGround();
+            return;
+        }
+
+        if (_player.IsEmpty())
+        {
+            Unit* victim = me->getVictim();
+            Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (!IsParticipant(player))
+                return;
+
+            _player = player->GetGUID();
+            _warmup = 3000;
+            me->CastSpell(me, GrowingDarkness, true);
+            return;
+        }
+
+        Player* player = ObjectAccessor::GetPlayer(*me, _player);
+        if (!IsParticipant(player))
+        {
+            ClearGround();
+            SmartAI::EnterEvadeMode();
+            return;
+        }
+
+        if (_ground.IsEmpty())
+        {
+            if (diff < _warmup)
+            {
+                _warmup -= diff;
+                return;
+            }
+            if (!PublishGround())
+            {
+                TC_LOG_ERROR("scripts", "Closing the Eye: Corrupting Shadows could not publish its ground hazard");
+                ClearGround();
+                SmartAI::EnterEvadeMode();
+            }
+            return;
+        }
+
+        AreaTrigger* ground = ObjectAccessor::GetAreaTrigger(*me, _ground);
+        if (!ground || ground->GetDuration() <= 0)
+        {
+            ClearGround();
+            SmartAI::EnterEvadeMode();
+            return;
+        }
+
+        _age += std::min(diff, 300000 - _age);
+        if (diff < _update)
+        {
+            _update -= diff;
+            return;
+        }
+        _update = 250;
+        UpdateGround(*ground, *player);
+    }
+
+private:
+    bool IsGroundEncounter() const
+    {
+        if (me->GetEntry() != CorruptingShadows || me->GetMapId() != ScenarioMap || !me->IsAlive() || !me->isInCombat())
+            return false;
+
+        TempSummon* boss = me->ToTempSummon();
+        if (!boss || !GetXylemAI(boss->GetSummoner()))
+            return false;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1204 && scenario->GetCurrentStep() == 2 && !scenario->IsCompleted(false);
+    }
+
+    bool IsParticipant(Player const* player) const
+    {
+        return player && player->IsAlive() && player->IsInWorld() && !player->IsPreDelete() &&
+            !player->IsBeingTeleportedFar() && me->IsInMap(player) && me->InSamePhase(player) &&
+            player->GetQuestStatus(44925) == QUEST_STATUS_INCOMPLETE;
+    }
+
+    bool PublishGround()
+    {
+        SpellInfo const* spell = sSpellMgr->GetSpellInfo(CreepingShadowsArea);
+        if (!spell)
+            return false;
+
+        auto ground = std::make_unique<AreaTrigger>();
+        Position origin = me->GetPosition();
+        me->UpdateGroundPositionZ(origin.GetPositionX(), origin.GetPositionY(), origin.m_positionZ);
+        if (!ground->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(),
+            CreepingShadowsTrigger, me, spell, origin, origin, nullptr, ObjectGuid::Empty, CreepingShadowsTemplate))
+            return false;
+
+        _ground = ground.release()->GetGUID();
+        return true;
+    }
+
+    void UpdateGround(AreaTrigger& ground, Player& player)
+    {
+        float const radius = CreepingShadowsRadius(_age);
+        if (std::abs(ground.GetRadius() - radius) > 0.02f)
+        {
+            ground.SetSphereScale(radius / CreepingShadowsInitialRadius, 250, true);
+            ground.UpdateOverrideScale();
+        }
+
+        auto updateTarget = [this, &ground, radius](Unit& target)
+        {
+            if (!IsInCreepingShadows(ground, target, radius))
+            {
+                target.RemoveAurasDueToSpell(CreepingShadowsDamage, me->GetGUID());
+                _affected.erase(target.GetGUID());
+                return;
+            }
+
+            Aura* aura = target.GetAura(CreepingShadowsDamage, me->GetGUID());
+            if (aura)
+            {
+                if (aura->GetDuration() < 500)
+                    aura->SetDuration(1500);
+            }
+            else if (me->AddAura(CreepingShadowsDamage, &target, nullptr, 0, 1500, 1500))
+                _affected.insert(target.GetGUID());
+        };
+
+        updateTarget(player);
+        Unit::ControlList const controlled = player.m_Controlled;
+        for (ObjectGuid const& guid : controlled)
+            if (Unit* unit = ObjectAccessor::GetUnit(player, guid))
+                if (unit->GetCharmerOrOwnerPlayerOrPlayerItself() == &player)
+                    updateTarget(*unit);
+    }
+
+    void ClearGround()
+    {
+        if (!_ground.IsEmpty())
+            me->RemoveAreaObject(CreepingShadowsArea);
+        for (ObjectGuid const& guid : _affected)
+            if (Unit* unit = ObjectAccessor::GetUnit(*me, guid))
+                unit->RemoveAurasDueToSpell(CreepingShadowsDamage, me->GetGUID());
+        _affected.clear();
+        _ground.Clear();
+        _player.Clear();
+        _age = 0;
+        _update = 0;
+    }
+
+    ObjectGuid _ground, _player;
+    std::set<ObjectGuid> _affected;
+    uint32 _warmup = 0;
+    uint32 _age = 0;
+    uint32 _update = 0;
+};
+}
+
+class npc_mage_tower_corrupting_shadows : public CreatureScript
+{
+public:
+    npc_mage_tower_corrupting_shadows() : CreatureScript("npc_mage_tower_corrupting_shadows") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::CorruptingShadowsAI(creature); }
+};
+
 namespace Feltotem
 {
 constexpr uint32 Tugar = 117230;
@@ -2706,6 +2912,7 @@ void AddSC_broken_shore()
     new npc_mage_tower_victoria();
     new npc_mage_tower_xylem();
     new npc_mage_tower_xylem_mirror();
+    new npc_mage_tower_corrupting_shadows();
     RegisterAuraScript(spell_mage_tower_xylem_darkness);
     RegisterSpellScript(spell_mage_tower_xylem_intermission_damage);
     RegisterAuraScript(spell_mage_tower_xylem_time_acceleration);

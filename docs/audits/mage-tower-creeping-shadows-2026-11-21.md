@@ -1,0 +1,13 @@
+# Corrupting Shadows ground hazard
+
+Scenario `1204` already had a native summon and death chain for Corrupting Shadows `116839`. The world data had no reachable producer for the growing ground hazard. The matching 26972 client data supplies the three-second Growing Darkness `231817`, the Creeping Shadows area spell `232664` and area entry `9346`, and the native `232672` damage, slow and screen effect. The original Survival recording shows the ground expanding while the player moves along the rim, then disappearing when the boss dies. I examined the sampled footage from the approach to the final boss through the kill and exit. [Original April 2018 Survival recording](https://www.youtube.com/watch?v=pnSf1I32Zgk&t=239s).
+
+Corrupting Shadows publishes the hazard beneath its grounded position after the native warmup. The published area remains fixed and grows. It applies the original aura inside the server's matching radius to the eligible player and their controlled units. It removes the aura on leaving and clears the attempt's ground and auras on death or reset. The boss must be the active Xylem summon in stage 2 of Closing the Eye. The original Seed schedule, Xylem's outro, berserk, boss death and quest objective still use their existing SmartAI rows.
+
+## Verification and limits
+
+- The build 26972 check verified the original area, aura, damage period, slow, warmup and three scenario stages. The native source-extracted AddressSanitizer regression passed for growth, edge crossing and vertical, phase, map and life guards. The first compilation reported two shadowed test variables. They were renamed and the final check was clean.
+- Both isolated MariaDB applications produced the expected row, retained the native Seed and victory graph, and left the quest objective intact. The exact migration was manually applied and read back in production.
+- The staged and canonical executable SHA-256 was `22DEAF4092E772F4ECC3188A48079BF6951B29777DE2348649EA78F234330F6C`. Both starts reached readiness against the isolated schema and shut down without new crashes, DBErrors, warnings or assertions. The verified `build-extractors/bin/Release/fixed/2026-11-21-mage-tower-creeping-shadows/` archive contains 36 hashes and records 177,427,541 bytes of redundant outputs removed.
+
+The five-yard initial radius, growth rate of 0.38 yards per second and the 100-yard cap are reconstructed from the arena and original footage. Client checks remain for the visible edge and its timing, the exact early warmup and floor coverage while kiting, jumping, pet damage, death and relog. Seed of Darkness' actual eight-second release and native merge are separate checks.
