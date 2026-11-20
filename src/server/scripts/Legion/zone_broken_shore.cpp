@@ -4,11 +4,13 @@
 #include "AreaTrigger.h"
 #include "Log.h"
 #include "ObjectAccessor.h"
+#include "ObjectMgr.h"
 #include "Player.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SmartAI.h"
 #include "Spell.h"
+#include "SpellMgr.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include <algorithm>
@@ -41,6 +43,13 @@ constexpr uint32 HatchBileSpitter = 242379;
 constexpr uint32 SummonBileSpitter = 243167;
 constexpr uint32 SpitBile = 242468;
 constexpr uint32 BileMissile = 242566;
+constexpr uint32 Rupture = 241664;
+constexpr uint32 RuptureDamage = 241666;
+constexpr uint32 RuptureCastTime = 2500;
+constexpr uint32 RuptureTemplateOffset = 1000000;
+constexpr float RuptureHalfLength = 7.5f;
+constexpr float RuptureHalfWidth = 1.25f;
+constexpr float RuptureHalfHeight = 2.5f;
 
 constexpr uint32 ChargeMovement = 1;
 constexpr float RockRadius = 2.75f;
@@ -71,6 +80,34 @@ bool SegmentTouches(Position const& start, Position const& end, Position const& 
         point.GetExactDist2dSq(start.GetPositionX() + dx * fraction, start.GetPositionY() + dy * fraction) <= radius * radius;
 }
 
+bool IsInRuptureCross(Position const& origin, Position const& point)
+{
+    if (std::abs(point.GetPositionZ() - origin.GetPositionZ()) > RuptureHalfHeight)
+        return false;
+
+    float const dx = point.GetPositionX() - origin.GetPositionX();
+    float const dy = point.GetPositionY() - origin.GetPositionY();
+    float const cs = std::cos(origin.GetOrientation());
+    float const sn = std::sin(origin.GetOrientation());
+    float const along = std::abs(dx * cs + dy * sn);
+    float const across = std::abs(dy * cs - dx * sn);
+    return (along <= RuptureHalfLength && across <= RuptureHalfWidth) ||
+        (across <= RuptureHalfLength && along <= RuptureHalfWidth);
+}
+
+struct RuptureForm
+{
+    uint32 warningSpell;
+    uint32 impactSpell;
+    std::array<uint32, 2> warnings;
+    std::array<uint32, 2> impacts;
+};
+
+RuptureForm const RuptureForms[] = {
+    { 241665, 241667, { 10341, 10342 }, { 10343, 7562 } },
+    { 241668, 241669, { 10344, 10345 }, { 10346, 10347 } }
+};
+
 struct TugarAI : SmartAI
 {
     explicit TugarAI(Creature* creature) : SmartAI(creature) {}
@@ -80,6 +117,8 @@ struct TugarAI : SmartAI
         ++_attempt;
         _totemTimer = 0;
         StopEarthquake();
+        _nextRupture = 0;
+        ClearRupture();
         SmartAI::Reset();
     }
 
@@ -90,6 +129,7 @@ struct TugarAI : SmartAI
         // 15-yard missile travels at 2 yards/sec before the totem begins it.
         _totemTimer = 54500;
         _earthquakeTimer = 20500;
+        _nextRupture = 7500;
         SmartAI::EnterCombat(enemy);
     }
 
@@ -137,6 +177,7 @@ struct TugarAI : SmartAI
     void JustDied(Unit* killer) override
     {
         StopEarthquake();
+        ClearRupture();
         SmartAI::JustDied(killer);
     }
 
@@ -146,6 +187,7 @@ struct TugarAI : SmartAI
             _eggInterrupted = true;
         SmartAI::UpdateAI(diff);
         UpdateEarthquake(diff);
+        UpdateRupture(diff);
         if (!_totemTimer || !ActiveAttempt())
             return;
         if (diff < _totemTimer)
@@ -170,6 +212,19 @@ struct TugarAI : SmartAI
 
 private:
     void UpdateEarthquake(uint32 diff);
+    void UpdateRupture(uint32 diff);
+    bool PublishRupture(uint32 spell, std::array<uint32, 2> const& entries);
+    void ClearRupture()
+    {
+        for (ObjectGuid& guid : _ruptureVisuals)
+        {
+            if (AreaTrigger* trigger = ObjectAccessor::GetAreaTrigger(*me, guid))
+                trigger->Remove();
+            guid.Clear();
+        }
+        _rupturePlayer.Clear();
+        _ruptureImpact = 0;
+    }
     void RemoveRocks()
     {
         for (ObjectGuid& guid : _rocks)
@@ -188,6 +243,12 @@ private:
     bool _eggInterrupted = false;
     std::array<Position, 3> _rockPositions;
     std::array<ObjectGuid, 3> _rocks;
+    Position _ruptureOrigin;
+    ObjectGuid _rupturePlayer;
+    std::array<ObjectGuid, 2> _ruptureVisuals;
+    uint32 _nextRupture = 0;
+    uint32 _ruptureImpact = 0;
+    uint8 _ruptureForm = 0;
 };
 
 TugarAI* FindTugarAI(Unit* caster)
@@ -452,6 +513,88 @@ void TugarAI::HitStalactites(Creature* worm, Position const& start, Position con
         worm->RemoveAuraFromStack(FelHardenedScales, worm->GetGUID());
         worm->CastSpell(position, StalactiteBreak, true);
     }
+}
+
+bool TugarAI::PublishRupture(uint32 spell, std::array<uint32, 2> const& entries)
+{
+    SpellInfo const* info = sSpellMgr->GetSpellInfo(spell);
+    if (!info)
+        return false;
+
+    for (std::size_t i = 0; i < entries.size(); ++i)
+    {
+        Position site = _ruptureOrigin;
+        site.SetOrientation(site.GetOrientation() + i * float(M_PI) / 2.0f);
+        auto trigger = std::make_unique<AreaTrigger>();
+        if (!trigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(),
+            entries[i], me, info, site, site, nullptr, ObjectGuid::Empty, RuptureTemplateOffset + entries[i]))
+        {
+            ClearRupture();
+            TC_LOG_WARN("scripts", "Feltotem's Fall: could not publish Fel Rupture spell %u in instance %u", spell, me->GetInstanceId());
+            return false;
+        }
+        _ruptureVisuals[i] = trigger.release()->GetGUID();
+    }
+    return true;
+}
+
+void TugarAI::UpdateRupture(uint32 diff)
+{
+    Player* player = Participant();
+    if (!player)
+    {
+        ClearRupture();
+        return;
+    }
+    if (_ruptureImpact && _rupturePlayer != player->GetGUID())
+        ClearRupture();
+
+    if (_ruptureImpact > diff)
+        _ruptureImpact -= diff;
+    else if (_ruptureImpact)
+    {
+        ClearRupture();
+        RuptureForm const& form = RuptureForms[_ruptureForm];
+        if (PublishRupture(form.impactSpell, form.impacts))
+        {
+            Unit::ControlList const controlled = player->m_Controlled;
+            if (IsInRuptureCross(_ruptureOrigin, player->GetPosition()))
+                me->CastSpell(player, RuptureDamage, true);
+            for (ObjectGuid const& guid : controlled)
+                if (Unit* unit = ObjectAccessor::GetUnit(*me, guid))
+                    if (unit->IsAlive() && unit->GetCharmerOrOwnerPlayerOrPlayerItself() == player &&
+                        me->IsInMap(unit) && unit->InSamePhase(me) && IsInRuptureCross(_ruptureOrigin, unit->GetPosition()))
+                        me->CastSpell(unit, RuptureDamage, true);
+        }
+    }
+
+    if (!_nextRupture)
+        return;
+    if (_nextRupture > diff)
+    {
+        _nextRupture -= diff;
+        return;
+    }
+    if (me->CastSpell(me, Rupture, false) != SPELL_CAST_OK)
+    {
+        _nextRupture = 500;
+        return;
+    }
+    _nextRupture = urand(10900, 13400);
+
+    Position origin = player->GetPosition();
+    float const z = me->GetHeight(origin.GetPositionX(), origin.GetPositionY(), origin.GetPositionZ() + 1.0f, true, 5.0f);
+    if (z <= INVALID_HEIGHT)
+        return;
+    origin.m_positionZ = z;
+    origin.SetOrientation(frand(0.0f, float(M_PI) / 2.0f));
+    ClearRupture();
+    _ruptureOrigin = origin;
+    _rupturePlayer = player->GetGUID();
+    _ruptureForm = urand(0, 1);
+    RuptureForm const& form = RuptureForms[_ruptureForm];
+    if (PublishRupture(form.warningSpell, form.warnings))
+        _ruptureImpact = RuptureCastTime;
 }
 }
 
