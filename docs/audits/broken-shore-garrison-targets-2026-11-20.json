@@ -19,12 +19,13 @@
   },
   "release": {
     "directory": "build-extractors/bin/Release",
-    "worldserver_sha256": "a5bf27e7f642836c5754f5a54ca2e79c4bbbe93fc7e764535d6e3bb60ad7aafc5",
+    "worldserver_sha256": "a5bf27e7f642836c5754f5a54ca2e79c4bbe93fc7e764535d6e3bb60ad7aafc5",
     "migration": "sql/updates/world/2026_11_20_01_broken_shore_garrison_targets.sql",
     "migration_sha256": "dfddbd64c10a8e1b834923a959510ccfc8a547fccd94847ee78a2c7148bd0429",
     "link": "The original final link used the rebuilt game.lib. The linker map ties GameObject::Use to GAME:GameObject.obj and the installed binary and map match the hash-verified client stage. The updater file was delivered after the matching executable while the normal server was stopped.",
     "canonical_startup": "The installed worldserver reached ready using a private configuration and a MariaDB snapshot with the World updater enabled. The updater recorded the migration as RELEASED with SHA1 FA1B0D7976878CA1C43CA51896279FC1C27702C5 and read back 13 creatures and four books. The world and private MariaDB stopped gracefully with exit code 0. Test stderr was empty and there were no changed crashes, appended DBErrors or unexplained server warnings, errors or assertions.",
-    "realm_database": "The normal Wamp MariaDB service was stopped. The standard updater directory now contains the matching migration so the next normal worldserver startup can apply the data to the realm database."
+    "realm_database": "SQL updates on this realm are applied manually. Applied the migration directly to the production legion_world schema and inserted its RELEASED SHA1 record in the same InnoDB transaction. Before the import the reserved ranges were empty and the quest's 46073 rotation row was already present. Read back all 13 creatures and four books and compared their positions, orientations, phases, respawn settings and the Libram's quest and spell against the migration. The same rotation row was present afterward.",
+    "manual_import": "The Wamp MariaDB service was stopped and this session could not start the Windows service. An owned console process used the existing MariaDB 11.4.9 production data directory on a separate loopback port. Before the write the client checked the schema, version, port, actual data directory and owned PID. The first connection produced the client diagnostic for default TLS on the configured local passwordless connection. The retry used the configured loopback transport and completed without MariaDB warnings or errors. Both owned processes shut down normally through MariaDB's Windows shutdown event and exited 0. Canonical crash and log snapshots were unchanged. The user's worldserver was not started as part of this import."
   },
   "diagnostics_and_cleanup": {
     "archive": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-garrison-targets",
@@ -32,6 +33,8 @@
     "manifest_sha256": "353b1cb10401868d3b2aa90233a2833a5209a42607bbcc31bbe80addf846a936",
     "removal_manifest_sha256": "a64dea4dfcd419fdeb62747eab1c25283be48e593d0453a2e0c830414121386c",
     "removed_bytes": 4034153906,
-    "cleanup": "Removed the disposable MariaDB snapshot, runtime and client copies, staging link output and regenerable native fixture files after verifying the archived diagnostics. The two checked client Data junctions were detached without touching the shared client Data. Rechecked canonical binaries, configuration, certificates, DLLs, empty Crashes and zero-length DBErrors.log. Retained the prior worldserver and linker map in the local rollback directory .codex/garrison-deploy-20261120/rollback. No task-owned servers remain running."
+    "cleanup": "Removed the disposable MariaDB snapshot, runtime and client copies, staging link output and regenerable native fixture files after verifying the archived diagnostics. The two checked client Data junctions were detached without touching the shared client Data. Rechecked canonical binaries, configuration, certificates, DLLs, empty Crashes and zero-length DBErrors.log. Retained the prior worldserver and linker map in the local rollback directory .codex/garrison-deploy-20261120/rollback. No task-owned servers remain running.",
+    "manual_import_archive": "build-extractors/bin/Release/fixed/2026-11-20-broken-shore-garrison-targets/manual-import",
+    "manual_import_manifest_sha256": "aaa756f7d693929b261d5b1008010fb3a4b322612e2baa9de7afb91ae30c08af"
   }
 }
