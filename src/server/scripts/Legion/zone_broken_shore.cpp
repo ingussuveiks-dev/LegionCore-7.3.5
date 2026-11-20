@@ -2739,6 +2739,19 @@ enum class AgathaPosition
     Lower
 };
 
+constexpr uint32 AgathaFelLavaMissile = 235259;
+constexpr uint32 AgathaFelLavaImpact = 235261;
+constexpr uint32 AgathaFelLavaAura = 235263;
+constexpr uint32 AgathaFelLavaTrigger = 9645;
+
+bool IsInsideAgathaFelLava(AreaTrigger const& ground, Unit const& target)
+{
+    return ground.GetRealEntry() == AgathaFelLavaTrigger && ground.GetDuration() > 0 && target.IsAlive() &&
+        target.IsInMap(&ground) && target.InSamePhase(&ground) &&
+        std::abs(ground.GetPositionZ() - target.GetPositionZ()) < 4.0f &&
+        ground.GetExactDist2d(target.GetPositionX(), target.GetPositionY()) <= ground.GetRadius();
+}
+
 uint32 GetAgathaTranslocate(AgathaPosition position, float health, uint32 remaining, bool reachedLower)
 {
     if (position == AgathaPosition::Center)
@@ -2762,6 +2775,7 @@ public:
 
         void Reset() override
         {
+            ClearFelLava();
             SmartAI::Reset();
             _position = AgathaPosition::Center;
             _reachedLower = false;
@@ -2769,6 +2783,7 @@ public:
             _pendingTranslocate = 0;
             _retry = 0;
             _failures = 0;
+            _nextFelLava = 8000;
             if (IsArenaActor())
                 SetCombatMove(false);
         }
@@ -2776,20 +2791,45 @@ public:
         void UpdateAI(uint32 diff) override
         {
             SmartAI::UpdateAI(diff);
-            if (!IsArenaActor() || !me->IsAlive() || !me->isInCombat())
+            Player* player = GetArenaPlayer();
+            if (!player)
+            {
+                if (!_lavaAffected.empty() || me->GetAreaObject(AgathaFelLavaImpact))
+                    ClearFelLava();
                 return;
+            }
+
+            UpdateTranslocate(diff);
+            if (_position != AgathaPosition::Center)
+                UpdateFelLava(*player, diff);
+        }
+
+        Player* GetFelLavaPlayer() const
+        {
+            return _position == AgathaPosition::Center ? nullptr : GetArenaPlayer();
+        }
+
+        void JustDied(Unit* killer) override
+        {
+            ClearFelLava();
+            SmartAI::JustDied(killer);
+        }
+
+        Player* GetArenaPlayer() const
+        {
+            if (!IsArenaActor() || !me->IsAlive() || !me->isInCombat())
+                return nullptr;
 
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1221 || scenario->IsCompleted(false))
-                return;
+                return nullptr;
 
             Unit* victim = me->getVictim();
             Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player || !player->IsAlive() || !player->IsInWorld() || player->IsPreDelete() || player->HasPendingTeleport() ||
                 !me->IsInMap(player) || !me->InSamePhase(player))
-                return;
-
-            UpdateTranslocate(diff);
+                return nullptr;
+            return player;
         }
 
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
@@ -2827,6 +2867,75 @@ public:
         }
 
     private:
+        void UpdateFelLava(Player& player, uint32 diff)
+        {
+            _nextFelLava -= std::min(diff, _nextFelLava);
+            if (!_nextFelLava)
+            {
+                Position spot = player.GetPosition();
+                float const floor = me->GetMap()->GetHeight(me->GetPhases(), spot.GetPositionX(), spot.GetPositionY(),
+                    spot.GetPositionZ() + 2.0f, true, 10.0f, nullptr, me);
+                _nextFelLava = 1000;
+                if (std::abs(floor - spot.GetPositionZ()) <= 8.0f)
+                {
+                    spot.m_positionZ = floor + 0.05f;
+                    if (me->CastSpell(spot, AgathaFelLavaMissile, true) == SPELL_CAST_OK)
+                        _nextFelLava = 14000;
+                }
+            }
+
+            if (diff < _lavaCheckRemaining)
+            {
+                _lavaCheckRemaining -= diff;
+                return;
+            }
+            _lavaCheckRemaining = 250;
+
+            std::list<AreaTrigger*> ground;
+            me->GetAreaObjectList(ground, AgathaFelLavaImpact);
+            if (ground.empty() && _lavaAffected.empty())
+                return;
+
+            auto updateTarget = [this, &ground](Unit& target)
+            {
+                bool const inside = std::any_of(ground.begin(), ground.end(), [&target](AreaTrigger const* patch)
+                {
+                    return IsInsideAgathaFelLava(*patch, target);
+                });
+                if (!inside)
+                {
+                    if (_lavaAffected.erase(target.GetGUID()))
+                        target.RemoveAurasDueToSpell(AgathaFelLavaAura, me->GetGUID());
+                    return;
+                }
+
+                if (Aura* aura = target.GetAura(AgathaFelLavaAura, me->GetGUID()))
+                {
+                    if (aura->GetDuration() < 500)
+                        aura->SetDuration(1500);
+                }
+                else if (me->AddAura(AgathaFelLavaAura, &target, nullptr, 0, 1500, 1500))
+                    _lavaAffected.insert(target.GetGUID());
+            };
+
+            updateTarget(player);
+            Unit::ControlList const controlled = player.m_Controlled;
+            for (ObjectGuid const& guid : controlled)
+                if (Unit* unit = ObjectAccessor::GetUnit(player, guid))
+                    if (unit->GetCharmerOrOwnerPlayerOrPlayerItself() == &player)
+                        updateTarget(*unit);
+        }
+
+        void ClearFelLava()
+        {
+            me->RemoveAreaObject(AgathaFelLavaImpact);
+            for (ObjectGuid const& guid : _lavaAffected)
+                if (Unit* unit = ObjectAccessor::GetUnit(*me, guid))
+                    unit->RemoveAurasDueToSpell(AgathaFelLavaAura, me->GetGUID());
+            _lavaAffected.clear();
+            _lavaCheckRemaining = 0;
+        }
+
         bool IsArenaActor() const
         {
             return me->GetMapId() == 1616 && me->GetDBTableGUIDLow() == 14534028;
@@ -2890,9 +2999,53 @@ public:
         uint32 _retry = 0;
         uint32 _failures = 0;
         bool _reachedLower = false;
+        uint32 _nextFelLava = 8000;
+        uint32 _lavaCheckRemaining = 0;
+        std::set<ObjectGuid> _lavaAffected;
     };
 
     CreatureAI* GetAI(Creature* creature) const override { return new AgathaAI(creature); }
+};
+
+class spell_mage_tower_agatha_fel_lava : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_agatha_fel_lava);
+
+    npc_mage_tower_agatha::AgathaAI* GetAgatha() const
+    {
+        Unit* caster = GetCaster();
+        Creature* agatha = caster ? caster->ToCreature() : nullptr;
+        if (!agatha || agatha->GetEntry() != 115638 || agatha->GetMapId() != 1616 ||
+            agatha->GetDBTableGUIDLow() != 14534028 || !agatha->IsAIEnabled)
+            return nullptr;
+        return dynamic_cast<npc_mage_tower_agatha::AgathaAI*>(agatha->AI());
+    }
+
+    bool Load() override { return GetAgatha() != nullptr; }
+
+    void SelectTarget(std::list<WorldObject*>& targets)
+    {
+        auto* ai = GetAgatha();
+        Player* player = ai ? ai->GetFelLavaPlayer() : nullptr;
+        targets.remove_if([player](WorldObject* target)
+        {
+            Unit* unit = target ? target->ToUnit() : nullptr;
+            return !player || !unit || unit->GetCharmerOrOwnerPlayerOrPlayerItself() != player;
+        });
+    }
+
+    void CreateLava(SpellEffIndex effect)
+    {
+        auto* ai = GetAgatha();
+        if (!ai || !ai->GetFelLavaPlayer())
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_agatha_fel_lava::SelectTarget, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnEffectHit += SpellEffectFn(spell_mage_tower_agatha_fel_lava::CreateLava, EFFECT_1, SPELL_EFFECT_CREATE_AREATRIGGER);
+    }
 };
 
 // 117470
@@ -3294,6 +3447,7 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_rune_missile);
     RegisterAreaTriggerAI(at_mage_tower_summoning_rune);
     new npc_mage_tower_agatha();
+    RegisterSpellScript(spell_mage_tower_agatha_fel_lava);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();

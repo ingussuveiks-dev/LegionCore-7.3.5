@@ -27,11 +27,12 @@ $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Agatha Translocate DB2 catalog mismatch' }
 
 $source = Get-Content -LiteralPath "$repo/src/server/scripts/Legion/zone_broken_shore.cpp" -Raw
-$choice = [regex]::Match($source, '(?ms)^enum class AgathaPosition.*?^\}\r?\n(?=\})')
+$positions = [regex]::Match($source, '(?ms)^enum class AgathaPosition.*?^};')
+$choice = [regex]::Match($source, '(?ms)^uint32 GetAgathaTranslocate\(.*?^\}')
 $failed = [regex]::Match($source, '(?ms)^        void TranslocateFailed\(.*?^        \}')
 $update = [regex]::Match($source, '(?ms)^        void UpdateTranslocate\(.*?^        \}')
-if (!$choice.Success -or !$failed.Success -or !$update.Success) { throw 'Production Agatha Translocate callbacks are absent' }
-[IO.File]::WriteAllText("$out/AgathaTranslocateChoice.inc", $choice.Value)
+if (!$positions.Success -or !$choice.Success -or !$failed.Success -or !$update.Success) { throw 'Production Agatha Translocate callbacks are absent' }
+[IO.File]::WriteAllLines("$out/AgathaTranslocateChoice.inc", @($positions.Value, $choice.Value))
 [IO.File]::WriteAllLines("$out/AgathaTranslocateUpdate.inc", @(
     $failed.Value.Replace('void TranslocateFailed', 'void AgathaAI::TranslocateFailed'),
     $update.Value.Replace('void UpdateTranslocate', 'void AgathaAI::UpdateTranslocate')
