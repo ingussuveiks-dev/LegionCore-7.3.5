@@ -2743,6 +2743,9 @@ constexpr uint32 AgathaFelLavaMissile = 235259;
 constexpr uint32 AgathaFelLavaImpact = 235261;
 constexpr uint32 AgathaFelLavaAura = 235263;
 constexpr uint32 AgathaFelLavaTrigger = 9645;
+constexpr uint32 AgathaDarkFuryDamage = 243111;
+constexpr uint32 AgathaDarkFuryShield = 243113;
+constexpr uint32 AgathaDarkFuryChannel = 243114;
 
 bool IsInsideAgathaFelLava(AreaTrigger const& ground, Unit const& target)
 {
@@ -2776,6 +2779,7 @@ public:
         void Reset() override
         {
             ClearFelLava();
+            ClearDarkFury();
             SmartAI::Reset();
             _position = AgathaPosition::Center;
             _reachedLower = false;
@@ -2796,6 +2800,8 @@ public:
             {
                 if (!_lavaAffected.empty() || me->GetAreaObject(AgathaFelLavaImpact))
                     ClearFelLava();
+                if (me->HasAura(AgathaDarkFuryChannel))
+                    ClearDarkFury();
                 return;
             }
 
@@ -2812,6 +2818,7 @@ public:
         void JustDied(Unit* killer) override
         {
             ClearFelLava();
+            ClearDarkFury();
             SmartAI::JustDied(killer);
         }
 
@@ -2867,6 +2874,16 @@ public:
         }
 
     private:
+        void ClearDarkFury()
+        {
+            if (!IsArenaActor())
+                return;
+            me->InterruptNonMeleeSpells(true, AgathaDarkFuryChannel);
+            me->RemoveAurasDueToSpell(AgathaDarkFuryChannel, me->GetGUID());
+            me->RemoveAurasDueToSpell(AgathaDarkFuryShield, me->GetGUID());
+            me->RemoveAurasDueToSpell(AgathaDarkFuryDamage, me->GetGUID());
+        }
+
         void UpdateFelLava(Player& player, uint32 diff)
         {
             _nextFelLava -= std::min(diff, _nextFelLava);
@@ -3007,25 +3024,27 @@ public:
     CreatureAI* GetAI(Creature* creature) const override { return new AgathaAI(creature); }
 };
 
+namespace
+{
+npc_mage_tower_agatha::AgathaAI* GetAgathaAI(Unit* caster)
+{
+    Creature* agatha = caster ? caster->ToCreature() : nullptr;
+    if (!agatha || agatha->GetEntry() != 115638 || agatha->GetMapId() != 1616 ||
+        agatha->GetDBTableGUIDLow() != 14534028 || !agatha->IsAIEnabled)
+        return nullptr;
+    return dynamic_cast<npc_mage_tower_agatha::AgathaAI*>(agatha->AI());
+}
+}
+
 class spell_mage_tower_agatha_fel_lava : public SpellScript
 {
     PrepareSpellScript(spell_mage_tower_agatha_fel_lava);
 
-    npc_mage_tower_agatha::AgathaAI* GetAgatha() const
-    {
-        Unit* caster = GetCaster();
-        Creature* agatha = caster ? caster->ToCreature() : nullptr;
-        if (!agatha || agatha->GetEntry() != 115638 || agatha->GetMapId() != 1616 ||
-            agatha->GetDBTableGUIDLow() != 14534028 || !agatha->IsAIEnabled)
-            return nullptr;
-        return dynamic_cast<npc_mage_tower_agatha::AgathaAI*>(agatha->AI());
-    }
-
-    bool Load() override { return GetAgatha() != nullptr; }
+    bool Load() override { return GetAgathaAI(GetCaster()) != nullptr; }
 
     void SelectTarget(std::list<WorldObject*>& targets)
     {
-        auto* ai = GetAgatha();
+        auto* ai = GetAgathaAI(GetCaster());
         Player* player = ai ? ai->GetFelLavaPlayer() : nullptr;
         targets.remove_if([player](WorldObject* target)
         {
@@ -3036,7 +3055,7 @@ class spell_mage_tower_agatha_fel_lava : public SpellScript
 
     void CreateLava(SpellEffIndex effect)
     {
-        auto* ai = GetAgatha();
+        auto* ai = GetAgathaAI(GetCaster());
         if (!ai || !ai->GetFelLavaPlayer())
             PreventHitDefaultEffect(effect);
     }
@@ -3045,6 +3064,82 @@ class spell_mage_tower_agatha_fel_lava : public SpellScript
     {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_agatha_fel_lava::SelectTarget, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
         OnEffectHit += SpellEffectFn(spell_mage_tower_agatha_fel_lava::CreateLava, EFFECT_1, SPELL_EFFECT_CREATE_AREATRIGGER);
+    }
+};
+
+class spell_mage_tower_agatha_dark_fury_channel : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_agatha_dark_fury_channel);
+
+    bool Load() override { return GetAgathaAI(GetCaster()) != nullptr; }
+
+    void OnTick(AuraEffect const*)
+    {
+        Unit* caster = GetCaster();
+        auto* ai = GetAgathaAI(caster);
+        Spell const* channel = caster ? caster->GetCurrentSpell(CURRENT_CHANNELED_SPELL) : nullptr;
+        if (!ai || !ai->GetArenaPlayer() || !channel || channel->getState() != SPELL_STATE_CASTING ||
+            channel->GetSpellInfo()->Id != AgathaDarkFuryChannel)
+            PreventDefaultAction();
+    }
+
+    void Stop(AuraEffect const*, AuraEffectHandleModes)
+    {
+        Unit* agatha = GetTarget();
+        agatha->RemoveAurasDueToSpell(AgathaDarkFuryShield, agatha->GetGUID());
+        agatha->RemoveAurasDueToSpell(AgathaDarkFuryDamage, agatha->GetGUID());
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_mage_tower_agatha_dark_fury_channel::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_tower_agatha_dark_fury_channel::Stop, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+class spell_mage_tower_agatha_dark_fury_shield : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_agatha_dark_fury_shield);
+
+    bool Load() override { return GetAgathaAI(GetCaster()) != nullptr; }
+
+    void SetInterruptImmunity(bool apply)
+    {
+        Unit* agatha = GetTarget();
+        agatha->ApplySpellImmune(AgathaDarkFuryShield, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, apply);
+        agatha->ApplySpellImmune(AgathaDarkFuryShield, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, apply);
+    }
+
+    void Apply(AuraEffect const*, AuraEffectHandleModes) { SetInterruptImmunity(true); }
+    void Remove(AuraEffect const*, AuraEffectHandleModes) { SetInterruptImmunity(false); }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_mage_tower_agatha_dark_fury_shield::Apply, EFFECT_1, SPELL_AURA_MECHANIC_IMMUNITY_MASK, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_tower_agatha_dark_fury_shield::Remove, EFFECT_1, SPELL_AURA_MECHANIC_IMMUNITY_MASK, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+class spell_mage_tower_agatha_dark_fury_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_agatha_dark_fury_damage);
+
+    bool Load() override { return GetAgathaAI(GetCaster()) != nullptr; }
+
+    void SelectTarget(std::list<WorldObject*>& targets)
+    {
+        auto* ai = GetAgathaAI(GetCaster());
+        Player* player = ai ? ai->GetArenaPlayer() : nullptr;
+        targets.remove_if([player](WorldObject* target)
+        {
+            Unit* unit = target ? target->ToUnit() : nullptr;
+            return !player || !unit || unit->GetCharmerOrOwnerPlayerOrPlayerItself() != player;
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_agatha_dark_fury_damage::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -3448,6 +3543,9 @@ void AddSC_broken_shore()
     RegisterAreaTriggerAI(at_mage_tower_summoning_rune);
     new npc_mage_tower_agatha();
     RegisterSpellScript(spell_mage_tower_agatha_fel_lava);
+    RegisterAuraScript(spell_mage_tower_agatha_dark_fury_channel);
+    RegisterAuraScript(spell_mage_tower_agatha_dark_fury_shield);
+    RegisterSpellScript(spell_mage_tower_agatha_dark_fury_damage);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();

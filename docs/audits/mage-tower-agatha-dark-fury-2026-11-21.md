@@ -1,0 +1,13 @@
+# Agatha's Dark Fury
+
+The existing combat row cast only the `243113` shield. Its native parent `243114` is a real channel with a one-second trigger for `243111` and an immediate trigger for the shield. The native damage effect uses mechanic 35, and the stacking aura raises the caster's damage for that mechanic by 10% per stack. The shield's native absorb is 4,000,000. The 26972 interrupt category allows a normal player interrupt once the shield is gone. [Original Fury Warrior recording](https://www.youtube.com/watch?v=R4a2esU-LCk), [Original DBM Dark Fury timer](https://github.com/DeadlyBossMods/DBM-Challenges/blob/cf9f66ea21818a6f503644599c5c4e1b28990a00/DBM-Challenges/LegionArtifacts/DPSImpossibleFoe.lua).
+
+Agatha now starts the actual channel and retains its native damage and stacking. While the shield's real aura is active, it registers interrupt immunity for its effect and mechanic. That immunity leaves when the shield is removed. The active channel keeps running after shield break, and an ordinary interrupt ends it. The end of the channel, reset, player loss and Agatha's death clear the shield and the accumulating modifier. The existing Umbral Imp behavior, timer windows and victory rows remain in use. The repeated SmartAI event waits for a spell already in progress.
+
+## Verification and limits
+
+- The build 26972 check verified the native channel flag and prevention type, the damage period and stack cap, and both shield effects. The source-extracted AddressSanitizer checks covered active and canceled ticks, effect and mechanic immunity on shield transitions, and shield and stack cleanup. Renaming two mock members cleared the initial test compilation warnings. The Fel Lava regression passed again.
+- Both isolated MariaDB applications and the manual production import preserved the native event schedule, Umbral shield behavior, ground areas and victory flow. The staged and canonical executables reached readiness against their isolated schema and shut down cleanly without new crashes, DBErrors, warnings or assertions. Their SHA-256 is `A78796A46DC43F58981C3D118F7BA768290D4690ACFC2F5F230942C389F59157`.
+- The verified `build-extractors/bin/Release/fixed/2026-11-21-mage-tower-agatha-dark-fury/` archive contains 41 evidence hashes. Cleanup removed 191,023,799 bytes of temporary outputs and 493,594,123 bytes of older rollback binaries. The two recent rollback images and Agatha footage were kept.
+
+The precise original power generation and repeat cadence still need their own check. Actual client shield damage, interrupt timing, immunity while an Umbral Imp is present, stacked damage and visual presentation remain pending.
