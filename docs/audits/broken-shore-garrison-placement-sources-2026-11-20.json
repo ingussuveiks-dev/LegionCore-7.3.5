@@ -1,0 +1,59 @@
+{
+  "scope": "Historical placement evidence for the three missing optional Break Their Garrison (46073) targets",
+  "felfire_imp_117555": {
+    "sources": [
+      {
+        "url": "https://web.archive.org/web/20170411074149id_/http://www.wowhead.com:80/npc=117555",
+        "captured": "2017-04-11",
+        "broken_shore_marker_count": 20,
+        "html_sha256": "a3dac7814800dc0125b2174f980c15205d514ca57f443e8b45b7c3634460e671"
+      },
+      {
+        "url": "https://web.archive.org/web/20180918110514id_/https://www.wowhead.com/npc=117555/felfire-imp",
+        "captured": "2018-09-18",
+        "broken_shore_marker_count": 18,
+        "html_sha256": "89cb9842d86ace9fa24bd706d25b6f4b29b3a7a2c984b68b0d8ee22fc702d56b"
+      }
+    ],
+    "finding": "The original Legion-era capture identifies entry 117555 and exposes 20 two-dimensional map observations. The September 2018 capture provides a later comparison with 18. Five exact coordinate pairs occur in both lists. The observations lie within percentage bounds 57.0–60.8 east and 41.8–50.0 south. The maps do not report NPC lifetime, movement, spawn count, or how the quickly recurring imps are produced."
+  },
+  "imp_mother_flaz_118720": {
+    "source": "https://web.archive.org/web/20180918110247id_/https://www.wowhead.com/npc=118720/imp-mother-flaz",
+    "html_sha256": "ce133aff6e5768c864afb0350197fb3db502847d1bc8ac63f76a6f6603072b00",
+    "broken_shore_map_percent": [60.2, 45.0],
+    "approximate_world_xy": [-1159, 2599],
+    "screenshot": "https://wow.zamimg.com/uploads/screenshots/normal/720432.jpg",
+    "screenshot_sha256": "3e28aae4293084be24264b35c064060971eb797a026a49697539fe00f3b2c281",
+    "finding": "The archived listing has one marker for Flaz and identifies the attached screenshot as an April 3, 2018 submission. The screenshot shows a large imp mother in the raised green pool seen in the earlier footage. It resembles the video actor, whose name was unreadable. The marker's projected center is about 10 horizontal yards from the existing separate Bruva 119718 placement. Marker rounding and the matching creature display leave exact separation, phasing and whether their appearances alternate unresolved."
+  },
+  "libram_of_fel_knowledge_269154": {
+    "sources": [
+      {
+        "url": "https://web.archive.org/web/20180913075532id_/https://www.wowhead.com/object=269154/libram-of-fel-knowledge",
+        "html_sha256": "759ac7f20d37a309b98b17aa51c3715d4882572a22f97301b7856233066caf9d"
+      },
+      {
+        "url": "https://web.archive.org/web/20191015061146id_/https://www.wowhead.com/object=269154/libram-of-fel-knowledge",
+        "html_sha256": "cbfd7f51604c2805159c9f94c10406f5cb9b59964c4ccd51112868cbc324e441"
+      }
+    ],
+    "screenshot": "https://wow.zamimg.com/uploads/screenshots/normal/720433.jpg",
+    "screenshot_sha256": "edee5072955e0d504119feabf586fbb6e557e33f4348f98a29d6163ebecfa222",
+    "finding": "The archived object pages confirm the English name and ID. The 2018 source confirms display 26998 and an April 3, 2018 screenshot of the open green book. The pinned local and Titans templates associate the same ID and display with a different English label, 'The knowledge manuscript of Badgers.' Both archive pages show the location as unknown. The present Wowhead display renders twelve Broken Shore map markers, with no Legion-era provenance established for them. Browser inspection stopped at Chrome's source view because Computer Use could not establish the current URL with enough confidence. No marker coordinates were collected from that session."
+  },
+  "terrain_cross_check": {
+    "method": "Projected Broken Shore percentages using matching 26972 WorldMapArea 1021 bounds. Read build 26972 MAPS v1.9 area chunks for map 1220 with the GridMap::getArea indexing convention. Known intro event 232 resolved to area 8551. Known same-name imp entry 117560 was correctly distinguished by the control point in area 8552.",
+    "result": "All 39 archived observations resolve to 8551, Garrison of the Fel, one of the three native task area IDs. The nine samples at the center and offsets of ±0.1 map percentage units for each observation also resolve to 8551. This confirms the terrain-area association. Heights, positions inside static model geometry, orientations, and unit or object phases were outside the terrain-area read.",
+    "diagnostics": "The corrected extraction passed. Canonical and test diagnostics showed no new crash reports, appended DBErrors, warnings, errors or assertions. The first extraction failed on an incorrectly escaped regular expression and produced no server diagnostics."
+  },
+  "database_cross_check": {
+    "sources": [
+      "Local LegionCore_world_735.26972_2024_10_23.sql",
+      "https://github.com/Titans-Project/LegionCore-Reforged/tree/13b8b208df72cf13ad0655d22fd728a6a49b098e/sql/base/world",
+      "https://github.com/TrinityCore/TrinityCore/issues/21676"
+    ],
+    "finding": "Read the local base and all five pinned Titans base SQL parts as text. Their spawn tables contain the known Bruva and other same-name imp entry 117560, but no spawn rows for 117555, 118720 or 269154. The 2018 TrinityCore issue describes an unverified Broken Shore submission. Its MEGA original returned -16 and its linked GitHub Gist returned HTTP 404. The Wayback availability lookup had no capture of that Gist."
+  },
+  "local_evidence": "The ignored .codex/garrison-placement-20261120 directory retains pinned source metadata, selected source pages and screenshots, the terrain observations TSV, the read-only checks and the SQL hash manifest. Deleted the five downloaded SQL copies after inspection, totaling 252660289 bytes.",
+  "result": "Archived evidence now identifies historical map observations for both NPC entries and the Libram's model and English name. Exact 3D coordinates, movement, orientation, respawn and actual phase are still unverified. No placement migration, server build, deployment or new client traversal was performed."
+}
