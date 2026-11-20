@@ -365,6 +365,265 @@ class spell_mage_tower_ancestral_blast : public SpellScript
     void Register() override { OnCheckCast += SpellCheckCastFn(spell_mage_tower_ancestral_blast::CheckAttempt); }
 };
 
+namespace GodQueen
+{
+constexpr uint32 Sigryn = 116484;
+constexpr uint32 Valkyr = 119696;
+constexpr uint32 SummonValkyr = 237730;
+constexpr uint32 DarkWingsPrepare = 237769;
+constexpr uint32 DarkWingsCharge = 237759;
+constexpr uint32 DarkWingsDamage = 237761;
+
+struct SigrynAI;
+
+struct ValkyrAI : ScriptedAI
+{
+    explicit ValkyrAI(Creature* creature) : ScriptedAI(creature) {}
+    bool Prepare(Position const& destination, uint64 wave);
+    SigrynAI* ActiveSigryn() const;
+    void SpellFinishCast(SpellInfo const* spell) override;
+    bool Covers(Unit const& target) const;
+
+private:
+    Position _destination;
+    uint64 _wave = 0;
+    bool _released = false;
+};
+
+struct SigrynAI : SmartAI
+{
+    explicit SigrynAI(Creature* creature) : SmartAI(creature), _wings(creature) {}
+
+    void Reset() override
+    {
+        StopWaves();
+        SmartAI::Reset();
+    }
+
+    void EnterCombat(Unit* enemy) override
+    {
+        _timer = 146000;
+        SmartAI::EnterCombat(enemy);
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        StopWaves();
+        SmartAI::JustDied(killer);
+    }
+
+    Player* Participant() const
+    {
+        if (!me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1703 || me->HasUnitState(UNIT_STATE_EVADE))
+            return nullptr;
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1265 || scenario->GetCurrentStep() != 1 || scenario->IsCompleted(false))
+            return nullptr;
+        Unit* victim = me->getVictim();
+        Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        return player && player->IsAlive() && player->IsInWorld() && !player->HasPendingTeleport() &&
+            me->IsInMap(player) && me->InSamePhase(player) && !me->IsFriendlyTo(player) ? player : nullptr;
+    }
+
+    bool OwnsWave(uint64 wave) const { return wave && wave == _wave && Participant(); }
+
+    bool ClaimHit(Unit& target)
+    {
+        Player* player = Participant();
+        return player && target.GetCharmerOrOwnerPlayerOrPlayerItself() == player && _hits.insert(target.GetGUID()).second;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        if (!_timer)
+            return;
+        if (!Participant())
+        {
+            // A temporary missing victim before a wave must not erase the pull timer.
+            if (_published)
+                StopWaves();
+            return;
+        }
+        if (_timer > diff)
+        {
+            _timer -= diff;
+            return;
+        }
+        if (me->HasUnitState(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
+        {
+            _timer = 100;
+            return;
+        }
+
+        _timer = 20000;
+        StartWave();
+    }
+
+    void JustSummoned(Creature* summon) override
+    {
+        SmartAI::JustSummoned(summon);
+        if (summon->GetEntry() != Valkyr || summon->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != SummonValkyr)
+            return;
+        auto* ai = summon->IsAIEnabled ? dynamic_cast<ValkyrAI*>(summon->AI()) : nullptr;
+        if (!_arming || !ai || !ai->Prepare(_landing, _wave))
+        {
+            summon->DespawnOrUnsummon();
+            return;
+        }
+        _wings.Summon(summon);
+        ++_published;
+    }
+
+    void SummonedCreatureDespawn(Creature* summon) override
+    {
+        if (summon->GetEntry() == Valkyr)
+            _wings.Despawn(summon);
+        SmartAI::SummonedCreatureDespawn(summon);
+    }
+
+private:
+    void StartWave()
+    {
+        ++_wave;
+        _wings.DespawnAll();
+        _hits.clear();
+        _published = 0;
+        // These three axes have a full-width, unobstructed flight corridor
+        // in the installed 7.3.5 arena. The reverse directions use the same corridors.
+        static constexpr float directions[] = { 0.0f, 0.78539816f, 2.3561945f };
+        uint32 direction = urand(0, 5);
+        float angle = directions[direction % 3] + (direction >= 3 ? 3.14159265f : 0.0f);
+        float dx = std::cos(angle), dy = std::sin(angle);
+        uint32 gap = urand(1, 7);
+        for (uint32 lane = 0; lane < 10; ++lane)
+        {
+            if (lane == gap || lane == gap + 1)
+                continue;
+            float offset = (float(lane) - 4.5f) * 6.0f;
+            float x = 3300.0f - offset * dy, y = 529.0f + offset * dx;
+            _landing.Relocate(x + dx * 28.0f, y + dy * 28.0f, 640.0f, angle);
+            _arming = true;
+            me->CastSpell(x - dx * 28.0f, y - dy * 28.0f, 640.0f, SummonValkyr, true);
+            _arming = false;
+        }
+        if (_published != 8)
+        {
+            _wings.DespawnAll();
+            _published = 0;
+            TC_LOG_WARN("scripts", "The God-Queen's Fury: Sigryn could not publish the full Dark Wings formation in instance %u", me->GetInstanceId());
+            return;
+        }
+        me->CastSpell(me, 237772, true); // Native boss event for the formation warning.
+        Talk(8);
+        Talk(9);
+    }
+
+    void StopWaves()
+    {
+        _timer = 0;
+        _arming = false;
+        _published = 0;
+        ++_wave;
+        _wings.DespawnAll();
+        _hits.clear();
+    }
+
+    SummonList _wings;
+    GuidSet _hits;
+    Position _landing;
+    uint32 _timer = 0;
+    uint32 _published = 0;
+    uint64 _wave = 0;
+    bool _arming = false;
+};
+
+SigrynAI* ValkyrAI::ActiveSigryn() const
+{
+    TempSummon* summon = me->ToTempSummon();
+    Unit* owner = summon ? summon->GetSummoner() : nullptr;
+    Creature* boss = owner ? owner->ToCreature() : nullptr;
+    auto* ai = boss && boss->GetEntry() == Sigryn && boss->IsAIEnabled ? dynamic_cast<SigrynAI*>(boss->AI()) : nullptr;
+    return ai && me->IsAlive() && ai->OwnsWave(_wave) ? ai : nullptr;
+}
+
+bool ValkyrAI::Prepare(Position const& destination, uint64 wave)
+{
+    _wave = wave;
+    _destination = destination;
+    if (!ActiveSigryn())
+        return false;
+    me->SetReactState(REACT_PASSIVE);
+    me->SetCanFly(true);
+    me->SetDisableGravity(true);
+    me->SetFacingTo(_destination.GetOrientation());
+    return me->CastSpell(me, DarkWingsPrepare, false) == SPELL_CAST_OK;
+}
+
+void ValkyrAI::SpellFinishCast(SpellInfo const* spell)
+{
+    if (spell->Id != DarkWingsPrepare || _released)
+        return;
+    _released = true;
+    if (!ActiveSigryn())
+    {
+        me->DespawnOrUnsummon();
+        return;
+    }
+    if (me->CastSpell(_destination, DarkWingsCharge, true) == SPELL_CAST_OK)
+        me->CastSpell(_destination, DarkWingsDamage, true);
+    me->DespawnOrUnsummon(2000);
+}
+
+bool ValkyrAI::Covers(Unit const& target) const
+{
+    float dx = _destination.GetPositionX() - me->GetPositionX();
+    float dy = _destination.GetPositionY() - me->GetPositionY();
+    float along = (target.GetPositionX() - me->GetPositionX()) * dx +
+        (target.GetPositionY() - me->GetPositionY()) * dy;
+    return _released && along >= 0.0f && along <= dx * dx + dy * dy;
+}
+}
+
+class npc_mage_tower_sigryn : public CreatureScript
+{
+public:
+    npc_mage_tower_sigryn() : CreatureScript("npc_mage_tower_sigryn") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new GodQueen::SigrynAI(creature); }
+};
+
+class npc_mage_tower_dark_valkyr : public CreatureScript
+{
+public:
+    npc_mage_tower_dark_valkyr() : CreatureScript("npc_mage_tower_dark_valkyr") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new GodQueen::ValkyrAI(creature); }
+};
+
+class spell_mage_tower_dark_wings : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_dark_wings);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Creature* caster = GetCaster()->ToCreature();
+        auto* valkyr = caster && caster->IsAIEnabled ? dynamic_cast<GodQueen::ValkyrAI*>(caster->AI()) : nullptr;
+        auto* sigryn = valkyr ? valkyr->ActiveSigryn() : nullptr;
+        if (!sigryn)
+            targets.clear();
+        else
+            targets.remove_if([valkyr, sigryn](WorldObject* object)
+            {
+                Unit* target = object->ToUnit();
+                return !target || !valkyr->Covers(*target) || !sigryn->ClaimHit(*target);
+            });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_dark_wings::FilterTargets, EFFECT_0, TARGET_UNIT_BETWEEN_ENEMY);
+    }
+};
+
 namespace Twins
 {
 constexpr uint32 Raest = 116409;
@@ -1042,6 +1301,9 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_fel_surge);
     new npc_mage_tower_faljar();
     RegisterSpellScript(spell_mage_tower_ancestral_blast);
+    new npc_mage_tower_sigryn();
+    new npc_mage_tower_dark_valkyr();
+    RegisterSpellScript(spell_mage_tower_dark_wings);
     new npc_mage_tower_raest();
     RegisterSpellScript(spell_mage_tower_rune_missile);
     RegisterAreaTriggerAI(at_mage_tower_summoning_rune);
