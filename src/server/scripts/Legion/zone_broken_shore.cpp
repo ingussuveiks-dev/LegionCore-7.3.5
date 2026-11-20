@@ -2730,6 +2730,27 @@ private:
     bool _soaked = false;
 };
 
+namespace
+{
+enum class AgathaPosition
+{
+    Center,
+    Upper,
+    Lower
+};
+
+uint32 GetAgathaTranslocate(AgathaPosition position, float health, uint32 remaining, bool reachedLower)
+{
+    if (position == AgathaPosition::Center)
+        return health <= 50.0f ? 242987 : 0;
+    if (position == AgathaPosition::Upper && (!remaining || (!reachedLower && health <= 35.0f)))
+        return 242989;
+    if (position == AgathaPosition::Lower && !remaining)
+        return 242987;
+    return 0;
+}
+}
+
 class npc_mage_tower_agatha : public CreatureScript
 {
 public:
@@ -2738,6 +2759,38 @@ public:
     struct AgathaAI : SmartAI
     {
         explicit AgathaAI(Creature* creature) : SmartAI(creature) {}
+
+        void Reset() override
+        {
+            SmartAI::Reset();
+            _position = AgathaPosition::Center;
+            _reachedLower = false;
+            _nextTranslocate = 0;
+            _pendingTranslocate = 0;
+            _retry = 0;
+            _failures = 0;
+            if (IsArenaActor())
+                SetCombatMove(false);
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            SmartAI::UpdateAI(diff);
+            if (!IsArenaActor() || !me->IsAlive() || !me->isInCombat())
+                return;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1221 || scenario->IsCompleted(false))
+                return;
+
+            Unit* victim = me->getVictim();
+            Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (!player || !player->IsAlive() || !player->IsInWorld() || player->IsPreDelete() || player->HasPendingTeleport() ||
+                !me->IsInMap(player) || !me->InSamePhase(player))
+                return;
+
+            UpdateTranslocate(diff);
+        }
 
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
         {
@@ -2772,6 +2825,71 @@ public:
 
             me->CastSpell(player->GetPosition(), 242879, true); // Agatha's Fury at the player's feet.
         }
+
+    private:
+        bool IsArenaActor() const
+        {
+            return me->GetMapId() == 1616 && me->GetDBTableGUIDLow() == 14534028;
+        }
+
+        void TranslocateFailed(uint32 spell)
+        {
+            if (++_failures == 3)
+                TC_LOG_ERROR("scripts", "An Impossible Foe: Agatha could not finish Translocate %u after three attempts", spell);
+            _retry = _failures < 3 ? 1500 : 6000;
+        }
+
+        void UpdateTranslocate(uint32 diff)
+        {
+            if (_pendingTranslocate)
+            {
+                Spell const* cast = me->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+                if (cast && cast->getState() != SPELL_STATE_FINISHED && cast->GetSpellInfo()->Id == _pendingTranslocate)
+                    return;
+
+                uint32 const spell = _pendingTranslocate;
+                _pendingTranslocate = 0;
+                SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(spell);
+                if (!destination || destination->target_mapId != me->GetMapId() ||
+                    me->GetExactDist2d(destination->target_X, destination->target_Y) > 0.5f ||
+                    std::abs(me->GetPositionZ() - destination->target_Z) > 1.0f)
+                {
+                    TranslocateFailed(spell);
+                    return;
+                }
+
+                _position = spell == 242987 ? AgathaPosition::Upper : AgathaPosition::Lower;
+                _reachedLower = _reachedLower || _position == AgathaPosition::Lower;
+                _nextTranslocate = 68000;
+                _retry = 1500;
+                _failures = 0;
+                return;
+            }
+
+            _nextTranslocate -= std::min(diff, _nextTranslocate);
+            _retry -= std::min(diff, _retry);
+            if (_retry || me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+
+            uint32 const spell = GetAgathaTranslocate(_position, me->GetHealthPct(), _nextTranslocate, _reachedLower);
+            if (!spell)
+                return;
+
+            SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(spell);
+            if (!destination || destination->target_mapId != me->GetMapId() || me->CastSpell(me, spell, false) != SPELL_CAST_OK)
+            {
+                TranslocateFailed(spell);
+                return;
+            }
+            _pendingTranslocate = spell;
+        }
+
+        AgathaPosition _position = AgathaPosition::Center;
+        uint32 _pendingTranslocate = 0;
+        uint32 _nextTranslocate = 0;
+        uint32 _retry = 0;
+        uint32 _failures = 0;
+        bool _reachedLower = false;
     };
 
     CreatureAI* GetAI(Creature* creature) const override { return new AgathaAI(creature); }
