@@ -6,6 +6,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SmartAI.h"
+#include "Spell.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
@@ -213,6 +214,152 @@ class spell_mage_tower_fel_surge : public SpellScript
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_fel_surge::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_fel_surge::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
     }
+};
+
+namespace GodQueen
+{
+constexpr uint32 Faljar = 116496;
+constexpr uint32 AncestralShield = 237949;
+constexpr uint32 AncestralBlast = 237952;
+// The Legion DBM timeline measures the start of the 20-second cast.
+constexpr uint32 KnowledgeIntervals[] = { 69200, 118400, 66300, 26700, 27100, 27500 };
+
+struct FaljarAI : SmartAI
+{
+    explicit FaljarAI(Creature* creature) : SmartAI(creature) {}
+
+    void Reset() override
+    {
+        StopKnowledge();
+        SmartAI::Reset();
+    }
+
+    void EnterCombat(Unit* enemy) override
+    {
+        _engaged = true;
+        _interval = 0;
+        _remaining = 98400;
+        SmartAI::EnterCombat(enemy);
+    }
+
+    void SetData(uint32 id, uint32 value) override
+    {
+        if (id == 3 && value == 3 && me->GetMapId() == 1703)
+            StopKnowledge();
+        SmartAI::SetData(id, value);
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        StopKnowledge();
+        SmartAI::JustDied(killer);
+    }
+
+    bool AllowsBlast() const { return (_handoff || _castingBlast) && IsActive(); }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!IsActive())
+        {
+            if (_handoff || _castingBlast)
+                StopKnowledge();
+            SmartAI::UpdateAI(diff);
+            return;
+        }
+
+        Spell const* current = me->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+        bool isBlast = current && current->GetSpellInfo()->Id == AncestralBlast;
+        if (_handoff)
+        {
+            if (isBlast)
+            {
+                _handoff = 0;
+                _castingBlast = true;
+                _remaining = _interval < std::size(KnowledgeIntervals) ? KnowledgeIntervals[_interval++] : 25000;
+            }
+            else if (_handoff > diff)
+            {
+                _handoff -= diff;
+                return; // Let the native10ms effect160 start the cast before another Shadowbolt.
+            }
+            else
+            {
+                _handoff = 0;
+                me->RemoveAurasDueToSpell(AncestralShield, me->GetGUID());
+                _remaining = 15000;
+                TC_LOG_WARN("scripts", "The God-Queen's Fury: Faljar's shield did not start Ancestral Knowledge in instance %u", me->GetInstanceId());
+            }
+        }
+
+        if (_castingBlast && !isBlast)
+        {
+            _castingBlast = false;
+            me->RemoveAurasDueToSpell(AncestralShield, me->GetGUID());
+        }
+
+        _remaining = _remaining > diff ? _remaining - diff : 0;
+        if (!_remaining && !me->IsNonMeleeSpellCast(false))
+        {
+            _handoff = 250;
+            if (me->CastSpell(me, AncestralShield, false) == SPELL_CAST_OK)
+                return;
+            _handoff = 0;
+            _remaining = 1000;
+        }
+        SmartAI::UpdateAI(diff);
+    }
+
+private:
+    bool IsActive() const
+    {
+        if (!_engaged || !me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1703 || me->HasUnitState(UNIT_STATE_EVADE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1265 || scenario->GetCurrentStep() != 1 || scenario->IsCompleted(false))
+            return false;
+        Unit* victim = me->getVictim();
+        Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        return player && player->IsAlive() && player->IsInWorld() && !player->HasPendingTeleport() &&
+            me->IsInMap(player) && me->InSamePhase(player) && !me->IsFriendlyTo(player);
+    }
+
+    void StopKnowledge()
+    {
+        _engaged = false;
+        _handoff = 0;
+        _castingBlast = false;
+        me->InterruptSpell(CURRENT_GENERIC_SPELL, true, true, AncestralBlast);
+        me->RemoveAurasDueToSpell(AncestralShield, me->GetGUID());
+    }
+
+    uint32 _remaining = 0;
+    uint32 _handoff = 0;
+    size_t _interval = 0;
+    bool _engaged = false;
+    bool _castingBlast = false;
+};
+}
+
+class npc_mage_tower_faljar : public CreatureScript
+{
+public:
+    npc_mage_tower_faljar() : CreatureScript("npc_mage_tower_faljar") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new GodQueen::FaljarAI(creature); }
+};
+
+class spell_mage_tower_ancestral_blast : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_ancestral_blast);
+
+    SpellCastResult CheckAttempt()
+    {
+        Creature* caster = GetCaster()->ToCreature();
+        auto* ai = caster && caster->GetEntry() == GodQueen::Faljar && caster->IsAIEnabled ?
+            dynamic_cast<GodQueen::FaljarAI*>(caster->AI()) : nullptr;
+        return ai && ai->AllowsBlast() ? SPELL_CAST_OK : SPELL_FAILED_DONT_REPORT;
+    }
+
+    void Register() override { OnCheckCast += SpellCheckCastFn(spell_mage_tower_ancestral_blast::CheckAttempt); }
 };
 
 class npc_mage_tower_agatha : public CreatureScript
@@ -630,6 +777,8 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_fel_surge_missile);
     RegisterSpellScript(spell_mage_tower_fel_surge_summon);
     RegisterSpellScript(spell_mage_tower_fel_surge);
+    new npc_mage_tower_faljar();
+    RegisterSpellScript(spell_mage_tower_ancestral_blast);
     new npc_mage_tower_agatha();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
