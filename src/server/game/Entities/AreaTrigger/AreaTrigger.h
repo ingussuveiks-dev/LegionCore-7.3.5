@@ -347,6 +347,7 @@ class TC_GAME_API AreaTrigger : public WorldObject, public GridObject<AreaTrigge
         ObjectGuid GetTargetGuid() const;
         Unit* GetTarget() const;
         int32 GetDuration() const;
+        uint32 GetElapsedTime() const { return _liveTime; }
         void SetDuration(int32 newDuration);
         int32 GeTimeToTarget() const;
         void SetTimeToTarget(int32 timeToTarget);

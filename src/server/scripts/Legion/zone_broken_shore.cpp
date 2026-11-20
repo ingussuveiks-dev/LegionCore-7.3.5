@@ -1,7 +1,9 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "AreaTriggerAI.h"
+#include "AreaTrigger.h"
 #include "Log.h"
+#include "ObjectAccessor.h"
 #include "Player.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
@@ -9,6 +11,7 @@
 #include "Spell.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
+#include <cmath>
 
 namespace Feltotem
 {
@@ -360,6 +363,266 @@ class spell_mage_tower_ancestral_blast : public SpellScript
     }
 
     void Register() override { OnCheckCast += SpellCheckCastFn(spell_mage_tower_ancestral_blast::CheckAttempt); }
+};
+
+namespace Twins
+{
+constexpr uint32 Raest = 116409;
+constexpr uint32 RuneWarning = 236468;
+constexpr uint32 RuneMissile = 236469;
+constexpr uint32 Rune = 236460;
+constexpr uint32 NightmareSummon = 236461;
+constexpr uint32 Nightmare = 119098;
+constexpr uint32 SoakDuration = 3000;
+
+struct RaestAI : SmartAI
+{
+    explicit RaestAI(Creature* creature) : SmartAI(creature), _nightmares(creature) {}
+
+    void Reset() override
+    {
+        StopRunes();
+        _phaseStarted = false;
+        SmartAI::Reset();
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        StopRunes();
+        SmartAI::JustDied(killer);
+    }
+
+    void SetData(uint32 id, uint32 value) override
+    {
+        SmartAI::SetData(id, value);
+        if (id != 5 || value != 5 || !InFight() || _phaseStarted)
+            return;
+
+        // This existing DATA event follows Karam's second Purgatory. The
+        // encounter's LFG entry admits a single player.
+        if (Player* player = me->SelectNearestPlayerNotGM(100.0f))
+        {
+            if (!player->IsAlive() || !player->IsInWorld() || player->HasPendingTeleport() || !me->InSamePhase(player))
+                return;
+            _phaseStarted = true;
+            _participant = player->GetGUID();
+            ++_generation;
+            _timer = 18200;
+        }
+    }
+
+    uint64 ActiveGeneration() const { return GetRunePlayer() ? _generation : 0; }
+
+    Player* GetRunePlayer() const
+    {
+        if (!_participant || !InFight())
+            return nullptr;
+        Player* player = ObjectAccessor::GetPlayer(*me, _participant);
+        return player && player->IsAlive() && player->IsInWorld() && !player->HasPendingTeleport() &&
+            me->IsInMap(player) && me->InSamePhase(player) ? player : nullptr;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        if (!_participant)
+            return;
+        if (!GetRunePlayer())
+        {
+            StopRunes();
+            return;
+        }
+        if (_timer > diff)
+        {
+            _timer -= diff;
+            return;
+        }
+        _timer = 35000;
+
+        // The original casts land near the central disk, even when the
+        // player is kiting on the perimeter. Raest's home is above that disk.
+        Position const& home = me->GetHomePosition();
+        float angle = frand(-1.6f, 0.4f);
+        for (uint8 attempt = 0; attempt < 4; ++attempt, angle += 0.6f)
+        {
+            float x = home.GetPositionX() + 8.0f * std::cos(angle);
+            float y = home.GetPositionY() + 8.0f * std::sin(angle);
+            float ground = me->GetHeight(x, y, home.GetPositionZ() + 1.0f, true, 10.0f);
+            if (ground < 435.0f || ground > 439.0f || !me->IsWithinLOS(x, y, ground + 1.0f))
+                continue;
+
+            if (me->CastSpell(x, y, ground, RuneMissile, true) == SPELL_CAST_OK)
+            {
+                me->CastSpell(me, RuneWarning, true);
+                Talk(7);
+                return;
+            }
+            break;
+        }
+        TC_LOG_WARN("scripts", "Thwarting the Twins: Raest could not project a Rune of Summoning in instance %u", me->GetInstanceId());
+    }
+
+    void JustSummoned(Creature* summon) override
+    {
+        SmartAI::JustSummoned(summon);
+        if (summon->GetEntry() != Nightmare || summon->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != NightmareSummon)
+            return;
+        Player* player = GetRunePlayer();
+        if (!player)
+        {
+            summon->DespawnOrUnsummon();
+            return;
+        }
+        _nightmares.Summon(summon);
+        summon->AI()->AttackStart(player);
+    }
+
+    void SummonedCreatureDespawn(Creature* summon) override
+    {
+        if (summon->GetEntry() == Nightmare)
+            _nightmares.Despawn(summon);
+        SmartAI::SummonedCreatureDespawn(summon);
+    }
+
+private:
+    bool InFight() const
+    {
+        if (!me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1684 || me->HasUnitState(UNIT_STATE_EVADE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1273 && scenario->GetCurrentStep() == 1 && !scenario->IsCompleted(false);
+    }
+
+    void StopRunes()
+    {
+        _participant.Clear();
+        _timer = 0;
+        me->RemoveAreaObject(Rune);
+        _nightmares.DespawnAll();
+    }
+
+    SummonList _nightmares;
+    ObjectGuid _participant;
+    uint64 _generation = 0;
+    uint32 _timer = 0;
+    bool _phaseStarted = false;
+};
+
+RaestAI* GetRaest(Unit* caster)
+{
+    Creature* boss = caster ? caster->ToCreature() : nullptr;
+    return boss && boss->GetEntry() == Raest && boss->IsAIEnabled ? dynamic_cast<RaestAI*>(boss->AI()) : nullptr;
+}
+}
+
+class npc_mage_tower_raest : public CreatureScript
+{
+public:
+    npc_mage_tower_raest() : CreatureScript("npc_mage_tower_raest") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new Twins::RaestAI(creature); }
+};
+
+class spell_mage_tower_rune_missile : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_rune_missile);
+
+    bool Load() override
+    {
+        if (auto* ai = Twins::GetRaest(GetCaster()))
+            _generation = ai->ActiveGeneration();
+        return true;
+    }
+
+    void Land(SpellEffIndex effect)
+    {
+        auto* ai = Twins::GetRaest(GetCaster());
+        if (!_generation || !ai || _generation != ai->ActiveGeneration())
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override { OnEffectHit += SpellEffectFn(spell_mage_tower_rune_missile::Land, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE); }
+
+    uint64 _generation = 0;
+};
+
+struct at_mage_tower_summoning_rune : AreaTriggerAI
+{
+    explicit at_mage_tower_summoning_rune(AreaTrigger* trigger) : AreaTriggerAI(trigger) {}
+
+    void OnCreate() override
+    {
+        if (auto* ai = Twins::GetRaest(at->GetCaster()))
+            _generation = ai->ActiveGeneration();
+        _lifetime = at->GetDuration();
+    }
+
+    void OnUpdate(uint32) override
+    {
+        Player* player = RunePlayer();
+        if (!player || IsSoaked(*player, at->GetElapsedTime()))
+            at->Remove(false);
+    }
+
+    void OnRemove() override
+    {
+        if (_lifetime <= 0 || at->GetElapsedTime() < static_cast<uint32>(_lifetime))
+            return;
+        if (Player* player = RunePlayer())
+            if (!IsSoaked(*player, static_cast<uint32>(_lifetime)))
+            {
+                _generation = 0;
+                at->GetCaster()->CastSpell(at->GetPosition(), Twins::NightmareSummon, true);
+            }
+    }
+
+private:
+    Player* RunePlayer() const
+    {
+        auto* ai = Twins::GetRaest(at->GetCaster());
+        return _generation && ai && _generation == ai->ActiveGeneration() ? ai->GetRunePlayer() : nullptr;
+    }
+
+    bool IsInside(Unit const& target) const
+    {
+        return target.IsAlive() && target.IsInWorld() && at->IsInMap(&target) && at->InSamePhase(&target) &&
+            at->GetExactDist2d(&target) <= at->GetRadius() &&
+            std::abs(at->GetPositionZ() - target.GetPositionZ()) <= 2.5f;
+    }
+
+    bool IsSoaked(Player const& player, uint32 elapsed)
+    {
+        if (!_soaked)
+        {
+            bool occupied = IsInside(player);
+            if (!occupied)
+                for (ObjectGuid const& guid : player.m_Controlled)
+                {
+                    Unit* controlled = ObjectAccessor::GetUnit(player, guid);
+                    if (controlled && (controlled->isPet() || controlled->isGuardian()) &&
+                        controlled->GetCharmerOrOwnerPlayerOrPlayerItself() == &player && IsInside(*controlled))
+                    {
+                        occupied = true;
+                        break;
+                    }
+                }
+            if (!occupied)
+                _occupied = false;
+            else if (!_occupied)
+            {
+                _occupied = true;
+                _occupiedSince = elapsed;
+            }
+            else
+                _soaked = elapsed - _occupiedSince >= Twins::SoakDuration;
+        }
+        return _soaked;
+    }
+
+    int32 _lifetime = 0;
+    uint64 _generation = 0;
+    uint32 _occupiedSince = 0;
+    bool _occupied = false;
+    bool _soaked = false;
 };
 
 class npc_mage_tower_agatha : public CreatureScript
@@ -779,6 +1042,9 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_fel_surge);
     new npc_mage_tower_faljar();
     RegisterSpellScript(spell_mage_tower_ancestral_blast);
+    new npc_mage_tower_raest();
+    RegisterSpellScript(spell_mage_tower_rune_missile);
+    RegisterAreaTriggerAI(at_mage_tower_summoning_rune);
     new npc_mage_tower_agatha();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
