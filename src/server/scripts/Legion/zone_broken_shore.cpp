@@ -11,6 +11,8 @@
 #include "Spell.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
+#include <algorithm>
+#include <array>
 #include <cmath>
 
 namespace Feltotem
@@ -19,6 +21,43 @@ constexpr uint32 Tugar = 117230;
 constexpr uint32 TotemMissile = 243224;
 constexpr uint32 TotemSummon = 237903;
 constexpr uint32 FelSurge = 242496;
+constexpr uint32 Jormog = 117484;
+constexpr uint32 Earthquake = 237950;
+constexpr uint32 StalactiteWarning = 241395;
+constexpr uint32 StalactiteImpact = 238027;
+constexpr uint32 FallenStalactite = 238302;
+constexpr uint32 StalactiteBreak = 243674;
+constexpr uint32 FelHardenedScales = 238471;
+constexpr uint32 BurrowedForm = 238703;
+constexpr uint32 BurrowedDisplay = 75542;
+constexpr uint32 BurrowDuration = 239942;
+constexpr uint32 ChargeWarning = 243242;
+constexpr uint32 JormogsFury = 241719;
+
+constexpr uint32 ChargeMovement = 1;
+constexpr float RockRadius = 2.75f;
+constexpr float PlayerHitRadius = 2.5f;
+Position const RockSites[] = {
+    { 5207.0f, 5057.0f, 626.0f },
+    { 5216.0f, 5049.0f, 626.0f },
+    { 5218.0f, 5061.0f, 627.0f }
+};
+
+bool SegmentTouches(Position const& start, Position const& end, Position const& point, float radius)
+{
+    float const dx = end.GetPositionX() - start.GetPositionX();
+    float const dy = end.GetPositionY() - start.GetPositionY();
+    float const lengthSq = dx * dx + dy * dy;
+    if (lengthSq < 0.0001f)
+        return false;
+
+    float const projection = ((point.GetPositionX() - start.GetPositionX()) * dx +
+        (point.GetPositionY() - start.GetPositionY()) * dy) / lengthSq;
+    float const fraction = std::clamp(projection, 0.0f, 1.0f);
+    float const z = start.GetPositionZ() + (end.GetPositionZ() - start.GetPositionZ()) * fraction;
+    return std::abs(point.GetPositionZ() - z) <= 3.0f &&
+        point.GetExactDist2dSq(start.GetPositionX() + dx * fraction, start.GetPositionY() + dy * fraction) <= radius * radius;
+}
 
 struct TugarAI : SmartAI
 {
@@ -28,6 +67,7 @@ struct TugarAI : SmartAI
     {
         ++_attempt;
         _totemTimer = 0;
+        StopEarthquake();
         SmartAI::Reset();
     }
 
@@ -37,30 +77,40 @@ struct TugarAI : SmartAI
         // Legion DBM observed the first Fel Surge cast near 62s. The original
         // 15-yard missile travels at 2 yards/sec before the totem begins it.
         _totemTimer = 54500;
+        _earthquakeTimer = 20500;
         SmartAI::EnterCombat(enemy);
     }
 
-    uint64 ActiveAttempt() const
+    Player* Participant() const
     {
         if (!me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1702 || me->HasUnitState(UNIT_STATE_EVADE))
-            return 0;
+            return nullptr;
 
         Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
         if (!scenario || scenario->GetScenarioId() != 1266 || scenario->GetCurrentStep() != 1 || scenario->IsCompleted(false))
-            return 0;
+            return nullptr;
 
         Unit* victim = me->getVictim();
         Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
         if (!player || !player->IsAlive() || !player->IsInWorld() || player->HasPendingTeleport() ||
             !me->IsInMap(player) || !me->InSamePhase(player))
-            return 0;
+            return nullptr;
 
-        return _attempt;
+        return player;
+    }
+
+    uint64 ActiveAttempt() const { return Participant() ? _attempt : 0; }
+
+    void JustDied(Unit* killer) override
+    {
+        StopEarthquake();
+        SmartAI::JustDied(killer);
     }
 
     void UpdateAI(uint32 diff) override
     {
         SmartAI::UpdateAI(diff);
+        UpdateEarthquake(diff);
         if (!_totemTimer || !ActiveAttempt())
             return;
         if (diff < _totemTimer)
@@ -74,18 +124,294 @@ struct TugarAI : SmartAI
             TC_LOG_WARN("scripts", "Feltotem's Fall: Tugar's Fel Surge Totem missile cast failed in instance %u", me->GetInstanceId());
     }
 
+    void HitStalactites(Creature* worm, Position const& start, Position const& end);
+    void StopEarthquake()
+    {
+        _earthquakeTimer = 0;
+        _rockFall = 0;
+        RemoveRocks();
+    }
+
 private:
+    void UpdateEarthquake(uint32 diff);
+    void RemoveRocks()
+    {
+        for (ObjectGuid& guid : _rocks)
+        {
+            if (AreaTrigger* rock = ObjectAccessor::GetAreaTrigger(*me, guid))
+                rock->Remove();
+            guid.Clear();
+        }
+    }
+
     uint64 _attempt = 0;
     uint32 _totemTimer = 0;
+    uint32 _earthquakeTimer = 0;
+    uint32 _rockFall = 0;
+    std::array<Position, 3> _rockPositions;
+    std::array<ObjectGuid, 3> _rocks;
 };
 
-uint64 ActiveTugarAttempt(Unit* caster)
+TugarAI* FindTugarAI(Unit* caster)
 {
     Creature* boss = caster ? caster->ToCreature() : nullptr;
     if (!boss || boss->GetEntry() != Tugar || !boss->IsAIEnabled)
-        return 0;
-    auto* ai = dynamic_cast<TugarAI*>(boss->AI());
+        return nullptr;
+    return dynamic_cast<TugarAI*>(boss->AI());
+}
+
+uint64 ActiveTugarAttempt(Unit* caster)
+{
+    auto* ai = FindTugarAI(caster);
     return ai ? ai->ActiveAttempt() : 0;
+}
+
+struct JormogAI : SmartAI
+{
+    explicit JormogAI(Creature* creature) : SmartAI(creature) {}
+
+    void Reset() override
+    {
+        Surface();
+        SmartAI::Reset();
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        if (auto* tugar = FindTugarAI(ObjectAccessor::GetCreature(*me, _tugar)))
+            tugar->StopEarthquake();
+        Surface();
+        SmartAI::JustDied(killer);
+    }
+
+    bool Burrow(Creature* tugar, uint64 attempt)
+    {
+        if (_attempt || !attempt || me->GetDBTableGUIDLow() != 14534072)
+            return false;
+        _attempt = attempt;
+        _tugar = tugar->GetGUID();
+        _nextCharge = 6500;
+        _burrowTime = 30000;
+        _chargesLaunched = 0;
+        _combatMove = CanCombatMove();
+        _addedFlags = (UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE) & ~me->GetUInt32Value(UNIT_FIELD_FLAGS);
+        me->SetFlag(UNIT_FIELD_FLAGS, _addedFlags);
+        SetCombatMove(false);
+        me->CastStop();
+        if (me->CastSpell(me, BurrowedForm, true) != SPELL_CAST_OK || !me->HasAura(BurrowedForm))
+        {
+            Surface();
+            return false;
+        }
+        // The transform's WDB record includes an invisible fallback model.
+        me->SetDisplayId(BurrowedDisplay);
+        me->CastSpell(me, BurrowDuration, true);
+        return true;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_attempt)
+        {
+            SmartAI::UpdateAI(diff);
+            return;
+        }
+
+        auto* tugar = FindTugarAI(ObjectAccessor::GetCreature(*me, _tugar));
+        Player* player = tugar && tugar->ActiveAttempt() == _attempt ? tugar->Participant() : nullptr;
+        if (!player)
+        {
+            Surface();
+            return;
+        }
+        if (_chargeInProgress)
+        {
+            ScanMovement(*tugar, *player);
+            if (_chargeArrived || diff >= _chargeInProgress)
+                _chargeInProgress = 0;
+            else
+                _chargeInProgress -= diff;
+        }
+        if (diff >= _burrowTime)
+        {
+            Surface();
+            return;
+        }
+        _burrowTime -= diff;
+
+        if (_chargesLaunched == 3)
+            return;
+        if (diff < _nextCharge)
+        {
+            _nextCharge -= diff;
+            return;
+        }
+        if (_watchingChargeTarget)
+        {
+            ++_chargesLaunched;
+            _watchingChargeTarget = false;
+            _nextCharge = 7500;
+            LaunchCharge();
+            return;
+        }
+
+        _targetPosition = player->GetPosition();
+        _watchingChargeTarget = true;
+        _nextCharge = 1650;
+        me->SetFacingToObject(player);
+        me->CastSpell(me, ChargeWarning, true);
+        Talk(0, player->GetGUID());
+    }
+
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (_chargeInProgress && type == POINT_MOTION_TYPE && id == ChargeMovement)
+            _chargeArrived = true;
+        SmartAI::MovementInform(type, id);
+    }
+
+private:
+    void LaunchCharge()
+    {
+        float const x = _targetPosition.GetPositionX();
+        float const y = _targetPosition.GetPositionY();
+        float const z = me->GetHeight(x, y, _targetPosition.GetPositionZ() + 1.0f, true, 5.0f);
+        if (z <= INVALID_HEIGHT || !me->IsWithinLOS(x, y, z + 1.0f))
+            return;
+        _previousPosition = me->GetPosition();
+        _chargeInProgress = 5000;
+        _chargeArrived = false;
+        _playerHit = false;
+        me->GetMotionMaster()->MoveCharge(x, y, z, 20.0f, ChargeMovement, true);
+    }
+
+    void ScanMovement(TugarAI& tugar, Player& player)
+    {
+        Position const current = me->GetPosition();
+        tugar.HitStalactites(me, _previousPosition, current);
+        if (!_playerHit && SegmentTouches(_previousPosition, current, player.GetPosition(), PlayerHitRadius))
+        {
+            _playerHit = true;
+            me->CastSpell(&player, JormogsFury, true);
+        }
+        _previousPosition = current;
+    }
+
+    void Surface()
+    {
+        if (!_attempt)
+            return;
+        _attempt = 0;
+        _watchingChargeTarget = false;
+        _chargeInProgress = 0;
+        me->StopMoving();
+        me->GetMotionMaster()->Clear(false);
+        me->RemoveAurasDueToSpell(BurrowedForm);
+        me->RemoveAurasDueToSpell(BurrowDuration);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, _addedFlags);
+        SetCombatMove(_combatMove && me->IsAlive());
+    }
+
+    ObjectGuid _tugar;
+    Position _previousPosition;
+    Position _targetPosition;
+    uint64 _attempt = 0;
+    uint32 _addedFlags = 0;
+    uint32 _nextCharge = 0;
+    uint32 _burrowTime = 0;
+    uint32 _chargeInProgress = 0;
+    uint8 _chargesLaunched = 0;
+    bool _combatMove = false;
+    bool _chargeArrived = false;
+    bool _playerHit = false;
+    bool _watchingChargeTarget = false;
+};
+
+void TugarAI::UpdateEarthquake(uint32 diff)
+{
+    uint64 const attempt = ActiveAttempt();
+    if (!attempt)
+    {
+        _rockFall = 0;
+        RemoveRocks();
+        return;
+    }
+
+    if (_rockFall > diff)
+        _rockFall -= diff;
+    else if (_rockFall)
+    {
+        _rockFall = 0;
+        for (std::size_t i = 0; i < _rocks.size(); ++i)
+        {
+            Position const& position = _rockPositions[i];
+            if (position.GetPositionZ() <= INVALID_HEIGHT)
+                continue;
+            me->CastSpell(position, StalactiteImpact, true);
+            me->CastSpell(position, FallenStalactite, true);
+            std::list<AreaTrigger*> areaTriggers;
+            me->GetAreaTriggersWithEntryInRange(areaTriggers, FallenStalactite, me->GetGUID(), 100.0f);
+            for (AreaTrigger const* rock : areaTriggers)
+                if (rock->GetSpellId() == FallenStalactite && rock->IsInDist2d(&position, 0.3f))
+                    _rocks[i] = rock->GetGUID();
+            if (!_rocks[i])
+                TC_LOG_WARN("scripts", "Feltotem's Fall: stalactite did not publish at site %u in instance %u",
+                    uint32(i), me->GetInstanceId());
+        }
+    }
+
+    if (diff < _earthquakeTimer)
+    {
+        _earthquakeTimer -= diff;
+        return;
+    }
+    if (!_earthquakeTimer)
+        return;
+
+    Creature* worm = me->FindNearestCreature(Jormog, 100.0f);
+    auto* ai = worm && worm->IsAIEnabled ? dynamic_cast<JormogAI*>(worm->AI()) : nullptr;
+    if (!ai)
+    {
+        _earthquakeTimer = 0;
+        return;
+    }
+    if (me->CastSpell(me, Earthquake, false) != SPELL_CAST_OK || !me->HasAura(Earthquake))
+    {
+        _earthquakeTimer = 500;
+        return;
+    }
+    _earthquakeTimer = 60000;
+    if (!ai->Burrow(me, attempt))
+        return;
+
+    RemoveRocks();
+    _rockFall = 2200;
+    for (std::size_t i = 0; i < _rocks.size(); ++i)
+    {
+        Position position = RockSites[i];
+        float const z = me->GetHeight(position.GetPositionX(), position.GetPositionY(),
+            position.GetPositionZ() + 1.0f, true, 5.0f);
+        position.m_positionZ = z;
+        _rockPositions[i] = position;
+        if (z > INVALID_HEIGHT)
+            me->CastSpell(position, StalactiteWarning, true);
+    }
+}
+
+void TugarAI::HitStalactites(Creature* worm, Position const& start, Position const& end)
+{
+    for (ObjectGuid& guid : _rocks)
+    {
+        AreaTrigger* rock = ObjectAccessor::GetAreaTrigger(*me, guid);
+        if (!rock || !SegmentTouches(start, end, rock->GetPosition(), RockRadius))
+            continue;
+
+        Position const position = rock->GetPosition();
+        guid.Clear();
+        rock->Remove();
+        worm->RemoveAuraFromStack(FelHardenedScales, worm->GetGUID());
+        worm->CastSpell(position, StalactiteBreak, true);
+    }
 }
 }
 
@@ -94,6 +420,39 @@ class npc_mage_tower_tugar : public CreatureScript
 public:
     npc_mage_tower_tugar() : CreatureScript("npc_mage_tower_tugar") {}
     CreatureAI* GetAI(Creature* creature) const override { return new Feltotem::TugarAI(creature); }
+};
+
+class npc_mage_tower_jormog : public CreatureScript
+{
+public:
+    npc_mage_tower_jormog() : CreatureScript("npc_mage_tower_jormog") {}
+    CreatureAI* GetAI(Creature* creature) const override { return new Feltotem::JormogAI(creature); }
+};
+
+class spell_mage_tower_stalactite_impact : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_stalactite_impact);
+
+    bool Load() override { return Feltotem::ActiveTugarAttempt(GetCaster()) != 0; }
+
+    void KnockBack(SpellEffIndex)
+    {
+        Player* player = GetHitPlayer();
+        WorldLocation const* impact = GetExplTargetDest();
+        if (player && impact && Feltotem::ActiveTugarAttempt(GetCaster()))
+            player->KnockbackFrom(impact->GetPositionX(), impact->GetPositionY(), 10.0f, 5.0f);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_tower_stalactite_impact::KnockBack, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+struct at_mage_tower_broken_stalactite : AreaTriggerAI
+{
+    explicit at_mage_tower_broken_stalactite(AreaTrigger* trigger) : AreaTriggerAI(trigger) {}
+    void OnCreate() override { at->SetDuration(1500); }
 };
 
 class npc_mage_tower_fel_surge_totem : public CreatureScript
@@ -1295,6 +1654,9 @@ public:
 void AddSC_broken_shore()
 {
     new npc_mage_tower_tugar();
+    new npc_mage_tower_jormog();
+    RegisterSpellScript(spell_mage_tower_stalactite_impact);
+    RegisterAreaTriggerAI(at_mage_tower_broken_stalactite);
     new npc_mage_tower_fel_surge_totem();
     RegisterSpellScript(spell_mage_tower_fel_surge_missile);
     RegisterSpellScript(spell_mage_tower_fel_surge_summon);
