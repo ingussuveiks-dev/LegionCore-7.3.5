@@ -653,6 +653,11 @@ constexpr uint32 CreepingShadowsArea = 232664;
 constexpr uint32 CreepingShadowsDamage = 232672;
 constexpr uint32 CreepingShadowsTrigger = 9346;
 constexpr uint32 CreepingShadowsTemplate = 90232664;
+constexpr uint32 SeedOfDarkness = 233248;
+constexpr uint32 FeedingOnDarkness = 233164;
+constexpr uint32 SummonDarknessWithin = 233165;
+constexpr uint32 DarknessWithin = 116840;
+constexpr uint32 MergeDarkness = 232991;
 constexpr float CreepingShadowsInitialRadius = 5.0f;
 
 float CreepingShadowsRadius(uint32 age)
@@ -670,6 +675,51 @@ bool IsInCreepingShadows(AreaTrigger const& ground, Unit const& target, float ra
 struct CorruptingShadowsAI : SmartAI
 {
     explicit CorruptingShadowsAI(Creature* creature) : SmartAI(creature) {}
+
+    Player* GetSeedPlayer() const
+    {
+        if (!IsGroundEncounter())
+            return nullptr;
+        Player* player = ObjectAccessor::GetPlayer(*me, _player);
+        return IsParticipant(player) ? player : nullptr;
+    }
+
+    void ReleaseSeeds(Player& player)
+    {
+        if (GetSeedPlayer() != &player || player.HasPendingTeleport())
+            return;
+
+        uint32 const previous = _seedPublished;
+        for (uint32 count = 0; count < 3; ++count)
+            player.CastSpell(&player, SummonDarknessWithin, true, nullptr, nullptr, me->GetGUID());
+
+        if (_seedPublished - previous != 3)
+            TC_LOG_ERROR("scripts", "Closing the Eye: Seed of Darkness published %u Darkness Within actors",
+                _seedPublished - previous);
+    }
+
+    bool OwnsSeed(Creature const& creature) const
+    {
+        return creature.GetEntry() == DarknessWithin && creature.GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == SummonDarknessWithin &&
+            me->IsInMap(&creature) && me->InSamePhase(&creature) && _seedAdds.count(creature.GetGUID()) && GetSeedPlayer();
+    }
+
+    void JustSummoned(Creature* summon) override
+    {
+        SmartAI::JustSummoned(summon);
+        if (summon->GetEntry() == DarknessWithin && summon->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == SummonDarknessWithin &&
+            GetSeedPlayer() && _seedAdds.insert(summon->GetGUID()).second)
+        {
+            ++_seedPublished;
+            summon->DespawnOrUnsummon(45000);
+        }
+    }
+
+    void SummonedCreatureDespawn(Creature* summon) override
+    {
+        _seedAdds.erase(summon->GetGUID());
+        SmartAI::SummonedCreatureDespawn(summon);
+    }
 
     void Reset() override
     {
@@ -830,17 +880,103 @@ private:
             if (Unit* unit = ObjectAccessor::GetUnit(*me, guid))
                 unit->RemoveAurasDueToSpell(CreepingShadowsDamage, me->GetGUID());
         _affected.clear();
+        me->RemoveAurasDueToSpell(FeedingOnDarkness);
+        if (Player* player = ObjectAccessor::GetPlayer(*me, _player))
+            player->RemoveAurasDueToSpell(SeedOfDarkness, me->GetGUID());
+
+        std::set<ObjectGuid> seedAdds;
+        seedAdds.swap(_seedAdds);
+        for (ObjectGuid const& guid : seedAdds)
+            if (Creature* add = ObjectAccessor::GetCreature(*me, guid))
+                add->DespawnOrUnsummon();
+
         _ground.Clear();
         _player.Clear();
         _age = 0;
         _update = 0;
+        _seedPublished = 0;
     }
 
     ObjectGuid _ground, _player;
     std::set<ObjectGuid> _affected;
+    std::set<ObjectGuid> _seedAdds;
     uint32 _warmup = 0;
     uint32 _age = 0;
     uint32 _update = 0;
+    uint32 _seedPublished = 0;
+};
+
+CorruptingShadowsAI* GetCorruptingShadowsAI(Unit* source)
+{
+    Creature* boss = source ? source->ToCreature() : nullptr;
+    if (!boss || boss->GetEntry() != CorruptingShadows || boss->GetMapId() != ScenarioMap || !boss->IsAIEnabled)
+        return nullptr;
+    return dynamic_cast<CorruptingShadowsAI*>(boss->AI());
+}
+
+Creature* GetSeedBoss(Creature& seed)
+{
+    TempSummon* summon = seed.ToTempSummon();
+    Unit* owner = summon ? summon->GetSummoner() : nullptr;
+    CorruptingShadowsAI* boss = GetCorruptingShadowsAI(owner);
+    return boss && boss->OwnsSeed(seed) ? owner->ToCreature() : nullptr;
+}
+
+bool CanMergeDarkness(Creature const& seed, Creature const& boss)
+{
+    return seed.IsAlive() && boss.IsAlive() && seed.IsWithinDistInMap(&boss, 3.0f) && seed.IsWithinLOSInMap(&boss);
+}
+
+struct DarknessWithinAI : ScriptedAI
+{
+    explicit DarknessWithinAI(Creature* creature) : ScriptedAI(creature)
+    {
+        me->SetReactState(REACT_PASSIVE);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_merged)
+            return;
+
+        Creature* boss = GetSeedBoss(*me);
+        if (!boss)
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+        if (!_following)
+        {
+            me->GetMotionMaster()->MoveFollow(boss, 1.0f, 0.0f);
+            _following = true;
+        }
+        if (diff < _mergeRetry)
+        {
+            _mergeRetry -= diff;
+            return;
+        }
+        _mergeRetry = 250;
+
+        if (CanMergeDarkness(*me, *boss))
+            me->CastSpell(boss, MergeDarkness, false);
+    }
+
+    void SpellHitTarget(Unit* target, SpellInfo const* spell) override
+    {
+        if (_merged || !spell || spell->Id != MergeDarkness || !target || target != GetSeedBoss(*me))
+            return;
+        _merged = true;
+        me->StopMoving();
+        me->DespawnOrUnsummon(250);
+    }
+
+    void AttackStart(Unit*) override {}
+    void MoveInLineOfSight(Unit*) override {}
+
+private:
+    bool _following = false;
+    bool _merged = false;
+    uint32 _mergeRetry = 0;
 };
 }
 
@@ -849,6 +985,101 @@ class npc_mage_tower_corrupting_shadows : public CreatureScript
 public:
     npc_mage_tower_corrupting_shadows() : CreatureScript("npc_mage_tower_corrupting_shadows") {}
     CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::CorruptingShadowsAI(creature); }
+};
+
+class npc_mage_tower_darkness_within : public CreatureScript
+{
+public:
+    npc_mage_tower_darkness_within() : CreatureScript("npc_mage_tower_darkness_within") {}
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        if (creature->GetMapId() == ClosingTheEye::ScenarioMap && creature->ToTempSummon())
+            return new ClosingTheEye::DarknessWithinAI(creature);
+        return new SmartAI(creature);
+    }
+};
+
+class spell_mage_tower_seed_target : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_seed_target);
+
+    bool Load() override { return ClosingTheEye::GetCorruptingShadowsAI(GetCaster()) != nullptr; }
+
+    void SelectPlayer(WorldObject*& target)
+    {
+        auto* ai = ClosingTheEye::GetCorruptingShadowsAI(GetCaster());
+        Unit* victim = target ? target->ToUnit() : nullptr;
+        Player* player = ai ? ai->GetSeedPlayer() : nullptr;
+        target = victim && player && victim->GetCharmerOrOwnerPlayerOrPlayerItself() == player ? player : nullptr;
+    }
+
+    void Register() override
+    {
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_mage_tower_seed_target::SelectPlayer, EFFECT_0, TARGET_UNIT_TARGET_ENEMY);
+    }
+};
+
+class spell_mage_tower_seed_expiry : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_seed_expiry);
+
+    bool Load() override { return ClosingTheEye::GetCorruptingShadowsAI(GetCaster()) != nullptr; }
+
+    void StartFeeding(AuraEffect const*, AuraEffectHandleModes)
+    {
+        Unit* boss = GetCaster();
+        auto* ai = ClosingTheEye::GetCorruptingShadowsAI(boss);
+        if (ai && GetTarget() == ai->GetSeedPlayer())
+            boss->CastSpell(boss, ClosingTheEye::FeedingOnDarkness, true);
+    }
+
+    void ReleaseSeeds(AuraEffect const*, AuraEffectHandleModes)
+    {
+        if (_released || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+        auto* ai = ClosingTheEye::GetCorruptingShadowsAI(GetCaster());
+        Unit* target = GetTarget();
+        if (ai && target && target->IsPlayer())
+        {
+            _released = true;
+            ai->ReleaseSeeds(*target->ToPlayer());
+        }
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_mage_tower_seed_expiry::StartFeeding, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_tower_seed_expiry::ReleaseSeeds, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+
+    bool _released = false;
+};
+
+class spell_mage_tower_merge_darkness : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_merge_darkness);
+
+    bool Load() override
+    {
+        Unit* caster = GetCaster();
+        return caster && caster->GetEntry() == ClosingTheEye::DarknessWithin && caster->GetMapId() == ClosingTheEye::ScenarioMap;
+    }
+
+    void SelectBoss(std::list<WorldObject*>& targets)
+    {
+        Creature* seed = GetCaster()->ToCreature();
+        Creature* boss = seed ? ClosingTheEye::GetSeedBoss(*seed) : nullptr;
+        targets.remove_if([seed, boss](WorldObject* target)
+        {
+            return !boss || target != boss || !ClosingTheEye::CanMergeDarkness(*seed, *boss);
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_merge_darkness::SelectBoss, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+    }
 };
 
 namespace Feltotem
@@ -2913,6 +3144,10 @@ void AddSC_broken_shore()
     new npc_mage_tower_xylem();
     new npc_mage_tower_xylem_mirror();
     new npc_mage_tower_corrupting_shadows();
+    new npc_mage_tower_darkness_within();
+    RegisterSpellScript(spell_mage_tower_seed_target);
+    RegisterAuraScript(spell_mage_tower_seed_expiry);
+    RegisterSpellScript(spell_mage_tower_merge_darkness);
     RegisterAuraScript(spell_mage_tower_xylem_darkness);
     RegisterSpellScript(spell_mage_tower_xylem_intermission_damage);
     RegisterAuraScript(spell_mage_tower_xylem_time_acceleration);
