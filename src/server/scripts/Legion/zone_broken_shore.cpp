@@ -1,6 +1,58 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "AreaTriggerAI.h"
+#include "Player.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "SmartAI.h"
+#include "TemporarySummon.h"
+
+class npc_mage_tower_agatha : public CreatureScript
+{
+public:
+    npc_mage_tower_agatha() : CreatureScript("npc_mage_tower_agatha") {}
+
+    struct AgathaAI : SmartAI
+    {
+        explicit AgathaAI(Creature* creature) : SmartAI(creature) {}
+
+        void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+        {
+            if (!summon || summon->IsAlive() || !me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1616)
+                return;
+
+            switch (summon->GetEntry())
+            {
+                case 115640: // Fuming Imp
+                case 115641: // Smoldering Imp
+                case 115642: // Umbral Imp
+                case 115643: // Imp Servant
+                case 115719: // Imp Servant, opposite side
+                    break;
+                default:
+                    return;
+            }
+
+            TempSummon* imp = summon->ToTempSummon();
+            if (!imp || imp->GetSummonerGUID() != me->GetGUID() || !me->IsInMap(imp))
+                return;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1221 || scenario->IsCompleted(false))
+                return;
+
+            Unit* victim = me->getVictim();
+            Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (!player || !player->IsAlive() || !player->IsInWorld() || player->HasPendingTeleport() ||
+                !me->IsInMap(player) || !me->InSamePhase(player))
+                return;
+
+            me->CastSpell(player->GetPosition(), 242879, true); // Agatha's Fury at the player's feet.
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new AgathaAI(creature); }
+};
 
 // 117470
 class boss_sivash : public CreatureScript
@@ -365,6 +417,7 @@ public:
 
 void AddSC_broken_shore()
 {
+    new npc_mage_tower_agatha();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
