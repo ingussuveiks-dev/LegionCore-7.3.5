@@ -11,7 +11,8 @@ function Extract([string]$s,[string]$start,[string]$end,[string]$name){
 $fixed=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
 $s=$fixed
 if($BaselineRevision){$s=(& git -C $repo show "${BaselineRevision}:src/server/game/AI/SmartScripts/SmartScript.cpp") -join "`n";if($LASTEXITCODE){throw 'Cannot read baseline'}}
-Extract $fixed 'namespace' 'SmartScript::SmartScript()' 'CreditHelpers'
+Extract $fixed 'namespace' '// Each party recipient must reach' 'CreditHelpers'
+[IO.File]::AppendAllText("$out/CreditHelpers.inc", "}`r`n")
 Extract $s '        case SMART_ACTION_INVOKER_CAST:' '        case SMART_ACTION_ADD_AURA:' 'InvokerCast'
 Extract $s '        case SMART_ACTION_CALL_KILLEDMONSTER:' '        case SMART_ACTION_SET_INST_DATA:' 'KillAction'
 Extract $s '        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:' '        case SMART_ACTION_SUMMON_CONVERSATION:' 'CriteriaAction'
@@ -21,7 +22,7 @@ $targetSource=$fixed.Substring($fixed.IndexOf('ObjectList* SmartScript::GetTarge
 $targetSource=$targetSource.Substring(0,$targetSource.IndexOf('ObjectList* SmartScript::GetWorldObjectsInDist('))
 [IO.File]::WriteAllText("$out/TargetTail.inc",[regex]::Replace($targetSource.Substring($targetSource.LastIndexOf('    if (GetBaseObject() && GetBaseObject()->HasQuestObjectScope())')),'\bl\b','targets'))
 $target=Get-Content "$out/PlayerTarget.inc" -Raw
-[IO.File]::WriteAllText("$out/PlayerTarget.inc",([regex]::Replace([regex]::Replace($target,'\bl\b','targets'),'\btrigger\b','currentInvoker')).Replace('e.target.','event.target.'))
+[IO.File]::WriteAllText("$out/PlayerTarget.inc",([regex]::Replace([regex]::Replace($target,'\bl\b','targets'),'\btrigger\b','currentInvoker')).Replace('e.target.','smartEvent.target.'))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.cpp" -Raw
 Extract $source '        case SMART_ACTION_ADD_AURA:' '        case SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS:' 'CastValidation'
 $validation=Get-Content "$out/CastValidation.inc" -Raw
@@ -30,7 +31,7 @@ $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 Extract $s 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const' 'Player* Unit::GetAffectingPlayer() const' 'OwnerPlayer'
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw
 Extract $s 'enum SmartCastFlags' '// one line in DB' 'CastFlags'
-$endpointIds=foreach($nativeId in @('SMART_EVENT_LINK','SMART_TARGET_SELF')){
+$endpointIds=foreach($nativeId in @('SMART_EVENT_LINK','SMART_TARGET_SELF','SMART_TARGET_ACTION_INVOKER')){
  $match=[regex]::Match($s,('\b'+$nativeId+'\s*=\s*(\d+)'))
  if(!$match.Success){throw "Missing native SmartAI endpoint:$nativeId"}
  "constexpr int $nativeId=$($match.Groups[1].Value);"

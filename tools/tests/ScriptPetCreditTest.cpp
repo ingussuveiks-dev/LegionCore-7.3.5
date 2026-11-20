@@ -68,6 +68,15 @@ struct Player:Unit {
     void UpdateAchievementCriteria(CriteriaTypes,uint32,uint32,uint32,Unit* actualInvoker,bool) { ++criteria; criterionInvoker=actualInvoker; }
 };
 struct Creature:Unit { Player* loot=nullptr; Player* GetLootRecipient() { return loot; } };
+struct EventObject : WorldObject
+{
+    uint32 GetMapId() const { return 1220; }
+    uint32 GetEntry() const { return 0; }
+};
+// These event-object handlers have their own regressions. The creature
+// fixture cannot enter either branch.
+void RewardStagedAreaCredit(Player*, EventObject*, uint32) { assert(false); }
+void ScheduleStoneDeliveryButton(Player*, EventObject*, bool) { assert(false); }
 struct Vehicle { struct Seat { struct { ObjectGuid Guid; } Passenger; }; std::map<int,Seat> Seats; };
 bool ObjectGuid::IsPlayer() const { return unit && unit->ToPlayer(); }
 struct ObjectAccessor {
@@ -88,7 +97,7 @@ struct SpellInfo {
 struct SpellManager {
     SpellInfo personal{true,false},group{false,true},ordinary{},mixed{true,false,true},conversation{},energy{};
     SpellManager(){conversation.extra.Effect=219;energy.extra.Effect=30;}
-    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364||id==197760)return &conversation; if(id==152435)return &energy; if(id==901)return &mixed; return nullptr; }
+    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287||id==233870)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364||id==197760)return &conversation; if(id==152435)return &energy; if(id==901)return &mixed; return nullptr; }
 } spellManager;
 auto sSpellMgr=&spellManager;
 void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
@@ -99,13 +108,14 @@ void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
     if((spell==200832||spell==204364||spell==197760)&&ToPlayer())++stories;
     // Model the unchanged player-only/self-target requirement of198287.
     if(spell==198287) if(Player* player=ToPlayer()) player->KilledMonsterCredit(100732);
+    if(spell==233870 && target==this) if(Player* player=ToPlayer()) player->KilledMonsterCredit(117368);
 }
 #include "CreditHelpers.inc"
 #include "PlayerResolver.inc"
 using ObjectList=std::list<WorldObject*>;
 struct SmartScriptHolder {
     int type=33,targetType=7;
-    int eventType=0,sourceType=0,link=0;struct{uint32 event_flags=0;}event;
+    int eventType=0,sourceType=0,link=0,event_id=0;struct{uint32 event_flags=0;}event;
     uint32 GetActionType()const{return type;}uint32 GetTargetType()const{return targetType;}
     uint32 GetEventType()const{return eventType;}uint32 GetScriptType()const{return sourceType;}
     struct {struct{uint32 dist=50;}playerDistance;}target;
@@ -124,14 +134,15 @@ struct SmartScript {
     Creature* me=nullptr;
     WorldObject* base=nullptr;
     bool trigger=false;
+    EventObject* event=nullptr;
     Unit* invoker=nullptr;
     ObjectList selection;
     WorldObject* GetBaseObject() { return base; }
     Unit* GetLastInvoker() { return invoker; }
-    ObjectList* GetTargets(SmartScriptHolder& event,Unit* unit) {
-        if(event.GetTargetType()!=130)return selection.empty()?nullptr:new ObjectList(selection);
+    ObjectList* GetTargets(SmartScriptHolder& smartEvent,Unit* unit) {
+        if(smartEvent.GetTargetType()!=130)return selection.empty()?nullptr:new ObjectList(selection);
         Unit* currentInvoker=unit?unit:GetLastInvoker();auto* targets=new ObjectList;
-        switch(event.GetTargetType()){
+        switch(smartEvent.GetTargetType()){
 #include "PlayerTarget.inc"
         }
 #include "TargetTail.inc"
@@ -192,7 +203,7 @@ int main(int argc,char** argv) {
     {
         SmartScriptHolder story;story.type=85;story.targetType=130;story.action.cast={200832,SMARTCAST_INVOKER_PLAYER};
         if(argc>=2){std::ifstream input(argv[1]);assert(input>>story.type>>story.action.cast.spell>>story.action.cast.flags>>story.targetType>>story.target.playerDistance.dist);}
-        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||((story.action.cast.spell==204364||story.action.cast.spell==197760)&&story.target.playerDistance.dist==70)||(story.action.cast.spell==152435&&story.target.playerDistance.dist==100)));
+        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||((story.action.cast.spell==204364||story.action.cast.spell==197760)&&story.target.playerDistance.dist==70)||((story.action.cast.spell==152435||story.action.cast.spell==233870)&&story.target.playerDistance.dist==100)));
         uint32 const storySpell=story.action.cast.spell,storyRange=story.target.playerDistance.dist;
         assert(ValidateCast(story));
         for(int target:{7,21}){story.targetType=target;assert(!ValidateCast(story));}story.targetType=130;
@@ -200,8 +211,21 @@ int main(int argc,char** argv) {
         Creature source;script.me=&source;script.base=&source;
         if(argc>=3){SmartScriptHolder raw;std::ifstream input(argv[2]);assert(input>>raw.type>>raw.action.cast.spell>>raw.action.cast.flags>>raw.targetType>>raw.target.playerDistance.dist);assert(raw.type==85&&raw.action.cast.spell==storySpell&&raw.action.cast.flags==0&&raw.targetType==7&&raw.target.playerDistance.dist==0&&ValidateCast(raw));script.selection={&pet};int before=owner.casts,petBefore=pet.casts;script.Run(raw,&pet);assert(pet.delayed.size()==1&&owner.delayed.empty());pet.Flush();assert(pet.casts==petBefore+1&&pet.lastSpell==storySpell&&pet.lastTarget==&pet&&owner.casts==before);std::cout<<"COUNTERFACTUAL raw SQL"<<storySpell<<"/flags0/target7 keeps pet caster and target; native payload semantics are tested separately\n";}
         for(Unit* killer:{static_cast<Unit*>(&owner),&pet,&guardian,&charmed}){
+            int creditBefore=owner.credits;
             int previous=owner.casts;script.Run(story,killer);assert(script.GetLastInvoker()==killer&&owner.delayed.size()==1&&owner.casts==previous);
             owner.Flush();assert(owner.casts==previous+1&&owner.lastTarget==&owner&&owner.lastSpell==storySpell);
+            if(storySpell==233870)assert(owner.credits==creditBefore+1);
+        }
+        if(storySpell==233870){
+            SmartScriptHolder jormog; jormog.type=205; jormog.targetType=130; jormog.target.playerDistance.dist=100;
+            jormog.action.achievementCriteria={92,58088,0,0};
+            for(Unit* killer:{static_cast<Unit*>(&owner),&pet,&guardian}){
+                int previous=owner.criteria;
+                script.Run(jormog,killer);
+                assert(owner.criteria==previous+1&&owner.criterionInvoker==killer);
+            }
+            int previous=owner.criteria;
+            script.Run(jormog,&ownerless); assert(owner.criteria==previous);
         }
         int previous=owner.casts;
         script.Run(story,&pet);pet.available=false;pet.owner=&other;owner.Flush();assert(owner.casts==previous+1&&other.casts==0);pet.available=true;pet.owner=&owner;previous=owner.casts;
@@ -227,7 +251,9 @@ int main(int argc,char** argv) {
         script.base=&source;story.action.cast.flags=128|SMARTCAST_AURA_NOT_PRESENT;owner.aura=true;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous);owner.aura=false;
         story.action.cast.flags=128|SMARTCAST_TRIGGERED|SMARTCAST_INTERRUPT_PREVIOUS;int interrupts=owner.interrupted;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous+1&&owner.lastTriggered&&owner.interrupted==interrupts+1);
         story.action.cast.flags=128;owner.castWorks=false;int presentations=owner.stories;previous=owner.casts;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous+1&&owner.stories==presentations&&owner.delayed.empty());owner.castWorks=true;previous=owner.casts;
-        script.base=&source;story.action.cast.flags=0;script.Run(story,&pet);pet.Flush();assert(pet.lastSpell==storySpell&&owner.casts==previous);
+        script.base=&source;story.action.cast.flags=0;script.Run(story,&pet);
+        if(storySpell==233870){owner.Flush();assert(owner.lastSpell==storySpell&&owner.casts==previous+1);}
+        else{pet.Flush();assert(pet.lastSpell==storySpell&&owner.casts==previous);}
     }
     std::cout<<"PASS: production SmartAI credit/criteria/invoker-cast; opt-in bounded Player caster/target, loader validation, delayed source/owner revalidation, pets/guardians/charmers/missing owners, dedup, loot/vehicle/trigger source, ordinary spell isolation and raw invoker preservation\n";
 }
