@@ -493,6 +493,8 @@ class Audit:
                 if not any(number(s, "npcflag") & 2 for s in self.spawns["npc"].get(entry, [])):
                     findings.add("npc_relation_questgiver_flag_untraced")
         result["relations"] = relations
+        result["has_placed_offer_actor"] = any(
+            kind.endswith("_start") and actor.get("spawn_count", 0) for kind, actor in relations)
         result["seasonal_relations"] = self.event_relations.get(quest, [])
         result["quest_conditions"] = [r for source in (19, 20) for r in self.conditions.get((source, 0, quest, 0), [])]
         result["phases"] = self.phase_quests.get(quest, [])
@@ -571,8 +573,7 @@ class Audit:
                 findings.add("native_objective_differs_from_world_sql")
         if start and any(role == "objective" and item == start for item, role, _ in items):
             findings.add("same_item_provided_and_required_review_cleanup")
-        if start or any(role == "extra_drop" for _, role, _ in items):
-            result["abandon_calls_provided_item_cleanup_twice"] = True
+        abandon_items = {entry for entry, role, _ in items if role in ("provided", "extra_drop")}
         result["items"] = []
         for item, role, amount in items:
             item_info = self.item(item, quest, role, amount, findings)
@@ -584,6 +585,11 @@ class Audit:
                 "starter": "separate_item_starter_and_objective_rules",
             }[role]
             item_info["turn_in_policy"] = cleanup
+            if role == "objective":
+                item_info["abandonment_has_provided_or_drop_entry"] = item in abandon_items
+                if (item not in abandon_items and item_info["class"] == 12
+                        and any(route[5] for route in item_info["loot_routes"])):
+                    findings.add("quest_only_loot_abandonment_cleanup_requires_review")
             result["items"].append(item_info)
         result["findings"] = sorted(findings)
         return result
@@ -613,6 +619,7 @@ def main():
             without_offer.append({key: record[key] for key in ("id", "title", "level", "disabled")})
     cpp, names = cpp_evidence(audit.scope, audit.cpp_names, evidence.binary)
     results = Counter()
+    findings_with_placed_offer = Counter()
     types = Counter()
     evidence_sets = Counter()
     with (args.output / "quests.jsonl").open("w", encoding="utf-8") as stream:
@@ -622,6 +629,8 @@ def main():
                 evidence_sets["disabled"] += 1
             else:
                 results.update(record["findings"])
+                if record["has_placed_offer_actor"]:
+                    findings_with_placed_offer.update(record["findings"])
                 types.update(o["type"] for o in record["objectives"])
             evidence_sets["authored_level_1_20"] += 1 <= record["level"] <= 20
             evidence_sets["minimum_level_1_20"] += 1 <= record["minimum"] <= 20
@@ -645,6 +654,7 @@ def main():
                "zero_minimum_without_offer_reference": len(without_offer),
                "zero_minimum_without_offer_with_cpp_quest_id_candidate": sum(bool(cpp.get(r["id"])) for r in without_offer),
                "enabled_objective_types": types, "enabled_quest_candidate_counts": results,
+               "enabled_candidate_counts_with_placed_offer": findings_with_placed_offer,
                "script_names": len(names),
                "script_names_with_release_string": sum(r["name_string_in_release"] for r in names.values()),
                "script_names_without_release_string": [k for k, r in names.items() if not r["name_string_in_release"]],

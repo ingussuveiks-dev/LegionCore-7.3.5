@@ -1,21 +1,23 @@
 param(
     [string]$OutputDirectory = "$PSScriptRoot/../../.codex/level-quest-audit",
     [string]$MariaDb = 'C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mariadb.exe',
-    [int]$SnapshotPort = 0
+    [int]$SnapshotPort = 0,
+    [string]$ConfigFile = "$PSScriptRoot/../../build-extractors/bin/Release/worldserver.conf",
+    [string]$ClientDefaultsFile
 )
 
 $ErrorActionPreference = 'Stop'
-$repo = (Resolve-Path "$PSScriptRoot/../..").Path
 $output = [IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Force -Path $output | Out-Null
-$conf = Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"
+$conf = Get-Content -LiteralPath $ConfigFile
 
 function Export-Database($setting, $tables) {
     $line = $conf | Where-Object { $_ -match "^$setting\s*=" }
     $connection = $line.Split('"')[1].Split(';')
     $port = $connection[1]
     if ($SnapshotPort) { $port = $SnapshotPort }
-    $arguments = @('--no-defaults', '--batch', '--default-character-set=utf8mb4',
+    $defaults = if ($ClientDefaultsFile) { '--defaults-file=' + (Resolve-Path -LiteralPath $ClientDefaultsFile).Path } else { '--no-defaults' }
+    $arguments = @($defaults, '--batch', '--default-character-set=utf8mb4',
         "--host=$($connection[0])", "--port=$port", "--user=$($connection[2])",
         "--database=$($connection[4])")
     $sql = [Collections.Generic.List[string]]::new()
@@ -30,7 +32,7 @@ function Export-Database($setting, $tables) {
     $writer = $null
     try {
         [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
-        $env:MYSQL_PWD = $connection[3]
+        if (!$ClientDefaultsFile) { $env:MYSQL_PWD = $connection[3] }
         # The marker SELECT has the same text as its column header and its only row.
         $skipMarkerRow = $false
         & $MariaDb @arguments "--execute=$($sql -join ' ')" | ForEach-Object {
