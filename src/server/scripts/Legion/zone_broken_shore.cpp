@@ -3,6 +3,7 @@
 #include "AreaTriggerAI.h"
 #include "AreaTrigger.h"
 #include "ConditionMgr.h"
+#include "GameTime.h"
 #include "GossipData.h"
 #include "GossipDef.h"
 #include "Group.h"
@@ -26,23 +27,57 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <map>
+#include <optional>
 #include <set>
 
-namespace ClosingTheEye
+namespace MageTowerAdmission
 {
 constexpr uint32 VictoriaMenu = 20778;
-constexpr uint32 PaidEntry = 6;
-constexpr uint32 FreeEntry = 7;
 constexpr uint32 AdmissionCurrency = 1226;
 constexpr int32 AdmissionCost = 100;
-constexpr uint32 FirstAttemptMarker = 45635;
-constexpr uint32 TeleportSpell = 229196;
-constexpr uint32 ScenarioMap = 1673;
+constexpr uint32 VictoriaEntry = 117871;
+constexpr uint32 VictoriaSpawn = 12742696;
+constexpr uint32 RequestLifetime = 3000;
 
-bool IsAcceptedXylemEntry(bool farTransfer, WorldLocation const& actual, SpellTargetPosition const* destination)
+struct Challenge
 {
-    return farTransfer && destination && destination->target_mapId == ScenarioMap &&
-        actual.GetMapId() == ScenarioMap &&
+    uint32 paidSpell;
+    uint32 freeSpell;
+    uint32 map;
+    uint32 marker;
+};
+
+struct Request
+{
+    uint32 selection;
+    uint32 acceptedAt;
+    uint16 previousScenario;
+};
+
+constexpr std::array<Challenge, 7> Challenges =
+{{
+    { 235527, 237660, 1616, 45547 },
+    { 235557, 235194, 1710, 46033 },
+    { 237622, 237664, 1703, 45548 },
+    { 229196, 229196, 1673, 45635 },
+    { 233380, 233379, 1698, 45546 },
+    { 231857, 237663, 1684, 45636 },
+    { 233804, 233808, 1702, 45549 }
+}};
+
+bool IsPaid(uint32 selection) { return selection % 2 == 0; }
+
+uint32 AdmissionSpell(uint32 selection)
+{
+    Challenge const& challenge = Challenges[selection / 2];
+    return IsPaid(selection) ? challenge.paidSpell : challenge.freeSpell;
+}
+
+bool IsAcceptedEntry(Challenge const& challenge, bool farTransfer, WorldLocation const& actual, SpellTargetPosition const* destination)
+{
+    return farTransfer && destination && destination->target_mapId == challenge.map &&
+        actual.GetMapId() == challenge.map &&
         std::abs(actual.GetPositionX() - destination->target_X) < 0.01f &&
         std::abs(actual.GetPositionY() - destination->target_Y) < 0.01f &&
         std::abs(actual.GetPositionZ() - destination->target_Z) < 0.01f;
@@ -54,55 +89,152 @@ struct VictoriaAI : SmartAI
 
     void sGossipSelect(Player* player, uint32 menu, uint32 selection) override
     {
-        if (menu != VictoriaMenu || (selection != PaidEntry && selection != FreeEntry))
+        if (menu != VictoriaMenu || selection >= Challenges.size() * 2)
         {
             SmartAI::sGossipSelect(player, menu, selection);
             return;
         }
 
-        if (!player || !player->IsAlive() || !player->IsInWorld() || player->HasPendingTeleport() ||
-            !me->IsInMap(player) || !me->InSamePhase(player) || me->GetMapId() != 1220 || me->GetDBTableGUIDLow() != 12742696)
+        if (!CanInteract(player))
             return;
 
         GossipMenu const& shown = player->PlayerTalkClass->GetGossipMenu();
         if (shown.GetMenuId() != menu || !shown.GetItem(selection))
             return;
 
-        auto const options = sGossipDataStore->GetGossipMenuItemsMapBounds(menu);
+        uint32 const now = GameTime::GetGameTimeMS();
+        for (auto it = _requests.begin(); it != _requests.end();)
+            if (now - it->second.acceptedAt >= RequestLifetime)
+                it = _requests.erase(it);
+            else
+                ++it;
+
+        if (_requests.count(player->GetGUID()) || !MeetsConditions(*player, selection))
+            return;
+
+        _requests.emplace(player->GetGUID(), Request{ selection, now, player->GetScenarioId() });
+        SmartAI::sGossipSelect(player, menu, selection);
+    }
+
+    bool HasAdmissionRequest(Player* player, uint32 spell) const
+    {
+        if (!CanInteract(player))
+            return false;
+
+        auto const it = _requests.find(player->GetGUID());
+        return it != _requests.end() && GameTime::GetGameTimeMS() - it->second.acceptedAt < RequestLifetime &&
+            AdmissionSpell(it->second.selection) == spell && MeetsConditions(*player, it->second.selection);
+    }
+
+    std::optional<Request> TakeAdmission(Player* player, uint32 spell)
+    {
+        if (!HasAdmissionRequest(player, spell))
+            return std::nullopt;
+
+        auto const it = _requests.find(player->GetGUID());
+        Request const request = it->second;
+        _requests.erase(it);
+        return request;
+    }
+
+private:
+    bool CanInteract(Player const* player) const
+    {
+        return player && player->IsAlive() && player->IsInWorld() && !player->HasPendingTeleport() &&
+            me->IsAlive() && me->IsInWorld() && me->IsInMap(player) && me->InSamePhase(player) &&
+            me->GetMapId() == 1220 && me->GetDBTableGUIDLow() == VictoriaSpawn &&
+            me->IsWithinDistInMap(player, INTERACTION_DISTANCE);
+    }
+
+    bool MeetsConditions(Player& player, uint32 selection) const
+    {
+        auto const options = sGossipDataStore->GetGossipMenuItemsMapBounds(VictoriaMenu);
         auto const option = std::find_if(options.first, options.second,
             [selection](auto const& item) { return item.second.OptionIndex == selection; });
-        if (option == options.second || !sConditionMgr->IsObjectMeetToConditions(player, me, option->second.Conditions) ||
-            (selection == PaidEntry && !player->HasCurrency(AdmissionCurrency, AdmissionCost)))
-            return;
-
-        // Preserve the SmartAI specialization setup, scenario selection and native teleport.
-        uint16 const previousScenario = player->GetScenarioId();
-        SmartAI::sGossipSelect(player, menu, selection);
-        if (!IsAcceptedXylemEntry(player->IsBeingTeleportedFar(), player->GetTeleportDest(),
-            sSpellMgr->GetSpellTargetPosition(TeleportSpell)))
-        {
-            if (!player->HasPendingTeleport())
-                player->SetScenarioId(previousScenario);
-            return;
-        }
-
-        if (selection == PaidEntry)
-            player->ModifyCurrency(AdmissionCurrency, -AdmissionCost, false, true);
-        else if (!player->GetQuestRewardStatus(FirstAttemptMarker))
-            player->SetRewardedQuest(FirstAttemptMarker);
+        return option != options.second && sConditionMgr->IsObjectMeetToConditions(&player, me, option->second.Conditions) &&
+            (!IsPaid(selection) || player.HasCurrency(AdmissionCurrency, AdmissionCost));
     }
+
+    std::map<ObjectGuid, Request> _requests;
 };
+
+void CompleteAdmission(Player& player, Request const& request, uint32 spell)
+{
+    Challenge const& challenge = Challenges[request.selection / 2];
+    if (!IsAcceptedEntry(challenge, player.IsBeingTeleportedFar(), player.GetTeleportDest(), sSpellMgr->GetSpellTargetPosition(spell)))
+    {
+        if (!player.HasPendingTeleport())
+            player.SetScenarioId(request.previousScenario);
+        return;
+    }
+
+    if (IsPaid(request.selection))
+        player.ModifyCurrency(AdmissionCurrency, -AdmissionCost, false, true);
+    else
+        player.SetRewardedQuest(challenge.marker);
+}
 }
 
 class npc_mage_tower_victoria : public CreatureScript
 {
 public:
     npc_mage_tower_victoria() : CreatureScript("npc_mage_tower_victoria") {}
-    CreatureAI* GetAI(Creature* creature) const override { return new ClosingTheEye::VictoriaAI(creature); }
+    CreatureAI* GetAI(Creature* creature) const override { return new MageTowerAdmission::VictoriaAI(creature); }
+};
+
+class spell_mage_tower_victoria_admission : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_victoria_admission);
+
+    MageTowerAdmission::VictoriaAI* FindVictoria(Player* player)
+    {
+        Creature* victoria = player ? player->FindNearestCreature(MageTowerAdmission::VictoriaEntry, INTERACTION_DISTANCE, true) : nullptr;
+        return victoria ? dynamic_cast<MageTowerAdmission::VictoriaAI*>(victoria->AI()) : nullptr;
+    }
+
+    SpellCastResult CheckAdmission()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        auto* ai = FindVictoria(player);
+        return ai && ai->HasAdmissionRequest(player, GetSpellInfo()->Id) ? SPELL_CAST_OK : SPELL_FAILED_DONT_REPORT;
+    }
+
+    void TakeAdmissionRequest()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        if (auto* ai = FindVictoria(player))
+            _request = ai->TakeAdmission(player, GetSpellInfo()->Id);
+    }
+
+    void CheckTeleportTarget(SpellEffIndex effect)
+    {
+        if (!_request || GetHitUnit() != GetCaster())
+            PreventHitDefaultEffect(effect);
+    }
+
+    void FinishAdmission()
+    {
+        // The normal cast checks the currency. Consume it through the selected option only after the teleport effect.
+        PreventCurrencyReagentConsumption();
+        if (_request)
+            if (Player* player = GetCaster()->ToPlayer())
+                MageTowerAdmission::CompleteAdmission(*player, *_request, GetSpellInfo()->Id);
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_mage_tower_victoria_admission::CheckAdmission);
+        OnCast += SpellCastFn(spell_mage_tower_victoria_admission::TakeAdmissionRequest);
+        OnEffectHitTarget += SpellEffectFn(spell_mage_tower_victoria_admission::CheckTeleportTarget, EFFECT_ALL, SPELL_EFFECT_TELEPORT);
+        AfterCast += SpellCastFn(spell_mage_tower_victoria_admission::FinishAdmission);
+    }
+
+    std::optional<MageTowerAdmission::Request> _request;
 };
 
 namespace ClosingTheEye
 {
+constexpr uint32 ScenarioMap = 1673;
 constexpr uint32 Xylem = 115244;
 constexpr uint32 FocusingIris = 64693;
 constexpr uint32 DrawPowerChannel = 231522;
@@ -4661,6 +4793,7 @@ public:
 void AddSC_broken_shore()
 {
     new npc_mage_tower_victoria();
+    RegisterSpellScript(spell_mage_tower_victoria_admission);
     new npc_mage_tower_xylem();
     new npc_mage_tower_xylem_mirror();
     new npc_mage_tower_corrupting_shadows();

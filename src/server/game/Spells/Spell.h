@@ -754,6 +754,7 @@ class TC_GAME_API Spell
         int32 m_timer;
 
         uint32 _triggeredCastFlags;
+        bool _preventCurrencyReagentConsumption = false;
         bool m_dispelResetCD;
 
         // if need this can be replaced by Aura copy

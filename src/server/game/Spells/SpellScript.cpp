@@ -879,6 +879,11 @@ SpellValue const* SpellScript::GetSpellValue()
     return m_spell->m_spellValue;
 }
 
+void SpellScript::PreventCurrencyReagentConsumption()
+{
+    m_spell->_preventCurrencyReagentConsumption = true;
+}
+
 bool AuraScript::_Validate(SpellInfo const* entry)
 {
     for (auto itr = DoCheckTargetsList.begin(); itr != DoCheckTargetsList.end(); ++itr)

@@ -6403,7 +6403,7 @@ void Spell::TakeReagents()
         p_caster->DestroyItemCount(itemid, itemcount, true);
     }
 
-    if(m_spellInfo->Reagents.CurrencyID != 0)
+    if (m_spellInfo->Reagents.CurrencyID != 0 && !_preventCurrencyReagentConsumption)
         p_caster->ModifyCurrency(m_spellInfo->Reagents.CurrencyID, -int32(m_spellInfo->Reagents.CurrencyCount));
 }
 
