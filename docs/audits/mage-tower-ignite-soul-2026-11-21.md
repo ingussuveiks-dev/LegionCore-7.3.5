@@ -1,0 +1,11 @@
+# Erdris Thorn's Ignite Soul
+
+The original nine-second Ignite Soul aura now detonates on expiry using the challenger's current health at that moment. Native spell 237189 targets the three original allies in the active Erdris finale. The effect ignores a removed or stale attempt, a foreign caster, a non-player recipient and allies in another phase. The original boss rotation, Fel Stomp and native death and quest credit remain in place.
+
+The installed 26972 catalog verified the aura, duration, ally-area damage effect and its no-critical-hit attribute. The 7.3.5 Holy Priest recording was sampled across its full duration. An original Legion account and the later published spell description corroborate the current-health rule. [Original Legion recording](https://www.youtube.com/watch?v=jP53P6-me5M), [Legion player account](https://www.mmo-champion.com/threads/2196190-End-of-the-Risen-Threat-Tips), [Ignite Soul spell description](https://www.icy-veins.com/wow/end-of-the-risen-threat-a-legion-timewalking-mage-tower-guide).
+
+Source-extracted AddressSanitizer checks exercised expiry, health changing after expiry, cancel, dispel, death, a controlled unit, pending transfer, a dead or foreign boss and exact same-phase ally selection. The actual link map shows the expiry, target and damage handlers in the final linked zone script. Two private applications and a manual MariaDB import verified the bindings, removed the previous unconditional link and retained the native Fel Stomp ground effect. Migration 2026_11_21_20_mage_tower_erdris_ignite_soul.sql has SHA-1 F12D7CAE0229DA5CF8401C91F44DFFD3C70F49F3 in the production ledger.
+
+Staged and canonical Release starts used SHA-256 D22C93AE49D7F893C1FD9568FC9FC8EB3333112C63593F94FF40AC0ED4C912DE and exited cleanly. No new crashes, DBErrors, warnings or assertions appeared. The archive in build-extractors/bin/Release/fixed/2026-11-21-mage-tower-ignite-soul contains 42 verified evidence hashes. Cleanup reclaimed 179,052,897 bytes and retained the immediate rollback.
+
+Actual combat log values, ally health impact, aura presentation, overlap with Fel Stomp and final victory and hand-in remain client checks.

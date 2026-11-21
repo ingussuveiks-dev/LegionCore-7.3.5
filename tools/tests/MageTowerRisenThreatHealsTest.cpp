@@ -3,12 +3,15 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <limits>
+#include <list>
 #include <map>
 #include <set>
 #include <vector>
 
 using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
+using int32 = std::int32_t;
 using DamageEffectType = uint32;
 
 struct Creature;
@@ -53,8 +56,16 @@ struct Unit
     bool IsWithinDistInMap(Unit const* unit, float) const { return IsInMap(unit) && unit->inRange; }
     Creature* ToCreature() const { return creature; }
     Player* GetCharmerOrOwnerPlayerOrPlayerItself() const { return owner; }
+    Player* ToPlayer() const { return player; }
     ObjectGuid GetGUID() const { return guid; }
+    Player* player = nullptr;
 };
+
+using WorldObject = Unit;
+enum AuraEffectHandleModes { AURA_EFFECT_HANDLE_REAL };
+enum RemoveMode { AURA_REMOVE_BY_EXPIRE, AURA_REMOVE_BY_DEATH, AURA_REMOVE_BY_CANCEL, AURA_REMOVE_BY_ENEMY_SPELL };
+enum { EFFECT_0, SPELL_AURA_DUMMY, TARGET_UNIT_SRC_AREA_ALLY, SPELLVALUE_BASE_POINT0 };
+struct AuraEffect {};
 
 struct Aura
 {
@@ -71,6 +82,8 @@ struct Creature : Unit
     InstanceMap* world = nullptr;
     InstanceScript* arena = nullptr;
     SmartAI* ai = nullptr;
+    int32 damageSnapshot = 0;
+    unsigned explosions = 0;
 
     Creature() { creature = this; }
     bool IsFullHealth() const { return health == 100; }
@@ -80,6 +93,12 @@ struct Creature : Unit
     InstanceMap* GetMap() const { return world; }
     InstanceScript* GetInstanceScript() const { return arena; }
     SmartAI* AI() const { return ai; }
+    void CastCustomSpell(uint32 id, int slot, int32 damage, Unit* target, bool triggered, void*, AuraEffect const* effect)
+    {
+        assert(id == 237189 && slot == SPELLVALUE_BASE_POINT0 && target->ToPlayer() && triggered && effect);
+        damageSnapshot = damage;
+        ++explosions;
+    }
 };
 
 struct Group
@@ -94,9 +113,11 @@ struct Player : Unit
 {
     Group group;
     bool pending = false;
-    Player() { owner = this; }
+    uint64 health = 1;
+    Player() { player = this; owner = this; }
     Group const* GetGroup() const { return &group; }
     bool IsBeingTeleportedFar() const { return pending; }
+    uint64 GetHealth() const { return health; }
 };
 
 struct Scenario
@@ -184,6 +205,50 @@ struct InstanceMapScript
 unsigned warnings = 0;
 void TC_LOG_WARN(char const*, char const*, uint32) { ++warnings; }
 
+struct Hook
+{
+    void operator+=(int) {}
+};
+
+struct AuraScript
+{
+    struct Application
+    {
+        RemoveMode mode = AURA_REMOVE_BY_EXPIRE;
+        RemoveMode GetRemoveMode() const { return mode; }
+    } application;
+    Unit* auraCaster = nullptr;
+    Unit* target = nullptr;
+    Hook AfterEffectRemove;
+    virtual ~AuraScript() = default;
+    virtual bool Validate(SpellInfo const*) = 0;
+    virtual void Register() = 0;
+    bool ValidateSpellInfo(std::initializer_list<uint32> spells) { return spells.size() == 1 && *spells.begin() == 237189; }
+    Application const* GetTargetApplication() const { return &application; }
+    Unit* GetCaster() const { return auraCaster; }
+    Unit* GetTarget() const { return target; }
+};
+
+struct SpellScript
+{
+    struct SpellValue { float EffectBasePoints[1]; } values{};
+    Unit* caster = nullptr;
+    int32 hitDamage = 0;
+    Hook OnObjectAreaTargetSelect;
+    Hook OnHit;
+    virtual ~SpellScript() = default;
+    virtual void Register() = 0;
+    Unit* GetCaster() const { return caster; }
+    SpellValue const* GetSpellValue() const { return &values; }
+    void SetHitDamage(int32 damage) { hitDamage = damage; }
+};
+
+#define PrepareAuraScript(name) public:
+#define PrepareSpellScript(name) public:
+#define AuraEffectRemoveFn(...) 0
+#define SpellObjectAreaTargetSelectFn(...) 0
+#define SpellHitFn(...) 0
+
 #include "RisenThreatHeals.inc"
 
 int main()
@@ -263,6 +328,8 @@ int main()
     callie.spawn = 410013;
     callie.guid = { 3 };
     erdris.guid = { 4 };
+    erdris.world = &map;
+    erdris.arena = &arena;
     SmartAI bossAI(&erdris);
     erdris.ai = &bossAI;
     for (Creature* actor : { &jarod, &granny, &callie, &erdris })
@@ -318,11 +385,59 @@ int main()
 
     scenarioManager.scenario.step = 6;
     assert(arena.GetData(2) == 1);
+
+    spell_mage_tower_erdris_ignite_soul ignite;
+    AuraEffect effect;
+    ignite.auraCaster = &erdris;
+    ignite.target = &healer;
+    healer.health = 1234567;
+    for (RemoveMode mode : { AURA_REMOVE_BY_CANCEL, AURA_REMOVE_BY_DEATH, AURA_REMOVE_BY_ENEMY_SPELL })
+    {
+        ignite.application.mode = mode;
+        ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    }
+    assert(!erdris.explosions);
+    ignite.application.mode = AURA_REMOVE_BY_EXPIRE;
+    ignite.auraCaster = &jarod;
+    ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    ignite.auraCaster = &erdris;
+    ignite.target = &healingTotem;
+    ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    ignite.target = &healer;
+    healer.pending = true;
+    ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    healer.pending = false;
+    erdris.alive = false;
+    ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    erdris.alive = true;
+    assert(!erdris.explosions);
+
+    ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    assert(erdris.explosions == 1 && erdris.damageSnapshot == 1234567);
+    healer.health = 765432;
+    spell_mage_tower_erdris_ignite_soul_damage explosion;
+    explosion.caster = &erdris;
+    explosion.values.EffectBasePoints[0] = float(erdris.damageSnapshot);
+    std::list<WorldObject*> targets{ &transformed, &healer, &healingTotem };
+    explosion.SelectAllies(targets);
+    assert((targets == std::list<WorldObject*>{ &jarod, &granny, &callie }));
+    explosion.ApplyDamage();
+    assert(explosion.hitDamage == 1234567);
+    callie.phase = 2;
+    explosion.SelectAllies(targets);
+    assert((targets == std::list<WorldObject*>{ &jarod, &granny }));
+    callie.phase = 1;
+    assert(GetIgniteSoulDamage(0) == 0);
+    assert(GetIgniteSoulDamage(1e12) == std::numeric_limits<int32>::max());
+
     arena.OnUnitDeath(&callie);
     assert(arena.GetData(2) == 0);
+    ignite.Explode(&effect, AURA_EFFECT_HANDLE_REAL);
+    assert(erdris.explosions == 1);
     scenarioManager.scenario.step = 0;
     arena.Update(1);
     scenarioManager.scenario.step = 5;
     assert(arena.GetData(1) == 0);
     std::cout << "PASS real corruption roster, death-only completion, ally loss, range, restart and final boss gate\n";
+    std::cout << "PASS Ignite Soul expiry, exact challenger health snapshot, same-phase trio and stale aura cleanup\n";
 }

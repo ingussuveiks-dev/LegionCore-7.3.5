@@ -4050,6 +4050,24 @@ public:
                 _erdris = creature->GetGUID();
         }
 
+        bool CanIgniteSoul(Creature const& erdris) const
+        {
+            return erdris.GetGUID() == _erdris && erdris.GetMap() == instance && erdris.IsAlive() &&
+                erdris.IsInWorld() && !erdris.IsPreDelete() && GetData(2);
+        }
+
+        void SelectIgniteSoulAllies(Creature const& erdris, std::list<WorldObject*>& targets) const
+        {
+            targets.clear();
+            if (!CanIgniteSoul(erdris))
+                return;
+
+            for (ObjectGuid const& guid : _allies)
+                if (Creature* ally = instance->GetCreature(guid))
+                    if (erdris.InSamePhase(ally) && erdris.IsWithinDistInMap(ally, 300.0f))
+                        targets.push_back(ally);
+        }
+
         void RecordWaveHeal() { _healingPhaseObserved = true; }
 
         void RecordCorruption(Creature const& soul)
@@ -4150,7 +4168,68 @@ void RecordRisenThreatCorruption(Creature const& soul)
     if (auto* arena = dynamic_cast<instance_mage_tower_risen_threat::RisenThreatInstance*>(soul.GetInstanceScript()))
         arena->RecordCorruption(soul);
 }
+
+int32 GetIgniteSoulDamage(double health)
+{
+    return int32(std::clamp(health, 0.0, double(std::numeric_limits<int32>::max())));
 }
+}
+
+class spell_mage_tower_erdris_ignite_soul : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_erdris_ignite_soul);
+
+    bool Validate(SpellInfo const* /*info*/) override { return ValidateSpellInfo({ 237189 }); }
+
+    void Explode(AuraEffect const* effect, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        Unit* caster = GetCaster();
+        Creature* erdris = caster ? caster->ToCreature() : nullptr;
+        auto* arena = erdris ? dynamic_cast<instance_mage_tower_risen_threat::RisenThreatInstance*>(erdris->GetInstanceScript()) : nullptr;
+        Player* challenger = GetTarget()->ToPlayer();
+        if (!arena || !arena->CanIgniteSoul(*erdris) || !IsRisenThreatChallenger(challenger, *erdris))
+            return;
+
+        erdris->CastCustomSpell(237189, SPELLVALUE_BASE_POINT0, GetIgniteSoulDamage(double(challenger->GetHealth())),
+            challenger, true, nullptr, effect);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_tower_erdris_ignite_soul::Explode, EFFECT_0,
+            SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+class spell_mage_tower_erdris_ignite_soul_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_erdris_ignite_soul_damage);
+
+    void SelectAllies(std::list<WorldObject*>& targets)
+    {
+        Creature* erdris = GetCaster()->ToCreature();
+        auto* arena = erdris ? dynamic_cast<instance_mage_tower_risen_threat::RisenThreatInstance*>(erdris->GetInstanceScript()) : nullptr;
+        if (arena)
+            arena->SelectIgniteSoulAllies(*erdris, targets);
+        else
+            targets.clear();
+    }
+
+    void ApplyDamage()
+    {
+        SetHitDamage(GetIgniteSoulDamage(GetSpellValue()->EffectBasePoints[EFFECT_0]));
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_erdris_ignite_soul_damage::SelectAllies,
+            EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnHit += SpellHitFn(spell_mage_tower_erdris_ignite_soul_damage::ApplyDamage);
+    }
+};
 
 class npc_mage_tower_risen_threat_soul : public CreatureScript
 {
@@ -4634,6 +4713,8 @@ void AddSC_broken_shore()
     new npc_mage_tower_risen_threat_soul();
     new condition_mage_tower_risen_threat_full_heal();
     new instance_mage_tower_risen_threat();
+    RegisterAuraScript(spell_mage_tower_erdris_ignite_soul);
+    RegisterSpellScript(spell_mage_tower_erdris_ignite_soul_damage);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
