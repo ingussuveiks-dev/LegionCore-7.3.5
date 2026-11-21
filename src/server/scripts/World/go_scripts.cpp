@@ -58,6 +58,7 @@ EndContentData */
 #include "GameObjectAI.h"
 #include "Spell.h"
 #include "QuestData.h"
+#include "../QuestItemChestAI.h"
 
 /*######
 ## go_cat_figurine
@@ -1614,6 +1615,12 @@ struct go_pirate_day_music : public GameObjectAI
 
 namespace
 {
+struct go_single_quest_supply_chest : QuestItemChestAI
+{
+    explicit go_single_quest_supply_chest(GameObject* object)
+        : QuestItemChestAI(object, object->GetGOInfo()->chest.questID, object->GetGOInfo()->QuestItems[0]) { }
+};
+
 struct go_allied_race_city_board : GameObjectAI
 {
     explicit go_allied_race_city_board(GameObject* object) : GameObjectAI(object) { }
@@ -1685,5 +1692,6 @@ void AddSC_go_scripts()
     RegisterGameObjectAI(go_midsummer_music);
     RegisterGameObjectAI(go_darkmoon_faire_music);
     RegisterGameObjectAI(go_pirate_day_music);
+    RegisterGameObjectAI(go_single_quest_supply_chest);
     RegisterGameObjectAI(go_allied_race_city_board);
 }
