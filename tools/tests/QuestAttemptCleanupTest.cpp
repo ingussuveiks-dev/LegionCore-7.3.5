@@ -7,10 +7,10 @@
 #include <memory>
 #include <vector>
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;using QuestStatus=int;using InventoryResult=int;
-enum {QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_DELETE_SAVE_TYPE=2,EQUIP_ERR_OK=0,QUEST_OBJECTIVE_ITEM=1,QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE=4,QUEST_ITEM_COUNT=4};
+enum {QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_DELETE_SAVE_TYPE=2,EQUIP_ERR_OK=0,QUEST_OBJECTIVE_ITEM=1,QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE=16,QUEST_ITEM_DROP_COUNT=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
 #include "QuestStatusData.inc"
-struct QuestObjective {unsigned Type=QUEST_OBJECTIVE_ITEM,ObjectID=139043;};
-struct Quest {unsigned SourceItemId=139043,SourceItemIdCount=1,flags=0;unsigned ItemDrop[4]={139043},ItemDropQuantity[4]={1};std::vector<QuestObjective> objectives;auto const& GetObjectives()const{return objectives;}bool HasSpecialFlag(unsigned f)const{return flags&f;}};
+struct QuestObjective {unsigned Type=QUEST_OBJECTIVE_ITEM,ObjectID=139043;int Amount=1;};
+struct Quest {unsigned SourceItemId=139043,SourceItemIdCount=1,flags=0,FlagsEx=0,Id=40890;unsigned ItemDrop[4]={139043},ItemDropQuantity[4]={1};std::vector<QuestObjective> objectives;auto const& GetObjectives()const{return objectives;}bool HasSpecialFlag(unsigned f)const{return flags&f;}unsigned GetQuestId()const{return Id;}};
 struct QuestStore {std::map<unsigned,Quest> quests;Quest const* GetQuestTemplate(unsigned q){auto it=quests.find(q);return it==quests.end()?nullptr:&it->second;}} store;
 auto sQuestDataStore=&store;
 struct ItemTemplate {unsigned start=0;unsigned GetStartQuestID()const{return start;}} itemTemplate;
@@ -37,6 +37,7 @@ struct Player {
  void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
  void RemoveActiveQuest(uint32);
  void CancelQuestObjects(uint32) {}
+ void UpdateForQuestWorldObjects() {}
  bool TakeQuestSourceItem(uint32,bool);
 };
 #include "QuestDelayedEvent.inc"
@@ -52,10 +53,31 @@ int main(){
  p.AddQuestDelayedEvent(999,1,[&](){++old;});assert(p.events.empty());
  p.inventory[139043]=1;p.inventory[42]=7;p.Add(40890);
  assert(p.TakeQuestSourceItem(40890,true));p.RemoveActiveQuest(40890);assert(!p.inventory[139043]&&p.inventory[42]==7);
- // Both reward and abandon call this production cleanup; repeated cleanup is harmless.
- assert(p.TakeQuestSourceItem(40890,true));p.inventory[139043]=1;assert(p.TakeQuestSourceItem(40890,true));assert(!p.inventory[139043]);
+ // Source and drop can describe one copy. Leave additional copies untouched.
+ p.inventory[139043]=3;assert(p.TakeQuestSourceItem(40890,true));assert(p.inventory[139043]==2);
  p.inventory[139043]=1;p.equipped=true;assert(!p.TakeQuestSourceItem(40890,true)&&p.inventory[139043]==1&&p.errors==1);
  p.equipped=false;auto& q=store.quests[40890];q.SourceItemId=0;q.flags=QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE;
  assert(p.TakeQuestSourceItem(40890,true)&&p.inventory[139043]==1);
- std::cout<<"PASS: actual quest status deletion invalidates delayed callbacks before same-tick reaccept; unrelated quest events survive; source/drop item cleanup, repeated removal, inventory isolation and failure/preservation guards.\n";
+ q.flags=0;q.SourceItemId=139043;q.ItemDropQuantity[0]=3;
+ q.objectives={{QUEST_OBJECTIVE_ITEM,139043,5},{QUEST_OBJECTIVE_ITEM,139043,2},{QUEST_OBJECTIVE_ITEM,755,2}};
+ p.inventory[139043]=7;p.inventory[755]=4;
+ RemoveQuestRewardItems(p,&q);
+ assert(p.inventory[139043]==2&&p.inventory[755]==2&&p.inventory[42]==7);
+ q.FlagsEx=QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS;
+ p.inventory[139043]=7;
+ RemoveQuestRewardItems(p,&q);
+ assert(p.inventory[139043]==6&&p.inventory[755]==2);
+ q.flags=QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE;
+ RemoveQuestRewardItems(p,&q);
+ assert(p.inventory[139043]==6);
+ q.FlagsEx=0;
+ RemoveQuestRewardItems(p,&q);
+ assert(p.inventory[139043]==1&&p.inventory[755]==0);
+ q.flags=0;q.ItemDrop[0]=0;itemTemplate.start=40890;
+ assert(p.TakeQuestSourceItem(40890,true)&&p.inventory[139043]==1);
+ itemTemplate.start=0;q.ItemDrop[0]=139043;q.ItemDropQuantity[0]=0;
+ p.inventory[139043]=10000;
+ RemoveQuestRewardItems(p,&q);
+ assert(p.inventory[139043]==1);
+ std::cout<<"PASS: quest attempt cancellation, single abandonment cleanup, overlapping reward quantities, starter/keep flags, 9999 drop limit and unequip guard.\n";
 }

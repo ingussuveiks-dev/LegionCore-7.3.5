@@ -11,6 +11,6 @@ $end=$source.IndexOf('void Player::BindQuestObject(',$start)
 [IO.File]::WriteAllText("$OutputDirectory/QuestDelayedEvent.inc",$source.Substring($start,$end-$start))
 # Acceptance must invalidate even a retained status record; NONE invalidates
 # without erasing. Normal abandon/reward destroys the status in RemoveActiveQuest.
-if($source -notmatch 'QuestStatusData& status_q = m_QuestStatus\[quest_id\];\s+status_q.ScriptLifetime.reset\(\);' -or
+if($source -notmatch 'QuestStatusData& status_q = m_QuestStatus\[quest_id\];\s+(?:status_q.WorldQuestStartTime = garrisonStart;\s+)?status_q.ScriptLifetime.reset\(\);' -or
    $source -notmatch 'if \(status == QUEST_STATUS_NONE\)\s+q_status.ScriptLifetime.reset\(\);' -or
    $source -notmatch 'm_QuestStatus.erase\(quest_id\);'){throw 'Missing quest lifetime invalidation'}

@@ -19719,6 +19719,91 @@ bool Player::CanRewardWorldQuest(Quest const* quest) const
     return true;
 }
 
+namespace
+{
+class QuestItemRemoval
+{
+public:
+    void Add(uint32 item, uint32 count, bool checkUnequip = false)
+    {
+        if (!item || !count)
+            return;
+
+        // An objective, a provided item and a drop can describe the same stack.
+        for (auto& removal : _items)
+            if (removal.Item == item)
+            {
+                removal.Count = std::max(removal.Count, count);
+                removal.CheckUnequip &= checkUnequip;
+                return;
+            }
+        _items.push_back({item, count, checkUnequip});
+    }
+
+    void AddDrops(Quest const* quest)
+    {
+        for (uint8 i = 0; i < QUEST_ITEM_DROP_COUNT; ++i)
+            Add(quest->ItemDrop[i], quest->ItemDropQuantity[i] ? quest->ItemDropQuantity[i] : 9999);
+    }
+
+    void Apply(Player& player) const
+    {
+        for (auto const& removal : _items)
+            player.DestroyItemCount(removal.Item, removal.Count, true, removal.CheckUnequip);
+    }
+
+private:
+    struct Removal
+    {
+        uint32 Item;
+        uint32 Count;
+        bool CheckUnequip;
+    };
+    std::vector<Removal> _items;
+};
+
+bool AddProvidedQuestItem(Player& player, Quest const* quest, QuestItemRemoval& items, bool msg)
+{
+    uint32 itemId = quest->SourceItemId;
+    if (!itemId)
+        return true;
+
+    uint32 count = quest->SourceItemIdCount ? quest->SourceItemIdCount : 1;
+    InventoryResult result = player.CanUnequipItems(itemId, count);
+    if (result != EQUIP_ERR_OK)
+    {
+        if (msg)
+            player.SendEquipError(result, nullptr, nullptr, itemId);
+        return false;
+    }
+
+    // An item that both starts the quest and is needed at turn-in is kept on abandon.
+    if (ItemTemplate const* item = sObjectMgr->GetItemTemplate(itemId))
+        if (item->GetStartQuestID() == quest->GetQuestId())
+            for (QuestObjective const& objective : quest->GetObjectives())
+                if (objective.Type == QUEST_OBJECTIVE_ITEM && uint32(objective.ObjectID) == itemId)
+                    return true;
+
+    items.Add(itemId, count, true);
+    return true;
+}
+
+void RemoveQuestRewardItems(Player& player, Quest const* quest)
+{
+    QuestItemRemoval items;
+    if (!(quest->FlagsEx & QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS))
+    {
+        for (QuestObjective const& objective : quest->GetObjectives())
+            if (objective.Type == QUEST_OBJECTIVE_ITEM && objective.Amount > 0)
+                items.Add(objective.ObjectID, objective.Amount);
+        items.AddDrops(quest);
+    }
+    if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
+        AddProvidedQuestItem(player, quest, items, true);
+    items.Apply(player);
+}
+}
+
 void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce)
 {
     // Automatic tasks bypass the usual turn-in admission. Reject an expired,
@@ -19734,14 +19819,12 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     uint32 quest_id = quest->GetQuestId();
     CharacterDatabaseTransaction rewardTrans = CharacterDatabase.BeginTransaction();
 
+    RemoveQuestRewardItems(*this, quest);
+
     for (QuestObjective const& obj : quest->GetObjectives())
     {
         switch (obj.Type)
         {
-            case QUEST_OBJECTIVE_ITEM:
-                if (!(quest->FlagsEx & QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS))
-                    DestroyItemCount(obj.ObjectID, obj.Amount, true);
-                break;
             case QUEST_OBJECTIVE_CURRENCY:
                 if (int32 reqCountCurrency = obj.Amount)
                 {
@@ -19759,21 +19842,6 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                 break;
         }
     }
-
-    if (!(quest->FlagsEx & QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS))
-    {
-        for (uint8 i = 0; i < QUEST_ITEM_DROP_COUNT; ++i)
-        {
-            if (quest->ItemDrop[i])
-            {
-                uint32 count = quest->ItemDropQuantity[i];
-                DestroyItemCount(quest->ItemDrop[i], count ? count : 9999, true);
-            }
-        }
-    }
-
-    if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
-        TakeQuestSourceItem(quest_id, true); // remove quest src item from player
 
     RemoveTimedQuest(quest_id);
 
@@ -20122,14 +20190,13 @@ void Player::FailQuest(uint32 questId)
         else
             SendQuestFailed(questId);
 
-        // Destroy quest items on quest failure.
+        QuestItemRemoval items;
         for (QuestObjective const& obj : quest->GetObjectives())
-            if (obj.Type == QUEST_OBJECTIVE_ITEM)
-                DestroyItemCount(obj.ObjectID, obj.Amount, true, true);
-        // Destroy items received during the quest.
-        for (uint8 i = 0; i < QUEST_ITEM_COUNT; ++i)
-            if (quest->ItemDrop[i] && quest->ItemDropQuantity[i])
-                DestroyItemCount(quest->ItemDrop[i], quest->ItemDropQuantity[i], true, true);
+            if (obj.Type == QUEST_OBJECTIVE_ITEM && obj.Amount > 0)
+                items.Add(obj.ObjectID, obj.Amount, true);
+        for (uint8 i = 0; i < QUEST_ITEM_DROP_COUNT; ++i)
+            items.Add(quest->ItemDrop[i], quest->ItemDropQuantity[i], true);
+        items.Apply(*this);
     }
 }
 
@@ -20548,38 +20615,15 @@ bool Player::GiveQuestSourceItem(Quest const* quest)
 bool Player::TakeQuestSourceItem(uint32 questId, bool msg)
 {
     Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
-    if (quest)
-    {
-        if (quest->SourceItemId)
-        {
-            // exist two cases when destroy source quest item not possible:
-            // a) non un-equippable item (equipped non-empty bag, for example)
-            // b) when quest is started from an item and item also is needed in
-            // the end as RequiredItemId
-            InventoryResult res = CanUnequipItems(quest->SourceItemId, quest->SourceItemIdCount ? quest->SourceItemIdCount : 1);
-            if (res != EQUIP_ERR_OK)
-            {
-                if (msg)
-                    SendEquipError(res, NULL, NULL, quest->SourceItemId);
-                return false;
-            }
+    if (!quest)
+        return true;
 
-            bool destroyItem = true;
-            ItemTemplate const* item = sObjectMgr->GetItemTemplate(quest->SourceItemId);
-            for (QuestObjective const& obj : quest->GetObjectives())
-                if (obj.Type == QUEST_OBJECTIVE_ITEM)
-                    if (item->GetStartQuestID() == questId && quest->SourceItemId == obj.ObjectID)
-                        destroyItem = false;
-
-            if (destroyItem)
-                DestroyItemCount(quest->SourceItemId, quest->SourceItemIdCount ? quest->SourceItemIdCount : 1, true, true);
-        }
-
-        for (uint8 i = 0; i < QUEST_ITEM_COUNT; ++i)
-            if (quest->ItemDrop[i] && !quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
-                DestroyItemCount(quest->ItemDrop[i], quest->ItemDropQuantity[i] ? quest->ItemDropQuantity[i] : 9999, true);
-    }
-
+    QuestItemRemoval items;
+    if (!AddProvidedQuestItem(*this, quest, items, msg))
+        return false;
+    if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
+        items.AddDrops(quest);
+    items.Apply(*this);
     return true;
 }
 

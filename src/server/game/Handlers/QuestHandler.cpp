@@ -629,7 +629,6 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemove
             }
         }
 
-        player->TakeQuestSourceItem(questId, true); // remove quest src item from player
         player->RemoveActiveQuest(questId);
         if (questId == 40729)
             player->ResetNewBloodQuest();
