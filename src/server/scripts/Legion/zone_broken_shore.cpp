@@ -2755,6 +2755,9 @@ constexpr uint32 AgathaBoulderVisual = 241473;
 constexpr uint32 AgathaBoulderLanding = 241475;
 constexpr uint32 AgathaBoulderWindup = 241502;
 constexpr uint32 AgathaBoulderHit = 241523;
+constexpr uint32 AgathaImpServant = 115643;
+constexpr uint32 AgathaOtherImpServant = 115719;
+constexpr uint32 AgathaFunnelEnergy = 229928;
 
 std::array<Position, 3> const AgathaBoulderStarts =
 {{
@@ -2908,7 +2911,7 @@ public:
 
             Unit* victim = me->getVictim();
             Player* player = victim ? victim->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
-            if (!player || !player->IsAlive() || !player->IsInWorld() || player->IsPreDelete() || player->HasPendingTeleport() ||
+            if (!player || !player->IsAlive() || !player->IsInWorld() || player->IsPreDelete() || player->IsBeingTeleportedFar() ||
                 !me->IsInMap(player) || !me->InSamePhase(player))
                 return nullptr;
             return player;
@@ -2999,7 +3002,7 @@ public:
         void UpdateFelLava(Player& player, uint32 diff)
         {
             _nextFelLava -= std::min(diff, _nextFelLava);
-            if (!_nextFelLava)
+            if (!_nextFelLava && !player.HasPendingTeleport())
             {
                 Position spot = player.GetPosition();
                 float const floor = me->GetMap()->GetHeight(me->GetPhases(), spot.GetPositionX(), spot.GetPositionY(),
@@ -3397,6 +3400,154 @@ class spell_mage_tower_agatha_boulder_landing : public SpellScript
     void Register() override
     {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_agatha_boulder_landing::SelectTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+    }
+};
+
+namespace
+{
+Creature* GetAgathaForServant(Unit* actor)
+{
+    if (!actor || (actor->GetEntry() != AgathaImpServant && actor->GetEntry() != AgathaOtherImpServant))
+        return nullptr;
+
+    TempSummon* servant = actor->ToTempSummon();
+    Unit* boss = servant ? servant->GetSummoner() : nullptr;
+    return GetAgathaAI(boss) ? boss->ToCreature() : nullptr;
+}
+
+bool CanFunnelAgatha(Creature const& servant, Creature const& boss, float range)
+{
+    return servant.IsAlive() && boss.IsAlive() && servant.IsInMap(&boss) && servant.InSamePhase(&boss) &&
+        servant.IsWithinDistInMap(&boss, range) && servant.IsWithinLOSInMap(&boss);
+}
+}
+
+class npc_mage_tower_agatha_imp_servant : public CreatureScript
+{
+public:
+    npc_mage_tower_agatha_imp_servant() : CreatureScript("npc_mage_tower_agatha_imp_servant") {}
+
+    struct ImpServantAI : SmartAI
+    {
+        explicit ImpServantAI(Creature* creature) : SmartAI(creature) {}
+
+        void UpdateAI(uint32 diff) override
+        {
+            Creature* boss = GetAgathaForServant(me);
+            auto* agatha = GetAgathaAI(boss);
+            if (!agatha)
+            {
+                SmartAI::UpdateAI(diff);
+                return;
+            }
+
+            if (!agatha->GetArenaPlayer())
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
+
+            bool const relocated = agatha->GetRelocatedArenaPlayer() != nullptr;
+            if (!relocated)
+            {
+                SmartAI::UpdateAI(diff);
+                if (!_reachedWaypoint)
+                    return;
+            }
+            else if (!_relocated)
+            {
+                _relocated = true;
+                me->InterruptNonMeleeSpells(true, AgathaFunnelEnergy);
+                me->StopMoving();
+                me->GetMotionMaster()->Clear();
+            }
+
+            _retry -= std::min(diff, _retry);
+            if (me->HasUnitState(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_CONFUSED))
+                return;
+
+            if (!CanFunnelAgatha(*me, *boss, relocated ? 5.0f : 20.0f))
+            {
+                if (relocated && me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                {
+                    me->InterruptNonMeleeSpells(true, AgathaFunnelEnergy);
+                    me->GetMotionMaster()->MoveFollow(boss, 2.0f, 0.0f);
+                    _following = true;
+                }
+                return;
+            }
+
+            if (_following)
+            {
+                me->StopMoving();
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MoveIdle();
+                _following = false;
+            }
+            if (!_retry && !me->HasUnitState(UNIT_STATE_CASTING))
+            {
+                me->CastSpell(boss, AgathaFunnelEnergy, false);
+                _retry = 1500;
+            }
+        }
+
+        void MovementInform(uint32 type, uint32 point) override
+        {
+            if (!_relocated && type == POINT_MOTION_TYPE && point == 1 && HasEscortState(SMART_ESCORT_ESCORTING) &&
+                GetScript()->GetPathId() == me->GetEntry() && GetAgathaForServant(me))
+            {
+                _reachedWaypoint = true;
+                _retry = 1500;
+            }
+            SmartAI::MovementInform(type, point);
+        }
+
+        void OnInterruptCast(Unit*, uint32, uint32 interrupted, uint32) override
+        {
+            if ((_reachedWaypoint || _relocated) && interrupted == AgathaFunnelEnergy)
+                _retry = 1500;
+        }
+
+        void AttackStart(Unit* target) override
+        {
+            if (!_relocated)
+                SmartAI::AttackStart(target);
+        }
+
+        void MoveInLineOfSight(Unit* target) override
+        {
+            if (!_relocated)
+                SmartAI::MoveInLineOfSight(target);
+        }
+
+    private:
+        uint32 _retry = 0;
+        bool _reachedWaypoint = false;
+        bool _relocated = false;
+        bool _following = false;
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new ImpServantAI(creature); }
+};
+
+class spell_mage_tower_agatha_funnel_energy : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_agatha_funnel_energy);
+
+    bool Load() override { return GetAgathaForServant(GetCaster()) != nullptr; }
+
+    void SelectTarget(WorldObject*& target)
+    {
+        Unit* caster = GetCaster();
+        Creature* servant = caster ? caster->ToCreature() : nullptr;
+        Creature* boss = GetAgathaForServant(servant);
+        auto* agatha = GetAgathaAI(boss);
+        target = agatha && agatha->GetArenaPlayer() && CanFunnelAgatha(*servant, *boss, 20.0f) ? boss : nullptr;
+    }
+
+    void Register() override
+    {
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_mage_tower_agatha_funnel_energy::SelectTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -3806,6 +3957,8 @@ void AddSC_broken_shore()
     new npc_mage_tower_agatha_boulder();
     RegisterSpellScript(spell_mage_tower_agatha_boulder_windup);
     RegisterSpellScript(spell_mage_tower_agatha_boulder_landing);
+    new npc_mage_tower_agatha_imp_servant();
+    RegisterSpellScript(spell_mage_tower_agatha_funnel_energy);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
