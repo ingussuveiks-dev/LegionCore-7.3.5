@@ -14,7 +14,7 @@ sys.path.insert(0,str(root/"tools/research"))
 from audit_spell_mechanics import Data
 dbc=root/"build-extractors/bin/Release/dbc/enUS"
 d=Data(dbc,dbc)
-ids={243111,243113,243114}
+ids={230163,230165,242950,243027,243111,243113,243114}
 effects={(r["SpellID"],r["EffectIndex"]):r for r in d.rows("SpellEffect").values()
          if r["SpellID"] in ids and not r["DifficultyID"]}
 def value(spell, effect, *fields):
@@ -31,6 +31,16 @@ assert any(r["SpellID"]==243111 and not r["DifficultyID"] and r["CumulativeAura"
 costs = [(r["PowerType"], r["ManaCost"]) for r in d.rows("SpellPower").values() if r["SpellID"] == 243114]
 assert costs == [(3, 100)]
 print("PASS 26972 original Dark Fury 100-energy cost, channel, interrupt category, periodic damage, stacking mechanic and shield.")
+assert value(230163,0,"Effect","EffectMiscValue1","EffectMiscValue2","ImplicitTarget1") == (28,115641,3999,87)
+assert value(230165,0,"Effect","EffectMiscValue1","EffectMiscValue2","ImplicitTarget1") == (28,115642,3999,87)
+assert value(243027,0,"EffectAura","EffectMiscValue1","ImplicitTarget1") == (40,127,92)
+assert value(242950,0,"Effect","ImplicitTarget1","ImplicitTarget2") == (3,87,86)
+assert value(242950,1,"Effect","ImplicitTarget1","ImplicitTarget2") == (252,1,87)
+misc = next(r for r in d.rows("SpellMisc").values() if r["SpellID"] == 242950 and not r["DifficultyID"])
+assert d.rows("SpellCastTimes")[misc["CastingTimeIndex"]]["Base"] == 2000
+assert d.rows("SpellRadius")[effects[242950,0]["EffectRadiusIndex2"]]["Radius"] == 6.0
+print("PASS native Smoldering and Umbral summons and original all-school Shadow Shield on the summoner.")
+print("PASS native Umbral Translocate cast, random destination radius and teleport effect.")
 '@
 $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Agatha Dark Fury DB2 catalog mismatch' }
@@ -40,15 +50,27 @@ $scope = [regex]::Match($source, '(?ms)^class spell_mage_tower_agatha_dark_fury_
 $charge = [regex]::Match($source, '(?ms)^struct AgathaDarkFuryCharge.*?^\};')
 $advance = [regex]::Match($source, '(?ms)^        void UpdateDarkFury\(.*?^        \}')
 $cycle = [regex]::Match($source, '(?ms)^        void DarkFuryStarted\(.*?^        \}')
+$wave = [regex]::Match($source, '(?ms)^std::array<uint32, 3> GetAgathaMixedImpWave\(.*?^\}')
+$waveTick = [regex]::Match($source, '(?ms)^        void UpdateMixedImpWave\(.*?^        \}')
+$refresh = [regex]::Match($source, '(?ms)^        void RefreshUmbralShield\(.*?^        \}')
+$retire = [regex]::Match($source, '(?ms)^        void RetireUmbral\(.*?^        \}')
+$clear = [regex]::Match($source, '(?ms)^        void ClearUmbrals\(.*?^        \}')
 $start = [regex]::Match($scope.Value, '(?ms)^    void Start\(.*?^    \}')
 $tick = [regex]::Match($scope.Value, '(?ms)^    void OnTick\(.*?^    \}')
 $stop = [regex]::Match($scope.Value, '(?ms)^    void Stop\(.*?^    \}')
 $shield = [regex]::Match($scope.Value, '(?ms)^    void SetInterruptImmunity\(.*?^    \}')
-if (!$charge.Success -or !$advance.Success -or !$cycle.Success -or !$start.Success -or !$tick.Success -or !$stop.Success -or !$shield.Success) { throw 'Production Agatha Dark Fury callbacks are absent' }
+foreach ($callback in $charge,$advance,$cycle,$wave,$waveTick,$refresh,$retire,$clear,$start,$tick,$stop,$shield) {
+    if (!$callback.Success) { throw 'Production Agatha combat callbacks are absent' }
+}
 [IO.File]::WriteAllText("$out/AgathaDarkFuryCharge.inc", $charge.Value)
 [IO.File]::WriteAllLines("$out/AgathaDarkFury.inc", @(
     $advance.Value.Replace('void UpdateDarkFury','void AgathaAI::UpdateDarkFury'),
     $cycle.Value.Replace('void DarkFuryStarted','void AgathaAI::DarkFuryStarted'),
+    $wave.Value,
+    $waveTick.Value.Replace('void UpdateMixedImpWave','void AgathaAI::UpdateMixedImpWave'),
+    $refresh.Value.Replace('void RefreshUmbralShield','void AgathaAI::RefreshUmbralShield'),
+    $retire.Value.Replace('void RetireUmbral','void AgathaAI::RetireUmbral'),
+    $clear.Value.Replace('void ClearUmbrals','void AgathaAI::ClearUmbrals'),
     $start.Value.Replace('void Start','void spell_mage_tower_agatha_dark_fury_channel::Start'),
     $tick.Value.Replace('void OnTick','void spell_mage_tower_agatha_dark_fury_channel::OnTick'),
     $stop.Value.Replace('void Stop','void spell_mage_tower_agatha_dark_fury_channel::Stop'),

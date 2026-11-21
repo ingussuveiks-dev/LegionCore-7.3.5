@@ -2938,6 +2938,18 @@ constexpr uint32 AgathaOtherImpServant = 115719;
 constexpr uint32 AgathaFunnelEnergy = 229928;
 constexpr uint32 AgathaServantWave = 4001;
 constexpr std::array<uint32, 2> AgathaServantSpells{ 230944, 230943 };
+constexpr uint32 AgathaSummonSmoldering = 230163;
+constexpr uint32 AgathaSummonUmbral = 230165;
+constexpr uint32 AgathaUmbralImp = 115642;
+constexpr uint32 AgathaShadowShield = 243027;
+
+std::array<uint32, 3> GetAgathaMixedImpWave(AgathaPosition position, uint32 relocatedUmbrals)
+{
+    if (position == AgathaPosition::Center)
+        return { AgathaSummonUmbral, AgathaSummonUmbral, AgathaSummonUmbral };
+
+    return { AgathaSummonUmbral, relocatedUmbrals == 2 ? AgathaSummonUmbral : AgathaSummonSmoldering, AgathaSummonSmoldering };
+}
 
 std::array<std::array<Position, 2>, 3> const AgathaServantSpawns
 {{
@@ -3027,6 +3039,7 @@ public:
             ClearFelLava();
             ClearDarkFury();
             ClearBoulders();
+            ClearUmbrals();
             SmartAI::Reset();
             _position = AgathaPosition::Center;
             _reachedLower = false;
@@ -3039,6 +3052,8 @@ public:
             _darkFuryCharge = {};
             _darkFuryRetry = 0;
             _darkFuryAttempts = 0;
+            _mixedWavesStarted = false;
+            _nextMixedWave = 0;
             if (IsArenaActor())
             {
                 SetCombatMove(false);
@@ -3060,11 +3075,13 @@ public:
                 if (me->HasAura(AgathaDarkFuryChannel))
                     ClearDarkFury();
                 ClearBoulders();
+                ClearUmbrals();
                 return;
             }
 
             UpdateTranslocate(diff);
             UpdateDarkFury(diff);
+            UpdateMixedImpWave(diff);
             if (_position != AgathaPosition::Center)
             {
                 UpdateFelLava(*player, diff);
@@ -3100,6 +3117,11 @@ public:
 
             _darkFuryCharge.StartNextCycle(_position != AgathaPosition::Center);
             _darkFuryAttempts = 0;
+            if (!_mixedWavesStarted)
+            {
+                _mixedWavesStarted = true;
+                _nextMixedWave = 12000;
+            }
         }
 
         void JustDied(Unit* killer) override
@@ -3107,6 +3129,7 @@ public:
             ClearFelLava();
             ClearDarkFury();
             ClearBoulders();
+            ClearUmbrals();
             SmartAI::JustDied(killer);
         }
 
@@ -3135,10 +3158,23 @@ public:
 
         void SummonedCreatureDespawn(Creature* summon) override
         {
+            RetireUmbral(*summon);
             _boulders.erase(summon->GetGUID());
             if (_boulderController == summon->GetGUID())
                 _boulderController.Clear();
             SmartAI::SummonedCreatureDespawn(summon);
+        }
+
+        void JustSummoned(Creature* summon) override
+        {
+            SmartAI::JustSummoned(summon);
+            TempSummon* imp = summon->ToTempSummon();
+            if (GetArenaPlayer() && imp && imp->GetEntry() == AgathaUmbralImp && imp->GetSummonerGUID() == me->GetGUID() &&
+                imp->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == AgathaSummonUmbral)
+            {
+                _umbrals.insert(imp->GetGUID());
+                RefreshUmbralShield();
+            }
         }
 
         Player* GetArenaPlayer() const
@@ -3160,7 +3196,11 @@ public:
 
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
         {
-            if (!summon || summon->IsAlive() || !me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1616)
+            if (!summon || summon->IsAlive())
+                return;
+
+            RetireUmbral(*summon);
+            if (!me->IsAlive() || !me->isInCombat() || me->GetMapId() != 1616)
                 return;
 
             switch (summon->GetEntry())
@@ -3193,6 +3233,65 @@ public:
         }
 
     private:
+        void UpdateMixedImpWave(uint32 diff)
+        {
+            if (!_mixedWavesStarted)
+                return;
+
+            _nextMixedWave -= std::min(diff, _nextMixedWave);
+            if (_nextMixedWave)
+                return;
+
+            _nextMixedWave = 55000;
+            auto const spells = GetAgathaMixedImpWave(_position, urand(1, 2));
+            constexpr std::array<float, 3> angles{ -0.9f, 0.0f, 0.9f };
+            for (size_t i = 0; i < spells.size(); ++i)
+            {
+                Position position = me->GetPosition();
+                me->MovePositionToFirstCollision(position, 3.0f, angles[i]);
+                if (me->CastSpell(position, spells[i], true) != SPELL_CAST_OK)
+                    TC_LOG_WARN("scripts", "An Impossible Foe: Agatha could not summon imp spell %u in instance %u", spells[i], me->GetInstanceId());
+            }
+        }
+
+        void RefreshUmbralShield()
+        {
+            if (!GetArenaPlayer())
+                return;
+
+            for (ObjectGuid const& guid : _umbrals)
+                if (me->HasAura(AgathaShadowShield, guid))
+                    return;
+
+            for (ObjectGuid const& guid : _umbrals)
+                if (Creature* imp = ObjectAccessor::GetCreature(*me, guid))
+                    if (imp->IsAlive() && imp->CastSpell(me, AgathaShadowShield, true) == SPELL_CAST_OK &&
+                        me->HasAura(AgathaShadowShield, guid))
+                        return;
+        }
+
+        void RetireUmbral(Creature const& imp)
+        {
+            ObjectGuid const guid = imp.GetGUID();
+            if (!_umbrals.erase(guid))
+                return;
+
+            me->RemoveAurasDueToSpell(AgathaShadowShield, guid);
+            RefreshUmbralShield();
+        }
+
+        void ClearUmbrals()
+        {
+            std::set<ObjectGuid> owned;
+            owned.swap(_umbrals);
+            for (ObjectGuid const& guid : owned)
+            {
+                me->RemoveAurasDueToSpell(AgathaShadowShield, guid);
+                if (Creature* imp = ObjectAccessor::GetCreature(*me, guid))
+                    imp->DespawnOrUnsummon();
+            }
+        }
+
         void UpdateDarkFury(uint32 diff)
         {
             int32 const energy = _darkFuryCharge.Advance(diff);
@@ -3398,6 +3497,9 @@ public:
         AgathaDarkFuryCharge _darkFuryCharge;
         uint32 _darkFuryRetry = 0;
         uint32 _darkFuryAttempts = 0;
+        bool _mixedWavesStarted = false;
+        uint32 _nextMixedWave = 0;
+        std::set<ObjectGuid> _umbrals;
         ObjectGuid _boulderController;
         std::set<ObjectGuid> _boulders;
     };

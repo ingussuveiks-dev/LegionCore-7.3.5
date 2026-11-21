@@ -1,15 +1,22 @@
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <map>
 #include <set>
+#include <vector>
 
 using uint32 = std::uint32_t;
 using int32 = std::int32_t;
+using ObjectGuid = uint32;
 using AuraEffectHandleModes = unsigned;
 constexpr uint32 AgathaDarkFuryDamage = 243111;
 constexpr uint32 AgathaDarkFuryShield = 243113;
 constexpr uint32 AgathaDarkFuryChannel = 243114;
+constexpr uint32 AgathaShadowShield = 243027;
+constexpr uint32 AgathaSummonSmoldering = 230163;
+constexpr uint32 AgathaSummonUmbral = 230165;
 constexpr unsigned CURRENT_CHANNELED_SPELL = 2;
 constexpr unsigned SPELL_STATE_CASTING = 2;
 constexpr unsigned IMMUNITY_EFFECT = 0;
@@ -21,6 +28,9 @@ constexpr unsigned UNIT_STATE_CASTING = 2;
 enum SpellCastResult { SPELL_CAST_OK, SPELL_FAILED_NOT_READY };
 enum class AgathaPosition { Center, Upper, Lower };
 struct AuraEffect {};
+struct Position {};
+uint32 waveRoll = 1;
+uint32 urand(uint32 low, uint32 high) { assert(waveRoll >= low && waveRoll <= high); return waveRoll; }
 
 #include "AgathaDarkFuryCharge.inc"
 
@@ -40,14 +50,34 @@ struct Unit
         assert(slot == CURRENT_CHANNELED_SPELL);
         return channel;
     }
-    unsigned GetGUID() const { return 42; }
+    unsigned GetGUID() const { return guid; }
     uint32 GetInstanceId() const { return 57; }
     int32 GetPower(unsigned power) const { assert(power == POWER_ENERGY); return energy; }
     void SetPower(unsigned power, int32 amount) { assert(power == POWER_ENERGY); energy = amount; }
     bool HasUnitState(unsigned state) const { assert(state == UNIT_STATE_CASTING); return casting; }
-    bool HasAura(uint32 aura, unsigned guid) const { return aura == AgathaDarkFuryChannel && guid == GetGUID() && channelAura; }
+    bool HasAura(uint32 aura, unsigned source) const
+    {
+        return (aura == AgathaDarkFuryChannel && source == GetGUID() && channelAura) ||
+            (aura == AgathaShadowShield && umbralSources.count(source));
+    }
+    bool IsAlive() const { return alive; }
+    void DespawnOrUnsummon() { despawned = true; }
+    Position GetPosition() const { return {}; }
+    void MovePositionToFirstCollision(Position&, float distance, float) const { assert(distance == 3.0f); }
+    SpellCastResult CastSpell(Position const&, uint32 spell, bool triggered)
+    {
+        assert(triggered && (spell == AgathaSummonUmbral || spell == AgathaSummonSmoldering));
+        waveCasts.push_back(spell);
+        return SPELL_CAST_OK;
+    }
     SpellCastResult CastSpell(Unit* target, uint32 spell, bool triggered)
     {
+        if (spell == AgathaShadowShield)
+        {
+            assert(alive && triggered && target != this);
+            target->umbralSources.insert(GetGUID());
+            return SPELL_CAST_OK;
+        }
         assert(target == this && spell == AgathaDarkFuryChannel && !triggered && energy == 100);
         ++attempts;
         return SPELL_FAILED_NOT_READY;
@@ -63,6 +93,11 @@ struct Unit
     }
     void RemoveAurasDueToSpell(uint32 spell, unsigned source)
     {
+        if (spell == AgathaShadowShield)
+        {
+            umbralSources.erase(source);
+            return;
+        }
         assert(source == GetGUID());
         removed.insert(spell);
     }
@@ -71,15 +106,36 @@ struct Unit
     unsigned attempts = 0;
     bool casting = false;
     bool channelAura = false;
+    unsigned guid = 42;
+    bool alive = true;
+    bool despawned = false;
+    std::set<ObjectGuid> umbralSources;
+    std::vector<uint32> waveCasts;
     std::set<std::pair<unsigned, unsigned>> immune;
     std::set<uint32> removed;
 };
+
+using Creature = Unit;
+struct ObjectAccessor
+{
+    static Creature* GetCreature(Unit const&, ObjectGuid guid)
+    {
+        auto const it = summons.find(guid);
+        return it == summons.end() ? nullptr : it->second;
+    }
+    static std::map<ObjectGuid, Creature*> summons;
+};
+std::map<ObjectGuid, Creature*> ObjectAccessor::summons;
 
 struct AgathaAI
 {
     bool GetArenaPlayer() const { return player; }
     void UpdateDarkFury(uint32 diff);
     void DarkFuryStarted();
+    void UpdateMixedImpWave(uint32 diff);
+    void RefreshUmbralShield();
+    void RetireUmbral(Creature const& imp);
+    void ClearUmbrals();
     Unit* me = nullptr;
     bool player = true;
     AgathaPosition _position = AgathaPosition::Center;
@@ -87,6 +143,9 @@ struct AgathaAI
     uint32 _darkFuryRetry = 0;
     uint32 _darkFuryAttempts = 0;
     uint32 _pendingTranslocate = 0;
+    bool _mixedWavesStarted = false;
+    uint32 _nextMixedWave = 0;
+    std::set<ObjectGuid> _umbrals;
 };
 unsigned warnings = 0;
 void TC_LOG_WARN(char const*, char const*, uint32 instance, uint32 result)
@@ -201,6 +260,49 @@ int main()
         encounter.UpdateDarkFury(500);
     assert(warnings == 1 && boss.attempts == 14);
 
+    assert(encounter._mixedWavesStarted && encounter._nextMixedWave == 12000);
+    encounter._position = AgathaPosition::Center;
+    encounter.UpdateMixedImpWave(11999);
+    assert(boss.waveCasts.empty());
+    encounter.UpdateMixedImpWave(1);
+    assert((boss.waveCasts == std::vector<uint32>{230165,230165,230165}));
+    boss.waveCasts.clear();
+    encounter._position = AgathaPosition::Upper;
+    encounter.UpdateMixedImpWave(54999);
+    assert(boss.waveCasts.empty());
+    encounter.UpdateMixedImpWave(1);
+    assert((boss.waveCasts == std::vector<uint32>{230165,230163,230163}));
+    boss.waveCasts.clear();
+    encounter._position = AgathaPosition::Lower;
+    waveRoll = 2;
+    encounter.UpdateMixedImpWave(55000);
+    assert((boss.waveCasts == std::vector<uint32>{230165,230165,230163}));
+
+    Creature umbral1, umbral2, umbral3, foreign;
+    umbral1.guid = 100;
+    umbral2.guid = 200;
+    umbral3.guid = 300;
+    foreign.guid = 900;
+    ObjectAccessor::summons = {{100,&umbral1},{200,&umbral2},{300,&umbral3},{900,&foreign}};
+    encounter._umbrals = {100,200,300};
+    encounter.RefreshUmbralShield();
+    assert(boss.umbralSources == std::set<ObjectGuid>{100});
+    umbral1.alive = false;
+    encounter.RetireUmbral(umbral1);
+    assert(boss.umbralSources == std::set<ObjectGuid>{200});
+    encounter.RetireUmbral(umbral1);
+    encounter.RetireUmbral(foreign);
+    assert(boss.umbralSources == std::set<ObjectGuid>{200});
+    encounter.RetireUmbral(umbral3);
+    assert(boss.umbralSources == std::set<ObjectGuid>{200});
+    encounter.RetireUmbral(umbral2);
+    assert(boss.umbralSources.empty());
+    encounter._umbrals = {200};
+    boss.umbralSources = {200,900};
+    encounter.ClearUmbrals();
+    assert(boss.umbralSources == std::set<ObjectGuid>{900} && umbral2.despawned && !foreign.despawned);
+
     std::cout << "PASS Dark Fury active channel ticks, interrupt immunity scoped to the shield, and cleanup of shield and stacks.\n";
     std::cout << "PASS Dark Fury energy cost, initial and phase-specific cycles, real aura receipt and bounded retries.\n";
+    std::cout << "PASS three original or mixed imps after native Dark Fury, shield transfer on death and owned reset cleanup.\n";
 }
