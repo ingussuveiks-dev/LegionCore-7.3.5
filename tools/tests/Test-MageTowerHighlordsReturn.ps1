@@ -27,6 +27,19 @@ for root_id, assets in ((56886, {56480, 56553}), (56889, {56552, 56796})):
     assert len(leaves) == 2 and all(row['Type'] == 92 for row in leaves)
     assert {row['Asset'] for row in leaves} == assets
 print('PASS 26972 solo LFG route and both native kill-plus-survival criteria trees')
+
+effects = {(row['SpellID'], row['EffectIndex']): row for row in data.rows('SpellEffect').values()
+           if row['SpellID'] in (233473, 240521) and not row['DifficultyID']}
+assert (effects[233473, 0]['Effect'], effects[233473, 0]['EffectMiscValue1']) == (179, 9586)
+ward = effects[240521, 0]
+assert (ward['Effect'], ward['EffectBasePoints'], ward['ImplicitTarget2']) == (136, 100, 31)
+disorient = effects[240521, 1]
+assert (disorient['EffectAura'], disorient['ImplicitTarget2']) == (5, 16)
+misc = {row['SpellID']: row for row in data.rows('SpellMisc').values()
+        if row['SpellID'] in (233473, 240521) and not row['DifficultyID']}
+assert data.rows('SpellCastTimes')[misc[233473]['CastingTimeIndex']]['Base'] == 8000
+assert data.rows('SpellDuration')[misc[240521]['DurationIndex']]['Duration'] == 5000
+print('PASS native Holy Ward area creation, eight-second cast, full friendly heal and five-second enemy disorient')
 '@
 $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Highlord survival DB2 regression failed' }
@@ -35,6 +48,11 @@ $source = Get-Content -LiteralPath "$repo/src/server/scripts/Legion/zone_broken_
 $production = [regex]::Match($source, '(?ms)^constexpr uint32 HighlordsReturnMap.*?^\};')
 if (!$production.Success) { throw 'Production Highlord survival controller is missing' }
 [IO.File]::WriteAllText("$out/HighlordsReturn.inc", "namespace`n{`n" + $production.Value)
+$wardCaster = [regex]::Match($source, '(?ms)^Creature\* GetHighlordsReturnKruul\(Unit\* actor\).*?^\}')
+$wardHit = [regex]::Match($source, '(?ms)^    void DispelReflection\(SpellEffIndex /\*effect\*/\).*?^    \}')
+if (!$wardCaster.Success -or !$wardHit.Success) { throw 'Production Holy Ward handlers are missing' }
+[IO.File]::WriteAllText("$out/HighlordsWardCaster.inc", $wardCaster.Value)
+[IO.File]::WriteAllText("$out/HighlordsWardHit.inc", $wardHit.Value)
 
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

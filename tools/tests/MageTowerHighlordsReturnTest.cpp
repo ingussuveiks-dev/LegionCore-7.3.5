@@ -4,11 +4,16 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <utility>
 #include <vector>
 
 using uint8 = std::uint8_t;
 using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
+using SpellEffIndex = uint32;
+
+struct Creature;
+struct Player;
 
 struct ObjectGuid
 {
@@ -24,10 +29,16 @@ struct Unit
     bool alive = true;
     bool inWorld = true;
     bool deleted = false;
+    Creature* creature = nullptr;
+    Player* player = nullptr;
+    uint32 map = 1698;
     ObjectGuid GetGUID() const { return guid; }
     bool IsAlive() const { return alive; }
     bool IsInWorld() const { return inWorld; }
     bool IsPreDelete() const { return deleted; }
+    Creature* ToCreature() const { return creature; }
+    Player* ToPlayer() const { return player; }
+    uint32 GetMapId() const { return map; }
 };
 
 struct Creature : Unit
@@ -48,19 +59,31 @@ struct Group
     ObjectGuid GetGUID() const { return guid; }
 };
 
+struct Aura
+{
+    Unit* caster;
+    Unit* GetCaster() const { return caster; }
+    ObjectGuid GetCasterGUID() const { return caster->GetGUID(); }
+};
+
 struct Player : Unit
 {
-    uint32 map = 1698;
     Group* group = nullptr;
+    Aura* curse = nullptr;
     bool pending = false;
     unsigned exits = 0;
     std::function<void()> departure;
     static inline unsigned removals = 0;
     Group* GetGroup() const { return group; }
-    uint32 GetMapId() const { return map; }
     bool HasPendingTeleport() const { return pending; }
     void AddDelayedEvent(uint32, std::function<void()> action) { departure = std::move(action); }
     static void RemoveFromGroup(Group*, ObjectGuid) { ++removals; }
+    Aura* GetAura(uint32 spell) const { return spell == 234676 ? curse : nullptr; }
+    void RemoveAura(uint32 spell, ObjectGuid caster)
+    {
+        assert(spell == 234676 && curse && curse->GetCasterGUID() == caster);
+        curse = nullptr;
+    }
 };
 
 struct PlayerRef
@@ -138,6 +161,16 @@ unsigned exhausted = 0;
 void TC_LOG_ERROR(char const*, char const*, uint32) { ++exhausted; }
 
 #include "HighlordsReturn.inc"
+#include "HighlordsWardCaster.inc"
+
+struct WardHit
+{
+    static constexpr uint32 TwistedReflection = 234676;
+    Unit* target;
+    Unit* GetHitUnit() const { return target; }
+
+#include "HighlordsWardHit.inc"
+};
 
 int main()
 {
@@ -145,10 +178,12 @@ int main()
     Creature korvas{ { { 11 } }, 116880, 14534062 };
     Creature otherVelen{ { { 12 } }, 117042, 7 };
     Creature boss{ { { 13 } }, 117198, 14534049 };
+    boss.creature = &boss;
     Group solo{ { 90 } };
     Group different{ { 91 } };
     Group unrelated{ { 100 } };
     Player challenger;
+    challenger.player = &challenger;
     challenger.group = &solo;
     challenger.alive = false;
     Player observer;
@@ -210,5 +245,25 @@ int main()
     challenger.departure();
     assert(Player::removals == 1);
 
+    Aura exactCurse{ &boss };
+    Aura foreignCurse{ &otherVelen };
+    WardHit ward{ &challenger };
+    challenger.map = 1698;
+    challenger.curse = &exactCurse;
+    ward.DispelReflection(0);
+    assert(challenger.curse == &exactCurse);
+    challenger.alive = true;
+    challenger.group = &unrelated;
+    ward.DispelReflection(0);
+    assert(challenger.curse == &exactCurse);
+    challenger.group = &solo;
+    challenger.curse = &foreignCurse;
+    ward.DispelReflection(0);
+    assert(challenger.curse == &foreignCurse);
+    challenger.curse = &exactCurse;
+    ward.DispelReflection(0);
+    assert(!challenger.curse);
+
     std::cout << "PASS living actor gate, ally death, isolated attempts, bounded native exit and post-exit solo group cleanup\n";
+    std::cout << "PASS Holy Ward cleanses the genuine Kruul curse on the living challenger\n";
 }

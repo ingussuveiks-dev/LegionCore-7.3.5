@@ -3554,6 +3554,15 @@ class spell_mage_tower_agatha_funnel_energy : public SpellScript
     }
 };
 
+namespace
+{
+Creature* GetHighlordsReturnKruul(Unit* actor)
+{
+    Creature* kruul = actor ? actor->ToCreature() : nullptr;
+    return kruul && kruul->GetEntry() == 117198 && kruul->GetMapId() == 1698 && kruul->GetDBTableGUIDLow() == 14534049 ? kruul : nullptr;
+}
+}
+
 class spell_mage_tower_kruul_twisted_reflection : public AuraScript
 {
     PrepareAuraScript(spell_mage_tower_kruul_twisted_reflection);
@@ -3567,12 +3576,7 @@ class spell_mage_tower_kruul_twisted_reflection : public AuraScript
 
     bool Load() override { return GetKruul() != nullptr; }
 
-    Creature* GetKruul()
-    {
-        Unit* caster = GetCaster();
-        Creature* kruul = caster ? caster->ToCreature() : nullptr;
-        return kruul && kruul->GetEntry() == 117198 && kruul->GetMapId() == 1698 && kruul->GetDBTableGUIDLow() == 14534049 ? kruul : nullptr;
-    }
+    Creature* GetKruul() { return GetHighlordsReturnKruul(GetCaster()); }
 
     Unit* GetHealRecipient(ProcEventInfo& event)
     {
@@ -3735,6 +3739,43 @@ public:
     };
 
     InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new HighlordsReturnInstance(map); }
+};
+
+class spell_mage_tower_highlords_return_holy_ward : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_highlords_return_holy_ward);
+
+    static constexpr uint32 TwistedReflection = 234676;
+
+    bool Validate(SpellInfo const* /*info*/) override
+    {
+        return ValidateSpellInfo({ TwistedReflection });
+    }
+
+    bool Load() override
+    {
+        Unit* caster = GetCaster();
+        Creature* velen = caster ? caster->ToCreature() : nullptr;
+        return velen && velen->GetEntry() == HighlordsReturnVelen && velen->GetMapId() == HighlordsReturnMap &&
+            velen->GetDBTableGUIDLow() == HighlordsReturnVelenSpawn;
+    }
+
+    void DispelReflection(SpellEffIndex /*effect*/)
+    {
+        Unit* hit = GetHitUnit();
+        Player* challenger = hit ? hit->ToPlayer() : nullptr;
+        if (!challenger || !challenger->IsAlive() || !GetHighlordsReturnSoloGroup(challenger))
+            return;
+
+        if (Aura* curse = challenger->GetAura(TwistedReflection))
+            if (GetHighlordsReturnKruul(curse->GetCaster()))
+                challenger->RemoveAura(TwistedReflection, curse->GetCasterGUID());
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_tower_highlords_return_holy_ward::DispelReflection, EFFECT_0, SPELL_EFFECT_HEAL_PCT);
+    }
 };
 
 // 117470
@@ -4147,6 +4188,7 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_agatha_funnel_energy);
     RegisterAuraScript(spell_mage_tower_kruul_twisted_reflection);
     new instance_mage_tower_highlords_return();
+    RegisterSpellScript(spell_mage_tower_highlords_return_holy_ward);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
