@@ -16,7 +16,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "DynamicTree.h"
 #include "GameObject.h"
+#include "GameObjectAI.h"
 #include "Item.h"
 #include "KyleLunch.h"
 #include "ObjectAccessor.h"
@@ -228,9 +230,194 @@ class spell_kyle_lunch : public SpellScript
     }
 };
 
+namespace
+{
+constexpr uint32 OurTribeImprisoned = 24852;
+constexpr uint32 QuilboarCage = 202112;
+constexpr uint32 CapturedBrave = 38345;
+constexpr uint32 RunFromCage = 1;
+
+// The original occupants are paired with their cages by their world spawns.
+struct CagePair { uint64 Cage; uint64 Brave; };
+constexpr CagePair Captives[] = {
+    {32629, 93501}, {32634, 93658}, {32635, 93664}, {32636, 93665}, {32639, 93702},
+    {32640, 93706}, {32641, 93707}, {51369, 169785}, {51370, 169830}, {51371, 169831}
+};
+
+bool IsReadyQuilboarCage(GameObject const* cage)
+{
+    return cage && cage->isSpawned() && cage->GetGoState() == GO_STATE_READY && cage->getLootState() == GO_READY &&
+        !cage->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
+}
+
+struct npc_mulgore_captured_brave : ScriptedAI
+{
+    explicit npc_mulgore_captured_brave(Creature* creature) : ScriptedAI(creature) { }
+
+    void InitializeAI() override
+    {
+        if (me->GetMapId() != 1)
+            return;
+        for (CagePair const& pair : Captives)
+            if (pair.Brave == me->GetDBTableGUIDLow())
+            {
+                ObjectGuid cage = ObjectGuid::Create<HighGuid::GameObject>(1, QuilboarCage, pair.Cage);
+                if (!IsReadyQuilboarCage(ObjectAccessor::GetGameObject(*me, cage)))
+                {
+                    _cage = cage;
+                    _state = WaitingForCage;
+                    me->SetVisible(false);
+                }
+                return;
+            }
+    }
+
+    bool IsCaptive() const { return _state == Captive && me->IsAlive(); }
+
+    void BeginEscape(GameObject const& cage)
+    {
+        _cage = cage.GetGUID();
+        _state = Opening;
+    }
+
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (_state == Escaping && type == POINT_MOTION_TYPE && id == RunFromCage)
+            _timer = 0;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        switch (_state)
+        {
+            case Captive:
+                return;
+            case Opening:
+            {
+                GameObject* cage = ObjectAccessor::GetGameObject(*me, _cage);
+                if (!cage || cage->GetGoState() != GO_STATE_ACTIVE)
+                {
+                    _cage.Clear();
+                    _state = Captive;
+                    return;
+                }
+
+                // Native Use opens the model after OnStateChanged. Start
+                // pathing on the next update through the already open door.
+                Position destination = me->GetHomePosition();
+                me->MovePositionToFirstCollision(destination, 12.0f, destination.GetOrientation() - me->GetOrientation());
+                _state = Escaping;
+                _timer = 8 * IN_MILLISECONDS;
+                Talk(0);
+                me->SetWalk(false);
+                me->GetMotionMaster()->MovePoint(RunFromCage, destination);
+                return;
+            }
+            case Escaping:
+                if (_timer > diff)
+                {
+                    _timer -= diff;
+                    return;
+                }
+
+                me->SetVisible(false);
+                me->GetMotionMaster()->Clear(false);
+                me->GetMotionMaster()->MoveIdle();
+                me->NearTeleportTo(me->GetHomePosition());
+                _state = WaitingForCage;
+                _timer = IN_MILLISECONDS;
+                return;
+            case WaitingForCage:
+                if (_timer > diff)
+                {
+                    _timer -= diff;
+                    return;
+                }
+
+                _timer = IN_MILLISECONDS;
+                if (IsReadyQuilboarCage(ObjectAccessor::GetGameObject(*me, _cage)))
+                {
+                    _cage.Clear();
+                    _state = Captive;
+                    me->SetVisible(true);
+                }
+                return;
+        }
+    }
+
+private:
+    enum State { Captive, Opening, Escaping, WaitingForCage };
+    State _state = Captive;
+    ObjectGuid _cage;
+    uint32 _timer = 0;
+};
+
+struct go_mulgore_quilboar_cage : GameObjectAI
+{
+    explicit go_mulgore_quilboar_cage(GameObject* object) : GameObjectAI(object) { }
+
+    bool GossipUse(Player* player) override
+    {
+        _opener.Clear();
+        _brave.Clear();
+        if (go->GetMapId() != 1 || go->GetEntry() != QuilboarCage || !IsReadyQuilboarCage(go) ||
+            !player->IsAlive() || !player->CanContact() || player->IsSpectator() ||
+            player->GetQuestStatus(OurTribeImprisoned) != QUEST_STATUS_INCOMPLETE ||
+            !go->IsWithinDistInMap(player, go->GetInteractionDistance()) || !player->canSeeOrDetect(go) ||
+            !CanReachCage(*player))
+            return true;
+
+        for (CagePair const& pair : Captives)
+            if (pair.Cage == go->GetDBTableGUIDLow())
+            {
+                // Outdoor spawns use their original database GUIDs.
+                Creature* captive = go->GetMap()->GetCreature(ObjectGuid::Create<HighGuid::Creature>(1, CapturedBrave, pair.Brave));
+                auto ai = captive ? dynamic_cast<npc_mulgore_captured_brave*>(captive->AI()) : nullptr;
+                if (ai && ai->IsCaptive() && go->IsWithinDistInMap(captive, 1.0f) && player->canSeeOrDetect(captive))
+                {
+                    _opener = player->GetGUID();
+                    _brave = captive->GetGUID();
+                    return false;
+                }
+                break;
+            }
+        return true;
+    }
+
+    void OnStateChanged(uint32 state, Unit* user) override
+    {
+        if (state != GO_ACTIVATED || !user || user->GetGUID() != _opener)
+            return;
+        if (Creature* captive = ObjectAccessor::GetCreature(*go, _brave))
+            if (auto ai = dynamic_cast<npc_mulgore_captured_brave*>(captive->AI()))
+                ai->BeginEscape(*go);
+        _opener.Clear();
+        _brave.Clear();
+    }
+
+private:
+    bool CanReachCage(Player const& player) const
+    {
+        // The cage bars cover its interaction point. Exclude this cage only
+        // from the ray to that point, keeping all surrounding collision.
+        DynamicTreeCallback filter;
+        filter.filter = [cage = go](GameObject const* obstruction) { return obstruction != cage; };
+        Position target = go->GetHitSpherePointFor(player.GetPosition());
+        return go->GetMap()->isInLineOfSight(player.GetPositionX(), player.GetPositionY(), player.GetPositionZ() + 2.0f,
+            target.GetPositionX(), target.GetPositionY(), target.GetPositionZ() + 2.0f,
+            player.GetPhases(), VMAP::ModelIgnoreFlags::Nothing, &filter, &player);
+    }
+
+    ObjectGuid _opener;
+    ObjectGuid _brave;
+};
+}
+
 void AddSC_mulgore()
 {
     new npc_skorn_whitecloud();
     RegisterCreatureAI(npc_kyle_frenzied);
     RegisterSpellScript(spell_kyle_lunch);
+    RegisterCreatureAI(npc_mulgore_captured_brave);
+    RegisterGameObjectAI(go_mulgore_quilboar_cage);
 }
