@@ -12,6 +12,7 @@
 using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
 using int32 = std::int32_t;
+using SpellEffIndex = unsigned;
 using DamageEffectType = uint32;
 
 struct Creature;
@@ -24,6 +25,7 @@ struct ObjectGuid
 {
     uint64 value = 0;
     bool IsEmpty() const { return value == 0; }
+    void Clear() { value = 0; }
     bool operator==(ObjectGuid const& other) const { return value == other.value; }
     bool operator<(ObjectGuid const& other) const { return value < other.value; }
 };
@@ -233,13 +235,17 @@ struct SpellScript
 {
     struct SpellValue { float EffectBasePoints[1]; } values{};
     Unit* caster = nullptr;
+    Unit* hit = nullptr;
     int32 hitDamage = 0;
     Hook OnObjectAreaTargetSelect;
+    Hook OnEffectHitTarget;
     Hook OnHit;
     virtual ~SpellScript() = default;
     virtual void Register() = 0;
     Unit* GetCaster() const { return caster; }
+    Unit* GetHitUnit() const { return hit; }
     SpellValue const* GetSpellValue() const { return &values; }
+    int32 GetHitDamage() const { return hitDamage; }
     void SetHitDamage(int32 damage) { hitDamage = damage; }
 };
 
@@ -247,6 +253,7 @@ struct SpellScript
 #define PrepareSpellScript(name) public:
 #define AuraEffectRemoveFn(...) 0
 #define SpellObjectAreaTargetSelectFn(...) 0
+#define SpellEffectFn(...) 0
 #define SpellHitFn(...) 0
 
 #include "RisenThreatHeals.inc"
@@ -421,8 +428,24 @@ int main()
     std::list<WorldObject*> targets{ &transformed, &healer, &healingTotem };
     explosion.SelectAllies(targets);
     assert((targets == std::list<WorldObject*>{ &jarod, &granny, &callie }));
+    explosion.hit = &jarod;
+    explosion.ApplyDamage();
+    assert(explosion.hitDamage == 0);
+    explosion.ConfirmHit(EFFECT_0);
+    explosion.ApplyDamage();
+    assert(explosion.hitDamage == 0);
+    explosion.ConfirmHit(EFFECT_0);
+    explosion.hitDamage = 100;
     explosion.ApplyDamage();
     assert(explosion.hitDamage == 1234567);
+    explosion.hit = &granny;
+    explosion.hitDamage = 100;
+    explosion.ApplyDamage();
+    assert(explosion.hitDamage == 100);
+    explosion.hit = &erdris;
+    explosion.ConfirmHit(EFFECT_0);
+    explosion.ApplyDamage();
+    assert(explosion.hitDamage == 100);
     callie.phase = 2;
     explosion.SelectAllies(targets);
     assert((targets == std::list<WorldObject*>{ &jarod, &granny }));

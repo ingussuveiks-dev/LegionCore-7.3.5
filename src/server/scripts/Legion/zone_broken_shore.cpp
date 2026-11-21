@@ -4350,17 +4350,30 @@ class spell_mage_tower_erdris_ignite_soul_damage : public SpellScript
             targets.clear();
     }
 
+    void ConfirmHit(SpellEffIndex /*effect*/)
+    {
+        if (Unit* target = GetHitUnit())
+            if (target != GetCaster())
+                _confirmedHit = target->GetGUID();
+    }
+
     void ApplyDamage()
     {
-        SetHitDamage(GetIgniteSoulDamage(GetSpellValue()->EffectBasePoints[EFFECT_0]));
+        Unit* target = GetHitUnit();
+        if (!_confirmedHit.IsEmpty() && target && target->GetGUID() == _confirmedHit && GetHitDamage() > 0)
+            SetHitDamage(GetIgniteSoulDamage(GetSpellValue()->EffectBasePoints[EFFECT_0]));
+        _confirmedHit.Clear();
     }
 
     void Register() override
     {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_erdris_ignite_soul_damage::SelectAllies,
             EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnEffectHitTarget += SpellEffectFn(spell_mage_tower_erdris_ignite_soul_damage::ConfirmHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
         OnHit += SpellHitFn(spell_mage_tower_erdris_ignite_soul_damage::ApplyDamage);
     }
+
+    ObjectGuid _confirmedHit;
 };
 
 class npc_mage_tower_risen_threat_soul : public CreatureScript
