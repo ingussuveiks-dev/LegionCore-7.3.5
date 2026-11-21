@@ -7073,8 +7073,8 @@ struct npc_hallows_end_investigator : ScriptedAI
         _witness = player->GetGUID();
         _shopkeeper = shopkeeper->GetGUID();
         _witnessAttempt = player->GetQuestCancellationReceipt(GetShoppingQuest());
-        _timer = 4000;
-        Talk(0, player->GetGUID());
+        _line = 0;
+        _timer = 1;
     }
 
     void UpdateAI(uint32 diff) override
@@ -7090,19 +7090,46 @@ struct npc_hallows_end_investigator : ScriptedAI
         Player* player = ObjectAccessor::GetPlayer(*me, _witness);
         Creature* shopkeeper = ObjectAccessor::GetCreature(*me, _shopkeeper);
         auto attempt = _witnessAttempt.lock();
-        _witness.Clear();
-        _shopkeeper.Clear();
-        _witnessAttempt.reset();
         if (!attempt || attempt->load() || !CanInvestigate(player) || !shopkeeper || !shopkeeper->IsAlive() ||
             !me->IsWithinDistInMap(shopkeeper, 12.0f) || !me->IsWithinLOSInMap(shopkeeper))
+        {
+            ClearWitness();
             return;
+        }
 
-        Talk(1, player->GetGUID());
-        me->CastSpell(player, 100578, true);
+        static constexpr std::array<bool, 7> AllianceShopkeeper = { false, false, true, true, false, true, false };
+        static constexpr std::array<bool, 7> HordeShopkeeper = { false, true, true, false, true, false, false };
+        auto const& shopkeeperLines = me->GetEntry() == 54021 ? AllianceShopkeeper : HordeShopkeeper;
+        if (_line == shopkeeperLines.size())
+        {
+            ClearWitness();
+            me->CastSpell(player, 100578, true);
+            return;
+        }
+
+        Creature* speaker = shopkeeperLines[_line] ? shopkeeper : me;
+        if (!sCreatureTextMgr->TextExist(speaker->GetEntry(), 10 + _line))
+        {
+            TC_LOG_ERROR("scripts", "Hallow's End Shopping Around scene is missing group %u for creature %u", 10 + _line, speaker->GetEntry());
+            ClearWitness();
+            return;
+        }
+        if (_line == shopkeeperLines.size() - 1)
+            me->SetFacingToObject(player);
+        sCreatureTextMgr->SendChat(speaker, 10 + _line, player->GetGUID());
+        ++_line;
+        _timer = 2300;
     }
 
 private:
     uint32 GetShoppingQuest() const { return me->GetEntry() == 54021 ? 29399 : 29425; }
+
+    void ClearWitness()
+    {
+        _witness.Clear();
+        _shopkeeper.Clear();
+        _witnessAttempt.reset();
+    }
 
     bool CanInvestigate(Player* player) const
     {
@@ -7115,6 +7142,271 @@ private:
     ObjectGuid _shopkeeper;
     std::weak_ptr<QuestCancellationReceipt const> _witnessAttempt;
     uint32 _timer = 0;
+    uint8 _line = 0;
+};
+
+// The public turn-in NPC stays available to other players. Only the
+// participant sees the short-lived copy that performs the ritual.
+struct npc_hallows_end_ritual_actor : ScriptedAI
+{
+    explicit npc_hallows_end_ritual_actor(Creature* creature) : ScriptedAI(creature)
+    {
+        if (me->ToTempSummon())
+        {
+            me->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0);
+            me->SetReactState(REACT_PASSIVE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+        }
+    }
+
+    void Begin(Player* player, Creature* employer, Creature* receiver, uint32 questId, uint32 ritualSpell)
+    {
+        _owner = player->GetGUID();
+        _employer = employer->GetGUID();
+        _receiver = receiver->GetGUID();
+        _quest = questId;
+        _spell = ritualSpell;
+        _alternate = employer != receiver;
+        _timer = 1800;
+        if (_alternate)
+        {
+            Speak(receiver, 10);
+            _timer = 750;
+            if (me->GetExactDist(receiver) > 2.5f)
+            {
+                Position destination = receiver->GetPosition();
+                receiver->MovePositionToFirstCollision(destination, 1.75f, receiver->GetRelativeAngle(me));
+                if (std::abs(destination.GetPositionZ() - receiver->GetPositionZ()) <= 1.25f &&
+                    receiver->IsWithinLOS(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ()))
+                {
+                    me->GetMotionMaster()->MovePoint(1, destination);
+                    _walkTime = 8000;
+                }
+            }
+        }
+        player->UpdateVisibilityForPlayer();
+    }
+
+    bool CanBeVisibleFor(WorldObject const* seer) const override
+    {
+        if (me->ToTempSummon())
+            return !_finished;
+        if (me->GetEntry() != 53949 && me->GetEntry() != 54141)
+            return true;
+
+        Player const* player = seer ? seer->ToPlayer() : nullptr;
+        if (!player)
+            return true;
+        for (ObjectGuid const& guid : *const_cast<Player*>(player)->GetSummonList(me->GetEntry()))
+            if (Creature* actor = me->GetMap()->GetCreature(guid))
+                if (auto scene = dynamic_cast<npc_hallows_end_ritual_actor*>(actor->AI()))
+                    if (scene->_owner == player->GetGUID() && scene->_employer == me->GetGUID())
+                        return false;
+        return true;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!me->ToTempSummon())
+        {
+            ScriptedAI::UpdateAI(diff);
+            return;
+        }
+        if (!_owner)
+            return;
+
+        Player* player = ObjectAccessor::GetPlayer(*me, _owner);
+        Creature* receiver = ObjectAccessor::GetCreature(*me, _receiver);
+        if (!player || !player->IsAlive() || !receiver || !receiver->IsAlive() || !sGameEventMgr->IsActiveEvent(12) ||
+            !player->GetQuestRewardStatus(_quest) || !receiver->IsWithinDistInMap(player, 24.0f))
+        {
+            End(player);
+            return;
+        }
+
+        if (_walkTime)
+        {
+            if (me->GetExactDist(receiver) <= 2.5f && std::abs(me->GetPositionZ() - receiver->GetPositionZ()) <= 1.25f)
+            {
+                _walkTime = 0;
+                me->SetFacingToObject(receiver);
+            }
+            else if (diff >= _walkTime)
+            {
+                TC_LOG_DEBUG("scripts", "Hallow's End ritual %u did not reach the approach for source %u", _spell, receiver->GetEntry());
+                End(player);
+                return;
+            }
+            else
+            {
+                _walkTime -= diff;
+                return;
+            }
+        }
+
+        if (_timer > diff)
+        {
+            _timer -= diff;
+            return;
+        }
+
+        if (_alternate && _line < Exchange.size())
+        {
+            auto const& cue = Exchange[_line++];
+            Speak(cue.Employer ? me : receiver, cue.Text);
+            _timer = 2500;
+            return;
+        }
+        if (!_alternate && !_line)
+        {
+            ++_line;
+            Speak(me, 15);
+            _timer = 2500;
+            return;
+        }
+
+        switch (_stage)
+        {
+            case Stage::Announce:
+                Speak(me, 13);
+                _stage = Stage::Transform;
+                _timer = 2500;
+                break;
+            case Stage::Transform:
+                me->CastSpell(me, _spell, true);
+                if (!me->HasAura(_spell))
+                {
+                    if (++_castAttempts >= 3)
+                    {
+                        TC_LOG_WARN("scripts", "Hallow's End ritual %u failed to apply its transform for source %u", _spell, receiver->GetEntry());
+                        End(player);
+                    }
+                    else
+                        _timer = 500;
+                    return;
+                }
+                _stage = Stage::Panic;
+                _timer = 2500;
+                break;
+            case Stage::Panic:
+                if (_alternate)
+                    Speak(receiver, 13);
+                Speak(me, 14);
+                _stage = Stage::Collapse;
+                _timer = 3000;
+                break;
+            case Stage::Collapse:
+                me->RemoveAurasDueToSpell(_spell);
+                me->GetMotionMaster()->Clear();
+                me->StopMoving();
+                me->SetStandState(UNIT_STAND_STATE_DEAD);
+                _stage = Stage::Finish;
+                _timer = 4500;
+                break;
+            case Stage::Finish:
+                End(player);
+                break;
+        }
+    }
+
+private:
+    struct Cue { bool Employer; uint8 Text; };
+    static constexpr std::array<Cue, 5> Exchange = {{ {true, 10}, {false, 11}, {true, 11}, {true, 12}, {false, 12} }};
+    enum class Stage { Announce, Transform, Panic, Collapse, Finish };
+
+    void Speak(Creature* speaker, uint8 group) const
+    {
+        sCreatureTextMgr->SendChat(speaker, group, _owner, CHAT_MSG_MONSTER_WHISPER);
+    }
+
+    void End(Player* player)
+    {
+        _finished = true;
+        _owner.Clear();
+        if (player)
+            player->UpdateVisibilityForPlayer();
+        me->DespawnOrUnsummon();
+    }
+
+    ObjectGuid _owner;
+    ObjectGuid _receiver;
+    ObjectGuid _employer;
+    uint32 _quest = 0;
+    uint32 _spell = 0;
+    uint32 _timer = 0;
+    uint32 _walkTime = 0;
+    size_t _line = 0;
+    uint8 _castAttempts = 0;
+    bool _alternate = false;
+    bool _finished = false;
+    Stage _stage = Stage::Announce;
+};
+
+class npc_hallows_end_crate_return : public CreatureScript
+{
+public:
+    npc_hallows_end_crate_return() : CreatureScript("npc_hallows_end_crate_return") { }
+
+    CreatureAI* GetAI(Creature* creature) const override { return new npc_hallows_end_ritual_actor(creature); }
+
+    bool OnQuestReward(Player* player, Creature* receiver, Quest const* quest, uint32 /*opt*/) override
+    {
+        uint32 questId = quest->GetQuestId();
+        uint32 receiverEntry = receiver->GetEntry();
+        bool alliance = questId == HallowsEndCrate::Alliance.Return && receiver->GetMapId() == 0 &&
+            (receiverEntry == 53949 || receiverEntry == 54118);
+        bool horde = questId == HallowsEndCrate::Horde.Return && receiver->GetMapId() == 1 && receiverEntry == 54170;
+        if ((!alliance && !horde) || !player->IsAlive() || receiver->ToTempSummon() || !sGameEventMgr->IsActiveEvent(12) ||
+            !player->GetQuestRewardStatus(questId) || !player->IsWithinDistInMap(receiver, INTERACTION_DISTANCE))
+            return false;
+
+        uint32 employerEntry = alliance ? 53949 : 54141;
+        Creature* employer = receiver;
+        if (receiverEntry != employerEntry)
+        {
+            employer = nullptr;
+            std::list<Creature*> candidates;
+            receiver->GetCreatureListWithEntryInGrid(candidates, employerEntry, 28.0f);
+            for (Creature* candidate : candidates)
+                if (!candidate->ToTempSummon() && candidate->IsAlive() &&
+                    (!employer || receiver->GetExactDist(candidate) < receiver->GetExactDist(employer)))
+                    employer = candidate;
+        }
+        auto properties = sSummonPropertiesStore.LookupEntry(2912);
+        if (!employer || !properties)
+            return false;
+
+        for (ObjectGuid const& guid : *player->GetSummonList(employerEntry))
+            if (player->GetMap()->GetCreature(guid))
+                return false;
+
+        Position appearance = employer->GetPosition();
+        if (employer != receiver)
+        {
+            // The outdoor copy's world position is separated from the inn by
+            // loaded geometry. Start the short entrance on the receiver's floor.
+            appearance = receiver->GetPosition();
+            float const entranceAngle = receiver->GetRelativeAngle(employer);
+            for (float offset : { 0.0f, float(M_PI_2), -float(M_PI_2), float(M_PI) })
+            {
+                Position candidate = receiver->GetPosition();
+                receiver->MovePositionToFirstCollision(candidate, 3.5f, entranceAngle + offset);
+                if (receiver->GetExactDist2d(&candidate) >= 1.0f &&
+                    std::abs(candidate.GetPositionZ() - receiver->GetPositionZ()) <= 1.25f &&
+                    receiver->IsWithinLOS(candidate.GetPositionX(), candidate.GetPositionY(), candidate.GetPositionZ()))
+                {
+                    appearance = candidate;
+                    break;
+                }
+            }
+        }
+
+        if (TempSummon* actor = player->GetMap()->SummonCreature(employerEntry, appearance, properties, 45000,
+            player, ObjectGuid::Empty, 0, 0, player->GetGUID()))
+            if (auto scene = dynamic_cast<npc_hallows_end_ritual_actor*>(actor->AI()))
+                scene->Begin(player, employer, receiver, questId, alliance ? 100671 : 100792);
+        return false;
+    }
 };
 
 struct go_hallows_end_crate : GameObjectAI
@@ -7218,6 +7510,7 @@ private:
 void AddSC_npcs_special()
 {
     new npc_hallows_end_hired_courier();
+    new npc_hallows_end_crate_return();
     RegisterCreatureAI(npc_hallows_end_investigator);
     RegisterGameObjectAI(go_hallows_end_crate);
     RegisterCreatureAI(npc_hallows_end_sanath);

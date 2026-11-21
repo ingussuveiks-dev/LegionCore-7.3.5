@@ -21,4 +21,4 @@ Sākotnējā `legion_world` datubāzē bija mērķi un kvestu avotu saites, bet 
 
 ## Pārējā ķēde
 
-Spēles klienta pārbaudē vēl jāiziet abas iepriekšējās pārejas, jāsalasa augi un jānodod Taking Precautions. Vēlāk atjaunota Unleashed Void sastapšanās un lādes, kā arī zirnekļu taka. Shopping Around izmanto īsu rekonstruētu sarunu. [Collector un balvas audits](hallows-end-collector-2026-11-21.md) · [Zirnekļu takas audits](hallows-end-fencing-2026-11-21.md) · [Blizzard Legion laika pasākuma apraksts](https://worldofwarcraft.blizzard.com/en-us/news/21088694/the-horseman-rises-hallow-s-end-is-nigh)
+Spēles klienta pārbaudē vēl jāiziet abas iepriekšējās pārejas, jāsalasa augi un jānodod Taking Precautions. Vēlāk atjaunota Unleashed Void sastapšanās un lādes, zirnekļu taka un paplašināta Shopping Around saruna. [Collector un balvas audits](hallows-end-collector-2026-11-21.md) · [Zirnekļu takas audits](hallows-end-fencing-2026-11-21.md) · [Sarunu audits](hallows-end-scenes-2026-11-21.md) · [Blizzard Legion laika pasākuma apraksts](https://worldofwarcraft.blizzard.com/en-us/news/21088694/the-horseman-rises-hallow-s-end-is-nigh)

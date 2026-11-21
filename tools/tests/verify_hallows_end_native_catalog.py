@@ -26,11 +26,19 @@ def verify(dbc):
     if expected != actual:
         raise ValueError(f"Unexpected Legion spell records {actual!r}")
 
+    for spell in (100671, 100792):
+        ritual = {
+            effects.value(record, 3): tuple(effects.value(record, field) for field in (1, 4, 26, 28))
+            for record, parent in effects.parents.items() if parent == spell and effects.value(record, 5) == 0
+        }
+        if ritual != {0: (6, 5, [0, 0], [1, 0]), 1: (6, 31, [0, 0], [1, 0]), 2: (6, 56, [43, 1], [1, 0])}:
+            raise ValueError(f"Unexpected native ritual for spell {spell}")
+
     item_effects = Table(dbc / "ItemEffect.db2")
     crate_spells = [item_effects.value(record, 0) for record, item in item_effects.parents.items() if item == 71076]
     if sorted(crate_spells) != [55884, 100684] or 71057 in item_effects.parents.values():
         raise ValueError("Unexpected use spells for the quest crate or companion item")
-    print("PASS Legion spider detect strengths and channels, native Void summon, quest-only crate and Creepy Crate item spells")
+    print("PASS Legion spider visibility, native Void summon, both spider rituals and the crate item spells")
 
 
 if __name__ == "__main__":

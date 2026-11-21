@@ -1,9 +1,10 @@
 param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='',
-      [switch]$TakingPrecautions,[switch]$Collector,[string]$FixtureConfig='')
+      [switch]$TakingPrecautions,[switch]$Collector,[switch]$Scenes,[string]$FixtureConfig='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-if(($TakingPrecautions -or $Collector) -and ($Baseline -or !$FixtureConfig -or ($TakingPrecautions -and $Collector))){throw "Use one Hallow's End probe and its private migrated fixture"}
-if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot$(if($Baseline){'-baseline'}elseif($TakingPrecautions){'-taking-precautions'}elseif($Collector){'-collector'})"}
+$holidayProbes = @(@($TakingPrecautions,$Collector,$Scenes) | Where-Object { $_ }).Count
+if($holidayProbes -and ($Baseline -or !$FixtureConfig -or $holidayProbes -gt 1)){throw "Use one Hallow's End probe and its private migrated fixture"}
+if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot$(if($Baseline){'-baseline'}elseif($TakingPrecautions){'-taking-precautions'}elseif($Collector){'-collector'}elseif($Scenes){'-scenes'})"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup|Where-Object Condition -like '*Release|x64*'|Select-Object -First 1
@@ -34,6 +35,10 @@ if($TakingPrecautions){
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"
  [IO.File]::WriteAllText("$out/NativeCollectorQuest.inc",$query+' " WHERE ID IN(29403,29411,29413,29427,29428,29429)"')
+}
+if($Scenes){
+ $probeSource = "$PSScriptRoot/HallowsEndScenesNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeHallowsEndScenesQuest.inc",$query+' " WHERE ID IN(29399,29411,29425,29428)"')
 }
 $extra=@('src/server/scripts/Legion','src/common/Collision/Management','src/common/Collision','dep/g3dlite/include','dep/recastnavigation/Detour/Include')|ForEach-Object {Join-Path $repo $_}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
