@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "AnowynCrystal.h"
 #include "ArtifactPackets.h"
 #include "BattlegroundAlteracValley.h"
 #include "CellImpl.h"
@@ -1476,6 +1477,9 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (target->isGameMaster())
         return true;
+
+    if (GetEntry() == AnowynCrystal::Entry && !AnowynCrystal::IsQuestSpawn(GetMapId(), GetDBTableGUIDLow()))
+        return false;
 
     if (target->HasQuestForGO(GetEntry()))
         return true;

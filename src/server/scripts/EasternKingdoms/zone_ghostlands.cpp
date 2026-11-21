@@ -28,6 +28,7 @@ npc_rathis_tomber
 npc_ranger_lilatha
 EndContentData */
 
+#include "AnowynCrystal.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "Item.h"
@@ -189,56 +190,54 @@ public:
 
 namespace
 {
-constexpr uint32 SeasoningQuest = 9275;
-constexpr uint32 ApothecarysPoison = 22796;
-
-struct go_seasoning_rack : GameObjectAI
+class GhostlandsQuestLock : public GameObjectAI
 {
-    explicit go_seasoning_rack(GameObject* object) : GameObjectAI(object) { }
+public:
+    GhostlandsQuestLock(GameObject* object, uint32 opening, uint32 item) : GameObjectAI(object), _opening(opening), _item(item) { }
 
-    bool CanPoison(Player const* player) const
+    bool CanOpenWith(Player const* player, uint32 spell, Item const* item) const
     {
-        return player && player->IsAlive() && go->GetMapId() == 530 && go->IsInMap(player) &&
-            go->GetEntry() >= 181250 && go->GetEntry() <= 181252 && go->GetGoType() == GAMEOBJECT_TYPE_GOOBER &&
-            go->GetGOInfo()->GetLockId() == 1655 && go->isSpawned() && !go->IsNeverVisible(player) &&
-            !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) && player->IsWithinLOSInMap(go) &&
-            player->GetQuestStatus(SeasoningQuest) == QUEST_STATUS_INCOMPLETE &&
-            player->GetQuestObjectiveData(SeasoningQuest, go->GetEntry()) == 0;
+        return spell == _opening && item && item->GetEntry() == _item && CanOpen(player);
     }
 
-    void BeginOpening(Player const* player)
+    void BeginOpening(Player const* player, uint32 spell)
     {
-        _opener = CanPoison(player) ? player->GetGUID() : ObjectGuid::Empty;
+        _opener = spell == _opening && CanOpen(player) ? player->GetGUID() : ObjectGuid::Empty;
     }
 
     void EndOpening() { _opener.Clear(); }
 
-    bool GossipUse(Player* player) override
+    bool GossipUse(Player* player) final
     {
         if (_opener != player->GetGUID())
             return true;
         EndOpening();
-        return !CanPoison(player);
+        return !CanOpen(player) || !OnOpened(player);
     }
 
+protected:
+    virtual bool CanOpen(Player const* player) const = 0;
+    virtual bool OnOpened(Player* /*player*/) { return true; }
+
 private:
+    uint32 const _opening;
+    uint32 const _item;
     ObjectGuid _opener;
 };
 
-class spell_apothecarys_poison : public SpellScript
+class spell_ghostlands_quest_opening : public SpellScript
 {
-    PrepareSpellScript(spell_apothecarys_poison);
+    PrepareSpellScript(spell_ghostlands_quest_opening);
 
-    static go_seasoning_rack* RackAI(GameObject* rack)
+    static GhostlandsQuestLock* LockAI(GameObject* object)
     {
-        return rack ? dynamic_cast<go_seasoning_rack*>(rack->AI()) : nullptr;
+        return object ? dynamic_cast<GhostlandsQuestLock*>(object->AI()) : nullptr;
     }
 
-    SpellCastResult CheckRack()
+    SpellCastResult CheckOpening()
     {
-        Item* poison = GetCastItem();
-        auto rack = RackAI(GetExplTargetGObj());
-        return poison && poison->GetEntry() == ApothecarysPoison && rack && rack->CanPoison(GetCaster()->ToPlayer())
+        auto lock = LockAI(GetExplTargetGObj());
+        return lock && lock->CanOpenWith(GetCaster()->ToPlayer(), GetSpellInfo()->Id, GetCastItem())
             ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
     }
 
@@ -246,21 +245,42 @@ class spell_apothecarys_poison : public SpellScript
     // GameObject::Use synchronously. Only that use may pass the rack's guard.
     void BeginOpening(SpellEffIndex /*effect*/)
     {
-        if (auto rack = RackAI(GetHitGObj()))
-            rack->BeginOpening(GetCaster()->ToPlayer());
+        if (auto lock = LockAI(GetHitGObj()))
+            lock->BeginOpening(GetCaster()->ToPlayer(), GetSpellInfo()->Id);
     }
 
     void EndOpening()
     {
-        if (auto rack = RackAI(GetHitGObj()))
-            rack->EndOpening();
+        if (auto lock = LockAI(GetHitGObj()))
+            lock->EndOpening();
     }
 
     void Register() override
     {
-        OnCheckCast += SpellCheckCastFn(spell_apothecarys_poison::CheckRack);
-        OnEffectHitTarget += SpellEffectFn(spell_apothecarys_poison::BeginOpening, EFFECT_0, SPELL_EFFECT_OPEN_LOCK);
-        AfterHit += SpellHitFn(spell_apothecarys_poison::EndOpening);
+        OnCheckCast += SpellCheckCastFn(spell_ghostlands_quest_opening::CheckOpening);
+        OnEffectHitTarget += SpellEffectFn(spell_ghostlands_quest_opening::BeginOpening, EFFECT_0, SPELL_EFFECT_OPEN_LOCK);
+        AfterHit += SpellHitFn(spell_ghostlands_quest_opening::EndOpening);
+    }
+};
+
+using spell_apothecarys_poison = spell_ghostlands_quest_opening;
+using spell_aquantion_medallions = spell_ghostlands_quest_opening;
+using spell_anowyn_controlling_orb = spell_ghostlands_quest_opening;
+
+constexpr uint32 SeasoningQuest = 9275;
+
+struct go_seasoning_rack : GhostlandsQuestLock
+{
+    explicit go_seasoning_rack(GameObject* object) : GhostlandsQuestLock(object, 29517, 22796) { }
+
+    bool CanOpen(Player const* player) const override
+    {
+        return player && player->IsAlive() && go->GetMapId() == 530 && go->IsInMap(player) &&
+            go->GetEntry() >= 181250 && go->GetEntry() <= 181252 && go->GetGoType() == GAMEOBJECT_TYPE_GOOBER &&
+            go->GetGOInfo()->GetLockId() == 1655 && go->isSpawned() && !go->IsNeverVisible(player) &&
+            !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) && player->IsWithinLOSInMap(go) &&
+            player->GetQuestStatus(SeasoningQuest) == QUEST_STATUS_INCOMPLETE &&
+            player->GetQuestObjectiveData(SeasoningQuest, go->GetEntry()) == 0;
     }
 };
 
@@ -273,11 +293,11 @@ Position const AquantionPlacement{7941.15f, -7636.45f, 116.19f, 5.66f};
 constexpr uint32 AquantionDelay = 2 * IN_MILLISECONDS;
 constexpr uint32 AquantionLifetime = 15 * MINUTE * IN_MILLISECONDS;
 
-struct go_aquantion_altar : GameObjectAI
+struct go_aquantion_altar : GhostlandsQuestLock
 {
-    explicit go_aquantion_altar(GameObject* object) : GameObjectAI(object) { }
+    explicit go_aquantion_altar(GameObject* object) : GhostlandsQuestLock(object, AquantionOpening, AquantionMedallions) { }
 
-    bool CanOpen(Player const* player) const
+    bool CanOpen(Player const* player) const override
     {
         if (_pendingPlayer || !CanContinue(player) || !go->isSpawned() ||
             go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE))
@@ -287,27 +307,14 @@ struct go_aquantion_altar : GameObjectAI
         return !current || !current->IsAlive();
     }
 
-    void BeginOpening(Player const* player)
+    bool OnOpened(Player* player) override
     {
-        _opener = CanOpen(player) ? player->GetGUID() : ObjectGuid::Empty;
-    }
-
-    void EndOpening() { _opener.Clear(); }
-
-    bool GossipUse(Player* player) override
-    {
-        if (_opener != player->GetGUID())
-            return true;
-        EndOpening();
-        if (!CanOpen(player))
-            return true;
-
         _attempt = player->GetQuestCancellationReceipt(AquantionQuest);
         if (!_attempt)
-            return true;
+            return false;
         _pendingPlayer = player->GetGUID();
         _timer = AquantionDelay;
-        return false;
+        return true;
     }
 
     void UpdateAI(uint32 diff) override
@@ -347,47 +354,24 @@ private:
             player->GetQuestObjectiveData(AquantionQuest, AquantionEntry) == 0 && player->HasItemCount(AquantionMedallions, 1);
     }
 
-    ObjectGuid _opener;
     ObjectGuid _pendingPlayer;
     ObjectGuid _aquantion;
     std::shared_ptr<QuestCancellationReceipt const> _attempt;
     uint32 _timer = 0;
 };
 
-class spell_aquantion_medallions : public SpellScript
+struct go_anowyn_moon_crystal : GhostlandsQuestLock
 {
-    PrepareSpellScript(spell_aquantion_medallions);
+    explicit go_anowyn_moon_crystal(GameObject* object) : GhostlandsQuestLock(object, AnowynCrystal::Opening, AnowynCrystal::Orb) { }
 
-    static go_aquantion_altar* AltarAI(GameObject* altar)
+    bool CanOpen(Player const* player) const override
     {
-        return altar ? dynamic_cast<go_aquantion_altar*>(altar->AI()) : nullptr;
-    }
-
-    SpellCastResult CheckAltar()
-    {
-        Item* medallions = GetCastItem();
-        auto altar = AltarAI(GetExplTargetGObj());
-        return medallions && medallions->GetEntry() == AquantionMedallions && altar && altar->CanOpen(GetCaster()->ToPlayer())
-            ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
-    }
-
-    void BeginOpening(SpellEffIndex /*effect*/)
-    {
-        if (auto altar = AltarAI(GetHitGObj()))
-            altar->BeginOpening(GetCaster()->ToPlayer());
-    }
-
-    void EndOpening()
-    {
-        if (auto altar = AltarAI(GetHitGObj()))
-            altar->EndOpening();
-    }
-
-    void Register() override
-    {
-        OnCheckCast += SpellCheckCastFn(spell_aquantion_medallions::CheckAltar);
-        OnEffectHitTarget += SpellEffectFn(spell_aquantion_medallions::BeginOpening, EFFECT_0, SPELL_EFFECT_OPEN_LOCK);
-        AfterHit += SpellHitFn(spell_aquantion_medallions::EndOpening);
+        return player && player->IsAlive() && go->IsInMap(player) && go->GetEntry() == AnowynCrystal::Entry &&
+            AnowynCrystal::IsQuestSpawn(go->GetMapId(), go->GetDBTableGUIDLow()) && go->GetGoType() == GAMEOBJECT_TYPE_GOOBER &&
+            go->GetGOInfo()->GetLockId() == AnowynCrystal::Lock && go->isSpawned() && !go->IsNeverVisible(player) &&
+            !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) && player->IsWithinLOSInMap(go) &&
+            player->GetQuestStatus(AnowynCrystal::Quest) == QUEST_STATUS_INCOMPLETE &&
+            player->GetQuestObjectiveData(AnowynCrystal::Quest, AnowynCrystal::Entry) == 0;
     }
 };
 }
@@ -400,4 +384,6 @@ void AddSC_ghostlands()
     RegisterSpellScript(spell_apothecarys_poison);
     RegisterGameObjectAI(go_aquantion_altar);
     RegisterSpellScript(spell_aquantion_medallions);
+    RegisterGameObjectAI(go_anowyn_moon_crystal);
+    RegisterSpellScript(spell_anowyn_controlling_orb);
 }
