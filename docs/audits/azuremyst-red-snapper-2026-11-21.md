@@ -1,0 +1,13 @@
+# Red Snapper — Very Tasty! Azuremyst Isle
+
+Kvestu `9452` pieņem un nodod pie Diktynna `17101`. Pieņemšana dod vienu tīklu `23654`, kas izpilda Legion burvestību `29866`. Tīkls prasa zivju bara fokusu `1369`. Tam ir viena veidne `181616` ar 22 izvietojumiem kartē `530` un esošu burvestības mērķa nosacījumu. Nododot kvestu, nepieciešams tīkls un desmit sarkanās zivis `23614`.
+
+Ar sākotnējo skriptu pēc pieņemšanas vai atmešanas saglabājies tīkls pie īstā zivju bara darbojās arī bez aktīva kvesta. Arī murloka `17102` sarkanās zivs loot rinda bija pieejama bez kvesta. Tagad metiens un tā rezultāts pārbauda īsto tīklu, dzīvu spēlētāju un aktīvu kvesta mērķi, kurā vēl trūkst zivju. Murloka zivs izmanto standarta kvesta loot pārbaudi. Saglabāts sākotnējais 66% tiešās zivs zars, alternatīvais naidīgais murloka izsaukums un tā 50% zivs loot iespēja, kā arī pārējās murloka rindas un parastās makšķerēšanas avots.
+
+## Pārbaudes un izvietošana
+
+- `Test-QuestObjectLootNative.ps1 -RedSnapperBaseline` atkārtoja derīgu metienu bez kvesta un zivs pieejamību murloka loot. `-RedSnapper` izpildīja faktiskā burvestības fokusa un loot apstrādi diviem spēlētājiem. Pārbaudīts metiens ārpus fokusa, bez tīkla, pirms pieņemšanas, pēc desmit zivīm un loot atbilstība pēc atmešanas. Ar īstu burvestību iegūta zivs un izsaukts metējam piederošs naidīgs murloks. Standarta atlīdzības apstrāde tukšajā izolētajā tēlu shēmā izņēma vienu tīklu un desmit zivis. Atmešanas pārbaudē izņemts pieņemot dotais tīkls.
+- Pārbaudītas gala `scripts.lib` un `game.lib` ievades, `CheckFishing` un `HandleDummy` simboli no `scripts:spell_quest.obj`. Kanoniskais `worldserver.exe` ar SHA-256 `45A0CC91424AF9A73B3AFEA7B6EDAA2AE9E20D5F3E203B3A20D844454DE76A16` ar migrēto izolēto pasauli startēja un korekti apstājās. Migrācija `2026_11_21_42_azuremyst_red_snapper.sql` ar SHA-1 `88B207759BD133363A45AF28D4DDE177CCC95FF5` piemērota `legion_world` un reģistrēta kā `RELEASED`. Ražošanas nolasījums sakrita ar izolēto rezultātu.
+- Palaišanās, native pārbaudēs un importā nebija jaunu crash failu, `DBErrors.log` ierakstu vai neizskaidrotu servera brīdinājumu. Saglabāti 42 diagnostikas faili ar pārbaudītām SHA-256 kontrolsummām zem `build-extractors/bin/Release/fixed/azuremyst-red-snapper-2026-11-21/`. Izņemti 20 pagaidu faili jeb 981 326 535 baiti. Saglabāta atjaunošanas kopija un kopējā audita datubāzes sagatave. Uzdevuma procesi korekti apstājās.
+
+7.3.5 klientā paliek tīkla animācija, pilnas somas, pilns murloka kaujas un grupas loot ceļš ar mājdzīvnieka pēdējo sitienu un atlīdzības saņemšana pie Diktynna. Native pārbaude atsevišķi izpildīja pašu izsaukumu un loot ģenerēšanu no īstās murloka rindas.

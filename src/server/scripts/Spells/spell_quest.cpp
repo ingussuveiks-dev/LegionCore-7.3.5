@@ -30,6 +30,7 @@
 #include "Packets/ArtifactPackets.h"
 #include "ScriptedCreature.h"
 #include "ScriptMgr.h"
+#include "Item.h"
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 #include "Vehicle.h"
@@ -1122,7 +1123,9 @@ class spell_q14112_14145_chum_the_water: public SpellScriptLoader
 // http://old01.wowhead.com/quest=9452 - Red Snapper - Very Tasty!
 enum RedSnapperVeryTasty
 {
+    QUEST_RED_SNAPPER       = 9452,
     SPELL_CAST_NET          = 29866,
+    ITEM_FISHING_NET        = 23654,
     ITEM_RED_SNAPPER        = 23614,
     NPC_ANGRY_MURLOC        = 17102,
     FACTION_HOSTILE         = 14,
@@ -1142,8 +1145,23 @@ class spell_q9452_cast_net: public SpellScriptLoader
                 return GetCaster()->GetTypeId() == TYPEID_PLAYER;
             }
 
+            SpellCastResult CheckFishing()
+            {
+                Player* caster = GetCaster()->ToPlayer();
+                Item* net = GetCastItem();
+                if (!net || net->GetEntry() != ITEM_FISHING_NET)
+                    return SPELL_FAILED_BAD_TARGETS;
+                if (!caster || !caster->IsAlive() || caster->GetQuestStatus(QUEST_RED_SNAPPER) != QUEST_STATUS_INCOMPLETE ||
+                    !caster->HasQuestForItem(ITEM_RED_SNAPPER))
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                return SPELL_CAST_OK;
+            }
+
             void HandleDummy(SpellEffIndex /*effIndex*/)
             {
+                if (CheckFishing() != SPELL_CAST_OK)
+                    return;
+
                 Player* caster = GetCaster()->ToPlayer();
                 if (roll_chance_i(66))
                     caster->AddItem(ITEM_RED_SNAPPER, 1);
@@ -1156,6 +1174,7 @@ class spell_q9452_cast_net: public SpellScriptLoader
 
             void Register() override
             {
+                OnCheckCast += SpellCheckCastFn(spell_q9452_cast_net_SpellScript::CheckFishing);
                 OnEffectHit += SpellEffectFn(spell_q9452_cast_net_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
