@@ -28,18 +28,28 @@ assert value(243111,1,"EffectAura","EffectMiscValue1","EffectBasePoints")== (276
 assert any(r["SpellID"]==243114 and not r["DifficultyID"] and r["Attributes2"] & 64 for r in d.rows("SpellMisc").values())
 assert any(r["SpellID"]==243114 and not r["DifficultyID"] and r["PreventionType"]==1 for r in d.rows("SpellCategories").values())
 assert any(r["SpellID"]==243111 and not r["DifficultyID"] and r["CumulativeAura"]==99 for r in d.rows("SpellAuraOptions").values())
-print("PASS 26972 original Dark Fury channel, interrupt category, periodic damage, stacking mechanic and shield.")
+costs = [(r["PowerType"], r["ManaCost"]) for r in d.rows("SpellPower").values() if r["SpellID"] == 243114]
+assert costs == [(3, 100)]
+print("PASS 26972 original Dark Fury 100-energy cost, channel, interrupt category, periodic damage, stacking mechanic and shield.")
 '@
 $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Agatha Dark Fury DB2 catalog mismatch' }
 
 $source = Get-Content -LiteralPath "$repo/src/server/scripts/Legion/zone_broken_shore.cpp" -Raw
 $scope = [regex]::Match($source, '(?ms)^class spell_mage_tower_agatha_dark_fury_channel .*?(?=^class spell_mage_tower_agatha_dark_fury_damage)')
+$charge = [regex]::Match($source, '(?ms)^struct AgathaDarkFuryCharge.*?^\};')
+$advance = [regex]::Match($source, '(?ms)^        void UpdateDarkFury\(.*?^        \}')
+$cycle = [regex]::Match($source, '(?ms)^        void DarkFuryStarted\(.*?^        \}')
+$start = [regex]::Match($scope.Value, '(?ms)^    void Start\(.*?^    \}')
 $tick = [regex]::Match($scope.Value, '(?ms)^    void OnTick\(.*?^    \}')
 $stop = [regex]::Match($scope.Value, '(?ms)^    void Stop\(.*?^    \}')
 $shield = [regex]::Match($scope.Value, '(?ms)^    void SetInterruptImmunity\(.*?^    \}')
-if (!$tick.Success -or !$stop.Success -or !$shield.Success) { throw 'Production Agatha Dark Fury callbacks are absent' }
+if (!$charge.Success -or !$advance.Success -or !$cycle.Success -or !$start.Success -or !$tick.Success -or !$stop.Success -or !$shield.Success) { throw 'Production Agatha Dark Fury callbacks are absent' }
+[IO.File]::WriteAllText("$out/AgathaDarkFuryCharge.inc", $charge.Value)
 [IO.File]::WriteAllLines("$out/AgathaDarkFury.inc", @(
+    $advance.Value.Replace('void UpdateDarkFury','void AgathaAI::UpdateDarkFury'),
+    $cycle.Value.Replace('void DarkFuryStarted','void AgathaAI::DarkFuryStarted'),
+    $start.Value.Replace('void Start','void spell_mage_tower_agatha_dark_fury_channel::Start'),
     $tick.Value.Replace('void OnTick','void spell_mage_tower_agatha_dark_fury_channel::OnTick'),
     $stop.Value.Replace('void Stop','void spell_mage_tower_agatha_dark_fury_channel::Stop'),
     $shield.Value.Replace('void SetInterruptImmunity','void spell_mage_tower_agatha_dark_fury_shield::SetInterruptImmunity')

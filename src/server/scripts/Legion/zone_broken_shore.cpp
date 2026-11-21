@@ -2940,6 +2940,25 @@ uint32 GetAgathaTranslocate(AgathaPosition position, float health, uint32 remain
         return 242987;
     return 0;
 }
+
+struct AgathaDarkFuryCharge
+{
+    int32 Advance(uint32 diff)
+    {
+        _elapsed += std::min(diff, _period - _elapsed);
+        return int32(_elapsed * 100 / _period);
+    }
+
+    void StartNextCycle(bool relocated)
+    {
+        _elapsed = 0;
+        _period = relocated ? 68000 : 51100;
+    }
+
+private:
+    uint32 _elapsed = 0;
+    uint32 _period = 50000;
+};
 }
 
 class npc_mage_tower_agatha : public CreatureScript
@@ -2965,8 +2984,17 @@ public:
             _failures = 0;
             _nextFelLava = 8000;
             _nextBoulder = 0;
+            _darkFuryCharge = {};
+            _darkFuryRetry = 0;
+            _darkFuryAttempts = 0;
             if (IsArenaActor())
+            {
                 SetCombatMove(false);
+                me->SetPowerType(POWER_ENERGY);
+                me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
+                me->SetMaxPower(POWER_ENERGY, 100);
+                me->SetPower(POWER_ENERGY, 0);
+            }
         }
 
         void UpdateAI(uint32 diff) override
@@ -2984,6 +3012,7 @@ public:
             }
 
             UpdateTranslocate(diff);
+            UpdateDarkFury(diff);
             if (_position != AgathaPosition::Center)
             {
                 UpdateFelLava(*player, diff);
@@ -2994,6 +3023,15 @@ public:
         Player* GetRelocatedArenaPlayer() const
         {
             return _position == AgathaPosition::Center ? nullptr : GetArenaPlayer();
+        }
+
+        void DarkFuryStarted()
+        {
+            if (!GetArenaPlayer())
+                return;
+
+            _darkFuryCharge.StartNextCycle(_position != AgathaPosition::Center);
+            _darkFuryAttempts = 0;
         }
 
         void JustDied(Unit* killer) override
@@ -3087,6 +3125,25 @@ public:
         }
 
     private:
+        void UpdateDarkFury(uint32 diff)
+        {
+            int32 const energy = _darkFuryCharge.Advance(diff);
+            if (me->GetPower(POWER_ENERGY) != energy)
+                me->SetPower(POWER_ENERGY, energy);
+
+            _darkFuryRetry -= std::min(diff, _darkFuryRetry);
+            if (energy < 100 || _darkFuryRetry || _pendingTranslocate || me->HasUnitState(UNIT_STATE_CASTING) ||
+                me->HasAura(AgathaDarkFuryChannel, me->GetGUID()))
+                return;
+
+            _darkFuryRetry = 500;
+            ++_darkFuryAttempts;
+            SpellCastResult const result = me->CastSpell(me, AgathaDarkFuryChannel, false);
+            if (_darkFuryAttempts == 10)
+                TC_LOG_WARN("scripts", "An Impossible Foe: Agatha Dark Fury current energy did not start a channel in instance %u (result %u)",
+                    me->GetInstanceId(), uint32(result));
+        }
+
         void UpdateBoulders(uint32 diff)
         {
             _nextBoulder -= std::min(diff, _nextBoulder);
@@ -3270,6 +3327,9 @@ public:
         uint32 _lavaCheckRemaining = 0;
         std::set<ObjectGuid> _lavaAffected;
         uint32 _nextBoulder = 0;
+        AgathaDarkFuryCharge _darkFuryCharge;
+        uint32 _darkFuryRetry = 0;
+        uint32 _darkFuryAttempts = 0;
         ObjectGuid _boulderController;
         std::set<ObjectGuid> _boulders;
     };
@@ -3332,6 +3392,14 @@ class spell_mage_tower_agatha_dark_fury_channel : public AuraScript
 
     bool Load() override { return GetAgathaAI(GetCaster()) != nullptr; }
 
+    void Start(AuraEffect const*, AuraEffectHandleModes)
+    {
+        Unit* caster = GetCaster();
+        if (caster == GetTarget())
+            if (auto* ai = GetAgathaAI(caster))
+                ai->DarkFuryStarted();
+    }
+
     void OnTick(AuraEffect const*)
     {
         Unit* caster = GetCaster();
@@ -3351,6 +3419,7 @@ class spell_mage_tower_agatha_dark_fury_channel : public AuraScript
 
     void Register() override
     {
+        AfterEffectApply += AuraEffectApplyFn(spell_mage_tower_agatha_dark_fury_channel::Start, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_mage_tower_agatha_dark_fury_channel::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
         AfterEffectRemove += AuraEffectRemoveFn(spell_mage_tower_agatha_dark_fury_channel::Stop, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
