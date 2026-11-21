@@ -23,19 +23,24 @@ tree = data.rows('CriteriaTree')[57401]
 assert tree['Amount'] == 8 and tree['Parent'] == 57400
 criteria = data.rows('Criteria')[tree['CriteriaID']]
 assert (criteria['Type'], criteria['Asset']) == (92, 56911)
+army = data.rows('CriteriaTree')[57563]
+army_criteria = data.rows('Criteria')[army['CriteriaID']]
+assert army['Parent'] == 57562 and (army_criteria['Type'], army_criteria['Asset']) == (92, 56980)
 effects = [row for row in data.rows('SpellEffect').values() if not row['DifficultyID']]
 assert any(row['SpellID'] == 237846 and row['Effect'] == 6 for row in effects)
 assert any(row['SpellID'] == 237847 and row['EffectTriggerSpell'] == 237848 for row in effects)
-print('PASS 26972 healer solo route, native eight-soul criterion and the draw and corruption spells')
+print('PASS 26972 healer solo route, eight-soul and Risen Army criteria, draw and corruption spells')
 '@
 $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Risen Threat native healing data regression failed' }
 
 $source = Get-Content -LiteralPath "$repo/src/server/scripts/Legion/zone_broken_shore.cpp" -Raw
 $scope = [regex]::Match($source, '(?ms)^bool IsRisenThreatSoulHealingStage\(.*?^bool IsRisenThreatChallenger\(.*?^\}')
+$instance = [regex]::Match($source, '(?ms)^class instance_mage_tower_risen_threat : public InstanceMapScript.*?^\};')
+$records = [regex]::Match($source, '(?ms)^void RecordRisenThreatWaveHeal\(.*?^void RecordRisenThreatCorruption\(.*?^\}')
 $receipt = [regex]::Match($source, '(?ms)^    struct RisenThreatSoulAI : SmartAI.*?^    \};')
-if (!$scope.Success -or !$receipt.Success) { throw 'Production Risen Threat healing receipt is missing' }
-[IO.File]::WriteAllText("$out/RisenThreatHeals.inc", $scope.Value + "`n" + $receipt.Value)
+if (!$scope.Success -or !$instance.Success -or !$records.Success -or !$receipt.Success) { throw 'Production Risen Threat callbacks are missing' }
+[IO.File]::WriteAllText("$out/RisenThreatHeals.inc", (@($scope.Value,$instance.Value,$records.Value,$receipt.Value) -join "`n"))
 
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

@@ -4026,6 +4026,132 @@ bool IsRisenThreatChallenger(Player const* player, Creature const& soul)
 }
 }
 
+class instance_mage_tower_risen_threat : public InstanceMapScript
+{
+public:
+    instance_mage_tower_risen_threat() : InstanceMapScript("instance_mage_tower_risen_threat", 1710) {}
+
+    struct RisenThreatInstance : InstanceScript
+    {
+        explicit RisenThreatInstance(InstanceMap* map) : InstanceScript(map) {}
+
+        void OnCreatureCreate(Creature* creature) override
+        {
+            InstanceScript::OnCreatureCreate(creature);
+            uint64 const spawn = creature->GetDBTableGUIDLow();
+            uint32 const entry = creature->GetEntry();
+            if (entry == 118447 && spawn == 410012)
+                _allies[0] = creature->GetGUID();
+            else if (entry == 118448 && spawn == 410010)
+                _allies[1] = creature->GetGUID();
+            else if (entry == 118451 && spawn == 410013)
+                _allies[2] = creature->GetGUID();
+            else if (entry == 118488 && spawn == 14534095)
+                _erdris = creature->GetGUID();
+        }
+
+        void RecordWaveHeal() { _healingPhaseObserved = true; }
+
+        void RecordCorruption(Creature const& soul)
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 1281 && (scenario->GetCurrentStep() == 4 || scenario->GetCurrentStep() == 5) &&
+                soul.GetMap() == instance && soul.IsAlive() && soul.GetEntry() >= 119476 && soul.GetEntry() <= 119480 &&
+                soul.HasAura(237847, soul.GetGUID()))
+                _risenArmy.insert(soul.GetGUID());
+        }
+
+        void OnUnitDeath(Unit* unit) override
+        {
+            _risenArmy.erase(unit->GetGUID());
+            if (std::find(_allies.begin(), _allies.end(), unit->GetGUID()) != _allies.end())
+                _allyLost = true;
+        }
+
+        void OnCreatureRemove(Creature* creature) override
+        {
+            InstanceScript::OnCreatureRemove(creature);
+            if (creature->IsAlive() && _risenArmy.count(creature->GetGUID()) && !instance->GetPlayers().isEmpty())
+                TC_LOG_WARN("scripts", "End of the Risen Threat instance %u lost a live converted soul before its death", instance->GetInstanceId());
+        }
+
+        void Update(uint32 /*diff*/) override
+        {
+            if (!_healingPhaseObserved && !_allyLost && _risenArmy.empty())
+                return;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 1281 && scenario->GetCurrentStep() == 0)
+            {
+                _risenArmy.clear();
+                _healingPhaseObserved = false;
+                _allyLost = false;
+            }
+        }
+
+        uint32 GetData(uint32 id) const override
+        {
+            if (!_healingPhaseObserved || _allyLost || !AlliesAlive())
+                return 0;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1281 || scenario->IsCompleted(false))
+                return 0;
+
+            if (id == 2)
+                return scenario->GetCurrentStep() == 6;
+            if (id != 1 || scenario->GetCurrentStep() != 5 || !_risenArmy.empty())
+                return 0;
+
+            Creature* erdris = instance->GetCreature(_erdris);
+            auto* ai = erdris ? dynamic_cast<SmartAI*>(erdris->AI()) : nullptr;
+            if (!ai || !erdris->IsAlive() || !ai->GetScript()->HasRunEvent(31, SMART_EVENT_UPDATE))
+                return 0;
+
+            for (auto const& reference : instance->GetPlayers())
+                if (Player* player = reference.getSource())
+                    if (IsRisenThreatChallenger(player, *erdris) && erdris->IsWithinDistInMap(player, 50.0f))
+                        return 1;
+            return 0;
+        }
+
+    private:
+        bool AlliesAlive() const
+        {
+            for (ObjectGuid const& guid : _allies)
+            {
+                Creature* ally = guid.IsEmpty() ? nullptr : instance->GetCreature(guid);
+                if (!ally || !ally->IsAlive() || !ally->IsInWorld() || ally->IsPreDelete())
+                    return false;
+            }
+            return true;
+        }
+
+        std::array<ObjectGuid, 3> _allies{};
+        ObjectGuid _erdris;
+        std::set<ObjectGuid> _risenArmy;
+        bool _healingPhaseObserved = false;
+        bool _allyLost = false;
+    };
+
+    InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new RisenThreatInstance(map); }
+};
+
+namespace
+{
+void RecordRisenThreatWaveHeal(Creature const& soul)
+{
+    if (auto* arena = dynamic_cast<instance_mage_tower_risen_threat::RisenThreatInstance*>(soul.GetInstanceScript()))
+        arena->RecordWaveHeal();
+}
+
+void RecordRisenThreatCorruption(Creature const& soul)
+{
+    if (auto* arena = dynamic_cast<instance_mage_tower_risen_threat::RisenThreatInstance*>(soul.GetInstanceScript()))
+        arena->RecordCorruption(soul);
+}
+}
+
 class npc_mage_tower_risen_threat_soul : public CreatureScript
 {
 public:
@@ -4048,6 +4174,15 @@ public:
 
             Player* player = healer ? healer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             _fullyHealed = me->IsFullHealth() && IsRisenThreatSoulHealingStage(*me) && IsRisenThreatChallenger(player, *me);
+            if (_fullyHealed && me->GetEntry() != 119470)
+                RecordRisenThreatWaveHeal(*me);
+        }
+
+        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        {
+            SmartAI::SpellHit(caster, spell);
+            if (caster == me && spell && spell->Id == 237847)
+                RecordRisenThreatCorruption(*me);
         }
 
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override
@@ -4498,6 +4633,7 @@ void AddSC_broken_shore()
     new at_mage_tower_kruul_shadow_sweep();
     new npc_mage_tower_risen_threat_soul();
     new condition_mage_tower_risen_threat_full_heal();
+    new instance_mage_tower_risen_threat();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
