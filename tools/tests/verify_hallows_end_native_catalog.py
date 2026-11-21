@@ -26,6 +26,18 @@ def verify(dbc):
     if expected != actual:
         raise ValueError(f"Unexpected Legion spell records {actual!r}")
 
+    explosion = [tuple(effects.value(record, field) for field in (1, 3, 5, 16, 27, 28))
+                 for record, spell in effects.parents.items() if spell == 100669]
+    if explosion != [(140, 0, 0, 100668, [0, 9], [22, 7])]:
+        raise ValueError(f"Unexpected native Void Explosion {explosion!r}")
+    lightning = [tuple(effects.value(record, field) for field in (1, 3, 4, 5, 28))
+                 for record, spell in effects.parents.items() if spell == 100922]
+    visuals = Table(dbc / "SpellXSpellVisual.db2", index_field=0)
+    if lightning != [(6, 0, 4, 0, [38, 0])] or not any(
+        spell == 100922 and visuals.value(record, 1) == 48545 for record, spell in visuals.parents.items()
+    ):
+        raise ValueError("Unexpected native Sanath's Lightning aura or visual")
+
     for spell in (100671, 100792):
         ritual = {
             effects.value(record, 3): tuple(effects.value(record, field) for field in (1, 4, 26, 28))
@@ -38,7 +50,7 @@ def verify(dbc):
     crate_spells = [item_effects.value(record, 0) for record, item in item_effects.parents.items() if item == 71076]
     if sorted(crate_spells) != [55884, 100684] or 71057 in item_effects.parents.values():
         raise ValueError("Unexpected use spells for the quest crate or companion item")
-    print("PASS Legion spider visibility, native Void summon, both spider rituals and the crate item spells")
+    print("PASS Legion spider visibility, Void Explosion and its native summon, both spider rituals and the crate item spells")
 
 
 if __name__ == "__main__":

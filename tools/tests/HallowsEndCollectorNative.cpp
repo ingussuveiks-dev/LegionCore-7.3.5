@@ -7,6 +7,13 @@
 
 void AddSC_npcs_special();
 
+struct CollectorAddonTag
+{
+    using Type = CreatureAddonContainer ObjectMgr::*;
+    friend Type Access(CollectorAddonTag);
+};
+template struct FixtureAccess<CollectorAddonTag, &ObjectMgr::_creatureAddonStore>;
+
 namespace
 {
 using HallowsEndCrate::Route;
@@ -45,19 +52,23 @@ struct SceneActor : Creature
 {
     ~SceneActor()
     {
-        CombatStop(true);
         if (IsInWorld())
+        {
+            CombatStop(true);
             GetMap()->RemoveFromMap(static_cast<Creature*>(this), false);
-        ResetMap();
+        }
+        if (FindMap())
+            ResetMap();
     }
 
-    void Spawn(Map& map, uint64 guid, Position const& pos)
+    void Spawn(Map& map, uint64 guid, uint32 entry, Position const& pos)
     {
-        Require(Create(guid, &map, 1, 54072, 0, ALLIANCE, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()),
-            "Native Sanath template could not be created");
+        auto runtimeGuid = sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate();
+        Require(Create(runtimeGuid, &map, 1, entry, 0, ALLIANCE, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()),
+            "Native Collector scene actor could not be created");
         m_DBTableGuid = guid;
         SetHomePosition(pos);
-        Require(map.AddToMap(static_cast<Creature*>(this)), "Sanath could not enter the world grid");
+        Require(map.AddToMap(static_cast<Creature*>(this)) && map.GetCreature(GetGUID()) == this, "Scene actor could not enter the world grid");
     }
 };
 
@@ -70,9 +81,11 @@ struct SceneCrate : GameObject
         ResetMap();
     }
 
-    void Spawn(Map& map, uint64 guid, uint32 entry, Position const& pos)
+    void Spawn(Map& map, uint32 entry, Position const& pos)
     {
-        Require(Create(guid, entry, &map, 1, pos, G3D::Quat(0, 0, 0, 1), 255, GO_STATE_READY) && map.AddToMap(static_cast<GameObject*>(this)),
+        auto guid = sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate();
+        Require(Create(guid, entry, &map, 1, pos, G3D::Quat(0, 0, 0, 1), 255, GO_STATE_READY) &&
+            map.AddToMap(static_cast<GameObject*>(this)) && map.GetGameObject(GetGUID()) == this,
             "Native crate could not enter the world grid");
     }
 };
@@ -92,12 +105,17 @@ void Accept(LootPlayer& player, uint32 quest)
     player.SetQuestSlot(0, quest);
 }
 
+Position ReadPlacement(uint64 guid, uint32 entry)
+{
+    auto rows = WorldDatabase.PQuery("SELECT position_x,position_y,position_z,orientation FROM creature WHERE guid=" UI64FMTD " AND id=%u", guid, entry);
+    Require(bool(rows), "No authored Collector scene placement for the faction");
+    auto position = rows->Fetch();
+    return {position[0].GetFloat(), position[1].GetFloat(), position[2].GetFloat(), position[3].GetFloat()};
+}
+
 void CheckRoute(WorldSession* first, WorldSession* second, Route const& route, uint8 race, bool usePet)
 {
-    auto rows = WorldDatabase.PQuery("SELECT position_x,position_y,position_z,orientation FROM creature WHERE guid=" UI64FMTD " AND id=54072", route.SanathSpawn);
-    Require(bool(rows), "No authored Sanath placement for the faction");
-    auto position = rows->Fetch();
-    Position spot(position[0].GetFloat(), position[1].GetFloat(), position[2].GetFloat(), position[3].GetFloat());
+    Position spot = ReadPlacement(route.SanathSpawn, 54072);
     Map map(0, 300, 9999995 + uint32(usePet), DIFFICULTY_NONE);
     LootPlayer owner(first, map, 100, spot);
     LootPlayer outsider(second, map, 101, spot);
@@ -109,27 +127,68 @@ void CheckRoute(WorldSession* first, WorldSession* second, Route const& route, u
     auto& active = const_cast<GameEventMgr::ActiveEvents&>(sGameEventMgr->GetActiveEventList());
     active.insert(12);
     SceneActor sanath;
-    sanath.Spawn(map, route.SanathSpawn, spot);
+    sanath.Spawn(map, route.SanathSpawn, 54072, spot);
     SceneCrate stolen;
     SceneCrate reward;
-    stolen.Spawn(map, route.SanathSpawn, route.StolenCrate, spot);
-    reward.Spawn(map, route.SanathSpawn + 5, route.RewardCrate, spot);
+    stolen.Spawn(map, route.StolenCrate, spot);
+    reward.Spawn(map, route.RewardCrate, spot);
     Require(stolen.IsNeverVisible(&outsider) && reward.IsNeverVisible(&outsider), "Uninvolved character could see the crates");
     Require(!outsider.GetGameObjectIfCanInteractWith(stolen.GetGUID(), GAMEOBJECT_TYPE_QUESTGIVER), "Hidden crate accepted a direct interaction");
     Accept(owner, route.Encounter);
     Quest const* quest = sQuestDataStore->GetQuestTemplate(route.Encounter);
     Require(!stolen.IsNeverVisible(&owner) && !owner.CanRewardQuest(quest, false), "Approach awarded the objective before the kill");
+    auto* intros = owner.GetSummonList(54072);
+    auto* roster = owner.GetSummonList(54114);
+    sanath.AI()->MoveInLineOfSight_Safe(&owner);
+    Require(intros->empty() && roster->empty(), "Missing Ren started an encounter");
+    SceneActor ren;
+    auto addonRows = WorldDatabase.PQuery("SELECT bytes1 FROM creature_addon WHERE guid=" UI64FMTD, route.RenSpawn);
+    Require(bool(addonRows), "Ren is missing the corpse addon");
+    auto& renAddon = (sObjectMgr->*Access(CollectorAddonTag{}))[route.RenSpawn];
+    renAddon.bytes1 = (*addonRows)[0].GetUInt32();
+    ren.Spawn(map, route.RenSpawn, 54205, ReadPlacement(route.RenSpawn, 54205));
+    Require(ren.LoadCreaturesAddon() && ren.getStandState() == UNIT_STAND_STATE_DEAD && ren.HasAura(100922), "Native Ren corpse addon did not load");
+    Require(owner.canSeeOrDetect(&ren) && !outsider.canSeeOrDetect(&ren) && !owner.canSeeOrDetect(&sanath), "Corpse or controller visibility is wrong");
     sanath.AI()->MoveInLineOfSight_Safe(&outsider);
-    Require(outsider.GetSummonList(54114)->empty(), "Bystander created a private encounter");
+    Require(outsider.GetSummonList(54072)->empty() && outsider.GetSummonList(54114)->empty(), "Bystander created a private encounter");
+    sanath.AI()->MoveInLineOfSight_Safe(&owner);
+    Require(intros->size() == 1 && roster->empty(), "Approach did not begin with a private Sanath");
+    auto* intro = map.GetCreature(intros->front());
+    Require(intro && owner.canSeeOrDetect(intro) && !outsider.canSeeOrDetect(intro), "Sanath scene crossed personal visibility");
+    Require(owner.CastSpell(intro, 100668, true) != SPELL_CAST_OK && roster->empty(), "Direct summon bypassed the dialogue and explosion");
+    intro->AI()->UpdateAI(8999);
+    Require(roster->empty(), "Unleashed Void appeared early");
+    owner.RemoveActiveQuest(route.Encounter);
+    owner.SetQuestSlot(0, 0);
+    Accept(owner, route.Encounter);
+    intro->AI()->UpdateAI(10000);
+    map.RemoveAllObjectsInRemoveList();
+    Require(intros->empty() && roster->empty(), "Abandoned scene reached the new attempt");
+
+    sanath.AI()->MoveInLineOfSight_Safe(&owner);
+    Require(intros->size() == 1, "Approach did not restart Sanath after abandonment");
+    active.erase(12);
+    map.GetCreature(intros->front())->AI()->UpdateAI(9000);
+    map.RemoveAllObjectsInRemoveList();
+    Require(intros->empty() && roster->empty() && !owner.canSeeOrDetect(&ren), "Deactivating the holiday left an accessible scene");
+    active.insert(12);
+
     std::unique_ptr<ProbeParty> party;
     if (!usePet)
-    {
         party = std::make_unique<ProbeParty>(owner, outsider);
-        Accept(outsider, route.Encounter);
-    }
+    Accept(outsider, route.Encounter);
+    sanath.AI()->MoveInLineOfSight_Safe(&outsider);
+    auto* otherIntros = outsider.GetSummonList(54072);
+    Require(otherIntros->size() == 1, "A second eligible player could not start their own presentation");
     sanath.AI()->MoveInLineOfSight_Safe(&owner);
-    auto roster = owner.GetSummonList(54114);
-    Require(roster->size() == 1, "Native 100668 did not create an Unleashed Void");
+    Require(intros->size() == 1, "Approach did not restart Sanath when the holiday returned");
+    intro = map.GetCreature(intros->front());
+    intro->AI()->UpdateAI(9000);
+    intro->AI()->UpdateAI(5500);
+    intro->AI()->UpdateAI(4499);
+    Require(roster->empty() && intro->getStandState() == UNIT_STAND_STATE_KNEEL, "Sanath skipped kneeling by the crate before summoning the Void");
+    intro->AI()->UpdateAI(1);
+    Require(roster->size() == 1 && outsider.GetSummonList(54114)->empty(), "Native 100669 to 100668 did not summon exclusively for the player");
     auto* boss = map.GetCreature(roster->front());
     Require(boss && boss->HasQuestObjectScope() && boss->IsHostileTo(&owner) && boss->GetHealth() > 0 &&
         boss->HasScalableLevels() && boss->GetLevelForTarget(&owner) == 110 && outsider.canSeeOrDetect(boss) == bool(party),
@@ -139,6 +198,13 @@ void CheckRoute(WorldSession* first, WorldSession* second, Route const& route, u
     owner.SetLevel(110);
     owner.CastSpell(&owner, 100668, true);
     Require(roster->size() == 1, "Repeated native summon duplicated the encounter");
+    auto* otherIntro = map.GetCreature(otherIntros->front());
+    otherIntro->AI()->UpdateAI(9000);
+    map.RemoveAllObjectsInRemoveList();
+    if (party)
+        Require(otherIntros->empty() && outsider.GetSummonList(54114)->empty(), "The party received a second independent encounter");
+    else
+        Require(otherIntros->size() == 1 && outsider.GetSummonList(54114)->empty(), "The explosion consumed a second solo player's separate scene");
 
     if (usePet)
     {
@@ -152,8 +218,13 @@ void CheckRoute(WorldSession* first, WorldSession* second, Route const& route, u
     std::cout << "ENCOUNTER " << route.Encounter << " alive=" << boss->IsAlive() << " damageTagged=" << boss->IsDamageEnoughForLootingAndReward()
         << " credit=" << owner.GetQuestObjectiveData(route.Encounter, 54114) << " status=" << owner.GetQuestStatus(route.Encounter) << '\n';
     Require(owner.GetQuestObjectiveData(route.Encounter, 54114) == 1 && owner.CanRewardQuest(quest, false), "Native death did not grant one completion");
-    Require(outsider.GetQuestStatus(route.Encounter) == (party ? QUEST_STATUS_COMPLETE : QUEST_STATUS_NONE),
+    Require(outsider.GetQuestStatus(route.Encounter) == (party ? QUEST_STATUS_COMPLETE : QUEST_STATUS_INCOMPLETE),
         "Death credit eligibility differed for group member or bystander");
+    intro->AI()->UpdateAI(3500);
+    Require(intros->size() == 1, "One-hit victory removed Sanath before the final cue");
+    intro->AI()->UpdateAI(3500);
+    map.RemoveAllObjectsInRemoveList();
+    Require(intros->empty() && owner.canSeeOrDetect(&ren), "The finished introduction did not remove just Sanath");
     owner.RemoveActiveQuest(route.Encounter);
     owner.SetQuestSlot(0, 0);
     auto& rewarded = const_cast<RewardedQuestSet&>(owner.getRewardedQuests());
@@ -163,17 +234,22 @@ void CheckRoute(WorldSession* first, WorldSession* second, Route const& route, u
     Quest const* delivery = sQuestDataStore->GetQuestTemplate(route.Return);
     Accept(owner, route.Return);
     Require(owner.GiveQuestSourceItem(delivery) && owner.GetItemCount(71057) == 1 && stolen.IsNeverVisible(&owner), "Native pickup did not create one recoverable crate or hide the source");
+    Require(!owner.canSeeOrDetect(&ren), "Ren stayed visible after claiming the crate");
     Require(owner.TakeQuestSourceItem(route.Return, false) && owner.GetItemCount(71057) == 0, "Abandon did not clean up the quest crate");
     owner.RemoveActiveQuest(route.Return);
     owner.SetQuestSlot(0, 0);
     Require(!stolen.IsNeverVisible(&owner), "Abandoned return could not recover from the stolen crate again");
+    Require(owner.canSeeOrDetect(&ren), "Ren did not return alongside the recovered crate offer");
     rewarded.insert(route.Return);
     Require(!reward.IsNeverVisible(&owner) && stolen.IsNeverVisible(&owner), "Turn-in did not unlock only the final crate");
     rewarded.insert(route.Reward);
     Require(reward.IsNeverVisible(&owner), "Already claimed reward crate was still available");
     active.erase(12);
+    if (!otherIntros->empty())
+        map.GetCreature(otherIntros->front())->AI()->UpdateAI(1);
     map.RemoveAllObjectsInRemoveList();
-    std::cout << "PASS native Collector quest " << route.Encounter << " " << (usePet ? "pet" : "player") << " kill, scaling, scoped combat and crate state transitions\n";
+    std::cout << "PASS native Collector quest " << route.Encounter << " private intro, 100669/100668, " << (usePet ? "pet" : "player")
+        << " kill, scaling, scoped combat and crate state transitions\n";
 }
 }
 

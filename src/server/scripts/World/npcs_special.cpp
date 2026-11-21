@@ -66,6 +66,7 @@ EndContentData */
 #include "ScriptMgr.h"
 #include "ScriptMgr.h"
 #include "SpellAuras.h"
+#include "SpellScript.h"
 #include "Vehicle.h"
 #include "World.h"
 #include "QuestData.h"
@@ -7437,33 +7438,225 @@ struct go_hallows_end_crate : GameObjectAI
 
 struct npc_hallows_end_sanath : ScriptedAI
 {
-    explicit npc_hallows_end_sanath(Creature* creature) : ScriptedAI(creature) { }
+    explicit npc_hallows_end_sanath(Creature* creature) : ScriptedAI(creature)
+    {
+        me->SetReactState(REACT_PASSIVE);
+        if (me->ToTempSummon())
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+        else
+            SetCanSeeEvenInPassiveMode(true);
+    }
+
+    bool CanBeVisibleFor(WorldObject const* /*seer*/) const override
+    {
+        return me->ToTempSummon() || !HallowsEndCrate::ForSanath(me->GetDBTableGUIDLow());
+    }
 
     void MoveInLineOfSight(Unit* unit) override
     {
         Player* player = unit->ToPlayer();
         auto route = HallowsEndCrate::ForSanath(me->GetDBTableGUIDLow());
-        if (!player || !route || _retry || !player->IsAlive() || !sGameEventMgr->IsActiveEvent(12) ||
-            player->GetQuestStatus(route->Encounter) != QUEST_STATUS_INCOMPLETE ||
-            !me->IsWithinDistInMap(player, 18.0f) || !me->IsWithinLOSInMap(player))
+        if (!route || !CanApproach(player, *route) || HasVisibleVoid(player))
             return;
 
+        for (ObjectGuid const& guid : *player->GetSummonList(54072))
+            if (me->GetMap()->GetCreature(guid))
+                return;
+
+        Creature* ren = me->FindNearestCreature(54205, 10.0f);
+        GameObject* crate = me->FindNearestGameObject(route->StolenCrate, 10.0f);
+        auto properties = sSummonPropertiesStore.LookupEntry(2912);
+        if (!ren || ren->GetDBTableGUIDLow() != route->RenSpawn || !crate || !properties)
+            return;
+
+        if (TempSummon* actor = me->GetMap()->SummonCreature(54072, me->GetPosition(), properties, 35000,
+            player, ObjectGuid::Empty, 0, 0, player->GetGUID()))
+            if (auto intro = dynamic_cast<npc_hallows_end_sanath*>(actor->AI()))
+            {
+                intro->_route = route;
+                intro->_ren = ren->GetGUID();
+                intro->_crate = crate->GetGUID();
+                intro->_receipt = player->GetQuestCancellationReceipt(route->Encounter);
+                actor->SetFacingTo(ren);
+                intro->Speak(player, 0);
+            }
+    }
+
+    bool CanUnleash(Player const* player) const
+    {
+        auto actor = me->ToTempSummon();
+        return _exploding && actor && player && actor->GetSummonerGUID() == player->GetGUID() &&
+            _route && _receipt && !_receipt->load(std::memory_order_acquire) && CanApproach(player, *_route);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_route)
+            return;
+
+        Player* player = ObjectAccessor::GetPlayer(*me, me->ToTempSummon()->GetSummonerGUID());
+        GameObject* crate = ObjectAccessor::GetGameObject(*me, _crate);
+        bool ending = _stage == Stage::Alarm || _stage == Stage::Leave;
+        if (!_receipt || _receipt->load(std::memory_order_acquire) || !sGameEventMgr->IsActiveEvent(12) || !player || !player->IsAlive() ||
+            !me->IsWithinDistInMap(player, 18.0f) || !me->IsWithinLOSInMap(player) ||
+            (!ending && (!crate || !ObjectAccessor::GetCreature(*me, _ren) || !CanApproach(player, *_route) || HasVisibleVoid(player))))
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+
+        if (_timer > diff)
+        {
+            _timer -= diff;
+            return;
+        }
+
+        switch (_stage)
+        {
+            case Stage::Notice:
+                me->SetFacingToObject(player);
+                Speak(player, 1);
+                _stage = Stage::PrepareCrate;
+                _timer = 5500;
+                break;
+            case Stage::PrepareCrate:
+                me->SetFacingToObject(crate);
+                me->SetStandState(UNIT_STAND_STATE_KNEEL);
+                me->HandleEmoteCommand(EMOTE_ONESHOT_SPELL_PRECAST);
+                _stage = Stage::Unleash;
+                _timer = 4500;
+                break;
+            case Stage::Unleash:
+            {
+                me->SetStandState(UNIT_STAND_STATE_STAND);
+                _exploding = true;
+                me->CastSpell(me, 100669, true);
+                _exploding = false;
+                if (!HasVisibleVoid(player))
+                {
+                    if (++_failedCasts < 3)
+                        _timer = 600;
+                    else
+                    {
+                        TC_LOG_WARN("scripts", "Hallow's End Void Explosion produced no encounter for quest %u", _route->Encounter);
+                        me->DespawnOrUnsummon();
+                    }
+                    return;
+                }
+                _stage = Stage::Alarm;
+                _timer = 3500;
+                break;
+            }
+            case Stage::Alarm:
+                Speak(player, 2);
+                _stage = Stage::Leave;
+                _timer = 3500;
+                break;
+            case Stage::Leave:
+                me->DespawnOrUnsummon();
+                break;
+        }
+    }
+
+private:
+    enum class Stage { Notice, PrepareCrate, Unleash, Alarm, Leave };
+
+    bool CanApproach(Player const* player, HallowsEndCrate::Route const& route) const
+    {
+        return player && player->IsAlive() && sGameEventMgr->IsActiveEvent(12) &&
+            player->GetQuestStatus(route.Encounter) == QUEST_STATUS_INCOMPLETE &&
+            me->IsWithinDistInMap(player, 18.0f) && me->IsWithinLOSInMap(player);
+    }
+
+    bool HasVisibleVoid(Player const* player) const
+    {
         std::list<Creature*> encounters;
         me->GetCreatureListWithEntryInGrid(encounters, 54114, 40.0f);
         for (Creature* encounter : encounters)
             if (encounter->HasQuestObjectScope() && !encounter->IsQuestObjectExpired() && player->canSeeOrDetect(encounter))
-                return;
-
-        _retry = 1000;
-        if (player->CastSpell(player, 100668, true) == SPELL_CAST_OK)
-            if (!player->GetSummonList(54114)->empty())
-                Talk(0, player->GetGUID());
+                return true;
+        return false;
     }
 
-    void UpdateAI(uint32 diff) override { _retry = diff >= _retry ? 0 : _retry - diff; }
+    void Speak(Player* player, uint8 line) const
+    {
+        sCreatureTextMgr->SendChat(me, line, player->GetGUID(), CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, TEXT_RANGE_PERSONAL);
+    }
 
-private:
-    uint32 _retry = 0;
+    HallowsEndCrate::Route const* _route = nullptr;
+    ObjectGuid _ren;
+    ObjectGuid _crate;
+    std::shared_ptr<QuestCancellationReceipt const> _receipt;
+    Stage _stage = Stage::Notice;
+    uint32 _timer = 9000;
+    uint8 _failedCasts = 0;
+    bool _exploding = false;
+};
+
+struct npc_hallows_end_ren : ScriptedAI
+{
+    explicit npc_hallows_end_ren(Creature* creature) : ScriptedAI(creature)
+    {
+        me->SetReactState(REACT_PASSIVE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+    }
+
+    void InitializeAI() override
+    {
+        ScriptedAI::InitializeAI();
+        if (HallowsEndCrate::ForRen(me->GetDBTableGUIDLow()))
+            me->AddAura(100922, me);
+    }
+
+    bool CanBeVisibleFor(WorldObject const* seer) const override
+    {
+        auto route = HallowsEndCrate::ForRen(me->GetDBTableGUIDLow());
+        if (!route)
+            return true;
+        Player const* player = seer ? seer->ToPlayer() : nullptr;
+        if (!player || !sGameEventMgr->IsActiveEvent(12))
+            return false;
+
+        QuestStatus encounter = player->GetQuestStatus(route->Encounter);
+        return encounter == QUEST_STATUS_INCOMPLETE || encounter == QUEST_STATUS_COMPLETE ||
+            (player->GetQuestRewardStatus(route->Encounter) && player->GetQuestStatus(route->Return) == QUEST_STATUS_NONE &&
+                !player->GetQuestRewardStatus(route->Return));
+    }
+};
+
+class spell_hallows_end_void_explosion : public SpellScript
+{
+    PrepareSpellScript(spell_hallows_end_void_explosion);
+
+    void SelectOwner(std::list<WorldObject*>& targets)
+    {
+        Creature* actor = GetCaster()->ToCreature();
+        auto intro = actor ? dynamic_cast<npc_hallows_end_sanath*>(actor->AI()) : nullptr;
+        targets.remove_if([intro](WorldObject* target) { return !intro || !intro->CanUnleash(target->ToPlayer()); });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_hallows_end_void_explosion::SelectOwner, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+    }
+};
+
+class spell_hallows_end_summon_void : public SpellScript
+{
+    PrepareSpellScript(spell_hallows_end_summon_void);
+
+    SpellCastResult CheckIntro()
+    {
+        Unit* caster = GetCaster();
+        Creature* actor = ObjectAccessor::GetCreature(*caster, GetOriginalTargetGUID());
+        auto intro = actor ? dynamic_cast<npc_hallows_end_sanath*>(actor->AI()) : nullptr;
+        return intro && intro->CanUnleash(caster->ToPlayer()) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_hallows_end_summon_void::CheckIntro);
+    }
 };
 
 struct npc_hallows_end_unleashed_void : ScriptedAI
@@ -7514,7 +7707,10 @@ void AddSC_npcs_special()
     RegisterCreatureAI(npc_hallows_end_investigator);
     RegisterGameObjectAI(go_hallows_end_crate);
     RegisterCreatureAI(npc_hallows_end_sanath);
+    RegisterCreatureAI(npc_hallows_end_ren);
     RegisterCreatureAI(npc_hallows_end_unleashed_void);
+    RegisterSpellScript(spell_hallows_end_void_explosion);
+    RegisterSpellScript(spell_hallows_end_summon_void);
     new npc_storm_earth_and_fire();
     new npc_air_force_bots();
     new npc_lunaclaw_spirit();

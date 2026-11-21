@@ -4303,9 +4303,16 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         Player* owner = summoner ? summoner->ToPlayer() : nullptr;
         if (!owner || !owner->IsAlive() || GetId() != 0 || !properties || properties->ID != 2926 || !sGameEventMgr->IsActiveEvent(12))
             return nullptr;
-        Creature const* sanath = owner->FindNearestCreature(54072, 22.0f);
-        collectorRoute = sanath ? HallowsEndCrate::ForSanath(sanath->GetDBTableGUIDLow()) : nullptr;
-        if (!collectorRoute || !owner->IsWithinLOSInMap(sanath) || owner->GetQuestStatus(collectorRoute->Encounter) != QUEST_STATUS_INCOMPLETE)
+        std::list<Creature*> anchors;
+        owner->GetCreatureListWithEntryInGrid(anchors, 54072, 22.0f);
+        for (Creature const* anchor : anchors)
+            if (auto route = HallowsEndCrate::ForSanath(anchor->GetDBTableGUIDLow()))
+                if (anchor->IsAlive() && owner->GetQuestStatus(route->Encounter) == QUEST_STATUS_INCOMPLETE && owner->IsWithinLOSInMap(anchor))
+                {
+                    collectorRoute = route;
+                    break;
+                }
+        if (!collectorRoute)
             return nullptr;
         for (ObjectGuid const& guid : *owner->GetSummonList(54114))
             if (Creature const* previous = GetCreature(guid))
