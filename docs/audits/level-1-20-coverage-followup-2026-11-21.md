@@ -14,6 +14,8 @@ Atjaunotajā pārskatā katram ierakstam ir iespējamais devējs, saņēmējs, o
 
 Pazīmes pārklājas. Aktiera novietojums vēl neapstiprina pieejamu piedāvājumu. Priekšnoteikumi, specializācija, atslēgti iepriekšējie kvesti, fāzes un aktuālais pasākums var mainīt pieejamību. Piemēram, `319` ir agrākās `317 → 318 → 319 → 320` ķēdes ieraksts. Sākums `317` ir atslēgts, `319` vajadzīgajam `1127` nav spawnu, un Blizzard kvestu izņēma agrāk par Legion. Classic spawni šai ķēdei nav pārnesti. [Klasiskās ķēdes statuss](https://www.wowhead.com/ptr/quest=319/a-favor-for-evershine)
 
-Mathystra Relics `951` nav atrasta sākuma sasaiste vai relikviju objektu spawns. Tas paliek neizsekots vecs ieraksts. Trīs priekšmeta ieguves kandidāti ar pasaulē esošu devēju ir `29433`, `37644` un `37645`; tiem vēl jāizseko pasākuma, pasaules loot vai mājdzīvnieku cīņas ceļš.
+Mathystra Relics `951` nav sākuma sasaistes vai relikviju objektu spawnu. Relikvijas un kvests izņemti 4.0.3a, tāpēc to neesamība atbilst Legion pasaulei. [Mathystra Relics vēsture](https://warcraft.wiki.gg/wiki/Mathystra_Relics)
+
+`29433` prasītajām Grisly Trophies nav atrasta iegūšanas saite. Kvesta teksts prasa Darkmoon Adventurer’s Guide un nogalināšanu, kas dod XP vai godu. Jāpārbauda pasākuma un grupas nogalināšanas ceļš. `37644/37645` abas devēju versijas ir tikai Draenor garnizona kartēs `1153/1159/1330/1331`. Nulles minimuma vērtība prasa papildus izsekot garnizona pieejamību.
 
 Eksports un atlases pārskats ir lokāli `.codex/quest-coverage-20261121/exports-clean/` un `.codex/quest-coverage-20261121/ranked-survey/`. Tajos ir `quests.jsonl`, `candidates.tsv` un kopsavilkums ar izmantoto SQL, DB2 un Release SHA-256. Pārskats tagad uzskaita faktiskās atmešanas metadatu saites, jo iepriekš labotais pamata kods vairs neizsauc noņemšanu divreiz. Abi datu avoti nolasīti tikai lasāmās transakcijās, izmantojot izolētās datubāzes iestatījumus.

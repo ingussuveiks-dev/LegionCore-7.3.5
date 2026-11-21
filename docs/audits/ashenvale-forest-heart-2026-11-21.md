@@ -1,0 +1,15 @@
+# The Forest Heart Ashenvale
+
+Gaivan Shadewalker `33777` piedāvā kvestu `13796`. Tā teksts prasa savākt Untainted Spirits `45571` no Severed Druid `3799` un Severed Keeper `3803`, izgatavot Power of Nature `45572` un atvērt Forest Heart `194549` Dor’Danil Barrow Den. Sirds `45573` jānogādā Gnarl `17310`. Sākotnējie dati ļāva savākt garus bez kvesta un saņemt gatavo sirdi no abu veidu līķiem. `-ForestHeartBaseline` atkārtoja abus ceļus ar standarta nogalināšanu un loot.
+
+Labojums abiem radījumiem saglabā garu daudzumu un varbūtību ar aktīva kvesta prasību. Gatavo sirdi dod sākotnējā kaste ar loot atslēgu `26899`. `63682` pārbauda aktīvo kvestu un izmanto sešus reagentus un pašu septīto lietoto garu. `63697` pārbauda aktīvo kvestu, nesēju un īsto atslēgu. Oriģinālā slēdzene `1928` pieņem tikai `45572`; vienīgais šāda tipa kastes šablons ar šo slēdzeni ir Forest Heart. Kaste izmanto jau izvietoto kopīgo quest-only krājumu skriptu un sākotnējo atjaunošanos. Sirds pievienota atmešanas tīrīšanai kopā ar jau norādīto atslēgu un gariem.
+
+`Test-QuestObjectLootNative.ps1 -ForestHeart` pārbaudīja īstus garu loot saņemšanas pieprasījumus pēc spēlētāja un peta nogalināšanas, atteikumu bez kvesta, sešu garu nepietiekamību un viena Power of Nature izgatavošanu no septiņiem. Ar atslēgu atteikta cita slēdzene. Kaste atteica atvēršanu bez atslēgas, ar atslēgu bez kvesta un pēc atlīdzības. Derīgā atvēršana deva sirdi, atjaunotā kaste bija pieejama otram tiesīgam spēlētājam, un nodošana un atmešana izņēma atlikušos kvesta priekšmetus.
+
+Agrīnā zonde avarēja, kad nogalināšana mēģināja piešķirt XP spēlētājam bez testa līmeņu datiem. Ielādējot standarta līmeņu datus un faktiskā nākamā līmeņa XP slieksni, šis cēlonis novērsts. Bāzes zondē pārbaudīta gan personīgā loot kešatmiņa, kur bija vecais garu loot, gan kopīgā, kur bija gatavā sirds. Pēc šiem zondes labojumiem abas izpildes beidzās ar 0 bez jaunām datubāzes kļūdām vai avārijām. Seši izolētās MariaDB savienojumu pārtraukuma brīdinājumi sakrita ar agrīnās zondes avāriju. Vēlākajos testos tie neatkārtojās, un MariaDB reģistrēja normālu izslēgšanos.
+
+Migrācijas `2026_11_21_49_ashenvale_forest_heart.sql` SHA-1 ir `03AFB6653DBD3BF5D33925321C48A4EE8B7ACACE`. Izolētajā un faktiskajā `legion_world` nolasījumā sakrita 16 pārbaudītās rindas. Atkārtota migrācija neko nemainīja. Kanoniskais Release ar jau pārbaudīto kastes skriptu un SHA-256 `C9B571148A381A670260833B21DB8BDE372A805D43721B55461B7D060C8916F2` startēja ar migrēto izolēto pasauli un korekti apstājās. Migrācija reģistrēta `RELEASED` stāvoklī. Kanoniskajos žurnālos nebija jaunu kļūdu, brīdinājumu vai avāriju.
+
+Ar pārbaudītām SHA-256 saglabāti 115 diagnostikas faili zem `build-extractors/bin/Release/fixed/ashenvale-forest-heart-2026-11-21/`. Izņemti 27 pagaidu faili jeb 736 974 076 baiti. Saglabāta koplietotā izolētās pasaules datubāze. Uzdevuma serveri ir apstājušies.
+
+Klientā vēl jāpārbauda Gaivan pieņemšanas logs, gājiens uz Dor’Danil Barrow Den, priekšmetu un kastes vizuālie efekti un nodošana pie Gnarl.
