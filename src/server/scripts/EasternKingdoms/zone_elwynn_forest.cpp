@@ -16,6 +16,8 @@
 * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../QuestItemChestAI.h"
+
 /*######
 ## npc_hogger
 ######*/
@@ -469,8 +471,14 @@ struct npc_hogger_minion : public ScriptedAI
     }
 };
 
+struct go_elwynn_bundle_of_wood : QuestItemChestAI
+{
+    explicit go_elwynn_bundle_of_wood(GameObject* object) : QuestItemChestAI(object, 5545, 13872) { }
+};
+
 void AddSC_elwynn_forest()
 {
+    RegisterGameObjectAI(go_elwynn_bundle_of_wood);
     RegisterCreatureAI(npc_hogger);
     RegisterCreatureAI(npc_hogger_minion);
 }
