@@ -26,6 +26,11 @@ assert data.rows('SpellDuration')[misc['DurationIndex']]['Duration'] == 300000
 spell_range = data.rows('SpellRange')[misc['RangeIndex']]
 assert spell_range['RangeMax1'] == spell_range['RangeMax2'] == 20
 print('PASS build 26972 Funnel Energy target, native periodic healing, channel duration and range')
+for spell, entry in ((230944, 115719), (230943, 115643)):
+    summon, = (row for row in data.rows('SpellEffect').values() if row['SpellID'] == spell and not row['DifficultyID'])
+    assert tuple(summon[key] for key in ('Effect', 'EffectMiscValue1', 'EffectMiscValue2', 'ImplicitTarget1')) == (28, entry, 3752, 87)
+assert 3752 in data.rows('SummonProperties')
+print('PASS both native Imp Servant summons, their creature identities and the explicit destination targets')
 '@
 $native | & $Python - $repo
 if ($LASTEXITCODE) { throw 'Agatha Funnel Energy 26972 DB2 regression failed' }

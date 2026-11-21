@@ -2936,6 +2936,15 @@ constexpr uint32 AgathaBoulderHit = 241523;
 constexpr uint32 AgathaImpServant = 115643;
 constexpr uint32 AgathaOtherImpServant = 115719;
 constexpr uint32 AgathaFunnelEnergy = 229928;
+constexpr uint32 AgathaServantWave = 4001;
+constexpr std::array<uint32, 2> AgathaServantSpells{ 230944, 230943 };
+
+std::array<std::array<Position, 2>, 3> const AgathaServantSpawns
+{{
+    {{ { -367.537f, 7570.38f, 53.1941f, 1.14f }, { -379.276f, 7574.78f, 53.1926f, 1.14f } }},
+    {{ { -354.401f, 7607.38f, 53.1936f, 1.14f }, { -361.506f, 7611.48f, 53.1653f, 1.14f } }},
+    {{ { -352.0f, 7637.0f, 57.9295f, 4.37f }, { -343.0f, 7637.0f, 58.1015f, 4.37f } }}
+}};
 
 std::array<Position, 3> const AgathaBoulderStarts =
 {{
@@ -3066,6 +3075,22 @@ public:
         Player* GetRelocatedArenaPlayer() const
         {
             return _position == AgathaPosition::Center ? nullptr : GetArenaPlayer();
+        }
+
+        void SetData(uint32 id, uint32 slot) override
+        {
+            if (id != AgathaServantWave)
+            {
+                SmartAI::SetData(id, slot);
+                return;
+            }
+
+            if (slot >= AgathaServantSpells.size() || !GetArenaPlayer())
+                return;
+
+            Position const& spot = AgathaServantSpawns[static_cast<size_t>(_position)][slot];
+            if (me->CastSpell(spot, AgathaServantSpells[slot], true) != SPELL_CAST_OK)
+                TC_LOG_WARN("scripts", "An Impossible Foe: Agatha could not summon Imp Servant slot %u in instance %u", slot, me->GetInstanceId());
         }
 
         void DarkFuryStarted()
