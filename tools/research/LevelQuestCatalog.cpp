@@ -20,10 +20,11 @@ int main(int argc, char** argv)
         return 2;
 
     std::set<uint32> const selectedItems{
-        780, 5339, 5411, 7627, 22473, 22693, 23614, 23654, 24081, 24337, 33009, 58362
+        780, 5056, 5339, 5411, 7627, 11583, 22473, 22693, 23614, 23654, 24081, 24337, 33009,
+        44850, 52483, 55240, 55241, 56225, 56226, 58362
     };
     std::set<uint32> const selectedSpells{
-        4975, 27907, 28247, 29866, 31614, 42222, 71725, 80199, 80208
+        4975, 27907, 28247, 29866, 31614, 42222, 71725, 77020, 77821, 80199, 80208
     };
     for (uint32 id : selectedItems)
     {
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
                       << row->EffectTriggerSpell << '\t' << row->EffectMiscValue[0] << '\t'
                       << row->EffectMiscValue[1] << '\t' << row->ImplicitTarget[0] << '\t'
                       << row->ImplicitTarget[1] << '\t' << row->EffectAura << '\n';
-    for (uint32 id : {259, 1673, 1691})
+    for (uint32 id : {29, 43, 259, 1673, 1691, 1896, 1912})
     {
         auto lock = locks.LookupEntry(id);
         if (!lock)
