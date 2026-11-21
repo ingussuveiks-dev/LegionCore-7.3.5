@@ -49,6 +49,8 @@ EndContentData */
 #include <mutex>
 #include "CreatureTextMgr.h"
 #include "GameEventMgr.h"
+#include "GameObjectAI.h"
+#include "HallowsEndCrate.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "ObjectMgr.h"
@@ -7115,10 +7117,111 @@ private:
     uint32 _timer = 0;
 };
 
+struct go_hallows_end_crate : GameObjectAI
+{
+    explicit go_hallows_end_crate(GameObject* object) : GameObjectAI(object) { }
+
+    bool CanBeVisibleFor(WorldObject const* seer) const override
+    {
+        Player const* player = seer ? seer->ToPlayer() : nullptr;
+        auto route = HallowsEndCrate::ForCrate(go->GetEntry());
+        if (!player || !route || !sGameEventMgr->IsActiveEvent(12))
+            return false;
+
+        if (go->GetEntry() == route->RewardCrate)
+            return player->GetQuestRewardStatus(route->Return) && !player->GetQuestRewardStatus(route->Reward);
+
+        QuestStatus encounter = player->GetQuestStatus(route->Encounter);
+        return encounter == QUEST_STATUS_INCOMPLETE || encounter == QUEST_STATUS_COMPLETE ||
+            (player->GetQuestRewardStatus(route->Encounter) && !player->GetQuestRewardStatus(route->Return) &&
+                player->GetQuestStatus(route->Return) == QUEST_STATUS_NONE);
+    }
+
+    bool GossipUse(Player* player) override
+    {
+        return !player->IsAlive() || !CanBeVisibleFor(player) || !player->IsWithinLOSInMap(go);
+    }
+};
+
+struct npc_hallows_end_sanath : ScriptedAI
+{
+    explicit npc_hallows_end_sanath(Creature* creature) : ScriptedAI(creature) { }
+
+    void MoveInLineOfSight(Unit* unit) override
+    {
+        Player* player = unit->ToPlayer();
+        auto route = HallowsEndCrate::ForSanath(me->GetDBTableGUIDLow());
+        if (!player || !route || _retry || !player->IsAlive() || !sGameEventMgr->IsActiveEvent(12) ||
+            player->GetQuestStatus(route->Encounter) != QUEST_STATUS_INCOMPLETE ||
+            !me->IsWithinDistInMap(player, 18.0f) || !me->IsWithinLOSInMap(player))
+            return;
+
+        std::list<Creature*> encounters;
+        me->GetCreatureListWithEntryInGrid(encounters, 54114, 40.0f);
+        for (Creature* encounter : encounters)
+            if (encounter->HasQuestObjectScope() && !encounter->IsQuestObjectExpired() && player->canSeeOrDetect(encounter))
+                return;
+
+        _retry = 1000;
+        if (player->CastSpell(player, 100668, true) == SPELL_CAST_OK)
+            if (!player->GetSummonList(54114)->empty())
+                Talk(0, player->GetGUID());
+    }
+
+    void UpdateAI(uint32 diff) override { _retry = diff >= _retry ? 0 : _retry - diff; }
+
+private:
+    uint32 _retry = 0;
+};
+
+struct npc_hallows_end_unleashed_void : ScriptedAI
+{
+    explicit npc_hallows_end_unleashed_void(Creature* creature) : ScriptedAI(creature) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (!summoner->IsPlayer() || !me->HasQuestObjectScope())
+            return;
+
+        _owner = summoner->GetGUID();
+        _quest = me->GetPositionX() < 0 ? HallowsEndCrate::Alliance.Encounter : HallowsEndCrate::Horde.Encounter;
+        me->SetCorpseDelay(5);
+        me->SetReactState(REACT_AGGRESSIVE);
+        AttackStart(summoner);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_owner)
+        {
+            ScriptedAI::UpdateAI(diff);
+            return;
+        }
+
+        Player* owner = ObjectAccessor::GetPlayer(*me, _owner);
+        if (!owner || !owner->IsAlive() || !me->IsWithinDistInMap(owner, 45.0f) || !sGameEventMgr->IsActiveEvent(12) ||
+            me->IsQuestObjectExpired() || owner->GetQuestStatus(_quest) != QUEST_STATUS_INCOMPLETE)
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+
+        if (UpdateVictim())
+            DoMeleeAttackIfReady();
+    }
+
+private:
+    ObjectGuid _owner;
+    uint32 _quest = 0;
+};
+
 void AddSC_npcs_special()
 {
     new npc_hallows_end_hired_courier();
     RegisterCreatureAI(npc_hallows_end_investigator);
+    RegisterGameObjectAI(go_hallows_end_crate);
+    RegisterCreatureAI(npc_hallows_end_sanath);
+    RegisterCreatureAI(npc_hallows_end_unleashed_void);
     new npc_storm_earth_and_fire();
     new npc_air_force_bots();
     new npc_lunaclaw_spirit();

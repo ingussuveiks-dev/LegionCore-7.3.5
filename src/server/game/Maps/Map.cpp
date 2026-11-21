@@ -30,6 +30,8 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
+#include "GameEventMgr.h"
+#include "HallowsEndCrate.h"
 #include "InstancePackets.h"
 #include "InstanceScript.h"
 #include "LFGMgr.h"
@@ -4295,6 +4297,21 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    HallowsEndCrate::Route const* collectorRoute = nullptr;
+    if (entry == 54114 && spellId == 100668)
+    {
+        Player* owner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!owner || !owner->IsAlive() || GetId() != 0 || !properties || properties->ID != 2926 || !sGameEventMgr->IsActiveEvent(12))
+            return nullptr;
+        Creature const* sanath = owner->FindNearestCreature(54072, 22.0f);
+        collectorRoute = sanath ? HallowsEndCrate::ForSanath(sanath->GetDBTableGUIDLow()) : nullptr;
+        if (!collectorRoute || !owner->IsWithinLOSInMap(sanath) || owner->GetQuestStatus(collectorRoute->Encounter) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+        for (ObjectGuid const& guid : *owner->GetSummonList(54114))
+            if (Creature const* previous = GetCreature(guid))
+                if (previous->HasQuestObjectScope() && !previous->IsQuestObjectExpired())
+                    return nullptr;
+    }
     Player* crystalOwner = nullptr;
     if (entry == 16364 && spellId == 28247)
     {
@@ -4429,6 +4446,13 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     {
         delete summon;
         return nullptr;
+    }
+    if (collectorRoute)
+    {
+        Player* owner = summoner->ToPlayer();
+        owner->BindQuestObject(collectorRoute->Encounter, summon, false);
+        if (Group const* group = owner->GetGroup())
+            summon->AddPlayerInPersonnalVisibilityList(group->GetGUID());
     }
     if (crystalOwner)
     {

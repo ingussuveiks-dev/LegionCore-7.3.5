@@ -1,9 +1,9 @@
 param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='',
-      [switch]$TakingPrecautions,[string]$FixtureConfig='')
+      [switch]$TakingPrecautions,[switch]$Collector,[string]$FixtureConfig='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-if($TakingPrecautions -and ($Baseline -or !$FixtureConfig)){throw 'Taking Precautions requires its private migrated fixture without Baseline'}
-if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot$(if($Baseline){'-baseline'}elseif($TakingPrecautions){'-taking-precautions'})"}
+if(($TakingPrecautions -or $Collector) -and ($Baseline -or !$FixtureConfig -or ($TakingPrecautions -and $Collector))){throw "Use one Hallow's End probe and its private migrated fixture"}
+if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot$(if($Baseline){'-baseline'}elseif($TakingPrecautions){'-taking-precautions'}elseif($Collector){'-collector'})"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup|Where-Object Condition -like '*Release|x64*'|Select-Object -First 1
@@ -30,6 +30,10 @@ $probeSource = "$PSScriptRoot/QuestObjectLootNative.cpp"
 if($TakingPrecautions){
  $probeSource = "$PSScriptRoot/HallowsEndTakingPrecautionsNative.cpp"
  [IO.File]::WriteAllText("$out/NativeTakingPrecautionsQuest.inc",$query+' " WHERE ID IN(29402,29426)"')
+}
+if($Collector){
+ $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeCollectorQuest.inc",$query+' " WHERE ID IN(29403,29411,29413,29427,29428,29429)"')
 }
 $extra=@('src/server/scripts/Legion','src/common/Collision/Management','src/common/Collision','dep/g3dlite/include','dep/recastnavigation/Detour/Include')|ForEach-Object {Join-Path $repo $_}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

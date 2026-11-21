@@ -64,6 +64,7 @@
 #include "EquipmentSetPackets.h"
 #include "Formulas.h"
 #include "GameEventMgr.h"
+#include "HallowsEndCrate.h"
 #include "GameObjectAI.h"
 #include "GameTime.h"
 #include "Garrison.h"
@@ -3284,6 +3285,9 @@ GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTy
 {
     auto go = GetMap()->GetGameObject(guid);
     if (!go)
+        return nullptr;
+
+    if (HallowsEndCrate::ForCrate(go->GetEntry()) && (go->IsNeverVisible(this) || !IsWithinLOSInMap(go)))
         return nullptr;
 
     if (go->GetGoType() == type)
@@ -19486,7 +19490,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-        if (quest_id == 29402 || quest_id == 29426)
+        if (quest_id == 29402 || quest_id == 29426 || HallowsEndCrate::RefreshVisibility(quest_id))
             UpdateVisibilityForPlayer();
         UpdateForQuestWorldObjects();
     });
@@ -20756,7 +20760,7 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-        if (quest_id == 29402 || quest_id == 29426)
+        if (quest_id == 29402 || quest_id == 29426 || HallowsEndCrate::RefreshVisibility(quest_id))
             UpdateVisibilityForPlayer();
         UpdateForQuestWorldObjects();
     });
@@ -20893,7 +20897,7 @@ void Player::RemoveActiveQuest(uint32 quest_id)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-        if (quest_id == 29402 || quest_id == 29426)
+        if (quest_id == 29402 || quest_id == 29426 || HallowsEndCrate::RefreshVisibility(quest_id))
             UpdateVisibilityForPlayer();
         // Static camp props remain visible across the artifact handoff. Refresh
         // their per-player interaction flags after reward/abandonment too.
