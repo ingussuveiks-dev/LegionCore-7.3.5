@@ -7,6 +7,7 @@ Cosmetic toDo:
 */
 
 #include "ScriptPCH.h"
+#include "ConditionMgr.h"
 #include "CreatureTextMgr.h"
 #include "ScriptedEscortAI.h"
 #include "QuestData.h"
@@ -94,6 +95,7 @@ enum isle_spells
 
 enum isle_items
 {
+    ITEM_IRRESISTIBLE_POOL_PONY                   = 50602,
     ITEM_REMOTE_CONTROL_FIREWORKS                = 52712,
 };
 
@@ -1556,6 +1558,13 @@ class npc_hobart_grapplehammer : public CreatureScript
     }
 };
 
+static bool CanLurePoolPonyHatchlings(Player const* player)
+{
+    return player && player->IsInWorld() && player->IsAlive() && player->HasAura(SPELL_PONNY_AURA) &&
+        player->GetQuestStatus(QUEST_IRRESTIBLE_POOL_PONY) == QUEST_STATUS_INCOMPLETE &&
+        player->HasItemCount(ITEM_IRRESISTIBLE_POOL_PONY, 1, false);
+}
+
 class npc_vashjelan_siren : public CreatureScript
 {
     public:
@@ -1571,35 +1580,20 @@ class npc_vashjelan_siren : public CreatureScript
             events.Reset();
         }
 
-        void Hatchiling(std::list<Creature*>& creatureList, Unit* killer)
-        {
-            for (std::list<Creature*>::iterator itr = creatureList.begin(); itr != creatureList.end(); ++itr)
-            {
-                Creature* c = *itr;
-                c->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                c->GetMotionMaster()->MovePoint(EVENT_GENERIC_1, killer->m_positionX, killer->m_positionY, killer->m_positionZ);
-                c->AI()->SetGUID(killer->GetGUID(), EVENT_GENERIC_1);
-            }
-        }
-
         void JustDied(Unit* killer) override
         {
             Player* player = killer ? killer->GetAffectingPlayer() : nullptr;
-            if (!player || !player->HasAura(SPELL_PONNY_AURA))
+            if (!CanLurePoolPonyHatchlings(player))
                 return;
 
-            if (player->GetQuestStatus(QUEST_IRRESTIBLE_POOL_PONY) != QUEST_STATUS_INCOMPLETE)
-                return;
-
-            std::list<Creature*> creatureList;
-            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING, 25.0f);
-            Hatchiling(creatureList, player);
-            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING2, 25.0f);
-            Hatchiling(creatureList, player);
-            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING3, 25.0f);
-            Hatchiling(creatureList, player);
-            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING4, 25.0f);
-            Hatchiling(creatureList, player);
+            for (uint32 entry : {NPC_NAGA_HATCHLING, NPC_NAGA_HATCHLING2, NPC_NAGA_HATCHLING3, NPC_NAGA_HATCHLING4})
+            {
+                std::list<Creature*> hatchlings;
+                me->GetCreatureListWithEntryInGrid(hatchlings, entry, 25.0f);
+                for (Creature* hatchling : hatchlings)
+                    if (hatchling->IsAIEnabled)
+                        hatchling->AI()->SetGUID(player->GetGUID(), EVENT_GENERIC_1);
+            }
         }
 
         void EnterCombat(Unit* /*victim*/) override
@@ -1654,29 +1648,68 @@ class npc_naga_hatchling : public CreatureScript
         npc_naga_hatchlingAI(Creature* creature) : ScriptedAI(creature){}
         EventMap events;
         ObjectGuid plrGUID;
+        bool collected = false;
+
         void Reset() override
         {
             events.Reset();
+            ClearLure();
+        }
+
+        void JustRespawned() override
+        {
+            collected = false;
+            Reset();
+        }
+
+        void ClearLure()
+        {
             plrGUID.Clear();
+            events.CancelEvent(EVENT_GENERIC_1);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
 
         void SetGUID(ObjectGuid const& guid, int32 id) override
         {
-            events.ScheduleEvent(EVENT_GENERIC_1, 20000);
+            if (id != EVENT_GENERIC_1 || collected || !me->IsAlive())
+                return;
+
+            Player* player = ObjectAccessor::GetPlayer(*me, guid);
+            if (!CanLurePoolPonyHatchlings(player) || !me->IsInMap(player))
+                return;
+            if (!plrGUID.IsEmpty() && CanLurePoolPonyHatchlings(ObjectAccessor::GetPlayer(*me, plrGUID)))
+                return;
+
             plrGUID = guid;
+            events.RescheduleEvent(EVENT_GENERIC_1, 20000);
+            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            me->GetMotionMaster()->MovePoint(EVENT_GENERIC_1, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ());
+        }
+
+        bool CanCollect(Player const* player) const
+        {
+            return !collected && me->IsAlive() && CanLurePoolPonyHatchlings(player) && plrGUID == player->GetGUID() &&
+                me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK) && me->IsWithinDistInMap(player, INTERACTION_DISTANCE);
         }
 
         void OnSpellClick(Unit* clicker) override
         {
-            if (!clicker || clicker->GetTypeId() != TYPEID_PLAYER)
+            Player* player = clicker ? clicker->ToPlayer() : nullptr;
+            if (!CanCollect(player))
                 return;
 
-            clicker->CastSpell(clicker, sum_hat[urand(0, 3)], true);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            if (player->CastSpell(player, sum_hat[urand(0, 3)], true) != SPELL_CAST_OK)
+            {
+                me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+                return;
+            }
+
+            collected = true;
+            ClearLure();
             me->PlayDistanceSound(SOUND_HATCHLING);
             me->HandleEmoteCommand(EMOTE_HATCHLING);
-            clicker->ToPlayer()->KilledMonsterCredit(NPC_NAGA_KILL_CREDIT);
+            player->KilledMonsterCredit(NPC_NAGA_KILL_CREDIT);
             me->DespawnOrUnsummon(100);
         }
 
@@ -1690,46 +1723,44 @@ class npc_naga_hatchling : public CreatureScript
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (!who->HasAura(SPELL_PONNY_AURA) || me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK))
-                return;
-
-            Player *player = who->ToPlayer();
-            if (!player)
-                return;
-
-            if (player->GetQuestStatus(QUEST_IRRESTIBLE_POOL_PONY) != QUEST_STATUS_INCOMPLETE)
+            Player* player = who->ToPlayer();
+            if (!CanLurePoolPonyHatchlings(player) || collected)
                 return;
 
             if (me->FindNearestCreature(NPC_NAGA_PROTECTOR_HATCHLING, 25.0f, true))
                 return;
 
-            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-            me->GetMotionMaster()->MovePoint(EVENT_GENERIC_1, who->m_positionX, who->m_positionY, who->m_positionZ);
-            SetGUID(who->GetGUID(), EVENT_GENERIC_1);
+            SetGUID(player->GetGUID(), EVENT_GENERIC_1);
         }
 
         void UpdateAI(uint32 diff) override
         {
+            if (plrGUID.IsEmpty())
+                return;
+
             events.Update(diff);
-
-            while (uint32 eventId = events.ExecuteEvent())
-            {
-                switch (eventId)
-                {
-                    case EVENT_GENERIC_1:
-                        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
+            if (events.ExecuteEvent() == EVENT_GENERIC_1 || !CanLurePoolPonyHatchlings(ObjectAccessor::GetPlayer(*me, plrGUID)))
+                ClearLure();
         }
     };
 
     CreatureAI* GetAI(Creature* creature) const override
     {
         return new npc_naga_hatchlingAI(creature);
+    }
+};
+
+class condition_pool_pony_hatchling_owner : public ConditionScript
+{
+public:
+    condition_pool_pony_hatchling_owner() : ConditionScript("condition_pool_pony_hatchling_owner") { }
+
+    bool OnConditionCheck(Condition*, ConditionSourceInfo& source) override
+    {
+        WorldObject* clicker = source.mConditionTargets[0];
+        Creature* hatchling = source.mConditionTargets[1] ? source.mConditionTargets[1]->ToCreature() : nullptr;
+        auto ai = hatchling && hatchling->IsAIEnabled ? CAST_AI(npc_naga_hatchling::npc_naga_hatchlingAI, hatchling->AI()) : nullptr;
+        return ai && ai->CanCollect(clicker ? clicker->ToPlayer() : nullptr);
     }
 };
 
@@ -2533,6 +2564,7 @@ void AddSC_lost_isle()
     new npc_hobart_grapplehammer();
     new npc_vashjelan_siren();
     new npc_naga_hatchling();
+    new condition_pool_pony_hatchling_owner();
     new npc_faceless_of_the_deep();
     new npc_omlot_warrior();
     new npc_goblin_captive();

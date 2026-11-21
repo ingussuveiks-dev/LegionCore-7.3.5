@@ -1,0 +1,9 @@
+# Irresistible Pool Pony (24864)
+
+Lost Isles kartē ir 48 dzīvu Naga Hatchling novietojumi četriem ierakstiem (`38412`, `44578`, `44579`, `44580`). Kvests iedod `50602`, kas uz paša spēlētāja izpilda `71914`. Vecais C++ vienam spēlētājam pievilinātu hatchling ļāva aktivizēt citam spēlētājam un otrs sirēnas izsaukums varēja pārrakstīt pievilinātāju.
+
+Klikšķa nosacījums un C++ kredīts pārbauda faktisko pievilinātāju, viņa aktīvo kvestu, priekšmetu, auru un attālumu. Cits spēlētājs neredz klikšķa iespēju un nevar to aktivizēt. Saglabāti tuvuma un Vashj'elan Siren ceļi, 20 sekunžu pievilināšanas logs, oriģinālās izsaukšanas burvestības un skaņas. Ja pievilinātājs atmet kvestu, zaudē auru vai pazūd no kartes, nākamais tiesīgais spēlētājs var uzsākt jaunu pievilināšanu. Native `spell_area` nosacījums ierobežo priekšmeta peldēšanas auru ar Lost Isles `4720` un noņem to, kad kvests vairs nav aktīvs un nepabeigts. Tas auru automātiski neuzliek.
+
+`Test-QuestObjectLootNative.ps1 -PoolPony` pārbaudīja īsto priekšmeta burvestību, marķiera pieejamību diviem spēlētājiem, sveša un atkārtota klikšķa noraidījumu, termiņa beigas, atmešanu, pārņemšanu pēc atmešanas un sirēnas nāves apstrādātāju ar mājdzīvnieku. Pārbaudīts arī 12. kredīts, auras noņemšana un priekšmeta noņemšana nodošanas brīdī. Pārbaude izmantoja faktiskā servera `game.lib` un `scripts.lib` un izolētu MariaDB.
+
+Staged un kanoniskais `worldserver.exe` ar SHA-256 `CF2FD491DF891CCF2484B5B14062ABA0989478E1EBEB5994696161D24CB0E5C1` sasniedza `ready` un korekti apstājās. Gala saites karte apstiprināja `OnSpellClick`, `JustDied` un īpašnieka nosacījuma kodu no `scripts:lost_isles.obj`. Migrācija pārbaudīta atkārtoti un darba MariaDB nolasītas 12 pārbaudes rindas un `RELEASED` kontrolsumma. Veiksmīgajās pārbaudēs nebija jaunu avāriju, DBErrors vai neizskaidrotu kļūdu. Klientā vēl jāpārbauda animācija ūdenī, sekošanas kustība un pilna secība ar diviem spēlētājiem.

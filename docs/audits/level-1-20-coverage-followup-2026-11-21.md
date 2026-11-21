@@ -23,3 +23,9 @@ Abiem `37644/37645` piedāvājumiem devēji ir tikai Draenor garnizona kartēs `
 `13968` atjaunots Tortusk pasaules novietojums. Servera pārbaude apstiprināja atrašanās vietu, nogalināšanu un progresu mājdzīvnieka īpašniekam. [Tortusk pārbaude](tortusk-thorn-hill-2026-11-22.md)
 
 Eksports un atlases pārskats ir lokāli `.codex/quest-coverage-20261121/exports-clean/` un `.codex/quest-coverage-20261121/ranked-survey/`. Tajos ir `quests.jsonl`, `candidates.tsv` un kopsavilkums ar izmantoto SQL, DB2 un Release SHA-256. Pārskats tagad uzskaita faktiskās atmešanas metadatu saites, jo iepriekš labotais pamata kods vairs neizsauc noņemšanu divreiz. Abi datu avoti nolasīti tikai lasāmās transakcijās, izmantojot izolētās datubāzes iestatījumus.
+
+`24671` novērsta Remote Control Fireworks izmantošana uz cita tipa mērķa un atkārtota viena Wild Clucker ieskaitīšana. [Cluster Cluck pārbaude](cluster-cluck-2026-11-22.md)
+
+`24864` klikšķis un kredīts piesaistīts faktiskajam pievilinātājam, un noņemta nepabeigtajam kvestam paredzētā aura pēc pabeigšanas vai atmešanas. [Irresistible Pool Pony pārbaude](irresistible-pool-pony-2026-11-22.md)
+
+`14021` paliek atvērts. Legion DB2 `68059` izsauc Frightened Miner `35813` ar properties `2261`, un `68064` izsauc Ore Cart `35814` ar properties `2262`. C++ Foreman pašlaik glabā vienu kopīgu `guidMiner`, kas nākamajam spēlētājam var liegt viņa personīgo pavadoni. Pavadonis izmanto 26 ceļa punktus un pašlaik deaktivizē kopīgo raktuves dekorāciju `195622`, kas var ietekmēt otra spēlētāja maršrutu.
