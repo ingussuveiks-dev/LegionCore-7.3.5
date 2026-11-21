@@ -1,0 +1,11 @@
+# End of the Risen Threat soul healing
+
+The three staircase Damaged Souls and the five combat-wave entries now require a real heal that brings the actor to full health. The check uses the core's applied healing callback and resolves a healing guardian or totem to its player. The native phase, actual Erdris draw aura, movement, corruption and exactly-once event rows are retained. At 99% health the soul remains in its existing sequence. In the final room, each legitimate full heal contributes to the original eight-soul criterion `56911`. The staircase plays its own existing speech and path.
+
+The 2018 Holy Priest recording was sampled across its full 15:20 duration. It shows the initial waves, staircase healing, approaching soul waves, the Risen Army, Erdris and the hand-in. A 2017 player account documents the eight full heals and the enemies created from the souls that reached Erdris. [Original 7.3.5 Holy Priest recording](https://www.youtube.com/watch?v=jP53P6-me5M), [original Legion healing sequence](https://www.mmo-champion.com/threads/2196190-End-of-the-Risen-Threat-Tips).
+
+The DB2 check confirmed LFG route `1471`, scenario `1281`, the criterion count of eight and the native draw and corruption spells. Source-extracted AddressSanitizer checks covered all five wave types, staircase healing, partial and zero-effective heals, controlled healers, foreign aura casters, wrong phases, pending far teleports and damage after a heal. The exact data passed two private applications and a manual production import. Hashes of the untouched SmartAI event paths matched the production readback. Migration `2026_11_21_18_mage_tower_risen_threat_full_heals.sql` has SHA-1 `44C0E0CD72495592158B26C96BD72DC095D1000F` in the ledger.
+
+Staged and canonical executable SHA-256 `A4F47F0459195D7B99F3D1D2DC23283D2DF4E0B372BA23B81B001342EB94BDFC` reached readiness and shut down cleanly in isolated startup checks. No new crashes, DBErrors, warnings or assertions were appended. Evidence and cleanup are under `build-extractors/bin/Release/fixed/2026-11-21-mage-tower-risen-threat-full-heals/`.
+
+Live client verification remains for the healing visuals, direct and controlled heals, staircase rescue, the eighth soul and the appearance hand-in. The following Risen Army stage uses a separate victory gate.

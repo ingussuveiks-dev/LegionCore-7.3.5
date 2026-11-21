@@ -3994,6 +3994,95 @@ class spell_mage_tower_highlords_return_holy_ward : public SpellScript
     }
 };
 
+namespace
+{
+bool IsRisenThreatSoulHealingStage(Creature const& soul)
+{
+    if (soul.GetMapId() != 1710 || !soul.IsInWorld() || soul.IsPreDelete() || !soul.IsAlive())
+        return false;
+
+    Scenario* scenario = sScenarioMgr->GetScenario(soul.GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 1281 || scenario->IsCompleted(false))
+        return false;
+    if (soul.GetEntry() == 119470)
+        return scenario->GetCurrentStep() == 2;
+    if (soul.GetEntry() < 119476 || soul.GetEntry() > 119480 || scenario->GetCurrentStep() != 4)
+        return false;
+
+    Aura* draw = soul.GetAura(237846);
+    Unit* caster = draw ? draw->GetCaster() : nullptr;
+    Creature* erdris = caster ? caster->ToCreature() : nullptr;
+    return erdris && erdris->GetEntry() == 118488 && erdris->GetDBTableGUIDLow() == 14534095 && soul.IsInMap(erdris);
+}
+
+bool IsRisenThreatChallenger(Player const* player, Creature const& soul)
+{
+    if (!player || !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() || player->IsBeingTeleportedFar() ||
+        !soul.IsInMap(player) || !soul.InSamePhase(player))
+        return false;
+
+    Group const* group = player->GetGroup();
+    return group && group->isLFGGroup() && group->GetMembersCount() == 1 && sLFGMgr->GetDungeon(group->GetGUID()) == 1471;
+}
+}
+
+class npc_mage_tower_risen_threat_soul : public CreatureScript
+{
+public:
+    npc_mage_tower_risen_threat_soul() : CreatureScript("npc_mage_tower_risen_threat_soul") {}
+
+    struct RisenThreatSoulAI : SmartAI
+    {
+        explicit RisenThreatSoulAI(Creature* creature) : SmartAI(creature) {}
+
+        void Reset() override
+        {
+            _fullyHealed = false;
+            SmartAI::Reset();
+        }
+
+        void OnHealApplied(Unit* healer, uint64 /*amount*/, uint64 gain) override
+        {
+            if (!gain)
+                return;
+
+            Player* player = healer ? healer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            _fullyHealed = me->IsFullHealth() && IsRisenThreatSoulHealingStage(*me) && IsRisenThreatChallenger(player, *me);
+        }
+
+        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override
+        {
+            SmartAI::DamageTaken(attacker, damage, type);
+            if (damage)
+                _fullyHealed = false;
+        }
+
+        bool WasFullyHealed() const
+        {
+            return _fullyHealed && me->IsFullHealth() && IsRisenThreatSoulHealingStage(*me);
+        }
+
+    private:
+        bool _fullyHealed = false;
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new RisenThreatSoulAI(creature); }
+};
+
+class condition_mage_tower_risen_threat_full_heal : public ConditionScript
+{
+public:
+    condition_mage_tower_risen_threat_full_heal() : ConditionScript("condition_mage_tower_risen_threat_full_heal") {}
+
+    bool OnConditionCheck(Condition* condition, ConditionSourceInfo& source) override
+    {
+        WorldObject* target = source.mConditionTargets[condition->ConditionTarget];
+        Creature* soul = target ? target->ToCreature() : nullptr;
+        auto* ai = soul ? dynamic_cast<npc_mage_tower_risen_threat_soul::RisenThreatSoulAI*>(soul->AI()) : nullptr;
+        return ai && ai->WasFullyHealed();
+    }
+};
+
 // 117470
 class boss_sivash : public CreatureScript
 {
@@ -4407,6 +4496,8 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_highlords_return_holy_ward);
     RegisterSpellScript(spell_mage_tower_kruul_shadow_sweep);
     new at_mage_tower_kruul_shadow_sweep();
+    new npc_mage_tower_risen_threat_soul();
+    new condition_mage_tower_risen_threat_full_heal();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
