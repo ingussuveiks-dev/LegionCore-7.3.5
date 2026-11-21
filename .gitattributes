@@ -5,4 +5,6 @@ sql/updates/world/2026_11_19_02_hov_crackle.sql text eol=lf
 sql/updates/world/2026_11_19_03_karazhan_volatile_charge.sql text eol=lf
 sql/updates/world/2026_11_19_04_brh_sic_bats.sql text eol=lf
 sql/updates/world/2026_11_19_05_challenge_chest_loot_links.sql text eol=lf
+sql/updates/world/2026_11_21_27_serpentbloom_loot_link.sql text eol=lf
+sql/updates/world/2026_11_21_28_powering_our_defenses_native_credit.sql text eol=lf
 docs/research/legion-teeming-reconstruction-2026-11-19.json text eol=lf

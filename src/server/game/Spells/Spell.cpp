@@ -7432,11 +7432,14 @@ SpellCastResult Spell::CheckCast(bool strict)
                     if (m_caster->ToPlayer()->InBattleground() && !m_caster->ToPlayer()->CanUseBattlegroundObject())
                         return SPELL_FAILED_TRY_AGAIN;
 
-                if (m_targets.GetGOTarget())
+                if (GameObject* target = m_targets.GetGOTarget())
                 {
-                    auto goInfo = m_targets.GetGOTarget()->GetGOInfo();
+                    auto goInfo = target->GetGOInfo();
                     if (goInfo->type == GAMEOBJECT_TYPE_CHEST || goInfo->type == GAMEOBJECT_TYPE_GATHERING_NODE)
                     {
+                        if ((target->GetEntry() == 13874 || target->GetEntry() == 13891) && target->GetMapId() == 43 &&
+                            !m_caster->ToPlayer()->HasQuestForItem(5339))
+                            return SPELL_FAILED_BAD_TARGETS;
                         if (!sConditionMgr->IsPlayerMeetingCondition(m_caster, goInfo->type == GAMEOBJECT_TYPE_CHEST ? goInfo->chest.conditionID1 : goInfo->gatheringNode.conditionID1))
                             return SPELL_FAILED_NO_VALID_TARGETS;
                         if (m_caster->ToPlayer()->IsFlying() && m_caster->GetMapId() != 616)

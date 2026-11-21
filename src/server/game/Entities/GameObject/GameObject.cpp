@@ -3074,6 +3074,12 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
                         if (ActivateToQuest(target))
                             dynFlags |= GO_DYNFLAG_LO_SPARKLE;
                         break;
+                    case GAMEOBJECT_TYPE_GATHERING_NODE:
+                        // The second Serpentbloom variant has the same quest
+                        // loot as the chest variant in Wailing Caverns.
+                        if (GetEntry() == 13891 && ActivateToQuest(target))
+                            dynFlags |= GO_DYNFLAG_LO_ACTIVATE | GO_DYNFLAG_LO_SPARKLE;
+                        break;
                     case GAMEOBJECT_TYPE_TRANSPORT:
                     {
                         dynFlags = GetUInt16Value(OBJECT_FIELD_DYNAMIC_FLAGS, 0);
