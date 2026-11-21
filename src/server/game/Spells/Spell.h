@@ -762,6 +762,7 @@ class TC_GAME_API Spell
         // and in same time need aura data and after aura deleting.
         SpellInfo const* m_triggeredByAuraSpell;
         AuraEffect const* m_triggeredByAura;
+        uint32 m_questKillReward = 0;
 
         bool m_skipCheck;
         uint32 m_spellMissMask;

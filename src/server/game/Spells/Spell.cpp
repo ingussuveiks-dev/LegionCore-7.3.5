@@ -157,6 +157,7 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
         m_triggeredByAuraSpell  = triggerData.triggeredByAura->GetSpellInfo();
         m_triggeredByAura = triggerData.triggeredByAura;
     }
+    m_questKillReward = triggerData.questKillReward;
 
     if (info->HasAttribute(SPELL_ATTR4_TRIGGERED) && !m_CastItem)
     {
@@ -6576,6 +6577,10 @@ bool Spell::CheckEffFromDummy(Unit* target, uint32 eff)
 
 SpellCastResult Spell::CheckCast(bool strict)
 {
+    // The guide's generic kill proc does not account for the actual recipients of XP or honor.
+    if (m_spellInfo->Id == 100776 && m_questKillReward != 29433)
+        return SPELL_FAILED_DONT_REPORT;
+
     SpellCastResult castResult = CallScriptCheckCastHandlers();
     
     if (Player* plr = m_caster->ToPlayer())

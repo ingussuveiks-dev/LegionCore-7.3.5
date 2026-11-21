@@ -754,6 +754,7 @@ struct TriggerCastData
     SpellPowerCost powerCost;
     uint32 auraDuration = 0;
     uint8 setSTack = 0;
+    uint32 questKillReward = 0;
 };
 
 struct CalcDamageInfo;

@@ -1,0 +1,15 @@
+# Test Your Strength (29433)
+
+Kerri Hicks (`14832`, novietojums `2170`) piedāvā kvestu Darkmoon Island, kamēr darbojas pasākums `75`. Pieņemtais kvests turpina reģistrēt trofejas ārpus pasākuma. Atlīdzību var saņemt uz salas un vienreiz vienā pasākuma periodā. Fiksētais perioda sākums un veco atlīdzību noņemšana tiek ierakstīti vienā rakstīšanas transakcijā. Tā paša perioda atkārtots servera starts ierakstu saglabā.
+
+Legion 7.3.5 DB2 saista ceļvedi `71634` ar iegūšanas auru `100775`, kas izraisa `100776`. Trofejas burvestībai trūka `spell_loot_template` rindas, tās vecais kvesta nosacījums bija piesaistīts dzēstam tiešajam mērķim, un koplietotais bonusa loot ceļš pēc izpildes noņemtu ceļveža auru. Trofejas izmanto spēles burvestību ar personīgo loot un mantas ievietošanu somā. Nogalināšanas ceļš izmanto faktiskos servera aprēķinātos XP un goda saņēmējus. Vienam saņēmējam pie viena nāves notikuma piešķir ne vairāk kā vienu trofeju. Vajadzīgs aktīvs nepabeigts kvests un ceļvedis līdzi. Kvesta atmešana vai nodošana noņem trofejas, saglabājot ceļvedi. [Blizzard Darkmoon Faire apraksts](https://worldofwarcraft.blizzard.com/en-gb/news/10052474)
+
+Izolētajā MariaDB migrācija izpildīta divas reizes un salīdzinātas astoņas paredzētās datu rindas. `Test-QuestObjectLootNative.ps1 -DarkmoonStrength` pārbaudīja ceļveža īsto saņemšanas burvestību, spēlētāja un kontrolētu aktieru nogalināšanu, grupas attālumu, pārāk zema līmeņa pretinieku, ceļvedi bankā, atmešanu un atkārtotu pieņemšanu, 250. trofejas saņemšanu, nodošanu un sezonas ierakstu atkārtotas atvēršanas robežu. Pārbaude izmantoja faktisko Release `game.lib` un atsevišķu tukšu tēlu datubāzi.
+
+Izstrādes mēģinājumos pārbaudes videi pietrūka proc ielādes un viena monstra loot tabulas. Pārbaude atklāja arī to, ka gadatirgus transakcijā asinhronajam savienojumam sagatavotu komandu nevar lietot sinhronajā savienojumā. Labotajā pārbaudē process beidzās ar kodu `0`, stderr un DBErrors bija tukši, un aktīvajās avāriju mapēs nebija jaunu vai mainītu failu. Fixture atkārtoja pasākuma perioda robežu ar mākslīgi iestatītiem sākuma laikiem.
+
+PvP pārbaudē tās pašas frakcijas nogalināšana trofeju nedeva, bet par tiesīgu pretējās frakcijas nogalināšanu ar mājdzīvnieku trofeju saņēma tā īpašnieks. Sākotnējā perioda glabāšana `game_event_save` radīja kļūdu pie starta, jo tā ir paredzēta pasaules notikumu stāvokļiem. Perioda sākums tagad glabājas `worldstates` ierakstā `20027`.
+
+Uzstādīts `build-extractors/bin/Release/worldserver.exe` ar SHA-256 `550320BCE41734BF5D42F87FB2FACB8BEE7274380CE97C787D4B26C22F0EA7E2`. Gala saites karte apstiprināja trofejas, bonusa loot, nogalināšanas un sezonas apstrādes objektus no faktiskās bibliotēkas. Uzstādītais exe sasniedza `ready` ar izolēto datubāzi un korekti apstājās. Darba datubāzē pārbaudīts visu astoņu rindu saturs un `RELEASED` migrācijas ieraksts. Pārbaudēs atrisinātie žurnāli glabājas lokāli `build-extractors/bin/Release/fixed/2026-11-22-darkmoon-tortusk/`.
+
+Klientā vēl jāapstiprina sākuma un nodošanas marķieris, trofejas parādīšanās somā, paziņojumi un kaujaslauka secība.

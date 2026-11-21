@@ -19,6 +19,7 @@
 #define KillRewarder_h__
 
 #include "Define.h"
+#include "ObjectGuid.h"
 
 class Player;
 class Unit;
@@ -27,7 +28,7 @@ class Group;
 class KillRewarder
 {
 public:
-    KillRewarder(Player* killer, Unit* victim, bool isBattleGround);
+    KillRewarder(Player* killer, Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients = nullptr);
 
     void Reward();
 
@@ -35,8 +36,9 @@ private:
     void _InitXP(Player* player);
     void _InitGroupData();
 
-    void _RewardHonor(Player* player);
-    void _RewardXP(Player* player, float rate);
+    bool _RewardHonor(Player* player);
+    bool _RewardXP(Player* player, float rate);
+    void _RewardDarkmoonTrophy(Player* player);
     void _RewardReputation(Player* player, float rate);
     void _RewardKillCredit(Player* player);
     void _RewardPlayer(Player* player, bool isDungeon);
@@ -46,6 +48,7 @@ private:
     Player* _maxNotGrayMember;
     Unit* _victim;
     Group* _group;
+    GuidSet* _darkmoonRecipients;
     uint32 _count;
     uint32 _countForRep;
     uint32 _sumLevel;

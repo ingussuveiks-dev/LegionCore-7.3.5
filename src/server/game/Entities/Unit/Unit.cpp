@@ -22146,6 +22146,8 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
     // call kill spell proc event (before real die and combat stop to triggering auras removed at death/combat stop)
     if (isRewardAllowed && player && player != victim)
     {
+        // Shared taps may visit the same eligible group through multiple KillRewarders.
+        GuidSet darkmoonRecipients;
         WorldPackets::Party::PartyKillLog partyKillLog;
         partyKillLog.Player = player->GetGUID();
         partyKillLog.Victim = victim->GetGUID();
@@ -22252,7 +22254,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
                     if (Player* playerForReward = ObjectAccessor::GetPlayer(*creature, _guid))
                     {
                         if (player != playerForReward && (!player->GetGroup() || player->GetGroup() != playerForReward->GetGroup()) && creature->isTappedBy(playerForReward))
-                            playerForReward->RewardPlayerAndGroupAtKill(victim, false);
+                            playerForReward->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients);
                     }
                 }
             }
@@ -22278,10 +22280,10 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
                     }
                 }
             }
-            player->RewardPlayerAndGroupAtKill(victim, false);
+            player->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients);
         }
         else
-            player->RewardPlayerAndGroupAtKill(victim, false);
+            player->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients);
     }
 
     // Do KILL and KILLED procs. KILL proc is called only for the unit who landed the killing blow (and its owner - for pets and totems) regardless of who tapped the victim

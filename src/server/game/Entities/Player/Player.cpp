@@ -19171,6 +19171,9 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    if (quest->GetQuestId() == 29433 && (GetMapId() != 974 || !sGameEventMgr->IsActiveEvent(75)))
+        return false;
+
     // A saved COMPLETE from the old zero-count objective proves no board visit.
     if (uint32 board = AlliedRaceCityBoard::BoardForQuest(quest->GetQuestId()))
         if (GetQuestObjectiveData(quest->GetQuestId(), board) < 1)
@@ -32558,9 +32561,9 @@ float Player::GetsAFriendBonus(bool forXP)
     return recruitAFriend;
 }
 
-void Player::RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround)
+void Player::RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients)
 {
-    KillRewarder(this, victim, isBattleGround).Reward();
+    KillRewarder(this, victim, isBattleGround, darkmoonRecipients).Reward();
 }
 
 void Player::RewardPlayerAndGroupAtEvent(uint32 creatureID, WorldObject* pRewardSource)

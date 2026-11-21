@@ -25,6 +25,9 @@
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "ScenarioMgr.h"
+#include "Spell.h"
+#include "SpellAuraEffects.h"
+#include "SpellMgr.h"
 
 // == KillRewarder ====================================================
 // KillRewarder incapsulates logic of rewarding player upon kill with:
@@ -68,11 +71,12 @@
 // 6. Update guild achievements.
 
 // 1. Initialize internal variables to default values.
-KillRewarder::KillRewarder(Player* killer, Unit* victim, bool isBattleGround)
+KillRewarder::KillRewarder(Player* killer, Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients)
 {
     _killer = killer;
     _victim = victim;
     _group = killer->GetGroup();
+    _darkmoonRecipients = darkmoonRecipients;
     _groupRate = 1.0f;
     _maxNotGrayMember = nullptr;
     _count = 0;
@@ -137,13 +141,12 @@ inline void KillRewarder::_InitXP(Player* player)
         _xp = Trinity::XP::Gain(player, _victim);
 }
 
-inline void KillRewarder::_RewardHonor(Player* player)
+inline bool KillRewarder::_RewardHonor(Player* player)
 {
-    if (player->IsAlive())
-        player->RewardHonor(_victim, _count, -1, true);
+    return player->IsAlive() && player->RewardHonor(_victim, _count, -1, true);
 }
 
-inline void KillRewarder::_RewardXP(Player* player, float rate)
+inline bool KillRewarder::_RewardXP(Player* player, float rate)
 {
     uint32 xp(_xp);
     if (_group)
@@ -175,6 +178,38 @@ inline void KillRewarder::_RewardXP(Player* player, float rate)
             else
                 player->GiveXP(xp, nullptr, groupRate);
         });
+    }
+    return xp != 0;
+}
+
+void KillRewarder::_RewardDarkmoonTrophy(Player* player)
+{
+    if (!_darkmoonRecipients || !player->IsAlive() || player->GetQuestStatus(29433) != QUEST_STATUS_INCOMPLETE)
+        return;
+
+    Item* guideItem = player->GetItemByEntry(71634);
+    if (!guideItem)
+        return;
+
+    AuraEffect const* guide = player->GetAuraEffect(100775, EFFECT_0);
+    if (!guide)
+    {
+        // The normal carried-item aura can be lost on death while the guide remains in the bags.
+        player->CastSpell(player, 100775, true, guideItem);
+        guide = player->GetAuraEffect(100775, EFFECT_0);
+    }
+    if (!guide || !_darkmoonRecipients->insert(player->GetGUID()).second)
+        return;
+
+    if (SpellInfo const* trophy = sSpellMgr->GetSpellInfo(100776))
+    {
+        SpellCastTargets targets;
+        targets.SetUnitTarget(player);
+        TriggerCastData trigger;
+        trigger.triggerFlags = TRIGGERED_FULL_MASK;
+        trigger.triggeredByAura = guide;
+        trigger.questKillReward = 29433;
+        player->CastSpell(targets, trophy, nullptr, trigger);
     }
 }
 
@@ -214,30 +249,31 @@ inline void KillRewarder::_RewardKillCredit(Player* player)
 void KillRewarder::_RewardPlayer(Player* player, bool isDungeon)
 {
     // 4. Reward player.
+    bool earnedHonor = false;
     if (!_isBattleGround)
     {
         // 4.1. Give honor (player must be alive and not on BG).
-        _RewardHonor(player);
+        earnedHonor = _RewardHonor(player);
         // 4.1.1 Send player killcredit for quests with PlayerSlain
         if (_victim->IsPlayer())
             player->KilledPlayerCredit();
     }
 
     // Give XP only in PvE or in battlegrounds. Give reputation and kill credit only in PvE.
-    if (!_isPvP || _isBattleGround)
-    {
-        const float rate = _group ? _groupRate * float(player->getLevel()) / _sumLevel : 1.0f;// Group rate depends on summary level. Personal rate is 100%.
-        if (_xp)
-            _RewardXP(player, rate);
-        if (!_isBattleGround)
-        {
-            if (Creature* creature = _victim->ToCreature())
-                if (creature->IsPlayerRewarded(player->GetGUID()))
-                    return;
+    bool canRewardXP = !_isPvP || _isBattleGround;
+    float rate = canRewardXP && _group ? _groupRate * float(player->getLevel()) / _sumLevel : 1.0f;
+    bool earnedXP = canRewardXP && _xp && _RewardXP(player, rate);
+    if (earnedXP || earnedHonor)
+        _RewardDarkmoonTrophy(player);
 
-            _RewardReputation(player, isDungeon ? 1.0f : rate);
-            _RewardKillCredit(player);
-        }
+    if (canRewardXP && !_isBattleGround)
+    {
+        if (Creature* creature = _victim->ToCreature())
+            if (creature->IsPlayerRewarded(player->GetGUID()))
+                return;
+
+        _RewardReputation(player, isDungeon ? 1.0f : rate);
+        _RewardKillCredit(player);
     }
 }
 

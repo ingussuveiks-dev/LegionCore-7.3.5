@@ -8818,6 +8818,21 @@ void Spell::EffectBonusLoot(SpellEffIndex effIndex)
 
     Player* player = unitTarget->ToPlayer();
 
+    // A guide remains active across kills. Use separate loot storage and leave its item and aura intact.
+    if (m_spellInfo->Id == 100776)
+    {
+        if (m_questKillReward != 29433 || m_caster != player || !m_triggeredByAuraSpell ||
+            m_triggeredByAuraSpell->Id != 100775 || player->GetQuestStatus(29433) != QUEST_STATUS_INCOMPLETE ||
+            !player->HasItemCount(71634, 1, false))
+            return;
+
+        Loot loot;
+        loot.personal = true;
+        if (loot.FillLoot(m_spellInfo->Id, LootTemplates_Spell, player, true))
+            loot.AutoStoreItems();
+        return;
+    }
+
     uint32 lootId = m_spellInfo->Id;
     uint8 lootType = TYPE_CREATURE;
 
