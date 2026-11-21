@@ -5,6 +5,9 @@
 #include "ConditionMgr.h"
 #include "GossipData.h"
 #include "GossipDef.h"
+#include "Group.h"
+#include "InstanceScript.h"
+#include "LFGMgr.h"
 #include "Log.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
@@ -3615,6 +3618,125 @@ class spell_mage_tower_kruul_twisted_reflection : public AuraScript
     }
 };
 
+namespace
+{
+constexpr uint32 HighlordsReturnMap = 1698;
+constexpr uint32 HighlordsReturnScenario = 1259;
+constexpr uint32 HighlordsReturnDungeon = 1440;
+constexpr uint32 HighlordsReturnAlliesAlive = 1;
+constexpr uint32 HighlordsReturnVelen = 117042;
+constexpr uint32 HighlordsReturnKorvas = 116880;
+constexpr uint64 HighlordsReturnVelenSpawn = 14534061;
+constexpr uint64 HighlordsReturnKorvasSpawn = 14534062;
+
+Group* GetHighlordsReturnSoloGroup(Player* player)
+{
+    Group* group = player->GetGroup();
+    return group && group->isLFGGroup() && group->GetMembersCount() == 1 &&
+        sLFGMgr->GetDungeon(group->GetGUID()) == HighlordsReturnDungeon ? group : nullptr;
+}
+}
+
+class instance_mage_tower_highlords_return : public InstanceMapScript
+{
+public:
+    instance_mage_tower_highlords_return() : InstanceMapScript("instance_mage_tower_highlords_return", HighlordsReturnMap) {}
+
+    struct HighlordsReturnInstance : InstanceScript
+    {
+        explicit HighlordsReturnInstance(InstanceMap* map) : InstanceScript(map) {}
+
+        void OnCreatureCreate(Creature* creature) override
+        {
+            InstanceScript::OnCreatureCreate(creature);
+            if (creature->GetEntry() == HighlordsReturnVelen && creature->GetDBTableGUIDLow() == HighlordsReturnVelenSpawn)
+                _velen = creature->GetGUID();
+            else if (creature->GetEntry() == HighlordsReturnKorvas && creature->GetDBTableGUIDLow() == HighlordsReturnKorvasSpawn)
+                _korvas = creature->GetGUID();
+        }
+
+        uint32 GetData(uint32 id) const override
+        {
+            return id == HighlordsReturnAlliesAlive && !_failed && IsLivingAlly(_velen) && IsLivingAlly(_korvas);
+        }
+
+        void OnUnitDeath(Unit* unit) override
+        {
+            if (_failed || (unit->GetGUID() != _velen && unit->GetGUID() != _korvas))
+                return;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != HighlordsReturnScenario || scenario->IsCompleted(false))
+                return;
+
+            _failed = true;
+            _exitChecks = 12;
+        }
+
+        void OnPlayerEnter(Player* player) override
+        {
+            if (_failed && GetHighlordsReturnSoloGroup(player))
+                _exitChecks = 12;
+        }
+
+        void OnPlayerLeave(Player* player) override
+        {
+            Group* group = _failed ? GetHighlordsReturnSoloGroup(player) : nullptr;
+            if (!group)
+                return;
+
+            ObjectGuid const failedGroup = group->GetGUID();
+            player->AddDelayedEvent(100, [player, failedGroup]()
+            {
+                if (!player->IsInWorld() || player->IsPreDelete() || player->GetMapId() == HighlordsReturnMap)
+                    return;
+                Group* current = GetHighlordsReturnSoloGroup(player);
+                if (current && current->GetGUID() == failedGroup)
+                    Player::RemoveFromGroup(current, player->GetGUID());
+            });
+        }
+
+        void Update(uint32 diff) override
+        {
+            if (!_exitChecks)
+                return;
+
+            _exitDelay -= std::min(diff, _exitDelay);
+            if (_exitDelay)
+                return;
+
+            _exitDelay = 500;
+            --_exitChecks;
+            for (auto const& reference : instance->GetPlayers())
+            {
+                Player* player = reference.getSource();
+                if (!player || !player->IsInWorld() || player->IsPreDelete() || !GetHighlordsReturnSoloGroup(player))
+                    continue;
+
+                if (!_exitChecks)
+                    TC_LOG_ERROR("scripts", "The Highlord's Return instance %u still has its challenger after the failed attempt exit retries", instance->GetInstanceId());
+                else if (!player->HasPendingTeleport())
+                    sLFGMgr->TeleportPlayer(player, true);
+            }
+        }
+
+    private:
+        bool IsLivingAlly(ObjectGuid const& guid) const
+        {
+            Creature* ally = guid.IsEmpty() ? nullptr : instance->GetCreature(guid);
+            return ally && ally->IsAlive() && ally->IsInWorld() && !ally->IsPreDelete();
+        }
+
+        ObjectGuid _velen;
+        ObjectGuid _korvas;
+        uint32 _exitDelay = 0;
+        uint8 _exitChecks = 0;
+        bool _failed = false;
+    };
+
+    InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new HighlordsReturnInstance(map); }
+};
+
 // 117470
 class boss_sivash : public CreatureScript
 {
@@ -4024,6 +4146,7 @@ void AddSC_broken_shore()
     new npc_mage_tower_agatha_imp_servant();
     RegisterSpellScript(spell_mage_tower_agatha_funnel_energy);
     RegisterAuraScript(spell_mage_tower_kruul_twisted_reflection);
+    new instance_mage_tower_highlords_return();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
