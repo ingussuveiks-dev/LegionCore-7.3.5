@@ -23,6 +23,7 @@
 #include "QuestRewardDisplay.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
+#include "AlliedRaceCityBoard.h"
 #include "Anticheat.h"
 #include "AreaTriggerData.h"
 #include "ArtifactPackets.h"
@@ -19170,6 +19171,11 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    // A saved COMPLETE from the old zero-count objective proves no board visit.
+    if (uint32 board = AlliedRaceCityBoard::BoardForQuest(quest->GetQuestId()))
+        if (GetQuestObjectiveData(quest->GetQuestId(), board) < 1)
+            return false;
+
     if (quest->GetQuestId() == 8490 && GetQuestObjectiveData(8490, 16364) < 1)
         return false;
 
@@ -19529,6 +19535,14 @@ void Player::IncompleteQuest(uint32 quest_id)
         if (log_slot < MAX_QUEST_LOG_SIZE)
             RemoveQuestSlotState(log_slot, QUEST_STATE_COMPLETE);
     }
+}
+
+void AlliedRaceCityBoard::RestoreIncompleteQuests(Player& player)
+{
+    for (Route route : Routes)
+        if (player.GetQuestStatus(route.Quest) == QUEST_STATUS_COMPLETE && !player.GetQuestRewardStatus(route.Quest) &&
+            player.GetQuestObjectiveData(route.Quest, route.Board) < 1)
+            player.IncompleteQuest(route.Quest);
 }
 
 int32 Player::GetQuestMoneyReward(Quest const* quest) const
@@ -23408,6 +23422,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
         _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
     _LoadQuestStatusObjectives(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
     _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
+    AlliedRaceCityBoard::RestoreIncompleteQuests(*this);
     // The New Blood's scenario selector is transient. Restore it before login
     // adds the player to map 1522 (also used by the later order-hall scenario).
     // A new instance has no saved scenario criteria or actor state: restart at

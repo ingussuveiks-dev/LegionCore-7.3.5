@@ -53,6 +53,8 @@ EndContentData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
+#include "AlliedRaceCityBoard.h"
+#include "ConditionMgr.h"
 #include "GameObjectAI.h"
 #include "Spell.h"
 #include "QuestData.h"
@@ -1610,6 +1612,30 @@ struct go_pirate_day_music : public GameObjectAI
     }
 };
 
+namespace
+{
+struct go_allied_race_city_board : GameObjectAI
+{
+    explicit go_allied_race_city_board(GameObject* object) : GameObjectAI(object) { }
+
+    bool GossipUse(Player* player) override { return GossipHello(player, true); }
+
+    bool GossipHello(Player* player, bool /*isUse*/) override
+    {
+        if (AlliedRaceCityBoard::IsCapitalBoard(go->GetEntry(), go->GetMapId(), go->GetDBTableGUIDLow()) &&
+            go->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER && go->isSpawned() &&
+            !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) &&
+            player->IsAlive() && player->CanContact() && !player->IsSpectator() &&
+            go->IsWithinDistInMap(player, go->GetInteractionDistance()) && player->canSeeOrDetect(go) &&
+            player->IsWithinLOSInMap(go) && sConditionMgr->IsPlayerMeetingCondition(player, go->GetGOInfo()->questgiver.conditionID1))
+            player->KillCreditGO(go->GetEntry(), go->GetGUID());
+
+        // Keep the ordinary board menu and its unrelated quests.
+        return false;
+    }
+};
+}
+
 void AddSC_go_scripts()
 {
     new go_cat_figurine;
@@ -1659,4 +1685,5 @@ void AddSC_go_scripts()
     RegisterGameObjectAI(go_midsummer_music);
     RegisterGameObjectAI(go_darkmoon_faire_music);
     RegisterGameObjectAI(go_pirate_day_music);
+    RegisterGameObjectAI(go_allied_race_city_board);
 }
