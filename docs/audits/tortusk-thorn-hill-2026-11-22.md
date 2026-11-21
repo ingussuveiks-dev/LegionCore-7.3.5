@@ -1,0 +1,7 @@
+# The Tortusk Takedown (13968)
+
+10. līmeņa kvesta devējs un saņēmējs ir Togrik `34513`. Iepriekšējais kvests `13963` un mērķis `34544 × 1` ir vietā. Pasaulē trūka paša Tortusk `34544`. Quest POI no Legion datiem norāda Thorn Hill, un vietējās TrinityCore TDB atsauces novietojums deva horizontālās koordinātas `-37.4816, -3351.61`. Atjaunotā ieraksta augstums `91.7306` sakrīt ar Legion 7.3.5 servera mērīto grīdu kartes `1` rajonā `1699`. Novietojums ir koplietots ar 120 sekunžu atjaunošanos. `SmartAI` atkal izmanto jau esošo aggro burvestības `82610` rindu. [Kvesta apraksts un vieta](https://www.wowhead.com/quest=13968/the-tortusk-takedown)
+
+Izolētajā MariaDB pārbaudītas sākotnējās rindas, migrācija un tās atkārtota palaišana. `Test-QuestObjectLootNative.ps1 -Tortusk` pārbaudīja kartes grīdu, aktiera izveidi no ielasītā šablona un native pēdējā sitiena norisi ar spēlētāju bez kvesta un ar pieņemta kvesta īpašnieka mājdzīvnieku. Pirmajā gadījumā progresa nebija, otrajā tika ieskaitīts viens mērķis un kvests kļuva pabeidzams. Pārbaudes tēlam iestatīts XP slieksnis un parasta mājdzīvnieka vadība.
+
+Uzstādītais Release startēja ar labotajiem datiem izolētā MariaDB, un faktiskais datu labojums darba MariaDB ir nolasīts atpakaļ ar reģistrētu `RELEASED` kontrolsummu. Veiksmīgajās pārbaudēs nebija jaunu avāriju vai DBErrors. Iepriekšējo pārbaudes mēģinājumu žurnāli saglabāti lokāli `build-extractors/bin/Release/fixed/2026-11-22-darkmoon-tortusk/`. Klientā vēl jāapstiprina pieeja, kaujas uzvedība, atjaunošanās un nodošana pie Togrik.

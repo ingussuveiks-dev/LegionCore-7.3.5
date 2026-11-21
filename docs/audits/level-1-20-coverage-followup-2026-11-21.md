@@ -16,6 +16,10 @@ Pazīmes pārklājas. Aktiera novietojums vēl neapstiprina pieejamu piedāvāju
 
 Mathystra Relics `951` nav sākuma sasaistes vai relikviju objektu spawnu. Relikvijas un kvests izņemti 4.0.3a, tāpēc to neesamība atbilst Legion pasaulei. [Mathystra Relics vēsture](https://warcraft.wiki.gg/wiki/Mathystra_Relics)
 
-`29433` prasītajām Grisly Trophies nav atrasta iegūšanas saite. Kvesta teksts prasa Darkmoon Adventurer’s Guide un nogalināšanu, kas dod XP vai godu. Jāpārbauda pasākuma un grupas nogalināšanas ceļš. `37644/37645` abas devēju versijas ir tikai Draenor garnizona kartēs `1153/1159/1330/1331`. Nulles minimuma vērtība prasa papildus izsekot garnizona pieejamību.
+`29433` trofeju ceļš atjaunots un pārbaudīts serverī, ieskaitot aktīvo kvestu, grupu, mantas atrašanos somā un nodošanu. [Darkmoon pārbaude](darkmoon-test-your-strength-2026-11-22.md)
+
+Abiem `37644/37645` piedāvājumiem devēji ir tikai Draenor garnizona kartēs `1153/1159/1330/1331`. To izveides kvesti `34378/34586` sākas 90. līmenī, un Pet Menagerie būves kvesti `36483/36662` sākas 98. līmenī. Šie ieraksti ir ārpus 1.–20. līmeņa spēlētāja parastā ceļa.
+
+`13968` atjaunots Tortusk pasaules novietojums. Servera pārbaude apstiprināja atrašanās vietu, nogalināšanu un progresu mājdzīvnieka īpašniekam. [Tortusk pārbaude](tortusk-thorn-hill-2026-11-22.md)
 
 Eksports un atlases pārskats ir lokāli `.codex/quest-coverage-20261121/exports-clean/` un `.codex/quest-coverage-20261121/ranked-survey/`. Tajos ir `quests.jsonl`, `candidates.tsv` un kopsavilkums ar izmantoto SQL, DB2 un Release SHA-256. Pārskats tagad uzskaita faktiskās atmešanas metadatu saites, jo iepriekš labotais pamata kods vairs neizsauc noņemšanu divreiz. Abi datu avoti nolasīti tikai lasāmās transakcijās, izmantojot izolētās datubāzes iestatījumus.
