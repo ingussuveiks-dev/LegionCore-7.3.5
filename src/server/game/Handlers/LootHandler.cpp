@@ -184,6 +184,11 @@ void WorldSession::LootCorps(ObjectGuid corpsGUID, WorldObject* lootedBy)
 
 void WorldSession::HandleLootRelease(WorldPackets::Loot::LootRelease& packet)
 {
+    // Releasing gameobject loot can consume a shared spawn. Only the session
+    // with that loot window open can request the state change.
+    if (packet.Unit.IsGameObject() && packet.Unit != GetPlayer()->GetLootGUID())
+        return;
+
     DoLootRelease(packet.Unit);
 }
 

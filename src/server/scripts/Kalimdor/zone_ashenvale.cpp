@@ -28,9 +28,14 @@ npc_torek
 npc_ruul_snowhoof
 EndContentData */
 
+#include "GameObject.h"
+#include "GameObjectAI.h"
+#include "ObjectAccessor.h"
+#include "Player.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
+#include "WorldSession.h"
 
 /*####
 # npc_torek
@@ -476,10 +481,58 @@ class go_naga_brazier : public GameObjectScript
         }
 };
 
+struct go_ashenvale_satyrnaar_fel_wood : GameObjectAI
+{
+    explicit go_ashenvale_satyrnaar_fel_wood(GameObject* object) : GameObjectAI(object) { }
+
+    bool GossipHello(Player* player, bool isUse) override
+    {
+        constexpr uint32 AShamefulWaste = 26454;
+        constexpr uint32 SatyrnaarFelWood = 24081;
+
+        if (!isUse)
+            return false;
+
+        // The opening spell has validated the lock. Reject an ineligible
+        // player before SendLoot can activate the shared chest with no loot.
+        if (!player->IsAlive() || !player->CanContact() || player->IsSpectator() ||
+            !go->IsWithinDistInMap(player, INTERACTION_DISTANCE) ||
+            player->GetQuestStatus(AShamefulWaste) != QUEST_STATUS_INCOMPLETE || !player->HasQuestForItem(SatyrnaarFelWood))
+            return true;
+
+        if (go->getLootState() == GO_ACTIVATED)
+        {
+            // This chest generates its quest item for the first opener. A
+            // second loot window would be empty and could discard that item.
+            if (Player* opener = ObjectAccessor::GetPlayer(*go, _opener))
+                if (opener->GetLootGUID() == go->GetGUID())
+                {
+                    if (go->IsWithinDistInMap(opener, INTERACTION_DISTANCE))
+                        return true;
+                    opener->GetSession()->DoLootRelease(go->GetGUID());
+                }
+
+            // A player who left interaction range may have closed the
+            // window without a chance for the native release to reset it.
+            go->SetLootState(GO_READY);
+        }
+        return go->getLootState() != GO_READY;
+    }
+
+    void OnStateChanged(uint32 state, Unit* user) override
+    {
+        _opener = state == GO_ACTIVATED && user ? user->GetGUID() : ObjectGuid::Empty;
+    }
+
+private:
+    ObjectGuid _opener;
+};
+
 void AddSC_ashenvale()
 {
     new npc_torek();
     new npc_ruul_snowhoof();
     new npc_muglash();
     new go_naga_brazier();
+    RegisterGameObjectAI(go_ashenvale_satyrnaar_fel_wood);
 }
