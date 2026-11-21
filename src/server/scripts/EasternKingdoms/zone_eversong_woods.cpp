@@ -32,6 +32,7 @@ go_harbinger_second_trial
 EndContentData */
 
 #include "ScriptMgr.h"
+#include "QuestItemLock.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 #include "ScriptedEscortAI.h"
@@ -637,6 +638,25 @@ public:
     };
 };
 
+namespace
+{
+struct go_duskwither_power_source : QuestItemLockAI
+{
+    explicit go_duskwither_power_source(GameObject* object) : QuestItemLockAI(object, 31614, 24337) { }
+
+    bool CanOpen(Player const* player) const override
+    {
+        return player && player->IsAlive() && go->GetMapId() == 530 && go->IsInMap(player) &&
+            go->GetGoType() == GAMEOBJECT_TYPE_GOOBER && go->GetGOInfo()->GetLockId() == 1673 &&
+            go->GetGOInfo()->goober.questID == 8889 && go->isSpawned() && player->canSeeOrDetect(go) &&
+            !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) && player->IsWithinLOSInMap(go) &&
+            player->GetQuestStatus(8889) == QUEST_STATUS_INCOMPLETE && player->GetQuestObjectiveData(8889, go->GetEntry()) == 0;
+    }
+};
+
+using spell_duskwither_deactivating_jewel = spell_quest_item_opening;
+}
+
 void AddSC_eversong_woods()
 {
     new npc_second_trial_controller();
@@ -644,4 +664,6 @@ void AddSC_eversong_woods()
     new go_second_trial();
     new npc_apprentice_mirveda();
     new npc_infused_crystal();
+    RegisterGameObjectAI(go_duskwither_power_source);
+    RegisterSpellScript(spell_duskwither_deactivating_jewel);
 }

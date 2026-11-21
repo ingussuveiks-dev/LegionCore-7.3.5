@@ -29,6 +29,7 @@ npc_ranger_lilatha
 EndContentData */
 
 #include "AnowynCrystal.h"
+#include "QuestItemLock.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "Item.h"
@@ -190,88 +191,15 @@ public:
 
 namespace
 {
-class GhostlandsQuestLock : public GameObjectAI
-{
-public:
-    GhostlandsQuestLock(GameObject* object, uint32 opening, uint32 item) : GameObjectAI(object), _opening(opening), _item(item) { }
-
-    bool CanOpenWith(Player const* player, uint32 spell, Item const* item) const
-    {
-        return spell == _opening && item && item->GetEntry() == _item && CanOpen(player);
-    }
-
-    void BeginOpening(Player const* player, uint32 spell)
-    {
-        _opener = spell == _opening && CanOpen(player) ? player->GetGUID() : ObjectGuid::Empty;
-    }
-
-    void EndOpening() { _opener.Clear(); }
-
-    bool GossipUse(Player* player) final
-    {
-        if (_opener != player->GetGUID())
-            return true;
-        EndOpening();
-        return !CanOpen(player) || !OnOpened(player);
-    }
-
-protected:
-    virtual bool CanOpen(Player const* player) const = 0;
-    virtual bool OnOpened(Player* /*player*/) { return true; }
-
-private:
-    uint32 const _opening;
-    uint32 const _item;
-    ObjectGuid _opener;
-};
-
-class spell_ghostlands_quest_opening : public SpellScript
-{
-    PrepareSpellScript(spell_ghostlands_quest_opening);
-
-    static GhostlandsQuestLock* LockAI(GameObject* object)
-    {
-        return object ? dynamic_cast<GhostlandsQuestLock*>(object->AI()) : nullptr;
-    }
-
-    SpellCastResult CheckOpening()
-    {
-        auto lock = LockAI(GetExplTargetGObj());
-        return lock && lock->CanOpenWith(GetCaster()->ToPlayer(), GetSpellInfo()->Id, GetCastItem())
-            ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
-    }
-
-    // The default OPEN_LOCK handler still checks Lock.db2 before calling
-    // GameObject::Use synchronously. Only that use may pass the rack's guard.
-    void BeginOpening(SpellEffIndex /*effect*/)
-    {
-        if (auto lock = LockAI(GetHitGObj()))
-            lock->BeginOpening(GetCaster()->ToPlayer(), GetSpellInfo()->Id);
-    }
-
-    void EndOpening()
-    {
-        if (auto lock = LockAI(GetHitGObj()))
-            lock->EndOpening();
-    }
-
-    void Register() override
-    {
-        OnCheckCast += SpellCheckCastFn(spell_ghostlands_quest_opening::CheckOpening);
-        OnEffectHitTarget += SpellEffectFn(spell_ghostlands_quest_opening::BeginOpening, EFFECT_0, SPELL_EFFECT_OPEN_LOCK);
-        AfterHit += SpellHitFn(spell_ghostlands_quest_opening::EndOpening);
-    }
-};
-
-using spell_apothecarys_poison = spell_ghostlands_quest_opening;
-using spell_aquantion_medallions = spell_ghostlands_quest_opening;
-using spell_anowyn_controlling_orb = spell_ghostlands_quest_opening;
+using spell_apothecarys_poison = spell_quest_item_opening;
+using spell_aquantion_medallions = spell_quest_item_opening;
+using spell_anowyn_controlling_orb = spell_quest_item_opening;
 
 constexpr uint32 SeasoningQuest = 9275;
 
-struct go_seasoning_rack : GhostlandsQuestLock
+struct go_seasoning_rack : QuestItemLockAI
 {
-    explicit go_seasoning_rack(GameObject* object) : GhostlandsQuestLock(object, 29517, 22796) { }
+    explicit go_seasoning_rack(GameObject* object) : QuestItemLockAI(object, 29517, 22796) { }
 
     bool CanOpen(Player const* player) const override
     {
@@ -293,9 +221,9 @@ Position const AquantionPlacement{7941.15f, -7636.45f, 116.19f, 5.66f};
 constexpr uint32 AquantionDelay = 2 * IN_MILLISECONDS;
 constexpr uint32 AquantionLifetime = 15 * MINUTE * IN_MILLISECONDS;
 
-struct go_aquantion_altar : GhostlandsQuestLock
+struct go_aquantion_altar : QuestItemLockAI
 {
-    explicit go_aquantion_altar(GameObject* object) : GhostlandsQuestLock(object, AquantionOpening, AquantionMedallions) { }
+    explicit go_aquantion_altar(GameObject* object) : QuestItemLockAI(object, AquantionOpening, AquantionMedallions) { }
 
     bool CanOpen(Player const* player) const override
     {
@@ -360,9 +288,9 @@ private:
     uint32 _timer = 0;
 };
 
-struct go_anowyn_moon_crystal : GhostlandsQuestLock
+struct go_anowyn_moon_crystal : QuestItemLockAI
 {
-    explicit go_anowyn_moon_crystal(GameObject* object) : GhostlandsQuestLock(object, AnowynCrystal::Opening, AnowynCrystal::Orb) { }
+    explicit go_anowyn_moon_crystal(GameObject* object) : QuestItemLockAI(object, AnowynCrystal::Opening, AnowynCrystal::Orb) { }
 
     bool CanOpen(Player const* player) const override
     {

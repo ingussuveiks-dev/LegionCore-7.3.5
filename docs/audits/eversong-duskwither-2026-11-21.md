@@ -1,0 +1,14 @@
+# Deactivating the Spire Eversong Woods
+
+Kvestu `8889` pieņem un nodod pie Apprentice Loralthalis `15924`. Pieņemšana dod vienu *Deactivating Jewel* `24337`. Legion burvestība `31614` izmanto `OPEN_LOCK` uz slēdzenes `1673`. Trīs atsevišķie *Duskwither Spire Power Source* mērķi ir `180916`, `180919` un `180920`. Katram ir viens kartes `530` spawns dažādā augstumā. Tālāk Loralthalis piedāvā `8890`, ko nodod Magister Duskwither `15951`.
+
+Sākotnējie dati ļāva ar parastu klikšķi ieskaitīt visas trīs iekārtas, kamēr dārgakmens vēl bija somā. Labojums piešķir kredītu tikai tad, kad spēlētāja īstā dārgakmens burvestība sasniedz vēl neizpildītu iekārtu. Saglabāta Legion slēdzene, vienas sekundes koplietojamā animācija un spawnu atjaunošanās laiki. Dārgakmens paliek līdzi visiem trim metieniem un standarta atlīdzības ceļš izņem vienu vienību. Atmešana izņem priekšmetu, un atkārtota pieņemšana piešķir to no jauna.
+
+## Pārbaudes un izvietošana
+
+- `Test-QuestObjectLootNative.ps1 -DuskwitherBaseline` ar sākotnējām objekta veidnēm atkārtoja trīs parasto klikšķu kļūdu. `-Duskwither` izpildīja īstu pieņemšanu, abu spēlētāju mērķa marķierus, trīs dārgakmens burvestības, nederīga mērķa un darbības bez dārgakmens atteikumu, vienreizēju kredītu katrai iekārtai, standarta `RewardQuest` somas tīrīšanu, atmešanu un atkārtotu pieņemšanu. Native atlīdzību saglabāja tikai tukšajā izolētajā tēlu shēmā. Divi sākotnējie testa būvējumi apturēti kompilācijā un linkošanā. Pirmajā izmantots nepareizs C++ priekšmeta lauka nosaukums. Otrajā mēģināts tieši izsaukt iekšēju tīrīšanas funkciju. Gala pārbaude iet caur faktisko atlīdzības metodi.
+- Kopīgo slēdzamo objektu kodu atkārtoti pārbaudīja `-Seasoning`, `-Aquantion` un `-Anowyn`. Visi trīs izgāja. Pārbaudītas faktiskās gala `scripts.lib` un `game.lib` ievades, Eversong skripta simboli, saglabātās Ghostlands reģistrācijas un `Player::RewardQuest` no `game:Player.obj`.
+- Kanoniskais `worldserver.exe` ar SHA-256 `65E9E93F7AF87E5BA72084D626EB99BDB77EB65F9784D4C224A5A51E4BB7F613` palaidās ar migrēto izolēto pasauli un korekti apstājās. Migrācija `2026_11_21_41_eversong_duskwither_power_sources.sql` ar SHA-1 `7C0C642AB7560DE25A05AC48E1B96F0FC24DAA3F` piemērota `legion_world` un reģistrēta kā `RELEASED`. Nolasījums apstiprina visas trīs veidņu piesaistes un burvestības skriptu.
+- Pārbaudītajā palaišanā, veiksmīgajos testos un importā nebija jaunu crash failu, `DBErrors.log` ierakstu vai neizskaidrotu servera brīdinājumu. Saglabāti 69 diagnostikas faili ar pārbaudītām SHA-256 kontrolsummām zem `build-extractors/bin/Release/fixed/eversong-duskwither-2026-11-21/`. Izņemti 47 pagaidu faili jeb 2 058 764 469 baiti. Saglabāta pēdējā atjaunošanas kopija un atkārtoti lietojamā izolētā datubāze. Uzdevuma serveri korekti apstājās.
+
+7.3.5 klientā vēl jāpārbauda pārvietošanās starp Spire stāviem, iekārtu izskats un atlīdzības logs pie Loralthalis ar pāreju uz `8890`.
