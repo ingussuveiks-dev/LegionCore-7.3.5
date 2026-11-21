@@ -6,8 +6,11 @@
 #include "GossipData.h"
 #include "GossipDef.h"
 #include "Log.h"
+#include "MoveSpline.h"
+#include "MoveSplineInit.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "PathGenerator.h"
 #include "Player.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
@@ -2746,6 +2749,40 @@ constexpr uint32 AgathaFelLavaTrigger = 9645;
 constexpr uint32 AgathaDarkFuryDamage = 243111;
 constexpr uint32 AgathaDarkFuryShield = 243113;
 constexpr uint32 AgathaDarkFuryChannel = 243114;
+constexpr uint32 AgathaBoulder = 121109;
+constexpr uint32 AgathaBoulderController = 121627;
+constexpr uint32 AgathaBoulderVisual = 241473;
+constexpr uint32 AgathaBoulderLanding = 241475;
+constexpr uint32 AgathaBoulderWindup = 241502;
+constexpr uint32 AgathaBoulderHit = 241523;
+
+std::array<Position, 3> const AgathaBoulderStarts =
+{{
+    {-346.0f, 7688.0f, 63.45f, 4.41f},
+    {-334.0f, 7688.0f, 63.48f, 4.41f},
+    {-322.0f, 7688.0f, 63.77f, 4.41f}
+}};
+
+std::array<Position, 3> const AgathaBoulderEnds =
+{{
+    {-379.0f, 7583.0f, 53.28f, 4.41f},
+    {-367.0f, 7583.0f, 53.28f, 4.41f},
+    {-355.0f, 7583.0f, 53.28f, 4.41f}
+}};
+
+bool IsInAgathaBoulderPath(Position const& previous, Position const& current, Position const& target)
+{
+    float const dx = current.GetPositionX() - previous.GetPositionX();
+    float const dy = current.GetPositionY() - previous.GetPositionY();
+    float const offsetX = target.GetPositionX() - previous.GetPositionX();
+    float const offsetY = target.GetPositionY() - previous.GetPositionY();
+    float const lengthSquared = dx * dx + dy * dy;
+    float const fraction = lengthSquared > 0.0f ? std::clamp((dx * offsetX + dy * offsetY) / lengthSquared, 0.0f, 1.0f) : 0.0f;
+    float const z = previous.GetPositionZ() + (current.GetPositionZ() - previous.GetPositionZ()) * fraction;
+    float const horizontalX = offsetX - dx * fraction;
+    float const horizontalY = offsetY - dy * fraction;
+    return std::abs(target.GetPositionZ() - z) <= 4.5f && horizontalX * horizontalX + horizontalY * horizontalY <= 20.25f;
+}
 
 bool IsInsideAgathaFelLava(AreaTrigger const& ground, Unit const& target)
 {
@@ -2780,6 +2817,7 @@ public:
         {
             ClearFelLava();
             ClearDarkFury();
+            ClearBoulders();
             SmartAI::Reset();
             _position = AgathaPosition::Center;
             _reachedLower = false;
@@ -2788,6 +2826,7 @@ public:
             _retry = 0;
             _failures = 0;
             _nextFelLava = 8000;
+            _nextBoulder = 0;
             if (IsArenaActor())
                 SetCombatMove(false);
         }
@@ -2802,15 +2841,19 @@ public:
                     ClearFelLava();
                 if (me->HasAura(AgathaDarkFuryChannel))
                     ClearDarkFury();
+                ClearBoulders();
                 return;
             }
 
             UpdateTranslocate(diff);
             if (_position != AgathaPosition::Center)
+            {
                 UpdateFelLava(*player, diff);
+                UpdateBoulders(diff);
+            }
         }
 
-        Player* GetFelLavaPlayer() const
+        Player* GetRelocatedArenaPlayer() const
         {
             return _position == AgathaPosition::Center ? nullptr : GetArenaPlayer();
         }
@@ -2819,7 +2862,39 @@ public:
         {
             ClearFelLava();
             ClearDarkFury();
+            ClearBoulders();
             SmartAI::JustDied(killer);
+        }
+
+        void LaunchBoulder(Creature& controller)
+        {
+            if (_boulderController != controller.GetGUID() || controller.GetEntry() != AgathaBoulderController ||
+                !GetRelocatedArenaPlayer())
+                return;
+
+            uint32 const lane = urand(0, uint32(AgathaBoulderStarts.size() - 1));
+            TempSummon* boulder = me->SummonCreature(AgathaBoulder, AgathaBoulderStarts[lane], TEMPSUMMON_TIMED_DESPAWN, 14000);
+            if (!boulder)
+            {
+                TC_LOG_ERROR("scripts", "An Impossible Foe: Agatha could not publish a Felfire Boulder");
+                return;
+            }
+            _boulders.insert(boulder->GetGUID());
+            boulder->AI()->SetData(1, lane);
+        }
+
+        Player* GetBoulderPlayer(Creature const& boulder) const
+        {
+            return boulder.GetEntry() == AgathaBoulder && me->IsInMap(&boulder) && me->InSamePhase(&boulder) &&
+                _boulders.count(boulder.GetGUID()) ? GetRelocatedArenaPlayer() : nullptr;
+        }
+
+        void SummonedCreatureDespawn(Creature* summon) override
+        {
+            _boulders.erase(summon->GetGUID());
+            if (_boulderController == summon->GetGUID())
+                _boulderController.Clear();
+            SmartAI::SummonedCreatureDespawn(summon);
         }
 
         Player* GetArenaPlayer() const
@@ -2874,6 +2949,43 @@ public:
         }
 
     private:
+        void UpdateBoulders(uint32 diff)
+        {
+            _nextBoulder -= std::min(diff, _nextBoulder);
+            if (_nextBoulder)
+                return;
+
+            Creature* controller = ObjectAccessor::GetCreature(*me, _boulderController);
+            if (!controller)
+            {
+                controller = me->SummonCreature(AgathaBoulderController, AgathaBoulderStarts[1], TEMPSUMMON_MANUAL_DESPAWN);
+                if (!controller)
+                {
+                    TC_LOG_ERROR("scripts", "An Impossible Foe: Agatha could not publish the Boulder Controller");
+                    _nextBoulder = 6500;
+                    return;
+                }
+                _boulderController = controller->GetGUID();
+            }
+            _nextBoulder = controller->CastSpell(controller, AgathaBoulderWindup, false) == SPELL_CAST_OK ? 6500 : 1500;
+        }
+
+        void ClearBoulders()
+        {
+            if (_boulders.empty() && _boulderController.IsEmpty())
+                return;
+
+            std::set<ObjectGuid> boulders;
+            boulders.swap(_boulders);
+            for (ObjectGuid const& guid : boulders)
+                if (Creature* boulder = ObjectAccessor::GetCreature(*me, guid))
+                    boulder->DespawnOrUnsummon();
+
+            if (Creature* controller = ObjectAccessor::GetCreature(*me, _boulderController))
+                controller->DespawnOrUnsummon();
+            _boulderController.Clear();
+        }
+
         void ClearDarkFury()
         {
             if (!IsArenaActor())
@@ -3019,6 +3131,9 @@ public:
         uint32 _nextFelLava = 8000;
         uint32 _lavaCheckRemaining = 0;
         std::set<ObjectGuid> _lavaAffected;
+        uint32 _nextBoulder = 0;
+        ObjectGuid _boulderController;
+        std::set<ObjectGuid> _boulders;
     };
 
     CreatureAI* GetAI(Creature* creature) const override { return new AgathaAI(creature); }
@@ -3034,6 +3149,12 @@ npc_mage_tower_agatha::AgathaAI* GetAgathaAI(Unit* caster)
         return nullptr;
     return dynamic_cast<npc_mage_tower_agatha::AgathaAI*>(agatha->AI());
 }
+
+npc_mage_tower_agatha::AgathaAI* GetBoulderOwner(Unit* actor)
+{
+    TempSummon* summon = actor ? actor->ToTempSummon() : nullptr;
+    return summon ? GetAgathaAI(summon->GetSummoner()) : nullptr;
+}
 }
 
 class spell_mage_tower_agatha_fel_lava : public SpellScript
@@ -3045,7 +3166,7 @@ class spell_mage_tower_agatha_fel_lava : public SpellScript
     void SelectTarget(std::list<WorldObject*>& targets)
     {
         auto* ai = GetAgathaAI(GetCaster());
-        Player* player = ai ? ai->GetFelLavaPlayer() : nullptr;
+        Player* player = ai ? ai->GetRelocatedArenaPlayer() : nullptr;
         targets.remove_if([player](WorldObject* target)
         {
             Unit* unit = target ? target->ToUnit() : nullptr;
@@ -3056,7 +3177,7 @@ class spell_mage_tower_agatha_fel_lava : public SpellScript
     void CreateLava(SpellEffIndex effect)
     {
         auto* ai = GetAgathaAI(GetCaster());
-        if (!ai || !ai->GetFelLavaPlayer())
+        if (!ai || !ai->GetRelocatedArenaPlayer())
             PreventHitDefaultEffect(effect);
     }
 
@@ -3140,6 +3261,142 @@ class spell_mage_tower_agatha_dark_fury_damage : public SpellScript
     void Register() override
     {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_agatha_dark_fury_damage::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+    }
+};
+
+class npc_mage_tower_agatha_boulder : public CreatureScript
+{
+public:
+    npc_mage_tower_agatha_boulder() : CreatureScript("npc_mage_tower_agatha_boulder") {}
+
+    struct BoulderAI : ScriptedAI
+    {
+        explicit BoulderAI(Creature* creature) : ScriptedAI(creature) { me->SetReactState(REACT_PASSIVE); }
+
+        void SetData(uint32 id, uint32 lane) override
+        {
+            auto* agatha = GetBoulderOwner(me);
+            if (id != 1 || lane >= AgathaBoulderEnds.size() || _moving || !agatha || !agatha->GetBoulderPlayer(*me))
+                return;
+
+            Position const& destination = AgathaBoulderEnds[lane];
+            PathGenerator path(me);
+            path.SetUseStraightPath(true);
+            if (!path.CalculatePath(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ()) ||
+                path.GetPathType() != PATHFIND_NORMAL || path.GetPath().size() < 2)
+            {
+                TC_LOG_ERROR("scripts", "An Impossible Foe: Felfire Boulder could not find a complete path in lane %u", lane);
+                me->DespawnOrUnsummon();
+                return;
+            }
+
+            _previous = me->GetPosition();
+            Movement::MoveSplineInit spline(*me);
+            spline.MovebyPath(path.GetPath());
+            spline.SetVelocity(14.0f);
+            if (!spline.Launch())
+            {
+                TC_LOG_ERROR("scripts", "An Impossible Foe: Felfire Boulder could not launch its spline in lane %u", lane);
+                me->DespawnOrUnsummon();
+                return;
+            }
+
+            _moving = true;
+            me->CastSpell(me, AgathaBoulderVisual, true);
+            me->CastSpell(me, AgathaBoulderLanding, true);
+        }
+
+        void UpdateAI(uint32) override
+        {
+            auto* agatha = GetBoulderOwner(me);
+            Player* player = agatha ? agatha->GetBoulderPlayer(*me) : nullptr;
+            if (!player)
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
+            if (!_moving)
+                return;
+
+            Position const current = me->GetPosition();
+            auto hit = [this, &current](Unit& target)
+            {
+                if (!target.IsAlive() || !me->IsInMap(&target) || !me->InSamePhase(&target) ||
+                    !IsInAgathaBoulderPath(_previous, current, target.GetPosition()) ||
+                    !_hit.insert(target.GetGUID()).second)
+                    return;
+
+                if (me->CastSpell(&target, AgathaBoulderHit, true) != SPELL_CAST_OK)
+                    _hit.erase(target.GetGUID());
+            };
+            hit(*player);
+            Unit::ControlList const controlled = player->m_Controlled;
+            for (ObjectGuid const& guid : controlled)
+                if (Unit* unit = ObjectAccessor::GetUnit(*player, guid))
+                    if (unit->GetCharmerOrOwnerPlayerOrPlayerItself() == player)
+                        hit(*unit);
+            _previous = current;
+
+            if (me->movespline->Finalized())
+                me->DespawnOrUnsummon();
+        }
+
+        void AttackStart(Unit*) override {}
+        void MoveInLineOfSight(Unit*) override {}
+
+    private:
+        Position _previous;
+        std::set<ObjectGuid> _hit;
+        bool _moving = false;
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new BoulderAI(creature); }
+};
+
+class spell_mage_tower_agatha_boulder_windup : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_agatha_boulder_windup);
+
+    bool Load() override
+    {
+        Unit* caster = GetCaster();
+        return caster && caster->GetEntry() == AgathaBoulderController && GetBoulderOwner(caster);
+    }
+
+    void LaunchBoulder(SpellEffIndex)
+    {
+        if (Creature* controller = GetHitCreature())
+            if (auto* agatha = GetBoulderOwner(controller))
+                agatha->LaunchBoulder(*controller);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_tower_agatha_boulder_windup::LaunchBoulder, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+class spell_mage_tower_agatha_boulder_landing : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_agatha_boulder_landing);
+
+    bool Load() override { return GetBoulderOwner(GetCaster()) != nullptr; }
+
+    void SelectTargets(std::list<WorldObject*>& targets)
+    {
+        Creature* boulder = GetCaster()->ToCreature();
+        auto* agatha = GetBoulderOwner(boulder);
+        Player* player = agatha ? agatha->GetBoulderPlayer(*boulder) : nullptr;
+        targets.remove_if([player](WorldObject* target)
+        {
+            Unit* unit = target ? target->ToUnit() : nullptr;
+            return !player || !unit || unit->GetCharmerOrOwnerPlayerOrPlayerItself() != player;
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_agatha_boulder_landing::SelectTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
     }
 };
 
@@ -3546,6 +3803,9 @@ void AddSC_broken_shore()
     RegisterAuraScript(spell_mage_tower_agatha_dark_fury_channel);
     RegisterAuraScript(spell_mage_tower_agatha_dark_fury_shield);
     RegisterSpellScript(spell_mage_tower_agatha_dark_fury_damage);
+    new npc_mage_tower_agatha_boulder();
+    RegisterSpellScript(spell_mage_tower_agatha_boulder_windup);
+    RegisterSpellScript(spell_mage_tower_agatha_boulder_landing);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();

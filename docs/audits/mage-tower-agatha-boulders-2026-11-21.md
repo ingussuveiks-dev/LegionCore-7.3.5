@@ -1,0 +1,13 @@
+# Agatha's Felfire Boulders
+
+After Agatha's first completed Translocate, the original Boulder Controller `121627` uses the native three-second Felfire Boulder windup `241502`. Its completed cast publishes a Boulder `121109` in one of three reachable lanes from the upper end of the arena. The rolling actor uses the native visual `241473`, landing spell `241475`, attached area `243570/10326`, and rolling damage and two-second stun `241523`. The rolling hit uses the segment between the server's previous and current positions. Each boulder can hit the eligible player or a controlled unit once per actor. The landing is a separate native hit.
+
+The route follows a complete map-1616 navigation path. Missing routes fail with diagnostics. Boulders expire at arrival or their finite lifetime and clear with their controller when Agatha's attempt ends. The native Dark Fury, Fel Lava, imp death reaction and victory flow remain in use. Both Legion recordings show the boulders beginning in the relocated phase and rolling down the tunnel. [Original 2017 Fury kill](https://www.youtube.com/watch?v=R4a2esU-LCk), [2018 Fury guide footage](https://www.youtube.com/watch?v=cei8mN5Rrys).
+
+## Verification and limits
+
+- Build 26972 data confirmed the original actors' display, windup, blast radius, rolling damage, stun and unique attached area reference. Actual VMAP and Detour data yielded complete routes of 110.954, 111.353 and 110.748 yards. The source-extracted AddressSanitizer geometry covered swept contact, endpoints, slope, stationary and diagonal motion. The retained Dark Fury regression also passed.
+- The first compilation passed a creature pointer to this core's reference-based spline constructor. The corrected build passed with the actual linker inputs. The exact SQL was applied twice against the isolated MariaDB fixture, then applied manually to production and read back. The native Translocate, Dark Fury, Fel Lava and victory bindings were preserved.
+- The staged and canonical executable SHA-256 was `47149EC05E8FC4E818994334661E411100D2E130EFAE71D3A237B6AE920B11BB`. Both starts reached readiness and shut down cleanly without new crashes, DBErrors, warnings or assertions. The verified `build-extractors/bin/Release/fixed/2026-11-21-mage-tower-agatha-boulders/` archive contains 42 evidence hashes and records 191,795,299 bytes of redundant outputs removed.
+
+The three starting positions and paths, 6.5-second cadence, 14-yard-per-second speed and 4.5-yard contact radius are reconstructions. The center and right paths approach each other at the tunnel bend. Client verification remains for the rolling visual, dodge window, stun and contact while moving, and cleanup after a wipe.
