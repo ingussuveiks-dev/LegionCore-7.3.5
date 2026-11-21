@@ -16,9 +16,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "GameObject.h"
+#include "Item.h"
+#include "KyleLunch.h"
+#include "ObjectAccessor.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
+#include "SpellScript.h"
 
 /*######
 # npc_skorn_whitecloud
@@ -59,136 +64,173 @@ public:
 # npc_kyle_frenzied
 ######*/
 
-enum KyleFrenzied
+struct npc_kyle_frenzied : ScriptedAI
 {
-    //emote signed for 7780 but propably thats wrong id.
-    EMOTE_SEE_LUNCH         = -1000340,
-    EMOTE_EAT_LUNCH         = -1000341,
-    EMOTE_DANCE             = -1000342,
+    explicit npc_kyle_frenzied(Creature* creature) : ScriptedAI(creature) { }
 
-    SPELL_LUNCH             = 42222,
-    NPC_KYLE_FRENZIED       = 23616,
-    NPC_KYLE_FRIENDLY       = 23622,
-    POINT_ID                = 1
-};
-
-class npc_kyle_frenzied : public CreatureScript
-{
-public:
-    npc_kyle_frenzied() : CreatureScript("npc_kyle_frenzied") {}
-
-    CreatureAI* GetAI(Creature* creature) const
+    bool CanAcceptLunch() const
     {
-        return new npc_kyle_frenziedAI (creature);
+        return _stage == Stage::Idle && me->GetEntry() == KyleLunch::Frenzied && me->IsAlive() && !me->isInCombat();
     }
 
-    struct npc_kyle_frenziedAI : public ScriptedAI
+    void Reset() override
     {
-        npc_kyle_frenziedAI(Creature* creature) : ScriptedAI(creature) {}
+        if (GameObject* food = ObjectAccessor::GetGameObject(*me, _food))
+            food->Delete();
+        _food.Clear();
+        _owner.Clear();
+        _stage = Stage::Idle;
+        _timer = 0;
+        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_NONE);
+        if (me->GetEntry() == KyleLunch::Friendly)
+            me->UpdateEntry(KyleLunch::Frenzied);
+    }
 
-        bool EventActive;
-        bool IsMovingToLunch;
-        ObjectGuid PlayerGUID;
-        uint32 EventTimer;
-        uint8 EventPhase;
+    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    {
+        Player* player = caster->ToPlayer();
+        if (spell->Id != KyleLunch::Spell || !CanAcceptLunch() || !CanFeed(player))
+            return;
 
-        void Reset()
+        GameObject* food = player->GetGameObject(KyleLunch::Spell);
+        if (!food || food->GetEntry() != KyleLunch::Food || !food->HasQuestObjectScope() || food->IsQuestObjectExpired())
+            return;
+
+        _food = food->GetGUID();
+        _owner = player->GetGUID();
+        me->GetMotionMaster()->Clear(false);
+        me->GetMotionMaster()->MoveIdle();
+        me->StopMoving();
+        Talk(0);
+        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_CREATURE_SPECIAL);
+        _stage = Stage::Notice;
+        _timer = 5000;
+    }
+
+    void MovementInform(uint32 type, uint32 point) override
+    {
+        if (type != POINT_MOTION_TYPE || point != LunchPoint || _stage != Stage::Approach)
+            return;
+        if (GameObject* food = ObjectAccessor::GetGameObject(*me, _food))
+            ReachFood(food);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_stage == Stage::Idle)
+            return;
+
+        Player* owner = ObjectAccessor::GetPlayer(*me, _owner);
+        GameObject* food = ObjectAccessor::GetGameObject(*me, _food);
+        if (_stage != Stage::Dance && (!CanFeed(owner) || !me->IsWithinDistInMap(owner, 40.0f) ||
+            !food || food->GetOwnerGUID() != _owner || food->IsQuestObjectExpired() || me->isInCombat()))
         {
-            EventActive = false;
-            IsMovingToLunch = false;
-            PlayerGUID.Clear();
-            EventTimer = 5000;
-            EventPhase = 0;
-
-            if (me->GetEntry() == NPC_KYLE_FRIENDLY)
-                me->UpdateEntry(NPC_KYLE_FRENZIED);
+            ResumeMovement();
+            return;
         }
 
-        void SpellHit(Unit* Caster, SpellInfo const* Spell)
+        if (_timer > diff)
         {
-            if (!me->getVictim() && !EventActive && Spell->Id == SPELL_LUNCH)
-            {
-                if (Caster->GetTypeId() == TYPEID_PLAYER)
-                    PlayerGUID = Caster->GetGUID();
+            _timer -= diff;
+            return;
+        }
 
-                if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == WAYPOINT_MOTION_TYPE)
+        switch (_stage)
+        {
+            case Stage::Notice:
+                _stage = Stage::Approach;
+                _timer = 12000;
+                if (!ReachFood(food))
+                    me->GetMotionMaster()->MovePoint(LunchPoint, food->GetPosition());
+                break;
+            case Stage::Eat:
+                if (me->GetExactDist(food) > 2.5f)
                 {
-                    me->GetMotionMaster()->MovementExpired();
-                    me->GetMotionMaster()->MoveIdle();
-                    me->StopMoving();
+                    ResumeMovement();
+                    break;
                 }
-
-                EventActive = true;
-                DoScriptText(EMOTE_SEE_LUNCH, me);
-                me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_CREATURE_SPECIAL);
-            }
+                food->Delete();
+                _food.Clear();
+                owner->TalkedToCreature(KyleLunch::Frenzied, me->GetGUID());
+                Talk(2);
+                me->UpdateEntry(KyleLunch::Friendly);
+                me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_DANCESPECIAL);
+                _stage = Stage::Dance;
+                _timer = 30000;
+                break;
+            case Stage::Approach:
+            case Stage::Dance:
+                ResumeMovement();
+                break;
+            case Stage::Idle:
+                break;
         }
+    }
 
-        void MovementInform(uint32 Type, uint32 PointId)
-        {
-            if (Type != POINT_MOTION_TYPE || !EventActive)
-                return;
+    static bool CanFeed(Player const* player)
+    {
+        return player && player->IsAlive() && player->GetMapId() == 1 &&
+            player->GetQuestStatus(KyleLunch::Quest) == QUEST_STATUS_INCOMPLETE;
+    }
 
-            if (PointId == POINT_ID)
-                IsMovingToLunch = false;
-        }
+private:
+    enum class Stage { Idle, Notice, Approach, Eat, Dance };
+    static constexpr uint32 LunchPoint = 1;
 
-        void UpdateAI(uint32 diff)
-        {
-            if (EventActive)
-            {
-                if (IsMovingToLunch)
-                    return;
+    bool ReachFood(GameObject* food)
+    {
+        if (me->GetExactDist(food) > 2.5f || !me->IsWithinLOS(food->GetPositionX(), food->GetPositionY(), food->GetPositionZ()))
+            return false;
+        Talk(1);
+        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_USE_STANDING);
+        _stage = Stage::Eat;
+        _timer = 5000;
+        return true;
+    }
 
-                if (EventTimer <= diff)
-                {
-                    EventTimer = 5000;
-                    ++EventPhase;
+    void ResumeMovement()
+    {
+        Reset();
+        me->StopMoving();
+        me->GetMotionMaster()->Initialize();
+    }
 
-                    switch (EventPhase)
-                    {
-                        case 1:
-                            if (Unit* unit = Unit::GetUnit(*me, PlayerGUID))
-                            {
-                                if (GameObject* go = unit->GetGameObject(SPELL_LUNCH))
-                                {
-                                    IsMovingToLunch = true;
-                                    me->GetMotionMaster()->MovePoint(POINT_ID, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ());
-                                }
-                            }
-                            break;
-                        case 2:
-                            DoScriptText(EMOTE_EAT_LUNCH, me);
-                            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_USE_STANDING);
-                            break;
-                        case 3:
-                            if (Player* unit = Unit::GetPlayer(*me, PlayerGUID))
-                                unit->TalkedToCreature(me->GetEntry(), me->GetGUID());
+    ObjectGuid _owner;
+    ObjectGuid _food;
+    uint32 _timer = 0;
+    Stage _stage = Stage::Idle;
+};
 
-                            me->UpdateEntry(NPC_KYLE_FRIENDLY);
-                            break;
-                        case 4:
-                            EventTimer = 30000;
-                            DoScriptText(EMOTE_DANCE, me);
-                            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_DANCESPECIAL);
-                            break;
-                        case 5:
-                            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_NONE);
-                            Reset();
-                            me->GetMotionMaster()->Clear();
-                            break;
-                    }
-                }
-                else
-                    EventTimer -= diff;
-            }
-        }
-    };
+class spell_kyle_lunch : public SpellScript
+{
+    PrepareSpellScript(spell_kyle_lunch);
 
+    SpellCastResult CheckLunch()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        Item* item = GetCastItem();
+        return npc_kyle_frenzied::CanFeed(player) && item && item->GetEntry() == KyleLunch::Item &&
+            !player->GetGameObject(KyleLunch::Spell) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    void SelectKyle(WorldObject*& target)
+    {
+        Creature* creature = target ? target->ToCreature() : nullptr;
+        auto kyle = creature ? dynamic_cast<npc_kyle_frenzied*>(creature->AI()) : nullptr;
+        if (!kyle || !kyle->CanAcceptLunch() || !GetCaster()->IsWithinLOSInMap(creature))
+            target = nullptr;
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_kyle_lunch::CheckLunch);
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_kyle_lunch::SelectKyle, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+    }
 };
 
 void AddSC_mulgore()
 {
     new npc_skorn_whitecloud();
-    new npc_kyle_frenzied();
+    RegisterCreatureAI(npc_kyle_frenzied);
+    RegisterSpellScript(spell_kyle_lunch);
 }

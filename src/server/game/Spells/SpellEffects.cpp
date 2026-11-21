@@ -45,6 +45,7 @@
 #include "Guild.h"
 #include "GuildMgr.h"
 #include "InstanceScript.h"
+#include "KyleLunch.h"
 #include "Language.h"
 #include "Log.h"
 #include "MapManager.h"
@@ -5265,6 +5266,14 @@ void Spell::EffectSummonObjectWild(SpellEffIndex effIndex)
         return;
 
     uint32 gameobject_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue;
+    Player* lunchOwner = nullptr;
+    if (m_spellInfo->Id == KyleLunch::Spell && gameobject_id == KyleLunch::Food)
+    {
+        lunchOwner = m_caster->ToPlayer();
+        if (!lunchOwner || !lunchOwner->IsAlive() || lunchOwner->GetQuestStatus(KyleLunch::Quest) != QUEST_STATUS_INCOMPLETE ||
+            lunchOwner->GetGameObject(KyleLunch::Spell))
+            return;
+    }
 
     GameObject* pGameObj = sObjectMgr->IsStaticTransport(gameobject_id) ? new StaticTransport : new GameObject;
 
@@ -5294,10 +5303,29 @@ void Spell::EffectSummonObjectWild(SpellEffIndex effIndex)
     pGameObj->SetRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
     pGameObj->SetSpellId(m_spellInfo->Id);
 
-    ExecuteLogEffectSummonObject(effIndex, pGameObj);
-
-    // Wild object not have owner and check clickable by players
-    map->AddToMap(pGameObj);
+    if (lunchOwner)
+    {
+        lunchOwner->BindQuestObject(KyleLunch::Quest, pGameObj);
+        if (!pGameObj->EnableQuestScopedCollision())
+        {
+            delete pGameObj;
+            return;
+        }
+        lunchOwner->AddGameObject(pGameObj);
+        if (!map->AddToMap(pGameObj))
+        {
+            lunchOwner->RemoveGameObject(pGameObj, false);
+            delete pGameObj;
+            return;
+        }
+        ExecuteLogEffectSummonObject(effIndex, pGameObj);
+    }
+    else
+    {
+        ExecuteLogEffectSummonObject(effIndex, pGameObj);
+        // Wild objects have no owner and remain clickable by players.
+        map->AddToMap(pGameObj);
+    }
 
     if (pGameObj->GetGoType() == GAMEOBJECT_TYPE_NEW_FLAG_DROP && m_caster->IsPlayer())
     {
