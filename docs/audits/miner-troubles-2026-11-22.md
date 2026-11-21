@@ -1,0 +1,9 @@
+# Miner Troubles (14021)
+
+Foreman Dampwick `35769` ir Lost Isles novietojumā `190054`. Frightened Miner `35813` tagad tiek izveidots ar Legion `68059` metadatiem un properties `2261` pie sākotnējā skripta starta punkta. Katrs aktīvais kvesta mēģinājums izmanto savu personīgo miner. Oriģinālais `68064` ar properties `2262` izsauc ratiņus, kas manto miner kvesta tvērumu. Atkārtots sākums kamēr paša miner ir dzīvs papildu pavadoni neizveido.
+
+Saglabāti 26 ceļa punkti un kredīts `35816` 23. punktā. Rūda `195622` paliek kopīgā pasaulē un izrakšanas animācija tiek nosūtīta tikai attiecīgajam spēlētājam. Pavadonis katru rūdu savā maršrutā izmanto vienreiz. Raktuves atzara kustības paziņojums paliek savā C++ apstrādātājā. Atmešana vai miner nāve atbrīvo attiecīgā spēlētāja pavadoni un ratiņus. Pēc galapunkta jau ieskaitītais progress saglabājas arī tad, ja pavadonis vēlāk iet bojā.
+
+`Test-QuestObjectLootNative.ps1 -MinerTroubles` pārbaudīja divus spēlētājus pie viena Foreman, atkārtotus sākuma izsaukumus, personīgo redzamības sarakstu, divus īstus ratiņu izsaukumus, vienas rūdas lietojumu abos eskorta gadījumos, kredīta saņēmēju, atmešanu, atkārtotu sākšanu un nāves apstrādātāju. Ceļa punkta pārbaude izmantoja ielasīto maršrutu un kontrolētus kustības paziņojumus. Izgāja arī saglabātā `-PoolPony` pārbaude. Sākotnējās pārbaudes ielādes un kustības paziņojuma kļūdas saglabātas kopā ar veiksmīgo regresiju.
+
+Gala Release SHA-256 ir `51AD34C15E969F59812B6E893D26781E73F5A5E0A978A9CB106303C5F7D45914`. Gala saite apstiprināja `game:Map.obj` un `scripts:lost_isles.obj` īstenojumu, un staged un kanoniskais Release sasniedza `ready` izolētajā MariaDB. Labojums izmanto esošos pasaules datus. Klientā vēl jāpārbauda pilna pastaiga, cīņa pa ceļam, ratiņu un rūdas animācijas un divu spēlētāju redzamība.

@@ -9,6 +9,7 @@ Cosmetic toDo:
 #include "ScriptPCH.h"
 #include "ConditionMgr.h"
 #include "CreatureTextMgr.h"
+#include "GameObjectPackets.h"
 #include "ScriptedEscortAI.h"
 #include "QuestData.h"
 
@@ -411,31 +412,16 @@ class npc_foreman_dampwick : public CreatureScript
 
         }
 
-        ObjectGuid guidMiner;
-
-        void Reset() override
-        {
-            guidMiner.Clear();
-        }
-
         void OnStartQuest(Player* player, Quest const* quest) override
         {
-            if (!quest || quest->GetQuestId() != QUEST_MINER_TROUBLES)
+            if (!quest || quest->GetQuestId() != QUEST_MINER_TROUBLES || player->GetMapId() != 648)
                 return;
 
-            // last summoned creature in world.
-            if (Unit::GetCreature(*me, guidMiner))
-                return;
-
-            Position pos;
-            pos.Relocate(492.4184f, 2976.321f, 8.040207f);
-            if (TempSummon* summon = player->GetMap()->SummonCreature(NPC_FRIGHTENED_MINER, pos, NULL, 0, player))
-            {
-                summon->AddPlayerInPersonnalVisibilityList(player->GetGUID());
-                summon->AI()->SetGUID(player->GetGUID(), 0);
+            Position const point{492.4184f, 2976.321f, 8.040207f, 0.0f};
+            auto const* properties = sSummonPropertiesStore.LookupEntry(2261);
+            if (player->GetMap()->SummonCreature(NPC_FRIGHTENED_MINER, point, properties, 0, player,
+                ObjectGuid::Empty, SPELL_SUMMON_FRIGTNED_MINER))
                 sCreatureTextMgr->SendChat(me, TEXT_FOREMAN_0, player->GetGUID());
-                guidMiner = summon->GetGUID();
-            }
         }
 
         void OnQuestReward(Player* player, Quest const* quest) override
@@ -481,6 +467,7 @@ public:
         ObjectGuid plrGUID;
         ObjectGuid cartGUID;
         ObjectGuid mineGUID;
+        GuidSet minedOre;
         EventMap events;
         uint32 wpMine;
 
@@ -489,16 +476,24 @@ public:
             plrGUID.Clear();
             cartGUID.Clear();
             mineGUID.Clear();
+            minedOre.clear();
             wpMine = 0;
             events.Reset();
             
         }
 
-        void SetGUID(ObjectGuid const& guid, int32 id) override
+        void IsSummonedBy(Unit* summoner) override
         {
-            plrGUID = guid;
-            Start(true, false, guid);
-            DoCast(me, SPELL_SUMMON_ORE_CART);
+            Player* player = summoner ? summoner->ToPlayer() : nullptr;
+            if (!player || !me->HasQuestObjectScope() || player->GetQuestStatus(QUEST_MINER_TROUBLES) != QUEST_STATUS_INCOMPLETE)
+                return;
+
+            plrGUID = player->GetGUID();
+            Start(true, false, plrGUID);
+            if (HasEscortState(STATE_ESCORT_ESCORTING))
+                DoCast(me, SPELL_SUMMON_ORE_CART);
+            else
+                me->DespawnOrUnsummon();
         }
 
         void EnterEvadeMode() override
@@ -510,7 +505,9 @@ public:
 
         void JustSummoned(Creature* summon) override
         {
-            summon->AddPlayerInPersonnalVisibilityList(plrGUID);
+            if (summon->GetEntry() != NPC_ORE_CART || !summon->HasQuestObjectScope())
+                return;
+
             summon->SetWalk(false);
             summon->SetSpeed(MOVE_RUN, 1.25f);
             summon->setFaction(35);
@@ -523,13 +520,27 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
+            if (me->IsQuestObjectExpired())
+                return;
+
             if (Player* player = GetPlayerForEscort())
-                player->FailQuest(QUEST_MINER_TROUBLES);
+            {
+                if (player->GetQuestStatus(QUEST_MINER_TROUBLES) == QUEST_STATUS_INCOMPLETE)
+                    player->FailQuest(QUEST_MINER_TROUBLES);
+                player->CancelQuestObjects(QUEST_MINER_TROUBLES);
+            }
         }
 
-        void seachMine()
+        void SearchMine()
         {
-            if (GameObject* mine = me->FindNearestGameObject(GO_KAJAMITE_ORE, 20.0f))
+            std::list<GameObject*> nearbyOre;
+            me->GetGameObjectListWithEntryInGrid(nearbyOre, GO_KAJAMITE_ORE, 20.0f);
+            GameObject* mine = nullptr;
+            for (GameObject* ore : nearbyOre)
+                if (ore->isSpawned() && !minedOre.count(ore->GetGUID()) && (!mine || me->GetDistance(ore) < me->GetDistance(mine)))
+                    mine = ore;
+
+            if (mine)
             {
                 mineGUID = mine->GetGUID();
                 SetEscortPaused(true);
@@ -548,12 +559,15 @@ public:
         {
             if (pointId == EVENT_POINT_MINE)
             {
-                me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_FIND_MINING);
-                events.ScheduleEvent(EVENT_GENERIC_1, 10000);
+                if (moveType == POINT_MOTION_TYPE && !mineGUID.IsEmpty() && HasEscortState(STATE_ESCORT_PAUSED))
+                {
+                    me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_FIND_MINING);
+                    events.RescheduleEvent(EVENT_GENERIC_1, 10000);
+                }
                 return;
             }
             if (HasEscortState(STATE_ESCORT_PAUSED))
-                seachMine();
+                SearchMine();
 
             npc_escortAI::MovementInform(moveType, pointId);
         }
@@ -575,12 +589,14 @@ public:
                 case 17:
                 case 22:
                     wpMine = pointId;
-                    seachMine();
+                    SearchMine();
                     break;
                 case 23:
                     sCreatureTextMgr->SendChat(me, TEXT_MINER_5, plrGUID);
-                    if (Player* player = GetPlayerForEscort())
-                        player->KilledMonsterCredit(NPC_QUEST_MINE_TROUBLES_CREDIT);
+                    if (!me->IsQuestObjectExpired())
+                        if (Player* player = GetPlayerForEscort())
+                            if (player->GetQuestStatus(QUEST_MINER_TROUBLES) == QUEST_STATUS_INCOMPLETE)
+                                player->KilledMonsterCredit(NPC_QUEST_MINE_TROUBLES_CREDIT);
                     break;
                 case 24:
                     me->SetWalk(false);
@@ -615,9 +631,16 @@ public:
                             sCreatureTextMgr->SendChat(me, text, plrGUID);
                         if (GameObject* go = ObjectAccessor::GetGameObject(*me, mineGUID))
                         {
-                            go->SendCustomAnim(0);
-                            go->SetLootState(GO_JUST_DEACTIVATED);
+                            minedOre.insert(go->GetGUID());
+                            if (Player* player = GetPlayerForEscort())
+                            {
+                                WorldPackets::GameObject::GoCustomAnim anim;
+                                anim.ObjectGUID = go->GetGUID();
+                                anim.PlayAsDespawn = true;
+                                player->SendDirectMessage(anim.Write());
+                            }
                         }
+                        mineGUID.Clear();
                         break;
                     }
                 }

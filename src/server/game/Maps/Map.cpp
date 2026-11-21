@@ -4297,6 +4297,20 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* minerOwner = nullptr;
+    if (entry == 35813 && spellId == 68059 && GetId() == 648)
+    {
+        minerOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!minerOwner || !minerOwner->IsAlive() || !properties || properties->ID != 2261 ||
+            minerOwner->GetQuestStatus(14021) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+
+        for (ObjectGuid const& guid : *minerOwner->GetSummonList(entry))
+            if (Creature const* miner = GetCreature(guid))
+                if (miner->IsAlive() && miner->HasQuestObjectScope() && !miner->IsQuestObjectExpired())
+                    return nullptr;
+    }
+
     HallowsEndCrate::Route const* collectorRoute = nullptr;
     if (entry == 54114 && spellId == 100668)
     {
@@ -4454,6 +4468,10 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         delete summon;
         return nullptr;
     }
+    // Keep the miner and his spell-summoned cart personal while retaining combat with the cavern.
+    if (minerOwner)
+        minerOwner->BindQuestObject(14021, summon, false);
+
     if (collectorRoute)
     {
         Player* owner = summoner->ToPlayer();
