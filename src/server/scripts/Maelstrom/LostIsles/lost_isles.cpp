@@ -1337,15 +1337,19 @@ public:
 
         void SpellHit(Unit* caster, SpellInfo const* spell) override
         {
-            if (caster->GetTypeId() != TYPEID_PLAYER || spell->Id != SPELL_REMOTE_CONTROL_FIREWORKS)
+            if (spell->Id != SPELL_REMOTE_CONTROL_FIREWORKS || !me->IsAlive() || me->getVictim() ||
+                HasEscortState(STATE_ESCORT_ESCORTING))
                 return;
 
-            Player *player = caster->ToPlayer();
-
-            if (player->GetQuestStatus(QUEST_CLUSTER_CLUCK) != QUEST_STATUS_INCOMPLETE)
+            Player* player = caster->ToPlayer();
+            if (!player || player->GetQuestStatus(QUEST_CLUSTER_CLUCK) != QUEST_STATUS_INCOMPLETE ||
+                !player->HasItemCount(ITEM_REMOTE_CONTROL_FIREWORKS, 1, false))
                 return;
 
             Start(false, true);
+            if (!HasEscortState(STATE_ESCORT_ESCORTING))
+                return;
+
             me->SendPlaySound(6820, false);
             me->CastSpell(me, SPELL_CC_FIREWORKS_VISUAL, true);
             player->KilledMonsterCredit(NPC_CLUSTER_CLUCK_KILL_CREDIT);
