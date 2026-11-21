@@ -2576,6 +2576,49 @@ public:
     CreatureAI* GetAI(Creature* creature) const override { return new GodQueen::SigrynAI(creature); }
 };
 
+class instance_mage_tower_god_queen : public InstanceMapScript
+{
+public:
+    instance_mage_tower_god_queen() : InstanceMapScript("instance_mage_tower_god_queen", 1703) {}
+
+    struct GodQueenInstance : InstanceScript
+    {
+        explicit GodQueenInstance(InstanceMap* map) : InstanceScript(map) {}
+
+        void OnCreatureDamageTaken(Creature* actor, Unit* attacker, uint32& damage) override
+        {
+            if (!damage || !attacker || actor->GetMap() != instance || !actor->IsAlive() || !actor->IsInWorld() ||
+                !actor->HasAura(239056, actor->GetGUID()))
+                return;
+
+            uint64 const spawn = actor->GetDBTableGUIDLow();
+            uint32 const entry = actor->GetEntry();
+            if ((entry != 116484 || spawn != 387451) && (entry != 116496 || spawn != 387454) &&
+                (entry != 116499 || spawn != 387453))
+                return;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1265 || scenario->GetCurrentStep() != 1 || scenario->IsCompleted(false))
+                return;
+
+            Player* owner = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (!owner || !owner->IsInWorld() || owner->IsPreDelete() || owner->IsBeingTeleportedFar() ||
+                !actor->IsInMap(owner) || !actor->InSamePhase(owner))
+                return;
+
+            // Keep a visible remainder through SetHealthScal's conversion back to the creature's base health.
+            uint64 const maximum = actor->GetMaxHealth(attacker);
+            uint64 const baseMaximum = std::max<uint64>(1, actor->GetMaxHealth());
+            uint64 const minimumScaledHealth = maximum / baseMaximum + (maximum % baseMaximum != 0);
+            uint64 const floor = std::max<uint64>({ 1, maximum / 100, minimumScaledHealth });
+            uint64 const health = actor->GetHealth(attacker);
+            damage = uint32(std::min<uint64>(damage, health - std::min(health, floor)));
+        }
+    };
+
+    InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new GodQueenInstance(map); }
+};
+
 class npc_mage_tower_dark_valkyr : public CreatureScript
 {
 public:
@@ -4905,6 +4948,7 @@ void AddSC_broken_shore()
     new npc_mage_tower_faljar();
     RegisterSpellScript(spell_mage_tower_ancestral_blast);
     new npc_mage_tower_sigryn();
+    new instance_mage_tower_god_queen();
     new npc_mage_tower_dark_valkyr();
     RegisterSpellScript(spell_mage_tower_dark_wings);
     new npc_mage_tower_raest();

@@ -1,0 +1,9 @@
+# The God-Queen's Fury surrender
+
+A lethal hit could previously remove Sigryn, Faljar or Jarl before their health event ran. The map 1703 instance hook now bounds the final scaled damage for those three exact spawns during scenario 1265 combat. It retains at least one unit of health and normally one percent through the core's scaling conversion. The hit stays real and can come from the challenger, pet or guardian. The original 20%, 23% and 27% health events, Shared Health aura, faction changes, dialogue and eventual criterion 56052 and quest credit remain in use.
+
+The installed 26972 catalog verified LFG 1446 and the Shared Health effect. The live database confirmed all three self-applied auras and surrender event rows. The source-extracted AddressSanitizer test exercised ordinary damage, all three one-hit paths, controlled units, level scaling, attack retries, exact actor and instance identity, missing aura, incorrect phase and completed attempts. It also checked that the native damage hook runs after normalization and before the death check.
+
+Two private applications of migration 2026_11_21_23_mage_tower_sigryn_surrender.sql preserved the original three-actor graph. The same migration was manually applied to production MariaDB with SHA-1 85CC46E989F7C52D56E7735BB3C4B55969F35F64 in the ledger. The linker map locates the final instance damage callback in the zone script. The staged and canonical executable 4A3B07D814DAA38FA995D4AFBE81AC0B6804B91B0641F1029F5271AFECF7F61A both reached readiness and shut down cleanly with no new crashes, DBErrors, warnings or assertions.
+
+The fixed archive at build-extractors/bin/Release/fixed/2026-11-21-mage-tower-sigryn-surrender contains 40 verified hashes and records 177,807,706 bytes of removed temporary output. The immediate rollback remains available. Live checks still cover the real Shared Health proc, surrender dialogue, failure and retry, and the appearance hand-in.
