@@ -31,10 +31,12 @@ EndContentData */
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "Item.h"
+#include "ObjectAccessor.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 #include "ScriptedEscortAI.h"
+#include "SpellMgr.h"
 #include "SpellScript.h"
 
 /*######
@@ -261,6 +263,133 @@ class spell_apothecarys_poison : public SpellScript
         AfterHit += SpellHitFn(spell_apothecarys_poison::EndOpening);
     }
 };
+
+constexpr uint32 AquantionQuest = 9174;
+constexpr uint32 AquantionMedallions = 22675;
+constexpr uint32 AquantionOpening = 28226;
+constexpr uint32 AquantionEntry = 16292;
+// The placement, delay and lifetime from the original event_scripts row 9980.
+Position const AquantionPlacement{7941.15f, -7636.45f, 116.19f, 5.66f};
+constexpr uint32 AquantionDelay = 2 * IN_MILLISECONDS;
+constexpr uint32 AquantionLifetime = 15 * MINUTE * IN_MILLISECONDS;
+
+struct go_aquantion_altar : GameObjectAI
+{
+    explicit go_aquantion_altar(GameObject* object) : GameObjectAI(object) { }
+
+    bool CanOpen(Player const* player) const
+    {
+        if (_pendingPlayer || !CanContinue(player) || !go->isSpawned() ||
+            go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE))
+            return false;
+
+        auto current = ObjectAccessor::GetCreature(*go, _aquantion);
+        return !current || !current->IsAlive();
+    }
+
+    void BeginOpening(Player const* player)
+    {
+        _opener = CanOpen(player) ? player->GetGUID() : ObjectGuid::Empty;
+    }
+
+    void EndOpening() { _opener.Clear(); }
+
+    bool GossipUse(Player* player) override
+    {
+        if (_opener != player->GetGUID())
+            return true;
+        EndOpening();
+        if (!CanOpen(player))
+            return true;
+
+        _attempt = player->GetQuestCancellationReceipt(AquantionQuest);
+        if (!_attempt)
+            return true;
+        _pendingPlayer = player->GetGUID();
+        _timer = AquantionDelay;
+        return false;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_pendingPlayer)
+            return;
+
+        Player* player = ObjectAccessor::GetPlayer(*go, _pendingPlayer);
+        if (_attempt->load(std::memory_order_acquire) || !CanContinue(player))
+        {
+            _pendingPlayer.Clear();
+            _attempt.reset();
+            return;
+        }
+        if (_timer > diff)
+        {
+            _timer -= diff;
+            return;
+        }
+
+        _pendingPlayer.Clear();
+        _attempt.reset();
+        if (TempSummon* actor = player->SummonCreature(AquantionEntry, AquantionPlacement, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, AquantionLifetime))
+            _aquantion = actor->GetGUID();
+        else
+            TC_LOG_WARN("scripts", "Vanquishing Aquantion: altar %u could not publish creature %u", go->GetEntry(), AquantionEntry);
+    }
+
+private:
+    bool CanContinue(Player const* player) const
+    {
+        SpellInfo const* spell = sSpellMgr->GetSpellInfo(AquantionOpening);
+        return player && player->IsAlive() && go->GetMapId() == 530 && go->IsInMap(player) && go->GetEntry() == 181157 &&
+            go->GetGoType() == GAMEOBJECT_TYPE_GOOBER && go->GetGOInfo()->GetLockId() == 1637 && !go->IsNeverVisible(player) &&
+            spell && go->IsWithinDistInMap(player, spell->GetMaxRange(spell->IsPositive())) && player->IsWithinLOSInMap(go) &&
+            player->GetQuestStatus(AquantionQuest) == QUEST_STATUS_INCOMPLETE &&
+            player->GetQuestObjectiveData(AquantionQuest, AquantionEntry) == 0 && player->HasItemCount(AquantionMedallions, 1);
+    }
+
+    ObjectGuid _opener;
+    ObjectGuid _pendingPlayer;
+    ObjectGuid _aquantion;
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
+    uint32 _timer = 0;
+};
+
+class spell_aquantion_medallions : public SpellScript
+{
+    PrepareSpellScript(spell_aquantion_medallions);
+
+    static go_aquantion_altar* AltarAI(GameObject* altar)
+    {
+        return altar ? dynamic_cast<go_aquantion_altar*>(altar->AI()) : nullptr;
+    }
+
+    SpellCastResult CheckAltar()
+    {
+        Item* medallions = GetCastItem();
+        auto altar = AltarAI(GetExplTargetGObj());
+        return medallions && medallions->GetEntry() == AquantionMedallions && altar && altar->CanOpen(GetCaster()->ToPlayer())
+            ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    void BeginOpening(SpellEffIndex /*effect*/)
+    {
+        if (auto altar = AltarAI(GetHitGObj()))
+            altar->BeginOpening(GetCaster()->ToPlayer());
+    }
+
+    void EndOpening()
+    {
+        if (auto altar = AltarAI(GetHitGObj()))
+            altar->EndOpening();
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_aquantion_medallions::CheckAltar);
+        OnEffectHitTarget += SpellEffectFn(spell_aquantion_medallions::BeginOpening, EFFECT_0, SPELL_EFFECT_OPEN_LOCK);
+        AfterHit += SpellHitFn(spell_aquantion_medallions::EndOpening);
+    }
+};
 }
 
 void AddSC_ghostlands()
@@ -269,4 +398,6 @@ void AddSC_ghostlands()
     new npc_ranger_lilatha();
     RegisterGameObjectAI(go_seasoning_rack);
     RegisterSpellScript(spell_apothecarys_poison);
+    RegisterGameObjectAI(go_aquantion_altar);
+    RegisterSpellScript(spell_aquantion_medallions);
 }

@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include "HallowsEndCrate.h"
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;using QuestStatus=int;using InventoryResult=int;
 enum {QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_DELETE_SAVE_TYPE=2,EQUIP_ERR_OK=0,QUEST_OBJECTIVE_ITEM=1,QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE=16,QUEST_ITEM_DROP_COUNT=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
 #include "QuestStatusData.inc"
@@ -25,7 +26,7 @@ struct Player {
  std::map<unsigned,int> m_QuestStatusSave;
  std::map<unsigned,unsigned> inventory;
  std::vector<std::function<void()>> events;
- PhaseMgr phase;bool equipped=false;unsigned errors=0,updates=0;
+ PhaseMgr phase;bool equipped=false;unsigned errors=0,updates=0,visibilityUpdates=0;
  QuestStatusData* getQuestStatus(unsigned q){auto it=m_QuestStatus.find(q);return it==m_QuestStatus.end()?nullptr:&it->second;}
  void Add(unsigned q){m_QuestStatus[q].Status=3;vector[q]=&m_QuestStatus[q];}
  void AddDelayedEvent(uint64,std::function<void()> f){events.push_back(std::move(f));}
@@ -38,6 +39,7 @@ struct Player {
  void RemoveActiveQuest(uint32);
  void CancelQuestObjects(uint32) {}
  void UpdateForQuestWorldObjects() {}
+ void UpdateVisibilityForPlayer(){++visibilityUpdates;}
  bool TakeQuestSourceItem(uint32,bool);
 };
 #include "QuestDelayedEvent.inc"
@@ -79,5 +81,16 @@ int main(){
  p.inventory[139043]=10000;
  RemoveQuestRewardItems(p,&q);
  assert(p.inventory[139043]==1);
+ Quest aquantion;
+ aquantion.Id=9174;aquantion.SourceItemId=22675;aquantion.ItemDrop[0]=0;
+ aquantion.objectives={{0,16292,1},{QUEST_OBJECTIVE_ITEM,22675,1}};
+ p.inventory[22675]=2;
+ RemoveQuestRewardItems(p,&aquantion);
+ assert(p.inventory[22675]==1);
+ auto const holidayQuest=HallowsEndCrate::Horde.Encounter;
+ store.quests[holidayQuest].Id=holidayQuest;
+ p.Add(holidayQuest);
+ p.RemoveActiveQuest(holidayQuest);p.Run();
+ assert(p.visibilityUpdates==1);
  std::cout<<"PASS: quest attempt cancellation, single abandonment cleanup, overlapping reward quantities, starter/keep flags, 9999 drop limit and unequip guard.\n";
 }

@@ -1,5 +1,6 @@
 param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/quest-attempt-cleanup")
 $ErrorActionPreference='Stop'
+$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output=[IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 & "$PSScriptRoot/Export-QuestDelayedEvent.ps1" -OutputDirectory $output
@@ -28,7 +29,7 @@ $cmd=@"
 @echo off
 call "$vs/VC/Auxiliary/Build/vcvars64.bat" >nul
 if errorlevel 1 exit /b 1
-cl /nologo /EHsc /std:c++17 /W4 /I"$output" "$PSScriptRoot/QuestAttemptCleanupTest.cpp" /Fe"$output/QuestAttemptCleanupTest.exe" /Fo"$output/QuestAttemptCleanupTest.obj"
+cl /nologo /EHsc /std:c++17 /W4 /I"$output" /I"$repo/src/common" /I"$repo/src/server/game/Quests" "$PSScriptRoot/QuestAttemptCleanupTest.cpp" /Fe"$output/QuestAttemptCleanupTest.exe" /Fo"$output/QuestAttemptCleanupTest.obj"
 if errorlevel 1 exit /b 1
 "$output/QuestAttemptCleanupTest.exe"
 exit /b %errorlevel%
