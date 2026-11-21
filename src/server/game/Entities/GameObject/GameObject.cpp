@@ -1430,6 +1430,11 @@ bool GameObject::IsAlwaysVisibleFor(WorldObject const* seer) const
 
 bool GameObject::IsNeverVisible(WorldObject const* obj) const
 {
+    if (GetEntry() == 209059)
+        if (Player const* player = obj->ToPlayer())
+            if (!sGameEventMgr->IsActiveEvent(12) || !player->HasQuestForItem(71035))
+                return true;
+
     if (AI() && !AI()->CanBeVisibleFor(obj))
         return true;
     auto last = m_lastUser.find(obj->GetGUID());
@@ -1662,6 +1667,9 @@ void GameObject::Use(Unit* user)
             GetDBTableGUIDLow(), uint32(GetGoState()), GetUInt32Value(GAMEOBJECT_FIELD_FLAGS),
             sObjectMgr->GetScriptName(GetScriptId()).c_str(), AI() ? typeid(*AI()).name() : "none");
     if (IsQuestObjectExpired())
+        return;
+
+    if (GetEntry() == 209059 && (!user->IsPlayer() || IsNeverVisible(user)))
         return;
 
     // Broken Shore's Libram uses the ordinary goober credit and spell paths.
@@ -3075,9 +3083,8 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
                             dynFlags |= GO_DYNFLAG_LO_SPARKLE;
                         break;
                     case GAMEOBJECT_TYPE_GATHERING_NODE:
-                        // The second Serpentbloom variant has the same quest
-                        // loot as the chest variant in Wailing Caverns.
-                        if (GetEntry() == 13891 && ActivateToQuest(target))
+                        // Serpentbloom and Blood Nettle use quest-only gathering loot.
+                        if ((GetEntry() == 13891 || GetEntry() == 209059) && ActivateToQuest(target))
                             dynFlags |= GO_DYNFLAG_LO_ACTIVATE | GO_DYNFLAG_LO_SPARKLE;
                         break;
                     case GAMEOBJECT_TYPE_TRANSPORT:

@@ -7028,8 +7028,97 @@ struct npc_train_wrecker : public ScriptedAI
     }
 };
 
+class npc_hallows_end_hired_courier : public CreatureScript
+{
+public:
+    npc_hallows_end_hired_courier() : CreatureScript("npc_hallows_end_hired_courier") { }
+
+    bool OnGossipHello(Player* player, Creature* courier) override
+    {
+        uint32 questId = courier->GetEntry() == 53950 && courier->GetMapId() == 0 ? 29392 :
+            courier->GetEntry() == 54142 && courier->GetMapId() == 1 ? 29415 : 0;
+        if (!questId || !sGameEventMgr->IsActiveEvent(12) || !player->IsAlive() ||
+            player->GetQuestStatus(questId) != QUEST_STATUS_INCOMPLETE || !player->IsWithinLOSInMap(courier))
+            return false;
+
+        if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
+            for (QuestObjective const& objective : quest->GetObjectives())
+                if (objective.Type == QUEST_OBJECTIVE_AREATRIGGER && objective.ObjectID == -1)
+                {
+                    player->SetQuestObjectiveData(quest, &objective, 1);
+                    if (player->CanCompleteQuest(questId))
+                        player->CompleteQuest(questId);
+                    break;
+                }
+        return false;
+    }
+};
+
+struct npc_hallows_end_investigator : ScriptedAI
+{
+    explicit npc_hallows_end_investigator(Creature* creature) : ScriptedAI(creature) { }
+
+    void MoveInLineOfSight(Unit* unit) override
+    {
+        Player* player = unit->ToPlayer();
+        if (!CanInvestigate(player) || _witness)
+            return;
+
+        Creature* shopkeeper = me->FindNearestCreature(me->GetEntry() == 54021 ? 53991 : 6986, 12.0f, true);
+        if (!shopkeeper || !me->IsWithinLOSInMap(shopkeeper))
+            return;
+
+        _witness = player->GetGUID();
+        _shopkeeper = shopkeeper->GetGUID();
+        _witnessAttempt = player->GetQuestCancellationReceipt(GetShoppingQuest());
+        _timer = 4000;
+        Talk(0, player->GetGUID());
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_witness)
+            return;
+        if (_timer > diff)
+        {
+            _timer -= diff;
+            return;
+        }
+
+        Player* player = ObjectAccessor::GetPlayer(*me, _witness);
+        Creature* shopkeeper = ObjectAccessor::GetCreature(*me, _shopkeeper);
+        auto attempt = _witnessAttempt.lock();
+        _witness.Clear();
+        _shopkeeper.Clear();
+        _witnessAttempt.reset();
+        if (!attempt || attempt->load() || !CanInvestigate(player) || !shopkeeper || !shopkeeper->IsAlive() ||
+            !me->IsWithinDistInMap(shopkeeper, 12.0f) || !me->IsWithinLOSInMap(shopkeeper))
+            return;
+
+        Talk(1, player->GetGUID());
+        me->CastSpell(player, 100578, true);
+    }
+
+private:
+    uint32 GetShoppingQuest() const { return me->GetEntry() == 54021 ? 29399 : 29425; }
+
+    bool CanInvestigate(Player* player) const
+    {
+        return player && player->IsAlive() && sGameEventMgr->IsActiveEvent(12) &&
+            player->GetQuestStatus(GetShoppingQuest()) == QUEST_STATUS_INCOMPLETE &&
+            me->IsWithinDistInMap(player, 12.0f) && me->IsWithinLOSInMap(player);
+    }
+
+    ObjectGuid _witness;
+    ObjectGuid _shopkeeper;
+    std::weak_ptr<QuestCancellationReceipt const> _witnessAttempt;
+    uint32 _timer = 0;
+};
+
 void AddSC_npcs_special()
 {
+    new npc_hallows_end_hired_courier();
+    RegisterCreatureAI(npc_hallows_end_investigator);
     new npc_storm_earth_and_fire();
     new npc_air_force_bots();
     new npc_lunaclaw_spirit();

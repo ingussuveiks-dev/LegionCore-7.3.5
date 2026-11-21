@@ -22,7 +22,7 @@ Abas migrācijas izmanto esošo `GetLootId`, `HasQuestForItem` un item loot nosa
 - **13796, 13909, 25668, 28325, 28724, 29360, 29418 un 29518** ir vismaz viens tiešs objekta avots ar atbilstošu veidnes loot atslēgu. Piemēram, abas Greymist Debris versijas pamatoti lasa `195080`, un trīs Darkmoon Tonk Scrap varianti lasa `40164`. Atsevišķas vecās rindas, kas glabātas zem objekta ID, pašas par sevi nepārtrauc šos ceļus.
 - Parastajām piegādēm un profesiju materiāliem atrasti tirgotāji, skinning vai NPC loot. Zvejas uzdevumos **8193, 8194 un 29513** vēl atsevišķi jāpārbauda reālais baseina un ūdens loot, pasākuma laiks un uzdevuma nodošana.
 - **29777 · Tools of the Enemy** ir tieša 74615 corpse loot rinda Fe-Feng Wiseman 55601, kura eksemplāri ir kartē 860. Parastajā negrupētajā loot ceļā `LootMode=0` ir derīgs. Ar nulles masku vien nepietiek, lai konstatētu defektu šajā kvestā. Īstā NPC laupīšana un skaitītājs vēl jāapstiprina.
-- **29402 un 29426 · Taking Precautions** abām frakcijām trūkst attiecīgo devēju 54021/54146 spawnu, 209059 auga spawnu un loot rindas 39847/71035. Vecās Shopping Around pārejas norāda uz tiem pašiem devējiem. Paliek atjaunot visu sezonālo ķēdi ar tās abu frakciju izvietojumu un aktivizāciju. [Blizzard Legion laika Hallow’s End norise](https://worldofwarcraft.blizzard.com/en-us/news/21088694/the-horseman-rises-hallow-s-end-is-nigh)
+- **29402 un 29426 · Taking Precautions** devēji, augu izvietojums, loot un nepieciešamās iepriekšējo kvestu pārejas atjaunotas. Par pārbaudi un atradumiem tālāk ķēdē skatīt [Taking Precautions auditu](hallows-end-taking-precautions-2026-11-21.md).
 
 ## Pārbaude un izvietošana
 

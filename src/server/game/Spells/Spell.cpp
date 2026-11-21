@@ -7440,6 +7440,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if ((target->GetEntry() == 13874 || target->GetEntry() == 13891) && target->GetMapId() == 43 &&
                             !m_caster->ToPlayer()->HasQuestForItem(5339))
                             return SPELL_FAILED_BAD_TARGETS;
+                        if (target->GetEntry() == 209059 && target->IsNeverVisible(m_caster))
+                            return SPELL_FAILED_BAD_TARGETS;
                         if (!sConditionMgr->IsPlayerMeetingCondition(m_caster, goInfo->type == GAMEOBJECT_TYPE_CHEST ? goInfo->chest.conditionID1 : goInfo->gatheringNode.conditionID1))
                             return SPELL_FAILED_NO_VALID_TARGETS;
                         if (m_caster->ToPlayer()->IsFlying() && m_caster->GetMapId() != 616)

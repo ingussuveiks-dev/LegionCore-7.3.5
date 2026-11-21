@@ -19486,6 +19486,8 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
+        if (quest_id == 29402 || quest_id == 29426)
+            UpdateVisibilityForPlayer();
         UpdateForQuestWorldObjects();
     });
 }
@@ -20754,6 +20756,8 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
+        if (quest_id == 29402 || quest_id == 29426)
+            UpdateVisibilityForPlayer();
         UpdateForQuestWorldObjects();
     });
 }
@@ -20889,6 +20893,8 @@ void Player::RemoveActiveQuest(uint32 quest_id)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
+        if (quest_id == 29402 || quest_id == 29426)
+            UpdateVisibilityForPlayer();
         // Static camp props remain visible across the artifact handoff. Refresh
         // their per-player interaction flags after reward/abandonment too.
         if (quest_id == 40604 || quest_id == 40835 || quest_id == 40932 || quest_id == 40606 || quest_id == 40385)
@@ -21172,8 +21178,10 @@ void Player::ItemAddedQuestCheck(uint32 entry, uint32 count)
         }
     }
     
-    AddDelayedEvent(100, [=, this]() -> void
+    AddDelayedEvent(100, [this, entry]()
     {
+        if (entry == 71035)
+            UpdateVisibilityForPlayer();
         UpdateForQuestWorldObjects();
     });
 }
