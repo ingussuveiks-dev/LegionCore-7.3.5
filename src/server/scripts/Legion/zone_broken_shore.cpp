@@ -3551,6 +3551,70 @@ class spell_mage_tower_agatha_funnel_energy : public SpellScript
     }
 };
 
+class spell_mage_tower_kruul_twisted_reflection : public AuraScript
+{
+    PrepareAuraScript(spell_mage_tower_kruul_twisted_reflection);
+
+    static constexpr uint32 KruulHeal = 234678;
+
+    bool Validate(SpellInfo const* /*info*/) override
+    {
+        return ValidateSpellInfo({ KruulHeal });
+    }
+
+    bool Load() override { return GetKruul() != nullptr; }
+
+    Creature* GetKruul()
+    {
+        Unit* caster = GetCaster();
+        Creature* kruul = caster ? caster->ToCreature() : nullptr;
+        return kruul && kruul->GetEntry() == 117198 && kruul->GetMapId() == 1698 && kruul->GetDBTableGUIDLow() == 14534049 ? kruul : nullptr;
+    }
+
+    Unit* GetHealRecipient(ProcEventInfo& event)
+    {
+        Creature* kruul = GetKruul();
+        Unit* afflicted = GetTarget();
+        DamageInfo const* hit = event.GetDamageInfo();
+        Unit* attacker = hit ? hit->GetAttacker() : nullptr;
+        if (!kruul || !kruul->IsAlive() || !kruul->isInCombat() || !afflicted || !attacker ||
+            !hit->GetDamage() || hit->GetVictim() != afflicted)
+            return nullptr;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(kruul->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1259 || scenario->GetCurrentStep() != 2 || scenario->IsCompleted(false))
+            return nullptr;
+
+        // The native spell system applies a reflected debuff to its original caster.
+        bool const reflected = afflicted == kruul;
+        if ((!reflected && attacker != kruul) || (reflected && attacker == kruul))
+            return nullptr;
+
+        Unit* participant = reflected ? attacker : afflicted;
+        Player* player = participant->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (!player || !player->IsAlive() || !player->IsInWorld() || player->IsPreDelete() || player->IsBeingTeleportedFar() ||
+            !kruul->IsInMap(player) || !kruul->InSamePhase(player) || !kruul->IsInMap(participant) || !kruul->InSamePhase(participant))
+            return nullptr;
+
+        return reflected ? static_cast<Unit*>(player) : kruul;
+    }
+
+    bool CheckProc(ProcEventInfo& event) { return GetHealRecipient(event) != nullptr; }
+
+    void HealAttacker(AuraEffect const* /*effect*/, ProcEventInfo& event)
+    {
+        PreventDefaultAction();
+        if (Unit* beneficiary = GetHealRecipient(event))
+            beneficiary->CastSpell(beneficiary, KruulHeal, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_mage_tower_kruul_twisted_reflection::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_mage_tower_kruul_twisted_reflection::HealAttacker, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // 117470
 class boss_sivash : public CreatureScript
 {
@@ -3959,6 +4023,7 @@ void AddSC_broken_shore()
     RegisterSpellScript(spell_mage_tower_agatha_boulder_landing);
     new npc_mage_tower_agatha_imp_servant();
     RegisterSpellScript(spell_mage_tower_agatha_funnel_energy);
+    RegisterAuraScript(spell_mage_tower_kruul_twisted_reflection);
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
