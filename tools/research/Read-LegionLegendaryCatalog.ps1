@@ -1,7 +1,7 @@
-param([string]$OutputFile="",[string]$DbcDirectory="",[string]$SourceFile='LegionLegendaryCatalog.cpp',[string]$ProbeName='LegionLegendaryCatalog',[switch]$BuildOnly)
+param([string]$OutputFile="",[string]$DbcDirectory="",[string]$SourceFile='LegionLegendaryCatalog.cpp',[string]$ProbeName='LegionLegendaryCatalog',[switch]$BuildOnly,[string]$BuildDirectory="")
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
-$output=Join-Path $repo "build-extractors/runtime-test/legion-legendary-catalog"
+$output=if($BuildDirectory){[IO.Path]::GetFullPath($BuildDirectory)}else{Join-Path $repo "build-extractors/runtime-test/legion-legendary-catalog"}
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
