@@ -4295,6 +4295,25 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* crystalOwner = nullptr;
+    if (entry == 16364 && spellId == 28247)
+    {
+        crystalOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!crystalOwner || !properties || properties->ID != 64 || GetId() != 530 ||
+            !crystalOwner->IsAlive() || crystalOwner->GetQuestRewardStatus(8490) ||
+            !crystalOwner->HasItemCount(22693) || crystalOwner->GetQuestObjectiveData(8490, 16364) > 0)
+            return nullptr;
+
+        QuestStatus status = crystalOwner->GetQuestStatus(8490);
+        if (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE)
+            return nullptr;
+
+        for (ObjectGuid const& guid : *crystalOwner->GetSummonList(16364))
+            if (Creature* crystal = GetCreature(guid))
+                if (crystal->IsAlive() && crystal->HasQuestObjectScope() && !crystal->IsQuestObjectExpired())
+                    return nullptr;
+    }
+
     if (summoner && entry != 114975 && entry != 44548 && entry != 230018 && entry != 230019)  // hack for brawguild
     {
         std::list<Creature*> creatures;
@@ -4410,6 +4429,14 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     {
         delete summon;
         return nullptr;
+    }
+    if (crystalOwner)
+    {
+        // Legacy completions did not record the runestone objective. A new
+        // native cast can replay the defense with the original quest item.
+        if (crystalOwner->GetQuestStatus(8490) == QUEST_STATUS_COMPLETE)
+            crystalOwner->IncompleteQuest(8490);
+        crystalOwner->BindQuestObject(8490, summon);
     }
     // New Blood's personal council actors are summoned directly by the
     // player. Bind BEFORE InitSummon: their AI synchronously creates children.

@@ -35,6 +35,7 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 #include "ScriptedEscortAI.h"
+#include "TemporarySummon.h"
 
 /*######
 ## Quest 9686 Second Trial
@@ -509,7 +510,7 @@ struct Location
     float x, y, z;
 };
 
-static Location SpawnLocations[] =
+static Location const SpawnLocations[] =
 {
     {8270.68f, -7188.53f, 139.619f},
     {8284.27f, -7187.78f, 139.603f},
@@ -533,78 +534,106 @@ public:
 
     struct npc_infused_crystalAI : public Scripted_NoMovementAI
     {
-        npc_infused_crystalAI(Creature* creature) : Scripted_NoMovementAI(creature) {}
+        npc_infused_crystalAI(Creature* creature) : Scripted_NoMovementAI(creature), _wraiths(creature) {}
 
-        uint32 EndTimer;
-        uint32 WaveTimer;
-        bool Completed;
-        bool Progress;
-        ObjectGuid PlayerGUID;
-
-        void Reset() override
+        void IsSummonedBy(Unit* summoner) override
         {
-            EndTimer = 0;
-            Completed = false;
-            Progress = false;
-            PlayerGUID.Clear();
-            WaveTimer = 0;
+            if (summoner && summoner->IsPlayer() && me->HasQuestObjectScope() &&
+                me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 28247)
+            {
+                me->SetReactState(REACT_PASSIVE);
+                _timer = 1000;
+                _waves = 0;
+                _running = true;
+            }
         }
 
-        void MoveInLineOfSight(Unit* who) override
+        Player* GetDefenseOwner() const
         {
-            if (!Progress && who->IsPlayer() && me->IsWithinDistInMap(who, 10.0f))
-            {
-                if (CAST_PLR(who)->GetQuestStatus(QUEST_POWERING_OUR_DEFENSES) == QUEST_STATUS_INCOMPLETE)
-                {
-                    PlayerGUID = who->GetGUID();
-                    WaveTimer = 1000;
-                    EndTimer = 60000;
-                    Progress = true;
-                }
-            }
+            TempSummon* crystal = me->ToTempSummon();
+            Unit* summoner = crystal ? crystal->GetSummoner() : nullptr;
+            Player* player = summoner ? summoner->ToPlayer() : nullptr;
+            if (!player || !player->IsAlive() || !me->IsWithinDistInMap(player, 35.0f) ||
+                player->GetQuestStatus(QUEST_POWERING_OUR_DEFENSES) != QUEST_STATUS_INCOMPLETE)
+                return nullptr;
+
+            auto scope = me->GetQuestObjectScope().lock();
+            if (!scope || scope->Owner != player->GetGUID() || scope->Cancelled)
+                return nullptr;
+            return player;
         }
 
         void JustSummoned(Creature* summoned) override
         {
+            _wraiths.Summon(summoned);
             summoned->AI()->AttackStart(me);
+        }
+
+        void SummonedCreatureDespawn(Creature* summoned) override
+        {
+            _wraiths.Despawn(summoned);
         }
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (PlayerGUID && !Completed)
-                if (Player* player = Unit::GetPlayer(*me, PlayerGUID))
-                    CAST_PLR(player)->FailQuest(QUEST_POWERING_OUR_DEFENSES);
+            _running = false;
+            _wraiths.DespawnAll();
+            // The crystal is reusable. The owner can retry without abandoning.
         }
 
         void UpdateAI(uint32 diff) override
         {
-            if (EndTimer < diff && Progress)
+            if (!_running)
+                return;
+            Player* owner = GetDefenseOwner();
+            if (!owner)
             {
-                Talk(0);
-                Completed = true;
-                if (PlayerGUID)
-                    if (Player* player = Unit::GetPlayer(*me, PlayerGUID))
-                        CAST_PLR(player)->CompleteQuest(QUEST_POWERING_OUR_DEFENSES);
-
-                me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                me->RemoveCorpse();
+                Finish();
+                return;
             }
-            else
-                EndTimer -= diff;
 
-            if (WaveTimer < diff && !Completed && Progress)
+            if (diff < _timer)
             {
-                uint32 ran1 = rand()%8;
-                uint32 ran2 = rand()%8;
-                uint32 ran3 = rand()%8;
-                me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran1].x, SpawnLocations[ran1].y, SpawnLocations[ran1].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-                me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran2].x, SpawnLocations[ran2].y, SpawnLocations[ran2].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-                me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran3].x, SpawnLocations[ran3].y, SpawnLocations[ran3].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-                WaveTimer = 30000;
+                _timer -= diff;
+                return;
             }
-            else
-                WaveTimer -= diff;
+
+            if (_waves < 2)
+            {
+                uint32 start = urand(0, 7);
+                for (uint32 i = 0; i < 3; ++i)
+                {
+                    Location const& pos = SpawnLocations[(start + i) % 8];
+                    if (!me->SummonCreature(MOB_ENRAGED_WRAITH, pos.x, pos.y, pos.z, 0,
+                        TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000))
+                    {
+                        TC_LOG_WARN("scripts", "Powering our Defenses: unable to summon wraith for crystal %u", me->GetGUIDLow());
+                        Finish();
+                        return;
+                    }
+                }
+                ++_waves;
+                _timer = _waves == 1 ? 30000 : 29000;
+                return;
+            }
+
+            Talk(0, owner->GetGUID());
+            owner->KilledMonsterCredit(me->GetEntry());
+            Finish();
         }
+
+    private:
+        void Finish()
+        {
+            _running = false;
+            _wraiths.DespawnAll();
+            me->DespawnOrUnsummon();
+        }
+
+        SummonList _wraiths;
+        uint32 _timer = 0;
+        uint8 _waves = 0;
+        bool _running = false;
     };
 };
 

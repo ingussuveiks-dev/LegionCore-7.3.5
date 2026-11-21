@@ -19166,6 +19166,9 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    if (quest->GetQuestId() == 8490 && GetQuestObjectiveData(8490, 16364) < 1)
+        return false;
+
     if (quest->GetQuestId() == 40938)
         for (uint32 credit : {102466u, 102465u, 102652u, 102653u, 102654u})
             if (GetQuestObjectiveData(40938, credit) < 1)
