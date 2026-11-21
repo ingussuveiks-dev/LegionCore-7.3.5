@@ -2943,12 +2943,14 @@ constexpr uint32 AgathaSummonUmbral = 230165;
 constexpr uint32 AgathaUmbralImp = 115642;
 constexpr uint32 AgathaShadowShield = 243027;
 
-std::array<uint32, 3> GetAgathaMixedImpWave(AgathaPosition position, uint32 relocatedUmbrals)
+std::array<uint32, 3> GetAgathaMixedImpWave(AgathaPosition position, uint32 waveIndex, uint32 relocatedUmbrals)
 {
-    if (position == AgathaPosition::Center)
-        return { AgathaSummonUmbral, AgathaSummonUmbral, AgathaSummonUmbral };
-
-    return { AgathaSummonUmbral, relocatedUmbrals == 2 ? AgathaSummonUmbral : AgathaSummonSmoldering, AgathaSummonSmoldering };
+    constexpr std::array<uint32, 3> openingUmbrals{ 3, 1, 2 };
+    uint32 const umbrals = waveIndex < openingUmbrals.size() ? openingUmbrals[waveIndex] :
+        (position == AgathaPosition::Center ? 3 : relocatedUmbrals);
+    return { AgathaSummonUmbral,
+        umbrals >= 2 ? AgathaSummonUmbral : AgathaSummonSmoldering,
+        umbrals == 3 ? AgathaSummonUmbral : AgathaSummonSmoldering };
 }
 
 std::array<std::array<Position, 2>, 3> const AgathaServantSpawns
@@ -3054,6 +3056,7 @@ public:
             _darkFuryAttempts = 0;
             _mixedWavesStarted = false;
             _nextMixedWave = 0;
+            _mixedWaveIndex = 0;
             if (IsArenaActor())
             {
                 SetCombatMove(false);
@@ -3242,8 +3245,10 @@ public:
             if (_nextMixedWave)
                 return;
 
-            _nextMixedWave = 55000;
-            auto const spells = GetAgathaMixedImpWave(_position, urand(1, 2));
+            _nextMixedWave = 61000;
+            auto const spells = GetAgathaMixedImpWave(_position, _mixedWaveIndex, urand(1, 2));
+            if (_mixedWaveIndex < 3)
+                ++_mixedWaveIndex;
             constexpr std::array<float, 3> angles{ -0.9f, 0.0f, 0.9f };
             for (size_t i = 0; i < spells.size(); ++i)
             {
@@ -3499,6 +3504,7 @@ public:
         uint32 _darkFuryAttempts = 0;
         bool _mixedWavesStarted = false;
         uint32 _nextMixedWave = 0;
+        uint32 _mixedWaveIndex = 0;
         std::set<ObjectGuid> _umbrals;
         ObjectGuid _boulderController;
         std::set<ObjectGuid> _boulders;

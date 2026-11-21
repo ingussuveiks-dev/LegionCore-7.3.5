@@ -145,6 +145,7 @@ struct AgathaAI
     uint32 _pendingTranslocate = 0;
     bool _mixedWavesStarted = false;
     uint32 _nextMixedWave = 0;
+    uint32 _mixedWaveIndex = 0;
     std::set<ObjectGuid> _umbrals;
 };
 unsigned warnings = 0;
@@ -267,16 +268,24 @@ int main()
     encounter.UpdateMixedImpWave(1);
     assert((boss.waveCasts == std::vector<uint32>{230165,230165,230165}));
     boss.waveCasts.clear();
-    encounter._position = AgathaPosition::Upper;
-    encounter.UpdateMixedImpWave(54999);
+    encounter.UpdateMixedImpWave(61000);
+    assert((boss.waveCasts == std::vector<uint32>{230165,230163,230163}));
+    boss.waveCasts.clear();
+    encounter.UpdateMixedImpWave(60999);
     assert(boss.waveCasts.empty());
     encounter.UpdateMixedImpWave(1);
+    assert((boss.waveCasts == std::vector<uint32>{230165,230165,230163}));
+    boss.waveCasts.clear();
+    encounter._position = AgathaPosition::Upper;
+    encounter.UpdateMixedImpWave(61000);
     assert((boss.waveCasts == std::vector<uint32>{230165,230163,230163}));
     boss.waveCasts.clear();
     encounter._position = AgathaPosition::Lower;
     waveRoll = 2;
-    encounter.UpdateMixedImpWave(55000);
+    encounter.UpdateMixedImpWave(61000);
     assert((boss.waveCasts == std::vector<uint32>{230165,230165,230163}));
+    assert(encounter._mixedWaveIndex == 3);
+    assert((GetAgathaMixedImpWave(AgathaPosition::Upper, 0, 1) == std::array<uint32, 3>{230165,230165,230165}));
 
     Creature umbral1, umbral2, umbral3, foreign;
     umbral1.guid = 100;
