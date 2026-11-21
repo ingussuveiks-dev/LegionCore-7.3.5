@@ -3741,6 +3741,222 @@ public:
     InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new HighlordsReturnInstance(map); }
 };
 
+namespace
+{
+constexpr uint32 HighlordsReturnSweeper = 118263;
+constexpr uint32 HighlordsReturnSweepWarning = 234920;
+constexpr uint32 HighlordsReturnSweepEvent = 234788;
+constexpr uint32 HighlordsReturnSpawnSweepers = 234789;
+constexpr uint32 HighlordsReturnActivateSweepers = 234922;
+constexpr uint32 HighlordsReturnSweepArea = 234440;
+constexpr uint32 HighlordsReturnSweepAura = 234441;
+constexpr float HighlordsReturnSweepDistance = 120.0f;
+
+Creature* GetActiveHighlordsReturnKruul(Unit* actor)
+{
+    Creature* kruul = GetHighlordsReturnKruul(actor);
+    if (!kruul || !kruul->IsAlive() || !kruul->isInCombat())
+        return nullptr;
+    Scenario* scenario = sScenarioMgr->GetScenario(kruul->GetInstanceId());
+    InstanceScript* arena = kruul->GetInstanceScript();
+    return scenario && scenario->GetScenarioId() == HighlordsReturnScenario && scenario->GetCurrentStep() == 2 &&
+        !scenario->IsCompleted(false) && arena && arena->GetData(HighlordsReturnAlliesAlive) ? kruul : nullptr;
+}
+
+Creature* GetKruulForShadowSweeper(Unit* actor)
+{
+    if (!actor || actor->GetEntry() != HighlordsReturnSweeper)
+        return nullptr;
+    TempSummon* sweeper = actor->ToTempSummon();
+    return sweeper ? GetActiveHighlordsReturnKruul(sweeper->GetSummoner()) : nullptr;
+}
+
+Position GetShadowSweeperStart(uint32 direction, float side)
+{
+    float const angle = std::atan2(-6.78708f, -5.91063f) + 1.57079633f * direction;
+    float const forwardX = std::cos(angle);
+    float const forwardY = std::sin(angle);
+    float const halfDistance = HighlordsReturnSweepDistance / 2.0f;
+    return Position(3988.5f - halfDistance * forwardX - side * forwardY,
+        -2404.0f - halfDistance * forwardY + side * forwardX, 98.838f, angle);
+}
+}
+
+class spell_mage_tower_kruul_shadow_sweep : public SpellScript
+{
+    PrepareSpellScript(spell_mage_tower_kruul_shadow_sweep);
+
+    bool Validate(SpellInfo const* /*info*/) override
+    {
+        return ValidateSpellInfo({ HighlordsReturnSweepEvent, HighlordsReturnSpawnSweepers, HighlordsReturnActivateSweepers, HighlordsReturnSweepArea });
+    }
+
+    void Warn(SpellEffIndex /*effect*/)
+    {
+        if (Creature* kruul = GetActiveHighlordsReturnKruul(GetCaster()))
+            if (GetHitUnit() == kruul)
+                kruul->CastSpell(kruul, HighlordsReturnSweepEvent, true);
+    }
+
+    void Spawn(SpellEffIndex /*effect*/)
+    {
+        Creature* kruul = GetActiveHighlordsReturnKruul(GetCaster());
+        if (!kruul || GetHitUnit() != kruul)
+            return;
+
+        uint32 const direction = urand(0, 3);
+        for (float side : { -14.0f, 14.0f })
+            if (!kruul->SummonCreature(HighlordsReturnSweeper, GetShadowSweeperStart(direction, side), TEMPSUMMON_TIMED_DESPAWN, 16500))
+                TC_LOG_ERROR("scripts", "The Highlord's Return failed to summon a Shadow Sweeper in instance %u", kruul->GetInstanceId());
+        kruul->CastSpell(kruul, HighlordsReturnActivateSweepers, true);
+    }
+
+    void SelectSweepers(std::list<WorldObject*>& targets)
+    {
+        Creature* kruul = GetActiveHighlordsReturnKruul(GetCaster());
+        targets.remove_if([kruul](WorldObject* target)
+        {
+            return !kruul || !target || GetKruulForShadowSweeper(target->ToUnit()) != kruul;
+        });
+    }
+
+    void Register() override
+    {
+        switch (m_scriptSpellId)
+        {
+            case HighlordsReturnSweepWarning:
+                OnEffectHitTarget += SpellEffectFn(spell_mage_tower_kruul_shadow_sweep::Warn, EFFECT_0, SPELL_EFFECT_DUMMY);
+                break;
+            case HighlordsReturnSpawnSweepers:
+                OnEffectHitTarget += SpellEffectFn(spell_mage_tower_kruul_shadow_sweep::Spawn, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                break;
+            case HighlordsReturnActivateSweepers:
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_kruul_shadow_sweep::SelectSweepers, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_tower_kruul_shadow_sweep::SelectSweepers, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+                break;
+        }
+    }
+};
+
+namespace
+{
+bool ShadowSweepTouches(Position const& from, Position const& to, Position const& player)
+{
+    float const forwardX = std::cos(from.GetOrientation());
+    float const forwardY = std::sin(from.GetOrientation());
+    float const dx = player.GetPositionX() - from.GetPositionX();
+    float const dy = player.GetPositionY() - from.GetPositionY();
+    float const travelled = (to.GetPositionX() - from.GetPositionX()) * forwardX +
+        (to.GetPositionY() - from.GetPositionY()) * forwardY;
+    float const along = dx * forwardX + dy * forwardY;
+    float const across = -dx * forwardY + dy * forwardX;
+    return along >= -0.375f && along <= std::max(0.0f, travelled) + 0.375f &&
+        std::abs(across) <= 12.5f && std::abs(player.GetPositionZ() - from.GetPositionZ()) <= 1.25f;
+}
+}
+
+class at_mage_tower_kruul_shadow_sweep : public AreaTriggerScript
+{
+public:
+    at_mage_tower_kruul_shadow_sweep() : AreaTriggerScript("at_mage_tower_kruul_shadow_sweep") {}
+
+    struct ShadowSweepAI : AreaTriggerAI
+    {
+        explicit ShadowSweepAI(AreaTrigger* trigger) : AreaTriggerAI(trigger) {}
+
+        void CalculateDuration(int32& duration) override
+        {
+            if (IsShadowSweep())
+                duration = 15500;
+        }
+
+        bool CalculateSpline(Position const* pos, Position& start, Position& end, std::vector<Position>&) override
+        {
+            if (!IsShadowSweep())
+                return false;
+
+            start = *pos;
+            float const angle = start.GetOrientation();
+            end.Relocate(start.GetPositionX() + HighlordsReturnSweepDistance * std::cos(angle),
+                start.GetPositionY() + HighlordsReturnSweepDistance * std::sin(angle), start.GetPositionZ(), angle);
+            _previous = start;
+            _angle = angle;
+            return true;
+        }
+
+        void OnUpdate(uint32 diff) override
+        {
+            if (!IsShadowSweep())
+                return;
+
+            Creature* kruul = GetKruulForShadowSweeper(at->GetCaster());
+            if (!kruul)
+            {
+                ReleaseWind();
+                at->SetDuration(0);
+                return;
+            }
+
+            Position current = at->GetPosition();
+            current.SetOrientation(_angle);
+            Player* player = GetChallenger(*kruul);
+            bool const inBeam = player && ShadowSweepTouches(current, current, player->GetPosition());
+            bool const touched = player && ShadowSweepTouches(_previous, current, player->GetPosition());
+            bool const alreadyPushed = player && _pushed == player->GetGUID();
+            _minimumWind -= std::min(diff, _minimumWind);
+            if (!_pushed.IsEmpty() && (!alreadyPushed || (!inBeam && !_minimumWind)))
+                ReleaseWind();
+
+            if (touched && !player->HasAura(HighlordsReturnSweepAura, kruul->GetGUID()))
+                player->CastSpell(player, HighlordsReturnSweepAura, TRIGGERED_FULL_MASK, nullptr, nullptr, kruul->GetGUID());
+
+            if (touched && !alreadyPushed)
+            {
+                player->SendMovementForce(at, Position(9.0f * std::cos(_angle), 9.0f * std::sin(_angle), 0.0f), 9.0f, 0, true);
+                _pushed = player->GetGUID();
+                _minimumWind = 150;
+            }
+            _previous = current;
+        }
+
+        void OnRemove() override { ReleaseWind(); }
+
+    private:
+        bool IsShadowSweep() const
+        {
+            return at->GetMapId() == HighlordsReturnMap && at->GetRealEntry() == 9554;
+        }
+
+        Player* GetChallenger(Creature const& kruul) const
+        {
+            for (auto const& reference : at->GetMap()->GetPlayers())
+                if (Player* player = reference.getSource())
+                    if (player->IsInWorld() && player->IsAlive() && !player->IsPreDelete() && !player->IsBeingTeleportedFar() &&
+                        player->InSamePhase(&kruul) && GetHighlordsReturnSoloGroup(player))
+                        return player;
+            return nullptr;
+        }
+
+        void ReleaseWind()
+        {
+            if (!_pushed.IsEmpty())
+            {
+                if (Player* player = ObjectAccessor::FindPlayer(_pushed))
+                    if (player->IsInWorld() && !player->IsPreDelete())
+                        player->SendMovementForce(at);
+                _pushed.Clear();
+            }
+        }
+
+        Position _previous;
+        float _angle = 0.0f;
+        ObjectGuid _pushed;
+        uint32 _minimumWind = 0;
+    };
+
+    AreaTriggerAI* GetAI(AreaTrigger* trigger) const override { return new ShadowSweepAI(trigger); }
+};
+
 class spell_mage_tower_highlords_return_holy_ward : public SpellScript
 {
     PrepareSpellScript(spell_mage_tower_highlords_return_holy_ward);
@@ -4189,6 +4405,8 @@ void AddSC_broken_shore()
     RegisterAuraScript(spell_mage_tower_kruul_twisted_reflection);
     new instance_mage_tower_highlords_return();
     RegisterSpellScript(spell_mage_tower_highlords_return_holy_ward);
+    RegisterSpellScript(spell_mage_tower_kruul_shadow_sweep);
+    new at_mage_tower_kruul_shadow_sweep();
     new boss_sivash();
     new areatrigger_at_tidal_wave();
     new boss_apocron();
