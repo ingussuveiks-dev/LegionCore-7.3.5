@@ -28,10 +28,14 @@ npc_rathis_tomber
 npc_ranger_lilatha
 EndContentData */
 
+#include "GameObject.h"
+#include "GameObjectAI.h"
+#include "Item.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 #include "ScriptedEscortAI.h"
+#include "SpellScript.h"
 
 /*######
 ## npc_rathis_tomber
@@ -181,8 +185,88 @@ public:
 
 };
 
+namespace
+{
+constexpr uint32 SeasoningQuest = 9275;
+constexpr uint32 ApothecarysPoison = 22796;
+
+struct go_seasoning_rack : GameObjectAI
+{
+    explicit go_seasoning_rack(GameObject* object) : GameObjectAI(object) { }
+
+    bool CanPoison(Player const* player) const
+    {
+        return player && player->IsAlive() && go->GetMapId() == 530 && go->IsInMap(player) &&
+            go->GetEntry() >= 181250 && go->GetEntry() <= 181252 && go->GetGoType() == GAMEOBJECT_TYPE_GOOBER &&
+            go->GetGOInfo()->GetLockId() == 1655 && go->isSpawned() && !go->IsNeverVisible(player) &&
+            !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) && player->IsWithinLOSInMap(go) &&
+            player->GetQuestStatus(SeasoningQuest) == QUEST_STATUS_INCOMPLETE &&
+            player->GetQuestObjectiveData(SeasoningQuest, go->GetEntry()) == 0;
+    }
+
+    void BeginOpening(Player const* player)
+    {
+        _opener = CanPoison(player) ? player->GetGUID() : ObjectGuid::Empty;
+    }
+
+    void EndOpening() { _opener.Clear(); }
+
+    bool GossipUse(Player* player) override
+    {
+        if (_opener != player->GetGUID())
+            return true;
+        EndOpening();
+        return !CanPoison(player);
+    }
+
+private:
+    ObjectGuid _opener;
+};
+
+class spell_apothecarys_poison : public SpellScript
+{
+    PrepareSpellScript(spell_apothecarys_poison);
+
+    static go_seasoning_rack* RackAI(GameObject* rack)
+    {
+        return rack ? dynamic_cast<go_seasoning_rack*>(rack->AI()) : nullptr;
+    }
+
+    SpellCastResult CheckRack()
+    {
+        Item* poison = GetCastItem();
+        auto rack = RackAI(GetExplTargetGObj());
+        return poison && poison->GetEntry() == ApothecarysPoison && rack && rack->CanPoison(GetCaster()->ToPlayer())
+            ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    // The default OPEN_LOCK handler still checks Lock.db2 before calling
+    // GameObject::Use synchronously. Only that use may pass the rack's guard.
+    void BeginOpening(SpellEffIndex /*effect*/)
+    {
+        if (auto rack = RackAI(GetHitGObj()))
+            rack->BeginOpening(GetCaster()->ToPlayer());
+    }
+
+    void EndOpening()
+    {
+        if (auto rack = RackAI(GetHitGObj()))
+            rack->EndOpening();
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_apothecarys_poison::CheckRack);
+        OnEffectHitTarget += SpellEffectFn(spell_apothecarys_poison::BeginOpening, EFFECT_0, SPELL_EFFECT_OPEN_LOCK);
+        AfterHit += SpellHitFn(spell_apothecarys_poison::EndOpening);
+    }
+};
+}
+
 void AddSC_ghostlands()
 {
     new npc_rathis_tomber();
     new npc_ranger_lilatha();
+    RegisterGameObjectAI(go_seasoning_rack);
+    RegisterSpellScript(spell_apothecarys_poison);
 }
