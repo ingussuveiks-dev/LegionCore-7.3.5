@@ -74,6 +74,7 @@
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "SpellMgr.h"
+#include "StagnantOasis.h"
 #include "SkyholdDeparture.h"
 #include "SpellPackets.h"
 #include "TalentPackets.h"
@@ -3476,7 +3477,14 @@ void Spell::SendLoot(ObjectGuid const& guid, LootType loottype)
         // special case, already has GossipHello inside so return and avoid calling twice
         if (gameObjTarget->GetGoType() == GAMEOBJECT_TYPE_GOOBER)
         {
-            gameObjTarget->Use(m_caster);
+            if (gameObjTarget->GetEntry() == StagnantOasis::Fissure)
+            {
+                if (m_spellInfo->Id == StagnantOasis::PlantSeeds && m_questItemCastReceipt &&
+                    !m_questItemCastReceipt->load(std::memory_order_acquire))
+                    gameObjTarget->Use(m_caster, StagnantOasis::PlantSeeds);
+            }
+            else
+                gameObjTarget->Use(m_caster);
             return;
         }
 

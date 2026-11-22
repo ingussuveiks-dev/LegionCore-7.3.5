@@ -187,6 +187,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         void EnableCollision(bool enable);
 
         void Use(Unit* user);
+        void Use(Unit* user, uint32 activationSpell);
 
         LootState getLootState() const;
         // Note: unit is only used when s = GO_ACTIVATED

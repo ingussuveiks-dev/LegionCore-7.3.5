@@ -46,6 +46,7 @@
 #include "ScriptMgr.h"
 #include "ScriptsData.h"
 #include "SpellMgr.h"
+#include "StagnantOasis.h"
 #include "Unit.h"
 #include "UpdateFieldFlags.h"
 #include "World.h"
@@ -1470,6 +1471,14 @@ bool GameObject::IsInvisibleDueToDespawn() const
     return false;
 }
 
+bool StagnantOasis::CanPlant(GameObject const* fissure, Player const* player)
+{
+    return fissure && player && player->IsAlive() && player->GetMap() == fissure->GetMap() &&
+        fissure->GetEntry() == Fissure && fissure->GetMapId() == 1 && fissure->GetDBTableGUIDLow() == FissureSpawn &&
+        player->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(Seeds, 1, false) &&
+        fissure->isSpawned() && !fissure->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
+}
+
 bool GameObject::ActivateToQuest(Player* target) const
 {
     if (!CanUseAridenCampObject(this, target))
@@ -1477,6 +1486,9 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (target->isGameMaster())
         return true;
+
+    if (GetEntry() == StagnantOasis::Fissure)
+        return StagnantOasis::CanPlant(this, target);
 
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&
@@ -1670,11 +1682,20 @@ uint32 GameObject::GetVignetteId() const
 
 void GameObject::Use(Unit* user)
 {
+    Use(user, 0);
+}
+
+void GameObject::Use(Unit* user, uint32 activationSpell)
+{
     if (GetEntry() == 245188 && GetMapId() == 1511)
         TC_LOG_INFO("scripts", "Warswords bonfire native Use: db=%llu state=%u flags=%u script=%s ai=%s",
             GetDBTableGUIDLow(), uint32(GetGoState()), GetUInt32Value(GAMEOBJECT_FIELD_FLAGS),
             sObjectMgr->GetScriptName(GetScriptId()).c_str(), AI() ? typeid(*AI()).name() : "none");
     if (IsQuestObjectExpired())
+        return;
+
+    if (GetEntry() == StagnantOasis::Fissure &&
+        (activationSpell != StagnantOasis::PlantSeeds || !StagnantOasis::CanPlant(this, user->ToPlayer())))
         return;
 
     if (GetEntry() == 181690)

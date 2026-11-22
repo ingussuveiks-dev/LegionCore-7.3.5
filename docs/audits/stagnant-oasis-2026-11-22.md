@@ -1,0 +1,13 @@
+# The Stagnant Oasis 877
+
+Pasaulē ir abi devēji, Jerrik Highmountain `34626` pie `87500` un Tonga Runetotem `3448` pie `87126`. Tonga arī pieņem kvestu. Saglabāta sākotnējā secība `13988 → 877 → 880`. Zemūdens Bubbling Fissure ir `3737`, izvietojums `32492` kartes `1` apgabalā `388`. Slēdzene `73` 7.3.5 datos prasa Dried Seeds `5068`. Kvests dod vienu devu. Tās faktiskā `Plant Seeds` burvestība ir `5206` ar vienas devas patēriņu. Objekts saglabā savu sākotnējo modeli un `525` aktivizācijas notikumu.
+
+Vecajā `cfce801ab` būvē `CMSG_GAME_OBJ_USE` pie pareizās plaisas nekavējoties ieskaitīja mērķi, taču sēklas palika somā. Labojums saglabā labo klikšķi un novirza to uz faktisko sēklu burvestību. Gan klikšķis, gan priekšmeta izmantošana prasa dzīvu spēlētāju ar aktīvu kvestu, sēklas somā un īsto plaisas izvietojumu. Atcelts mēģinājums vairs nevar iedarbināt objektu. Plaisa ir pasaules dekorācija, un tās kvesta mijiedarbība tiek piedāvāta tikai derīgam spēlētājam.
+
+`Test-QuestObjectLootNative.ps1 -StagnantOasis` izmantoja faktiskos devējus, plaisas koordinātas, tās slēdzeni un servera paketes. Pārbaude aptvēra klikšķi no attāluma, svešu objektu, tā paša objekta nepareizu izvietojumu, burvestību bez priekšmeta un veca mēģinājuma stādīšanu. Tikai pabeigta burvestība pēc sākotnējās `OPEN_LOCK` pārbaudes ieskaitīja mērķi un patērēja devu. Otrs blakus esošais spēlētājs ar pieņemtu kvestu saglabāja savu devu un nesaņēma ieskaiti. Tonga faktiskā atlīdzības pakete izņēma testa papildu sēklas, un atmešana izņēma otra spēlētāja neizlietotās sēklas. Izturēti arī `-FelfireSeedlings` un `-Dozercism` testi.
+
+Izolētais un kanoniskais Release `3C6E076F69AF5DB06B553500458FDF77F1268338028F2A76A9F7254A29433DF9` sasniedza `ready` un korekti izslēdzās. Pārbaudīta faktiskā spēles un skriptu bibliotēku saite, PE un saišu kartes laika zīmogi un labotās funkcijas gala būvē. Produkcijas `2026_11_22_25_barrens_stagnant_oasis.sql` trīs nosacījumi un migrācijas kontrolsumma sakrīt ar izolēto datu pārbaudi. Izvietošanas laikā nav jaunu avāriju, kļūdu vai jaunu `DBErrors.log` ierakstu.
+
+Saglabātas 228 datnes ar pārbaudītām kontrolsummām `build-extractors/bin/Release/fixed/stagnant-oasis-2026-11-22/`. Pagaidu kopiju izņemšana atbrīvoja 3 786 135 585 baitus. Saglabāta viena iepriekšējā izlaiduma atgriešanas kopija.
+
+2015. gada video ir apskatīts no pieņemšanas līdz Tonga nodošanai ar trīs sekunžu kadru soli. Zemūdens stādīšanas posms papildus apskatīts ar vienas sekundes soli. Tajā redzams stādīšanas ilgums, 1/1 ieskaite un zilā plaisas animācija. Faktiskā 7.3.5 klienta klikšķa, animācijas un peldošā tēla pārbaude paliek atvērta. [Kvesta gājiens pirms Legion](https://www.youtube.com/watch?v=xzEuoBmbvSI)

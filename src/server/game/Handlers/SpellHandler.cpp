@@ -27,6 +27,7 @@
 #include "PlayerDefines.h"
 #include "GameObjectPackets.h"
 #include "SpellAuraEffects.h"
+#include "StagnantOasis.h"
 #include "Chat.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::ItemUse& cast)
@@ -159,8 +160,17 @@ void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& 
         return;
 
     if (GameObject* obj = GetPlayer()->GetMap()->GetGameObject(packet.Guid))
+    {
+        if (obj->GetEntry() == StagnantOasis::Fissure)
+        {
+            if (StagnantOasis::CanPlant(obj, _player) && obj->IsWithinDistInMap(_player, obj->GetInteractionDistance()))
+                if (Item* seeds = _player->GetItemByEntry(StagnantOasis::Seeds))
+                    _player->CastSpell(obj, StagnantOasis::PlantSeeds, false, seeds);
+            return;
+        }
         if (obj->GetEntry() != 181690) // Fertile Dirt Mounds are activated by Plant Tree Seedling.
             obj->Use(_player);
+    }
 }
 
 void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjReportUse& packet)
