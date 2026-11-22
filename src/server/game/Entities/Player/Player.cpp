@@ -19195,7 +19195,9 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     switch (quest->GetQuestId())
     {
         case 29506:
+        case 29509:
         case 29510:
+        case 29511:
         case 29515:
         case 29516:
         case 29517:

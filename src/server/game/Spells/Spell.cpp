@@ -80,6 +80,7 @@ struct QuestAssembly
     uint32 Item;
     uint32 Quest;
     uint32 LegacyQuest;
+    bool SelfTarget = true;
 
     uint32 IncompleteQuest(Player const& player) const
     {
@@ -110,7 +111,10 @@ QuestAssembly const* FindQuestAssembly(uint32 spell)
         {101863, 71971, 29515, 0}, // Make Prophetic Ink from the herbs
         {101868, 71972, 29515, 0}, // Write a Fortune with the ink
         {102221, 72052, 29516, 0}, // Cut a Bit of Glass
-        {101874, 71977, 29517, 0}  // Build a Darkmoon Prize with the kit
+        {101874, 71977, 29517, 0}, // Build a Darkmoon Prize with the kit
+        {102050, 72056, 29509, 0}, // Bread five frogs before frying
+        {102053, 72057, 29509, 0, false}, // Fry one Breaded Frog at the Cookpot
+        {101838, 72110, 29511, 0, false}  // Repair a Damaged Tonk with the wrench
     };
     for (QuestAssembly const& assembly : assemblies)
         if (assembly.Spell == spell)
@@ -219,6 +223,12 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
             quest = assembly->IncompleteQuest(*player);
         if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
             m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
+    }
+    else if (player && m_spellInfo->Id == 101838 && triggerData.originalCaster == player->GetGUID() &&
+        player->GetQuestStatus(29511) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(72110, 1, false))
+    {
+        // Native spell click supplies the clicker's GUID while the wrench stays in their bag.
+        m_questItemCastReceipt = player->GetQuestCancellationReceipt(29511);
     }
 
     m_castPos = *m_caster;
@@ -6769,8 +6779,20 @@ SpellCastResult Spell::CheckCast(bool strict)
         Player* player = m_caster->ToPlayer();
         if (!player || !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
             !assembly->MatchesAttempt(*player, m_questItemCastReceipt) ||
-            (m_targets.GetObjectTarget() && m_targets.GetObjectTarget() != player))
+            (assembly->SelfTarget && m_targets.GetObjectTarget() && m_targets.GetObjectTarget() != player))
             return SPELL_FAILED_BAD_TARGETS;
+
+        if (m_spellInfo->Id == 102053)
+        {
+            // The Cookpot responds with 102363 after the item cast. Check its output before using a frog.
+            ItemPosCountVec destination;
+            InventoryResult result = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, destination, 72058, 1);
+            if (result != EQUIP_ERR_OK)
+            {
+                player->SendEquipError(result, nullptr, nullptr, 72058);
+                return SPELL_FAILED_DONT_REPORT;
+            }
+        }
     }
 
     if (m_spellInfo->Id == 29773)
