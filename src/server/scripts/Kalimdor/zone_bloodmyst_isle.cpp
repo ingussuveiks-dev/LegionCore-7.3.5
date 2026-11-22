@@ -34,7 +34,10 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
+#include "GameObjectAI.h"
 #include "Player.h"
+#include "QuestItemObjectUse.h"
+#include "SmartAI.h"
 #include "Group.h"
 
 /*######
@@ -157,55 +160,176 @@ public:
 ## Quest 9667: Saving Princess Stillpine
 ######*/
 
-enum Stillpine
+namespace
 {
-    QUEST_SAVING_PRINCESS_STILLPINE               = 9667,
-    NPC_PRINCESS_STILLPINE                        = 17682,
-    GO_PRINCESS_STILLPINES_CAGE                   = 181928,
-    SPELL_OPENING_PRINCESS_STILLPINE_CREDIT       = 31003,
-    SAY_DIRECTION                                 = 1
+constexpr uint32 BristlelimbChief = 17702;
+constexpr uint32 BristlelimbChiefSpawn = 35410;
+constexpr float BristlelimbCampRange = 150.0f;
+constexpr uint32 PrincessEscape = 1;
+constexpr uint32 PrincessOfferFlags = UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER;
+
+struct BristlelimbChiefAI : SmartAI
+{
+    explicit BristlelimbChiefAI(Creature* creature) : SmartAI(creature) { }
+
+    void Reset() override
+    {
+        SmartAI::Reset();
+        _revealed = false;
+        me->SetReactState(REACT_PASSIVE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetVisible(false);
+    }
+
+    void TryReveal()
+    {
+        // The older encounter data rolls a 20% chance after an eligible camp death.
+        if (_revealed || !me->IsAlive() || me->IsInEvadeMode() || !roll_chance_i(20))
+            return;
+
+        _revealed = true;
+        me->SetVisible(true);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_AGGRESSIVE);
+        Talk(0);
+    }
+
+private:
+    bool _revealed = false;
 };
 
-class go_princess_stillpines_cage : public GameObjectScript
+struct BristlelimbCampAI : SmartAI
+{
+    explicit BristlelimbCampAI(Creature* creature) : SmartAI(creature) { }
+
+    void JustDied(Unit* killer) override
+    {
+        SmartAI::JustDied(killer);
+        if (!killer || !killer->GetCharmerOrOwnerPlayerOrPlayerItself())
+            return;
+
+        Creature* chief = me->FindNearestCreature(BristlelimbChief, BristlelimbCampRange);
+        if (chief && chief->GetDBTableGUIDLow() == BristlelimbChiefSpawn &&
+            me->GetHomePosition().GetExactDist(chief->GetHomePosition()) <= BristlelimbCampRange)
+            if (auto ai = CAST_AI(BristlelimbChiefAI, chief->AI()))
+                ai->TryReveal();
+    }
+};
+
+struct StillpinePrincessAI : ScriptedAI
+{
+    explicit StillpinePrincessAI(Creature* creature) : ScriptedAI(creature) { }
+
+    void Reset() override
+    {
+        me->SetFlag(UNIT_FIELD_NPC_FLAGS, _offerFlags);
+        _offerFlags = 0;
+        _departure = 0;
+        _leftCage = false;
+    }
+
+    uint32 GetData(uint32 id) const override
+    {
+        return id == SavingPrincessStillpine::ReadyForRescue && me->IsAlive() && !_departure;
+    }
+
+    void Release(Player& owner, GameObject& cage)
+    {
+        if (!GetData(SavingPrincessStillpine::ReadyForRescue) || cage.getLootState() != GO_READY)
+            return;
+
+        _departure = 10 * IN_MILLISECONDS;
+        _offerFlags = me->GetUInt32Value(UNIT_FIELD_NPC_FLAGS) & PrincessOfferFlags;
+        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, _offerFlags);
+        cage.UseDoorOrButton(0, false, &owner);
+
+        float x, y, z;
+        me->GetClosePoint(x, y, z, me->GetObjectSize() / 3.0f, 5.0f);
+        me->GetMotionMaster()->MovePoint(PrincessEscape, x, y, z);
+        Talk(0, owner.GetGUID());
+        owner.KilledMonsterCredit(me->GetEntry(), me->GetGUID());
+    }
+
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (type == POINT_MOTION_TYPE && id == PrincessEscape && _departure && !_leftCage)
+        {
+            _leftCage = true;
+            Talk(1);
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_departure)
+            return;
+        if (_departure > diff)
+            _departure -= diff;
+        else
+            me->DespawnOrUnsummon();
+    }
+
+private:
+    uint32 _departure = 0;
+    uint32 _offerFlags = 0;
+    bool _leftCage = false;
+};
+}
+
+class npc_bristlelimb_high_chief : public CreatureScript
 {
 public:
-    go_princess_stillpines_cage() : GameObjectScript("go_princess_stillpines_cage") {}
+    npc_bristlelimb_high_chief() : CreatureScript("npc_bristlelimb_high_chief") { }
 
-    bool OnGossipHello(Player* player, GameObject* go)
+    CreatureAI* GetAI(Creature* creature) const override
     {
-        if (Creature* stillpine = go->FindNearestCreature(NPC_PRINCESS_STILLPINE, 25, true))
-        {
-            go->SetGoState(GO_STATE_ACTIVE);
-            stillpine->GetMotionMaster()->MovePoint(1, go->GetPositionX(), go->GetPositionY()-15, go->GetPositionZ());
-            player->KillCreditGO(NPC_PRINCESS_STILLPINE, ObjectGuid::Empty);
-        }
-        return true;
+        if (creature->GetMapId() == 530 && creature->GetDBTableGUIDLow() == BristlelimbChiefSpawn)
+            return new BristlelimbChiefAI(creature);
+        return nullptr;
+    }
+};
+
+class npc_bristlelimb_camp_member : public CreatureScript
+{
+public:
+    npc_bristlelimb_camp_member() : CreatureScript("npc_bristlelimb_camp_member") { }
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        if (creature->GetDBTableGUIDLow() && creature->GetMapId() == 530 && creature->GetAreaId() == 3600)
+            return new BristlelimbCampAI(creature);
+        return nullptr;
     }
 };
 
 class npc_princess_stillpine : public CreatureScript
 {
 public:
-    npc_princess_stillpine() : CreatureScript("npc_princess_stillpine") {}
+    npc_princess_stillpine() : CreatureScript("npc_princess_stillpine") { }
 
-    struct npc_princess_stillpineAI : public ScriptedAI
+    CreatureAI* GetAI(Creature* creature) const override { return new StillpinePrincessAI(creature); }
+};
+
+class go_princess_stillpines_cage : public GameObjectScript
+{
+public:
+    go_princess_stillpines_cage() : GameObjectScript("go_princess_stillpines_cage") { }
+
+    struct CageAI : GameObjectAI
     {
-        npc_princess_stillpineAI(Creature* creature) : ScriptedAI(creature) {}
+        explicit CageAI(GameObject* cage) : GameObjectAI(cage) { }
 
-        void MovementInform(uint32 type, uint32 id)
+        bool GossipHello(Player* player, bool withSpell) override
         {
-            if (type == POINT_MOTION_TYPE && id == 1)
-            {
-                Talk(SAY_DIRECTION);
-                me->DespawnOrUnsummon();
-            }
+            if (withSpell)
+                if (Creature* princess = SavingPrincessStillpine::FindPrincess(*go))
+                    if (auto ai = CAST_AI(StillpinePrincessAI, princess->AI()))
+                        ai->Release(*player, *go);
+            return true;
         }
     };
 
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_princess_stillpineAI(creature);
-    }
+    GameObjectAI* GetAI(GameObject* cage) const override { return new CageAI(cage); }
 };
 
 /*######
@@ -940,6 +1064,8 @@ void AddSC_bloodmyst_isle()
     new npc_captured_sunhawk_agent();
     new npc_princess_stillpine();
     new go_princess_stillpines_cage();
+    new npc_bristlelimb_high_chief();
+    new npc_bristlelimb_camp_member();
     new npc_sironas();
     new npc_demolitionist_legoso();
 }

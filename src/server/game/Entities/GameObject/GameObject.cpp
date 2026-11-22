@@ -1479,7 +1479,9 @@ constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
     {StagnantOasis::Fissure, StagnantOasis::FissureSpawn, 1, 0, StagnantOasis::Quest, StagnantOasis::Seeds, StagnantOasis::PlantSeeds},
     {AmaniCatacombs::Remains, 0, 530, 3510, AmaniCatacombs::Quest, AmaniCatacombs::Torch, AmaniCatacombs::BurnRemains},
     {RavagerCage::Cage, RavagerCage::CageSpawn, 530, 0, RavagerCage::Quest, RavagerCage::Key, RavagerCage::OpenCage},
-    {ProphecyOfAkida::Cage, 0, 530, 3571, ProphecyOfAkida::Quest, ProphecyOfAkida::Key, ProphecyOfAkida::OpenCage}
+    {ProphecyOfAkida::Cage, 0, 530, 3571, ProphecyOfAkida::Quest, ProphecyOfAkida::Key, ProphecyOfAkida::OpenCage},
+    {SavingPrincessStillpine::Cage, SavingPrincessStillpine::CageSpawn, 530, 3600, SavingPrincessStillpine::Quest,
+        SavingPrincessStillpine::Key, SavingPrincessStillpine::OpenCage}
 };
 }
 
@@ -1502,6 +1504,16 @@ Creature* ProphecyOfAkida::FindCaptive(GameObject const& cage)
     Creature* captive = cage.FindNearestCreature(Captive, 5.0f);
     if (captive && IsPlacedPair(cage, *captive))
         return captive;
+    return nullptr;
+}
+
+Creature* SavingPrincessStillpine::FindPrincess(GameObject const& cage)
+{
+    if (cage.GetEntry() != Cage || cage.GetDBTableGUIDLow() != CageSpawn || cage.GetMapId() != 530)
+        return nullptr;
+    Creature* princess = cage.FindNearestCreature(Princess, 5.0f);
+    if (princess && princess->GetDBTableGUIDLow() == PrincessSpawn)
+        return princess;
     return nullptr;
 }
 
@@ -1537,8 +1549,16 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
         (!binding.Spawn || object->GetDBTableGUIDLow() == binding.Spawn) && (!binding.AreaId || object->GetAreaId() == binding.AreaId) &&
         player->GetQuestStatus(binding.Quest) == QUEST_STATUS_INCOMPLETE && FindUsableItem(*player, binding) &&
         object->isSpawned() && !object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
-    if (!eligible || binding.Quest != ProphecyOfAkida::Quest)
-        return eligible;
+    if (!eligible)
+        return false;
+    if (binding.Quest == SavingPrincessStillpine::Quest)
+    {
+        Creature const* princess = SavingPrincessStillpine::FindPrincess(*object);
+        return object->getLootState() == GO_READY && princess && princess->AI() &&
+            princess->AI()->GetData(SavingPrincessStillpine::ReadyForRescue);
+    }
+    if (binding.Quest != ProphecyOfAkida::Quest)
+        return true;
 
     if (object->getLootState() != GO_READY)
         return false;
@@ -1765,7 +1785,7 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
     {
         if (activationSpell != binding->Spell || !QuestItemObjectUse::CanUse(this, user->ToPlayer(), *binding))
             return;
-        if (GetGoType() == GAMEOBJECT_TYPE_DOOR)
+        if (GetGoType() == GAMEOBJECT_TYPE_DOOR || GetGoType() == GAMEOBJECT_TYPE_BUTTON)
         {
             AI()->GossipHello(user->ToPlayer(), true);
             return;

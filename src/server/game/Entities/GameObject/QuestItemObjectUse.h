@@ -52,6 +52,20 @@ bool IsPlacedPair(GameObject const& cage, Creature const& captive);
 Creature* FindCaptive(GameObject const& cage);
 }
 
+namespace SavingPrincessStillpine
+{
+constexpr uint32 Quest = 9667;
+constexpr uint32 Cage = 181928;
+constexpr uint32 CageSpawn = 19182;
+constexpr uint32 Princess = 17682;
+constexpr uint32 PrincessSpawn = 17225;
+constexpr uint32 Key = 24099;
+constexpr uint32 OpenCage = 31003;
+constexpr uint32 ReadyForRescue = 1;
+
+Creature* FindPrincess(GameObject const& cage);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding
