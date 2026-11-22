@@ -286,6 +286,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == WoodsEndCoffer::Horn)
                     quest = WoodsEndCoffer::Quest;
                 break;
+            case Volcanoth::Fire:
+                if (m_CastItem->GetEntry() == Volcanoth::Bootzooka)
+                    quest = Volcanoth::Quest;
+                break;
             case PerfumedGuardAnalysis::Analysis:
                 if (m_CastItem->GetEntry() == PerfumedGuardAnalysis::Analyzer)
                     quest = PerfumedGuardAnalysis::ActiveQuest(player);
@@ -3323,6 +3327,10 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     // so the accepted attempt and live target validate the later impact.
     if (m_spellInfo->Id == 69743 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
         !CanFireSfg(m_caster->ToPlayer(), unit->ToCreature())))
+        return SPELL_MISS_EVADE;
+
+    if (m_spellInfo->Id == Volcanoth::Fire && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !Volcanoth::CanFire(m_caster->ToPlayer(), unit)))
         return SPELL_MISS_EVADE;
 
     if (m_spellInfo->Id == 67915)
@@ -6863,6 +6871,12 @@ bool Spell::CheckEffFromDummy(Unit* target, uint32 eff)
 
 SpellCastResult Spell::CheckCast(bool strict)
 {
+    if (m_spellInfo->Id == Volcanoth::Fire && (!m_CastItem ||
+        !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
+        !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !Volcanoth::CanFire(m_caster->ToPlayer(), m_targets.GetUnitTarget())))
+        return SPELL_FAILED_BAD_TARGETS;
+
     if (m_spellInfo->Id == GilneanMastiff::Summon && (!GilneanMastiff::CanSummon(m_caster->ToPlayer()) ||
         (m_CastItem && (m_CastItem->GetEntry() != GilneanMastiff::Collar ||
             !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot())))))

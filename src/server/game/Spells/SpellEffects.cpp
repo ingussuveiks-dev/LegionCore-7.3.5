@@ -121,6 +121,15 @@ bool GilneanMastiff::CanSummon(Player* owner)
     return true;
 }
 
+bool Volcanoth::CanFire(Player const* player, Unit const* target)
+{
+    Creature const* boss = target ? target->ToCreature() : nullptr;
+    return player && player->IsAlive() && player->IsInWorld() && player->GetMapId() == 648 &&
+        player->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(Bootzooka, 1, false) &&
+        boss && boss->IsAlive() && boss->IsInWorld() && boss->GetEntry() == 38855 && boss->GetDBTableGUIDLow() == 242274 &&
+        player->IsInMap(boss) && player->InSamePhase(boss);
+}
+
 bool WoodsEndCoffer::IsAtCabin(Player const* player)
 {
     return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 654 &&

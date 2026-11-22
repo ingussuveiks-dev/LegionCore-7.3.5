@@ -7,6 +7,7 @@ class Creature;
 class GameObject;
 class Item;
 class Player;
+class Unit;
 
 namespace StagnantOasis
 {
@@ -223,6 +224,15 @@ constexpr uint32 Lurker = 35463;
 bool IsCityAttempt(Player const* owner);
 bool CanSummon(Player* owner);
 bool IsQuestMastiff(Creature const* creature);
+}
+
+namespace Volcanoth
+{
+constexpr uint32 Quest = 24958;
+constexpr uint32 Bootzooka = 52043;
+constexpr uint32 Fire = 73066;
+
+bool CanFire(Player const* player, Unit const* target);
 }
 
 namespace QuestItemObjectUse
