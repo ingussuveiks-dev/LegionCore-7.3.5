@@ -76,6 +76,7 @@
 #include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "QuestItemObjectUse.h"
+#include "PerfumedGuardAnalysis.h"
 #include "SkyholdDeparture.h"
 #include "SpellPackets.h"
 #include "TalentPackets.h"
@@ -5433,6 +5434,28 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
 
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
+
+    if (m_spellInfo->Id == PerfumedGuardAnalysis::Analysis)
+    {
+        using namespace PerfumedGuardAnalysis;
+        Player* player = m_caster->ToPlayer();
+        Creature* guard = unitTarget ? unitTarget->ToCreature() : nullptr;
+        if (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            !CanAnalyze(player, guard))
+            return;
+
+        uint32 quest = ActiveQuest(player);
+        if (player->GetQuestCancellationReceipt(quest) != m_questItemCastReceipt)
+            return;
+
+        guard->CastSpell(guard, RecentlyAnalyzed, true);
+        if (!guard->HasAura(RecentlyAnalyzed))
+            return;
+
+        guard->RemoveAurasDueToSpell(Perfumed);
+        player->CastSpell(player, quest == HordeQuest ? HordeCredit : AllianceCredit, true);
+        return;
+    }
 
     switch (m_spellInfo->ClassOptions.SpellClassSet)
     {

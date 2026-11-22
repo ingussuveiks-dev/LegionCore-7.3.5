@@ -10,4 +10,5 @@ sql/updates/world/2026_11_21_28_powering_our_defenses_native_credit.sql text eol
 sql/updates/world/2026_11_21_29_root_samples_herb_loot.sql text eol=lf
 sql/updates/world/2026_11_21_30_low_level_quest_object_loot.sql text eol=lf
 sql/updates/world/2026_11_22_39_knee_deep.sql text eol=lf
+sql/updates/world/2026_11_22_40_something_stinks.sql text eol=lf
 docs/research/legion-teeming-reconstruction-2026-11-19.json text eol=lf

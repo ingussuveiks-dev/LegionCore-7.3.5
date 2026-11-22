@@ -57,6 +57,8 @@
 #include "SpellPackets.h"
 #include "SpellScript.h"
 #include "QuestItemObjectUse.h"
+#include "PerfumedGuardAnalysis.h"
+#include "GameEventMgr.h"
 #include "TemporarySummon.h"
 #include "TradeData.h"
 #include "Unit.h"
@@ -174,6 +176,45 @@ bool KneeDeep::IsTunnelVermin(Creature const* creature)
         (creature->GetEntry() == 37889 || creature->GetEntry() == 37891 || creature->GetEntry() == 37892);
 }
 
+bool PerfumedGuardAnalysis::IsCapitalGuard(Creature const& guard)
+{
+    if (!guard.GetDBTableGUIDLow())
+        return false;
+
+    switch (guard.GetEntry())
+    {
+        case 68:
+        case 1976:
+        case 37944:
+            return guard.GetMapId() == 0 && guard.GetZoneId() == 1519;
+        case 3296:
+            return guard.GetMapId() == 1 && guard.GetZoneId() == 1637;
+        default:
+            return false;
+    }
+}
+
+uint32 PerfumedGuardAnalysis::ActiveQuest(Player const* player)
+{
+    if (!player || !player->IsAlive() || !sGameEventMgr->IsActiveEvent(Event) || !player->HasItemCount(Analyzer, 1, false))
+        return 0;
+
+    uint32 quest = 0;
+    if (player->GetTeam() == ALLIANCE && player->GetMapId() == 0 && player->GetZoneId() == 1519)
+        quest = AllianceQuest;
+    else if (player->GetTeam() == HORDE && player->GetMapId() == 1 && player->GetZoneId() == 1637)
+        quest = HordeQuest;
+
+    return quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE ? quest : 0;
+}
+
+bool PerfumedGuardAnalysis::CanAnalyze(Player const* player, Creature const* guard)
+{
+    return ActiveQuest(player) && guard && guard->IsAlive() && !guard->IsDespawn() && IsCapitalGuard(*guard) &&
+        guard->HasAura(Perfumed) && !guard->HasAura(RecentlyAnalyzed) && !guard->IsHostileTo(player) && !player->IsHostileTo(guard) &&
+        player->IsInMap(guard) && player->InSamePhase(guard) && player->IsWithinLOSInMap(guard);
+}
+
 SpellValue::SpellValue(SpellInfo const* proto, uint8 diff)
 {
     for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -240,6 +281,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
             case KneeDeep::Swing:
                 if (m_CastItem->GetEntry() == KneeDeep::Torch)
                     quest = KneeDeep::Quest;
+                break;
+            case PerfumedGuardAnalysis::Analysis:
+                if (m_CastItem->GetEntry() == PerfumedGuardAnalysis::Analyzer)
+                    quest = PerfumedGuardAnalysis::ActiveQuest(player);
                 break;
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
@@ -6822,6 +6867,15 @@ SpellCastResult Spell::CheckCast(bool strict)
         !m_CastItem || !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
         !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_FAILED_BAD_TARGETS;
+
+    if (m_spellInfo->Id == PerfumedGuardAnalysis::Analysis)
+    {
+        Unit* target = m_targets.GetUnitTarget();
+        if (!m_CastItem || !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
+            !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            !PerfumedGuardAnalysis::CanAnalyze(m_caster->ToPlayer(), target ? target->ToCreature() : nullptr))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
 
     if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id, m_CastItem ? m_CastItem->GetEntry() : 0); binding && (!m_questItemCastReceipt ||
         m_questItemCastReceipt->load(std::memory_order_acquire) ||

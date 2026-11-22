@@ -32,6 +32,7 @@ EndContentData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "GuardAI.h"
+#include "PerfumedGuardAnalysis.h"
 
 enum GuardGeneric
 {
@@ -55,8 +56,8 @@ public:
         {
             globalCooldown = 0;
             buffTimer = 0;
-            if(sGameEventMgr->IsActiveEvent(8))
-                me->AddAura(71507, me); //aura for event
+            perfumeTimer = 1000;
+            UpdatePerfume();
         }
 
         void EnterCombat(Unit* who) override
@@ -69,6 +70,14 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (perfumeTimer <= diff)
+            {
+                UpdatePerfume();
+                perfumeTimer = 1000;
+            }
+            else
+                perfumeTimer -= diff;
+
              //Always decrease our global cooldown first
             if (globalCooldown > diff)
                 globalCooldown -= diff;
@@ -252,8 +261,23 @@ public:
         }
 
     private:
+        void UpdatePerfume()
+        {
+            using namespace PerfumedGuardAnalysis;
+            if (IsCapitalGuard(*me) && sGameEventMgr->IsActiveEvent(Event))
+            {
+                if (me->IsAlive() && !me->HasAura(RecentlyAnalyzed) && !me->HasAura(Perfumed))
+                    me->CastSpell(me, Perfumed, true);
+                return;
+            }
+
+            me->RemoveAurasDueToSpell(Perfumed);
+            me->RemoveAurasDueToSpell(RecentlyAnalyzed);
+        }
+
         uint32 globalCooldown;
         uint32 buffTimer;
+        uint32 perfumeTimer = 1000;
     };
 
     CreatureAI* GetAI(Creature* creature) const override
