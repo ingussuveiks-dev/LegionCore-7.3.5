@@ -31,6 +31,7 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
+#include "QuestItemObjectUse.h"
 #include "GameEventMgr.h"
 #include "HallowsEndCrate.h"
 #include "InstancePackets.h"
@@ -4300,6 +4301,15 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* trackerOwner = nullptr;
+    if (entry == WoodsEndCoffer::Tracker && spellId == WoodsEndCoffer::SummonTracker)
+    {
+        trackerOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!properties || properties->ID != 66 || !WoodsEndCoffer::IsAtCabin(trackerOwner) ||
+            trackerOwner->GetQuestStatus(WoodsEndCoffer::Quest) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+    }
+
     Player* cannonRider = nullptr;
     if (entry == 45270 && summoner && summoner->GetEntry() == 45263)
     {
@@ -4610,6 +4620,13 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);
+
+    if (trackerOwner)
+    {
+        trackerOwner->BindQuestObject(WoodsEndCoffer::Quest, summon, false);
+        if (Group const* group = trackerOwner->GetGroup())
+            summon->AddPlayerInPersonnalVisibilityList(group->GetGUID());
+    }
 
     if (pillagerCaptor)
         pillagerCaptor->BindQuestObject(13961, summon);

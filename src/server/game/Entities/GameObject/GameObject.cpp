@@ -1444,6 +1444,17 @@ bool KorothBanner::CanLoot(GameObject const& object, Player const& player)
         player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player.HasQuestForItem(Banner);
 }
 
+bool WoodsEndCoffer::IsCoffer(GameObject const& object)
+{
+    return object.GetEntry() == 201939 && object.GetMapId() == 654 && object.GetDBTableGUIDLow() == 47222;
+}
+
+bool WoodsEndCoffer::CanLoot(GameObject const& object, Player const& player)
+{
+    return player.IsAlive() && object.isSpawned() && player.IsInMap(&object) && player.InSamePhase(&object) &&
+        player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player.HasQuestForItem(Artifact);
+}
+
 bool GameObject::IsNeverVisible(WorldObject const* obj) const
 {
     if (GetEntry() == 209059)
@@ -1677,6 +1688,8 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (KorothBanner::IsBanner(*this))
         return KorothBanner::CanLoot(*this, *target);
+    if (WoodsEndCoffer::IsCoffer(*this))
+        return WoodsEndCoffer::CanLoot(*this, *target);
 
     if (auto binding = QuestItemObjectUse::ForObject(GetEntry()))
         return QuestItemObjectUse::CanUse(this, target, *binding);
@@ -1895,6 +1908,10 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
 {
     if (KorothBanner::IsBanner(*this))
         if (Player* player = user->ToPlayer(); !player || !KorothBanner::CanLoot(*this, *player))
+            return;
+
+    if (WoodsEndCoffer::IsCoffer(*this))
+        if (Player* player = user->ToPlayer(); !player || !WoodsEndCoffer::CanLoot(*this, *player))
             return;
 
     if (GetEntry() == 245188 && GetMapId() == 1511)

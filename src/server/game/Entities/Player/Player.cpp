@@ -11944,6 +11944,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
             (darkmoonSource && !DarkmoonCrafting::CanGather(*go, *this, *darkmoonSource)) ||
             (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)) ||
             (KorothBanner::IsBanner(*go) && !KorothBanner::CanLoot(*go, *this)) ||
+            (WoodsEndCoffer::IsCoffer(*go) && !WoodsEndCoffer::CanLoot(*go, *this)) ||
             (go->GetEntry() == IronforgeBait::Trap && !IronforgeBait::CanGather(*go, *this)))
         {
             SendLootRelease(guid);
@@ -20747,6 +20748,8 @@ bool Player::TakeQuestSourceItem(uint32 questId, bool msg)
                 items.Add(BloodcupBraid::WovenBraid, 1);
             if (questId == KorothBanner::Quest)
                 items.Add(KorothBanner::Banner, 1);
+            if (questId == WoodsEndCoffer::Quest)
+                items.Add(WoodsEndCoffer::Artifact, 1);
         }
     }
     items.Apply(*this);

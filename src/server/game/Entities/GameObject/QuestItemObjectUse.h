@@ -189,6 +189,28 @@ bool IsBanner(GameObject const& object);
 bool CanLoot(GameObject const& object, Player const& player);
 }
 
+namespace WoodsEndCoffer
+{
+constexpr uint32 Quest = 24646;
+constexpr uint32 Artifact = 50086;
+constexpr uint32 Horn = 50134;
+constexpr uint32 BlowHorn = 71061;
+constexpr uint32 Rally = 71011;
+constexpr uint32 SummonTracker = 71008;
+constexpr uint32 Retreat = 71018;
+constexpr uint32 WarStomp = 71019;
+constexpr uint32 Ranger = 38022;
+constexpr uint32 Tracker = 38027;
+constexpr uint32 Tobias = 38029;
+
+bool IsCoffer(GameObject const& object);
+bool CanLoot(GameObject const& object, Player const& player);
+bool IsAtCabin(Player const* player);
+bool IsTobias(Creature const* creature);
+Creature* FindTobias(Player const* player);
+bool CanRally(Player* player);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

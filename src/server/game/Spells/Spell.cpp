@@ -282,6 +282,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == KneeDeep::Torch)
                     quest = KneeDeep::Quest;
                 break;
+            case WoodsEndCoffer::BlowHorn:
+                if (m_CastItem->GetEntry() == WoodsEndCoffer::Horn)
+                    quest = WoodsEndCoffer::Quest;
+                break;
             case PerfumedGuardAnalysis::Analysis:
                 if (m_CastItem->GetEntry() == PerfumedGuardAnalysis::Analyzer)
                     quest = PerfumedGuardAnalysis::ActiveQuest(player);
@@ -6866,6 +6870,12 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_spellInfo->Id == KneeDeep::Swing && (!KneeDeep::CanSwing(m_caster->ToPlayer()) ||
         !m_CastItem || !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
         !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    if (m_spellInfo->Id == WoodsEndCoffer::BlowHorn && (!m_CastItem ||
+        !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
+        !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !WoodsEndCoffer::CanRally(m_caster->ToPlayer())))
         return SPELL_FAILED_BAD_TARGETS;
 
     if (m_spellInfo->Id == PerfumedGuardAnalysis::Analysis)

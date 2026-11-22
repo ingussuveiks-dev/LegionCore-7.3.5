@@ -2,6 +2,7 @@
 #include "QuestSupplyChestsNative.cpp"
 #undef main
 
+#include "GilneasQuestNative.h"
 #include "QuestItemObjectUse.h"
 
 namespace
@@ -13,29 +14,6 @@ constexpr uint32 Ogre = 36293;
 constexpr uint32 Koroth = 36294;
 constexpr uint32 BannerObject = 201594;
 constexpr uint32 BannerPhase = 16384;
-
-Position ReadBannerPoint(Field* row)
-{
-    return {row[0].GetFloat(), row[1].GetFloat(), row[2].GetFloat(), row[3].GetFloat()};
-}
-
-struct GilneasActor : Actor
-{
-    GilneasActor(Map& map, Field* row) : Actor(&map, row[1].GetUInt32(), row[0].GetUInt32(), ReadBannerPoint(row + 2))
-    {
-        m_DBTableGuid = row[0].GetUInt32();
-        SetPhaseMask(row[6].GetUInt32(), false);
-        map.LoadGrid(GetPositionX(), GetPositionY());
-        Require(map.AddToMap(static_cast<Creature*>(this)), "Could not publish the original Gilneas actor");
-    }
-
-    ~GilneasActor()
-    {
-        CombatStop(true);
-        if (IsInWorld())
-            GetMap()->RemoveFromMap(static_cast<Creature*>(this), false);
-    }
-};
 
 void LoadBannerInputs()
 {
@@ -113,42 +91,14 @@ void LoadBannerInputs()
     sSpellMgr->LoadSpellAreas();
 }
 
-void MoveBannerPlayer(LootPlayer& player, Position const& point)
-{
-    SupplyMove(player, point);
-    player.GetMap()->GetZoneAndAreaId(player.m_zoneId, player.m_areaId, point.GetPositionX(), point.GetPositionY(), point.GetPositionZ());
-    player.UpdateZoneDependentAuras(player.GetZoneId());
-    player.GetPhaseMgr().Recalculate();
-    player.GetPhaseMgr().Update();
-}
-
 void AcceptBanner(LootPlayer& player, Creature& prince)
 {
-    MoveBannerPlayer(player, prince.GetPosition());
+    MoveGilneasPlayer(player, prince.GetPosition());
     WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
     accept.QuestGiverGUID = prince.GetGUID();
     accept.QuestID = KorothBanner::Quest;
     player.GetSession()->HandleQuestGiverAcceptQuest(accept);
     Require(player.GetQuestStatus(KorothBanner::Quest) == QUEST_STATUS_INCOMPLETE, "Prince Liam did not give the original quest");
-}
-
-void OpenOriginalBanner(LootPlayer& player, Supply& banner)
-{
-    constexpr float HalfTurn = 3.14159265358979f;
-    for (float offset : {0.0f, HalfTurn / 2.0f, -HalfTurn / 2.0f, HalfTurn})
-    {
-        float facing = banner.GetOrientation() + offset;
-        Position approach{banner.GetPositionX() - 1.5f * std::cos(facing), banner.GetPositionY() - 1.5f * std::sin(facing),
-            banner.GetPositionZ(), Position::NormalizeOrientation(facing)};
-        MoveBannerPlayer(player, approach);
-        if (player.IsWithinLOSInMap(&banner))
-            break;
-    }
-    OpenSupply(player, banner);
-    std::cout << "CASE Banner ready=" << banner.isSpawned() << " type=" << uint32(banner.GetGoType())
-        << " state=" << uint32(banner.getLootState()) << " allowed=" << banner.ActivateToQuest(&player) << " distance=" << player.GetDistance(&banner)
-        << " LOS=" << player.IsWithinLOSInMap(&banner) << " questItem=" << player.HasQuestForItem(KorothBanner::Banner)
-        << " lootGUID=" << (player.GetLootGUID() == banner.GetGUID()) << ' ' << banner.loot.items.size() << '\n';
 }
 
 void CheckKorothBanner()
@@ -164,7 +114,7 @@ void CheckKorothBanner()
     Map map(654, 603, 0, DIFFICULTY_NONE);
     GilneasActor liam(map, prince->Fetch()), pursuer(map, koroth->Fetch());
     Require(pursuer.AIM_Initialize(), "Actual Koroth AI failed to initialize");
-    Position origin = ReadBannerPoint(row + 3);
+    Position origin = ReadGilneasPoint(row + 3);
     map.LoadGrid(origin.GetPositionX(), origin.GetPositionY());
     Supply banner(map, {BannerObject, 47029, row[2].GetUInt32(), origin,
         G3D::Quat(row[7].GetFloat(), row[8].GetFloat(), row[9].GetFloat(), row[10].GetFloat())});
@@ -184,7 +134,7 @@ void CheckKorothBanner()
         player->SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 30000);
         player->SetRewardedQuest(OriginalPhaseQuest);
         player->SetRewardedQuest(Marsh);
-        MoveBannerPlayer(*player, origin);
+        MoveGilneasPlayer(*player, origin);
         Require(player->HasAura(68483) && player->HasPhaseId(183) && player->InSamePhase(&banner), "The original post-marsh phase did not apply");
     }
     observer.SendLoot(banner.GetGUID(), LOOT_SKINNING);
@@ -196,8 +146,8 @@ void CheckKorothBanner()
     if (banner.getLootState() == GO_JUST_DEACTIVATED)
         banner.Rearm();
     AcceptBanner(owner, liam);
-    MoveBannerPlayer(owner, origin);
-    OpenOriginalBanner(owner, banner);
+    MoveGilneasPlayer(owner, origin);
+    OpenGilneasQuestChest(owner, banner);
     Require(TakeSupply(owner, banner, KorothBanner::Banner) && pursuer.getVictim() != &owner,
         "The original native loot no longer reproduces the missing Koroth response");
     ReleaseSupply(owner, banner);
@@ -208,14 +158,14 @@ void CheckKorothBanner()
     Require(!banner.IsNeverVisible(&observer) && !banner.ActivateToQuest(&observer) && !observer.GetLootGUID(),
         "An inactive player opened the Banner or the shared physical model was hidden");
     AcceptBanner(owner, liam);
-    MoveBannerPlayer(owner, origin);
+    MoveGilneasPlayer(owner, origin);
     Require(!banner.IsNeverVisible(&owner) && banner.ActivateToQuest(&owner), "The accepted quest did not show its exact Banner");
     GiveSupply(owner, KorothBanner::Banner, 1);
     Tick(owner, 1500);
     Require(!pursuer.getVictim(), "An inventory-only Banner started the actual Koroth encounter");
     owner.DestroyItemCount(KorothBanner::Banner, 1, true);
     Tick(owner, 150);
-    OpenOriginalBanner(owner, banner);
+    OpenGilneasQuestChest(owner, banner);
     Require(TakeSupply(owner, banner, KorothBanner::Banner), "The actual Banner offered no native loot");
     Tick(owner, 300);
     Require(pursuer.getVictim() == &owner && !banner.ActivateToQuest(&owner), "Genuine Banner loot did not start the original Koroth response and close personal access");
@@ -238,7 +188,7 @@ void CheckKorothBanner()
     for (uint32 count = 1; count <= 4; ++count)
     {
         GilneasActor minion(map, ogres->Fetch());
-        MoveBannerPlayer(observer, minion.GetPosition());
+        MoveGilneasPlayer(observer, minion.GetPosition());
         Unit& killer = count == 1 ? static_cast<Unit&>(pet) : static_cast<Unit&>(observer);
         if (count == 1)
             pet.Relocate(minion.GetPosition());
@@ -250,14 +200,14 @@ void CheckKorothBanner()
             Require(ogres->NextRow(), "The actual Ogre list ended early");
     }
     observer.SetMinion(&pet, false);
-    MoveBannerPlayer(observer, origin);
-    OpenOriginalBanner(observer, banner);
+    MoveGilneasPlayer(observer, origin);
+    OpenGilneasQuestChest(observer, banner);
     Require(TakeSupply(observer, banner, KorothBanner::Banner) && observer.GetQuestStatus(KorothBanner::Quest) == QUEST_STATUS_COMPLETE,
         "Four actual kills and genuine loot did not complete the quest");
     ReleaseSupply(observer, banner);
     pursuer.CombatStop(true);
     observer.CombatStop(true);
-    MoveBannerPlayer(observer, liam.GetPosition());
+    MoveGilneasPlayer(observer, liam.GetPosition());
     WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
     reward.QuestID = KorothBanner::Quest;
     reward.QuestGiverGUID = liam.GetGUID();

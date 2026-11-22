@@ -91,6 +91,50 @@
 #include "WorldPacket.h"
 #include <G3D/Quat.h>
 
+bool WoodsEndCoffer::IsAtCabin(Player const* player)
+{
+    return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 654 &&
+        player->GetAreaId() == 4730 && player->IsWithinDist3d(-2125.575f, 1625.254f, -42.15344f, 60.0f);
+}
+
+bool WoodsEndCoffer::IsTobias(Creature const* creature)
+{
+    return creature && creature->IsAlive() && creature->GetMapId() == 654 &&
+        creature->GetEntry() == Tobias && creature->GetDBTableGUIDLow() == 149545;
+}
+
+Creature* WoodsEndCoffer::FindTobias(Player const* player)
+{
+    if (!IsAtCabin(player))
+        return nullptr;
+
+    Creature* tobias = player->FindNearestCreature(Tobias, 70.0f);
+    return IsTobias(tobias) && player->InSamePhase(tobias) ? tobias : nullptr;
+}
+
+namespace
+{
+bool IsWoodsEndTracker(Creature const* creature, Player const& player)
+{
+    TempSummon const* tracker = creature ? creature->ToTempSummon() : nullptr;
+    return tracker && tracker->GetEntry() == WoodsEndCoffer::Tracker && tracker->IsAlive() &&
+        tracker->GetSummonerGUID() == player.GetGUID() && tracker->HasQuestObjectScope() && !tracker->IsQuestObjectExpired() &&
+        tracker->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == WoodsEndCoffer::SummonTracker;
+}
+}
+
+bool WoodsEndCoffer::CanRally(Player* player)
+{
+    if (!FindTobias(player) || player->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE ||
+        !player->HasItemCount(Horn, 1, false))
+        return false;
+
+    for (ObjectGuid const& guid : *player->GetSummonList(Tracker))
+        if (IsWoodsEndTracker(player->GetMap()->GetCreature(guid), *player))
+            return false;
+
+    return true;
+}
 namespace
 {
 constexpr uint32 DRUID_RESTORATION_HOT_FAMILY_FLAG = 0x00400000;
@@ -1137,6 +1181,21 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
     if (!unitTarget && !gameObjTarget && !itemTarget)
         return;
 
+    if (m_spellInfo->Id == WoodsEndCoffer::Retreat)
+    {
+        Player* player = m_originalCaster ? m_originalCaster->ToPlayer() : nullptr;
+        Creature* tracker = unitTarget ? unitTarget->ToCreature() : nullptr;
+        if (player && WoodsEndCoffer::IsTobias(m_caster->ToCreature()) && IsWoodsEndTracker(tracker, *player))
+        {
+            tracker->CombatStop(true);
+            tracker->SetReactState(REACT_PASSIVE);
+            tracker->CastSpell(tracker, WoodsEndCoffer::WarStomp, true);
+            tracker->GetMotionMaster()->MovePoint(1, m_caster->GetPosition());
+            tracker->DespawnOrUnsummon(4000);
+        }
+        return;
+    }
+
     if (m_spellInfo->Id == KneeDeep::Swing)
     {
         Player* player = m_caster->ToPlayer();
@@ -1810,6 +1869,17 @@ void Spell::EffectForceCast(SpellEffIndex effIndex)
         return;
     }
 
+    if (m_spellInfo->Id == WoodsEndCoffer::Rally)
+    {
+        Player* player = m_originalCaster ? m_originalCaster->ToPlayer() : nullptr;
+        Creature* ranger = unitTarget->ToCreature();
+        if (WoodsEndCoffer::IsAtCabin(player) && player->GetQuestStatus(WoodsEndCoffer::Quest) == QUEST_STATUS_INCOMPLETE &&
+            WoodsEndCoffer::IsTobias(m_caster->ToCreature()) && ranger && ranger->GetEntry() == WoodsEndCoffer::Ranger &&
+            ranger->GetDBTableGUIDLow() && ranger->IsAlive() && ranger->InSamePhase(player))
+            ranger->CastSpell(ranger, spellInfo, true, nullptr, nullptr, player->GetGUID());
+        return;
+    }
+
     if (m_spellInfo->GetEffect(effIndex, m_diffMode)->Effect == SPELL_EFFECT_FORCE_CAST && damage)
     {
         switch (m_spellInfo->Id)
@@ -2424,6 +2494,33 @@ void Spell::EffectSendEvent(SpellEffIndex effIndex)
     if (m_spellInfo->Id == Dozercism::Flare && (!m_questItemCastReceipt ||
         m_questItemCastReceipt->load(std::memory_order_acquire) || !Dozercism::CanStart(m_caster->ToPlayer())))
         return;
+
+    if (m_spellInfo->Id == WoodsEndCoffer::BlowHorn)
+    {
+        Player* player = m_caster->ToPlayer();
+        if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET || unitTarget != player || !m_questItemCastReceipt ||
+            m_questItemCastReceipt->load(std::memory_order_acquire) || !WoodsEndCoffer::CanRally(player))
+            return;
+
+        // The original Tobias text rows publish the rally at 2125 ms and the retreat at 27594 ms.
+        player->AddQuestDelayedEvent(WoodsEndCoffer::Quest, 2125, [player]()
+        {
+            if (!WoodsEndCoffer::CanRally(player))
+                return;
+
+            Creature* tobias = WoodsEndCoffer::FindTobias(player);
+            tobias->MonsterYell(37795, LANG_UNIVERSAL, player->GetGUID());
+            tobias->CastSpell(tobias, WoodsEndCoffer::Rally, true, nullptr, nullptr, player->GetGUID());
+            player->AddQuestDelayedEvent(WoodsEndCoffer::Quest, 27594 - 2125, [player]()
+            {
+                if (Creature* actor = WoodsEndCoffer::FindTobias(player))
+                {
+                    actor->MonsterYell(37796, LANG_UNIVERSAL, player->GetGUID());
+                    actor->CastSpell(actor, WoodsEndCoffer::Retreat, true, nullptr, nullptr, player->GetGUID());
+                }
+            });
+        });
+    }
 
     if (m_spellInfo->Id == KorothBanner::Swiped)
     {
@@ -3990,6 +4087,30 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
     int32 duration = m_spellInfo->GetDuration(m_diffMode);
     if (Player* modOwner = m_originalCaster->GetSpellModOwner())
         modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_DURATION, duration);
+
+    if (m_spellInfo->Id == WoodsEndCoffer::SummonTracker)
+    {
+        Player* player = m_originalCaster->ToPlayer();
+        Creature* ranger = m_caster->ToCreature();
+        if (!WoodsEndCoffer::IsAtCabin(player) || !ranger || ranger->GetEntry() != WoodsEndCoffer::Ranger ||
+            !ranger->GetDBTableGUIDLow() || !ranger->IsAlive() || !ranger->InSamePhase(player) || !destTarget)
+            return;
+
+        // The battle ends after Tobias' retreat line. Bound the native five-minute summon if that cast is missed.
+        uint32 lifetime = duration > 0 ? std::min<uint32>(duration, 33000) : 33000;
+        if (TempSummon* tracker = player->SummonCreature(entry, *destTarget, ranger->GetGUID(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN,
+            lifetime, m_spellInfo->Id, properties))
+        {
+            if (tracker->AI() && ranger->AI())
+            {
+                tracker->AI()->AttackStart(ranger);
+                if (!ranger->getVictim() || ranger->getVictim() == player)
+                    ranger->AI()->AttackStart(tracker);
+            }
+            ExecuteLogEffectSummonObject(effIndex, tracker);
+        }
+        return;
+    }
 
     TempSummon* summon = nullptr;
 
