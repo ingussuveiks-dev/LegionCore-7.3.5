@@ -29,6 +29,8 @@ npc_ruul_snowhoof
 EndContentData */
 
 #include "../QuestItemChestAI.h"
+#include "ObjectAccessor.h"
+#include "QuestObjectScope.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
@@ -482,6 +484,145 @@ struct go_ashenvale_satyrnaar_fel_wood : QuestItemChestAI
     explicit go_ashenvale_satyrnaar_fel_wood(GameObject* object) : QuestItemChestAI(object, 26454, 24081) { }
 };
 
+struct npc_ashenvale_durak : ScriptedAI
+{
+    explicit npc_ashenvale_durak(Creature* creature) : ScriptedAI(creature) { }
+
+    void Reset() override
+    {
+        _owner.Clear();
+        _receipt.reset();
+        _stage = Stage::Idle;
+        _delay = 0;
+        _casts = 0;
+        me->RemoveAurasDueToSpell(RevealSpell);
+        me->RestoreFaction();
+        me->SetReactState(REACT_PASSIVE);
+        me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+    }
+
+    void sGossipSelect(Player* player, uint32 menu, uint32 option) override
+    {
+        if (_stage != Stage::Idle || menu != Durak || option != 0 || !me->IsAlive() ||
+            !player->IsAlive() || player->GetQuestStatus(QuestId) != QUEST_STATUS_INCOMPLETE ||
+            player->GetQuestObjectiveData(QuestId, Durak) || !me->IsWithinDistInMap(player, INTERACTION_DISTANCE))
+            return;
+
+        _receipt = player->GetQuestCancellationReceipt(QuestId);
+        if (!_receipt)
+            return;
+
+        _owner = player->GetGUID();
+        _stage = Stage::SecondLine;
+        _delay = 5000;
+        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        player->PlayerTalkClass->SendCloseGossip();
+        Talk(0, _owner);
+    }
+
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+    {
+        Player* owner = ObjectAccessor::GetPlayer(*me, _owner);
+        Player* player = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (_stage != Stage::Combat || !HasCurrentAttempt(owner, 60.0f) || !player ||
+            (player != owner && (!owner->GetGroup() || owner->GetGroup() != player->GetGroup())))
+            damage = 0;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_stage == Stage::Idle)
+            return;
+
+        Player* owner = ObjectAccessor::GetPlayer(*me, _owner);
+        if (_stage == Stage::Combat)
+        {
+            if (!HasCurrentAttempt(owner, 60.0f))
+                EnterEvadeMode();
+            else if (UpdateVictim())
+                DoMeleeAttackIfReady();
+            return;
+        }
+
+        if (!HasCurrentAttempt(owner, 25.0f) || !owner->IsAlive())
+        {
+            Reset();
+            return;
+        }
+
+        if (_delay > diff)
+        {
+            _delay -= diff;
+            return;
+        }
+
+        switch (_stage)
+        {
+            case Stage::SecondLine:
+                Talk(1, _owner);
+                _stage = Stage::ThirdLine;
+                _delay = 6000;
+                break;
+            case Stage::ThirdLine:
+                Talk(2, _owner);
+                _stage = Stage::Reveal;
+                _delay = 6000;
+                break;
+            case Stage::Reveal:
+                Reveal(owner);
+                break;
+            default:
+                break;
+        }
+    }
+
+private:
+    enum class Stage { Idle, SecondLine, ThirdLine, Reveal, Combat };
+    static constexpr uint32 QuestId = 13842;
+    static constexpr uint32 Durak = 44414;
+    static constexpr uint32 Persuaded = 44416;
+    static constexpr uint32 RevealSpell = 82969;
+
+    bool HasCurrentAttempt(Player* owner, float distance) const
+    {
+        return owner && _receipt && !_receipt->load() && me->IsWithinDistInMap(owner, distance) &&
+            owner->GetQuestStatus(QuestId) == QUEST_STATUS_INCOMPLETE &&
+            owner->GetQuestCancellationReceipt(QuestId) == _receipt;
+    }
+
+    void Reveal(Player* owner)
+    {
+        if (!me->HasAura(RevealSpell, me->GetGUID()))
+            DoCastSelf(RevealSpell, true);
+        if (!me->HasAura(RevealSpell, me->GetGUID()))
+        {
+            if (++_casts < 3)
+                _delay = 300;
+            else
+            {
+                TC_LOG_WARN("scripts", "Durak 44414: native transform 82969 failed to apply after three attempts");
+                Reset();
+            }
+            return;
+        }
+
+        // The Legion spell transforms the display. The actor's original entry
+        // must survive for the separate, native death objective.
+        owner->RewardPlayerAndGroupAtEvent(Persuaded, owner);
+        _stage = Stage::Combat;
+        me->setFaction(14);
+        me->SetReactState(REACT_DEFENSIVE);
+        me->SetLootRecipient(owner);
+        AttackStart(owner);
+    }
+
+    Stage _stage = Stage::Idle;
+    ObjectGuid _owner;
+    std::shared_ptr<QuestCancellationReceipt const> _receipt;
+    uint32 _delay = 0;
+    uint8 _casts = 0;
+};
+
 void AddSC_ashenvale()
 {
     new npc_torek();
@@ -489,4 +630,5 @@ void AddSC_ashenvale()
     new npc_muglash();
     new go_naga_brazier();
     RegisterGameObjectAI(go_ashenvale_satyrnaar_fel_wood);
+    RegisterCreatureAI(npc_ashenvale_durak);
 }
