@@ -68,6 +68,8 @@ Pēc `13918` atkārtotā izolētā datu eksportā bija 5 459 tvēruma ieraksti, 
 
 Pēc `13988` vēlreiz eksportēta pasaules datubāze un hotfix dati. Izlasē paliek 5 459 ieraksti, no kuriem 4 865 ir ieslēgti. Kanoniskajā Release atrodami visi 160 piesaistītie skriptu nosaukumi. Starp kvestiem ar pasaulē novietotu devēju paliek 58 priekšmetu lietošanas kandidāti un 17 statiski neizsekoti aktiera vai kredīta ceļi. Kandidātu sarakstos ietilpst jau serverī pārbaudīti C++ ceļi. Pārskats un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-summit/`.
 
+`26078` dzēšanas konuss atlasa tikai dzīvas lidlauka ugunis un vienu uguni ieskaita vienreiz. Serverī pārbaudītas sešas sākotnējās ugunis, atteikums ārpus lidlauka un ekipējuma auras un priekšmeta izņemšana. [Extinguish the Fires pārbaude](airfield-firefighting-2026-11-22.md)
+
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)
 
 `13885` Orseus `34392` jāatver hipogrifa posms, un Kathrena Winterwisp `34301` piedāvā un pieņem kvestu. 7.3.5 datiem atrasti `65401 → 65372` izsaukums, pasažiere `34376`, `65384` iekāpšana, `65385` pacelšanās un `65373` laukuma burvestība. 2017. gada 4:24 video visa ceļa kadri ar sešu sekunžu soli parāda divus braucējus, Kathrena vadītu lidojumu, spēlētāja darbību uz trīs sugām un nolaišanos pirms nodošanas. Pasaulē vēl trūkst Orseus funkcijas, transportlīdzekļa datu sasaistes, lidojuma koordinātu un progresa sasaistes ar `34323/34324/34325`. [2017. gada gājiens](https://www.youtube.com/watch?v=Rc2HWdXKOVo)
