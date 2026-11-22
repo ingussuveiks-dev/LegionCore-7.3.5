@@ -22,6 +22,7 @@
 #include "CreatureTextMgr.h"
 #include "CreatureTextMgrImpl.h"
 #include "DatabaseEnv.h"
+#include "Dozercism.h"
 #include "EventObject.h"
 #include "GossipDef.h"
 #include "GridDefines.h"
@@ -432,7 +433,13 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 mTextGUID = ObjectGuid::Empty;
 
             mUseTextTimer = true;
-            sCreatureTextMgr->SendChat(talker, uint8(e.action.talk.textGroupID), mTextGUID);
+            if (talker->GetEntry() == Dozercism::Priest && Dozercism::IsEncounterActor(talker))
+            {
+                if (Player* owner = Dozercism::GetOwner(*talker))
+                    sCreatureTextMgr->SendChat(talker, uint8(e.action.talk.textGroupID), owner->GetGUID(), CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_PERSONAL);
+            }
+            else
+                sCreatureTextMgr->SendChat(talker, uint8(e.action.talk.textGroupID), mTextGUID);
             TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction: SMART_ACTION_TALK: talker: %s (GuidLow: %u), textGuid: %lu",
                 talker->GetName(), talker->GetGUIDLow(), mTextGUID.GetCounter());
             break;
@@ -1755,6 +1762,42 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_SET_DATA:
         {
+            if (me && e.entryOrGuid == Dozercism::Priest && e.event_id == 6 &&
+                e.action.setData.field == 1 && e.action.setData.data == 1)
+            {
+                if (!Dozercism::IsEncounterActor(me) || !Dozercism::CanContinue(*me))
+                    break;
+                Player* owner = Dozercism::GetOwner(*me);
+                Creature* anchor = Dozercism::FindAnchor(*me, 50.0f);
+                auto properties = sSummonPropertiesStore.LookupEntry(Dozercism::SummonProperties);
+                if (owner && anchor && properties)
+                {
+                    if (auto dozer = me->GetMap()->SummonCreature(Dozercism::Dozer, anchor->GetHomePosition(), properties,
+                        120000, owner, me->GetGUID(), Dozercism::Flare))
+                    {
+                        if (SmartAI* ai = dynamic_cast<SmartAI*>(dozer->AI()))
+                        {
+                            anchor->UpdateObjectVisibility();
+                            ai->GetScript()->ProcessEventsFor(SMART_EVENT_DATA_SET, owner, 1, 1);
+                            break;
+                        }
+                        dozer->DespawnOrUnsummon();
+                        TC_LOG_ERROR("scripts.ai", "Dozercism: a scoped dozer was published without its native SmartAI.");
+                    }
+                }
+                me->DespawnOrUnsummon(); // allow another flare if the real anchor or publish failed
+                break;
+            }
+            if (me && e.entryOrGuid == Dozercism::Dozer && e.event_id == 2 &&
+                e.action.setData.field == 2 && e.action.setData.data == 2)
+            {
+                if (Dozercism::IsEncounterActor(me))
+                    if (Player* owner = Dozercism::GetOwner(*me))
+                        if (Creature* priest = Dozercism::FindActor(*owner, Dozercism::Priest); priest && priest->IsAlive() && priest->AI())
+                            priest->AI()->SetData(2, 2);
+                break;
+            }
+
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
                 break;

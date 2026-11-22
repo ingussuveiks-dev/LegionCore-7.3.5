@@ -21,17 +21,83 @@
 #include "ConditionMgr.h"
 #include "CreatureGroups.h"
 #include "DatabaseEnv.h"
+#include "Dozercism.h"
 #include "GridDefines.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
 #include "InstanceScript.h"
+#include "ObjectAccessor.h"
 #include "ObjectDefines.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellMgr.h"
 #include <algorithm>
+
+bool Dozercism::IsEncounterActor(Creature const* actor)
+{
+    return actor && actor->GetMapId() == 1 && actor->HasQuestObjectScope() &&
+        actor->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == Flare &&
+        (actor->GetEntry() == Priest || actor->GetEntry() == Dozer);
+}
+
+bool Dozercism::IsAnchor(Creature const* actor)
+{
+    return actor && actor->GetEntry() == Dozer && actor->GetMapId() == 1 && actor->GetDBTableGUIDLow() == DozerSpawn;
+}
+
+Creature* Dozercism::FindAnchor(WorldObject const& source, float range)
+{
+    std::list<Creature*> nearby;
+    source.GetCreatureListWithEntryInGrid(nearby, Dozer, range);
+    for (Creature* actor : nearby)
+        if (IsAnchor(actor) && actor->IsAlive() && !actor->IsDespawn() &&
+            source.IsWithinDistInMap(actor, range) && source.IsWithinLOSInMap(actor))
+            return actor;
+    return nullptr;
+}
+
+Creature* Dozercism::FindActor(Player& owner, uint32 entry)
+{
+    for (ObjectGuid const& guid : *owner.GetSummonList(entry))
+        if (Creature* actor = owner.GetMap()->GetCreature(guid); IsEncounterActor(actor) &&
+            actor->IsInWorld() && !actor->IsDespawn() && !actor->IsQuestObjectExpired())
+            return actor;
+    return nullptr;
+}
+
+bool Dozercism::CanStart(Player* owner)
+{
+    return owner && owner->IsInWorld() && owner->IsAlive() && owner->GetMapId() == 1 && owner->GetZoneId() == 16 &&
+        owner->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && !owner->GetQuestObjectiveData(Quest, Dozer) &&
+        owner->HasItemCount(Flaregun, 1, false) && !FindActor(*owner, Priest) && !FindActor(*owner, Dozer) &&
+        FindAnchor(*owner, 20.0f);
+}
+
+Player* Dozercism::GetOwner(Creature const& actor)
+{
+    auto scope = actor.GetQuestObjectScope().lock();
+    return scope && !scope->Cancelled ? ObjectAccessor::GetPlayer(actor, scope->Owner) : nullptr;
+}
+
+bool Dozercism::CanContinue(Creature const& actor)
+{
+    Player* owner = GetOwner(actor);
+    if (!owner || !owner->IsAlive() || owner->IsBeingTeleported() || !owner->IsWithinDistInMap(&actor, 65.0f))
+        return false;
+    QuestStatus status = owner->GetQuestStatus(Quest);
+    return (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE) &&
+        (actor.GetEntry() == Priest || !actor.IsAlive() || FindActor(*owner, Priest));
+}
+
+bool Dozercism::CanParticipate(Creature const& actor, Player const* player)
+{
+    Player const* owner = GetOwner(actor);
+    if (!owner || !player || player->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE || player->GetQuestObjectiveData(Quest, Dozer))
+        return false;
+    return player == owner || (owner->GetGroup() && player->GetGroup() == owner->GetGroup() && player->IsAtGroupRewardDistance(&actor));
+}
 
 struct DarkHuntCastSequence
 {
@@ -525,6 +591,11 @@ void SmartAI::UpdateCorpseAI(uint32 diff)
 
 void SmartAI::UpdateAI(uint32 diff)
 {
+    if (Dozercism::IsEncounterActor(me) && !Dozercism::CanContinue(*me))
+    {
+        me->DespawnOrUnsummon();
+        return;
+    }
     GetScript()->OnUpdate(diff);
     UpdateDarkHunt(diff);
     UpdatePath(diff);
@@ -641,6 +712,14 @@ void SmartAI::RemoveAuras()
 
 void SmartAI::EnterEvadeMode()
 {
+    if (Dozercism::IsEncounterActor(me) && me->GetEntry() == Dozercism::Dozer)
+    {
+        if (Player* owner = Dozercism::GetOwner(*me))
+            if (Creature* priest = Dozercism::FindActor(*owner, Dozercism::Priest))
+                priest->DespawnOrUnsummon();
+        me->DespawnOrUnsummon();
+        return;
+    }
     ResetDarkHunt();
     if (mEvadeDisabled)
     {
@@ -893,6 +972,12 @@ void SmartAI::SpellHitTarget(Unit* target, const SpellInfo* spellInfo)
 
 void SmartAI::DamageTaken(Unit* doneBy, uint32& damage, DamageEffectType dmgType)
 {
+    if (Dozercism::IsEncounterActor(me) && me->GetEntry() == Dozercism::Dozer &&
+        !Dozercism::CanParticipate(*me, doneBy ? doneBy->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr))
+    {
+        damage = 0;
+        return;
+    }
     GetScript()->ProcessEventsFor(SMART_EVENT_DAMAGED, doneBy, damage);
     if ((damage >= me->GetHealth(doneBy) - mInvincibilityHpLevel) && (mInvincibilityHpLevel > 0))
     {

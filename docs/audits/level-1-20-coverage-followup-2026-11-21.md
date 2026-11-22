@@ -86,6 +86,8 @@ Pēc `14250` atkārtotajā eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēg
 
 `14472` SFG izvēlas tikai paredzēto dzīvo milzi un saglabā vienas devas patēriņu. Faktiskā šāviena nogalināšana ieskaitās aktīvajam šāvējam un derīgajiem grupas biedriem. Pārbaudīta veca šāviena atcelšana, aizkavētā ieskaite un nodošana pie Glix. Jaunajā eksportā ir 50 priekšmetu lietošanas kandidāti ar pasaulē novietotu devēju un 17 statiski neizsekoti aktiera vai progresa ceļi. Eksports ir lokāli `.codex/quest-coverage-20261122-sfg/`. [In The Face! pārbaude](sfg-minefield-2026-11-22.md)
 
+`14423` signālraķete sāk privātu rituālu tikai ar aktīvu kvestu pie faktiskā Azsharas buldozera. Pārbaudīti divi vienlaicīgi rituāli, kopīgā `14209` klikšķa saglabāšana, mājdzīvnieka un grupas ieskaite, atkārtota pieņemšana un faktiskā signālraķetes nodošana pie Custer. [Dozercism pārbaude](dozercism-2026-11-22.md)
+
 Brazie the Botanist `49687` ir novietots Hillsbrad Foothills un piedāvā sešus aktīvus 20. līmeņa kvestus `28733/28617/28744/28747/28748/28751`. `28744` un `28747` datu pārskatā ir atrastas native ieskaites burvestības `92340` un `92435`, tāpēc tās neparādās četrās pilnībā neizsekotajās atlasēs. Pārbaudītajā datubāzē šīm divām burvestībām arī trūkst izsaukuma sasaistes ar minispēles kontroli. Visu sešu kvestu faktiskā iedarbināšana, viļņi un nodošana paliek atvērti.
 
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)

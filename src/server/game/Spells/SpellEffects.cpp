@@ -32,6 +32,7 @@
 #include "Creature.h"
 #include "CreatureAI.h"
 #include "DatabaseEnv.h"
+#include "Dozercism.h"
 #include "DuelPackets.h"
 #include "DynamicObject.h"
 #include "GameObject.h"
@@ -2392,6 +2393,10 @@ void Spell::EffectSendEvent(SpellEffIndex effIndex)
     // we do not handle a flag dropping or clicking on flag in battleground by sendevent system
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET
         && effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
+        return;
+
+    if (m_spellInfo->Id == Dozercism::Flare && (!m_questItemCastReceipt ||
+        m_questItemCastReceipt->load(std::memory_order_acquire) || !Dozercism::CanStart(m_caster->ToPlayer())))
         return;
 
     WorldObject* target = nullptr;

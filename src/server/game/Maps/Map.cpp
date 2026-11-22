@@ -24,6 +24,7 @@
 #include "CellImpl.h"
 #include "Corpse.h"
 #include "DisableMgr.h"
+#include "Dozercism.h"
 #include "DynamicTree.h"
 #include "GridInfo.h"
 #include "GridMap.h"
@@ -4421,6 +4422,23 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                         return nullptr;
     }
 
+    Player* dozerOwner = nullptr;
+    if (spellId == Dozercism::Flare && (entry == Dozercism::Priest || entry == Dozercism::Dozer))
+    {
+        dozerOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!dozerOwner || GetId() != 1 || !properties || properties->ID != Dozercism::SummonProperties)
+            return nullptr;
+        if (entry == Dozercism::Priest && !Dozercism::CanStart(dozerOwner))
+            return nullptr;
+        if (entry == Dozercism::Dozer)
+        {
+            Creature* priest = Dozercism::FindActor(*dozerOwner, Dozercism::Priest);
+            if (!priest || priest->GetGUID() != targetGuid || !Dozercism::CanContinue(*priest) ||
+                !Dozercism::CanParticipate(*priest, dozerOwner) || Dozercism::FindActor(*dozerOwner, Dozercism::Dozer))
+                return nullptr;
+        }
+    }
+
     HallowsEndCrate::Route const* collectorRoute = nullptr;
     if (entry == 54114 && spellId == 100668)
     {
@@ -4604,6 +4622,13 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     {
         murlocOwner->BindQuestObject(24974, summon);
         summon->SetReactState(REACT_PASSIVE);
+    }
+
+    if (dozerOwner)
+    {
+        dozerOwner->BindQuestObject(Dozercism::Quest, summon, false);
+        if (entry == Dozercism::Dozer)
+            summon->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
     }
 
     if (collectorRoute)

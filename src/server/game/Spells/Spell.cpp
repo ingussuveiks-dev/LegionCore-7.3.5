@@ -27,6 +27,7 @@
 #include "G3DPosition.hpp"
 #include "DB2Stores.h"
 #include "DisableMgr.h"
+#include "Dozercism.h"
 #include "DynamicObject.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -149,6 +150,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
             case 67922: // Arcane Charge
                 if (m_CastItem->GetEntry() == 49038)
                     quest = 14250;
+                break;
+            case Dozercism::Flare:
+                if (m_CastItem->GetEntry() == Dozercism::Flaregun)
+                    quest = Dozercism::Quest;
                 break;
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
@@ -6716,6 +6721,9 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (m_spellInfo->Id == 67922 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_FAILED_DONT_REPORT;
+    if (m_spellInfo->Id == Dozercism::Flare && (!m_questItemCastReceipt ||
+        m_questItemCastReceipt->load(std::memory_order_acquire) || !Dozercism::CanStart(m_caster->ToPlayer())))
+        return SPELL_FAILED_BAD_TARGETS;
 
     if (m_spellInfo->Id == 68411 && (!m_triggeredByAuraSpell || m_triggeredByAuraSpell->Id != 68413))
         return SPELL_FAILED_DONT_REPORT;

@@ -37,6 +37,7 @@
 #include "CreatureAI.h"
 #include "CreatureAIImpl.h"
 #include "CreatureGroups.h"
+#include "Dozercism.h"
 #include "Formulas.h"
 #include "Garrison.h"
 #include "GridNotifiersImpl.h"
@@ -24390,6 +24391,9 @@ void Unit::JumpTo(WorldObject* obj, float speedZ)
 
 bool Unit::HandleSpellClick(Unit* clicker, int8 seatId)
 {
+    if (GetEntry() == Dozercism::Dozer && Dozercism::IsEncounterActor(ToCreature()))
+        return false;
+
     bool res = false;
     uint32 spellClickEntry = GetVehicleKit() ? GetVehicleKit()->GetCreatureEntry() : GetEntry();
     SpellClickInfoMapBounds clickPair = sObjectMgr->GetSpellClickInfoMapBounds(spellClickEntry);

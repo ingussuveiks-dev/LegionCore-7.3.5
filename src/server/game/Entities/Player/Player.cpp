@@ -61,6 +61,7 @@
 #include "DB2Stores.h"
 #include "DatabaseEnv.h"
 #include "DisableMgr.h"
+#include "Dozercism.h"
 #include "DuelPackets.h"
 #include "EquipmentSetPackets.h"
 #include "Formulas.h"
@@ -21392,6 +21393,10 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid, uint32 killingSp
 
         if (questid == 14472 && real_entry == 36868 && killingSpellId != 69743)
             continue; // In The Face! needs the actual SFG kill.
+
+        if (questid == Dozercism::Quest && real_entry == Dozercism::Dozer &&
+            (!Dozercism::IsEncounterActor(killed) || killed->IsAlive() || !Dozercism::CanParticipate(*killed, this)))
+            continue;
 
         // These markers are also used by the separate1572 shaman intro.
         // Ring40225 uses the real1469 leadership/opening actions, and its

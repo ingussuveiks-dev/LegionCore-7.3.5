@@ -22,6 +22,7 @@
 #include "GuildMgr.h"
 #include "InstanceScript.h"
 #include "KillRewarder.h"
+#include "Dozercism.h"
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "ScenarioMgr.h"
@@ -236,8 +237,13 @@ inline void KillRewarder::_RewardKillCredit(Player* player)
             uint32 victimEntry = creature->GetEntry();
             auto sfgReceipt = _killingSpellId == 69743 && victimEntry == 36868 &&
                 player->GetQuestStatus(14472) == QUEST_STATUS_INCOMPLETE ? player->GetQuestCancellationReceipt(14472) : nullptr;
+            bool ritualDozer = victimEntry == Dozercism::Dozer && Dozercism::IsEncounterActor(creature);
+            auto dozerReceipt = ritualDozer && Dozercism::CanParticipate(*creature, player) ?
+                player->GetQuestCancellationReceipt(Dozercism::Quest) : nullptr;
             player->AddDelayedEvent(50, [=]() -> void
             {
+                if (ritualDozer && (!dozerReceipt || dozerReceipt->load(std::memory_order_acquire)))
+                    return;
                 // Death credit belongs to this confirmed kill. Its corpse may
                 // already have left the map before the player queue is pumped.
                 if (CreatureTemplate const* victimTemplate = sObjectMgr->GetCreatureTemplate(victimEntry))

@@ -17,6 +17,7 @@
  */
 
 #include "CellImpl.h"
+#include "Dozercism.h"
 #include "GameTime.h"
 #include "GossipDef.h"
 #include "GridNotifiers.h"
@@ -667,6 +668,19 @@ void Map::ScriptsProcess()
                         float y = step.script->TempSummonCreature.PosY;
                         float z = step.script->TempSummonCreature.PosZ;
                         float o = step.script->TempSummonCreature.Orientation;
+
+                        if (step.script->type == SCRIPTS_EVENT && step.script->id == Dozercism::Event &&
+                            step.script->TempSummonCreature.CreatureEntry == Dozercism::Priest)
+                        {
+                            if (auto properties = sSummonPropertiesStore.LookupEntry(Dozercism::SummonProperties);
+                                properties && Dozercism::CanStart(pSummoner->ToPlayer()))
+                            {
+                                if (!SummonCreature(Dozercism::Priest, Position(x, y, z, o), properties,
+                                    step.script->TempSummonCreature.DespawnDelay, pSummoner->ToUnit(), ObjectGuid::Empty, Dozercism::Flare))
+                                    TC_LOG_ERROR("scripts", "%s could not publish the quest's airborne priest.", step.script->GetDebugInfo().c_str());
+                            }
+                            break;
+                        }
 
                         if (auto sum = pSummoner->SummonCreature(step.script->TempSummonCreature.CreatureEntry, x, y, z, o, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, step.script->TempSummonCreature.DespawnDelay))
                         {

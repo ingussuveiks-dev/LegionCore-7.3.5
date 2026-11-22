@@ -17,6 +17,7 @@
  */
 
 #include "Creature.h"
+#include "Dozercism.h"
 #include "CreatureScaling.h"
 #include "BattlegroundMgr.h"
 #include "CellImpl.h"
@@ -2490,6 +2491,9 @@ bool Creature::CanAlwaysSee(WorldObject const* obj) const
 
 bool Creature::IsNeverVisible(WorldObject const* seer) const
 {
+    if (Dozercism::IsAnchor(this) && seer && seer->IsPlayer() && seer->GetMap() == GetMap())
+        if (Dozercism::FindActor(*const_cast<Player*>(seer->ToPlayer()), Dozercism::Dozer))
+            return true;
     if (AI() && !AI()->CanBeVisibleFor(seer))
         return true;
     if (i_disabledAI && i_disabledAI != i_AI &&

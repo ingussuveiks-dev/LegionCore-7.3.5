@@ -21,6 +21,7 @@
 #include "CreatureAI.h"
 #include "ObjectMgr.h"
 #include "TemporarySummon.h"
+#include "Dozercism.h"
 #include "TotemPackets.h"
 #include "CharmInfo.h"
 
@@ -528,6 +529,10 @@ void TempSummon::RemoveFromWorld()
 
     //if (GetOwnerGUID())
     //    TC_LOG_ERROR("entities.unit", "Unit %u has owner guid when removed from world", GetEntry());
+
+    if (Dozercism::IsEncounterActor(this) && GetEntry() == Dozercism::Dozer)
+        if (Creature* anchor = Dozercism::FindAnchor(*this, 100.0f))
+            anchor->UpdateObjectVisibility();
 
     Creature::RemoveFromWorld();
 }
