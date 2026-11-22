@@ -21269,8 +21269,13 @@ void Player::ItemRemovedQuestCheck(uint32 entry, uint32 count)
 
 void Player::KilledMonster(CreatureTemplate const* cInfo, ObjectGuid guid)
 {
+    KilledMonster(cInfo, guid, 0);
+}
+
+void Player::KilledMonster(CreatureTemplate const* cInfo, ObjectGuid guid, uint32 killingSpellId)
+{
     if (cInfo->Entry)
-        KilledMonsterCredit(cInfo->Entry, guid);
+        KilledMonsterCredit(cInfo->Entry, guid, killingSpellId);
 
     for (uint8 i = 0; i < MAX_KILL_CREDIT; ++i)
         if (cInfo->KillCredit[i])
@@ -21335,6 +21340,11 @@ bool SkyholdArtifactReturn::HasPendingFuryReturn(Player* player)
 
 void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::Empty*/)
 {
+    KilledMonsterCredit(entry, guid, 0);
+}
+
+void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid, uint32 killingSpellId)
+{
     uint16 addKillCount = 1;
     uint32 real_entry = entry;
     Creature* killed = NULL;
@@ -21379,6 +21389,9 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
 
         if (questid == 40216 && (entry == 97441 || real_entry == 97441))
             continue; // Addie's owner-scoped hunting controller owns all skill counters.
+
+        if (questid == 14472 && real_entry == 36868 && killingSpellId != 69743)
+            continue; // In The Face! needs the actual SFG kill.
 
         // These markers are also used by the separate1572 shaman intro.
         // Ring40225 uses the real1469 leadership/opening actions, and its
@@ -32566,7 +32579,12 @@ float Player::GetsAFriendBonus(bool forXP)
 
 void Player::RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients)
 {
-    KillRewarder(this, victim, isBattleGround, darkmoonRecipients).Reward();
+    RewardPlayerAndGroupAtKill(victim, isBattleGround, darkmoonRecipients, 0);
+}
+
+void Player::RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients, uint32 killingSpellId)
+{
+    KillRewarder(this, victim, isBattleGround, darkmoonRecipients, killingSpellId).Reward();
 }
 
 void Player::RewardPlayerAndGroupAtEvent(uint32 creatureID, WorldObject* pRewardSource)

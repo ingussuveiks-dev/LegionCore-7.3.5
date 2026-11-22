@@ -80,6 +80,14 @@ bool CanLeashVileFin(Player const* player, Creature const* target)
         target->IsAlive() && !target->IsDespawn() && target->GetHealthPct() <= 25.0f &&
         (!target->hasLootRecipient() || target->isTappedBy(player));
 }
+
+bool CanFireSfg(Player const* player, Creature const* target)
+{
+    return player && player->IsAlive() && player->GetMapId() == 1 && player->GetZoneId() == 16 &&
+        player->GetQuestStatus(14472) == QUEST_STATUS_INCOMPLETE &&
+        target && target->GetEntry() == 36868 && target->GetMapId() == 1 && target->GetZoneId() == 16 &&
+        target->IsAlive() && !target->IsDespawn() && (!target->hasLootRecipient() || target->isTappedBy(player));
+}
 }
 
 
@@ -145,6 +153,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
                     quest = 14461;
+                break;
+            case 69743: // SFG
+                if (m_CastItem->GetEntry() == 49700)
+                    quest = 14472;
                 break;
             case 73108: // Murloc Leash
                 if (m_CastItem->GetEntry() == 52059)
@@ -3146,6 +3158,12 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
     if (m_spellInfo->Id == 73108 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
         !CanLeashVileFin(m_caster->ToPlayer(), unit->ToCreature())))
+        return SPELL_MISS_EVADE;
+
+    // The SFG has one charge. Its genuine item cast consumes it on launch,
+    // so the accepted attempt and live target validate the later impact.
+    if (m_spellInfo->Id == 69743 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !CanFireSfg(m_caster->ToPlayer(), unit->ToCreature())))
         return SPELL_MISS_EVADE;
 
     if (m_spellInfo->Id == 67915)
@@ -6707,6 +6725,15 @@ SpellCastResult Spell::CheckCast(bool strict)
         Unit* target = m_targets.GetUnitTarget();
         if (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
             !CanLeashVileFin(m_caster->ToPlayer(), target ? target->ToCreature() : nullptr))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
+
+    if (m_spellInfo->Id == 69743)
+    {
+        Unit* target = m_targets.GetUnitTarget();
+        Player* shooter = m_caster->ToPlayer();
+        if (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            !CanFireSfg(shooter, target ? target->ToCreature() : nullptr) || !shooter->HasItemCount(49700, 1, false))
             return SPELL_FAILED_BAD_TARGETS;
     }
 

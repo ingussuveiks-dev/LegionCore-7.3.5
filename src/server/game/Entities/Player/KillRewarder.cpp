@@ -71,12 +71,13 @@
 // 6. Update guild achievements.
 
 // 1. Initialize internal variables to default values.
-KillRewarder::KillRewarder(Player* killer, Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients)
+KillRewarder::KillRewarder(Player* killer, Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients, uint32 killingSpellId)
 {
     _killer = killer;
     _victim = victim;
     _group = killer->GetGroup();
     _darkmoonRecipients = darkmoonRecipients;
+    _killingSpellId = killingSpellId;
     _groupRate = 1.0f;
     _maxNotGrayMember = nullptr;
     _count = 0;
@@ -233,12 +234,15 @@ inline void KillRewarder::_RewardKillCredit(Player* player)
         {
             ObjectGuid victimGuid = creature->GetGUID();
             uint32 victimEntry = creature->GetEntry();
+            auto sfgReceipt = _killingSpellId == 69743 && victimEntry == 36868 &&
+                player->GetQuestStatus(14472) == QUEST_STATUS_INCOMPLETE ? player->GetQuestCancellationReceipt(14472) : nullptr;
             player->AddDelayedEvent(50, [=]() -> void
             {
                 // Death credit belongs to this confirmed kill. Its corpse may
                 // already have left the map before the player queue is pumped.
                 if (CreatureTemplate const* victimTemplate = sObjectMgr->GetCreatureTemplate(victimEntry))
-                    player->KilledMonster(victimTemplate, victimGuid);
+                    player->KilledMonster(victimTemplate, victimGuid,
+                        sfgReceipt && !sfgReceipt->load(std::memory_order_acquire) ? 69743 : 0);
 
                 if (Creature* target = ObjectAccessor::GetCreature(*player, victimGuid))
                     target->AddRewardPlayer(player->GetGUID());

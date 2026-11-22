@@ -2019,7 +2019,9 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void ItemAddedQuestCheck(uint32 entry, uint32 count);
         void ItemRemovedQuestCheck(uint32 entry, uint32 count);
         void KilledMonster(CreatureTemplate const* cInfo, ObjectGuid guid);
+        void KilledMonster(CreatureTemplate const* cInfo, ObjectGuid guid, uint32 killingSpellId);
         void KilledMonsterCredit(uint32 entry, ObjectGuid guid = ObjectGuid::Empty);
+        void KilledMonsterCredit(uint32 entry, ObjectGuid guid, uint32 killingSpellId);
         void KilledPlayerCredit();
         void KillCreditGO(uint32 entry, ObjectGuid const& guid);
         void AchieveCriteriaCredit(uint32 criteriaID);
@@ -2652,6 +2654,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool IsAtGroupRewardDistance(WorldObject const* pRewardSource) const;
         bool IsAtRecruitAFriendDistance(WorldObject const* pOther) const;
         void RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients = nullptr);
+        void RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients, uint32 killingSpellId);
         void RewardPlayerAndGroupAtEvent(uint32 creature_id, WorldObject* pRewardSource);
         bool isHonorOrXPTarget(Unit* victim);
 

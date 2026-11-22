@@ -8,14 +8,36 @@
 #include "FunctionProcessorActual.inc"
 using ObjectGuid=uint64;
 constexpr uint8 MAX_KILL_CREDIT=2;
+constexpr uint32 QUEST_STATUS_INCOMPLETE=1;
 struct CreatureTemplate{uint32 Entry=121,KillCredit[2]={500,0};};
 struct Player;
 struct Creature{ObjectGuid guid=99;uint32 entry=121,rewards=0;CreatureTemplate data;ObjectGuid GetGUID(){return guid;}uint32 GetEntry(){return entry;}CreatureTemplate const*GetCreatureTemplate(){return &data;}Creature*ToCreature(){return this;}void AddRewardPlayer(ObjectGuid){++rewards;}};
-struct Player{FunctionProcessor queue;bool alive=true,corpse=false;std::vector<uint32> credits;std::vector<ObjectGuid> guids;ObjectGuid GetGUID(){return 1;}bool IsAlive(){return alive;}bool GetCorpse(){return corpse;}void AddDelayedEvent(uint64 ms,std::function<void()>&&f){queue.AddDelayedEvent(ms,std::move(f));}void KilledMonster(CreatureTemplate const*,ObjectGuid);void KilledMonsterCredit(uint32 n,ObjectGuid guid=0){credits.push_back(n);guids.push_back(guid);}};
+struct Player
+{
+    FunctionProcessor queue;
+    bool alive = true;
+    bool corpse = false;
+    std::vector<uint32> credits;
+    std::vector<ObjectGuid> guids;
+
+    ObjectGuid GetGUID() { return 1; }
+    bool IsAlive() { return alive; }
+    bool GetCorpse() { return corpse; }
+    uint32 GetQuestStatus(uint32) { return 0; }
+    std::shared_ptr<std::atomic<bool> const> GetQuestCancellationReceipt(uint32) { return {}; }
+    void AddDelayedEvent(uint64 ms, std::function<void()>&& action) { queue.AddDelayedEvent(ms, std::move(action)); }
+    void KilledMonster(CreatureTemplate const*, ObjectGuid);
+    void KilledMonster(CreatureTemplate const*, ObjectGuid, uint32);
+    void KilledMonsterCredit(uint32 entry, ObjectGuid guid = 0, uint32 = 0)
+    {
+        credits.push_back(entry);
+        guids.push_back(guid);
+    }
+};
 struct Catalog{CreatureTemplate data;bool present=true;CreatureTemplate const*GetCreatureTemplate(uint32 entry){return present&&entry==121?&data:nullptr;}}catalog;
 auto sObjectMgr=&catalog;
 namespace ObjectAccessor{static Creature*present;Creature*GetCreature(Player&,ObjectGuid guid){return present&&present->guid==guid?present:nullptr;}}
-struct KillRewarder{Creature*_victim;bool _group=false;void _RewardKillCredit(Player*);};
+struct KillRewarder{Creature*_victim;bool _group=false;uint32 _killingSpellId=0;void _RewardKillCredit(Player*);};
 #include "KilledMonster.inc"
 #include "Reward.inc"
 static void Require(bool ok,char const*message){if(!ok)throw std::runtime_error(message);}

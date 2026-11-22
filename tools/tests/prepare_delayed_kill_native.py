@@ -9,7 +9,7 @@ inc=out/'NativeFollowingGoLoot.inc';text=inc.read_text();assert text.count('3069
 inc.write_text(text.replace('30698,47828,48094','14,30698,47828,48094'))
 s=s.replace('HashMapHolder<Player>::SetSize(1000)','HashMapHolder<Player>::SetSize(20000)')
 s=s.replace('q->LoadQuestObjective(f);','q->LoadQuestObjective(f);if(f[2].GetUInt8()==QUEST_OBJECTIVE_MONSTER)q->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL);')
-s+='\nstruct NativeRewarder{Unit*_victim;bool _group=false;void _RewardKillCredit(Player*);};\n'
+s+='\nstruct NativeRewarder{Unit*_victim;bool _group=false;uint32 _killingSpellId=0;void _RewardKillCredit(Player*);};\n'
 s+=(old if baseline else new).replace('KillRewarder::','NativeRewarder::')+'\n'
 s+=r'''
 struct PlayerQueueTag{using Type=FunctionProcessor Unit::*;friend Type Access(PlayerQueueTag);};template struct Accessor<PlayerQueueTag,&Unit::m_Functions>;

@@ -28,7 +28,7 @@ class Group;
 class KillRewarder
 {
 public:
-    KillRewarder(Player* killer, Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients = nullptr);
+    KillRewarder(Player* killer, Unit* victim, bool isBattleGround, GuidSet* darkmoonRecipients = nullptr, uint32 killingSpellId = 0);
 
     void Reward();
 
@@ -49,6 +49,7 @@ private:
     Unit* _victim;
     Group* _group;
     GuidSet* _darkmoonRecipients;
+    uint32 _killingSpellId;
     uint32 _count;
     uint32 _countForRep;
     uint32 _sumLevel;

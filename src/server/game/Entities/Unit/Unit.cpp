@@ -22148,6 +22148,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
     {
         // Shared taps may visit the same eligible group through multiple KillRewarders.
         GuidSet darkmoonRecipients;
+        uint32 killingSpellId = spellProto ? spellProto->Id : 0;
         WorldPackets::Party::PartyKillLog partyKillLog;
         partyKillLog.Player = player->GetGUID();
         partyKillLog.Victim = victim->GetGUID();
@@ -22254,7 +22255,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
                     if (Player* playerForReward = ObjectAccessor::GetPlayer(*creature, _guid))
                     {
                         if (player != playerForReward && (!player->GetGroup() || player->GetGroup() != playerForReward->GetGroup()) && creature->isTappedBy(playerForReward))
-                            playerForReward->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients);
+                            playerForReward->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients, killingSpellId);
                     }
                 }
             }
@@ -22280,10 +22281,10 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
                     }
                 }
             }
-            player->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients);
+            player->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients, killingSpellId);
         }
         else
-            player->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients);
+            player->RewardPlayerAndGroupAtKill(victim, false, &darkmoonRecipients, killingSpellId);
     }
 
     // Do KILL and KILLED procs. KILL proc is called only for the unit who landed the killing blow (and its owner - for pets and totems) regardless of who tapped the victim
