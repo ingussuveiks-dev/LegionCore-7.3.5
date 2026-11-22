@@ -1,0 +1,11 @@
+# Reclaiming Felfire Hill (26446)
+
+Gnarl `17310` novietojumā `111469` piedāvā kvestu un dod vienu Tree Seedlings `23788` saišķi ar astoņām devām. Divdesmit Fertile Dirt Mound `181690` novietojumiem Felfire Hill ir sākotnējā slēdzene `1661`, kurai Legion DB2 prasa tieši `23788`. Stādīšanas burvestība `29773` izmanto šo slēdzeni un ilgst piecas sekundes.
+
+Ar pirmslabojuma bibliotēku `-FelfireSeedlingsBaseline` atkārtoja īstā parastā objekta lietošanas paketē, ka viens klikšķis virzīja kvestu un devas palika neskartas. Tagad mērķi aktivizē sākotnējais stādīšanas ceļš. Tas prasa aktīvu kvestu, somā esošu stādu un brīvu pauguru. Sāktais stādīšanas mēģinājums pieder konkrētajai kvesta pieņemšanas reizei. Apvidus modelis joprojām ir daļa no pasaules, un kvesta aktivizācija tiek rādīta tikai tiesīgajam spēlētājam. Atslēgtā priekšgājēja `9526` jau pieņemtie ieraksti joprojām var izmantot kopīgo stādīšanas vietu.
+
+`-FelfireSeedlings` pārbaudīja faktisko klikšķa atteikumu, citu objektu Felfire Hill, atmešanu un atkārtotu pieņemšanu nepabeigta 5 sekunžu stādījuma laikā, astoņus sākotnējos pasaules paugurus un vienas devas patērēšanu par katru pabeigtu stādījumu. Astotais stādījums izlietoja visu saišķi. Pabeigšanas gadījumā atkārtota izmantošana tika atteikta un īstā atlīdzības pakete izņēma pārbaudē papildus iedoto saišķi. Atsevišķais `9526` gadījums pārbaudīja saglabāta aktīvā kvesta ieskaiti un atmešanu.
+
+Klienta animācija un pauguru kvesta apzīmējumi jāpārbauda spēlē. Native tests pārbaudīja servera aktivizācijas lēmumu, objekta stāvokli un inventāru.
+
+Atkārtoti izturētas `-YurivPendant`, `-SupplyChests` un `-TongaGuide` pārbaudes. Pagaidu un kanoniskais Release `81A645C5B69BD896CE67A3A60E9F924DA9156E2274A67E68D43FB63A24D6FAFC` sasniedza `ready` un korekti izslēdzās bez jaunām kļūdām. Gala saitē pārbaudīti `GameObject.obj`, `SpellHandler.obj` un `Spell.obj`. Produkcijas sešu nosacījumu vērtības un migrācijas kontrolsumma sakrīt ar pārbaudītajiem datiem, un atkārtota migrācija rezultātu nemainīja. Saglabātas 158 ar kontrolsummām pārbaudītas diagnostikas datnes `build-extractors/bin/Release/fixed/felfire-seedlings-2026-11-22/`. Pagaidu datņu izņemšana atbrīvoja 3 014 325 444 baitus.

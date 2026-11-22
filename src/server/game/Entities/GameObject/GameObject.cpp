@@ -1478,6 +1478,10 @@ bool GameObject::ActivateToQuest(Player* target) const
     if (target->isGameMaster())
         return true;
 
+    if (GetEntry() == 181690)
+        return target->HasItemCount(23788, 1, false) &&
+            (target->GetQuestStatus(26446) == QUEST_STATUS_INCOMPLETE || target->GetQuestStatus(9526) == QUEST_STATUS_INCOMPLETE);
+
     if (GetEntry() == AnowynCrystal::Entry && !AnowynCrystal::IsQuestSpawn(GetMapId(), GetDBTableGUIDLow()))
         return false;
 
@@ -1672,6 +1676,13 @@ void GameObject::Use(Unit* user)
             sObjectMgr->GetScriptName(GetScriptId()).c_str(), AI() ? typeid(*AI()).name() : "none");
     if (IsQuestObjectExpired())
         return;
+
+    if (GetEntry() == 181690)
+    {
+        Player* gardener = user->ToPlayer();
+        if (!gardener || !gardener->IsAlive() || !ActivateToQuest(gardener))
+            return;
+    }
 
     if (GetEntry() == 209059 && (!user->IsPlayer() || IsNeverVisible(user)))
         return;

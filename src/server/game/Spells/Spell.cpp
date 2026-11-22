@@ -106,11 +106,15 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
     m_spellGuid = triggerData.spellGuid;
     m_parentTargetCount = triggerData.parentTargetCount;
 
-    if (m_CastItem)
+    if (Player* player = m_caster->ToPlayer(); m_CastItem && player)
     {
         uint32 quest = 0;
         switch (m_spellInfo->Id)
         {
+            case 29773: // Tree Seedlings
+                if (m_CastItem->GetEntry() == 23788)
+                    quest = player->GetQuestStatus(26446) == QUEST_STATUS_INCOMPLETE ? 26446 : 9526;
+                break;
             case 65580: // Grol'dom Net
                 if (m_CastItem->GetEntry() == 46722)
                     quest = 13961;
@@ -124,9 +128,8 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                     quest = 14019;
                 break;
         }
-        if (Player* player = m_caster->ToPlayer())
-            if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
-                m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
+        if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+            m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
     }
 
     m_castPos = *m_caster;
@@ -6618,6 +6621,15 @@ SpellCastResult Spell::CheckCast(bool strict)
     // The guide's generic kill proc does not account for the actual recipients of XP or honor.
     if (m_spellInfo->Id == 100776 && m_questKillReward != 29433)
         return SPELL_FAILED_DONT_REPORT;
+
+    if (m_spellInfo->Id == 29773)
+    {
+        GameObject* mound = m_targets.GetGOTarget();
+        if (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            !mound || mound->GetEntry() != 181690 || !mound->isSpawned() ||
+            mound->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
 
     SpellCastResult castResult = CallScriptCheckCastHandlers();
     

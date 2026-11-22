@@ -159,7 +159,8 @@ void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& 
         return;
 
     if (GameObject* obj = GetPlayer()->GetMap()->GetGameObject(packet.Guid))
-        obj->Use(_player);
+        if (obj->GetEntry() != 181690) // Fertile Dirt Mounds are activated by Plant Tree Seedling.
+            obj->Use(_player);
 }
 
 void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjReportUse& packet)
