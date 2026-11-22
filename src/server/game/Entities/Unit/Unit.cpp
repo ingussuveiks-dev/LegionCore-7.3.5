@@ -38,6 +38,7 @@
 #include "CreatureAIImpl.h"
 #include "CreatureGroups.h"
 #include "Dozercism.h"
+#include "OldFriendsFlight.h"
 #include "Formulas.h"
 #include "Garrison.h"
 #include "GridNotifiersImpl.h"
@@ -24483,6 +24484,14 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
     // Must be called only from aura handler
     if (!IsAlive() || GetVehicleKit() == vehicle || vehicle->GetBase()->IsOnVehicle(this))
         return;
+
+    Unit* base = vehicle->GetBase();
+    if (base->GetEntry() == OldFriendsFlight::Bomber && base->GetMapId() == OldFriendsFlight::Map &&
+        (!base->HasQuestObjectScope() || !base->CanTargetQuestObject(this)))
+    {
+        base->RemoveAura(const_cast<AuraApplication*>(aurApp));
+        return;
+    }
 
     if (m_vehicle)
     {

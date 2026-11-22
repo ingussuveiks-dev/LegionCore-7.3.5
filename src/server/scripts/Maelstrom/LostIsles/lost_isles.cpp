@@ -10,6 +10,7 @@ Cosmetic toDo:
 #include "ConditionMgr.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectPackets.h"
+#include "OldFriendsFlight.h"
 #include "ScriptedEscortAI.h"
 #include "QuestData.h"
 
@@ -2124,11 +2125,15 @@ class npc_sassy_hardwrench : public CreatureScript
 
         void OnStartQuest(Player* player, Quest const* quest) override
         {
-            if (!quest || quest->GetQuestId() != QUEST_OLD_FRIENDS)
+            if (!quest || quest->GetQuestId() != QUEST_OLD_FRIENDS || !player || !player->IsAlive())
                 return;
 
-            //WorldLocation loc(648, 1580.93f, 2720.48f, 83.2326f);
-            //player->SetHomebind(loc, 4912);
+            Unit* base = me->GetVehicleBase();
+            Creature* caveBomber = base ? base->ToCreature() : nullptr;
+            if (!caveBomber || caveBomber->GetDBTableGUIDLow() != OldFriendsFlight::CaveBomberSpawn ||
+                caveBomber->GetEntry() != OldFriendsFlight::CaveBomber || caveBomber->GetMapId() != OldFriendsFlight::Map)
+                return;
+
             me->CastSpell(player, SPELL_OF_BIND, true);
             player->PlayDistanceSound(MUSIC_VOLCANO, player);
             player->CastSpell(player, SPELL_OF_SUMMON_BOMBER, true);
@@ -2153,68 +2158,87 @@ public:
 
     struct npc_flying_bomberAI : public npc_escortAI
     {
-        npc_flying_bomberAI(Creature* creature) : npc_escortAI(creature) {}
+        npc_flying_bomberAI(Creature* creature) : npc_escortAI(creature) { }
 
-        bool PlayerOn;
-        void Reset() override
-        {
-             PlayerOn       = false;
-        }
-
-        void OnCharmed(bool /*apply*/) override
-        {
-        }
-
+        void OnCharmed(bool /*apply*/) override { }
 
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
-            if (!apply || who->GetTypeId() != TYPEID_PLAYER)
-                return;
-
-             PlayerOn = true;
-             Start(false, true, who->GetGUID());
+            if (apply && who->IsPlayer() && me->HasQuestObjectScope() && me->CanTargetQuestObject(who))
+                _rider = who->GetGUID();
         }
 
-        void WaypointReached(uint32 i) override
+        void CalcExitVehiclePos(Position& pos) override
+        {
+            if (!_arrived)
+                return;
+
+            float ground = me->GetHeight(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), true, 15.0f);
+            if (ground > INVALID_HEIGHT && ground <= pos.GetPositionZ())
+                pos.m_positionZ = ground;
+        }
+
+        void WaypointReached(uint32 point) override
         {
             Player* player = GetPlayerForEscort();
-            if (!player)
+            if (!player || player->GetVehicleBase() != me)
                 return;
 
-            Vehicle*  v = me->GetVehicleKit();
-            if (!v)
-                return;
-
-            Unit* sassy = v->GetPassenger(0);
-            if (!sassy)
-                return;
-
-            switch(i)
+            if (point == 25)
             {
-                case 1:
-                    sCreatureTextMgr->SendChat(sassy->ToCreature(), TEXT_GENERIC_0, player->GetGUID());
-                    break;
-                case 3:
-                    sCreatureTextMgr->SendChat(sassy->ToCreature(), TEXT_GENERIC_1, player->GetGUID());
-                    break;
-                case 25 :
-                    SetEscortPaused(true);
-                    player->ExitVehicle();
-                    break;
+                _arrived = true;
+                SetEscortPaused(true);
+                player->ExitVehicle();
+                me->DespawnOrUnsummon(1000);
+                return;
             }
+
+            Unit* passenger = me->GetVehicleKit()->GetPassenger(0);
+            if (!passenger || passenger->GetEntry() != OldFriendsFlight::Sassy)
+                return;
+
+            static constexpr uint32 cues[] = {1, 9, 14, 15, 20, 23};
+            auto cue = std::find(std::begin(cues), std::end(cues), point);
+            if (cue != std::end(cues))
+                sCreatureTextMgr->SendChat(passenger->ToCreature(), uint8(cue - std::begin(cues)), player->GetGUID(),
+                    CHAT_MSG_MONSTER_YELL, LANG_ADDON, TEXT_RANGE_PERSONAL);
         }
 
         void UpdateAI(uint32 diff) override
         {
-            npc_escortAI::UpdateAI(diff);
-            
-            if (PlayerOn)
+            if (_arrived)
+                return;
+
+            Player* player = ObjectAccessor::GetPlayer(*me, _rider);
+            if (player && player->GetVehicleBase() == me)
             {
-                if (Player* player = GetPlayerForEscort())
+                if (HasEscortState(STATE_ESCORT_ESCORTING))
+                {
+                    npc_escortAI::UpdateAI(diff);
+                    return;
+                }
+
+                Unit* passenger = me->GetVehicleKit()->GetPassenger(0);
+                if (passenger && passenger->GetEntry() == OldFriendsFlight::Sassy)
+                {
+                    Start(false, true, player->GetGUID());
                     player->SetClientControl(me, 0);
-                PlayerOn = false;
+                    return;
+                }
             }
+
+            if (HasEscortState(STATE_ESCORT_ESCORTING) || _boardingTime <= diff)
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
+            _boardingTime -= diff;
         }
+
+    private:
+        ObjectGuid _rider;
+        uint32 _boardingTime = 15000;
+        bool _arrived = false;
     };
 };
 // Kaja'Cola Gives You IDEAS! (TM): Dummy To Assistant Greely

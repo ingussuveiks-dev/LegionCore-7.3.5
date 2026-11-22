@@ -32,6 +32,7 @@
 #include "GridNotifiersImpl.h"
 #include "Group.h"
 #include "QuestItemObjectUse.h"
+#include "OldFriendsFlight.h"
 #include "GameEventMgr.h"
 #include "HallowsEndCrate.h"
 #include "InstancePackets.h"
@@ -4301,6 +4302,31 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* bomberRider = nullptr;
+    if (entry == OldFriendsFlight::Bomber && spellId == OldFriendsFlight::Summon)
+    {
+        bomberRider = summoner ? summoner->ToPlayer() : nullptr;
+        if (!bomberRider || GetId() != OldFriendsFlight::Map || !properties ||
+            properties->ID != OldFriendsFlight::SummonProperties || !bomberRider->IsAlive() ||
+            bomberRider->GetVehicle() || !bomberRider->HasAura(73065) || !bomberRider->GetQuestRewardStatus(24958))
+            return nullptr;
+
+        QuestStatus status = bomberRider->GetQuestStatus(OldFriendsFlight::Quest);
+        if (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE)
+            return nullptr;
+
+        CreatureData const* cave = sObjectMgr->GetCreatureData(OldFriendsFlight::CaveBomberSpawn);
+        if (!cave || cave->id != OldFriendsFlight::CaveBomber ||
+            !bomberRider->IsWithinDist3d(cave->posX, cave->posY, cave->posZ, 35.0f))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *bomberRider->GetSummonList(entry))
+            if (Creature const* bomber = GetCreature(guid))
+                if (!bomber->IsDespawn() && !bomber->IsQuestObjectExpired())
+                    return nullptr;
+        duration = 4 * MINUTE * IN_MILLISECONDS;
+    }
+
     Player* mastiffOwner = nullptr;
     if (entry == GilneanMastiff::Mastiff && spellId == GilneanMastiff::Summon)
     {
@@ -4622,6 +4648,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (caravanRider)
         caravanRider->BindQuestObject(13975, summon, false);
+
+    if (bomberRider)
+        bomberRider->BindQuestObject(OldFriendsFlight::Quest, summon);
 
     if (shangXiEscortOwner)
         shangXiEscortOwner->BindQuestObject(29787, summon);
