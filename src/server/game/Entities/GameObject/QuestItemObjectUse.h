@@ -291,6 +291,7 @@ struct Binding
     uint32 ItemEntry;
     uint32 Spell;
     bool SharedSpell = false;
+    bool AllowsCompletedQuest = false;
 };
 
 Binding const* ForObject(uint32 entry);

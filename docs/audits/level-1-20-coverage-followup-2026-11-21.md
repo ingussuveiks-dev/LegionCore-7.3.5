@@ -184,3 +184,5 @@ Atkārtotais eksports aptver 5 459 ierakstus, 4 865 ieslēgtus kvestus un visus 
 `26646` spēles slēdzenei `1930` vajag Blackrock Holding Pen Key `59261`. Atbilstošajam būrim `204441/1379` ieskaite ir piesaistīta atvērta objekta stāvoklim. Pārskatīts arī vispārīgais pogas mijiedarbības ceļš, kas var pārslēgt objekta stāvokli bez slēdzenes pārbaudes. Jāpārbauda šī ceļa faktiskā uzvedība ar būri bez atslēgas, īstā atslēgas izlietošana un gūstekņu secība. [Objekta lietošanas kods](../../src/server/game/Entities/GameObject/GameObject.cpp#L1905)
 
 `26646` servera zonde apstiprināja sākotnējo ieskaiti bez atslēgas. Labojums kanoniskajā Release pieprasa īsto atslēgu un atbrīvojamus gūstekņus. Pārbaudīta komplekta darbība, atvēršana, ieskaite un nodošana. [Prisoners of War pārbaude](blackrock-prisoners-2026-11-22.md)
+
+`26694` servera zonde apstiprināja, ka iepriekš Ilgalar palātu varēja atvērt bez atslēgas. Labojums izmanto īsto atslēgu gan ieejot, gan izejot pēc Doane nāves. Pārbaudīts mājdzīvnieka pēdējais sitiens, īpašnieka ieskaite un Keeshan atlīdzība. [The Grand Magus Doane pārbaude](ilgalar-ward-2026-11-22.md)

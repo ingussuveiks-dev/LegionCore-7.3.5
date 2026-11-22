@@ -315,12 +315,14 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                     quest = 24974;
                 break;
         }
-        if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id, m_CastItem->GetEntry()); binding && m_CastItem->GetEntry() == binding->ItemEntry)
+        auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id, m_CastItem->GetEntry());
+        if (binding && m_CastItem->GetEntry() == binding->ItemEntry)
             quest = binding->Quest;
         if (auto assembly = FindQuestAssembly(m_spellInfo->Id); assembly && m_CastItem->GetEntry() == assembly->Item)
             quest = assembly->IncompleteQuest(*player);
         if (quest && (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE ||
-            (quest == KneeDeep::Quest && player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE)))
+            ((quest == KneeDeep::Quest || (binding && binding->Quest == quest && binding->AllowsCompletedQuest)) &&
+                player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE)))
             m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
     }
     else if (player && m_spellInfo->Id == 101838 && triggerData.originalCaster == player->GetGUID() &&
