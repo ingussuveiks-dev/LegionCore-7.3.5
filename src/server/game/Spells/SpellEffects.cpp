@@ -8160,6 +8160,9 @@ void Spell::EffectKillCreditPersonal(SpellEffIndex effIndex)
     if (m_spellInfo->Id == DarkmoonBanner::Plant || m_spellInfo->Id == IronforgeRations::Feed)
         return;
 
+    if (m_spellInfo->Id == 66393) // The owning driver receives the Hot Rod key credit on actual boarding.
+        return;
+
     // The preceding create-item effect must actually store the lit torch.
     if (m_spellInfo->Id == ChallengerFires::LightTorch && !unitTarget->ToPlayer()->HasItemCount(ChallengerFires::LitTorch, 1, false))
         return;

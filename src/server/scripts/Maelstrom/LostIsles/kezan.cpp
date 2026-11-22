@@ -11,6 +11,8 @@ start q14116 spell - 59087 phase 8
 #include "Player.h"
 #include "Creature.h"
 #include "CreatureTextMgr.h"
+#include "QuestObjectScope.h"
+#include "SmartAI.h"
 #include "Vehicle.h"
 #include "QuestData.h"
 
@@ -351,10 +353,197 @@ enum Friends
 
     SPELL_SUMMON_IZZY               = 66600, // q.14071 sum.34959 orig.34890
     SPELL_SUMMON_ACE                = 66597, // q.14071 sum.34957 orig.34892
-    SPELL_SUMMON_GOBER              = 66645, // q.14071 sum.34958 orig.34954
+    SPELL_SUMMON_GOBER              = 66599, // q.14071 sum.34958 orig.34954
 
     //by 46598 they sit to veh
 };
+
+namespace
+{
+constexpr uint32 HotRod = 34840;
+constexpr uint32 HotRodKeys = 46856;
+constexpr uint32 SummonHotRod = 66393;
+constexpr uint32 HotRodKeysCredit = 48323;
+
+struct HomiePickup
+{
+    uint32 Friend;
+    uint32 Spawn;
+    uint32 Passenger;
+    uint32 PickupSpell;
+    uint32 ResummonSpell;
+    InvisibilityType Detection;
+    int8 Seat;
+};
+
+constexpr HomiePickup Homies[] =
+{
+    {NPC_ACE, 240082, 34957, SPELL_SUMMON_ACE, SPELL_RESUMMON_ACE, INVISIBILITY_UNK7, 1},
+    {NPC_GOBER, 240081, 34958, SPELL_SUMMON_GOBER, SPELL_RESUMMON_GOBER, INVISIBILITY_UNK8, 2},
+    {NPC_IZZY, 240080, 34959, SPELL_SUMMON_IZZY, SPELL_RESUMMON_IZZY, INVISIBILITY_UNK9, 3}
+};
+
+HomiePickup const* FindHomie(uint32 entry)
+{
+    for (HomiePickup const& homie : Homies)
+        if (entry == homie.Friend || entry == homie.Passenger)
+            return &homie;
+    return nullptr;
+}
+
+Player* HotRodDriver(Unit* vehicle)
+{
+    Creature* rod = vehicle ? vehicle->ToCreature() : nullptr;
+    TempSummon* summoned = rod ? rod->ToTempSummon() : nullptr;
+    if (!summoned || summoned->GetEntry() != HotRod || summoned->GetMapId() != 648 ||
+        summoned->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != SummonHotRod || !summoned->GetVehicleKit())
+        return nullptr;
+    Unit* owner = summoned->GetSummoner();
+    return owner && owner->IsAlive() && summoned->GetVehicleKit()->GetPassenger(0) == owner ? owner->ToPlayer() : nullptr;
+}
+
+void ChangeHomieDetection(Unit& detector, InvisibilityType type, bool apply)
+{
+    if (apply)
+        detector.m_invisibilityDetect.AddFlag(type);
+    detector.m_invisibilityDetect.AddValue(type, apply ? 1 : -1);
+    if (!apply && detector.m_invisibilityDetect.GetValue(type) <= 0)
+        detector.m_invisibilityDetect.DelFlag(type);
+}
+
+struct npc_kezan_hot_rod : SmartAI
+{
+    explicit npc_kezan_hot_rod(Creature* creature) : SmartAI(creature) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        SmartAI::IsSummonedBy(summoner);
+        if (Player* owner = summoner->ToPlayer(); owner && owner->HasItemCount(HotRodKeys, 1, false) &&
+            owner->GetQuestStatus(QUEST_ROLLING_WITH_MY_HOMIES) == QUEST_STATUS_INCOMPLETE)
+            _attempt = owner->GetQuestCancellationReceipt(QUEST_ROLLING_WITH_MY_HOMIES);
+    }
+
+    bool HasAcceptedRide(Player& driver) const
+    {
+        return _attempt && !_attempt->load(std::memory_order_acquire) &&
+            driver.GetQuestCancellationReceipt(QUEST_ROLLING_WITH_MY_HOMIES) == _attempt &&
+            driver.GetQuestStatus(QUEST_ROLLING_WITH_MY_HOMIES) == QUEST_STATUS_INCOMPLETE;
+    }
+
+    void RequestCrew(Player& driver, HomiePickup const& homie, bool firstPickup)
+    {
+        if (_requestedCrew || !me->GetVehicleKit()->HasEmptySeat(homie.Seat))
+            return;
+        if (firstPickup)
+            if (Creature* pending = me->GetMap()->GetCreature(_pickupPassengers[homie.Seat - 1]);
+                pending && pending->IsAlive() && !pending->IsDespawn())
+                return;
+        _requestedCrew = homie.Passenger;
+        _requestIsPickup = firstPickup;
+        driver.CastSpell(&driver, firstPickup ? homie.PickupSpell : homie.ResummonSpell, true);
+        _requestedCrew = 0;
+        _requestIsPickup = false;
+    }
+
+    bool AdmitCrew(Player& driver, Creature& crew, HomiePickup const& homie)
+    {
+        if (!me->GetVehicleKit()->HasEmptySeat(homie.Seat))
+            return false;
+        if (_requestedCrew == homie.Passenger && _requestIsPickup && HasAcceptedRide(driver))
+        {
+            _pickupPassengers[homie.Seat - 1] = crew.GetGUID();
+            return true;
+        }
+        return CanBoardCrew(driver, crew, homie);
+    }
+
+    bool CanBoardCrew(Player& driver, Creature& crew, HomiePickup const& homie) const
+    {
+        return (HasAcceptedRide(driver) && _pickupPassengers[homie.Seat - 1] == crew.GetGUID()) ||
+            driver.GetQuestRewardStatus(QUEST_ROLLING_WITH_MY_HOMIES) ||
+            driver.GetQuestObjectiveData(QUEST_ROLLING_WITH_MY_HOMIES, homie.Passenger) > 0;
+    }
+
+    void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
+    {
+        SmartAI::PassengerBoarded(passenger, seat, apply);
+        if (!apply)
+        {
+            if (seat == 0)
+                if (Player* driver = passenger->ToPlayer(); driver && driver->GetGUID() == _driver)
+                    RemoveDetection(*driver);
+            return;
+        }
+        Player* driver = HotRodDriver(me);
+        if (!driver)
+            return;
+
+        if (seat == 0 && passenger == driver)
+        {
+            _driver = driver->GetGUID();
+            bool const accepted = HasAcceptedRide(*driver);
+            bool const rewarded = driver->GetQuestRewardStatus(QUEST_ROLLING_WITH_MY_HOMIES);
+            if (accepted)
+                driver->KilledMonsterCredit(HotRodKeysCredit, ObjectGuid::Empty);
+            for (HomiePickup const& homie : Homies)
+            {
+                if (rewarded || driver->GetQuestObjectiveData(QUEST_ROLLING_WITH_MY_HOMIES, homie.Passenger))
+                    RequestCrew(*driver, homie, false);
+                else if (accepted)
+                    SetDetection(*driver, homie, true);
+            }
+            return;
+        }
+        if (!HasAcceptedRide(*driver))
+            return;
+        HomiePickup const* homie = FindHomie(passenger->GetEntry());
+        Creature* crew = passenger->ToCreature();
+        TempSummon* summoned = crew ? crew->ToTempSummon() : nullptr;
+        if (!homie || !summoned || homie->Passenger != summoned->GetEntry() || homie->Seat != seat ||
+            summoned->GetSummonerGUID() != driver->GetGUID() || _pickupPassengers[seat - 1] != summoned->GetGUID())
+            return;
+
+        _pickupPassengers[seat - 1].Clear();
+        SetDetection(*driver, *homie, false);
+        driver->KilledMonsterCredit(homie->Passenger, ObjectGuid::Empty);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_attempt && _attempt->load(std::memory_order_acquire) && !_driver.IsEmpty())
+            if (Player* driver = HotRodDriver(me); driver && driver->GetGUID() == _driver)
+                RemoveDetection(*driver);
+        SmartAI::UpdateAI(diff);
+    }
+
+private:
+    void SetDetection(Player& driver, HomiePickup const& homie, bool apply)
+    {
+        bool& added = _detected[homie.Seat - 1];
+        if (added == apply)
+            return;
+        ChangeHomieDetection(driver, homie.Detection, apply);
+        ChangeHomieDetection(*me, homie.Detection, apply);
+        added = apply;
+    }
+
+    void RemoveDetection(Player& driver)
+    {
+        for (HomiePickup const& homie : Homies)
+            SetDetection(driver, homie, false);
+        for (ObjectGuid& pending : _pickupPassengers)
+            pending.Clear();
+        _driver.Clear();
+    }
+
+    ObjectGuid _driver;
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
+    std::array<bool, 3> _detected{};
+    std::array<ObjectGuid, 3> _pickupPassengers{};
+    uint32 _requestedCrew = 0;
+    bool _requestIsPickup = false;
+};
+}
 
 class npc_roling_friends : public CreatureScript
 {
@@ -369,38 +558,19 @@ class npc_roling_friends : public CreatureScript
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (!me->IsWithinDistInMap(who, 10.0f))
+            HomiePickup const* homie = FindHomie(me->GetEntry());
+            if (!homie || homie->Spawn != me->GetDBTableGUIDLow() || !me->IsWithinDistInMap(who, 10.0f) ||
+                !me->InSamePhase(who) || !me->IsWithinLOSInMap(who))
                 return;
 
-            if (who->GetTypeId() == TYPEID_UNIT && who->ToCreature()->IsVehicle())
-            {
-                InvisibilityType type = INVISIBILITY_GENERAL;
-                uint32 spellID = 0;
-                switch(me->GetEntry())
-                {
-                    case NPC_IZZY:  type = INVISIBILITY_UNK9; spellID = SPELL_SUMMON_IZZY;    break;
-                    case NPC_ACE:   type = INVISIBILITY_UNK7; spellID = SPELL_SUMMON_ACE;     break;
-                    case NPC_GOBER: type = INVISIBILITY_UNK8; spellID = SPELL_RESUMMON_GOBER; break;
-                    default:
-                        return;
-                }
+            Player* driver = HotRodDriver(who);
+            auto controller = driver ? CAST_AI(npc_kezan_hot_rod, who->ToCreature()->AI()) : nullptr;
+            if (!controller || !controller->HasAcceptedRide(*driver) ||
+                driver->GetQuestObjectiveData(QUEST_ROLLING_WITH_MY_HOMIES, homie->Passenger) ||
+                !who->GetVehicleKit()->HasEmptySeat(homie->Seat))
+                return;
 
-                if(who->GetVehicleKit())
-                if (Unit* passanger = who->GetVehicleKit()->GetPassenger(0))
-                {
-                    if (Player* player = passanger->ToPlayer())
-                    {
-                        //remove visibility for plr.
-                        player->m_invisibilityDetect.DelFlag(type);
-                        player->m_invisibilityDetect.AddValue(type, -1);
-                        //summon
-                        player->CastSpell(player, spellID, true);
-                    }
-                }
-                //remove visibility for vehicle
-                who->m_invisibilityDetect.DelFlag(type);
-                who->m_invisibilityDetect.AddValue(type, -1);
-            }
+            controller->RequestCrew(*driver, *homie, true);
         }
 
         void UpdateAI(uint32 diff) override
@@ -474,31 +644,41 @@ class npc_roling_friends_guard : public CreatureScript
             me->SetReactState(REACT_AGGRESSIVE);
 
             Player* player = summoner->ToPlayer();
-            if (!player || !player->m_movementInfo.transport.Guid)
+            HomiePickup const* homie = FindHomie(me->GetEntry());
+            if (!player || !homie)
                 return;
 
-            player->KilledMonsterCredit(me->GetEntry(), ObjectGuid::Empty);
-            if (Unit* veh = player->GetVehicleBase())
+            Unit* vehicle = player->GetVehicleBase();
+            auto controller = HotRodDriver(vehicle) == player ? CAST_AI(npc_kezan_hot_rod, vehicle->ToCreature()->AI()) : nullptr;
+            bool alreadyPickedUp = player->GetQuestObjectiveData(QUEST_ROLLING_WITH_MY_HOMIES, homie->Passenger) > 0 ||
+                player->GetQuestRewardStatus(QUEST_ROLLING_WITH_MY_HOMIES);
+            if (controller && controller->AdmitCrew(*player, *me, *homie))
             {
-                uint8 seatID = 0;
-                switch(me->GetEntry())
+                // The native minipet summon runs an initial evade after this
+                // callback. Its event cleanup would cancel an immediate join.
+                me->AddDelayedEvent(1, [this, homie, owner = player->GetGUID(), rod = vehicle->GetGUID()]
                 {
-                    case NPC_IZZY_GUARD:  seatID = 3; break;
-                    case NPC_ACE_GUARD:   seatID = 1; break;
-                    case NPC_GOBER_GUARD: seatID = 2; break;
-                    default:
+                    Creature* base = me->GetMap()->GetCreature(rod);
+                    Player* driver = HotRodDriver(base);
+                    auto ride = driver ? CAST_AI(npc_kezan_hot_rod, base->AI()) : nullptr;
+                    if (!ride || driver->GetGUID() != owner || !base->GetVehicleKit()->HasEmptySeat(homie->Seat) ||
+                        !ride->CanBoardCrew(*driver, *me, *homie))
+                    {
+                        me->DespawnOrUnsummon();
                         return;
-                }
-
-                
-                if(veh->GetVehicleKit() && veh->GetVehicleKit()->HasEmptySeat(seatID))
-                {
+                    }
+                    me->EnterVehicle(base, homie->Seat, true);
                     events.ScheduleEvent(EVENT_EMOTE, urand(1000, 5000));
-                    me->EnterVehicle(veh, seatID);
-                }
-                else
-                    me->ToCreature()->DespawnOrUnsummon();
+                    me->AddDelayedEvent(1000, [passenger = me, rod]
+                    {
+                        Unit* boarded = passenger->GetVehicleBase();
+                        if (!boarded || boarded->GetGUID() != rod)
+                            passenger->DespawnOrUnsummon();
+                    });
+                });
             }
+            else if (controller || !alreadyPickedUp)
+                me->DespawnOrUnsummon(100);
         }
 
         uint32 GenerateEmote()
@@ -1411,7 +1591,7 @@ public:
 void AddSC_kezan()
 {
     new npc_defiant_troll;
-    //new npc_hot_rod();
+    RegisterCreatureAI(npc_kezan_hot_rod);
     new npc_roling_friends();
     new npc_roling_friends_guard();
     new npc_bilgewater_buccaneer_click();
