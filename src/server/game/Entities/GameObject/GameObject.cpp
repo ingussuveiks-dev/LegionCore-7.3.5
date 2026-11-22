@@ -1505,6 +1505,39 @@ constexpr uint32 GrandMagusDoaneQuest = 26694;
 constexpr uint32 IlgalarWard = 204582;
 constexpr uint32 IlgalarWardSpawn = 472;
 
+struct ChallengerBrazier
+{
+    uint32 Entry;
+    uint32 Spawn;
+    uint32 Spell;
+    uint32 Credit;
+};
+
+constexpr ChallengerBrazier ChallengerBraziers[] =
+{
+    {209369, 102395, ChallengerFires::LightTorch, ChallengerFires::TorchCredit},
+    {209801, 102400, 105156, 56037},
+    {209802, 102398, 105157, 56038},
+    {209803, 102399, 105158, 56040}
+};
+
+bool CanUseChallengerBrazier(GameObject const& object, Player const* player, ChallengerBrazier const& brazier)
+{
+    if (!player || !player->IsAlive() || object.GetMapId() != 860 || object.GetAreaId() != 5849 ||
+        object.GetDBTableGUIDLow() != brazier.Spawn || object.GetGoType() != GAMEOBJECT_TYPE_SPELLCASTER ||
+        object.GetGOInfo()->spellCaster.spell != brazier.Spell || !object.InSamePhase(player) ||
+        !object.IsWithinDistInMap(player, object.GetInteractionDistance()) ||
+        player->GetQuestStatus(ChallengerFires::Quest) != QUEST_STATUS_INCOMPLETE)
+        return false;
+
+    if (brazier.Spell == ChallengerFires::LightTorch)
+        return player->HasItemCount(ChallengerFires::UnlitTorch, 1, false) && !player->HasItemCount(ChallengerFires::LitTorch, 1, false);
+
+    return player->HasItemCount(ChallengerFires::LitTorch, 1, false) &&
+        player->GetQuestObjectiveData(ChallengerFires::Quest, ChallengerFires::TorchCredit) == 1 &&
+        !player->GetQuestObjectiveData(ChallengerFires::Quest, brazier.Credit);
+}
+
 constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
 {
     {StagnantOasis::Fissure, StagnantOasis::FissureSpawn, 1, 0, StagnantOasis::Quest, StagnantOasis::Seeds, StagnantOasis::PlantSeeds},
@@ -1961,6 +1994,10 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
             sObjectMgr->GetScriptName(GetScriptId()).c_str(), AI() ? typeid(*AI()).name() : "none");
     if (IsQuestObjectExpired())
         return;
+
+    for (ChallengerBrazier const& brazier : ChallengerBraziers)
+        if (GetEntry() == brazier.Entry && !CanUseChallengerBrazier(*this, user->ToPlayer(), brazier))
+            return;
 
     if (auto binding = QuestItemObjectUse::ForObject(GetEntry()))
     {

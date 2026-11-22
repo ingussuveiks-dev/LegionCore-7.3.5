@@ -279,6 +279,15 @@ namespace CrushcogAssault
     bool CanPlaceMarker(Player const* player, Position const& destination);
 }
 
+namespace ChallengerFires
+{
+constexpr uint32 Quest = 29664;
+constexpr uint32 UnlitTorch = 75008;
+constexpr uint32 LitTorch = 75000;
+constexpr uint32 LightTorch = 105151;
+constexpr uint32 TorchCredit = 56048;
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

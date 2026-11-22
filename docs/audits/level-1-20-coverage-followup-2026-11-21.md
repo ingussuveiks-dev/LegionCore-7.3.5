@@ -186,3 +186,5 @@ Atkārtotais eksports aptver 5 459 ierakstus, 4 865 ieslēgtus kvestus un visus 
 `26646` servera zonde apstiprināja sākotnējo ieskaiti bez atslēgas. Labojums kanoniskajā Release pieprasa īsto atslēgu un atbrīvojamus gūstekņus. Pārbaudīta komplekta darbība, atvēršana, ieskaite un nodošana. [Prisoners of War pārbaude](blackrock-prisoners-2026-11-22.md)
 
 `26694` servera zonde apstiprināja, ka iepriekš Ilgalar palātu varēja atvērt bez atslēgas. Labojums izmanto īsto atslēgu gan ieejot, gan izejot pēc Doane nāves. Pārbaudīts mājdzīvnieka pēdējais sitiens, īpašnieka ieskaite un Keeshan atlīdzība. [The Grand Magus Doane pārbaude](ilgalar-ward-2026-11-22.md)
+
+`29664` krāsainie ugunskuri tagad prasa īsto iedegto lāpu un faktiskās iedegšanas ieskaiti. Pārbaudīta lāpas maiņa, visu trīs krāsu ieskaite, atmešana un atkārtota pieņemšana pēc lāpas pazaudēšanas, kā arī nodošana pie Li Fei. [The Challenger’s Fires pārbaude](challenger-fires-2026-11-22.md)

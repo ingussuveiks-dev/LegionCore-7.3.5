@@ -8160,6 +8160,10 @@ void Spell::EffectKillCreditPersonal(SpellEffIndex effIndex)
     if (m_spellInfo->Id == DarkmoonBanner::Plant || m_spellInfo->Id == IronforgeRations::Feed)
         return;
 
+    // The preceding create-item effect must actually store the lit torch.
+    if (m_spellInfo->Id == ChallengerFires::LightTorch && !unitTarget->ToPlayer()->HasItemCount(ChallengerFires::LitTorch, 1, false))
+        return;
+
     unitTarget->ToPlayer()->KilledMonsterCredit(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);
 }
 
