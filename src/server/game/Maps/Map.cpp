@@ -1715,6 +1715,8 @@ void Map::MoveAllCreaturesInMoveList()
         {
             // update position and visibility for server and client
             c->Relocate(c->_newPosition);
+            if (Vehicle* vehicle = c->GetVehicleKit())
+                vehicle->RelocatePassengers();
             c->UpdateObjectVisibility(false);
         }
         else

@@ -18,6 +18,11 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
+#include "Item.h"
+#include "ObjectAccessor.h"
+#include "Player.h"
+#include "SmartAI.h"
+#include "Vehicle.h"
 
 /*######
 ## Quest 25134: Lazy Peons
@@ -198,9 +203,243 @@ public:
     }
 };
 
+namespace
+{
+constexpr uint32 SwiftclawQuest = 24626;
+constexpr uint32 BloodtalonLasso = 50053;
+constexpr uint32 RideSwiftclaw = 46598;
+constexpr uint32 Swiftclaw = 37989;
+constexpr uint32 SwiftclawSpawn = 80616;
+constexpr uint32 RaptorPens = 5675;
+constexpr uint32 PensController = 38003;
+constexpr uint32 PensControllerSpawn = 240751;
+constexpr uint32 CaptureSwiftclaw = 70943;
+constexpr uint32 ReturnSwiftclaw = 70941;
+constexpr uint32 ReturnedSwiftclaw = 38002;
+
+class SwiftclawQuestAI : public SmartAI
+{
+public:
+    explicit SwiftclawQuestAI(Creature* creature) : SmartAI(creature) { }
+
+    bool CanLasso(Player const& player, float radius) const
+    {
+        Vehicle const* vehicle = me->GetVehicleKit();
+        return me->GetDBTableGUIDLow() == SwiftclawSpawn && me->IsAlive() && !me->IsDespawn() && !_rider && !_delivered &&
+            vehicle && vehicle->HasEmptySeat(0) && !player.GetVehicle() && player.IsAlive() && player.GetMapId() == 1 &&
+            player.GetZoneId() == 6453 && player.GetQuestStatus(SwiftclawQuest) == QUEST_STATUS_INCOMPLETE &&
+            !player.GetQuestObjectiveData(SwiftclawQuest, ReturnedSwiftclaw) && player.IsWithinDistInMap(me, radius) && player.IsWithinLOSInMap(me);
+    }
+
+    void ArmRide(Player& player, float radius)
+    {
+        if (!CanLasso(player, radius))
+            return;
+
+        _attempt = player.GetQuestCancellationReceipt(SwiftclawQuest);
+        if (!_attempt || _attempt->load(std::memory_order_acquire))
+            return;
+
+        _rider = player.GetGUID();
+        _boardingMs = 5000;
+        _rideDelayMs = 200;
+        _lassoRadius = radius;
+    }
+
+    void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
+    {
+        SmartAI::PassengerBoarded(passenger, seat, apply);
+        if (seat != 0 || passenger->GetGUID() != _rider)
+            return;
+
+        if (!apply)
+        {
+            ClearRider();
+            if (!_delivered)
+                me->GetMotionMaster()->MoveTargetedHome();
+            return;
+        }
+
+        if (Player* player = passenger->ToPlayer(); IsCurrentRider(player))
+        {
+            _boardingMs = 0;
+            me->CastSpell(player, CaptureSwiftclaw, true);
+        }
+    }
+
+    void SetData(uint32 id, uint32 value) override
+    {
+        if (id != 1 || value != 1)
+        {
+            SmartAI::SetData(id, value);
+            return;
+        }
+
+        Player* player = GetSeatedPlayer();
+        if (_delivered || !IsCurrentRider(player) || !player->IsInAreaTriggerRadius(RaptorPens) ||
+            !player->GetQuestObjectiveData(SwiftclawQuest, Swiftclaw) || player->GetQuestObjectiveData(SwiftclawQuest, ReturnedSwiftclaw))
+            return;
+
+        Creature* handler = me->FindNearestCreature(PensController, 10.0f, true);
+        if (!handler || handler->GetDBTableGUIDLow() != PensControllerSpawn)
+            return;
+
+        handler->CastSpell(player, ReturnSwiftclaw, true);
+        if (!player->GetQuestObjectiveData(SwiftclawQuest, ReturnedSwiftclaw))
+            return;
+
+        _delivered = true;
+        player->ExitVehicle();
+        me->DespawnOrUnsummon(1);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        if (_delivered)
+            return;
+
+        if (Vehicle* vehicle = me->GetVehicleKit())
+            if (Unit* passenger = vehicle->GetPassenger(0); passenger && !IsCurrentRider(passenger->ToPlayer()))
+            {
+                passenger->ExitVehicle();
+                return;
+            }
+
+        if (_boardingMs && diff >= _boardingMs)
+        {
+            ClearRider();
+            return;
+        }
+        if (_boardingMs)
+            _boardingMs -= diff;
+
+        if (!_rideDelayMs)
+            return;
+        if (diff < _rideDelayMs)
+        {
+            _rideDelayMs -= diff;
+            return;
+        }
+
+        // Keep the original 200 ms ride delay and recheck the attempt before the native cast.
+        _rideDelayMs = 0;
+        Player* player = ObjectAccessor::GetPlayer(*me, _rider);
+        Vehicle* vehicle = me->GetVehicleKit();
+        if (!IsAcceptedRider(player) || !vehicle || !vehicle->HasEmptySeat(0) || player->GetVehicle() ||
+            !player->HasItemCount(BloodtalonLasso, 1, false) || !player->IsWithinDistInMap(me, _lassoRadius) ||
+            !player->IsWithinLOSInMap(me) || player->CastSpell(me, RideSwiftclaw, false) != SPELL_CAST_OK)
+            ClearRider();
+    }
+
+    void JustRespawned() override
+    {
+        ClearRider();
+        _delivered = false;
+        SmartAI::JustRespawned();
+    }
+
+private:
+    Player* GetSeatedPlayer() const
+    {
+        Vehicle* vehicle = me->GetVehicleKit();
+        Unit* passenger = vehicle ? vehicle->GetPassenger(0) : nullptr;
+        return passenger ? passenger->ToPlayer() : nullptr;
+    }
+
+    bool IsCurrentRider(Player* player) const
+    {
+        return IsAcceptedRider(player) && player == GetSeatedPlayer();
+    }
+
+    bool IsAcceptedRider(Player* player) const
+    {
+        return player && player->GetGUID() == _rider && player->IsAlive() && player->IsInMap(me) &&
+            player->GetQuestStatus(SwiftclawQuest) == QUEST_STATUS_INCOMPLETE && _attempt &&
+            !_attempt->load(std::memory_order_acquire) && player->GetQuestCancellationReceipt(SwiftclawQuest) == _attempt;
+    }
+
+    void ClearRider()
+    {
+        _rider.Clear();
+        _attempt.reset();
+        _boardingMs = 0;
+        _rideDelayMs = 0;
+    }
+
+    ObjectGuid _rider;
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
+    uint32 _boardingMs = 0;
+    uint32 _rideDelayMs = 0;
+    float _lassoRadius = 0.0f;
+    bool _delivered = false;
+};
+
+class npc_swiftclaw_quest_ride : public CreatureScript
+{
+public:
+    npc_swiftclaw_quest_ride() : CreatureScript("npc_swiftclaw_quest_ride") { }
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new SwiftclawQuestAI(creature);
+    }
+};
+
+class spell_swiftclaw_quest_lasso : public SpellScript
+{
+    PrepareSpellScript(spell_swiftclaw_quest_lasso);
+
+    SpellCastResult CheckLasso()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        Item* item = GetCastItem();
+        if (!player || !item || item->GetEntry() != BloodtalonLasso || !Player::IsInventoryPos(item->GetBagSlot(), item->GetSlot()) ||
+            !player->HasItemCount(BloodtalonLasso, 1, false))
+            return SPELL_FAILED_BAD_TARGETS;
+
+        float radius = GetSpellInfo()->GetEffect(EFFECT_0)->CalcRadius(player);
+        ObjectGuid target = GetOriginalTargetGUID();
+        Creature* raptor = target && target != player->GetGUID() ? ObjectAccessor::GetCreature(*player, target) :
+            player->FindNearestCreature(Swiftclaw, radius, true);
+        auto ai = raptor && raptor->GetEntry() == Swiftclaw ? dynamic_cast<SwiftclawQuestAI*>(raptor->AI()) : nullptr;
+        if (!ai || !ai->CanLasso(*player, radius))
+            return SPELL_FAILED_BAD_TARGETS;
+
+        _target = raptor->GetGUID();
+        return SPELL_CAST_OK;
+    }
+
+    void SelectSwiftclaw(std::list<WorldObject*>& targets)
+    {
+        targets.remove_if([this](WorldObject const* target) { return target->GetGUID() != _target; });
+    }
+
+    void ArmSwiftclaw(SpellEffIndex /*effect*/)
+    {
+        Player* player = GetCaster()->ToPlayer();
+        Creature* raptor = GetHitCreature();
+        auto ai = raptor && raptor->GetGUID() == _target ? dynamic_cast<SwiftclawQuestAI*>(raptor->AI()) : nullptr;
+        if (player && ai)
+            ai->ArmRide(*player, GetSpellInfo()->GetEffect(EFFECT_0)->CalcRadius(player));
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_swiftclaw_quest_lasso::CheckLasso);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_swiftclaw_quest_lasso::SelectSwiftclaw, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnEffectHitTarget += SpellEffectFn(spell_swiftclaw_quest_lasso::ArmSwiftclaw, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+
+    ObjectGuid _target;
+};
+}
+
 void AddSC_durotar()
 {
     new npc_lazy_peon();
     new spell_voodoo();
     new npc_100874_illidari_enforcer_dh_questline();
+    new npc_swiftclaw_quest_ride();
+    RegisterSpellScript(spell_swiftclaw_quest_lasso);
 }
