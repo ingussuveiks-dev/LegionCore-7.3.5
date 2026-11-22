@@ -1,0 +1,11 @@
+# Playing With Felfire (13730)
+
+Draaka `33726` ir gan piedāvājuma, gan nodošanas NPC Ashenvale novietojumā `111938`. Kvests dod vienu Reinforced Canister `45478`, un Felfire Hill ir 16 pasaulē novietoti `33736` ugunskuri. Vajadzīgi septiņi ieskaitīti savākšanas cikli.
+
+Legion burvestība `63565` piecas sekundes darbojas uz tuvumā esošu mērķi. Pirms labojuma tai trūka filtra dzīvajiem `33736`. Kad izolētajā pārbaudē pievienoja filtru, kanāls sasniedza īsto mērķi, bet ugunskurs pats bez rezultāta izpildīja sev adresēto progresa burvestību `63566`. Aura tagad saglabā faktiskā pieņemtā kvesta mēģinājumu un pie sākotnējā periodiskā notikuma izsauc `63566` no tvertnes turētāja. Pārbauda atbilstošo dzīvo ugunskuru, attālumu, redzamības līniju un konkrēto aktīvajā somā esošo tvertni. `63566` saglabā standarta tuvumā esošās grupas kredīta ceļu.
+
+`Test-QuestObjectLootNative.ps1 -FelfireCanister` apstiprināja, ka tvertne bez kvesta un nepareizs mērķis nedod progresu, pārtraukts kanāls un atmešana ar atkārtotu pieņemšanu nedod novēlotu progresu, un septiņi dažādi īsti ugunskuru novietojumi dod tieši septiņus kredītus. Pēc nodošanas ar īsto draakas NPC un atlīdzības paketi `1612` serveris piešķīra izvēlēto priekšmetu un izņēma tvertni. Atmešana arī izņēma tvertni. Klientā vēl jāpārbauda kanāla animācija, cik ilgi ugunskurs pēc izmantošanas ir pieejams atkārtoti, un pilnais ceļš. Vēsturiskajos komentāros spēlētāji apraksta savākšanu pie uguns un pilna kanāla nogaidīšanu. [Playing With Felfire komentāri](https://www.wowhead.com/ptr-2/quest=13730/playing-with-felfire)
+
+Pagaidu un kanoniskais Release SHA-256 `FC030910EF6A209678FA3BE30C4609C32B69D3E0D95B518F517E147953207A6B` sasniedza `ready` ar izolēto datubāzi un korekti izslēdzās. Gala saitē `scripts:zone_ashenvale.obj` satur mēģinājuma piesaisti un `FinishSiphon`. Produkcijā pārbaudīta skripta reģistrācija, četras nosacījumu rindas un migrācijas kontrolsumma. Gala servera un native pārbaudēs nav jaunu avāriju, `DBErrors` vai jaunu neizskaidrotu servera brīdinājumu.
+
+146 diagnostikas kopijas ar pārbaudītām kontrolsummām glabājas `build-extractors/bin/Release/fixed/felfire-canister-2026-11-22/`. Tajā ir arī sākotnējais neveiksmīgais tests ar SQL filtru un bez C++ labojuma. Noņemti 651 603 630 baiti pagaidu failu un saglabāta viena iepriekšējā Release kopija.

@@ -29,11 +29,14 @@ npc_ruul_snowhoof
 EndContentData */
 
 #include "../QuestItemChestAI.h"
+#include "Item.h"
 #include "ObjectAccessor.h"
 #include "QuestObjectScope.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
+#include "SpellAuraEffects.h"
+#include "SpellScript.h"
 
 /*####
 # npc_torek
@@ -623,6 +626,58 @@ private:
     uint8 _casts = 0;
 };
 
+class spell_ashenvale_siphon_felfire : public AuraScript
+{
+    PrepareAuraScript(spell_ashenvale_siphon_felfire);
+
+    static constexpr uint32 QuestId = 13730;
+    static constexpr uint32 Canister = 45478;
+    static constexpr uint32 FelFire = 33736;
+    static constexpr uint32 Credit = 63566;
+
+    bool Validate(SpellInfo const* spell) override
+    {
+        auto effect = spell->GetEffect(EFFECT_0);
+        return effect && effect->TriggerSpell == Credit && ValidateSpellInfo({Credit});
+    }
+
+    void CaptureAttempt(AuraEffect const*, AuraEffectHandleModes)
+    {
+        if (Unit* caster = GetCaster())
+            if (Player* player = caster->ToPlayer(); player && player->GetQuestStatus(QuestId) == QUEST_STATUS_INCOMPLETE)
+                _attempt = player->GetQuestCancellationReceipt(QuestId);
+    }
+
+    void FinishSiphon(AuraEffect const* effect)
+    {
+        // The native trigger is self-targeted; its caster must be the player
+        // holding the canister, or the fire casts it on itself.
+        PreventDefaultAction();
+        Unit* caster = GetCaster();
+        Unit* fire = GetTarget();
+        Player* player = caster ? caster->ToPlayer() : nullptr;
+        if (!player || !player->IsAlive() || !fire || !fire->IsCreature() || fire->GetEntry() != FelFire || !fire->IsAlive() ||
+            !_attempt || player->GetQuestStatus(QuestId) != QUEST_STATUS_INCOMPLETE ||
+            player->GetQuestCancellationReceipt(QuestId) != _attempt ||
+            !player->IsWithinDistInMap(fire, GetSpellInfo()->GetMaxRange(GetSpellInfo()->IsPositive())) ||
+            !player->IsWithinLOSInMap(fire))
+            return;
+
+        Item* item = player->GetItemByGuid(GetAura()->GetCastItemGUID());
+        if (item && item->GetEntry() == Canister && Player::IsInventoryPos(item->GetPos()))
+            player->CastSpell(player, Credit, true, item, effect);
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_ashenvale_siphon_felfire::CaptureAttempt, EFFECT_0,
+            SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_ashenvale_siphon_felfire::FinishSiphon, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    }
+
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
+};
+
 void AddSC_ashenvale()
 {
     new npc_torek();
@@ -631,4 +686,5 @@ void AddSC_ashenvale()
     new go_naga_brazier();
     RegisterGameObjectAI(go_ashenvale_satyrnaar_fel_wood);
     RegisterCreatureAI(npc_ashenvale_durak);
+    RegisterAuraScript(spell_ashenvale_siphon_felfire);
 }
