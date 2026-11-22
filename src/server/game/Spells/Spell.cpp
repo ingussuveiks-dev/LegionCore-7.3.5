@@ -117,12 +117,21 @@ QuestAssembly const* FindQuestAssembly(uint32 spell)
         {101838, 72110, 29511, 0, false}, // Repair a Damaged Tonk with the wrench
         {DarkmoonBanner::Sew, DarkmoonBanner::Kit, DarkmoonBanner::Quest, 0},
         {DarkmoonBanner::Plant, DarkmoonBanner::FoldedBanner, DarkmoonBanner::Quest, 0, false},
-        {IronforgeBait::Assemble, IronforgeBait::Blueprint, IronforgeBait::Quest, 0}
+        {IronforgeBait::Assemble, IronforgeBait::Blueprint, IronforgeBait::Quest, 0},
+        {IronforgeRations::Feed, IronforgeRations::Item, IronforgeRations::Quest, 0, false},
+        {IronforgeRations::WellFed, IronforgeRations::Item, IronforgeRations::Quest, 0, false}
     };
     for (QuestAssembly const& assembly : assemblies)
         if (assembly.Spell == spell)
             return &assembly;
     return nullptr;
+}
+
+bool CanFeedIronforgeGuard(Player const& player, Creature const* guard)
+{
+    return player.IsAlive() && guard && guard->IsAlive() && !guard->IsDespawn() && guard->GetDBTableGUIDLow() &&
+        guard->GetEntry() == IronforgeRations::Guard && guard->GetMapId() == 0 && guard->GetZoneId() == 1537 &&
+        guard->GetMap() == player.GetMap() && !guard->HasAura(IronforgeRations::WellFed);
 }
 
 bool CanLeashVileFin(Player const* player, Creature const* target)
@@ -6787,6 +6796,14 @@ SpellCastResult Spell::CheckCast(bool strict)
             !assembly->MatchesAttempt(*player, m_questItemCastReceipt) ||
             (assembly->SelfTarget && m_targets.GetObjectTarget() && m_targets.GetObjectTarget() != player))
             return SPELL_FAILED_BAD_TARGETS;
+
+        if (m_spellInfo->Id == IronforgeRations::Feed || m_spellInfo->Id == IronforgeRations::WellFed)
+        {
+            Unit const* target = m_targets.GetUnitTarget();
+            if (!m_CastItem || !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
+                !CanFeedIronforgeGuard(*player, target ? target->ToCreature() : nullptr))
+                return SPELL_FAILED_BAD_TARGETS;
+        }
 
         if (m_spellInfo->Id == 102053)
         {

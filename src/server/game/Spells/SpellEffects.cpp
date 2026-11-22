@@ -1649,9 +1649,13 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
     ObjectGuid itemGUID = m_CastItem ? m_CastItem->GetGUID() : ObjectGuid::Empty;
 
     Unit* caster = m_caster;
+    auto rationsAttempt = m_spellInfo->Id == IronforgeRations::Feed ? m_questItemCastReceipt : nullptr;
 
-    m_caster->AddDelayedEvent(delay, [caster, spellInfo, values, spellGuid, targets, originalCaster, casttime, TargetGUID, _cost, itemGUID, mask]() -> void
+    m_caster->AddDelayedEvent(delay, [caster, spellInfo, values, spellGuid, targets, originalCaster, casttime, TargetGUID, _cost, itemGUID, mask, rationsAttempt]() -> void
     {
+        if (rationsAttempt && rationsAttempt->load(std::memory_order_acquire))
+            return;
+
         SpellCastTargets _targets;
         _targets.SetCaster(caster);
         if (targets.HasDst())
@@ -2327,6 +2331,14 @@ void Spell::EffectApplyAura(SpellEffIndex effIndex)
     m_spellAura->_ApplyEffectForTargets(effIndex);
     if (_triggeredCastFlags & TRIGGERED_CASTED_BY_AREATRIGGER)
         m_spellAura->SetAuraAttribute(AURA_ATTR_FROM_AREATRIGGER);
+
+    if (m_spellInfo->Id == IronforgeRations::WellFed)
+        if (Player* owner = m_caster->ToPlayer(); owner && unitTarget == m_targets.GetUnitTarget() &&
+            unitTarget->GetAura(IronforgeRations::WellFed, owner->GetGUID()) == m_spellAura)
+        {
+            owner->KilledMonsterCredit(IronforgeRations::Credit);
+            unitTarget->MonsterSay(int32(urand(52137, 52142)), LANG_UNIVERSAL, owner->GetGUID());
+        }
 }
 
 void Spell::EffectApplyAreaAura(SpellEffIndex effIndex)
@@ -7872,8 +7884,8 @@ void Spell::EffectKillCreditPersonal(SpellEffIndex effIndex)
     if (!unitTarget || !unitTarget->IsPlayer())
         return;
 
-    // The banner awards its objective when the actual stones publish the placed object.
-    if (m_spellInfo->Id == DarkmoonBanner::Plant)
+    // Place the flag or apply Well Fed to the selected guard before awarding the objective.
+    if (m_spellInfo->Id == DarkmoonBanner::Plant || m_spellInfo->Id == IronforgeRations::Feed)
         return;
 
     unitTarget->ToPlayer()->KilledMonsterCredit(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);

@@ -141,6 +141,16 @@ constexpr uint32 TrapItem = 69980;
 bool CanGather(GameObject const& trap, Player const& player);
 }
 
+namespace IronforgeRations
+{
+constexpr uint32 Quest = 29351;
+constexpr uint32 Item = 69981;
+constexpr uint32 Feed = 99479;
+constexpr uint32 WellFed = 99478;
+constexpr uint32 Guard = 5595;
+constexpr uint32 Credit = 53564;
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding
