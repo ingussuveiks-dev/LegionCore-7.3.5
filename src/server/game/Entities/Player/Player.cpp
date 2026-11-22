@@ -11943,6 +11943,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
         if ((go->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*go, *this)) ||
             (darkmoonSource && !DarkmoonCrafting::CanGather(*go, *this, *darkmoonSource)) ||
             (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)) ||
+            (KorothBanner::IsBanner(*go) && !KorothBanner::CanLoot(*go, *this)) ||
             (go->GetEntry() == IronforgeBait::Trap && !IronforgeBait::CanGather(*go, *this)))
         {
             SendLootRelease(guid);
@@ -20744,6 +20745,8 @@ bool Player::TakeQuestSourceItem(uint32 questId, bool msg)
             }
             if (questId == BloodcupBraid::Quest)
                 items.Add(BloodcupBraid::WovenBraid, 1);
+            if (questId == KorothBanner::Quest)
+                items.Add(KorothBanner::Banner, 1);
         }
     }
     items.Apply(*this);

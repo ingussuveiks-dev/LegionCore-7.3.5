@@ -179,6 +179,16 @@ bool CanSwing(Player const* player);
 bool IsTunnelVermin(Creature const* creature);
 }
 
+namespace KorothBanner
+{
+constexpr uint32 Quest = 24472;
+constexpr uint32 Banner = 49742;
+constexpr uint32 Swiped = 69858;
+
+bool IsBanner(GameObject const& object);
+bool CanLoot(GameObject const& object, Player const& player);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

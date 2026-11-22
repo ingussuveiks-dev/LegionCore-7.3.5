@@ -2425,6 +2425,44 @@ void Spell::EffectSendEvent(SpellEffIndex effIndex)
         m_questItemCastReceipt->load(std::memory_order_acquire) || !Dozercism::CanStart(m_caster->ToPlayer())))
         return;
 
+    if (m_spellInfo->Id == KorothBanner::Swiped)
+    {
+        Player* player = m_caster->ToPlayer();
+        if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET || !player || !player->IsAlive() || unitTarget != player ||
+            !m_CastItem || m_CastItem->GetEntry() != KorothBanner::Banner || !player->IsInWorld())
+            return;
+
+        QuestStatus status = player->GetQuestStatus(KorothBanner::Quest);
+        if (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE)
+            return;
+
+        ObjectGuid loot = player->GetLootGUID();
+        GameObject* banner = loot.IsGameObject() ? player->GetMap()->GetGameObject(loot) : nullptr;
+        if (!banner || !KorothBanner::IsBanner(*banner) || !player->IsWithinDistInMap(banner, INTERACTION_DISTANCE))
+            return;
+
+        Creature* koroth = banner->FindNearestCreature(36294, 40.0f, true);
+        if (koroth && koroth->GetDBTableGUIDLow() == 149430 && koroth->AI() && player->InSamePhase(koroth))
+        {
+            koroth->MonsterYell(36914, LANG_UNIVERSAL, player->GetGUID());
+            if (!koroth->isInCombat())
+                koroth->AI()->AttackStart(player);
+
+            ObjectGuid korothGuid = koroth->GetGUID();
+            auto attempt = player->GetQuestCancellationReceipt(KorothBanner::Quest);
+            // The two authored speech records are 7828 ms apart.
+            player->AddDelayedEvent(7828, [player, korothGuid, attempt]()
+            {
+                if (!attempt || attempt->load(std::memory_order_acquire) || !player->IsInWorld() || !player->IsAlive())
+                    return;
+
+                if (Creature* pursuer = player->GetMap()->GetCreature(korothGuid); pursuer && pursuer->IsAlive() &&
+                    pursuer->getVictim() == player && player->InSamePhase(pursuer))
+                    pursuer->MonsterYell(36913, LANG_UNIVERSAL, player->GetGUID());
+            });
+        }
+    }
+
     WorldObject* target = nullptr;
 
     // call events for object target if present
