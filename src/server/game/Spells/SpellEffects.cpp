@@ -130,6 +130,20 @@ bool Volcanoth::CanFire(Player const* player, Unit const* target)
         player->IsInMap(boss) && player->InSamePhase(boss);
 }
 
+bool NoTanks::CanThrow(Player const* player, Unit const* target)
+{
+    Creature const* tank = target ? target->ToCreature() : nullptr;
+    if (!player || !player->IsAlive() || !player->IsInWorld() || player->GetMapId() != 0 ||
+        player->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE || !player->HasItemCount(Grenade, 1, false) ||
+        !tank || !tank->IsAlive() || !tank->IsInWorld() || tank->GetEntry() != Tank || !tank->GetDBTableGUIDLow() ||
+        !player->IsInMap(tank) || !player->InSamePhase(tank))
+        return false;
+
+    CreatureData const* placement = sObjectMgr->GetCreatureData(tank->GetDBTableGUIDLow());
+    return placement && placement->id == Tank && placement->mapid == 0 && placement->zoneId == 6457 &&
+        (placement->areaId == 5177 || placement->areaId == 801);
+}
+
 bool WoodsEndCoffer::IsAtCabin(Player const* player)
 {
     return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 654 &&

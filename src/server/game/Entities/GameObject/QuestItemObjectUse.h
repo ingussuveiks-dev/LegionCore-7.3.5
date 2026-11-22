@@ -244,6 +244,16 @@ constexpr uint32 Fire = 73066;
 bool CanFire(Player const* player, Unit const* target);
 }
 
+namespace NoTanks
+{
+constexpr uint32 Quest = 26333;
+constexpr uint32 Grenade = 58200;
+constexpr uint32 ThrowGrenade = 79751;
+constexpr uint32 Tank = 42224;
+
+bool CanThrow(Player const* player, Unit const* target);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding
