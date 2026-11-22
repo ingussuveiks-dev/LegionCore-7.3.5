@@ -11942,7 +11942,8 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
         auto darkmoonSource = DarkmoonCrafting::FindMaterialSource(go->GetEntry());
         if ((go->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*go, *this)) ||
             (darkmoonSource && !DarkmoonCrafting::CanGather(*go, *this, *darkmoonSource)) ||
-            (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)))
+            (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)) ||
+            (go->GetEntry() == IronforgeBait::Trap && !IronforgeBait::CanGather(*go, *this)))
         {
             SendLootRelease(guid);
             return;

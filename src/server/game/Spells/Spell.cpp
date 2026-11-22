@@ -116,7 +116,8 @@ QuestAssembly const* FindQuestAssembly(uint32 spell)
         {102053, 72057, 29509, 0, false}, // Fry one Breaded Frog at the Cookpot
         {101838, 72110, 29511, 0, false}, // Repair a Damaged Tonk with the wrench
         {DarkmoonBanner::Sew, DarkmoonBanner::Kit, DarkmoonBanner::Quest, 0},
-        {DarkmoonBanner::Plant, DarkmoonBanner::FoldedBanner, DarkmoonBanner::Quest, 0, false}
+        {DarkmoonBanner::Plant, DarkmoonBanner::FoldedBanner, DarkmoonBanner::Quest, 0, false},
+        {IronforgeBait::Assemble, IronforgeBait::Blueprint, IronforgeBait::Quest, 0}
     };
     for (QuestAssembly const& assembly : assemblies)
         if (assembly.Spell == spell)
@@ -7699,6 +7700,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if (target->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*target, *m_caster->ToPlayer()))
                             return SPELL_FAILED_NO_VALID_TARGETS;
                         if (target->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*target, *m_caster->ToPlayer()))
+                            return SPELL_FAILED_NO_VALID_TARGETS;
+                        if (target->GetEntry() == IronforgeBait::Trap && !IronforgeBait::CanGather(*target, *m_caster->ToPlayer()))
                             return SPELL_FAILED_NO_VALID_TARGETS;
                         if (auto source = DarkmoonCrafting::FindMaterialSource(target->GetEntry());
                             source && !DarkmoonCrafting::CanGather(*target, *m_caster->ToPlayer(), *source))

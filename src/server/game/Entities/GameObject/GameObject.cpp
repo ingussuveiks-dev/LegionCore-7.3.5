@@ -1560,6 +1560,12 @@ bool DarkmoonBanner::CanPlant(Player const& player)
         player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE;
 }
 
+bool IronforgeBait::CanGather(GameObject const& trap, Player const& player)
+{
+    return player.IsAlive() && trap.GetMap() == player.GetMap() && trap.GetMapId() == 369 && trap.GetZoneId() == 2257 &&
+        trap.GetDBTableGUIDLow() && player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player.HasQuestForItem(TrapItem);
+}
+
 QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
 {
     for (Binding const& binding : QuestItemObjects)
@@ -1631,6 +1637,9 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (GetEntry() == DarkmoonBanner::LooseStones)
         return DarkmoonBanner::IsPlantingSpot(*this) && DarkmoonBanner::CanPlant(*target);
+
+    if (GetEntry() == IronforgeBait::Trap)
+        return IronforgeBait::CanGather(*this, *target);
 
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&

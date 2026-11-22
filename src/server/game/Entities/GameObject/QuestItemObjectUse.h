@@ -130,6 +130,17 @@ bool IsPlantingSpot(GameObject const& object);
 bool CanPlant(Player const& player);
 }
 
+namespace IronforgeBait
+{
+constexpr uint32 Quest = 29350;
+constexpr uint32 Blueprint = 69979;
+constexpr uint32 Assemble = 99474;
+constexpr uint32 Trap = 208864;
+constexpr uint32 TrapItem = 69980;
+
+bool CanGather(GameObject const& trap, Player const& player);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding
