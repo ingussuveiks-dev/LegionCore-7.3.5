@@ -104,7 +104,13 @@ QuestAssembly const* FindQuestAssembly(uint32 spell)
     static constexpr QuestAssembly assemblies[] =
     {
         {BloodcupBraid::Weave, BloodcupBraid::HairBraid, BloodcupBraid::Quest, 0},
-        {SamophlangeManual::Assemble, SamophlangeManual::Cover, SamophlangeManual::Quest, SamophlangeManual::LegacyQuest}
+        {SamophlangeManual::Assemble, SamophlangeManual::Cover, SamophlangeManual::Quest, SamophlangeManual::LegacyQuest},
+        {101988, 72043, 29506, 0}, // Moonberry Fizz from the Cocktail Shaker
+        {101985, 72018, 29510, 0}, // Disenchant a Discarded Weapon
+        {101863, 71971, 29515, 0}, // Make Prophetic Ink from the herbs
+        {101868, 71972, 29515, 0}, // Write a Fortune with the ink
+        {102221, 72052, 29516, 0}, // Cut a Bit of Glass
+        {101874, 71977, 29517, 0}  // Build a Darkmoon Prize with the kit
     };
     for (QuestAssembly const& assembly : assemblies)
         if (assembly.Spell == spell)
@@ -7666,6 +7672,9 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if (target->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*target, *m_caster->ToPlayer()))
                             return SPELL_FAILED_NO_VALID_TARGETS;
                         if (target->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*target, *m_caster->ToPlayer()))
+                            return SPELL_FAILED_NO_VALID_TARGETS;
+                        if (auto source = DarkmoonCrafting::FindMaterialSource(target->GetEntry());
+                            source && !DarkmoonCrafting::CanGather(*target, *m_caster->ToPlayer(), *source))
                             return SPELL_FAILED_NO_VALID_TARGETS;
                         if ((target->GetEntry() == 13874 || target->GetEntry() == 13891) && target->GetMapId() == 43 &&
                             !m_caster->ToPlayer()->HasQuestForItem(5339))

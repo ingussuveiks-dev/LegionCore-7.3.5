@@ -11939,7 +11939,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
             return;
         }
 
+        auto darkmoonSource = DarkmoonCrafting::FindMaterialSource(go->GetEntry());
         if ((go->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*go, *this)) ||
+            (darkmoonSource && !DarkmoonCrafting::CanGather(*go, *this, *darkmoonSource)) ||
             (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)))
         {
             SendLootRelease(guid);
@@ -19189,6 +19191,20 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
     if (quest->GetQuestId() == 29433 && (GetMapId() != 974 || !sGameEventMgr->IsActiveEvent(75)))
         return false;
+
+    switch (quest->GetQuestId())
+    {
+        case 29506:
+        case 29510:
+        case 29515:
+        case 29516:
+        case 29517:
+            if (GetMapId() != DarkmoonCrafting::Island || !IsEventActive(DarkmoonCrafting::Faire))
+                return false;
+            break;
+        default:
+            break;
+    }
 
     if (quest->SourceItemId == LovelyCharmCollectorKit && !IsHolidayActive(HOLIDAY_LOVE_IS_IN_THE_AIR))
         return false;

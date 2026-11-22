@@ -97,6 +97,24 @@ constexpr uint32 Record = 55242;
 bool CanRead(GameObject const& seismograph, Player const& player);
 }
 
+namespace DarkmoonCrafting
+{
+constexpr uint16 Faire = 75;
+constexpr uint32 Island = 974;
+
+struct MaterialSource
+{
+    uint32 Object;
+    uint32 Quest;
+    uint32 Material;
+    uint32 Result;
+    uint32 Quantity;
+};
+
+MaterialSource const* FindMaterialSource(uint32 entry);
+bool CanGather(GameObject const& object, Player const& player, MaterialSource const& source);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

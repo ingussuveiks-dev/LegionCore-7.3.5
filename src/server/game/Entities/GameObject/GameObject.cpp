@@ -1528,6 +1528,26 @@ bool ThelgenSeismograph::CanRead(GameObject const& seismograph, Player const& pl
         player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player.HasQuestForItem(Record);
 }
 
+DarkmoonCrafting::MaterialSource const* DarkmoonCrafting::FindMaterialSource(uint32 entry)
+{
+    static constexpr MaterialSource sources[] =
+    {
+        {209283, 29510, 72018, 71979, 6}, // Discarded Weapons for Soothsayer's Dust
+        {209287, 29516, 72052, 72050, 5}  // Bits of Glass for Sparkling 'Gemstones'
+    };
+    for (MaterialSource const& source : sources)
+        if (source.Object == entry)
+            return &source;
+    return nullptr;
+}
+
+bool DarkmoonCrafting::CanGather(GameObject const& object, Player const& player, MaterialSource const& source)
+{
+    return player.IsAlive() && object.GetMap() == player.GetMap() && object.GetMapId() == Island && object.GetDBTableGUIDLow() &&
+        IsEventActive(Faire) && player.GetQuestStatus(source.Quest) == QUEST_STATUS_INCOMPLETE && player.HasQuestForItem(source.Material) &&
+        player.GetItemCount(source.Material, true) + player.GetItemCount(source.Result, true) < source.Quantity;
+}
+
 QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
 {
     for (Binding const& binding : QuestItemObjects)
@@ -1593,6 +1613,9 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*this, *target))
         return false;
+
+    if (auto source = DarkmoonCrafting::FindMaterialSource(GetEntry()))
+        return DarkmoonCrafting::CanGather(*this, *target, *source);
 
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&
