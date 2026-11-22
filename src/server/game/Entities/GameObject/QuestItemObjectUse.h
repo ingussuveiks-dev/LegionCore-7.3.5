@@ -151,6 +151,15 @@ constexpr uint32 Guard = 5595;
 constexpr uint32 Credit = 53564;
 }
 
+namespace LiberationDay
+{
+constexpr uint32 Quest = 24575;
+constexpr uint32 Key = 49881;
+constexpr uint32 OpenChain = 3366;
+constexpr uint32 Chain = 201775;
+constexpr uint32 Captive = 37694;
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding
@@ -162,10 +171,11 @@ struct Binding
     uint32 Quest;
     uint32 ItemEntry;
     uint32 Spell;
+    bool SharedSpell = false;
 };
 
 Binding const* ForObject(uint32 entry);
-Binding const* ForSpell(uint32 spellId);
+Binding const* ForSpell(uint32 spellId, uint32 itemEntry);
 Item* FindUsableItem(Player const& player, Binding const& binding);
 bool CanUse(GameObject const* object, Player const* player, Binding const& binding);
 }

@@ -229,7 +229,7 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                     quest = 24974;
                 break;
         }
-        if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id); binding && m_CastItem->GetEntry() == binding->ItemEntry)
+        if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id, m_CastItem->GetEntry()); binding && m_CastItem->GetEntry() == binding->ItemEntry)
             quest = binding->Quest;
         if (auto assembly = FindQuestAssembly(m_spellInfo->Id); assembly && m_CastItem->GetEntry() == assembly->Item)
             quest = assembly->IncompleteQuest(*player);
@@ -6784,8 +6784,9 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_spellInfo->Id == 100776 && m_questKillReward != 29433)
         return SPELL_FAILED_DONT_REPORT;
 
-    if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id); binding && (!m_questItemCastReceipt ||
+    if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id, m_CastItem ? m_CastItem->GetEntry() : 0); binding && (!m_questItemCastReceipt ||
         m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        (binding->SharedSpell && !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot())) ||
         !QuestItemObjectUse::CanUse(m_targets.GetGOTarget(), m_caster->ToPlayer(), *binding)))
         return SPELL_FAILED_BAD_TARGETS;
 

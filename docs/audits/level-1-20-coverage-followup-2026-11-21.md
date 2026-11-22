@@ -120,6 +120,8 @@ Pēc `13875` atjaunotais eksports aptver 5 459 ierakstus un 4 865 ieslēgtus kve
 
 `29351` porciju var izmantot tikai uz īsta Dzelzsvelves sarga aktīva kvesta laikā. Serverī pārbaudīti seši paēdušā efekti, viena ieskaite par katru, atteikums barot tikko pabarotu sargu un porciju noņemšana pēc nodevuma vai atmešanas. [A Round for the Guards pārbaude](ironforge-rations-2026-11-22.md)
 
+`24575` pārbaudīts īstais atslēgas avots, 14 ķēžu un gūstekņu pāri, piecas atbrīvošanas ar vienu atslēgu katrā un grupas ieskaite tuvumā. Četras ķēdes bez gūstekņa nevar dot ieskaiti. Nodošanas un atmešanas testi apstiprināja atlikušo atslēgu noņemšanu. [Liberation Day pārbaude](liberation-day-2026-11-22.md)
+
 Klasiskā Evershine ķēde `317–320` tika izņemta versijā `4.0.3a`. Datubāzē `317` jau ir atzīmēts kā novecojis, un vienīgais ceļš uz `318–320` ved caur šo sākuma kvestu. Pārbaudē netika atrasta cita aktīva ķēde, kas uz tiem atsauktos. Tāpēc trūkstošais Elder Crag Boar `1127` pie `319` ir izņemtas ķēdes ieraksts. [Stocking Jetsteam](https://warcraft.wiki.gg/wiki/Stocking_Jetsteam) · [Evershine](https://warcraft.wiki.gg/wiki/Evershine) · [A Favor for Evershine](https://warcraft.wiki.gg/wiki/A_Favor_for_Evershine) · [Return to Bellowfiz](https://warcraft.wiki.gg/wiki/Return_to_Bellowfiz)
 
 Pēc `9193` jaunākajā datu eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēgti kvesti. Atbilstošajā Release atrodami visi 160 pasaules skriptu nosaukumi. Kvestiem ar pasaulē novietotu devēju paliek 47 priekšmeta lietošanas kandidāti un 17 statiski neizsekoti aktiera vai kredīta ceļi. Šie ir pārskatāmi kandidāti, kuros ietilpst arī jau pārbaudīti C++ ceļi. Eksports un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-catacombs/`.

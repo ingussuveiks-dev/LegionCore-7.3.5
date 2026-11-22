@@ -38,12 +38,14 @@
 #include "MMapManager.h"
 #include "MapManager.h"
 #include "MiscPackets.h"
+#include "MotionMaster.h"
 #include "ObjectMgr.h"
 #include "ObjectVisitors.hpp"
 #include "OutdoorPvPMgr.h"
 #include "PlayerDefines.h"
 #include "PoolMgr.h"
 #include "QuestData.h"
+#include "Random.h"
 #include "ScriptMgr.h"
 #include "ScriptsData.h"
 #include "SpellMgr.h"
@@ -1481,8 +1483,38 @@ constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
     {RavagerCage::Cage, RavagerCage::CageSpawn, 530, 0, RavagerCage::Quest, RavagerCage::Key, RavagerCage::OpenCage},
     {ProphecyOfAkida::Cage, 0, 530, 3571, ProphecyOfAkida::Quest, ProphecyOfAkida::Key, ProphecyOfAkida::OpenCage},
     {SavingPrincessStillpine::Cage, SavingPrincessStillpine::CageSpawn, 530, 3600, SavingPrincessStillpine::Quest,
-        SavingPrincessStillpine::Key, SavingPrincessStillpine::OpenCage}
+        SavingPrincessStillpine::Key, SavingPrincessStillpine::OpenCage},
+    {LiberationDay::Chain, 0, 654, 0, LiberationDay::Quest, LiberationDay::Key, LiberationDay::OpenChain, true}
 };
+
+Creature* FindLiberationCaptive(GameObject const& chain)
+{
+    if (chain.GetZoneId() != 4714 || !chain.GetDBTableGUIDLow())
+        return nullptr;
+
+    // The matching prisoner is less than 1.15 yards from each linked chain.
+    std::list<Creature*> captives;
+    chain.GetCreatureListWithEntryInGrid(captives, LiberationDay::Captive, 1.5f);
+    for (Creature* captive : captives)
+        if (captive->GetDBTableGUIDLow() && captive->IsAlive() && !captive->IsDespawn() && chain.InSamePhase(captive) &&
+            chain.GetExactDist(captive) < 1.5f)
+            return captive;
+    return nullptr;
+}
+
+void ReleaseLiberationCaptive(GameObject& chain, Player& player, Creature& captive)
+{
+    captive.MonsterSay(int32(urand(37238, 37239)), LANG_UNIVERSAL, player.GetGUID());
+    captive.GetMotionMaster()->MoveFleeing(&player, 4000);
+    captive.DespawnOrUnsummon(4000);
+
+    if (Group* group = player.GetGroup())
+        for (GroupReference* reference = group->GetFirstMember(); reference; reference = reference->next())
+            if (Player* member = reference->getSource(); member && member != &player && member->IsInWorld() &&
+                member->GetQuestStatus(LiberationDay::Quest) == QUEST_STATUS_INCOMPLETE && member->InSamePhase(&chain) &&
+                member->IsAtGroupRewardDistance(&chain) && (member->IsAlive() || !member->GetCorpse()))
+                member->KillCreditGO(chain.GetEntry(), chain.GetGUID());
+}
 }
 
 bool ProphecyOfAkida::IsPlacedPair(GameObject const& cage, Creature const& captive)
@@ -1574,10 +1606,10 @@ QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
     return nullptr;
 }
 
-QuestItemObjectUse::Binding const* QuestItemObjectUse::ForSpell(uint32 spellId)
+QuestItemObjectUse::Binding const* QuestItemObjectUse::ForSpell(uint32 spellId, uint32 itemEntry)
 {
     for (Binding const& binding : QuestItemObjects)
-        if (binding.Spell == spellId)
+        if (binding.Spell == spellId && (!binding.SharedSpell || binding.ItemEntry == itemEntry))
             return &binding;
     return nullptr;
 }
@@ -1585,9 +1617,13 @@ QuestItemObjectUse::Binding const* QuestItemObjectUse::ForSpell(uint32 spellId)
 Item* QuestItemObjectUse::FindUsableItem(Player const& player, Binding const& binding)
 {
     for (Item* item : player.GetItemListByEntry(binding.ItemEntry))
+    {
+        if (binding.SharedSpell && !Player::IsInventoryPos(item->GetBagSlot(), item->GetSlot()))
+            continue;
         for (ItemEffectEntry const* effect : item->GetTemplate()->Effects)
             if (effect && effect->SpellID == binding.Spell && (!effect->Charges || item->GetSpellCharges(effect->LegacySlotIndex) != 0))
                 return item;
+    }
     return nullptr;
 }
 
@@ -1600,6 +1636,8 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
         object->isSpawned() && !object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
     if (!eligible)
         return false;
+    if (binding.Quest == LiberationDay::Quest)
+        return object->getLootState() == GO_READY && FindLiberationCaptive(*object);
     if (binding.Quest == SavingPrincessStillpine::Quest)
     {
         Creature const* princess = SavingPrincessStillpine::FindPrincess(*object);
@@ -2051,6 +2089,9 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
             if (user->IsPlayer())
             {
                 Player* player = user->ToPlayer();
+                Creature* liberationCaptive = nullptr;
+                if (GetEntry() == LiberationDay::Chain && !(liberationCaptive = FindLiberationCaptive(*this)))
+                    return;
 
                 if (info->goober.pageID)                    // show page...
                     player->SendDirectMessage(WorldPackets::GameObject::PageText(GetGUID()).Write());
@@ -2079,6 +2120,8 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
                     bg->EventPlayerUsedGO(player, this);
 
                 player->KillCreditGO(info->entry, GetGUID());
+                if (liberationCaptive)
+                    ReleaseLiberationCaptive(*this, *player, *liberationCaptive);
 
                 GetMap()->ScriptsStart(sGameObjectScripts, GetDBTableGUIDLow(), player, this);
             }
