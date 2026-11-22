@@ -17,6 +17,8 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "CreatureTextMgr.h"
+#include "ScorpidVenom.h"
 #include "SpellScript.h"
 #include "Item.h"
 #include "ObjectAccessor.h"
@@ -435,6 +437,120 @@ class spell_swiftclaw_quest_lasso : public SpellScript
 };
 }
 
+namespace
+{
+class ClatteringScorpidAI : public SmartAI
+{
+public:
+    explicit ClatteringScorpidAI(Creature* creature) : SmartAI(creature) { }
+
+    void Reset() override
+    {
+        SmartAI::Reset();
+        _sampleCollected = false;
+    }
+
+    bool CollectSample()
+    {
+        if (_sampleCollected)
+            return false;
+        _sampleCollected = true;
+        return true;
+    }
+
+private:
+    bool _sampleCollected = false;
+};
+
+class npc_clattering_scorpid_venom : public CreatureScript
+{
+public:
+    npc_clattering_scorpid_venom() : CreatureScript("npc_clattering_scorpid_venom") { }
+
+    CreatureAI* GetAI(Creature* creature) const override { return new ClatteringScorpidAI(creature); }
+};
+
+class spell_poison_extraction_totem : public SpellScript
+{
+    PrepareSpellScript(spell_poison_extraction_totem);
+
+    SpellCastResult CheckPlacement()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        Item* item = GetCastItem();
+        if (!item || item->GetEntry() != ScorpidVenom::Item || !ScorpidVenom::CanPlace(player) ||
+            item->GetOwnerGUID() != player->GetGUID() || !Player::IsInventoryPos(item->GetBagSlot(), item->GetSlot()))
+            return SPELL_FAILED_BAD_TARGETS;
+        return SPELL_CAST_OK;
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_poison_extraction_totem::CheckPlacement);
+    }
+};
+
+class spell_clattering_scorpid_envenom : public SpellScript
+{
+    PrepareSpellScript(spell_clattering_scorpid_envenom);
+
+    bool Load() override
+    {
+        return GetCaster()->GetEntry() == ScorpidVenom::Scorpid && GetCaster()->GetMapId() == 1;
+    }
+
+    Player* GetParticipant(Unit* target) const
+    {
+        if (!target || !target->IsAlive())
+            return nullptr;
+        Player* player = target->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (!player || !player->IsAlive() || !GetCaster()->IsInMap(player) || !GetCaster()->InSamePhase(player) ||
+            player->GetQuestStatus(ScorpidVenom::Quest) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+        return player;
+    }
+
+    void WarnParticipant()
+    {
+        if (Player* player = GetParticipant(GetExplTargetUnit()))
+            sCreatureTextMgr->SendChat(GetCaster()->ToCreature(), 0, player->GetGUID(),
+                CHAT_MSG_RAID_BOSS_EMOTE, LANG_ADDON, TEXT_RANGE_PERSONAL);
+    }
+
+    void CaptureVenom(SpellEffIndex /*effect*/)
+    {
+        Unit* target = GetHitUnit();
+        Player* player = GetParticipant(target);
+        Creature* scorpid = GetCaster()->ToCreature();
+        auto ai = scorpid->IsAIEnabled ? dynamic_cast<ClatteringScorpidAI*>(scorpid->AI()) : nullptr;
+        if (!player || !ai || !player->HasItemCount(ScorpidVenom::Item, 1, false) || !player->HasAura(ScorpidVenom::PlaceTotem))
+            return;
+
+        for (ObjectGuid const& guid : *player->GetSummonList(ScorpidVenom::Totem))
+        {
+            Creature* totem = player->GetMap()->GetCreature(guid);
+            if (!totem || !totem->IsInWorld() || !totem->IsAlive() || totem->IsDespawn() || !totem->HasQuestObjectScope() ||
+                !totem->CanTargetQuestObject(player) || totem->GetOwnerGUID() != player->GetGUID() ||
+                totem->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != ScorpidVenom::PlaceTotem ||
+                !totem->IsWithinDistInMap(scorpid, ScorpidVenom::Range) || !totem->IsWithinDistInMap(target, ScorpidVenom::Range) ||
+                !totem->IsWithinLOSInMap(target))
+                continue;
+
+            PreventHitDamage();
+            if (ai->CollectSample())
+                player->RewardPlayerAndGroupAtEvent(ScorpidVenom::Totem, player);
+            return;
+        }
+    }
+
+    void Register() override
+    {
+        BeforeStartCast += SpellCastFn(spell_clattering_scorpid_envenom::WarnParticipant);
+        OnEffectHitTarget += SpellEffectFn(spell_clattering_scorpid_envenom::CaptureVenom, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+}
+
 void AddSC_durotar()
 {
     new npc_lazy_peon();
@@ -442,4 +558,7 @@ void AddSC_durotar()
     new npc_100874_illidari_enforcer_dh_questline();
     new npc_swiftclaw_quest_ride();
     RegisterSpellScript(spell_swiftclaw_quest_lasso);
+    new npc_clattering_scorpid_venom();
+    RegisterSpellScript(spell_poison_extraction_totem);
+    RegisterSpellScript(spell_clattering_scorpid_envenom);
 }

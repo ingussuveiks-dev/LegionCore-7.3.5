@@ -33,6 +33,7 @@
 #include "Group.h"
 #include "QuestItemObjectUse.h"
 #include "OldFriendsFlight.h"
+#include "ScorpidVenom.h"
 #include "GameEventMgr.h"
 #include "HallowsEndCrate.h"
 #include "InstancePackets.h"
@@ -4300,8 +4301,31 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
     Map::RemovePlayerFromMap(player, remove);
 }
 
+bool ScorpidVenom::CanPlace(Player const* owner)
+{
+    if (!owner || !owner->IsInWorld() || !owner->IsAlive() || owner->GetMapId() != 1 || owner->GetZoneId() != 14 ||
+        owner->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE || !owner->HasItemCount(Item, 1, false))
+        return false;
+
+    std::list<Creature*> scorpids;
+    owner->GetCreatureListWithEntryInGrid(scorpids, Scorpid, Range);
+    return std::any_of(scorpids.begin(), scorpids.end(), [owner](Creature const* scorpid)
+    {
+        return scorpid->IsAlive() && owner->InSamePhase(scorpid) && owner->IsWithinLOSInMap(scorpid);
+    });
+}
+
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* totemOwner = nullptr;
+    if (entry == ScorpidVenom::Totem && spellId == ScorpidVenom::PlaceTotem)
+    {
+        totemOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!properties || properties->ID != ScorpidVenom::SummonProperties || !ScorpidVenom::CanPlace(totemOwner) ||
+            !totemOwner->IsWithinDist3d(&pos, 5.0f))
+            return nullptr;
+    }
+
     Player* bomberRider = nullptr;
     if (entry == OldFriendsFlight::Bomber && spellId == OldFriendsFlight::Summon)
     {
@@ -4651,6 +4675,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (bomberRider)
         bomberRider->BindQuestObject(OldFriendsFlight::Quest, summon);
+
+    if (totemOwner)
+        totemOwner->BindQuestObject(ScorpidVenom::Quest, summon);
 
     if (shangXiEscortOwner)
         shangXiEscortOwner->BindQuestObject(29787, summon);
