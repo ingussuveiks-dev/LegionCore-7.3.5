@@ -4312,6 +4312,20 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                     return nullptr;
     }
 
+    Player* shangXiEscortOwner = nullptr;
+    if (entry == 56159 && spellId == 105333)
+    {
+        shangXiEscortOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!shangXiEscortOwner || GetId() != 860 || !properties || properties->ID != 3276 ||
+            !shangXiEscortOwner->IsAlive() || shangXiEscortOwner->GetQuestStatus(29787) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+
+        for (ObjectGuid const& guid : *shangXiEscortOwner->GetSummonList(entry))
+            if (Creature const* escort = GetCreature(guid))
+                if (escort->IsAlive() && escort->HasQuestObjectScope() && !escort->IsQuestObjectExpired())
+                    return nullptr;
+    }
+
     Player* minerOwner = nullptr;
     if (entry == 35813 && spellId == 68059 && GetId() == 648)
     {
@@ -4489,6 +4503,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (caravanRider)
         caravanRider->BindQuestObject(13975, summon, false);
+
+    if (shangXiEscortOwner)
+        shangXiEscortOwner->BindQuestObject(29787, summon);
 
     if (collectorRoute)
     {

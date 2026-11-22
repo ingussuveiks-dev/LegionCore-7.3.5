@@ -39,6 +39,7 @@ enum panda_quests
     QUEST_BALANCED_PERSPECTIVE                     = 29784, // Balanced Perspective
     QUST_DAFENG_SPIRIT_OF_AIR                      = 29785, // Dafeng, the Spirit of Air
     QIEST_BATTLE_FOR_SKIES                         = 29786, // Battle for the Skies
+    QUEST_WORTHY_OF_PASSING                        = 29787,
     QUEST_PASSING_WISDOM                           = 29790,
     QUEST_SUF_SHUN_ZI                              = 29791,
     QUEST_BIDDEN_TO_GREATNESS                      = 29792, // Bidden to Greatness
@@ -3209,27 +3210,28 @@ class mob_master_shang_xi_after_zhao_escort : public CreatureScript
         mob_master_shang_xi_after_zhao_escortAI(Creature* creature) : npc_escortAI(creature)
         {}
         
-        uint32 IntroTimer;
-
-        ObjectGuid playerGuid;
-
-        void Reset()
+        void Reset() override
         {
-            IntroTimer = 250;
             me->SetReactState(REACT_PASSIVE);
             me->SetWalk(false);
-            //Start(false, true);
         }
 
-        void IsSummonedBy(Unit* summoner)
+        void IsSummonedBy(Unit* summoner) override
         {
-            me->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
-            playerGuid = summoner->GetGUID();
-            Start(false, true);
-            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
+            Player* player = summoner->ToPlayer();
+            if (!player || !me->HasQuestObjectScope() || me->IsQuestObjectExpired() ||
+                player->GetQuestStatus(QUEST_WORTHY_OF_PASSING) != QUEST_STATUS_INCOMPLETE)
+            {
+                me->DespawnOrUnsummon(1);
+                return;
+            }
+
+            _owner = player->GetGUID();
+            Start(false, true, _owner);
+            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, _owner);
         }
 
-        void WaypointReached(uint32 waypointId)
+        void WaypointReached(uint32 waypointId) override
         {
             switch (waypointId)
             {
@@ -3238,17 +3240,21 @@ class mob_master_shang_xi_after_zhao_escort : public CreatureScript
                     sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1);
                     break;
                 case 8:
-                    if (GameObject* gate =  me->FindNearestGameObject(209922, 200.0f))
-                        gate->EnableOrDisableGo(false);
-                    me->SummonCreature(56274, 845.89f, 4372.62f, 223.98f, 4.78f, TEMPSUMMON_CORPSE_DESPAWN, 0, playerGuid);
-                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);
+                    if (!_guardian && !_guardianDefeated && !_guardianAttempts)
+                    {
+                        if (GameObject* gate = me->FindNearestGameObject(209922, 200.0f))
+                            gate->EnableOrDisableGo(false);
+                        SummonGuardian();
+                        sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, _owner);
+                    }
                     break;
                 case 9:
                     sCreatureTextMgr->SendChat(me, TEXT_GENERIC_3);
                     break;
                 case 11:
                     me->SetFacingTo(0.0f);
-                    SetEscortPaused(true);
+                    if (!_guardianDefeated)
+                        SetEscortPaused(true);
                     break;
                 case 12:
                     me->SetFacingTo(4.537860f);
@@ -3259,22 +3265,88 @@ class mob_master_shang_xi_after_zhao_escort : public CreatureScript
             }
         }
 
-        void SummonedCreatureDespawn(Creature* summon)
+        void SummonedCreatureDies(Creature* summon, Unit* killer) override
         {
-            if (summon->GetEntry() == 56274)
-            {
-                if (auto owner = me->GetAnyOwner())
-                {
-                    if (auto plr = owner->ToPlayer())
-                        plr->KilledMonsterCredit(56274);
-                }
-                sCreatureTextMgr->SendChat(me, TEXT_GENERIC_4);
-                if (GameObject* gate =  me->FindNearestGameObject(209922, 200.0f))
-                    gate->EnableOrDisableGo(true);
-                me->SetWalk(false);
-                SetEscortPaused(false);
-            }
+            Player* owner = GetOwner();
+            if (_guardian != summon->GetGUID() || _guardianDefeated || !owner || !killer ||
+                killer->GetCharmerOrOwnerPlayerOrPlayerItself() != owner)
+                return;
+
+            // The actual guardian death already uses native kill credit.
+            _guardianDefeated = true;
+            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_4, _owner);
+            if (GameObject* gate = me->FindNearestGameObject(209922, 200.0f))
+                gate->EnableOrDisableGo(true);
+            me->SetWalk(false);
+            SetEscortPaused(false);
         }
+
+        void SummonedCreatureDespawn(Creature* summon) override
+        {
+            if (_guardian != summon->GetGUID())
+                return;
+
+            _guardian.Clear();
+            if (!_guardianDefeated && GetOwner())
+                _retryIn = 1000;
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (_retryIn)
+            {
+                if (_retryIn <= diff)
+                {
+                    _retryIn = 0;
+                    SummonGuardian();
+                }
+                else
+                    _retryIn -= diff;
+            }
+            npc_escortAI::UpdateAI(diff);
+        }
+
+    private:
+        Player* GetOwner() const
+        {
+            if (me->IsQuestObjectExpired())
+                return nullptr;
+            Player* player = ObjectAccessor::GetPlayer(*me, _owner);
+            if (player && player->IsAlive() &&
+                (player->GetQuestStatus(QUEST_WORTHY_OF_PASSING) == QUEST_STATUS_INCOMPLETE ||
+                    player->GetQuestStatus(QUEST_WORTHY_OF_PASSING) == QUEST_STATUS_COMPLETE))
+                return player;
+            return nullptr;
+        }
+
+        void SummonGuardian()
+        {
+            Player* owner = GetOwner();
+            if (!owner || _guardian || _guardianDefeated ||
+                owner->GetQuestStatus(QUEST_WORTHY_OF_PASSING) != QUEST_STATUS_INCOMPLETE)
+                return;
+
+            if (_guardianAttempts == 3)
+            {
+                TC_LOG_WARN("scripts", "Worthy of Passing: escort %u exhausted three guardian attempts", me->GetGUIDLow());
+                owner->FailQuest(QUEST_WORTHY_OF_PASSING);
+                me->DespawnOrUnsummon(1);
+                return;
+            }
+
+            ++_guardianAttempts;
+            if (Creature* guardian = me->SummonCreature(56274, 845.89f, 4372.62f, 223.98f, 4.78f,
+                TEMPSUMMON_CORPSE_DESPAWN, 0, _owner))
+                _guardian = guardian->GetGUID();
+            else
+                _retryIn = 1000;
+        }
+
+        ObjectGuid _owner;
+        ObjectGuid _guardian;
+        uint32 _retryIn = 0;
+        uint8 _guardianAttempts = 0;
+        bool _guardianDefeated = false;
     };
     
     CreatureAI* GetAI(Creature* creature) const
