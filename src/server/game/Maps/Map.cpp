@@ -34,6 +34,7 @@
 #include "QuestItemObjectUse.h"
 #include "OldFriendsFlight.h"
 #include "ScorpidVenom.h"
+#include "WestfallStew.h"
 #include "GameEventMgr.h"
 #include "HallowsEndCrate.h"
 #include "InstancePackets.h"
@@ -4315,8 +4316,41 @@ bool ScorpidVenom::CanPlace(Player const* owner)
     });
 }
 
+bool WestfallStew::IsActive(Player const* owner)
+{
+    return owner && owner->IsAlive() && owner->IsInWorld() && owner->GetMapId() == 0 && owner->GetAreaId() == SentinelHill &&
+        owner->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && owner->HasItemCount(Item, 1, false);
+}
+
+std::list<Creature*> WestfallStew::FindHungryResidents(WorldObject const& source, Player const& owner)
+{
+    std::list<Creature*> residents;
+    for (uint32 entry : {42383u, 42384u, 42386u, 42391u, 42400u})
+        source.GetCreatureListWithEntryInGridAppend(residents, entry, FeedingRange);
+    residents.remove_if([&source, &owner](Creature const* resident)
+    {
+        return !resident->GetDBTableGUIDLow() || !resident->IsAlive() || resident->IsDespawn() || resident->isInCombat() ||
+            resident->GetAreaId() != SentinelHill || resident->HasAura(FullBelly) || resident->IsHostileTo(&owner) ||
+            !source.InSamePhase(resident) || !source.IsWithinLOSInMap(resident);
+    });
+    residents.sort([&source](Creature const* left, Creature const* right)
+    {
+        return source.GetExactDistSq(left) < source.GetExactDistSq(right);
+    });
+    return residents;
+}
+
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* stewOwner = nullptr;
+    if (entry == WestfallStew::Pot && spellId == WestfallStew::Offer)
+    {
+        stewOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!properties || properties->ID != WestfallStew::SummonProperties || !WestfallStew::IsActive(stewOwner) ||
+            !stewOwner->IsWithinDist3d(&pos, 5.0f) || WestfallStew::FindHungryResidents(*stewOwner, *stewOwner).empty())
+            return nullptr;
+    }
+
     Player* totemOwner = nullptr;
     if (entry == ScorpidVenom::Totem && spellId == ScorpidVenom::PlaceTotem)
     {
@@ -4678,6 +4712,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (totemOwner)
         totemOwner->BindQuestObject(ScorpidVenom::Quest, summon);
+
+    if (stewOwner)
+        stewOwner->BindQuestObject(WestfallStew::Quest, summon);
 
     if (shangXiEscortOwner)
         shangXiEscortOwner->BindQuestObject(29787, summon);

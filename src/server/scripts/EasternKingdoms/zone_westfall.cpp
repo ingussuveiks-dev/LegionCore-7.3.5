@@ -29,8 +29,11 @@ npc_defias_traitor
 EndContentData */
 
 #include "ScriptMgr.h"
+#include "CreatureTextMgr.h"
+#include "Item.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
+#include "WestfallStew.h"
 
 enum WestfallCreature
 {
@@ -279,72 +282,66 @@ public:
     };
 };
 
-enum clodoEnum { 
-
-    NPC_HOMELESS_STORMWIND_CITIZEN      = 42384,
-    NPC_HOMELESS_STORMWIND_CITIZEN2     = 42386,
-    NPC_WEST_PLAINS_DRIFTER             = 42391,
-    KILL_CREDIT_WESTFALL_STEW           = 42617
-
-};
-
 class npc_westfall_stew : public CreatureScript
 {
 public:
     npc_westfall_stew() : CreatureScript("npc_westfall_stew") { }
 
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_westfall_stewAI (creature);
-    }
-    
     struct npc_westfall_stewAI : public ScriptedAI
     {
-        npc_westfall_stewAI(Creature* creature) : ScriptedAI(creature) {}
-        uint32 time;
-        bool booltest;
-        std::list<Creature*> clodoList;
-            
-        void Reset()
+        explicit npc_westfall_stewAI(Creature* creature) : ScriptedAI(creature) { }
+
+        void IsSummonedBy(Unit* summoner) override
         {
-            time = 30000;
-            booltest = true;
-            if(me->ToTempSummon() && me->ToTempSummon()->GetSummoner())
-            if(Player* invocer = me->ToTempSummon()->GetSummoner()->ToPlayer()) 
-            {               
-                GetCreatureListWithEntryInGrid(clodoList, me, NPC_HOMELESS_STORMWIND_CITIZEN, 15.0f);
-                for (std::list<Creature*>::iterator itr = clodoList.begin(); itr != clodoList.end(); ++itr)
-                {
-                    if((*itr)->getStandState() != UNIT_STAND_STATE_SIT)
-                    {
-                        (*itr)->GetMotionMaster()->MoveFollow(me, 1, me->GetAngle((*itr)));
-                        (*itr)->SetStandState(UNIT_STAND_STATE_SIT);
-                        invocer->KilledMonsterCredit(KILL_CREDIT_WESTFALL_STEW, ObjectGuid::Empty);
-                    }
-                }               
-            }
-        }
-        void UpdateAI(uint32 diff)
-        {
-            if(booltest)
+            Player* owner = summoner ? summoner->ToPlayer() : nullptr;
+            if (!WestfallStew::IsActive(owner) || !me->HasQuestObjectScope() || !me->CanTargetQuestObject(owner))
+                return;
+
+            for (Creature* resident : WestfallStew::FindHungryResidents(*me, *owner))
             {
-                if (time < diff)
-                {
-                    for (std::list<Creature*>::iterator itr = clodoList.begin(); itr != clodoList.end(); ++itr)
-                    
-                    {
-                        (*itr)->SetStandState(UNIT_STAND_STATE_STAND);
-                        (*itr)->SetDefaultMovementType(RANDOM_MOTION_TYPE);                   
-                    } 
-                    me->DespawnOrUnsummon();
-                    booltest = false;
-                }
-                else 
-                    time -= diff;
+                if (owner->GetQuestStatus(WestfallStew::Quest) != QUEST_STATUS_INCOMPLETE)
+                    break;
+                if (resident->CastSpell(resident, WestfallStew::FullBelly, true) != SPELL_CAST_OK ||
+                    !resident->HasAura(WestfallStew::FullBelly, resident->GetGUID()))
+                    continue;
+
+                // The objective uses the stew's credit entry while the resident stays alive.
+                owner->KilledMonsterCredit(WestfallStew::Pot);
+                sCreatureTextMgr->SendChat(resident, 5, owner->GetGUID());
             }
         }
     };
 
+    CreatureAI* GetAI(Creature* creature) const override { return new npc_westfall_stewAI(creature); }
+};
+
+class spell_offer_westfall_stew : public SpellScript
+{
+    PrepareSpellScript(spell_offer_westfall_stew);
+
+    SpellCastResult CheckOffering()
+    {
+        Player* owner = GetCaster()->ToPlayer();
+        Item* item = GetCastItem();
+        if (!item || item->GetEntry() != WestfallStew::Item || !WestfallStew::IsActive(owner) ||
+            item->GetOwnerGUID() != owner->GetGUID() || !Player::IsInventoryPos(item->GetBagSlot(), item->GetSlot()) ||
+            WestfallStew::FindHungryResidents(*owner, *owner).empty())
+            return SPELL_FAILED_BAD_TARGETS;
+
+        auto attempt = owner->GetQuestCancellationReceipt(WestfallStew::Quest);
+        if (!_attempt)
+            _attempt = attempt;
+        if (!_attempt || _attempt != attempt || _attempt->load(std::memory_order_acquire))
+            return SPELL_FAILED_BAD_TARGETS;
+        return SPELL_CAST_OK;
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_offer_westfall_stew::CheckOffering);
+    }
+
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
 };
 
 class spell_westfall_unbound_energy : public SpellScript
@@ -564,6 +561,7 @@ void AddSC_westfall()
     new npc_daphne_stilwell();
     new npc_defias_traitor();
     new npc_westfall_stew();
+    RegisterSpellScript(spell_offer_westfall_stew);
     RegisterSpellScript(spell_westfall_unbound_energy);
     RegisterCreatureAI(npc_westfall_overloaded_harvest_golem);
     RegisterAuraScript(spell_westfall_reaping_blows);
