@@ -73,6 +73,81 @@ Unit* GetScriptCreditCaster(Unit* invoker, SpellInfo const* spell)
     return invoker;
 }
 
+bool CanHandleHogtiedRazormane(Player const* player)
+{
+    return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 1 &&
+        player->GetQuestStatus(13961) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(46722, 1, false);
+}
+
+Creature* FindHogtiedRazormane(Player* player)
+{
+    for (ObjectGuid const& guid : *player->GetSummonList(34514))
+        if (Creature* captive = ObjectAccessor::GetCreature(*player, guid))
+            if (!captive->IsDespawn() && captive->HasQuestObjectScope() && !captive->IsQuestObjectExpired())
+                return captive;
+    return nullptr;
+}
+
+void CaptureRazormane(Player* player, Creature* pillager)
+{
+    if (!CanHandleHogtiedRazormane(player) || FindHogtiedRazormane(player))
+        return;
+
+    ObjectGuid const targetGuid = pillager->GetGUID();
+    player->AddQuestDelayedEvent(13961, 200, [player, targetGuid]
+    {
+        if (!CanHandleHogtiedRazormane(player) || FindHogtiedRazormane(player))
+            return;
+
+        Creature* target = ObjectAccessor::GetCreature(*player, targetGuid);
+        SpellInfo const* net = sSpellMgr->GetSpellInfo(65580);
+        if (!target || !target->IsAlive() || target->IsDespawn() || !net ||
+            !player->InSamePhase(target) || !player->IsWithinLOSInMap(target) ||
+            !player->IsWithinDistInMap(target, net->GetMaxRange(false, player)) ||
+            net->CheckTarget(player, target) != SPELL_CAST_OK)
+            return;
+
+        if (player->CastSpell(player, 65595, false) == SPELL_CAST_OK && FindHogtiedRazormane(player))
+            target->DespawnOrUnsummon();
+    });
+}
+
+bool DeliverHogtiedRazormane(Creature* captive)
+{
+    TempSummon* summon = captive->ToTempSummon();
+    Player* player = summon ? ObjectAccessor::GetPlayer(*captive, summon->GetSummonerGUID()) : nullptr;
+    if (!CanHandleHogtiedRazormane(player) || !captive->HasQuestObjectScope() ||
+        captive->IsQuestObjectExpired() || captive->IsDespawn() || !captive->IsAlive() ||
+        captive->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 65595 ||
+        !captive->IsWithinDistInMap(player, 12.0f) || !captive->CanTargetQuestObject(player))
+        return false;
+
+    Creature* togrik = captive->FindNearestCreature(34513, 7.0f, true);
+    if (!togrik || !togrik->IsWithinDistInMap(player, 12.0f) ||
+        !togrik->IsWithinLOSInMap(captive) || !togrik->IsWithinLOSInMap(player))
+        return false;
+
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(13961);
+    if (!quest)
+        return false;
+
+    QuestObjective const* arrival = nullptr;
+    for (QuestObjective const& objective : quest->GetObjectives())
+    {
+        if (objective.Type == QUEST_OBJECTIVE_AREATRIGGER && objective.ObjectID == -1)
+            arrival = &objective;
+        else if (!(objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL) && !player->HasQuestObjectiveComplete(quest, objective))
+            return false;
+    }
+
+    if (!arrival || player->HasQuestObjectiveComplete(quest, *arrival))
+        return false;
+
+    player->SetQuestObjectiveData(quest, arrival, 1);
+    player->CompleteQuest(13961);
+    return true;
+}
+
 // Each party recipient must reach their own quest stage before recording
 // these two proximity objectives. Keep the native party distance and corpse
 // rules and leave combat-triggered group credits on the ordinary path.
@@ -659,6 +734,14 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS:
         {
+            if (me && me->GetEntry() == 34514 && e.GetEventType() == SMART_EVENT_DATA_SET &&
+                e.GetTargetType() == SMART_TARGET_OWNER_OR_SUMMONER && e.action.quest.quest == 13961)
+            {
+                if (!DeliverHogtiedRazormane(me))
+                    return;
+                break;
+            }
+
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
                 break;
@@ -848,6 +931,16 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_INVOKER_CAST:
         {
+            if (me && me->GetEntry() == 34503 && spell && spell->Id == 65580 &&
+                e.GetEventType() == SMART_EVENT_SPELLHIT && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
+                e.action.cast.spell == 65595)
+            {
+                // The authored link removes the shared target immediately.
+                // Wait for the real owner-bound summon before removing it.
+                CaptureRazormane(unit ? unit->ToPlayer() : nullptr, me);
+                return;
+            }
+
             if (event && event->GetMapId() == 1220 && event->GetEntry() == 533 &&
                 e.event_id == 1 && e.action.cast.spell == 206158 && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER)
             {

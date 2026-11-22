@@ -106,6 +106,11 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
     m_spellGuid = triggerData.spellGuid;
     m_parentTargetCount = triggerData.parentTargetCount;
 
+    if (m_spellInfo->Id == 65580 && m_CastItem && m_CastItem->GetEntry() == 46722)
+        if (Player* player = m_caster->ToPlayer())
+            if (player->GetQuestStatus(13961) == QUEST_STATUS_INCOMPLETE)
+                m_questItemCastReceipt = player->GetQuestCancellationReceipt(13961);
+
     m_castPos = *m_caster;
     m_diffMode = m_caster->GetMap() ? m_caster->GetMap()->GetSpawnMode() : 0;
     m_spellValue = new SpellValue(m_spellInfo, m_diffMode);
@@ -3072,6 +3077,10 @@ TargetInfoPtr Spell::GetTargetInfo(ObjectGuid const& targetGUID)
 SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleAura)
 {
     if (!unit || !effectMask)
+        return SPELL_MISS_EVADE;
+
+    // A net launched before abandon must not capture for the next acceptance.
+    if (m_spellInfo->Id == 65580 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_MISS_EVADE;
 
     // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case

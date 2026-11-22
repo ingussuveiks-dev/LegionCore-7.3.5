@@ -501,6 +501,10 @@ void TempSummon::RemoveFromWorld()
     if (!IsInWorld())
         return;
 
+    if (GetEntry() == 34514 && GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 65595 && HasQuestObjectScope())
+        if (Unit* owner = GetSummoner())
+            owner->RemoveAurasDueToSpell(65596, GetGUID());
+
     if (m_Properties)
         if (uint32 slot = m_Properties->Slot)
         {

@@ -62,6 +62,8 @@ Pēc `13918` atkārtotā izolētā datu eksportā bija 5 459 tvēruma ieraksti, 
 
 `14019` banānus var lietot tikai ar aktīvu kvestu uz dzīvu Bomb-Throwing Monkey. Serverī pārbaudīti desmit pasaules novietojumi, sākotnējais kaujas piesaistes noteikums, atlīdzības izvēle un banānu izņemšana pēc nodošanas vai atmešanas. [Monkey Business pārbaude](monkey-business-2026-11-22.md)
 
+`13961` tīkla trāpījums un izsaukums piesaistīts konkrētajai kvesta pieņemšanas reizei. Serverī pārbaudīti divi neatkarīgi gūstekņi, sekošanas komanda, reālais Togrik pabeigšanas notikums un tīkla izņemšana pēc nodošanas vai atmešanas. [Drag it Out of Them pārbaude](hogtied-razormane-2026-11-22.md)
+
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)
 
 `13885` Orseus `34392` jāatver hipogrifa posms, un Kathrena Winterwisp `34301` piedāvā un pieņem kvestu. 7.3.5 datiem atrasti `65401 → 65372` izsaukums, pasažiere `34376`, `65384` iekāpšana, `65385` pacelšanās un `65373` laukuma burvestība. 2017. gada 4:24 video visa ceļa kadri ar sešu sekunžu soli parāda divus braucējus, Kathrena vadītu lidojumu, spēlētāja darbību uz trīs sugām un nolaišanos pirms nodošanas. Pasaulē vēl trūkst Orseus funkcijas, transportlīdzekļa datu sasaistes, lidojuma koordinātu un progresa sasaistes ar `34323/34324/34325`. [2017. gada gājiens](https://www.youtube.com/watch?v=Rc2HWdXKOVo)

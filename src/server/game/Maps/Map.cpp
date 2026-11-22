@@ -4351,6 +4351,25 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                     return nullptr;
     }
 
+    Player* pillagerCaptor = nullptr;
+    if (entry == 34514 && spellId == 65595)
+    {
+        pillagerCaptor = summoner ? summoner->ToPlayer() : nullptr;
+        if (!pillagerCaptor || GetId() != 1 || !properties || properties->ID != 1901 ||
+            !pillagerCaptor->IsAlive() || pillagerCaptor->GetQuestStatus(13961) != QUEST_STATUS_INCOMPLETE ||
+            !pillagerCaptor->HasItemCount(46722, 1, false))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *pillagerCaptor->GetSummonList(entry))
+            if (Creature const* captive = GetCreature(guid))
+                if (!captive->IsDespawn() && captive->HasQuestObjectScope() && !captive->IsQuestObjectExpired())
+                    return nullptr;
+
+        // The spell has an indefinite duration. Give disconnected or stuck
+        // captures a finite lifetime so the player can attempt another net.
+        duration = 180000;
+    }
+
     HallowsEndCrate::Route const* collectorRoute = nullptr;
     if (entry == 54114 && spellId == 100668)
     {
@@ -4520,6 +4539,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);
+
+    if (pillagerCaptor)
+        pillagerCaptor->BindQuestObject(13961, summon);
 
     if (collectorRoute)
     {

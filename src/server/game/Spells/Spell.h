@@ -35,6 +35,7 @@ class WorldObject;
 class Aura;
 class SpellScript;
 class ByteBuffer;
+class QuestCancellationReceipt;
 
 namespace WorldPackets
 {
@@ -606,6 +607,7 @@ class TC_GAME_API Spell
         uint32 m_parentTargetCount;
 
         TriggerCastData m_triggerData;
+        std::shared_ptr<QuestCancellationReceipt const> m_questItemCastReceipt;
 
         uint8 m_delayAtDamageCount;
         bool isDelayableNoMore();
