@@ -191,6 +191,27 @@ bool ReturnVileFin(Creature* captive)
     return true;
 }
 
+bool AbsorbVileSplash(Player* player, Creature* splash)
+{
+    if (!player || !player->HasQuestForItem(49172))
+        return false;
+
+    // The native create-item spell is the receipt. Leave the same splash
+    // available for retry if the item cannot be put in the player's bags.
+    ItemPosCountVec destinations;
+    if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, destinations, 49172, 1) != EQUIP_ERR_OK)
+        return false;
+
+    auto previous = player->GetItemCount(49172);
+    splash->CastSpell(player, 68412, true);
+    if (player->GetItemCount(49172) != previous + 1)
+        return false;
+
+    splash->CastSpell(player, 68419, true);
+    splash->DespawnOrUnsummon(2000);
+    return true;
+}
+
 void CreditTongaSummit(GameObject* focus)
 {
     if (focus->GetMapId() != 1 || focus->GetDBTableGUIDLow() != 32485)
@@ -899,6 +920,14 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 ((me->GetEntry() == 1543 && e.action.cast.spell == 73110) || (me->GetEntry() == 1544 && e.action.cast.spell == 73434)))
             {
                 CaptureVileFin(unit ? unit->ToPlayer() : nullptr, me, e.action.cast.spell, me->GetEntry() == 1543 ? 38923 : 39078);
+                break;
+            }
+
+            if (me && me->GetEntry() == 36131 && spell && spell->Id == 68411 &&
+                e.GetEventType() == SMART_EVENT_SPELLHIT && e.action.cast.spell == 68419)
+            {
+                if (!AbsorbVileSplash(unit ? unit->ToPlayer() : nullptr, me))
+                    e.runOnce = false;
                 break;
             }
 

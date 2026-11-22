@@ -1,0 +1,13 @@
+# Absorbent (14323)
+
+Ergll `35142`, izvietojums `99620`, piedāvā kvestu un ir norādīts kā saņēmējs. Kvests izsniedz vienu Enchanted Azshari Sea Sponge `49168` un prasa atdot sūkli kopā ar 20 Simmering Water Droplets `49172`. Azsharā ir 84 izvietoti Vile Splash `36131`. Savākšanas posma beigās 2017. gada ierakstā atveras attālinātā nodošanas izvēlne. Pārskatīts viss 3:06 periods ar piecu sekunžu soli. Ieraksts rāda, ka pilienus var saņemt arī jāšus. Lielais ūdens elementālis ir nākamā kvesta `14324` posms. [2017. gada spēles ieraksts](https://www.youtube.com/watch?v=wVbG9DbhUhw)
+
+7.3.5 priekšmeta efekts `5` iedarbina `68413` auru, kuras periodiskā burvestība ir `68411`. Vecais avots reaģēja uz kaujas sākumu un izsauca dzīvību atņemošo `68419` pirms `68412` priekšmeta izveides. Iepriekšējā Release pārbaudē atlikušais sūklis iedarbināja auru bez kvesta, un `68411` metiens bez auras atstāja mirušu Vile Splash un tukšu pilienu skaitu.
+
+Dzīvs Vile Splash tagad atbild uz faktiskā lietotāja sūkļa auras periodisko burvestību. Pārbaude izmanto aktīvo kvestu, sūkli somā, Azsharu, esošo piecu jardu robežu un parasto kaujas piesaisti. `68412` izveido vienu īstu pilienu `49172`. `68419` un pazušana seko tikai pēc tam, kad priekšmets nonācis somā. Ja soma ir pilna, to pašu avotu var mēģināt vēlreiz. Saglabāta oriģinālā nodošana, kas patērē abus priekšmetus.
+
+Atmešanas pārbaudē atklājās, ka savāktie pilieni palika somā. `ItemDrop1=49172` un daudzums `20` piesaista tos esošajai atmešanas tīrīšanai. Sūkļa noņemšana izmanto esošo priekšmeta auras tīrīšanu.
+
+`Test-QuestObjectLootNative.ps1 -Absorbent` ieslēdza oriģinālo auru ar kvesta priekšmeta saņemšanu un pārbaudīja pilnu somu, atkārtojumu pēc atbrīvotas vietas, sveša spēlētāja kaujas piesaisti, tieša metiena aizliegumu bez auras un nostrādāšanu tikai vienreiz katrā no 20 pasaules novietojumiem. Faktiskais `CMSG_QUEST_GIVER_CHOOSE_REWARD` attālināti noņēma sūkli un 20 pilienus. Otrs spēlētājs saņēma vēl vienu pilienu no faktiska elementāļa. Atmešana noņēma gan pilienu, gan sūkli un auru. Atkārtoti izturēta arī `-VileFinLeash` pārbaude. Klientā paliek jāpārbauda efekta attēlojums, lietošana jāšus un attālinātās izvēlnes parādīšanās.
+
+Pagaidu un kanoniskais Release `C2F07AA853C11DCA5456F51093D0005E308616859F9EFE0AECB0B0D4BDF4D880` sasniedza `ready` un korekti izslēdzās. Produkcijas `22` migrācijas kontrolsumma un rindas sakrita ar izolētajiem datiem. Gala pārbaudēs nav jaunu avāriju vai neizskaidrotu kļūdu. Arhīvā `build-extractors/bin/Release/fixed/absorbent-2026-11-22/` saglabātas 188 pārbaudītas diagnostikas kopijas. Noņemti 2 704 462 806 baiti īslaicīgu failu, saglabājot iepriekšējā Release kopiju.

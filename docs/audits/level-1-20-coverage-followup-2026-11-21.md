@@ -82,6 +82,8 @@ Pēc `14250` atkārtotajā eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēg
 
 `24974` pavada pieņem abas paredzētās ievainotās murloku sugas. Servera pārbaudē abi gūstekņi seko savam īpašniekam, un pie Sedrick katrs saņem savu atgriešanas atzīmi. Pārbaudīta pavadas un gūstekņa noņemšana. Jaunajā eksportā paliek 53 priekšmetu lietošanas kandidāti ar pasaulē novietotu devēju. Pārējie iepriekšējā eksporta skaitļi atkārtojas. Eksports ir lokāli `.codex/quest-coverage-20261122-leash/`. [Ever So Lonely pārbaude](vile-fin-leash-2026-11-22.md)
 
+`14323` sūklis savāc pilienus tikai ar savu periodisko auru pie paredzētā dzīvā elementāļa. Pārbaudīti 20 pilieni, pilna soma, attālinātā nodošana un priekšmetu izņemšana pēc atmešanas. Atkārtotajā eksportā paliek 52 priekšmetu lietošanas kandidāti ar pasaulē novietotu devēju. Eksports ir lokāli `.codex/quest-coverage-20261122-absorbent/`. [Absorbent pārbaude](absorbent-2026-11-22.md)
+
 Brazie the Botanist `49687` ir novietots Hillsbrad Foothills un piedāvā sešus aktīvus 20. līmeņa kvestus `28733/28617/28744/28747/28748/28751`. `28744` un `28747` datu pārskatā ir atrastas native ieskaites burvestības `92340` un `92435`, tāpēc tās neparādās četrās pilnībā neizsekotajās atlasēs. Pārbaudītajā datubāzē šīm divām burvestībām arī trūkst izsaukuma sasaistes ar minispēles kontroli. Visu sešu kvestu faktiskā iedarbināšana, viļņi un nodošana paliek atvērti.
 
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)

@@ -3132,6 +3132,18 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_MISS_EVADE;
 
+    if (m_spellInfo->Id == 68411)
+    {
+        Player* owner = m_caster->ToPlayer();
+        Creature* splash = unit->ToCreature();
+        if (!owner || !owner->IsAlive() || owner->GetMapId() != 1 || owner->GetZoneId() != 16 ||
+            owner->GetQuestStatus(14323) != QUEST_STATUS_INCOMPLETE || !owner->HasItemCount(49168, 1, false) ||
+            !m_triggeredByAuraSpell || m_triggeredByAuraSpell->Id != 68413 || !owner->HasAura(68413, owner->GetGUID()) ||
+            !splash || splash->GetEntry() != 36131 || !splash->IsAlive() || splash->IsDespawn() ||
+            !owner->IsWithinDistInMap(splash, 5.0f) || (splash->hasLootRecipient() && !splash->isTappedBy(owner)))
+            return SPELL_MISS_EVADE;
+    }
+
     if (m_spellInfo->Id == 73108 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
         !CanLeashVileFin(m_caster->ToPlayer(), unit->ToCreature())))
         return SPELL_MISS_EVADE;
@@ -6685,6 +6697,9 @@ SpellCastResult Spell::CheckCast(bool strict)
     }
 
     if (m_spellInfo->Id == 67922 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+        return SPELL_FAILED_DONT_REPORT;
+
+    if (m_spellInfo->Id == 68411 && (!m_triggeredByAuraSpell || m_triggeredByAuraSpell->Id != 68413))
         return SPELL_FAILED_DONT_REPORT;
 
     if (m_spellInfo->Id == 73108)
