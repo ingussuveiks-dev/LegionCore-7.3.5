@@ -31,6 +31,7 @@
 #include "OutdoorPvP.h"
 #include "PlayerDefines.h"
 #include "QuestData.h"
+#include "QuestItemObjectUse.h"
 #include "RestMgr.h"
 #include "ScriptMgr.h"
 #include "Warden.h"
@@ -226,6 +227,8 @@ void WorldSession::HandleAreaTrigger(WorldPackets::Misc::AreaTrigger& packet)
         {
             for (uint32 questId : *quests)
             {
+                if (questId == AmaniCatacombs::Quest && (!packet.Entered || packet.AreaTriggerID != AmaniCatacombs::Entrance))
+                    continue;
                 Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questId);
                 if (qInfo && player->GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE)
                 {
@@ -238,6 +241,14 @@ void WorldSession::HandleAreaTrigger(WorldPackets::Misc::AreaTrigger& packet)
                         break;
                     }
 
+                    if (questId == AmaniCatacombs::Quest)
+                    {
+                        if (player->CanCompleteQuest(questId))
+                            player->CompleteQuest(questId);
+                        else
+                            player->IncompleteQuest(questId);
+                        continue;
+                    }
                     player->AreaExploredOrEventHappens(questId);
                 }
             }

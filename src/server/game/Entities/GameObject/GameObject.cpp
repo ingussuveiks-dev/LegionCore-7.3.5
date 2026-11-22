@@ -46,7 +46,7 @@
 #include "ScriptMgr.h"
 #include "ScriptsData.h"
 #include "SpellMgr.h"
-#include "StagnantOasis.h"
+#include "QuestItemObjectUse.h"
 #include "Unit.h"
 #include "UpdateFieldFlags.h"
 #include "World.h"
@@ -1471,12 +1471,47 @@ bool GameObject::IsInvisibleDueToDespawn() const
     return false;
 }
 
-bool StagnantOasis::CanPlant(GameObject const* fissure, Player const* player)
+namespace
 {
-    return fissure && player && player->IsAlive() && player->GetMap() == fissure->GetMap() &&
-        fissure->GetEntry() == Fissure && fissure->GetMapId() == 1 && fissure->GetDBTableGUIDLow() == FissureSpawn &&
-        player->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(Seeds, 1, false) &&
-        fissure->isSpawned() && !fissure->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
+constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
+{
+    {StagnantOasis::Fissure, StagnantOasis::FissureSpawn, 1, 0, StagnantOasis::Quest, StagnantOasis::Seeds, StagnantOasis::PlantSeeds},
+    {AmaniCatacombs::Remains, 0, 530, 3510, AmaniCatacombs::Quest, AmaniCatacombs::Torch, AmaniCatacombs::BurnRemains}
+};
+}
+
+QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
+{
+    for (Binding const& binding : QuestItemObjects)
+        if (binding.ObjectEntry == entry)
+            return &binding;
+    return nullptr;
+}
+
+QuestItemObjectUse::Binding const* QuestItemObjectUse::ForSpell(uint32 spellId)
+{
+    for (Binding const& binding : QuestItemObjects)
+        if (binding.Spell == spellId)
+            return &binding;
+    return nullptr;
+}
+
+Item* QuestItemObjectUse::FindChargedItem(Player const& player, Binding const& binding)
+{
+    for (Item* item : player.GetItemListByEntry(binding.ItemEntry))
+        for (ItemEffectEntry const* effect : item->GetTemplate()->Effects)
+            if (effect && effect->SpellID == binding.Spell && item->GetSpellCharges(effect->LegacySlotIndex) != 0)
+                return item;
+    return nullptr;
+}
+
+bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, Binding const& binding)
+{
+    return object && player && player->IsAlive() && player->GetMap() == object->GetMap() &&
+        object->GetEntry() == binding.ObjectEntry && object->GetMapId() == binding.MapId &&
+        (!binding.Spawn || object->GetDBTableGUIDLow() == binding.Spawn) && (!binding.AreaId || object->GetAreaId() == binding.AreaId) &&
+        player->GetQuestStatus(binding.Quest) == QUEST_STATUS_INCOMPLETE && FindChargedItem(*player, binding) &&
+        object->isSpawned() && !object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
 }
 
 bool GameObject::ActivateToQuest(Player* target) const
@@ -1487,8 +1522,8 @@ bool GameObject::ActivateToQuest(Player* target) const
     if (target->isGameMaster())
         return true;
 
-    if (GetEntry() == StagnantOasis::Fissure)
-        return StagnantOasis::CanPlant(this, target);
+    if (auto binding = QuestItemObjectUse::ForObject(GetEntry()))
+        return QuestItemObjectUse::CanUse(this, target, *binding);
 
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&
@@ -1694,8 +1729,8 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
     if (IsQuestObjectExpired())
         return;
 
-    if (GetEntry() == StagnantOasis::Fissure &&
-        (activationSpell != StagnantOasis::PlantSeeds || !StagnantOasis::CanPlant(this, user->ToPlayer())))
+    if (auto binding = QuestItemObjectUse::ForObject(GetEntry()); binding &&
+        (activationSpell != binding->Spell || !QuestItemObjectUse::CanUse(this, user->ToPlayer(), *binding)))
         return;
 
     if (GetEntry() == 181690)

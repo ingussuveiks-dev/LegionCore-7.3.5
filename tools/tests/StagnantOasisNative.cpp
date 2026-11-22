@@ -3,7 +3,7 @@
 #undef main
 
 #include "GameObjectPackets.h"
-#include "StagnantOasis.h"
+#include "QuestItemObjectUse.h"
 
 namespace
 {

@@ -106,6 +106,7 @@
 #include "PlayerDefines.h"
 #include "QueryHolder.h"
 #include "QuestData.h"
+#include "QuestItemObjectUse.h"
 #include "QuestDef.h"
 #include "QuestPackets.h"
 #include "RestMgr.h"
@@ -19124,7 +19125,9 @@ bool Player::CanCompleteQuest(uint32 quest_id)
         if (!q_status)
             return false;
 
-        if (qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT) && q_status->Status != QUEST_STATUS_COMPLETE)
+        // The catacombs store exploration in a real objective. Requiring an
+        // already complete legacy event here would prevent either objective order.
+        if (quest_id != AmaniCatacombs::Quest && qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT) && q_status->Status != QUEST_STATUS_COMPLETE)
             return false;
 
         if (q_status->Status == QUEST_STATUS_INCOMPLETE)
@@ -19185,6 +19188,12 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
 
     if (quest->GetQuestId() == 13975 && GetQuestObjectiveData(13975, 65892) < 1)
         return false;
+
+    if (quest->GetQuestId() == AmaniCatacombs::Quest)
+        for (QuestObjective const& objective : quest->GetObjectives())
+            if ((objective.Type == QUEST_OBJECTIVE_GAMEOBJECT || objective.Type == QUEST_OBJECTIVE_AREATRIGGER) &&
+                !HasQuestObjectiveComplete(quest, objective))
+                return false;
 
     if (quest->GetQuestId() == 40938)
         for (uint32 credit : {102466u, 102465u, 102652u, 102653u, 102654u})
@@ -19550,6 +19559,29 @@ void AlliedRaceCityBoard::RestoreIncompleteQuests(Player& player)
         if (player.GetQuestStatus(route.Quest) == QUEST_STATUS_COMPLETE && !player.GetQuestRewardStatus(route.Quest) &&
             player.GetQuestObjectiveData(route.Quest, route.Board) < 1)
             player.IncompleteQuest(route.Quest);
+}
+
+void AmaniCatacombs::RestoreIncompleteQuest(Player& player)
+{
+    if (player.GetQuestStatus(Quest) != QUEST_STATUS_COMPLETE || player.GetQuestRewardStatus(Quest))
+        return;
+
+    auto quest = sQuestDataStore->GetQuestTemplate(Quest);
+    if (!quest)
+        return;
+
+    for (QuestObjective const& objective : quest->GetObjectives())
+        if ((objective.Type == QUEST_OBJECTIVE_GAMEOBJECT || objective.Type == QUEST_OBJECTIVE_AREATRIGGER) &&
+            !player.HasQuestObjectiveComplete(quest, objective))
+        {
+            // Old notifications could mark the quest complete without entering
+            // the site or burning all ten remains. Preserve the burn counter.
+            for (QuestObjective const& checkpoint : quest->GetObjectives())
+                if (checkpoint.Type == QUEST_OBJECTIVE_AREATRIGGER)
+                    player.SetQuestObjectiveData(quest, &checkpoint, 0);
+            player.IncompleteQuest(Quest);
+            break;
+        }
 }
 
 int32 Player::GetQuestMoneyReward(Quest const* quest) const
@@ -23447,6 +23479,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     _LoadQuestStatusObjectives(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
     _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
     AlliedRaceCityBoard::RestoreIncompleteQuests(*this);
+    AmaniCatacombs::RestoreIncompleteQuest(*this);
     // The New Blood's scenario selector is transient. Restore it before login
     // adds the player to map 1522 (also used by the later order-hall scenario).
     // A new instance has no saved scenario criteria or actor state: restart at

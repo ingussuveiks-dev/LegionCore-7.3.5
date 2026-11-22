@@ -56,7 +56,7 @@
 #include "SpellMgr.h"
 #include "SpellPackets.h"
 #include "SpellScript.h"
-#include "StagnantOasis.h"
+#include "QuestItemObjectUse.h"
 #include "TemporarySummon.h"
 #include "TradeData.h"
 #include "Unit.h"
@@ -132,10 +132,6 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
         uint32 quest = 0;
         switch (m_spellInfo->Id)
         {
-            case StagnantOasis::PlantSeeds:
-                if (m_CastItem->GetEntry() == StagnantOasis::Seeds)
-                    quest = StagnantOasis::Quest;
-                break;
             case 29773: // Tree Seedlings
                 if (m_CastItem->GetEntry() == 23788)
                     quest = player->GetQuestStatus(26446) == QUEST_STATUS_INCOMPLETE ? 26446 : 9526;
@@ -173,6 +169,8 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                     quest = 24974;
                 break;
         }
+        if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id); binding && m_CastItem->GetEntry() == binding->ItemEntry)
+            quest = binding->Quest;
         if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
             m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
     }
@@ -6715,9 +6713,9 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_spellInfo->Id == 100776 && m_questKillReward != 29433)
         return SPELL_FAILED_DONT_REPORT;
 
-    if (m_spellInfo->Id == StagnantOasis::PlantSeeds && (!m_questItemCastReceipt ||
+    if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id); binding && (!m_questItemCastReceipt ||
         m_questItemCastReceipt->load(std::memory_order_acquire) ||
-        !StagnantOasis::CanPlant(m_targets.GetGOTarget(), m_caster->ToPlayer())))
+        !QuestItemObjectUse::CanUse(m_targets.GetGOTarget(), m_caster->ToPlayer(), *binding)))
         return SPELL_FAILED_BAD_TARGETS;
 
     if (m_spellInfo->Id == 29773)

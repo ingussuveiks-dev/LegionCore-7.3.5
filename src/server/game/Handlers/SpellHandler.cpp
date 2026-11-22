@@ -27,7 +27,7 @@
 #include "PlayerDefines.h"
 #include "GameObjectPackets.h"
 #include "SpellAuraEffects.h"
-#include "StagnantOasis.h"
+#include "QuestItemObjectUse.h"
 #include "Chat.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::ItemUse& cast)
@@ -161,11 +161,11 @@ void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& 
 
     if (GameObject* obj = GetPlayer()->GetMap()->GetGameObject(packet.Guid))
     {
-        if (obj->GetEntry() == StagnantOasis::Fissure)
+        if (auto binding = QuestItemObjectUse::ForObject(obj->GetEntry()))
         {
-            if (StagnantOasis::CanPlant(obj, _player) && obj->IsWithinDistInMap(_player, obj->GetInteractionDistance()))
-                if (Item* seeds = _player->GetItemByEntry(StagnantOasis::Seeds))
-                    _player->CastSpell(obj, StagnantOasis::PlantSeeds, false, seeds);
+            if (obj->IsWithinDistInMap(_player, obj->GetInteractionDistance()))
+                if (Item* item = QuestItemObjectUse::FindChargedItem(*_player, *binding))
+                    _player->CastSpell(obj, binding->Spell, false, item);
             return;
         }
         if (obj->GetEntry() != 181690) // Fertile Dirt Mounds are activated by Plant Tree Seedling.
