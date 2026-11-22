@@ -1613,10 +1613,10 @@ void QuestDataStoreMgr::LoadGameObjectForQuests()
             // scan GO chest with loot including quest items
             case GAMEOBJECT_TYPE_CHEST:
             {
-                uint32 loot_id = (itr->second.entry);
+                uint32 const lootId = itr->second.GetLootId();
 
                 // find quest loot for GO
-                if (itr->second.chest.questID || LootTemplates_Gameobject.HaveQuestLootFor(loot_id))
+                if (itr->second.chest.questID || LootTemplates_Gameobject.HaveQuestLootFor(lootId))
                 {
                     _gameObjectForQuestStore.insert(itr->second.entry);
                     ++count;

@@ -1522,6 +1522,12 @@ bool BloodcupBraid::CanGather(GameObject const& plant, Player const& player)
     return player.IsAlive() && plant.GetMapId() == 1 && plant.GetZoneId() == 331 && plant.GetDBTableGUIDLow() && player.HasQuestForItem(Flower);
 }
 
+bool ThelgenSeismograph::CanRead(GameObject const& seismograph, Player const& player)
+{
+    return player.IsAlive() && player.GetMap() == seismograph.GetMap() && seismograph.GetMapId() == 0 && seismograph.GetDBTableGUIDLow() == Spawn &&
+        player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player.HasQuestForItem(Record);
+}
+
 QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
 {
     for (Binding const& binding : QuestItemObjects)
@@ -1585,6 +1591,9 @@ bool GameObject::ActivateToQuest(Player* target) const
     if (GetEntry() == BloodcupBraid::Plant)
         return BloodcupBraid::CanGather(*this, *target);
 
+    if (GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*this, *target))
+        return false;
+
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&
             (target->GetQuestStatus(26446) == QUEST_STATUS_INCOMPLETE || target->GetQuestStatus(9526) == QUEST_STATUS_INCOMPLETE);
@@ -1610,7 +1619,7 @@ bool GameObject::ActivateToQuest(Player* target) const
     {
         case GAMEOBJECT_TYPE_CHEST: // scan GO chest with loot including quest items
         {
-            if (LootTemplates_Gameobject.HaveQuestLootForPlayer(GetEntry(), target))
+            if (LootTemplates_Gameobject.HaveQuestLootForPlayer(GetGOInfo()->GetLootId(), target))
             {
                 //TODO: fix this hack
                 //look for battlegroundAV for some objects which are only activated after mine gots captured by own team

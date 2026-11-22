@@ -7665,6 +7665,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                     {
                         if (target->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*target, *m_caster->ToPlayer()))
                             return SPELL_FAILED_NO_VALID_TARGETS;
+                        if (target->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*target, *m_caster->ToPlayer()))
+                            return SPELL_FAILED_NO_VALID_TARGETS;
                         if ((target->GetEntry() == 13874 || target->GetEntry() == 13891) && target->GetMapId() == 43 &&
                             !m_caster->ToPlayer()->HasQuestForItem(5339))
                             return SPELL_FAILED_BAD_TARGETS;

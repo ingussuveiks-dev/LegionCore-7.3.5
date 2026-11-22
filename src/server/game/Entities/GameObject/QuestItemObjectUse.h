@@ -87,6 +87,16 @@ constexpr uint32 Manual = 11149;
 constexpr uint32 Assemble = 13714;
 }
 
+namespace ThelgenSeismograph
+{
+constexpr uint32 Quest = 25734;
+constexpr uint32 Seismograph = 203184;
+constexpr uint32 Spawn = 37153;
+constexpr uint32 Record = 55242;
+
+bool CanRead(GameObject const& seismograph, Player const& player);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

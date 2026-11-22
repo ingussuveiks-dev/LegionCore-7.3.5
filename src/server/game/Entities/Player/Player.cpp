@@ -11939,7 +11939,8 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
             return;
         }
 
-        if (go->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*go, *this))
+        if ((go->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*go, *this)) ||
+            (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)))
         {
             SendLootRelease(guid);
             return;
