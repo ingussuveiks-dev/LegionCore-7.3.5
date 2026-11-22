@@ -148,6 +148,33 @@ bool DeliverHogtiedRazormane(Creature* captive)
     return true;
 }
 
+void CreditTongaSummit(GameObject* focus)
+{
+    if (focus->GetMapId() != 1 || focus->GetDBTableGUIDLow() != 32485)
+        return;
+
+    std::list<Creature*> eagles;
+    focus->GetAliveCreatureListWithEntryInGrid(eagles, 34615, 10.0f);
+    for (Creature* eagle : eagles)
+    {
+        TempSummon* summon = eagle->ToTempSummon();
+        Player* owner = summon ? ObjectAccessor::GetPlayer(*eagle, summon->GetSummonerGUID()) : nullptr;
+        if (!owner || !owner->IsAlive() || eagle->IsDespawn() || !eagle->HasQuestObjectScope() ||
+            eagle->IsQuestObjectExpired() || eagle->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 65751 ||
+            !eagle->CanTargetQuestObject(owner) || owner->GetQuestStatus(13988) != QUEST_STATUS_INCOMPLETE ||
+            !owner->HasItemCount(46782, 1, false) || owner->GetQuestObjectiveData(13988, 34631) ||
+            !focus->InSamePhase(owner) || !focus->IsWithinDistInMap(owner, 7.0f) || !focus->IsWithinLOSInMap(owner))
+            continue;
+
+        eagle->CastSpell(owner, 65773, true);
+        if (owner->GetQuestObjectiveData(13988, 34631))
+        {
+            owner->CastSpell(owner, 65763, true);
+            eagle->DespawnOrUnsummon();
+        }
+    }
+}
+
 // Each party recipient must reach their own quest stage before recording
 // these two proximity objectives. Keep the native party distance and corpse
 // rules and leave combat-triggered group credits on the ordinary path.
@@ -1393,6 +1420,12 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CALL_KILLEDMONSTER:
         {
+            if (go && go->GetEntry() == 195146 && e.event_id == 0 && e.action.killedMonster.creature == 34631)
+            {
+                CreditTongaSummit(go);
+                break;
+            }
+
             // The Lifebringer trial is a successful item use. Combat tap on
             // the animal must not redirect credit to an unrelated player.
             if (me && spell && spell->Id == 65188 && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&

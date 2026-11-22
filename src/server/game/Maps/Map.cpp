@@ -4370,6 +4370,29 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         duration = 180000;
     }
 
+    Player* tongaOwner = nullptr;
+    if ((entry == 34615 && spellId == 65751) || (entry == 34623 && spellId == 65763))
+    {
+        tongaOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!tongaOwner || !tongaOwner->IsAlive() || !properties || !tongaOwner->HasItemCount(46782, 1, false))
+            return nullptr;
+
+        QuestStatus status = tongaOwner->GetQuestStatus(13988);
+        if (entry == 34615)
+        {
+            if (properties->ID != 821 || status != QUEST_STATUS_INCOMPLETE)
+                return nullptr;
+        }
+        else if (GetId() != 1 || properties->ID != 64 || status != QUEST_STATUS_COMPLETE ||
+            !tongaOwner->GetQuestObjectiveData(13988, 34631))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *tongaOwner->GetSummonList(entry))
+            if (Creature const* actor = GetCreature(guid))
+                if (!actor->IsDespawn() && actor->HasQuestObjectScope() && !actor->IsQuestObjectExpired())
+                    return nullptr;
+    }
+
     HallowsEndCrate::Route const* collectorRoute = nullptr;
     if (entry == 54114 && spellId == 100668)
     {
@@ -4543,6 +4566,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     if (pillagerCaptor)
         pillagerCaptor->BindQuestObject(13961, summon);
 
+    if (tongaOwner)
+        tongaOwner->BindQuestObject(13988, summon);
+
     if (collectorRoute)
     {
         Player* owner = summoner->ToPlayer();
@@ -4685,6 +4711,12 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         summon->SetDisableGravity(true);
         summon->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // enabled when built
     }
+    if (tongaOwner && entry == 34615)
+    {
+        summon->SetReactState(REACT_PASSIVE);
+        summon->SetCanFly(true);
+        summon->SetDisableGravity(true);
+    }
     AddToMap(summon->ToCreature());
     if (entry == 101456 && summon->HasQuestObjectScope())
     {
@@ -4698,6 +4730,8 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                 summon->SummonCreature(35845, marker->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN);
     }
     summon->InitSummon();
+    if (tongaOwner && entry == 34615)
+        summon->GetMotionMaster()->MoveFollow(tongaOwner, summon->GetFollowDistance(), summon->GetFollowAngle());
     //summon->CastPetAuras(true);
 
     //TC_LOG_DEBUG("misc", "Map::SummonCreature summoner %u entry %i mask %i", summoner ? summoner->GetGUID() : 0, entry, mask);

@@ -106,10 +106,14 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
     m_spellGuid = triggerData.spellGuid;
     m_parentTargetCount = triggerData.parentTargetCount;
 
-    if (m_spellInfo->Id == 65580 && m_CastItem && m_CastItem->GetEntry() == 46722)
+    if (m_CastItem && (m_spellInfo->Id == 65580 || m_spellInfo->Id == 65751))
         if (Player* player = m_caster->ToPlayer())
-            if (player->GetQuestStatus(13961) == QUEST_STATUS_INCOMPLETE)
-                m_questItemCastReceipt = player->GetQuestCancellationReceipt(13961);
+        {
+            uint32 const quest = m_spellInfo->Id == 65580 ? 13961 : 13988;
+            uint32 const item = m_spellInfo->Id == 65580 ? 46722 : 46782;
+            if (m_CastItem->GetEntry() == item && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+                m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
+        }
 
     m_castPos = *m_caster;
     m_diffMode = m_caster->GetMap() ? m_caster->GetMap()->GetSpawnMode() : 0;

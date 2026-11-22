@@ -3888,6 +3888,9 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
         return;
 
+    if (m_spellInfo->Id == 65751 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+        return;
+
     uint32 entry = m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue;
 
     if (!entry)
@@ -7823,6 +7826,17 @@ void Spell::EffectKillCredit(SpellEffIndex effIndex)
 
     if (!unitTarget || !unitTarget->IsPlayer())
         return;
+
+    if (m_spellInfo->Id == 65773)
+    {
+        TempSummon* eagle = m_caster->ToTempSummon();
+        Player* owner = unitTarget->ToPlayer();
+        if (eagle && eagle->GetEntry() == 34615 && eagle->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 65751 &&
+            eagle->GetSummonerGUID() == owner->GetGUID() && eagle->HasQuestObjectScope() && !eagle->IsQuestObjectExpired() &&
+            owner->GetQuestStatus(13988) == QUEST_STATUS_INCOMPLETE && owner->HasItemCount(46782, 1, false))
+            owner->KilledMonsterCredit(34631);
+        return;
+    }
 
     if (int32 creatureEntry = m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue)
         unitTarget->ToPlayer()->RewardPlayerAndGroupAtEvent(creatureEntry, unitTarget);
