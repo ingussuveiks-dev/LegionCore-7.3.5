@@ -170,6 +170,15 @@ constexpr uint32 Ore = 55241;
 constexpr uint32 Mine = 77020;
 }
 
+namespace PricelessTreasures
+{
+constexpr uint32 Quest = 25937;
+constexpr uint32 Deposit = 203385;
+constexpr uint32 Artifact = 56225;
+constexpr uint32 Pick = 56226;
+constexpr uint32 Dig = 77821;
+}
+
 namespace KneeDeep
 {
 constexpr uint32 Quest = 24678;

@@ -1,0 +1,14 @@
+# Priceless Treasures 25937
+
+Prospector Drugan `50631/82854` provides the original Excavator’s Pick `56226`. The pick’s reusable `77821` open-lock effect matches the sole native key entry for lock `1912`. All 34 actual Frozen Artifact deposits `203385` use that lock in Gol’Bolar Quarry area `134`, and their original loot has one quest-required artifact `56225`. Native copper vein `1731/32098` uses Mining lock `38`. The provided pick continued to reject it in the original build.
+
+The original native probe reproduced an inactive player opening an empty artifact loot window and a player retaining three artifact items after abandoning. The deposit now uses the existing quest-item object gate, with the actual placed deposit, quarry, active quest, carried pick, outstanding item objective, and an active quest receipt for the native open-lock spell. The data repair marks the eight quest-owned artifacts for native cleanup. The loot entry, lock, provided item, reward choice, and all original placements are preserved.
+
+The 166.5-second 2015 walkthrough was sampled across the entire recording at eight-second intervals, including Drugan, the quarry entrance, several pieces of artifact loot and the reward dialog. Current client interaction and visuals are separate from the native server probe. [2015 quest walkthrough](https://www.youtube.com/watch?v=_gj1rPN6r0g)
+
+## Server verification and deployment
+
+- The repaired probe used the actual Drugan quest packet, the original carried pick in a non-miner’s inventory, native object-click and direct item casts, and the actual loot window. An inactive player could no longer open a deposit with a stale pick. The native copper lock still rejected the quest pick. Partial abandonment removed three artifacts and the pick, and fresh acceptance supplied the pick again. The eighth actual artifact completed the objective, a ninth deposit stayed unavailable, and Drugan’s original class reward consumed the artifacts and pick.
+- The retained Incendicite Ore and Woods’ End coffer tests passed. The link used game SHA-256 `F706133887DB212C261DFE4284E2C5DF26538BB36380B9C7396319791A5CB090` and scripts SHA-256 `91470569ECC3DE5A6CCE7210847E65ECAA781D80870203B7824D3F1C54EC4445`. The checked and deployed `worldserver.exe` SHA-256 is `A53BDB458C3C7AF03A8FF6E691E4D551C6EC991703D5470A633C5C3984480980`.
+- Both private applications and the production readback matched all verified rows. The updater ledger records migration `2026_11_22_47_priceless_treasures.sql` as `RELEASED` with SHA-1 `C84C761EDA1A2A71DEABC1035D394FF15B04F1D3`. Staged and canonical Release started with matching isolated data and shut down cleanly with no new crash, DB error, server warning or assertion.
+- The hash-verified local archive `build-extractors/bin/Release/fixed/priceless-treasures-2026-11-22/` contains 123 diagnostics and verification files. Cleanup reclaimed 1,819,627,473 bytes and retained the rollback executable.
