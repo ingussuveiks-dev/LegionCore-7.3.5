@@ -51,6 +51,30 @@ struct RescuePet : LootPet
     RescuePet(LootPlayer& owner, Map& map) : LootPet(owner, map) { m_ControlledByPlayer = true; }
 };
 
+struct RescueParty : Group
+{
+    RescueParty(LootPlayer& owner, LootPlayer& receiver) : members{&owner, &receiver}
+    {
+        this->*Access(GroupGuidTag{}) = ObjectGuid::Create<HighGuid::Party>(Rescue, 0);
+        for (auto player : members)
+        {
+            MemberSlot slot;
+            slot.Guid = player->GetGUID();
+            slot.Class = player->getClass();
+            const_cast<MemberSlotList&>(GetMemberSlots()).push_back(slot);
+            player->SetGroup(this, 0);
+        }
+    }
+
+    ~RescueParty()
+    {
+        for (auto player : members)
+            player->SetGroup(nullptr);
+    }
+
+    LootPlayer* members[2];
+};
+
 void CheckRescue(Quest const* quest)
 {
     auto source = WorldDatabase.Query("SELECT guid,position_x,position_y,position_z,orientation FROM creature WHERE id=17680 "
@@ -63,11 +87,14 @@ void CheckRescue(Quest const* quest)
         "JOIN creature_questender e ON e.id=c.id AND e.quest=s.quest WHERE s.quest=9670 AND c.id=17686 AND c.map=530")),
         "Researcher Cornelius is missing the offer or turn-in");
     Map map(530, 300, 0, DIFFICULTY_NONE);
-    LootPlayer owner(SupplySession(), map, 9670, point);
-    owner.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_DRAENEI);
-    owner.setFactionForRace(RACE_DRAENEI);
-    owner.SetLevel(19);
-    owner.SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 30000);
+    LootPlayer owner(SupplySession(), map, 9670, point), member(SupplySession(), map, 9671, point);
+    for (auto player : {&owner, &member})
+    {
+        player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_DRAENEI);
+        player->setFactionForRace(RACE_DRAENEI);
+        player->SetLevel(19);
+        player->SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 30000);
+    }
     uint32 guid = 60000;
     auto breakWeb = [&](Unit& killer)
     {
@@ -98,6 +125,8 @@ void CheckRescue(Quest const* quest)
     findResearcher(owner);
     Require(!owner.GetQuestObjectiveData(Rescue, Researcher), "Researcher outside the quest gave credit");
     owner.AddQuestAndCheckCompletion(quest, nullptr);
+    member.AddQuestAndCheckCompletion(quest, nullptr);
+    RescueParty party(owner, member);
     findResearcher(owner);
     RescuePet pet(owner, map);
     pet.SetLevel(19);
@@ -105,10 +134,13 @@ void CheckRescue(Quest const* quest)
     while (owner.GetQuestObjectiveData(Rescue, Researcher) < 5)
         findResearcher(pet);
     Require(owner.CanRewardQuest(quest, false), "Five successful rescues did not allow turn-in");
+    Tick(member, 100);
+    Require(!member.GetQuestObjectiveData(Rescue, Researcher) && !member.CanRewardQuest(quest, false),
+        "The local personal researcher receipt reached a nearby party member");
     AbandonSupply(owner, Rescue);
     owner.AddQuestAndCheckCompletion(quest, nullptr);
     Require(!owner.GetQuestObjectiveData(Rescue, Researcher), "The new acceptance inherited old rescue credit");
-    std::cout << "PASS native web deaths and researcher summons, player and pet-owner credit, five rescues and abandon/retry\n";
+    std::cout << "PASS native web deaths, genuine researcher summons, personal player and pet-owner credit in a party, five rescues and abandon/retry\n";
 }
 }
 
