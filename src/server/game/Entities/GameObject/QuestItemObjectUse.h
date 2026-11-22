@@ -8,6 +8,7 @@ class GameObject;
 class Item;
 class Player;
 class Unit;
+struct Position;
 
 namespace StagnantOasis
 {
@@ -263,6 +264,19 @@ namespace PaintItBlack
     constexpr uint32 BlindedCredit = 42796;
 
     bool CanPaint(Player const* player, Unit* target);
+}
+
+namespace CrushcogAssault
+{
+    constexpr uint32 Quest = 26364;
+    constexpr uint32 OrbitalDevice = 58253;
+    constexpr uint32 OrbitalTarget = 80101;
+    constexpr uint32 OrbitalMarker = 42929;
+    constexpr uint32 OrbitalProperties = 1362;
+    constexpr uint32 Razlo = 42839;
+    constexpr uint32 RazloSpawn = 84395;
+
+    bool CanPlaceMarker(Player const* player, Position const& destination);
 }
 
 namespace QuestItemObjectUse

@@ -4340,8 +4340,26 @@ std::list<Creature*> WestfallStew::FindHungryResidents(WorldObject const& source
     return residents;
 }
 
+bool CrushcogAssault::CanPlaceMarker(Player const* player, Position const& destination)
+{
+    CreatureData const* arena = sObjectMgr->GetCreatureData(RazloSpawn);
+    return player && player->IsAlive() && player->IsInWorld() && player->GetMapId() == 0 &&
+        player->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(OrbitalDevice, 1, false) &&
+        arena && arena->id == Razlo && arena->mapid == 0 && destination.IsPositionValid() &&
+        player->IsWithinDist3d(arena->posX, arena->posY, arena->posZ, 65.0f) &&
+        destination.IsInDist(arena->posX, arena->posY, arena->posZ, 45.0f);
+}
+
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* orbitalOwner = nullptr;
+    if (entry == CrushcogAssault::OrbitalMarker && spellId == CrushcogAssault::OrbitalTarget)
+    {
+        orbitalOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!properties || properties->ID != CrushcogAssault::OrbitalProperties || !CrushcogAssault::CanPlaceMarker(orbitalOwner, pos))
+            return nullptr;
+    }
+
     Player* stewOwner = nullptr;
     if (entry == WestfallStew::Pot && spellId == WestfallStew::Offer)
     {
@@ -4713,6 +4731,8 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     if (totemOwner)
         totemOwner->BindQuestObject(ScorpidVenom::Quest, summon);
 
+    if (orbitalOwner)
+        orbitalOwner->BindQuestObject(CrushcogAssault::Quest, summon);
     if (stewOwner)
         stewOwner->BindQuestObject(WestfallStew::Quest, summon);
 

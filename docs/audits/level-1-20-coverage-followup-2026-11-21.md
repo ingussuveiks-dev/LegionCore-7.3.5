@@ -159,3 +159,16 @@ Brazie the Botanist `49687` ir novietots Hillsbrad Foothills un piedāvā sešus
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)
 
 `13885` Orseus `34392` jāatver hipogrifa posms, un Kathrena Winterwisp `34301` piedāvā un pieņem kvestu. 7.3.5 datiem atrasti `65401 → 65372` izsaukums, pasažiere `34376`, `65384` iekāpšana, `65385` pacelšanās un `65373` laukuma burvestība. 2017. gada 4:24 video visa ceļa kadri ar sešu sekunžu soli parāda divus braucējus, Kathrena vadītu lidojumu, spēlētāja darbību uz trīs sugām un nolaišanos pirms nodošanas. Pasaulē vēl trūkst Orseus funkcijas, transportlīdzekļa datu sasaistes, lidojuma koordinātu un progresa sasaistes ar `34323/34324/34325`. [2017. gada gājiens](https://www.youtube.com/watch?v=Rc2HWdXKOVo)
+
+## Atkārtotā atlase pēc `26364`
+
+`26364` Mekkatorque saruna sāk kauju, un ierīce izmanto spēlētāja paša mērķa marķieri. Serverī pārbaudīta Razlo pilota iekāpšana, sabiedroto pienākšana un cīņa, orbitālā ieroča trāpījums, mājdzīvnieka pēdējais sitiens, grupas ieskaite un Jarvi atlīdzība. Kanoniskais Release un datu migrācija ir uzstādīti. [Down with Crushcog! pārbaude](down-with-crushcog-2026-11-22.md)
+
+Svaigajā pasaules un hotfix eksportā ir 5 459 tvēruma ieraksti. No tiem 4 865 ir ieslēgti un 594 atslēgti. Visi 166 atrastie skriptu nosaukumi ir kanoniskajā Release. Kvestiem ar pasaulē novietotu devēju statiskajā atlasē palika 17 aktieru vai kredīta atzīmes un 31 priekšmeta lietošanas atzīme. Iepriekšējās 66 priekšmetu atzīmes bija no agrāka eksporta. Jaunais eksports, kandidātu saraksti un kontrolsummas glabājas lokāli `.codex/quest-coverage-20261122-crushcog/`.
+
+- No 17 aktieru vai kredīta atzīmēm desmit ceļiem ir iepriekšēja servera pārbaude. Pieciem vēl trūkst izpildāma ceļa. Tie ir `13885` un četri Brazie kvesti `28617/28733/28748/28751`. Pilnai Brazie minispēlei vēl atvērti arī `28744/28747`. `319` pieder izņemtajai Evershine ķēdei, un `46064` jāizskata kopā ar Legion 110. līmeņa pasākumu. `9670` grupas noteikumi joprojām jāapstiprina atsevišķi.
+- No 31 priekšmeta lietošanas atzīmes 23 ir iepriekš aprakstītas servera pārbaudes. Astoņi atvērtie gadījumi šajā atlasē ir `14071/26557/26646/26651/26694/27088/29422/29664`.
+
+`26557` izmeklēšanā pārbaudīti abi Sandy Carp `58946` avoti. Valley of Wisdom laupījuma tabulai `5171` jau ir Stag Eye burvestības `80868` nosacījums. Orgrimmar rezerves tabulā `1637` tam pašam priekšmetam ir `QuestRequired=1` un 2,8042% iespēja bez ēsmas auras prasības. Kad apakšzonai nav savas laupījuma tabulas, makšķerēšanas kods izmanto pilsētas tabulu. Pareizajai Stag Eye `58949` rindai ir aktīva kvesta nosacījums un 50 Weakened Mosshoof Stag `35096` novietojumi Azsharā. Rezerves laupījuma labojums un makšķerēšanas pārbaude vēl ir atvērti. [Makšķerēšanas laupījuma atlase](../../src/server/game/Entities/GameObject/GameObject.cpp#L962)
+
+Kopējais audits paliek atvērts. Šoreiz faktisko kvestu izspēli nevarēja pārbaudīt, jo spēles klients nedarbojās.
