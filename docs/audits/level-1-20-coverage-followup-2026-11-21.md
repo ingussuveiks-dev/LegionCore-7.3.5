@@ -54,4 +54,6 @@ Legion `Lock.db2` ieraksti sasaista `877` sēklas `5068` ar `3737`, `9193` lāpu
 
 `13925` stāds pieņem visas četras paredzētās dzīvnieku sugas un piešķir progresu faktiskajam lietotājam. Nodevēja saņemtā stāda izņemšana un atmešanas ceļš pārbaudīts serverī. [An Ounce of Prevention pārbaude](lifebringer-sapling-2026-11-22.md)
 
-`13885` lauka devēja posmā Orseus ir `34392`, savukārt `34301` ir piedāvājuma un nodošanas NPC Kathrena Winterwisp. Atrasts sākotnējais hipogrifa izsaukums `65372`. Hipogrifam `34375` un Orseus dialogam trūkst piesaistīta pasaules ceļa. `27232` trīs Horde Cannon `45263` stāv sākotnējā vietā, bet tiem nav transportlīdzekļa veidnes, un mērķim `45270` nav izsaukuma vai novietojuma.
+`27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)
+
+`13885` Orseus `34392` jāatver hipogrifa posms, un Kathrena Winterwisp `34301` piedāvā un pieņem kvestu. 7.3.5 datiem atrasti `65401 → 65372` izsaukums, pasažiere `34376`, `65384` iekāpšana, `65385` pacelšanās un `65373` laukuma burvestība. 2017. gada 4:24 video visa ceļa kadri ar sešu sekunžu soli parāda divus braucējus, Kathrena vadītu lidojumu, spēlētāja darbību uz trīs sugām un nolaišanos pirms nodošanas. Pasaulē vēl trūkst Orseus funkcijas, transportlīdzekļa datu sasaistes, lidojuma koordinātu un progresa sasaistes ar `34323/34324/34325`. [2017. gada gājiens](https://www.youtube.com/watch?v=Rc2HWdXKOVo)

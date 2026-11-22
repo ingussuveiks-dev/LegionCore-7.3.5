@@ -4297,6 +4297,17 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* cannonRider = nullptr;
+    if (entry == 45270 && summoner && summoner->GetEntry() == 45263)
+    {
+        Vehicle* cannon = summoner->GetVehicleKit();
+        Unit* seat = cannon ? cannon->GetPassenger(0) : nullptr;
+        cannonRider = seat ? seat->ToPlayer() : nullptr;
+        if (GetId() != 0 || !properties || properties->ID != 64 || !cannonRider ||
+            !cannonRider->IsAlive() || cannonRider->GetQuestStatus(27232) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+    }
+
     Player* caravanRider = nullptr;
     if (entry == 34577 && spellId == 65662)
     {
@@ -4506,6 +4517,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (shangXiEscortOwner)
         shangXiEscortOwner->BindQuestObject(29787, summon);
+
+    if (cannonRider)
+        cannonRider->BindQuestObject(27232, summon);
 
     if (collectorRoute)
     {
