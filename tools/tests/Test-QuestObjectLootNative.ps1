@@ -8,10 +8,10 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$AshenvaleFelWood,[switch]$AshenvaleFelWoodBaseline,
       [switch]$ElwynnQuests,[switch]$ElwynnQuestsBaseline,
       [switch]$SupplyChests,[switch]$SupplyChestsBaseline,
-      [switch]$ForestHeart,[switch]$ForestHeartBaseline,[switch]$DarkmoonStrength,[switch]$Tortusk,[switch]$ClusterCluck,[switch]$PoolPony,[switch]$MinerTroubles,[switch]$DreadHead,[switch]$CaravanDelivery,[switch]$WebbedResearcher,[switch]$LiFeiDuel,[switch]$ShangXiEscort,[switch]$YurivPendant,[switch]$FelfireCanister,[switch]$LifebringerSapling,[switch]$LordamereCannon,[switch]$TitansTerminal,[switch]$StillpinePrimer,[switch]$StillpinePrimerBaseline,[switch]$MonkeyBusiness,[switch]$MonkeyBusinessBaseline,[switch]$MonkeyBusinessFlightBaseline,[switch]$HogtiedRazormane,[switch]$HogtiedRazormaneBaseline,[switch]$TongaGuide,[switch]$TongaGuideBaseline,[switch]$AirfieldFirefighting,[switch]$AirfieldFirefightingBaseline,[switch]$FelfireSeedlings,[switch]$FelfireSeedlingsBaseline,[switch]$BattleboarTroughs,[switch]$BattleboarTroughsBaseline,[string]$FixtureConfig='')
+      [switch]$ForestHeart,[switch]$ForestHeartBaseline,[switch]$DarkmoonStrength,[switch]$Tortusk,[switch]$ClusterCluck,[switch]$PoolPony,[switch]$MinerTroubles,[switch]$DreadHead,[switch]$CaravanDelivery,[switch]$WebbedResearcher,[switch]$LiFeiDuel,[switch]$ShangXiEscort,[switch]$YurivPendant,[switch]$FelfireCanister,[switch]$LifebringerSapling,[switch]$LordamereCannon,[switch]$TitansTerminal,[switch]$StillpinePrimer,[switch]$StillpinePrimerBaseline,[switch]$MonkeyBusiness,[switch]$MonkeyBusinessBaseline,[switch]$MonkeyBusinessFlightBaseline,[switch]$HogtiedRazormane,[switch]$HogtiedRazormaneBaseline,[switch]$TongaGuide,[switch]$TongaGuideBaseline,[switch]$AirfieldFirefighting,[switch]$AirfieldFirefightingBaseline,[switch]$FelfireSeedlings,[switch]$FelfireSeedlingsBaseline,[switch]$BattleboarTroughs,[switch]$BattleboarTroughsBaseline,[switch]$BalboaBasalt,[switch]$BalboaBasaltBaseline,[string]$FixtureConfig='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$scopedProbes = @(@($TakingPrecautions,$Collector,$Scenes,$Kyle,$Seasoning,$SeasoningBaseline,$Aquantion,$AquantionBaseline,$Anowyn,$AnowynBaseline,$AlliedCity,$AlliedCityBaseline,$Duskwither,$DuskwitherBaseline,$RedSnapper,$RedSnapperBaseline,$SwiftDiscipline,$SwiftDisciplineBaseline,$ExtinguishingHope,$ExtinguishingHopeBaseline,$MulgoreCages,$MulgoreCagesBaseline,$AshenvaleFelWood,$AshenvaleFelWoodBaseline,$ElwynnQuests,$ElwynnQuestsBaseline,$SupplyChests,$SupplyChestsBaseline,$ForestHeart,$ForestHeartBaseline,$DarkmoonStrength,$Tortusk,$ClusterCluck,$PoolPony,$MinerTroubles,$DreadHead,$CaravanDelivery,$WebbedResearcher,$LiFeiDuel,$ShangXiEscort,$YurivPendant,$FelfireCanister,$LifebringerSapling,$LordamereCannon,$TitansTerminal,$StillpinePrimer,$StillpinePrimerBaseline,$MonkeyBusiness,$MonkeyBusinessBaseline,$MonkeyBusinessFlightBaseline,$HogtiedRazormane,$HogtiedRazormaneBaseline,$TongaGuide,$TongaGuideBaseline,$AirfieldFirefighting,$AirfieldFirefightingBaseline,$FelfireSeedlings,$FelfireSeedlingsBaseline,$BattleboarTroughs,$BattleboarTroughsBaseline) | Where-Object { $_ }).Count
+$scopedProbes = @(@($TakingPrecautions,$Collector,$Scenes,$Kyle,$Seasoning,$SeasoningBaseline,$Aquantion,$AquantionBaseline,$Anowyn,$AnowynBaseline,$AlliedCity,$AlliedCityBaseline,$Duskwither,$DuskwitherBaseline,$RedSnapper,$RedSnapperBaseline,$SwiftDiscipline,$SwiftDisciplineBaseline,$ExtinguishingHope,$ExtinguishingHopeBaseline,$MulgoreCages,$MulgoreCagesBaseline,$AshenvaleFelWood,$AshenvaleFelWoodBaseline,$ElwynnQuests,$ElwynnQuestsBaseline,$SupplyChests,$SupplyChestsBaseline,$ForestHeart,$ForestHeartBaseline,$DarkmoonStrength,$Tortusk,$ClusterCluck,$PoolPony,$MinerTroubles,$DreadHead,$CaravanDelivery,$WebbedResearcher,$LiFeiDuel,$ShangXiEscort,$YurivPendant,$FelfireCanister,$LifebringerSapling,$LordamereCannon,$TitansTerminal,$StillpinePrimer,$StillpinePrimerBaseline,$MonkeyBusiness,$MonkeyBusinessBaseline,$MonkeyBusinessFlightBaseline,$HogtiedRazormane,$HogtiedRazormaneBaseline,$TongaGuide,$TongaGuideBaseline,$AirfieldFirefighting,$AirfieldFirefightingBaseline,$FelfireSeedlings,$FelfireSeedlingsBaseline,$BattleboarTroughs,$BattleboarTroughsBaseline,$BalboaBasalt,$BalboaBasaltBaseline) | Where-Object { $_ }).Count
 if($scopedProbes -and ($Baseline -or !$FixtureConfig -or $scopedProbes -gt 1)){throw 'Use one named probe and its private migrated fixture'}
 if(!$OutputDirectory -and $DarkmoonStrength){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot-darkmoon-strength"}
 if(!$OutputDirectory -and $Tortusk){$OutputDirectory="$repo/build-extractors/runtime-test/quest-tortusk"}
@@ -28,6 +28,7 @@ if(!$OutputDirectory -and $FelfireCanister){$OutputDirectory="$repo/build-extrac
 if(!$OutputDirectory -and $LifebringerSapling){$OutputDirectory="$repo/build-extractors/runtime-test/quest-lifebringer-sapling"}
 if(!$OutputDirectory -and $LordamereCannon){$OutputDirectory="$repo/build-extractors/runtime-test/quest-lordamere-cannon"}
 if(!$OutputDirectory -and $TitansTerminal){$OutputDirectory="$repo/build-extractors/runtime-test/quest-titans-terminal"}
+if(!$OutputDirectory -and ($BalboaBasalt -or $BalboaBasaltBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-balboa-basalt"}
 if(!$OutputDirectory -and ($BattleboarTroughs -or $BattleboarTroughsBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-battleboar-troughs"}
 if(!$OutputDirectory -and ($FelfireSeedlings -or $FelfireSeedlingsBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-felfire-seedlings"}
 if(!$OutputDirectory -and ($AirfieldFirefighting -or $AirfieldFirefightingBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-airfield-firefighting"}
@@ -62,6 +63,12 @@ if($Baseline){
  if(!$BaselineDirectory){$BaselineDirectory="$repo/.codex/kezan-monkey-flight-20261122/pre-fix"}
  $manifest=Get-Content "$BaselineDirectory/manifest.json" -Raw|ConvertFrom-Json
  if($manifest.pin -ne '2dc07336c' -or (Get-FileHash "$BaselineDirectory/game.lib").Hash -ne $manifest.game){throw 'Pinned banana counterfactual library differs'}
+ $libs=$libs|ForEach-Object {if($_ -eq $game){"$BaselineDirectory/game.lib"}else{$_}}
+ $game="$BaselineDirectory/game.lib"
+}elseif($BalboaBasaltBaseline){
+ if(!$BaselineDirectory){$BaselineDirectory="$repo/.codex/balboa-basalt-20261122/pre-fix"}
+ $manifest=Get-Content "$BaselineDirectory/manifest.json" -Raw|ConvertFrom-Json
+ if($manifest.pin -ne '15bc6e838' -or (Get-FileHash "$BaselineDirectory/game.lib").Hash -ne $manifest.game){throw 'Pinned Balboa counterfactual library differs'}
  $libs=$libs|ForEach-Object {if($_ -eq $game){"$BaselineDirectory/game.lib"}else{$_}}
  $game="$BaselineDirectory/game.lib"
 }elseif($BattleboarTroughsBaseline){
@@ -299,6 +306,16 @@ if($AirfieldFirefighting -or $AirfieldFirefightingBaseline){
  [IO.File]::WriteAllText("$out/NativeAirfieldFirefighting.inc",$query+' " WHERE ID=26078"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
+if($BalboaBasalt -or $BalboaBasaltBaseline){
+ $probeSource = "$PSScriptRoot/BalboaBasaltNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeBalboaBasalt.inc",$query+' " WHERE ID=14250"')
+ [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
+ if($BalboaBasalt){
+  foreach($file in @('AI/SmartScripts/SmartScript.cpp','Maps/Map.cpp','Spells/Spell.cpp','Entities/Object/Object.cpp')){
+   if((Get-Item "$repo/src/server/game/$file").LastWriteTimeUtc -gt (Get-Item $game).LastWriteTimeUtc){throw "Actual game library predates $file"}
+  }
+ }
+}
 if($TongaGuide -or $TongaGuideBaseline){
  $probeSource = "$PSScriptRoot/TongaGuideNative.cpp"
  [IO.File]::WriteAllText("$out/NativeTongaGuide.inc",$query+' " WHERE ID=13988"')
@@ -361,6 +378,7 @@ if($TongaGuideBaseline){$compilerArgs+='/DTONGA_GUIDE_BASELINE'}
 if($AirfieldFirefightingBaseline){$compilerArgs+='/DAIRFIELD_FIREFIGHTING_BASELINE'}
 if($FelfireSeedlingsBaseline){$compilerArgs+='/DFELFIRE_SEEDLINGS_BASELINE'}
 if($BattleboarTroughsBaseline){$compilerArgs+='/DBATTLEBOAR_TROUGHS_BASELINE'}
+if($BalboaBasaltBaseline){$compilerArgs+='/DBALBOA_BASALT_BASELINE'}
 if($ForestHeartBaseline){$compilerArgs+='/DFOREST_HEART_BASELINE'}
 $compilerArgs+=($includes+$extra+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include',$out)|ForEach-Object {'/I"'+$_+'"'})
 $compilerArgs+='"'+$probeSource+'"'
@@ -381,5 +399,5 @@ try{
 Get-Content "$run/stdout.log"|Where-Object {$_ -match '^(PASS|EXPECTED_BROKEN|CASE)'}
 if($exit -or (Get-Item "$run/stderr.log").Length){Get-Content "$run/stderr.log" -Tail 12;throw "Native quest-object loot exit=$exit or stderr"}
 if((Test-Path "$run/DBErrors.log") -and (Get-Item "$run/DBErrors.log").Length){throw 'Native loot emitted DBErrors; inspect preserved evidence'}
-@{baseline=[bool]($Baseline -or $SeasoningBaseline -or $AquantionBaseline -or $AnowynBaseline -or $AlliedCityBaseline -or $DuskwitherBaseline -or $RedSnapperBaseline -or $SwiftDisciplineBaseline -or $ExtinguishingHopeBaseline -or $MulgoreCagesBaseline -or $AshenvaleFelWoodBaseline -or $ElwynnQuestsBaseline -or $SupplyChestsBaseline -or $ForestHeartBaseline -or $StillpinePrimerBaseline -or $MonkeyBusinessBaseline -or $MonkeyBusinessFlightBaseline -or $HogtiedRazormaneBaseline -or $TongaGuideBaseline -or $AirfieldFirefightingBaseline -or $FelfireSeedlingsBaseline -or $BattleboarTroughsBaseline);game=(Get-FileHash $game).Hash;executable=(Get-FileHash "$out/probe.exe").Hash;source=(Get-FileHash $probeSource).Hash;run=$run;exit=$exit}|ConvertTo-Json|Set-Content "$out/native-inputs.json"
+@{baseline=[bool]($Baseline -or $SeasoningBaseline -or $AquantionBaseline -or $AnowynBaseline -or $AlliedCityBaseline -or $DuskwitherBaseline -or $RedSnapperBaseline -or $SwiftDisciplineBaseline -or $ExtinguishingHopeBaseline -or $MulgoreCagesBaseline -or $AshenvaleFelWoodBaseline -or $ElwynnQuestsBaseline -or $SupplyChestsBaseline -or $ForestHeartBaseline -or $StillpinePrimerBaseline -or $MonkeyBusinessBaseline -or $MonkeyBusinessFlightBaseline -or $HogtiedRazormaneBaseline -or $TongaGuideBaseline -or $AirfieldFirefightingBaseline -or $FelfireSeedlingsBaseline -or $BattleboarTroughsBaseline -or $BalboaBasaltBaseline);game=(Get-FileHash $game).Hash;executable=(Get-FileHash "$out/probe.exe").Hash;source=(Get-FileHash $probeSource).Hash;run=$run;exit=$exit}|ConvertTo-Json|Set-Content "$out/native-inputs.json"
 'PASS native execution/exit/stdout/stderr/DBErrors; wrapper must also inspect crash and appended server diagnostics'

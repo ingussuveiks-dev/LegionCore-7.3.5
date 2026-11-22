@@ -4393,6 +4393,16 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                     return nullptr;
     }
 
+    Player* chargeOwner = nullptr;
+    if (entry == 35762 && spellId == 67922)
+    {
+        chargeOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!chargeOwner || !chargeOwner->IsAlive() || GetId() != 1 || chargeOwner->GetZoneId() != 16 ||
+            !properties || properties->ID != 2241 || chargeOwner->GetQuestStatus(14250) != QUEST_STATUS_INCOMPLETE ||
+            !chargeOwner->HasItemCount(49038, 1, false))
+            return nullptr;
+    }
+
     HallowsEndCrate::Route const* collectorRoute = nullptr;
     if (entry == 54114 && spellId == 100668)
     {
@@ -4568,6 +4578,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (tongaOwner)
         tongaOwner->BindQuestObject(13988, summon);
+
+    if (chargeOwner)
+        chargeOwner->BindQuestObject(14250, summon, false);
 
     if (collectorRoute)
     {

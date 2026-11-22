@@ -837,6 +837,21 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             uint32 const linkedTicket = retryLink ? BeginLinkedCastAttempt(e) : 0;
             if (retryLink && !linkedTicket)
                 return;
+
+            if (me && me->GetEntry() == 35759 && e.GetEventType() == SMART_EVENT_LINK && e.action.cast.spell == 67962)
+            {
+                TempSummon* charge = unit ? unit->ToTempSummon() : nullptr;
+                if (!spell || spell->Id != 67915 || !charge || charge->GetEntry() != 35762 ||
+                    charge->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 67922 ||
+                    !charge->HasQuestObjectScope() || charge->IsQuestObjectExpired())
+                    return;
+
+                // Keep Balboa as the origin of the five scattered pieces and
+                // carry the triggering charge's accepted quest into each summon.
+                me->CastSpell(me, 67962, true, nullptr, nullptr, charge->GetGUID());
+                break;
+            }
+
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
             {

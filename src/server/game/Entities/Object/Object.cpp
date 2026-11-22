@@ -3019,6 +3019,11 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     if (entry == 195055 && (!digger || digger->GetQuestStatus(13918) != QUEST_STATUS_INCOMPLETE))
         return nullptr;
 
+    auto basaltScope = entry == 195602 ? GetQuestObjectScope().lock() : nullptr;
+    if (entry == 195602 && (!IsCreature() || GetEntry() != 35772 || GetMapId() != 1 ||
+        GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 67962 || !basaltScope || basaltScope->Cancelled))
+        return nullptr;
+
     GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(entry);
     if (!goinfo)
     {
@@ -3033,20 +3038,21 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         return nullptr;
     }
     go->SetPhaseId(GetPhases(), false);
-    if (!go->InheritQuestObjectScope(this))
+    if (basaltScope)
+        go->BindQuestObjectScope(basaltScope, true);
+    else if (!go->InheritQuestObjectScope(this))
     {
         delete go;
         return nullptr;
     }
     if (digger)
-    {
         digger->BindQuestObject(13918, go);
-        if (!go->EnableQuestScopedCollision())
-        {
-            go->CleanupsBeforeDelete();
-            delete go;
-            return nullptr;
-        }
+
+    if ((digger || entry == 195602) && !go->EnableQuestScopedCollision())
+    {
+        go->CleanupsBeforeDelete();
+        delete go;
+        return nullptr;
     }
     go->SetSummonerGUID(GetGUID());
     go->SetTratsport(GetTransport());

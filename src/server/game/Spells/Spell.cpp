@@ -127,6 +127,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == 49028)
                     quest = 14019;
                 break;
+            case 67922: // Arcane Charge
+                if (m_CastItem->GetEntry() == 49038)
+                    quest = 14250;
+                break;
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
                     quest = 14461;
@@ -2938,6 +2942,10 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
 
         caster->DealDamageMods(damageInfo.target, damageInfo.damage, &damageInfo.absorb, m_spellInfo, GetTriggeredCastFlags() & TRIGGERED_CASTED_BY_AREATRIGGER);
 
+        // An Arcane Charge dislodges basalt from the shared, living Balboa.
+        if (m_spellInfo->Id == 67915 && m_caster->GetEntry() == 35762 && unit->GetEntry() == 35759 && unit->IsAlive())
+            damageInfo.damage = std::min<uint64>(damageInfo.damage, unit->GetHealth() - 1);
+
         m_absorb = damageInfo.absorb;
 
         procEx |= createProcExtendMask(&damageInfo, missInfo);
@@ -3108,6 +3116,18 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     if ((m_spellInfo->Id == 65580 || m_spellInfo->Id == 67917 || m_spellInfo->Id == 69228) &&
         (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_MISS_EVADE;
+
+    if (m_spellInfo->Id == 67915)
+    {
+        TempSummon* charge = m_caster->ToTempSummon();
+        Unit* summoner = charge ? charge->GetSummoner() : nullptr;
+        Player* owner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!charge || charge->GetEntry() != 35762 || charge->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 67922 ||
+            !charge->HasQuestObjectScope() || charge->IsQuestObjectExpired() ||
+            !owner || !owner->IsAlive() || owner->GetQuestStatus(14250) != QUEST_STATUS_INCOMPLETE ||
+            !owner->HasItemCount(49038, 1, false) || !unit->IsCreature() || unit->GetEntry() != 35759 || !unit->IsAlive())
+            return SPELL_MISS_EVADE;
+    }
 
     if (m_spellInfo->Id == 67917)
     {
@@ -6644,6 +6664,9 @@ SpellCastResult Spell::CheckCast(bool strict)
             mound->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE))
             return SPELL_FAILED_BAD_TARGETS;
     }
+
+    if (m_spellInfo->Id == 67922 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+        return SPELL_FAILED_DONT_REPORT;
 
     SpellCastResult castResult = CallScriptCheckCastHandlers();
     
