@@ -1426,13 +1426,13 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 break;
             }
 
-            // The Lifebringer trial is a successful item use. Combat tap on
-            // the animal must not redirect credit to an unrelated player.
-            if (me && spell && spell->Id == 65188 && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
-                e.action.killedMonster.creature == 34373)
+            // These quest interactions belong to the actual item user.
+            if (me && spell && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
+                ((spell->Id == 65188 && e.action.killedMonster.creature == 34373) ||
+                 (spell->Id == 67917 && me->GetEntry() == 34699 && e.action.killedMonster.creature == 35760)))
             {
                 if (Player* user = unit ? unit->ToPlayer() : nullptr)
-                    user->RewardPlayerAndGroupAtEvent(34373, user);
+                    user->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, user);
                 break;
             }
 

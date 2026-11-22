@@ -106,14 +106,28 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
     m_spellGuid = triggerData.spellGuid;
     m_parentTargetCount = triggerData.parentTargetCount;
 
-    if (m_CastItem && (m_spellInfo->Id == 65580 || m_spellInfo->Id == 65751))
-        if (Player* player = m_caster->ToPlayer())
+    if (m_CastItem)
+    {
+        uint32 quest = 0;
+        switch (m_spellInfo->Id)
         {
-            uint32 const quest = m_spellInfo->Id == 65580 ? 13961 : 13988;
-            uint32 const item = m_spellInfo->Id == 65580 ? 46722 : 46782;
-            if (m_CastItem->GetEntry() == item && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
-                m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
+            case 65580: // Grol'dom Net
+                if (m_CastItem->GetEntry() == 46722)
+                    quest = 13961;
+                break;
+            case 65751: // Tonga's Totem
+                if (m_CastItem->GetEntry() == 46782)
+                    quest = 13988;
+                break;
+            case 67917: // Nitro-Potassium Bananas
+                if (m_CastItem->GetEntry() == 49028)
+                    quest = 14019;
+                break;
         }
+        if (Player* player = m_caster->ToPlayer())
+            if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+                m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
+    }
 
     m_castPos = *m_caster;
     m_diffMode = m_caster->GetMap() ? m_caster->GetMap()->GetSpawnMode() : 0;
@@ -3083,9 +3097,20 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     if (!unit || !effectMask)
         return SPELL_MISS_EVADE;
 
-    // A net launched before abandon must not capture for the next acceptance.
-    if (m_spellInfo->Id == 65580 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+    // These missiles must still belong to the quest attempt that launched them.
+    if ((m_spellInfo->Id == 65580 || m_spellInfo->Id == 67917) &&
+        (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_MISS_EVADE;
+
+    if (m_spellInfo->Id == 67917)
+    {
+        Player* feeder = m_caster->ToPlayer();
+        Creature* monkey = unit->ToCreature();
+        if (!feeder || !monkey || monkey->GetEntry() != 34699 || !monkey->IsAlive() ||
+            feeder->GetQuestStatus(14019) != QUEST_STATUS_INCOMPLETE || !feeder->HasItemCount(49028, 1, false) ||
+            m_spellInfo->CheckTarget(feeder, monkey) != SPELL_CAST_OK)
+            return SPELL_MISS_EVADE;
+    }
 
     // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
     if (m_spellInfo->GetMisc(m_diffMode)->MiscData.Speed && (/*unit->IsImmunedToDamage(m_spellInfo) ||*/unit->IsImmunedToSpell(m_spellInfo)))

@@ -9,3 +9,11 @@ Pirms labojuma somā palikušus banānus varēja izlietot uz pērtiķa arī bez 
 Migrācijas atkārtota izpilde saglabāja identiskus datus. Kanoniskais Release `7A536D1EDCD34529439FEA1147C14088D7DE5D944DF6AD0190912E45E75C6FCC` ar pārbaudīto datubāzi startējās un korekti izslēdzās bez jaunas kļūdu diagnostikas. Produkcijā salīdzinātas četras nosacījumu rindas, visas deviņas SmartAI rindas un migrācijas kontrolsumma. Lokālajā `build-extractors/bin/Release/fixed/kezan-monkey-business-2026-11-22/` saglabātas 116 diagnostikas datnes ar kontrolsummām. Pagaidu izpildfailu un būves datņu izņemšana atbrīvoja 1 950 873 498 baitus.
 
 Klientā atsevišķi pārbaudāma redzamība gaitā no iepriekšējās Goblinu sākuma salas fāzes un banānu izmešanas vizuālais efekts.
+
+## Spēlētāji maina kaujas piesaisti metiena laikā
+
+`-MonkeyBusinessFlightBaseline` ar bibliotēku no `2dc07336c` atkārtoja ieskaiti nepareizajam spēlētājam. Kvestu pieņēmušais metējs trāpīja parastajam mērķim, bet pa to laiku cits spēlētājs bija to piesaistījis kaujā. Iepriekšējais trāpījums izmantoja pēdējo kaujas piesaisti un palaida pērtiķa nāves notikumu.
+
+`67917` tagad glabā metiena kvesta pieņemšanas reizi un trāpījuma brīdī vēlreiz pārbauda aktīvo kvestu, banānus somā, dzīvu mērķi un sākotnējo aizliegumu izmantot sveša spēlētāja piesaistītu mērķi. Atteikts trāpījums neizpilda SmartAI notikumu un neizlieto pašu mērķi. Veiksmīga trāpījuma ieskaiti sāk faktiskais barotājs, un native grupas nosacījumi joprojām nodrošina ieskaiti tiesīgiem biedriem.
+
+Paplašinātā `-MonkeyBusiness` pārbaude beidzās ar desmit sekmīgiem barošanas gadījumiem, dzīvu mērķi pēc svešas piesaistes, trāpījuma atteikumu pēc atmešanas un atkārtotas pieņemšanas, kā arī derīgu grupas ieskaiti. Atkārtotās `-HogtiedRazormane` un `-TongaGuide` pārbaudes pabeigtas bez jaunām kļūdām. Pagaidu un kanoniskais Release `743352C5779843C4CA71EEF1E21B22CFDC68F24150F5F9C0BEE9C61288CCF6CA` sasniedza `ready` un korekti izslēdzās. Gala saitē apstiprināti `SmartScript.obj` un `Spell.obj`. Šim labojumam pietika ar C++ izmaiņām. Saglabātas 102 diagnostikas datnes ar pārbaudītām kontrolsummām `build-extractors/bin/Release/fixed/kezan-monkey-flight-2026-11-22/`. Pagaidu datņu izņemšana atbrīvoja 2 281 492 743 baitus.

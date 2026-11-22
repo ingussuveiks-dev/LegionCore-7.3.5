@@ -104,6 +104,8 @@ void CheckFeeding(Quest const* quest)
     Actor receiver(&map, Bamm, bamm->Fetch()[0].GetUInt32(), receiverPoint);
     receiver.SetPhaseMask(bamm->Fetch()[5].GetUInt32(), false);
     Require(map.AddToMap(static_cast<Creature*>(&receiver)), "Could not publish the actual questgiver");
+    Group party;
+    party.*Access(GroupGuidTag{}) = ObjectGuid::Create<HighGuid::Party>(14019, 0);
     LootPlayer owner(SupplySession(), map, 14019, receiverPoint), other(SupplySession(), map, 14020, receiverPoint);
     for (auto player : {&owner, &other})
     {
@@ -120,6 +122,7 @@ void CheckFeeding(Quest const* quest)
     Require(Feed(owner, receiver) != SPELL_CAST_OK, "Bananas accepted an unrelated creature");
 #endif
 
+    uint32 expectedOther = 0;
     for (uint32 index = 0; index < 11; ++index, monkeys->NextRow())
     {
         Field* fields = monkeys->Fetch();
@@ -152,15 +155,52 @@ void CheckFeeding(Quest const* quest)
             Require(Feed(owner, monkey) == SPELL_FAILED_CANT_CAST_ON_TAPPED && monkey.IsAlive() &&
                 !other.GetQuestObjectiveData(FeedingQuest, FeedCredit), "The spell did not preserve its native combat tap restriction");
             monkey.SetLootRecipient(nullptr);
+
+            Require(Feed(owner, monkey) == SPELL_CAST_OK, "The native missile did not launch while the target was untapped");
+            Tick(owner, 20);
+            monkey.SetLootRecipient(&other);
+            Tick(owner, 3000);
+#ifdef MONKEY_BUSINESS_FLIGHT_BASELINE
+            Require(!owner.GetQuestObjectiveData(FeedingQuest, FeedCredit) && other.GetQuestObjectiveData(FeedingQuest, FeedCredit) == 1 &&
+                !monkey.IsAlive(), "Expected the old missile to credit the unrelated combat tap at impact");
+            std::cout << "EXPECTED_BROKEN a combat tap received another player's banana while it was in flight\n";
+            return;
+#else
+            Require(!owner.GetQuestObjectiveData(FeedingQuest, FeedCredit) && !other.GetQuestObjectiveData(FeedingQuest, FeedCredit) &&
+                monkey.IsAlive(), "A foreign combat tap between launch and impact still consumed the target or gained credit");
+            monkey.SetLootRecipient(nullptr);
+
+            Require(Feed(owner, monkey) == SPELL_CAST_OK, "The untapped target did not admit a follow-up item cast");
+            Tick(owner, 20);
+            AbandonSupply(owner, FeedingQuest);
+            owner.AddQuestAndCheckCompletion(quest, &receiver);
+            Tick(owner, 3000);
+            Require(owner.GetItemCount(Bananas) == 1 && !owner.GetQuestObjectiveData(FeedingQuest, FeedCredit) && monkey.IsAlive(),
+                "A projectile from the abandoned quest affected the newly accepted quest");
+#endif
 #endif
         }
         if (index == 1)
+        {
+            for (auto player : {&owner, &other})
+            {
+                Group::MemberSlot member;
+                member.Guid = player->GetGUID();
+                member.Class = player->getClass();
+                const_cast<Group::MemberSlotList&>(party.GetMemberSlots()).push_back(member);
+                player->SetGroup(&party, 0);
+            }
+            sGroupMgr->AddGroup(&party);
+            monkey.SetLootRecipient(&other);
+            expectedOther = 1;
+        }
+        if (index == 2)
             monkey.SetLootRecipient(&owner);
         if (index == 10)
         {
             Require(Feed(owner, monkey) != SPELL_CAST_OK && monkey.IsAlive(), "A completed quest accepted additional feeding");
             other.Kill(&monkey);
-            Require(!other.GetQuestObjectiveData(FeedingQuest, FeedCredit), "Ordinary combat death advanced the feeding objective");
+            Require(other.GetQuestObjectiveData(FeedingQuest, FeedCredit) == expectedOther, "Ordinary combat death advanced the feeding objective");
             break;
         }
         SpellCastResult result = Feed(owner, monkey);
@@ -168,9 +208,16 @@ void CheckFeeding(Quest const* quest)
             std::cout << "CASE feeding result=" << result << " monkey=" << index << " faction=" << monkey.getFaction() << '\n';
         Require(result == SPELL_CAST_OK, "The native banana spell rejected a valid delivery");
         Tick(owner, 3000);
+        if (index == 1)
+        {
+            owner.SetGroup(nullptr);
+            other.SetGroup(nullptr);
+            sGroupMgr->RemoveGroup(&party);
+        }
         Require(owner.GetQuestObjectiveData(FeedingQuest, FeedCredit) == index + 1 &&
-            !other.GetQuestObjectiveData(FeedingQuest, FeedCredit) && owner.GetItemCount(Bananas) == 1 && !monkey.IsAlive(),
-            "Expected one credit for the feeder, the authored monkey death and the retained bundle");
+            other.GetQuestObjectiveData(FeedingQuest, FeedCredit) == expectedOther &&
+            owner.GetItemCount(Bananas) == 1 && !monkey.IsAlive(),
+            "Expected one credit for the feeder and any eligible nearby party member, and the authored monkey death");
         Require(Feed(other, monkey) != SPELL_CAST_OK, "A dead monkey accepted another feed");
     }
 
