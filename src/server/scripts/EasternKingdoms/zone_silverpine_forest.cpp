@@ -16,8 +16,10 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Item.h"
 #include "MoveSplineInit.h"
 #include "PassiveAI.h"
+#include "QuestObjectScope.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
@@ -219,6 +221,329 @@ class spell_lordamere_rocket_blast : public SpellScript
     std::shared_ptr<QuestCancellationReceipt const> _attempt;
     uint32 _rideSequence = 0;
 };
+
+constexpr uint32 PoisonousChickenQuest = 27088;
+constexpr uint32 ChickenCage = 60808;
+constexpr uint32 ForestEttin = 44367;
+constexpr uint32 BushChicken = 44935;
+constexpr uint32 ReleaseBushChicken = 83902;
+constexpr uint8 BushChickenSummonSlot = 6;
+constexpr uint32 EttinVehicle = 1063;
+constexpr uint32 EttinGrabChicken = 83904;
+constexpr uint32 ChickenRide = 46598;
+constexpr uint32 EttinMouth = 83907;
+constexpr uint32 ChickenExplosion = 83903;
+constexpr uint32 EttinBonk = 80146;
+constexpr uint32 EttinSmash = 88421;
+constexpr int8 ArmSeat = 0;
+constexpr int8 MouthSeat = 1;
+
+bool IsPlacedEttin(Creature const& ettin)
+{
+    uint64 spawn = ettin.GetDBTableGUIDLow();
+    return ettin.GetEntry() == ForestEttin && ettin.GetMapId() == 0 && (spawn == 128656 || spawn == 128825);
+}
+
+bool CanReleaseChicken(Player const& player, Creature const& ettin)
+{
+    return player.IsAlive() && ettin.IsAlive() && IsPlacedEttin(ettin) &&
+        player.GetQuestStatus(PoisonousChickenQuest) == QUEST_STATUS_INCOMPLETE && player.HasItemCount(ChickenCage, 1, false) &&
+        player.InSamePhase(&ettin) && player.IsWithinDistInMap(&ettin, 40.0f);
+}
+
+struct npc_silverpine_forest_ettin : ScriptedAI
+{
+    explicit npc_silverpine_forest_ettin(Creature* creature) : ScriptedAI(creature) { }
+
+    enum class FeedingStep { None, Approach, Notice, BoardArm, Lift, BoardMouth, Swallow, Explode };
+
+    bool CanFeed() const
+    {
+        Vehicle* seats = me->GetVehicleKit();
+        return _step == FeedingStep::None && seats && seats->GetVehicleInfo()->ID == EttinVehicle &&
+            seats->HasEmptySeat(ArmSeat) && seats->HasEmptySeat(MouthSeat);
+    }
+
+    bool OfferChicken(Player& owner, TempSummon& chicken)
+    {
+        if (!CanFeed() || !CanReleaseChicken(owner, *me) || chicken.GetSummonerGUID() != owner.GetGUID() ||
+            chicken.GetEntry() != BushChicken || !chicken.IsAlive() || chicken.GetVehicle())
+            return false;
+
+        _owner = owner.GetGUID();
+        _chicken = chicken.GetGUID();
+        _attempt = owner.GetQuestCancellationReceipt(PoisonousChickenQuest);
+        _timeLeft = 20000;
+        _step = FeedingStep::Approach;
+        chicken.SetReactState(REACT_PASSIVE);
+        chicken.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        Position point = me->GetNearPosition(1.5f, me->GetRelativeAngle(&chicken));
+        chicken.GetMotionMaster()->MovePoint(1, point);
+        return true;
+    }
+
+    bool IsGrabbing(Unit const* chicken) const
+    {
+        return chicken && _step == FeedingStep::BoardArm && chicken->GetGUID() == _chicken;
+    }
+
+    bool IsEating(Unit const* chicken) const
+    {
+        return chicken && _step == FeedingStep::Explode && chicken->GetGUID() == _chicken;
+    }
+
+    void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
+    {
+        if (!apply || passenger->GetGUID() != _chicken)
+            return;
+        if (_step == FeedingStep::BoardArm && seat == ArmSeat)
+        {
+            ResumePatrol();
+            _step = FeedingStep::Lift;
+            _wait = 4000;
+        }
+        else if (_step == FeedingStep::BoardMouth && seat == MouthSeat)
+        {
+            _step = FeedingStep::Swallow;
+            _wait = 2000;
+        }
+    }
+
+    void Reset() override
+    {
+        EndFeeding();
+        _combat.Reset();
+    }
+
+    void JustDied(Unit*) override { EndFeeding(); }
+
+    void EnterCombat(Unit*) override
+    {
+        _combat.ScheduleEvent(EttinBonk, 2000);
+        _combat.ScheduleEvent(EttinSmash, 8000);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_step != FeedingStep::None)
+            UpdateFeeding(diff);
+
+        if (!UpdateVictim())
+            return;
+        _combat.Update(diff);
+        if (!me->HasUnitState(UNIT_STATE_CASTING))
+            if (uint32 spell = _combat.ExecuteEvent())
+            {
+                DoCastVictim(spell);
+                _combat.ScheduleEvent(spell, spell == EttinBonk ? urand(9000, 11000) : urand(15000, 16000));
+            }
+        DoMeleeAttackIfReady();
+    }
+
+private:
+    void ResumePatrol()
+    {
+        if (_paused)
+        {
+            me->ResumeMovement();
+            _paused = false;
+        }
+    }
+
+    void EndFeeding()
+    {
+        ObjectGuid chicken = _chicken;
+        _step = FeedingStep::None;
+        _wait = 0;
+        _timeLeft = 0;
+        _chicken.Clear();
+        _owner.Clear();
+        _attempt.reset();
+        ResumePatrol();
+        if (!chicken.IsEmpty())
+            if (Creature* actor = ObjectAccessor::GetCreature(*me, chicken))
+                actor->DespawnOrUnsummon(100);
+    }
+
+    void UpdateFeeding(uint32 diff)
+    {
+        Player* owner = ObjectAccessor::GetPlayer(*me, _owner);
+        Creature* chicken = ObjectAccessor::GetCreature(*me, _chicken);
+        if (!owner || !chicken || !chicken->IsAlive() || !_attempt || _attempt->load(std::memory_order_acquire) ||
+            !CanReleaseChicken(*owner, *me) || diff >= _timeLeft)
+        {
+            EndFeeding();
+            return;
+        }
+        _timeLeft -= diff;
+        if (diff < _wait)
+        {
+            _wait -= diff;
+            return;
+        }
+        _wait = 0;
+
+        switch (_step)
+        {
+            case FeedingStep::Approach:
+                if (me->IsWithinDistInMap(chicken, 2.5f))
+                {
+                    me->PauseMovement();
+                    _paused = true;
+                    me->SetFacingToObject(chicken);
+                    _step = FeedingStep::Notice;
+                    _wait = 1250;
+                }
+                break;
+            case FeedingStep::Notice:
+                _step = FeedingStep::BoardArm;
+                me->CastSpell(chicken, EttinGrabChicken, true);
+                break;
+            case FeedingStep::Lift:
+                _step = FeedingStep::BoardMouth;
+                if (me->GetVehicleKit()->GetPassenger(ArmSeat) == chicken)
+                    chicken->CastSpell(me, EttinMouth, true);
+                break;
+            case FeedingStep::Swallow:
+                if (me->GetVehicleKit()->GetPassenger(MouthSeat) == chicken)
+                {
+                    _step = FeedingStep::Explode;
+                    chicken->CastSpell(chicken, ChickenExplosion, true, nullptr, nullptr, owner->GetGUID());
+                    if (me->IsAlive())
+                        AttackStart(owner);
+                }
+                EndFeeding();
+                break;
+            default:
+                break;
+        }
+    }
+
+    FeedingStep _step = FeedingStep::None;
+    ObjectGuid _owner;
+    ObjectGuid _chicken;
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
+    EventMap _combat;
+    uint32 _timeLeft = 0;
+    uint32 _wait = 0;
+    bool _paused = false;
+};
+
+class spell_silverpine_release_bush_chicken : public SpellScript
+{
+    PrepareSpellScript(spell_silverpine_release_bush_chicken);
+
+    SpellCastResult CheckCage()
+    {
+        Player* owner = GetCaster()->ToPlayer();
+        Unit* explicitTarget = GetExplTargetUnit();
+        Creature* ettin = explicitTarget ? explicitTarget->ToCreature() : nullptr;
+        Item* cage = GetCastItem();
+        if (!owner || !ettin || !cage || cage->GetEntry() != ChickenCage || !CanReleaseChicken(*owner, *ettin))
+            return SPELL_FAILED_BAD_TARGETS;
+        auto ai = CAST_AI(npc_silverpine_forest_ettin, ettin->AI());
+        return ai && ai->CanFeed() ? SPELL_CAST_OK : SPELL_FAILED_NOT_READY;
+    }
+
+    void RememberPreviousChicken()
+    {
+        _previous = GetCaster()->m_SummonSlot[BushChickenSummonSlot];
+    }
+
+    TempSummon* FindReleasedChicken(Player& owner)
+    {
+        ObjectGuid summon = owner.m_SummonSlot[BushChickenSummonSlot];
+        if (!summon || summon == _previous)
+            return nullptr;
+        Creature* creature = ObjectAccessor::GetCreature(owner, summon);
+        TempSummon* chicken = creature ? creature->ToTempSummon() : nullptr;
+        return chicken && chicken->GetEntry() == BushChicken && chicken->GetSummonerGUID() == owner.GetGUID() &&
+            chicken->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == ReleaseBushChicken ? chicken : nullptr;
+    }
+
+    void SendChicken(SpellEffIndex)
+    {
+        Player* owner = GetCaster()->ToPlayer();
+        Creature* ettin = GetHitCreature();
+        if (!owner || !ettin || !CanReleaseChicken(*owner, *ettin))
+            return;
+        auto ai = CAST_AI(npc_silverpine_forest_ettin, ettin->AI());
+        if (!ai)
+            return;
+
+        if (TempSummon* chicken = FindReleasedChicken(*owner))
+            _feeding = ai->OfferChicken(*owner, *chicken);
+    }
+
+    void DespawnUnassignedChicken()
+    {
+        if (!_feeding)
+            if (Player* owner = GetCaster()->ToPlayer())
+                if (TempSummon* chicken = FindReleasedChicken(*owner))
+                    chicken->DespawnOrUnsummon();
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_silverpine_release_bush_chicken::CheckCage);
+        BeforeCast += SpellCastFn(spell_silverpine_release_bush_chicken::RememberPreviousChicken);
+        OnEffectHitTarget += SpellEffectFn(spell_silverpine_release_bush_chicken::SendChicken, EFFECT_1, SPELL_EFFECT_DUMMY);
+        AfterCast += SpellCastFn(spell_silverpine_release_bush_chicken::DespawnUnassignedChicken);
+    }
+
+    ObjectGuid _previous;
+    bool _feeding = false;
+};
+
+class spell_silverpine_ettin_grab : public SpellScript
+{
+    PrepareSpellScript(spell_silverpine_ettin_grab);
+
+    void GrabChicken(SpellEffIndex)
+    {
+        Creature* ettin = GetCaster()->ToCreature();
+        Unit* chicken = GetHitUnit();
+        auto ai = ettin ? CAST_AI(npc_silverpine_forest_ettin, ettin->AI()) : nullptr;
+        if (ai && ai->IsGrabbing(chicken) && GetEffectValue() == ChickenRide)
+            chicken->CastSpell(ettin, ChickenRide, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_silverpine_ettin_grab::GrabChicken, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
+class spell_silverpine_chicken_explosion : public SpellScript
+{
+    PrepareSpellScript(spell_silverpine_chicken_explosion);
+
+    void SelectFedEttin(std::list<WorldObject*>& targets)
+    {
+        Unit* chicken = GetCaster();
+        Creature* ettin = chicken->GetVehicleBase() ? chicken->GetVehicleBase()->ToCreature() : nullptr;
+        auto ai = ettin ? CAST_AI(npc_silverpine_forest_ettin, ettin->AI()) : nullptr;
+        if (!ai || !ai->IsEating(chicken))
+        {
+            targets.clear();
+            return;
+        }
+        targets.remove_if([ettin](WorldObject const* target) { return target != ettin; });
+    }
+
+    void WeakenEttin()
+    {
+        if (Creature* ettin = GetHitCreature(); ettin && IsPlacedEttin(*ettin) && GetHitDamage() > 0)
+            SetHitDamage(int32(CalculatePct(ettin->GetMaxHealth(), 80)));
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_silverpine_chicken_explosion::SelectFedEttin, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_silverpine_chicken_explosion::SelectFedEttin, EFFECT_2, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnHit += SpellHitFn(spell_silverpine_chicken_explosion::WeakenEttin);
+    }
+};
 }
 
 void AddSC_silverpine_forest()
@@ -226,4 +551,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_lordamere_horde_cannon);
     RegisterCreatureAI(npc_lordamere_hillsbrad_worgen);
     RegisterSpellScript(spell_lordamere_rocket_blast);
+    RegisterCreatureAI(npc_silverpine_forest_ettin);
+    RegisterSpellScript(spell_silverpine_release_bush_chicken);
+    RegisterSpellScript(spell_silverpine_ettin_grab);
+    RegisterSpellScript(spell_silverpine_chicken_explosion);
 }

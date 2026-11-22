@@ -194,3 +194,5 @@ Atkārtotais eksports aptver 5 459 ierakstus, 4 865 ieslēgtus kvestus un visus 
 `29422` Huo’s Offerings tagad sākas pie redzamā Huo un pabeidz kvestu tikai pēc īstās auras beigām. Pārbaudīta priekšmeta lietošana, dabiskā auras izbeigšanās, aiziešana, atmešana, atkārtots mēģinājums un nodošana. [Huo, the Spirit of Fire pārbaude](huo-offerings-2026-11-22.md)
 
 Atkārtotajā eksportā pēc Redridge un Svētnīcas labojumiem ir 5 459 ieraksti un 4 865 ieslēgti kvesti. Visi 167 atrastie skriptu nosaukumi ir kanoniskajā Release. Atlasē ar pasaulē novietotu devēju palika 17 aktieru vai kredīta atzīmes un 28 priekšmeta lietošanas atzīmes. Šajā priekšmetu atlasē turpināmi `14071` un `27088`. Eksports, kandidātu saraksti un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-shrine/`.
+
+`27088` atjaunoti Forest Ettin oriģinālie sēdekļi. Servera zonde ar īsto būri pārbaudīja vistas satveršanu, pārvietošanu uz mutes sēdekli, sprādzienu, indi, mājdzīvnieka pēdējo sitienu un nodošanu pie Wormcrud. [Forest Ettin pārbaude](forest-ettin-2026-11-22.md)
