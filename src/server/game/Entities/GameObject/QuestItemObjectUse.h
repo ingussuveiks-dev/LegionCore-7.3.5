@@ -3,6 +3,7 @@
 
 #include "Define.h"
 
+class Creature;
 class GameObject;
 class Item;
 class Player;
@@ -36,6 +37,19 @@ constexpr uint32 Key = 23925;
 constexpr uint32 OpenCage = 30767;
 constexpr uint32 Ravager = 17556;
 constexpr uint32 RavagerSpawn = 35799;
+}
+
+namespace ProphecyOfAkida
+{
+constexpr uint32 Quest = 9544;
+constexpr uint32 Cage = 181714;
+constexpr uint32 Captive = 17375;
+constexpr uint32 Key = 23801;
+constexpr uint32 OpenCage = 30406;
+constexpr uint32 CaptiveReady = 1;
+
+bool IsPlacedPair(GameObject const& cage, Creature const& captive);
+Creature* FindCaptive(GameObject const& cage);
 }
 
 namespace QuestItemObjectUse

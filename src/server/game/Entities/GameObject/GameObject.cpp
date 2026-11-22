@@ -21,6 +21,7 @@
 #include "BattlegroundAlteracValley.h"
 #include "CellImpl.h"
 #include "ChallengeMgr.h"
+#include "CreatureAI.h"
 #include "CreatureAISelector.h"
 #include "DatabaseEnv.h"
 #include "GameEventMgr.h"
@@ -1477,8 +1478,31 @@ constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
 {
     {StagnantOasis::Fissure, StagnantOasis::FissureSpawn, 1, 0, StagnantOasis::Quest, StagnantOasis::Seeds, StagnantOasis::PlantSeeds},
     {AmaniCatacombs::Remains, 0, 530, 3510, AmaniCatacombs::Quest, AmaniCatacombs::Torch, AmaniCatacombs::BurnRemains},
-    {RavagerCage::Cage, RavagerCage::CageSpawn, 530, 0, RavagerCage::Quest, RavagerCage::Key, RavagerCage::OpenCage}
+    {RavagerCage::Cage, RavagerCage::CageSpawn, 530, 0, RavagerCage::Quest, RavagerCage::Key, RavagerCage::OpenCage},
+    {ProphecyOfAkida::Cage, 0, 530, 3571, ProphecyOfAkida::Quest, ProphecyOfAkida::Key, ProphecyOfAkida::OpenCage}
 };
+}
+
+bool ProphecyOfAkida::IsPlacedPair(GameObject const& cage, Creature const& captive)
+{
+    // Rows 18839–18853 are the original Bristlelimb Village cage placements.
+    constexpr uint32 CaptiveSpawns[] =
+    {
+        39317, 39320, 39318, 39319, 39322, 39315, 39321, 39314,
+        39316, 39328, 39327, 39326, 39325, 39324, 39323
+    };
+    uint64 cageSpawn = cage.GetDBTableGUIDLow();
+    return cage.GetEntry() == Cage && cage.GetMapId() == 530 && captive.GetEntry() == Captive &&
+        captive.GetMap() == cage.GetMap() && cageSpawn >= 18839 && cageSpawn <= 18853 &&
+        captive.GetDBTableGUIDLow() == CaptiveSpawns[cageSpawn - 18839];
+}
+
+Creature* ProphecyOfAkida::FindCaptive(GameObject const& cage)
+{
+    Creature* captive = cage.FindNearestCreature(Captive, 5.0f);
+    if (captive && IsPlacedPair(cage, *captive))
+        return captive;
+    return nullptr;
 }
 
 QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
@@ -1508,11 +1532,18 @@ Item* QuestItemObjectUse::FindUsableItem(Player const& player, Binding const& bi
 
 bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, Binding const& binding)
 {
-    return object && player && player->IsAlive() && player->GetMap() == object->GetMap() &&
+    bool eligible = object && player && player->IsAlive() && player->GetMap() == object->GetMap() &&
         object->GetEntry() == binding.ObjectEntry && object->GetMapId() == binding.MapId &&
         (!binding.Spawn || object->GetDBTableGUIDLow() == binding.Spawn) && (!binding.AreaId || object->GetAreaId() == binding.AreaId) &&
         player->GetQuestStatus(binding.Quest) == QUEST_STATUS_INCOMPLETE && FindUsableItem(*player, binding) &&
         object->isSpawned() && !object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
+    if (!eligible || binding.Quest != ProphecyOfAkida::Quest)
+        return eligible;
+
+    if (object->getLootState() != GO_READY)
+        return false;
+    Creature const* captive = ProphecyOfAkida::FindCaptive(*object);
+    return captive && captive->AI() && captive->AI()->GetData(ProphecyOfAkida::CaptiveReady);
 }
 
 bool GameObject::ActivateToQuest(Player* target) const

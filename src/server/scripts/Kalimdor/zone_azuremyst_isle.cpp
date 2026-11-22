@@ -564,16 +564,9 @@ public:
 
 enum BristlelimbCage
 {
-    QUEST_THE_PROPHECY_OF_AKIDA         = 9544,
-    NPC_STILLPINE_CAPITIVE              = 17375,
-    GO_BRISTELIMB_CAGE                  = 181714,
-
-    CAPITIVE_SAY_1                      = -1000474,
-    CAPITIVE_SAY_2                      = -1000475,
-    CAPITIVE_SAY_3                      = -1000476,
-
-    POINT_INIT                          = 1,
-    EVENT_DESPAWN                       = 1,
+    CAPTIVE_SAY_1 = -1000474,
+    CAPTIVE_SAY_2 = -1000475,
+    CAPTIVE_SAY_3 = -1000476
 };
 
 class npc_stillpine_capitive : public CreatureScript
@@ -587,61 +580,99 @@ class npc_stillpine_capitive : public CreatureScript
             {
             }
 
-            void Reset()
+            void Reset() override
             {
-                if (GameObject* cage = me->FindNearestGameObject(GO_BRISTELIMB_CAGE, 5.0f))
-                {
-                    cage->SetLootState(GO_JUST_DEACTIVATED);
-                    cage->SetGoState(GO_STATE_READY);
-                }
-                _events.Reset();
+                GameObject* cage = _cageGuid ? ObjectAccessor::GetGameObject(*me, _cageGuid) :
+                    me->FindNearestGameObject(ProphecyOfAkida::Cage, 5.0f);
+                if (cage && ProphecyOfAkida::IsPlacedPair(*cage, *me))
+                    cage->ResetDoorOrButton();
+
+                _cageGuid.Clear();
                 _playerGuid.Clear();
-                _movementComplete = false;
+                _attempt.reset();
+                _timer = 0;
+                _freed = false;
             }
 
-            void StartMoving(Player* owner)
+            uint32 GetData(uint32 id) const override
             {
-                if (_movementComplete || !_playerGuid.IsEmpty() || !owner)
+                return id == ProphecyOfAkida::CaptiveReady && me->IsAlive() && !_playerGuid && !_freed;
+            }
+
+            void Release(Player& owner, GameObject& cage)
+            {
+                if (!GetData(ProphecyOfAkida::CaptiveReady) || cage.getLootState() != GO_READY ||
+                    !ProphecyOfAkida::IsPlacedPair(cage, *me))
                     return;
-                if (owner)
+
+                _attempt = owner.GetQuestCancellationReceipt(ProphecyOfAkida::Quest);
+                if (!_attempt || _attempt->load(std::memory_order_acquire))
+                    return;
+
+                _playerGuid = owner.GetGUID();
+                _cageGuid = cage.GetGUID();
+                _exit = me->GetNearPosition(3.0f, 0.0f);
+                _timer = 10 * IN_MILLISECONDS;
+                cage.UseDoorOrButton(0, false, &owner);
+                DoScriptText(RAND(CAPTIVE_SAY_1, CAPTIVE_SAY_2, CAPTIVE_SAY_3), me, &owner);
+                me->GetMotionMaster()->MovePoint(++_movementId, _exit);
+            }
+
+            void MovementInform(uint32 type, uint32 id) override
+            {
+                if (type != POINT_MOTION_TYPE || id != _movementId || !_playerGuid || _freed || me->GetExactDist(_exit) > 1.0f)
+                    return;
+
+                Player* owner = GetOwner();
+                if (!owner)
+                    return;
+
+                _freed = true;
+                _timer = 3500;
+                owner->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
+            }
+
+            void UpdateAI(uint32 diff) override
+            {
+                if (!_playerGuid)
+                    return;
+                if ((_freed || GetOwner()) && _timer > diff)
                 {
-                    DoScriptText(RAND(CAPITIVE_SAY_1, CAPITIVE_SAY_2, CAPITIVE_SAY_3), me, owner);
-                    _playerGuid = owner->GetGUID();
+                    _timer -= diff;
+                    return;
                 }
-                Position pos = me->GetNearPosition(3.0f, 0.0f);
-                me->GetMotionMaster()->MovePoint(POINT_INIT, pos);
-            }
-
-            void MovementInform(uint32 type, uint32 id)
-            {
-                if (type != POINT_MOTION_TYPE || id != POINT_INIT || _movementComplete)
-                    return;
-
-                if (Player* _player = ObjectAccessor::GetPlayer(*me, _playerGuid))
-                    _player->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
-
-                _movementComplete = true;
-                _events.ScheduleEvent(EVENT_DESPAWN, 3500);
-            }
-
-            void UpdateAI(uint32 diff)
-            {
-                if (!_movementComplete)
-                    return;
-
-                _events.Update(diff);
-
-                if (_events.ExecuteEvent() == EVENT_DESPAWN)
+                if (_freed)
                     me->DespawnOrUnsummon();
+                else
+                {
+                    Reset();
+                    me->GetMotionMaster()->Clear(false);
+                    me->NearTeleportTo(me->GetHomePosition());
+                }
             }
 
         private:
+            Player* GetOwner() const
+            {
+                if (!_attempt || _attempt->load(std::memory_order_acquire))
+                    return nullptr;
+                Player* owner = ObjectAccessor::GetPlayer(*me, _playerGuid);
+                if (owner && owner->IsAlive() && owner->GetQuestStatus(ProphecyOfAkida::Quest) == QUEST_STATUS_INCOMPLETE &&
+                    owner->IsWithinDistInMap(me, 20.0f))
+                    return owner;
+                return nullptr;
+            }
+
             ObjectGuid _playerGuid;
-            EventMap _events;
-            bool _movementComplete = false;
+            ObjectGuid _cageGuid;
+            std::shared_ptr<QuestCancellationReceipt const> _attempt;
+            Position _exit;
+            uint32 _timer = 0;
+            uint32 _movementId = 0;
+            bool _freed = false;
         };
 
-        CreatureAI* GetAI(Creature* creature) const
+        CreatureAI* GetAI(Creature* creature) const override
         {
             return new npc_stillpine_capitiveAI(creature);
         }
@@ -649,22 +680,26 @@ class npc_stillpine_capitive : public CreatureScript
 
 class go_bristlelimb_cage : public GameObjectScript
 {
-    public:
-        go_bristlelimb_cage() : GameObjectScript("go_bristlelimb_cage") { }
+public:
+    go_bristlelimb_cage() : GameObjectScript("go_bristlelimb_cage") { }
 
-        bool OnGossipHello(Player* player, GameObject* go)
+    struct CageAI : GameObjectAI
+    {
+        explicit CageAI(GameObject* cage) : GameObjectAI(cage) { }
+
+        bool GossipHello(Player* player, bool withSpell) override
         {
-            if (player->GetQuestStatus(QUEST_THE_PROPHECY_OF_AKIDA) == QUEST_STATUS_INCOMPLETE)
+            if (withSpell)
             {
-                if (Creature* capitive = go->FindNearestCreature(NPC_STILLPINE_CAPITIVE, 5.0f, true))
-                {
-                    go->ResetDoorOrButton();
-                    CAST_AI(npc_stillpine_capitive::npc_stillpine_capitiveAI, capitive->AI())->StartMoving(player);
-                    return false;
-                }
+                if (Creature* captive = ProphecyOfAkida::FindCaptive(*go))
+                    if (auto ai = CAST_AI(npc_stillpine_capitive::npc_stillpine_capitiveAI, captive->AI()))
+                        ai->Release(*player, *go);
             }
             return true;
         }
+    };
+
+    GameObjectAI* GetAI(GameObject* cage) const override { return new CageAI(cage); }
 };
 
 void AddSC_azuremyst_isle()

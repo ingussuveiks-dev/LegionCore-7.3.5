@@ -94,6 +94,8 @@ Pēc `14250` atkārtotajā eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēg
 
 `9582` piecu sekunžu atslēgas darbība atver faktiskā Death Ravager būri. Serverī pārbaudīta pārtraukta un atkārtota atvēršana, cīņas atcelšana, mājdzīvnieka un grupas ieskaite un atslēgas izņemšana, nododot kvestu pie Ruada. [Strength of One pārbaude](ravager-cage-2026-11-22.md)
 
+`9544` gūstekni var atbrīvot ar īsto Bristlelimb atslēgu tikai pie viņa faktiskā būra. Serverī pārbaudīti trīs sākotnējie laupījuma avoti, 15 pāri, astoņas kustības ieskaites, nederīga atkārtota atvēršana un rezerves atslēgu noņemšana. [The Prophecy of Akida pārbaude](akida-cages-2026-11-22.md)
+
 Pēc `9193` jaunākajā datu eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēgti kvesti. Atbilstošajā Release atrodami visi 160 pasaules skriptu nosaukumi. Kvestiem ar pasaulē novietotu devēju paliek 47 priekšmeta lietošanas kandidāti un 17 statiski neizsekoti aktiera vai kredīta ceļi. Šie ir pārskatāmi kandidāti, kuros ietilpst arī jau pārbaudīti C++ ceļi. Eksports un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-catacombs/`.
 
 Brazie the Botanist `49687` ir novietots Hillsbrad Foothills un piedāvā sešus aktīvus 20. līmeņa kvestus `28733/28617/28744/28747/28748/28751`. `28744` un `28747` datu pārskatā ir atrastas native ieskaites burvestības `92340` un `92435`, tāpēc tās neparādās četrās pilnībā neizsekotajās atlasēs. Pārbaudītajā datubāzē šīm divām burvestībām arī trūkst izsaukuma sasaistes ar minispēles kontroli. Visu sešu kvestu faktiskā iedarbināšana, viļņi un nodošana paliek atvērti.
