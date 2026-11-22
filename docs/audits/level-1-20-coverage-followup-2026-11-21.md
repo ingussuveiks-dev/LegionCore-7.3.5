@@ -172,3 +172,7 @@ Svaigajā pasaules un hotfix eksportā ir 5 459 tvēruma ieraksti. No tiem 4 865
 `26557` izmeklēšanā pārbaudīti abi Sandy Carp `58946` avoti. Valley of Wisdom laupījuma tabulai `5171` jau ir Stag Eye burvestības `80868` nosacījums. Orgrimmar rezerves tabulā `1637` tam pašam priekšmetam ir `QuestRequired=1` un 2,8042% iespēja bez ēsmas auras prasības. Kad apakšzonai nav savas laupījuma tabulas, makšķerēšanas kods izmanto pilsētas tabulu. Pareizajai Stag Eye `58949` rindai ir aktīva kvesta nosacījums un 50 Weakened Mosshoof Stag `35096` novietojumi Azsharā. Rezerves laupījuma labojums un makšķerēšanas pārbaude vēl ir atvērti. [Makšķerēšanas laupījuma atlase](../../src/server/game/Entities/GameObject/GameObject.cpp#L962)
 
 Kopējais audits paliek atvērts. Šoreiz faktisko kvestu izspēli nevarēja pārbaudīt, jo spēles klients nedarbojās.
+
+## Nākamie priekšmeta lietošanas labojumi
+
+`26557` Sandy Carp tagad iegūstams Valley of Wisdom ar aktīvu kvestu un izlietotu Stag Eye. Servera pārbaude aptvēra nepareizās apakšzonas atteikumu, parasto zivju saglabāšanu, atmešanu, jaunu lomu un nodošanu pie Razgar. Migrācija uzstādīta darba MariaDB. [A Staggering Effort pārbaude](stag-eye-fishing-2026-11-22.md)
