@@ -176,3 +176,9 @@ Kopējais audits paliek atvērts. Šoreiz faktisko kvestu izspēli nevarēja pā
 ## Nākamie priekšmeta lietošanas labojumi
 
 `26557` Sandy Carp tagad iegūstams Valley of Wisdom ar aktīvu kvestu un izlietotu Stag Eye. Servera pārbaude aptvēra nepareizās apakšzonas atteikumu, parasto zivju saglabāšanu, atmešanu, jaunu lomu un nodošanu pie Razgar. Migrācija uzstādīta darba MariaDB. [A Staggering Effort pārbaude](stag-eye-fishing-2026-11-22.md)
+
+`26651` Bravo Company Field Kit dod īsto lādiņa darbību nepabeigtā kvestā. Serverī pārbaudīti abi novietotie fokusi, abu būvju ieskaite, atkārtots trāpījums vienā būvē, kvesta atmešana un nodošana pie Keeshan. Migrācija uzstādīta darba MariaDB. [To Win a War, You Gotta Become War pārbaude](redridge-seaforium-2026-11-22.md)
+
+Atkārtotais eksports aptver 5 459 ierakstus, 4 865 ieslēgtus kvestus un visus 166 pārbaudītos skriptu nosaukumus kanoniskajā Release. Pie pasaulē novietota devēja palika 17 aktieru vai kredīta atzīmes un 29 priekšmeta lietošanas atzīmes. Seši priekšmeta lietošanas gadījumi šajā atlasē joprojām ir atvērti, proti, `14071/26646/26694/27088/29422/29664`. Eksports un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-fishing-and-seaforium/`.
+
+`26646` spēles slēdzenei `1930` vajag Blackrock Holding Pen Key `59261`. Atbilstošajam būrim `204441/1379` ieskaite ir piesaistīta atvērta objekta stāvoklim. Pārskatīts arī vispārīgais pogas mijiedarbības ceļš, kas var pārslēgt objekta stāvokli bez slēdzenes pārbaudes. Jāpārbauda šī ceļa faktiskā uzvedība ar būri bez atslēgas, īstā atslēgas izlietošana un gūstekņu secība. [Objekta lietošanas kods](../../src/server/game/Entities/GameObject/GameObject.cpp#L1905)
