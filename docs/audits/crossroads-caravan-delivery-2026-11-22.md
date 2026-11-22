@@ -1,0 +1,13 @@
+# Crossroads Caravan Delivery (13975)
+
+Rocco Whipshank `34578` piedāvā braucienu ar pieņemtu kvestu un somā esošo Halga's Street Sweeper `46714`. Divos mērķu slotos bija samainīti tipi. `65892` tagad ir eskorta kredīts, un `46714` ir līdzi dotais priekšmets, ko spēlētājs saņem no Rocco un nodod Thorkam `3429`. Kvests ar vecu statusu `COMPLETE` bez eskorta kredīta atgriežas nepabeigts, saglabājot iespēju izbraukt maršrutu.
+
+Rocco izsauc kodo `34577` ar Legion burvestību `65662` un properties `64` esošajā starta vietā. Kodo un ar `65494` izsauktais kravas kodo ir redzami savam spēlētājam. Sākotnējā SmartAI darbība startēja ceļu jau no klikšķa, arī ja sēdvietas pārbaude to noraidīja. Tagad ceļš sākas ar faktisku braucēja iekāpšanu. Datu pārbaudē 0. sēdvietai nebija parastā iekāpšanas karoga, bet īstais `46598` ceļš izmanto tās atļauto izņēmumu, ko apstiprināja native pārbaude.
+
+Saglabāti 24 maršruta punkti, kredīts 23. punktā un izkāpšana ar `68576` 24. punktā. Kredītu saņem tikai sava kodo pasažieris faktiskajā ierašanās vietā. Balgors noslēguma darbību nodod kodo, kas viņu izsauca. Nodošana un atmešana izņem šāvēju no somas. Kopējais kvesta objektu izņemšanas ceļš tagad atpazīst arī transportlīdzekļa GUID, tāpēc atmešana brauciena laikā noņem kodo un atbrīvo pasažieri.
+
+`Test-QuestObjectLootNative.ps1 -CaravanDelivery` izmantoja īstos SQL un DB2 ierakstus, divus spēlētājus, native izsaukšanu, pasažiera pievienošanu un izkāpšanu, citu spēlētāju klikšķu atteikumu, atrašanās vietas un kredīta pārbaudi, nodošanu un atmešanu brauciena laikā. Maršruta punktus pārbaudīja ar kontrolētiem kustības paziņojumiem. Tests pārbaudīja arī, ka bez braucēja nav šāviena un ka braucēja spēju nevar izmantot pret Rocco. Klientā vēl jāpārbauda nepārtraukta pārvietošanās, kameras darbība un kauja ar Burning Blade Raiders, tostarp `96792` sitiena efekts.
+
+Gala Release SHA-256 `D8FB03D1EC5229A0F8E158CE06A855B7763316C51DFAFB2993269B4C370E8F4B`. Gala saišu kartē pārbaudīti `Map.obj`, `Player.obj` un `zone_the_barrens.obj`. Staged un kanoniskais Release sasniedza `ready` izolētajā datubāzē un korekti izslēdzās. Produkcijas rindas salīdzinātas ar pārbaudīto migrāciju.
+
+Sākotnējās native palaišanas avāriju izraisīja nepilnīgs testa spēlētāja modeļa iestatījums. Tā pati palaišana arī ielasīja nesaistītus dialogu datus bez to atkarībām. Labotajā pārbaudē ielasīts spēlētāja īstais modelis un tikai pārbaudāmais dialogs. Avārijas pēdas, tā brīža izolētās MariaDB savienojumu pārtraukumi un gala pārbaudes žurnāli glabājas `build-extractors/bin/Release/fixed/crossroads-caravan-delivery-2026-11-22/` ar pārbaudītām SHA-256 vērtībām. Noņemti 663 285 936 baiti pagaidu failu, saglabājot iepriekšējā Release atjaunošanas kopiju.

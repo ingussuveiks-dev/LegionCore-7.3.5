@@ -19182,6 +19182,9 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     if (quest->GetQuestId() == 8490 && GetQuestObjectiveData(8490, 16364) < 1)
         return false;
 
+    if (quest->GetQuestId() == 13975 && GetQuestObjectiveData(13975, 65892) < 1)
+        return false;
+
     if (quest->GetQuestId() == 40938)
         for (uint32 credit : {102466u, 102465u, 102652u, 102653u, 102654u})
             if (GetQuestObjectiveData(40938, credit) < 1)
@@ -20847,7 +20850,7 @@ void Player::CancelQuestObjects(uint32 questId)
         return;
     for (ObjectGuid const& guid : objects)
     {
-        if (guid.IsCreature())
+        if (guid.IsCreature() || guid.IsVehicle())
         {
             if (Creature* creature = GetMap()->GetCreature(guid))
             {

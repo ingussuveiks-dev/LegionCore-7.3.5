@@ -4297,6 +4297,21 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* caravanRider = nullptr;
+    if (entry == 34577 && spellId == 65662)
+    {
+        caravanRider = summoner ? summoner->ToPlayer() : nullptr;
+        if (!caravanRider || GetId() != 1 || !properties || properties->ID != 64 ||
+            !caravanRider->IsAlive() || caravanRider->GetQuestStatus(13975) != QUEST_STATUS_INCOMPLETE ||
+            !caravanRider->HasItemCount(46714, 1, false) || caravanRider->GetQuestObjectiveData(13975, 65892))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *caravanRider->GetSummonList(entry))
+            if (Creature const* kodo = GetCreature(guid))
+                if (kodo->IsAlive() && kodo->HasQuestObjectScope() && !kodo->IsQuestObjectExpired())
+                    return nullptr;
+    }
+
     Player* minerOwner = nullptr;
     if (entry == 35813 && spellId == 68059 && GetId() == 648)
     {
@@ -4471,6 +4486,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     // Keep the miner and his spell-summoned cart personal while retaining combat with the cavern.
     if (minerOwner)
         minerOwner->BindQuestObject(14021, summon, false);
+
+    if (caravanRider)
+        caravanRider->BindQuestObject(13975, summon, false);
 
     if (collectorRoute)
     {
