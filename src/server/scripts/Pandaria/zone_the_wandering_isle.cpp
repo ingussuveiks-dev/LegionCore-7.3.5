@@ -1024,17 +1024,22 @@ public:
 
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest)
     {
-        if (quest->GetQuestId() == QUEST_PARCHEMIN_VOLANT) // La lecon du parchemin brulant
+        if (quest->GetQuestId() == QUEST_PARCHEMIN_VOLANT && player->IsAlive() &&
+            player->GetQuestStatus(QUEST_PARCHEMIN_VOLANT) == QUEST_STATUS_INCOMPLETE)
         {
-            // used by spell 102445
-            if (Creature* tempSummon = creature->SummonCreature(54734, creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000, player->GetGUID()))
+            std::list<Creature*> opponents;
+            creature->GetCreatureListWithEntryInGrid(opponents, 54734, 60.0f);
+            for (Creature const* opponent : opponents)
+                if (opponent->IsAlive() && opponent->HasQuestObjectScope() && !opponent->IsQuestObjectExpired() &&
+                    opponent->IsInPersonnalVisibilityList(player->GetGUID()))
+                    return true;
+
+            if (Creature* opponent = creature->SummonCreature(54734, creature->GetPositionX(), creature->GetPositionY(),
+                creature->GetPositionZ(), creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000, player->GetGUID()))
             {
-                //player->CastSpell(player, 108149);  //visib
-                //player->CastSpell(player, 108150);  //invis
-                
-                tempSummon->AddPlayerInPersonnalVisibilityList(player->GetGUID());
-                tempSummon->AI()->AttackStart(player);
-                tempSummon->AI()->SetGUID(player->GetGUID());
+                player->BindQuestObject(QUEST_PARCHEMIN_VOLANT, opponent);
+                opponent->AI()->SetGUID(player->GetGUID());
+                opponent->AI()->AttackStart(player);
             }
         }
 
@@ -1055,8 +1060,8 @@ public:
     struct boss_li_fei_fightAI : public ScriptedAI
     {
         EventMap events;
-        std::list<Player*> playersInvolved;
         ObjectGuid playerGuid;
+        bool surrendered = false;
 
         boss_li_fei_fightAI(Creature* creature) : ScriptedAI(creature)
         {}
@@ -1069,13 +1074,13 @@ public:
             EVENT_SHADOW_KICK_STUN  = 4,
         };
 
-        void Reset()
+        void Reset() override
         {
             // This particular entry is also spawned on an other event
-            if (me->GetAreaId() != 5849) // Cavern areaid
+            if (me->GetAreaId() != 5849 || surrendered)
                 return;
 
-            playerGuid.Clear();
+            events.Reset();
             me->SetReactState(REACT_AGGRESSIVE);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC);
             me->setFaction(16);
@@ -1089,38 +1094,59 @@ public:
             playerGuid = guid;
         }
         
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType)
+        Player* GetDuelist() const
         {
-            if (me->HealthBelowPctDamaged(10, damage))
+            if (!me->HasQuestObjectScope() || me->IsQuestObjectExpired())
+                return nullptr;
+            if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                if (player->GetQuestStatus(QUEST_PARCHEMIN_VOLANT) == QUEST_STATUS_INCOMPLETE &&
+                    me->IsWithinDistInMap(player, 50.0f))
+                    return player;
+            return nullptr;
+        }
+
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+        {
+            if (!me->HasQuestObjectScope())
+                return;
+
+            Player* player = GetDuelist();
+            if (surrendered || !player || !player->IsAlive() ||
+                attacker->GetCharmerOrOwnerPlayerOrPlayerItself() != player)
             {
                 damage = 0;
+                return;
+            }
+
+            if (damage && me->HealthBelowPctDamaged(10, damage))
+            {
+                damage = 0;
+                surrendered = true;
+                events.Reset();
                 me->setFaction(35);
                 me->CombatStop();
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
-
-                if (Player* player = ObjectAccessor::FindPlayer(playerGuid))
-                {
-                    player->KilledMonsterCredit(54734, ObjectGuid::Empty);
-                    player->RemoveAurasDueToSpell(108150);
-                }
-                if (Creature* owner = me->GetMap()->GetCreature(me->ToTempSummon()->GetSummonerGUID()))
-                    sCreatureTextMgr->SendChat(owner, TEXT_GENERIC_0, attacker->GetGUID());
+                player->KilledMonsterCredit(54734);
+                player->RemoveAurasDueToSpell(108150);
+                if (TempSummon* summon = me->ToTempSummon())
+                    if (Creature* teacher = me->GetMap()->GetCreature(summon->GetSummonerGUID()))
+                        sCreatureTextMgr->SendChat(teacher, TEXT_GENERIC_0, player->GetGUID());
+                me->DespawnOrUnsummon(3000);
             }
         }
 
-        void KilledUnit(Unit* victim)
+        void KilledUnit(Unit* victim) override
         {
-            if (victim->GetTypeId() == TYPEID_PLAYER)
-            {
-                victim->ToPlayer()->SetQuestStatus(QUEST_PARCHEMIN_VOLANT, QUEST_STATUS_FAILED);
-
-                if (victim->GetGUID() == playerGuid)
+            if (Player* player = GetDuelist())
+                if (victim == player)
+                {
+                    player->FailQuest(QUEST_PARCHEMIN_VOLANT);
                     me->DespawnOrUnsummon(3000);
-            }
+                }
         }
         
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) override
         {
             events.Update(diff);
             
@@ -1130,20 +1156,10 @@ public:
                 {
                     case EVENT_CHECK_PLAYER:
                     {
-                        bool checkPassed = true;
-                        Player* player = ObjectAccessor::FindPlayer(playerGuid);
-
+                        Player* player = GetDuelist();
                         if (!player || !player->IsAlive())
                         {
                             me->DespawnOrUnsummon(1000);
-                            playerGuid.Clear();
-                            break;
-                        }
-
-                        if (player->GetQuestStatus(QUEST_PARCHEMIN_VOLANT) != QUEST_STATUS_INCOMPLETE)
-                        {
-                            me->DespawnOrUnsummon(1000);
-                            playerGuid.Clear();
                             break;
                         }
 
