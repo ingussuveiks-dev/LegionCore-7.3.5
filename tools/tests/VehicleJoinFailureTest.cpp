@@ -58,6 +58,21 @@ struct Player;
 struct Creature;
 struct Vehicle;
 struct VehicleJoinEvent;
+
+// The join fixtures use ordinary vehicles. The scenario-specific branch is
+// compiled from production and should remain unreachable for these actors.
+constexpr uint32 AT_ACTION_MOMENT_ENTER = 1;
+struct AreaTrigger
+{
+    void const* GetAreaTriggerInfo() const { assert(false); return nullptr; }
+    void AffectUnit(Unit*, uint32) { assert(false); }
+};
+namespace SharasdalWaveRide
+{
+    constexpr uint32 Wave = 209132;
+    bool Enabled(AreaTrigger*, Unit*, void const*) { assert(false); return false; }
+}
+
 struct Position
 {
     float m_positionX=0,m_positionY=0,m_positionZ=0;
@@ -75,6 +90,7 @@ struct Unit : Object
     uint32 identity=17,despawns=0,exits=0,flags=0,states=0,movementFlags=0,interrupted=0,mountedRemoved=0;
     uint32 breakTargets=0,splines=0,visibilityUpdates=0,charmCalls=0,rootCalls=0;
     bool inWorld=true,accessory=false,charmResult=true;
+    bool alive=true,preDelete=false;
     bool waitOnSeat=false;
     EventProcessor m_Events;
     std::function<void()> onExit;
@@ -99,8 +115,12 @@ struct Unit : Object
     ObjectGuid GetGUID() const {return {identity};}
     uint32 GetGUIDLow() const {return identity;}
     uint32 GetEntry() const {return 105886;}
+    uint32 GetMapId() const {return 1;}
+    AreaTrigger* GetAreaObject(uint32) const {assert(false);return nullptr;}
     char const* GetName() const {return "passenger";}
     bool IsInWorld() const {return inWorld;}
+    bool IsAlive() const {return alive;}
+    bool IsPreDelete() const {return preDelete;}
     bool HasUnitTypeMask(uint32 mask) const {assert(mask==UNIT_MASK_ACCESSORY);return accessory;}
     bool HasFlag(uint32 field,uint32 flag) const {assert(field==UNIT_FIELD_FLAGS);return (flags&flag)!=0;}
     bool HasUnitMovementFlag(uint32 flag) const {return (movementFlags&flag)!=0;}
