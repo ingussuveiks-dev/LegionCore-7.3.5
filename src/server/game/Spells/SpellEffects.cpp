@@ -51,6 +51,7 @@
 #include "Log.h"
 #include "MapManager.h"
 #include "MiscPackets.h"
+#include "MotionMaster.h"
 #include "MoveSplineInitArgs.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
@@ -1134,6 +1135,17 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
 
     if (!unitTarget && !gameObjTarget && !itemTarget)
         return;
+
+    if (m_spellInfo->Id == KneeDeep::Swing)
+    {
+        Player* player = m_caster->ToPlayer();
+        Creature* vermin = unitTarget ? unitTarget->ToCreature() : nullptr;
+        if (KneeDeep::CanSwing(player) && m_questItemCastReceipt && !m_questItemCastReceipt->load(std::memory_order_acquire) &&
+            player->GetQuestCancellationReceipt(KneeDeep::Quest) == m_questItemCastReceipt && KneeDeep::IsTunnelVermin(vermin) &&
+            vermin->InSamePhase(player) && player->IsWithinLOSInMap(vermin))
+            vermin->GetMotionMaster()->MoveFleeing(player, 3000);
+        return;
+    }
 
     // Fishing dummy
     if (m_spellInfo->Id == 131474)

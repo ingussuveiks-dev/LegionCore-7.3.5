@@ -169,6 +169,16 @@ constexpr uint32 Ore = 55241;
 constexpr uint32 Mine = 77020;
 }
 
+namespace KneeDeep
+{
+constexpr uint32 Quest = 24678;
+constexpr uint32 Torch = 50220;
+constexpr uint32 Swing = 70631;
+
+bool CanSwing(Player const* player);
+bool IsTunnelVermin(Creature const* creature);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

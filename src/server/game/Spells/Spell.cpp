@@ -150,8 +150,29 @@ bool CanFireSfg(Player const* player, Creature const* target)
         target && target->GetEntry() == 36868 && target->GetMapId() == 1 && target->GetZoneId() == 16 &&
         target->IsAlive() && !target->IsDespawn() && (!target->hasLootRecipient() || target->isTappedBy(player));
 }
+
+bool IsGilneasTunnel(WorldObject const& object)
+{
+    uint32 area = object.GetAreaId();
+    return object.GetMapId() == 654 && (area == 4758 || area == 4790 || area == 4727) && object.InSamePhase(2097152);
+}
 }
 
+bool KneeDeep::CanSwing(Player const* player)
+{
+    if (!player || !player->IsAlive() || player->getRace() != RACE_WORGEN || !IsGilneasTunnel(*player) || !player->HasItemCount(Torch, 1, false))
+        return false;
+
+    QuestStatus status = player->GetQuestStatus(Quest);
+    // The original travel quest has no counter and can enter COMPLETE before reaching Krennan.
+    return status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE;
+}
+
+bool KneeDeep::IsTunnelVermin(Creature const* creature)
+{
+    return creature && creature->GetDBTableGUIDLow() && creature->IsAlive() && !creature->IsDespawn() && IsGilneasTunnel(*creature) &&
+        (creature->GetEntry() == 37889 || creature->GetEntry() == 37891 || creature->GetEntry() == 37892);
+}
 
 SpellValue::SpellValue(SpellInfo const* proto, uint8 diff)
 {
@@ -216,6 +237,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == Dozercism::Flaregun)
                     quest = Dozercism::Quest;
                 break;
+            case KneeDeep::Swing:
+                if (m_CastItem->GetEntry() == KneeDeep::Torch)
+                    quest = KneeDeep::Quest;
+                break;
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
                     quest = 14461;
@@ -233,7 +258,8 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
             quest = binding->Quest;
         if (auto assembly = FindQuestAssembly(m_spellInfo->Id); assembly && m_CastItem->GetEntry() == assembly->Item)
             quest = assembly->IncompleteQuest(*player);
-        if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+        if (quest && (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE ||
+            (quest == KneeDeep::Quest && player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE)))
             m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
     }
     else if (player && m_spellInfo->Id == 101838 && triggerData.originalCaster == player->GetGUID() &&
@@ -6791,6 +6817,11 @@ SpellCastResult Spell::CheckCast(bool strict)
     // The guide's generic kill proc does not account for the actual recipients of XP or honor.
     if (m_spellInfo->Id == 100776 && m_questKillReward != 29433)
         return SPELL_FAILED_DONT_REPORT;
+
+    if (m_spellInfo->Id == KneeDeep::Swing && (!KneeDeep::CanSwing(m_caster->ToPlayer()) ||
+        !m_CastItem || !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
+        !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+        return SPELL_FAILED_BAD_TARGETS;
 
     if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id, m_CastItem ? m_CastItem->GetEntry() : 0); binding && (!m_questItemCastReceipt ||
         m_questItemCastReceipt->load(std::memory_order_acquire) ||
