@@ -72,9 +72,19 @@ constexpr uint32 Quest = 13875;
 constexpr uint32 Plant = 194997;
 constexpr uint32 Flower = 46315;
 constexpr uint32 HairBraid = 46316;
+constexpr uint32 WovenBraid = 46314;
 constexpr uint32 Weave = 65001;
 
 bool CanGather(GameObject const& plant, Player const& player);
+}
+
+namespace SamophlangeManual
+{
+constexpr uint32 Quest = 14006;
+constexpr uint32 LegacyQuest = 3924;
+constexpr uint32 Cover = 11147;
+constexpr uint32 Manual = 11149;
+constexpr uint32 Assemble = 13714;
 }
 
 namespace QuestItemObjectUse

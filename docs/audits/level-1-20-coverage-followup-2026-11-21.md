@@ -100,6 +100,10 @@ Pēc `14250` atkārtotajā eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēg
 
 `13875` pārbauda aktīvu kvestu, lietojot Thorned Bloodcup ziedus un aužot bizi. Serverī pārbaudīti 59 novietojumi, astoņi laupījuma paņēmieni, pilna soma, atcelta aušana un gatavās bizes un rezerves materiālu izņemšana pie Draaka. [Gurtar's Request pārbaude](gurtars-request-2026-11-22.md)
 
+Pēc `13875` atjaunotais eksports aptver 5 459 ierakstus un 4 865 ieslēgtus kvestus. Atbilstošajā Release apstiprināti visi 160 aptvertie skriptu nosaukumi. Statiskajā atlasē kvestiem ar novietotu devēju ir 44 priekšmeta lietošanas kandidāti un 17 neizsekoti aktiera vai progresa ceļi. Eksports ir lokāli `.codex/quest-coverage-20261122-braid/`.
+
+`14006` saliek rokasgrāmatu no lietotāja faktiskā vāka un piecām lapām tikai aktīvā mēģinājumā. Serverī pārbaudīti abi lapu avoti, saglabātais `3924`, gatavās rokasgrāmatas izņemšana pēc atmešanas un Sputtervalve nodošana. Kopā pārbaudīta arī `13875` gatavās bizes izņemšana pēc atmešanas. [Read the Manual pārbaude](samophlange-manual-2026-11-22.md)
+
 Pēc `9193` jaunākajā datu eksportā ir 5 459 tvēruma ieraksti un 4 865 ieslēgti kvesti. Atbilstošajā Release atrodami visi 160 pasaules skriptu nosaukumi. Kvestiem ar pasaulē novietotu devēju paliek 47 priekšmeta lietošanas kandidāti un 17 statiski neizsekoti aktiera vai kredīta ceļi. Šie ir pārskatāmi kandidāti, kuros ietilpst arī jau pārbaudīti C++ ceļi. Eksports un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-catacombs/`.
 
 Brazie the Botanist `49687` ir novietots Hillsbrad Foothills un piedāvā sešus aktīvus 20. līmeņa kvestus `28733/28617/28744/28747/28748/28751`. `28744` un `28747` datu pārskatā ir atrastas native ieskaites burvestības `92340` un `92435`, tāpēc tās neparādās četrās pilnībā neizsekotajās atlasēs. Pārbaudītajā datubāzē šīm divām burvestībām arī trūkst izsaukuma sasaistes ar minispēles kontroli. Visu sešu kvestu faktiskā iedarbināšana, viļņi un nodošana paliek atvērti.

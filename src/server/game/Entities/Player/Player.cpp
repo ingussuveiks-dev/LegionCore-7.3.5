@@ -20687,7 +20687,26 @@ bool Player::TakeQuestSourceItem(uint32 questId, bool msg)
     if (!AddProvidedQuestItem(*this, quest, items, msg))
         return false;
     if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
-        items.AddDrops(quest);
+    {
+        uint32 sharedManualQuest = 0;
+        if (questId == SamophlangeManual::Quest)
+            sharedManualQuest = SamophlangeManual::LegacyQuest;
+        else if (questId == SamophlangeManual::LegacyQuest)
+            sharedManualQuest = SamophlangeManual::Quest;
+
+        QuestStatus const sharedStatus = sharedManualQuest ? GetQuestStatus(sharedManualQuest) : QUEST_STATUS_NONE;
+        if (sharedStatus != QUEST_STATUS_INCOMPLETE && sharedStatus != QUEST_STATUS_COMPLETE)
+        {
+            items.AddDrops(quest);
+            if (sharedManualQuest)
+            {
+                items.Add(SamophlangeManual::Cover, 1);
+                items.Add(SamophlangeManual::Manual, 1);
+            }
+            if (questId == BloodcupBraid::Quest)
+                items.Add(BloodcupBraid::WovenBraid, 1);
+        }
+    }
     items.Apply(*this);
     return true;
 }

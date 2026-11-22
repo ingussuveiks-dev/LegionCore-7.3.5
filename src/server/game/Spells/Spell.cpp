@@ -74,6 +74,44 @@ extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
 
 namespace
 {
+struct QuestAssembly
+{
+    uint32 Spell;
+    uint32 Item;
+    uint32 Quest;
+    uint32 LegacyQuest;
+
+    uint32 IncompleteQuest(Player const& player) const
+    {
+        if (player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE)
+            return Quest;
+        if (LegacyQuest && player.GetQuestStatus(LegacyQuest) == QUEST_STATUS_INCOMPLETE)
+            return LegacyQuest;
+        return 0;
+    }
+
+    bool MatchesAttempt(Player& player, std::shared_ptr<QuestCancellationReceipt const> const& receipt) const
+    {
+        if (player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE && player.GetQuestCancellationReceipt(Quest) == receipt)
+            return true;
+        return LegacyQuest && player.GetQuestStatus(LegacyQuest) == QUEST_STATUS_INCOMPLETE &&
+            player.GetQuestCancellationReceipt(LegacyQuest) == receipt;
+    }
+};
+
+QuestAssembly const* FindQuestAssembly(uint32 spell)
+{
+    static constexpr QuestAssembly assemblies[] =
+    {
+        {BloodcupBraid::Weave, BloodcupBraid::HairBraid, BloodcupBraid::Quest, 0},
+        {SamophlangeManual::Assemble, SamophlangeManual::Cover, SamophlangeManual::Quest, SamophlangeManual::LegacyQuest}
+    };
+    for (QuestAssembly const& assembly : assemblies)
+        if (assembly.Spell == spell)
+            return &assembly;
+    return nullptr;
+}
+
 bool CanLeashVileFin(Player const* player, Creature const* target)
 {
     return player && player->IsAlive() && player->GetMapId() == 0 &&
@@ -156,10 +194,6 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == Dozercism::Flaregun)
                     quest = Dozercism::Quest;
                 break;
-            case BloodcupBraid::Weave:
-                if (m_CastItem->GetEntry() == BloodcupBraid::HairBraid)
-                    quest = BloodcupBraid::Quest;
-                break;
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
                     quest = 14461;
@@ -175,6 +209,8 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
         }
         if (auto binding = QuestItemObjectUse::ForSpell(m_spellInfo->Id); binding && m_CastItem->GetEntry() == binding->ItemEntry)
             quest = binding->Quest;
+        if (auto assembly = FindQuestAssembly(m_spellInfo->Id); assembly && m_CastItem->GetEntry() == assembly->Item)
+            quest = assembly->IncompleteQuest(*player);
         if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
             m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
     }
@@ -6722,11 +6758,11 @@ SpellCastResult Spell::CheckCast(bool strict)
         !QuestItemObjectUse::CanUse(m_targets.GetGOTarget(), m_caster->ToPlayer(), *binding)))
         return SPELL_FAILED_BAD_TARGETS;
 
-    if (m_spellInfo->Id == BloodcupBraid::Weave)
+    if (auto assembly = FindQuestAssembly(m_spellInfo->Id))
     {
-        Player const* player = m_caster->ToPlayer();
+        Player* player = m_caster->ToPlayer();
         if (!player || !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
-            player->GetQuestStatus(BloodcupBraid::Quest) != QUEST_STATUS_INCOMPLETE ||
+            !assembly->MatchesAttempt(*player, m_questItemCastReceipt) ||
             (m_targets.GetObjectTarget() && m_targets.GetObjectTarget() != player))
             return SPELL_FAILED_BAD_TARGETS;
     }

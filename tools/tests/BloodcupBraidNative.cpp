@@ -215,7 +215,14 @@ void CheckBraid(::Quest const* quest)
     Tick(other, 2200);
     Require(!other.GetItemCount(Braid) && other.GetItemCount(Flower) == 8 && other.GetItemCount(HairBraid) == 1,
         "A cancelled cast wove or consumed materials from a new acceptance");
+    Sleep(1800);
+    GameTime::UpdateGameTimers();
+    Require(other.CastSpell(&other, Weave, false, other.GetItemByEntry(HairBraid)) == SPELL_CAST_OK, "The new quest could not weave its own braid");
+    Tick(other, 3000);
+    Require(other.GetItemCount(Braid) == 1 && other.GetQuestStatus(BloodcupBraid::Quest) == QUEST_STATUS_COMPLETE,
+        "The new quest did not actually craft a braid before abandonment");
     AbandonSupply(other, BloodcupBraid::Quest);
+    Require(!other.GetItemCount(Braid), "Abandoning Gurtar's completed quest kept the woven output");
     std::cout << "PASS actual flower loot markers and 59 placements, eight pickups, scoped material use, cancelled repeat and Draaka reward\n";
 }
 }
