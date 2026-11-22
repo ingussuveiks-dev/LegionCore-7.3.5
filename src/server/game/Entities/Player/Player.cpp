@@ -19201,6 +19201,7 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
         case 29515:
         case 29516:
         case 29517:
+        case DarkmoonBanner::Quest:
             if (GetMapId() != DarkmoonCrafting::Island || !IsEventActive(DarkmoonCrafting::Faire))
                 return false;
             break;

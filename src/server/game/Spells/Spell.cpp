@@ -114,7 +114,9 @@ QuestAssembly const* FindQuestAssembly(uint32 spell)
         {101874, 71977, 29517, 0}, // Build a Darkmoon Prize with the kit
         {102050, 72056, 29509, 0}, // Bread five frogs before frying
         {102053, 72057, 29509, 0, false}, // Fry one Breaded Frog at the Cookpot
-        {101838, 72110, 29511, 0, false}  // Repair a Damaged Tonk with the wrench
+        {101838, 72110, 29511, 0, false}, // Repair a Damaged Tonk with the wrench
+        {DarkmoonBanner::Sew, DarkmoonBanner::Kit, DarkmoonBanner::Quest, 0},
+        {DarkmoonBanner::Plant, DarkmoonBanner::FoldedBanner, DarkmoonBanner::Quest, 0, false}
     };
     for (QuestAssembly const& assembly : assemblies)
         if (assembly.Spell == spell)
@@ -5907,9 +5909,12 @@ void Spell::SendResurrectRequest(Player* target)
     target->SendDirectMessage(resurrectRequest.Write());
 }
 
-void Spell::TakeCastItem()
+void Spell::TakeCastItem(bool bannerPlaced)
 {
     if (!m_CastItem || !m_caster->IsPlayer() || !m_CastItem->IsInWorld())
+        return;
+
+    if (m_spellInfo->Id == DarkmoonBanner::Plant && !bannerPlaced)
         return;
 
     // TODO : research spell attributes or item flags
@@ -5917,7 +5922,7 @@ void Spell::TakeCastItem()
     if (m_spellInfo->HasEffect(SPELL_EFFECT_GIVE_CURRENCY) || m_spellInfo->HasEffect(SPELL_EFFECT_GIVE_REPUTATION) || m_spellInfo->HasEffect(SPELL_EFFECT_ADD_GARRISON_FOLLOWER) || m_spellInfo->HasEffect(SPELL_EFFECT_LEARN_GARRISON_BUILDING))
         alwaysDestroy = true;
 
-    if (m_spellInfo->HasEffect(SPELL_EFFECT_KILL_CREDIT) && !alwaysDestroy) // If item deleted by quest we have crash example http://pastebin.com/bvcaFJyA
+    if (m_spellInfo->HasEffect(SPELL_EFFECT_KILL_CREDIT) && !alwaysDestroy && !bannerPlaced) // If item deleted by quest we have crash example http://pastebin.com/bvcaFJyA
         return;
 
     uint32 itemId = m_CastItem->GetEntry();
@@ -8795,13 +8800,20 @@ SpellCastResult Spell::CheckItems()
 
         GameObject* ok = nullptr;
         Trinity::GameObjectFocusCheck go_check(m_caster, m_spellInfo->CastingReq.RequiresSpellFocus);
-        Trinity::GameObjectSearcher<Trinity::GameObjectFocusCheck> checker(m_caster, ok, go_check);
+        auto matchesFocus = [&](GameObject* object)
+        {
+            return go_check(object) && (m_spellInfo->Id != DarkmoonBanner::Plant || DarkmoonBanner::IsPlantingSpot(*object));
+        };
+        Trinity::GameObjectSearcher<decltype(matchesFocus)> checker(m_caster, ok, matchesFocus);
 
         Map& map = *m_caster->GetMap();
         cell.Visit(p, Trinity::makeGridVisitor(checker), map, *m_caster, m_caster->GetVisibilityRange());
 
         if (!ok)
         {
+            if (m_spellInfo->Id == DarkmoonBanner::Plant)
+                return SPELL_FAILED_REQUIRES_SPELL_FOCUS;
+
             if (SpellTargetPosition const* st = sSpellMgr->GetSpellTargetPosition(m_spellInfo->Id))
             {
                 if (!m_caster->IsWithinDist3d(st->target_X, st->target_Y, st->target_Z, 20.0f) || m_caster->GetMapId() != st->target_mapId)

@@ -402,7 +402,7 @@ class TC_GAME_API Spell
 
         void TakeRunePower();
         void TakeReagents();
-        void TakeCastItem();
+        void TakeCastItem(bool bannerPlaced = false);
         bool CanDestoyCastItem();
         void LinkedSpell(Unit* caster, Unit *target, SpellLinkedType type = SPELL_LINK_CAST, uint32 effectMask = 4294967295);
 

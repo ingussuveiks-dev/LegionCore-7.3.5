@@ -6330,6 +6330,48 @@ void Spell::EffectActivateObject(SpellEffIndex effIndex)
     if (!gameObjTarget || m_spellInfo->Id == gameObjTarget->GetGOInfo()->GetSpell())
         return;
 
+    if (m_spellInfo->Id == DarkmoonBanner::Plant)
+    {
+        Player* owner = m_caster->ToPlayer();
+        if (!owner || gameObjTarget != focusObject || !DarkmoonBanner::CanPlant(*owner) ||
+            !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            owner->GetQuestCancellationReceipt(DarkmoonBanner::Quest) != m_questItemCastReceipt ||
+            !DarkmoonBanner::IsPlantingSpot(*gameObjTarget) ||
+            !gameObjTarget->IsWithinDistInMap(owner, float(gameObjTarget->GetGOInfo()->spellFocus.radius)))
+            return;
+
+        Item* item = owner->GetItemByGuid(m_castItemGUID);
+        if (!item || item->GetEntry() != DarkmoonBanner::FoldedBanner || !Player::IsInventoryPos(item->GetBagSlot(), item->GetSlot()))
+            return;
+
+        Map* map = gameObjTarget->GetMap();
+        auto banner = std::make_unique<GameObject>();
+        Position const position = gameObjTarget->GetPosition();
+        G3D::Quat const rotation(G3D::Matrix3::fromEulerAnglesZYX(position.GetOrientation(), 0.0f, 0.0f));
+        if (!banner->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), DarkmoonBanner::RaisedBanner, map,
+            owner->GetPhaseMask(), position, rotation, 100, GO_STATE_READY))
+            return;
+        banner->SetPhaseId(owner->GetPhases(), false);
+        banner->SetSpawnedByDefault(false);
+        banner->SetRespawnTime(60);
+        banner->SetSpellId(DarkmoonBanner::Plant);
+        owner->BindQuestObject(DarkmoonBanner::Quest, banner.get());
+        if (!banner->EnableQuestScopedCollision())
+            return;
+        owner->AddGameObject(banner.get());
+        if (!map->AddToMap(banner.get()))
+        {
+            owner->RemoveGameObject(banner.get(), false);
+            return;
+        }
+
+        m_CastItem = item;
+        TakeCastItem(true);
+        ExecuteLogEffectSummonObject(effIndex, banner.release());
+        owner->KilledMonsterCredit(DarkmoonBanner::Credit);
+        return;
+    }
+
     switch (GameObjectActions(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue))
     {
     case GameObjectActions::None: // -NONE-
@@ -7828,6 +7870,10 @@ void Spell::EffectKillCreditPersonal(SpellEffIndex effIndex)
         return;
 
     if (!unitTarget || !unitTarget->IsPlayer())
+        return;
+
+    // The banner awards its objective when the actual stones publish the placed object.
+    if (m_spellInfo->Id == DarkmoonBanner::Plant)
         return;
 
     unitTarget->ToPlayer()->KilledMonsterCredit(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);

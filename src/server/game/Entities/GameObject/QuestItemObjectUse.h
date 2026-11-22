@@ -115,6 +115,21 @@ MaterialSource const* FindMaterialSource(uint32 entry);
 bool CanGather(GameObject const& object, Player const& player, MaterialSource const& source);
 }
 
+namespace DarkmoonBanner
+{
+constexpr uint32 Quest = 29520;
+constexpr uint32 Kit = 72048;
+constexpr uint32 FoldedBanner = 72049;
+constexpr uint32 Sew = 101993;
+constexpr uint32 Plant = 101992;
+constexpr uint32 LooseStones = 209288;
+constexpr uint32 RaisedBanner = 179965;
+constexpr uint32 Credit = 54545;
+
+bool IsPlantingSpot(GameObject const& object);
+bool CanPlant(Player const& player);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

@@ -1548,6 +1548,18 @@ bool DarkmoonCrafting::CanGather(GameObject const& object, Player const& player,
         player.GetItemCount(source.Material, true) + player.GetItemCount(source.Result, true) < source.Quantity;
 }
 
+bool DarkmoonBanner::IsPlantingSpot(GameObject const& object)
+{
+    return object.GetEntry() == LooseStones && object.GetGoType() == GAMEOBJECT_TYPE_SPELL_FOCUS &&
+        object.GetMapId() == DarkmoonCrafting::Island && object.GetDBTableGUIDLow() && object.isSpawned();
+}
+
+bool DarkmoonBanner::CanPlant(Player const& player)
+{
+    return player.IsAlive() && player.GetMapId() == DarkmoonCrafting::Island && IsEventActive(DarkmoonCrafting::Faire) &&
+        player.GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE;
+}
+
 QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
 {
     for (Binding const& binding : QuestItemObjects)
@@ -1616,6 +1628,9 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (auto source = DarkmoonCrafting::FindMaterialSource(GetEntry()))
         return DarkmoonCrafting::CanGather(*this, *target, *source);
+
+    if (GetEntry() == DarkmoonBanner::LooseStones)
+        return DarkmoonBanner::IsPlantingSpot(*this) && DarkmoonBanner::CanPlant(*target);
 
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&
