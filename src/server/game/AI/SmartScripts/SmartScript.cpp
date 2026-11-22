@@ -1300,6 +1300,16 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CALL_KILLEDMONSTER:
         {
+            // The Lifebringer trial is a successful item use. Combat tap on
+            // the animal must not redirect credit to an unrelated player.
+            if (me && spell && spell->Id == 65188 && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
+                e.action.killedMonster.creature == 34373)
+            {
+                if (Player* user = unit ? unit->ToPlayer() : nullptr)
+                    user->RewardPlayerAndGroupAtEvent(34373, user);
+                break;
+            }
+
             if (event && event->GetMapId() == 1220 && e.event_id == 0 &&
                 e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
                 ((event->GetEntry() == 197 && e.action.killedMonster.creature == 112623) ||

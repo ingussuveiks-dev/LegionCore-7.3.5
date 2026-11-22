@@ -52,4 +52,6 @@ Legion `Lock.db2` ieraksti sasaista `877` sēklas `5068` ar `3737`, `9193` lāpu
 
 `13730` tvertne atrod dzīvus Felfire Hill ugunskurus 10 jardu rādiusā un atdod kredītu spēlētājam pēc pilna kanāla. Servera pārbaude sasniedza visas septiņas atzīmes un apstiprināja atlīdzības izvēli, nodošanu un tvertnes izņemšanu. [Playing With Felfire pārbaude](felfire-canister-2026-11-22.md)
 
+`13925` stāds pieņem visas četras paredzētās dzīvnieku sugas un piešķir progresu faktiskajam lietotājam. Nodevēja saņemtā stāda izņemšana un atmešanas ceļš pārbaudīts serverī. [An Ounce of Prevention pārbaude](lifebringer-sapling-2026-11-22.md)
+
 `13885` lauka devēja posmā Orseus ir `34392`, savukārt `34301` ir piedāvājuma un nodošanas NPC Kathrena Winterwisp. Atrasts sākotnējais hipogrifa izsaukums `65372`. Hipogrifam `34375` un Orseus dialogam trūkst piesaistīta pasaules ceļa. `27232` trīs Horde Cannon `45263` stāv sākotnējā vietā, bet tiem nav transportlīdzekļa veidnes, un mērķim `45270` nav izsaukuma vai novietojuma.
