@@ -1476,7 +1476,8 @@ namespace
 constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
 {
     {StagnantOasis::Fissure, StagnantOasis::FissureSpawn, 1, 0, StagnantOasis::Quest, StagnantOasis::Seeds, StagnantOasis::PlantSeeds},
-    {AmaniCatacombs::Remains, 0, 530, 3510, AmaniCatacombs::Quest, AmaniCatacombs::Torch, AmaniCatacombs::BurnRemains}
+    {AmaniCatacombs::Remains, 0, 530, 3510, AmaniCatacombs::Quest, AmaniCatacombs::Torch, AmaniCatacombs::BurnRemains},
+    {RavagerCage::Cage, RavagerCage::CageSpawn, 530, 0, RavagerCage::Quest, RavagerCage::Key, RavagerCage::OpenCage}
 };
 }
 
@@ -1496,11 +1497,11 @@ QuestItemObjectUse::Binding const* QuestItemObjectUse::ForSpell(uint32 spellId)
     return nullptr;
 }
 
-Item* QuestItemObjectUse::FindChargedItem(Player const& player, Binding const& binding)
+Item* QuestItemObjectUse::FindUsableItem(Player const& player, Binding const& binding)
 {
     for (Item* item : player.GetItemListByEntry(binding.ItemEntry))
         for (ItemEffectEntry const* effect : item->GetTemplate()->Effects)
-            if (effect && effect->SpellID == binding.Spell && item->GetSpellCharges(effect->LegacySlotIndex) != 0)
+            if (effect && effect->SpellID == binding.Spell && (!effect->Charges || item->GetSpellCharges(effect->LegacySlotIndex) != 0))
                 return item;
     return nullptr;
 }
@@ -1510,7 +1511,7 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
     return object && player && player->IsAlive() && player->GetMap() == object->GetMap() &&
         object->GetEntry() == binding.ObjectEntry && object->GetMapId() == binding.MapId &&
         (!binding.Spawn || object->GetDBTableGUIDLow() == binding.Spawn) && (!binding.AreaId || object->GetAreaId() == binding.AreaId) &&
-        player->GetQuestStatus(binding.Quest) == QUEST_STATUS_INCOMPLETE && FindChargedItem(*player, binding) &&
+        player->GetQuestStatus(binding.Quest) == QUEST_STATUS_INCOMPLETE && FindUsableItem(*player, binding) &&
         object->isSpawned() && !object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
 }
 
@@ -1729,9 +1730,16 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
     if (IsQuestObjectExpired())
         return;
 
-    if (auto binding = QuestItemObjectUse::ForObject(GetEntry()); binding &&
-        (activationSpell != binding->Spell || !QuestItemObjectUse::CanUse(this, user->ToPlayer(), *binding)))
-        return;
+    if (auto binding = QuestItemObjectUse::ForObject(GetEntry()))
+    {
+        if (activationSpell != binding->Spell || !QuestItemObjectUse::CanUse(this, user->ToPlayer(), *binding))
+            return;
+        if (GetGoType() == GAMEOBJECT_TYPE_DOOR)
+        {
+            AI()->GossipHello(user->ToPlayer(), true);
+            return;
+        }
+    }
 
     if (GetEntry() == 181690)
     {

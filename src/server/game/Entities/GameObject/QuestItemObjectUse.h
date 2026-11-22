@@ -27,6 +27,17 @@ constexpr uint32 Entrance = 4071;
 void RestoreIncompleteQuest(Player& player);
 }
 
+namespace RavagerCage
+{
+constexpr uint32 Quest = 9582;
+constexpr uint32 Cage = 181849;
+constexpr uint32 CageSpawn = 7903;
+constexpr uint32 Key = 23925;
+constexpr uint32 OpenCage = 30767;
+constexpr uint32 Ravager = 17556;
+constexpr uint32 RavagerSpawn = 35799;
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding
@@ -42,7 +53,7 @@ struct Binding
 
 Binding const* ForObject(uint32 entry);
 Binding const* ForSpell(uint32 spellId);
-Item* FindChargedItem(Player const& player, Binding const& binding);
+Item* FindUsableItem(Player const& player, Binding const& binding);
 bool CanUse(GameObject const* object, Player const* player, Binding const& binding);
 }
 

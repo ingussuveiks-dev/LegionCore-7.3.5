@@ -164,7 +164,7 @@ void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& 
         if (auto binding = QuestItemObjectUse::ForObject(obj->GetEntry()))
         {
             if (obj->IsWithinDistInMap(_player, obj->GetInteractionDistance()))
-                if (Item* item = QuestItemObjectUse::FindChargedItem(*_player, *binding))
+                if (Item* item = QuestItemObjectUse::FindUsableItem(*_player, *binding))
                     _player->CastSpell(obj, binding->Spell, false, item);
             return;
         }

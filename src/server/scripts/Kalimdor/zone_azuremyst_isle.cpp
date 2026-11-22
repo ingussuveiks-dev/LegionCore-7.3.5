@@ -39,6 +39,9 @@ EndContentData */
 #include "Cell.h"
 #include "CellImpl.h"
 #include "GridNotifiers.h"
+#include "GameObjectAI.h"
+#include "ObjectAccessor.h"
+#include "QuestItemObjectUse.h"
 
 /*######
 ## npc_draenei_survivor
@@ -406,34 +409,10 @@ public:
 
 };
 
-enum RavegerCage
+enum DeathRavagerSpells
 {
-    NPC_DEATH_RAVAGER       = 17556,
-
     SPELL_REND              = 13443,
-    SPELL_ENRAGING_BITE     = 30736,
-
-    QUEST_STRENGTH_ONE      = 9582
-};
-
-class go_ravager_cage : public GameObjectScript
-{
-public:
-    go_ravager_cage() : GameObjectScript("go_ravager_cage") { }
-
-    bool OnGossipHello(Player* player, GameObject* go)
-    {
-        if (player->GetQuestStatus(QUEST_STRENGTH_ONE) == QUEST_STATUS_INCOMPLETE)
-        {
-            if (Creature* ravager = go->FindNearestCreature(NPC_DEATH_RAVAGER, 5.0f, true))
-            {
-                ravager->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                ravager->SetReactState(REACT_AGGRESSIVE);
-                ravager->AI()->AttackStart(player);
-            }
-        }
-        return true;
-    }
+    SPELL_ENRAGING_BITE     = 30736
 };
 
 class npc_death_ravager : public CreatureScript
@@ -453,8 +432,10 @@ public:
         uint32 RendTimer;
         uint32 EnragingBiteTimer;
 
-        void Reset()
+        void Reset() override
         {
+            _challenger.Clear();
+            _attempt.reset();
             RendTimer = 30000;
             EnragingBiteTimer = 20000;
 
@@ -462,8 +443,49 @@ public:
             me->SetReactState(REACT_PASSIVE);
         }
 
-        void UpdateAI(uint32 diff)
+        bool Release(Player& player, GameObject& cage)
         {
+            if (_challenger || !me->IsAlive() || me->IsInEvadeMode() ||
+                me->GetMapId() != 530 || me->GetDBTableGUIDLow() != RavagerCage::RavagerSpawn || cage.getLootState() != GO_READY)
+                return false;
+
+            _attempt = player.GetQuestCancellationReceipt(RavagerCage::Quest);
+            if (!_attempt || _attempt->load(std::memory_order_acquire))
+                return false;
+            _challenger = player.GetGUID();
+
+            cage.UseDoorOrButton(0, false, &player);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetReactState(REACT_AGGRESSIVE);
+            AttackStart(&player);
+            if (me->getVictim() == &player)
+                return true;
+
+            cage.ResetDoorOrButton();
+            Reset();
+            return false;
+        }
+
+        void AttackStart(Unit* target) override
+        {
+            if (CanFight(target))
+                ScriptedAI::AttackStart(target);
+        }
+
+        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
+        {
+            if (!CanFight(attacker))
+                damage = 0;
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (_challenger && !GetChallenger())
+            {
+                Reset();
+                EnterEvadeMode();
+                return;
+            }
             if (!UpdateVictim())
                 return;
 
@@ -483,8 +505,57 @@ public:
 
             DoMeleeAttackIfReady();
         }
+
+    private:
+        Player* GetChallenger() const
+        {
+            if (!_attempt || _attempt->load(std::memory_order_acquire))
+                return nullptr;
+            Player* player = ObjectAccessor::GetPlayer(*me, _challenger);
+            if (player && player->IsAlive() && player->GetQuestStatus(RavagerCage::Quest) == QUEST_STATUS_INCOMPLETE &&
+                player->IsWithinDistInMap(me, 60.0f))
+                return player;
+            return nullptr;
+        }
+
+        bool CanFight(Unit* unit) const
+        {
+            Player const* challenger = GetChallenger();
+            Player const* participant = unit ? unit->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            return challenger && participant &&
+                (participant == challenger || (challenger->GetGroup() && participant->GetGroup() == challenger->GetGroup() &&
+                    participant->IsAtGroupRewardDistance(me)));
+        }
+
+        ObjectGuid _challenger;
+        std::shared_ptr<QuestCancellationReceipt const> _attempt;
     };
 
+};
+
+class go_ravager_cage : public GameObjectScript
+{
+public:
+    go_ravager_cage() : GameObjectScript("go_ravager_cage") { }
+
+    struct CageAI : public GameObjectAI
+    {
+        explicit CageAI(GameObject* cage) : GameObjectAI(cage) { }
+
+        bool GossipHello(Player* player, bool withSpell) override
+        {
+            auto binding = QuestItemObjectUse::ForObject(RavagerCage::Cage);
+            if (!withSpell || !binding || !QuestItemObjectUse::CanUse(go, player, *binding))
+                return false;
+
+            if (Creature* ravager = go->FindNearestCreature(RavagerCage::Ravager, 5.0f, true))
+                if (auto ai = dynamic_cast<npc_death_ravager::npc_death_ravagerAI*>(ravager->AI()))
+                    return ai->Release(*player, *go);
+            return false;
+        }
+    };
+
+    GameObjectAI* GetAI(GameObject* cage) const override { return new CageAI(cage); }
 };
 
 /*########

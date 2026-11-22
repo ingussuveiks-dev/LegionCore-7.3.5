@@ -3474,17 +3474,18 @@ void Spell::SendLoot(ObjectGuid const& guid, LootType loottype)
                            player->GetName(), player->GetGUIDLow(), gameObjTarget->GetEntry(), gameObjTarget->GetGUIDLow());
             return;
         }
-        // special case, already has GossipHello inside so return and avoid calling twice
+        if (auto binding = QuestItemObjectUse::ForObject(gameObjTarget->GetEntry()))
+        {
+            if (m_spellInfo->Id == binding->Spell && m_questItemCastReceipt &&
+                !m_questItemCastReceipt->load(std::memory_order_acquire))
+                gameObjTarget->Use(m_caster, binding->Spell);
+            return;
+        }
+
+        // Goobers already invoke GossipHello during normal use.
         if (gameObjTarget->GetGoType() == GAMEOBJECT_TYPE_GOOBER)
         {
-            if (auto binding = QuestItemObjectUse::ForObject(gameObjTarget->GetEntry()))
-            {
-                if (m_spellInfo->Id == binding->Spell && m_questItemCastReceipt &&
-                    !m_questItemCastReceipt->load(std::memory_order_acquire))
-                    gameObjTarget->Use(m_caster, binding->Spell);
-            }
-            else
-                gameObjTarget->Use(m_caster);
+            gameObjTarget->Use(m_caster);
             return;
         }
 
@@ -3631,7 +3632,7 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         // TODO: Add script for spell 41920 - Filling, becouse server it freze when use this spell
         // handle outdoor pvp object opening, return true if go was registered for handling
         // these objects must have been spawned by outdoorpvp!
-        else if (goInfo->type == GAMEOBJECT_TYPE_DOOR && !kingslayersDoor)
+        else if (goInfo->type == GAMEOBJECT_TYPE_DOOR && !kingslayersDoor && !QuestItemObjectUse::ForObject(gameObjTarget->GetEntry()))
         {
             gameObjTarget->UseDoorOrButton(0, false, player);
             player->GetMap()->ScriptsStart(sGameObjectScripts, gameObjTarget->GetDBTableGUIDLow(), player, gameObjTarget);
