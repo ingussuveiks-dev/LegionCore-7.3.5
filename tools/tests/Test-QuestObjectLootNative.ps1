@@ -8,10 +8,10 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$AshenvaleFelWood,[switch]$AshenvaleFelWoodBaseline,
       [switch]$ElwynnQuests,[switch]$ElwynnQuestsBaseline,
       [switch]$SupplyChests,[switch]$SupplyChestsBaseline,
-      [switch]$ForestHeart,[switch]$ForestHeartBaseline,[switch]$DarkmoonStrength,[switch]$Tortusk,[switch]$ClusterCluck,[switch]$PoolPony,[switch]$MinerTroubles,[switch]$DreadHead,[switch]$CaravanDelivery,[switch]$WebbedResearcher,[switch]$LiFeiDuel,[switch]$ShangXiEscort,[switch]$YurivPendant,[switch]$FelfireCanister,[switch]$LifebringerSapling,[switch]$LordamereCannon,[string]$FixtureConfig='')
+      [switch]$ForestHeart,[switch]$ForestHeartBaseline,[switch]$DarkmoonStrength,[switch]$Tortusk,[switch]$ClusterCluck,[switch]$PoolPony,[switch]$MinerTroubles,[switch]$DreadHead,[switch]$CaravanDelivery,[switch]$WebbedResearcher,[switch]$LiFeiDuel,[switch]$ShangXiEscort,[switch]$YurivPendant,[switch]$FelfireCanister,[switch]$LifebringerSapling,[switch]$LordamereCannon,[switch]$TitansTerminal,[string]$FixtureConfig='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$scopedProbes = @(@($TakingPrecautions,$Collector,$Scenes,$Kyle,$Seasoning,$SeasoningBaseline,$Aquantion,$AquantionBaseline,$Anowyn,$AnowynBaseline,$AlliedCity,$AlliedCityBaseline,$Duskwither,$DuskwitherBaseline,$RedSnapper,$RedSnapperBaseline,$SwiftDiscipline,$SwiftDisciplineBaseline,$ExtinguishingHope,$ExtinguishingHopeBaseline,$MulgoreCages,$MulgoreCagesBaseline,$AshenvaleFelWood,$AshenvaleFelWoodBaseline,$ElwynnQuests,$ElwynnQuestsBaseline,$SupplyChests,$SupplyChestsBaseline,$ForestHeart,$ForestHeartBaseline,$DarkmoonStrength,$Tortusk,$ClusterCluck,$PoolPony,$MinerTroubles,$DreadHead,$CaravanDelivery,$WebbedResearcher,$LiFeiDuel,$ShangXiEscort,$YurivPendant,$FelfireCanister,$LifebringerSapling,$LordamereCannon) | Where-Object { $_ }).Count
+$scopedProbes = @(@($TakingPrecautions,$Collector,$Scenes,$Kyle,$Seasoning,$SeasoningBaseline,$Aquantion,$AquantionBaseline,$Anowyn,$AnowynBaseline,$AlliedCity,$AlliedCityBaseline,$Duskwither,$DuskwitherBaseline,$RedSnapper,$RedSnapperBaseline,$SwiftDiscipline,$SwiftDisciplineBaseline,$ExtinguishingHope,$ExtinguishingHopeBaseline,$MulgoreCages,$MulgoreCagesBaseline,$AshenvaleFelWood,$AshenvaleFelWoodBaseline,$ElwynnQuests,$ElwynnQuestsBaseline,$SupplyChests,$SupplyChestsBaseline,$ForestHeart,$ForestHeartBaseline,$DarkmoonStrength,$Tortusk,$ClusterCluck,$PoolPony,$MinerTroubles,$DreadHead,$CaravanDelivery,$WebbedResearcher,$LiFeiDuel,$ShangXiEscort,$YurivPendant,$FelfireCanister,$LifebringerSapling,$LordamereCannon,$TitansTerminal) | Where-Object { $_ }).Count
 if($scopedProbes -and ($Baseline -or !$FixtureConfig -or $scopedProbes -gt 1)){throw 'Use one named probe and its private migrated fixture'}
 if(!$OutputDirectory -and $DarkmoonStrength){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot-darkmoon-strength"}
 if(!$OutputDirectory -and $Tortusk){$OutputDirectory="$repo/build-extractors/runtime-test/quest-tortusk"}
@@ -27,6 +27,7 @@ if(!$OutputDirectory -and $YurivPendant){$OutputDirectory="$repo/build-extractor
 if(!$OutputDirectory -and $FelfireCanister){$OutputDirectory="$repo/build-extractors/runtime-test/quest-felfire-canister"}
 if(!$OutputDirectory -and $LifebringerSapling){$OutputDirectory="$repo/build-extractors/runtime-test/quest-lifebringer-sapling"}
 if(!$OutputDirectory -and $LordamereCannon){$OutputDirectory="$repo/build-extractors/runtime-test/quest-lordamere-cannon"}
+if(!$OutputDirectory -and $TitansTerminal){$OutputDirectory="$repo/build-extractors/runtime-test/quest-titans-terminal"}
 if(!$OutputDirectory -and ($ForestHeart -or $ForestHeartBaseline)){
  $OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot-forest-heart$(if($ForestHeartBaseline){'-counterfactual'})"
 }
@@ -229,6 +230,16 @@ if($LordamereCannon){
  $scripts=$libs|Where-Object {$_ -match 'scripts[\\/]Release[\\/]scripts.lib$'}|Select-Object -First 1
  if(!$scripts -or (Get-Item "$repo/src/server/scripts/EasternKingdoms/zone_silverpine_forest.cpp").LastWriteTimeUtc -gt (Get-Item $scripts).LastWriteTimeUtc){throw 'Actual scripts library predates the Lordamere cannon'}
  if((Get-Item "$repo/src/server/game/Maps/Map.cpp").LastWriteTimeUtc -gt (Get-Item $game).LastWriteTimeUtc){throw 'Actual game library predates the accepted scope for the Lordamere waves'}
+}
+if($TitansTerminal){
+ $probeSource = "$PSScriptRoot/TitansTerminalNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeTitansTerminal.inc",$query+' " WHERE ID=13918"')
+ [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
+ $scripts=$libs|Where-Object {$_ -match 'scripts[\\/]Release[\\/]scripts.lib$'}|Select-Object -First 1
+ if(!$scripts -or (Get-Item "$repo/src/server/scripts/Kalimdor/zone_darkshore.cpp").LastWriteTimeUtc -gt (Get-Item $scripts).LastWriteTimeUtc){throw 'Actual scripts library predates the buried marker selection'}
+ foreach($file in @('AI/SmartScripts/SmartScript.cpp','Entities/Object/Object.cpp')){
+  if((Get-Item "$repo/src/server/game/$file").LastWriteTimeUtc -gt (Get-Item $game).LastWriteTimeUtc){throw "Actual game library predates $file"}
+ }
 }
 $extra=@('src/server/scripts/Legion','src/common/Collision/Management','src/common/Collision','dep/g3dlite/include','dep/recastnavigation/Detour/Include')|ForEach-Object {Join-Path $repo $_}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

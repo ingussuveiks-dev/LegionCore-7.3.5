@@ -31,7 +31,34 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedFollowerAI.h"
+#include "SpellScript.h"
+
+class spell_darkshore_buried_artifact_detector : public SpellScript
+{
+    PrepareSpellScript(spell_darkshore_buried_artifact_detector);
+
+    void SelectNearestMarker(std::list<WorldObject*>& targets)
+    {
+        if (targets.size() < 2)
+            return;
+
+        auto caster = GetCaster();
+        auto nearest = *std::min_element(targets.begin(), targets.end(), [caster](WorldObject const* first, WorldObject const* second)
+        {
+            return caster->GetExactDistSq(first) < caster->GetExactDistSq(second);
+        });
+        targets.clear();
+        targets.push_back(nearest);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_darkshore_buried_artifact_detector::SelectNearestMarker,
+            EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+    }
+};
 
 void AddSC_darkshore()
 {
+    RegisterSpellScript(spell_darkshore_buried_artifact_detector);
 }

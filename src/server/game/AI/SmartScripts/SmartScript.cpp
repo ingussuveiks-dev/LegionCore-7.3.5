@@ -1668,6 +1668,28 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_SUMMON_GO:
         {
+            // The beach marker identifies the location, but it is the player
+            // using the detector who owns this particular set of debris.
+            if (me && me->GetEntry() == 34356 && spell && spell->Id == 65300 && e.action.summonGO.entry == 195055)
+            {
+                Player* digger = unit ? unit->ToPlayer() : nullptr;
+                if (!digger || digger->GetQuestStatus(13918) != QUEST_STATUS_INCOMPLETE ||
+                    !digger->HasItemCount(46388, 1, false) || digger->HasItemCount(46702, 5, false))
+                    break;
+
+                std::list<GameObject*> debris;
+                digger->GetGameObjectListWithEntryInGrid(debris, 195055, 30.0f);
+                if (std::any_of(debris.begin(), debris.end(), [&](GameObject const* object)
+                    { return object->GetSummonerGUID() == digger->GetGUID() && object->isSpawned() &&
+                        object->getLootState() != GO_JUST_DEACTIVATED && !object->IsPreDelete() && !object->IsQuestObjectExpired(); }))
+                    break;
+
+                auto place = me->GetPosition();
+                digger->SummonGameObject(195055, place, place.GetOrientation(), 0, 0, 0, 0, e.action.summonGO.despawnTime,
+                    digger->GetGUID(), nullptr, false);
+                break;
+            }
+
             if ((e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE) && e.GetTargetType() == SMART_TARGET_POSITION)
             {
                 if (!GetBaseObject() || !GetBaseObject()->SummonGameObject(e.action.summonGO.entry, e.target.x, e.target.y, e.target.z, e.target.o, 0, 0, 0, 0, e.action.summonGO.despawnTime,

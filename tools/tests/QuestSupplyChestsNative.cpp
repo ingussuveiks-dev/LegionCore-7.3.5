@@ -128,7 +128,7 @@ void SupplyMove(Player& player, Position const& point)
     player.GetMap()->PlayerRelocation(&player, point.GetPositionX(), point.GetPositionY(), point.GetPositionZ(), point.GetOrientation());
 }
 
-void OpenSupply(LootPlayer& player, Supply& chest)
+void OpenSupply(LootPlayer& player, GameObject& chest)
 {
     auto lock = sLockStore.LookupEntry(chest.GetGOInfo()->GetLockId());
     Require(lock, "Original chest has no DB2 lock");
@@ -144,7 +144,7 @@ void OpenSupply(LootPlayer& player, Supply& chest)
     Require(false, "Unhandled DB2 opening category");
 }
 
-void ReleaseSupply(LootPlayer& player, Supply& chest)
+void ReleaseSupply(LootPlayer& player, GameObject& chest)
 {
     WorldPackets::Loot::LootRelease packet{WorldPacket(CMSG_LOOT_RELEASE)};
     packet.Unit = chest.GetGUID();

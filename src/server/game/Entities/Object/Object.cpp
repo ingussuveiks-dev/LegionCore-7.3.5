@@ -3015,6 +3015,10 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     if (!IsInWorld())
         return nullptr;
 
+    Player* digger = entry == 195055 && GetMapId() == 1 ? ToPlayer() : nullptr;
+    if (entry == 195055 && (!digger || digger->GetQuestStatus(13918) != QUEST_STATUS_INCOMPLETE))
+        return nullptr;
+
     GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(entry);
     if (!goinfo)
     {
@@ -3033,6 +3037,16 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     {
         delete go;
         return nullptr;
+    }
+    if (digger)
+    {
+        digger->BindQuestObject(13918, go);
+        if (!go->EnableQuestScopedCollision())
+        {
+            go->CleanupsBeforeDelete();
+            delete go;
+            return nullptr;
+        }
     }
     go->SetSummonerGUID(GetGUID());
     go->SetTratsport(GetTransport());
