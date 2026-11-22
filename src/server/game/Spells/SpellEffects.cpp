@@ -6889,7 +6889,18 @@ void Spell::EffectQuestComplete(SpellEffIndex effIndex)
 
         uint16 logSlot = player->FindQuestSlot(questId);
         if (logSlot < MAX_QUEST_LOG_SIZE)
+        {
+            // The Stillpine Primer is a standalone study event. There are no
+            // objective counters for the obsolete area-credit path to fill.
+            if (m_spellInfo->Id == 30419 && questId == 9538 && quest->GetObjectives().empty() &&
+                quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT))
+            {
+                if (player->GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE)
+                    player->CompleteQuest(questId);
+                return;
+            }
             player->AreaExploredOrEventHappens(questId);
+        }
         else if (quest->HasFlag(QUEST_FLAGS_TRACKING))  // Check if the quest is used as a serverside flag.
             player->SetRewardedQuest(questId);          // If so, set status to rewarded without broadcasting it to client.
     }

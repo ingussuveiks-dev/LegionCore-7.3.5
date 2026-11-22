@@ -56,6 +56,10 @@ Legion `Lock.db2` ieraksti sasaista `877` sēklas `5068` ar `3737`, `9193` lāpu
 
 `13918` detektora tuvākais atradums pieejams tikai attiecīgajam kvesta mēģinājumam, arī sadursmju aprēķinos. Servera pārbaude izgāja piecu fragmentu iegūšanu, salikšanu un abu prasīto priekšmetu nodošanu pie Ferd. [The Titans’ Terminal pārbaude](titans-terminal-2026-11-22.md)
 
+Pēc `13918` atkārtotā izolētā datu eksportā bija 5 459 tvēruma ieraksti, 4 865 ieslēgti kvesti un visi 160 sasaistītie skriptu nosaukumi atrodami atbilstošajā Release. Palika 62 priekšmetu lietošanas kandidāti un 17 ar statisko analīzi līdz galam neizsekoti aktiera vai progresa ceļi, kuros ir arī serverī jau pārbaudītie C++ ceļi. Eksports, kontrolsummas un saraksts ir `.codex/quest-coverage-20261122-sealed/`.
+
+`9538` valodas grāmata pieņem aktīvu kvestu, pēc pilnas lasīšanas pabeidz tikai lasītāja kvestu un tiek izlietota. Pie Totem of Coo pārbaudīta nodošana un nākamais piedāvājums `9539`. [Learning the Language pārbaude](stillpine-primer-2026-11-22.md)
+
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)
 
 `13885` Orseus `34392` jāatver hipogrifa posms, un Kathrena Winterwisp `34301` piedāvā un pieņem kvestu. 7.3.5 datiem atrasti `65401 → 65372` izsaukums, pasažiere `34376`, `65384` iekāpšana, `65385` pacelšanās un `65373` laukuma burvestība. 2017. gada 4:24 video visa ceļa kadri ar sešu sekunžu soli parāda divus braucējus, Kathrena vadītu lidojumu, spēlētāja darbību uz trīs sugām un nolaišanos pirms nodošanas. Pasaulē vēl trūkst Orseus funkcijas, transportlīdzekļa datu sasaistes, lidojuma koordinātu un progresa sasaistes ar `34323/34324/34325`. [2017. gada gājiens](https://www.youtube.com/watch?v=Rc2HWdXKOVo)
