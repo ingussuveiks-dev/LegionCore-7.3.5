@@ -1498,6 +1498,10 @@ bool GameObject::IsInvisibleDueToDespawn() const
 
 namespace
 {
+constexpr uint32 BlackrockPrisonersQuest = 26646;
+constexpr uint32 BlackrockHoldingPen = 204441;
+constexpr uint32 BlackrockHoldingPenSpawn = 1379;
+
 constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
 {
     {StagnantOasis::Fissure, StagnantOasis::FissureSpawn, 1, 0, StagnantOasis::Quest, StagnantOasis::Seeds, StagnantOasis::PlantSeeds},
@@ -1506,10 +1510,22 @@ constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
     {ProphecyOfAkida::Cage, 0, 530, 3571, ProphecyOfAkida::Quest, ProphecyOfAkida::Key, ProphecyOfAkida::OpenCage},
     {SavingPrincessStillpine::Cage, SavingPrincessStillpine::CageSpawn, 530, 3600, SavingPrincessStillpine::Quest,
         SavingPrincessStillpine::Key, SavingPrincessStillpine::OpenCage},
+    {BlackrockHoldingPen, BlackrockHoldingPenSpawn, 0, 997, BlackrockPrisonersQuest, 59261, 81515},
     {LiberationDay::Chain, 0, 654, 0, LiberationDay::Quest, LiberationDay::Key, LiberationDay::OpenChain, true},
     {IncendiciteOre::Vein, 0, 0, 0, IncendiciteOre::Quest, IncendiciteOre::Pick, IncendiciteOre::Mine},
     {PricelessTreasures::Deposit, 0, 0, 134, PricelessTreasures::Quest, PricelessTreasures::Pick, PricelessTreasures::Dig, true}
 };
+
+bool HasBlackrockPrisoners(GameObject const& pen)
+{
+    std::list<Creature*> captives;
+    pen.GetCreatureListWithEntryInGrid(captives, 43572, 15.0f);
+    return std::any_of(captives.begin(), captives.end(), [&pen](Creature const* captive)
+    {
+        uint64 spawn = captive->GetDBTableGUIDLow();
+        return spawn >= 39156 && spawn <= 39162 && captive->IsAlive() && !captive->IsDespawn() && captive->InSamePhase(&pen);
+    });
+}
 
 Creature* FindLiberationCaptive(GameObject const& chain)
 {
@@ -1666,6 +1682,10 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
         return object->GetZoneId() == 1 && object->GetDBTableGUIDLow() && player->HasQuestForItem(PricelessTreasures::Artifact);
     if (binding.Quest == LiberationDay::Quest)
         return object->getLootState() == GO_READY && FindLiberationCaptive(*object);
+    if (binding.Quest == BlackrockPrisonersQuest)
+        return object->GetGoType() == GAMEOBJECT_TYPE_BUTTON && object->getLootState() == GO_READY &&
+            object->InSamePhase(player) && object->IsWithinDistInMap(player, object->GetInteractionDistance()) &&
+            HasBlackrockPrisoners(*object);
     if (binding.Quest == SavingPrincessStillpine::Quest)
     {
         Creature const* princess = SavingPrincessStillpine::FindPrincess(*object);
@@ -1928,6 +1948,12 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
     {
         if (activationSpell != binding->Spell || !QuestItemObjectUse::CanUse(this, user->ToPlayer(), *binding))
             return;
+        if (binding->Quest == BlackrockPrisonersQuest)
+        {
+            UseDoorOrButton(0, false, user);
+            GetMap()->ScriptsStart(sGameObjectScripts, GetDBTableGUIDLow(), user, this);
+            return;
+        }
         if (GetGoType() == GAMEOBJECT_TYPE_DOOR || GetGoType() == GAMEOBJECT_TYPE_BUTTON)
         {
             AI()->GossipHello(user->ToPlayer(), true);
