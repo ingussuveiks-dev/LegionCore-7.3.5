@@ -1,0 +1,9 @@
+# Feed of Evil (14461)
+
+Adana Thunderhorn `36694` novietojumā `169368` Camp Narache piedāvā un pieņem kvestu. Viņa dod lāpu `49539`, ko izmanto ar `69228`. Visi trīs paredzētie trauku marķieri `36727`, `37155` un `37156` atrodas Mulgore apgabalā `4879`. Kvestam vajag vienu atzīmi no katra no tiem.
+
+Iepriekš `69228` neierobežotā atlase varēja trāpīt citai tuvai būtnei arī bez aktīva kvesta. Tas atkārtots ar īsto priekšmetu `-BattleboarTroughsBaseline` un bibliotēku no `98284209e`. Tagad visām trim sākotnējām mērķu atlases darbībām ir viena dzīvotspējīgo trauku grupa, kamēr spēlētājam vajag aktīvu kvestu un lāpu somā. Šāviņš saglabā konkrēto kvesta pieņemšanas reizi. Trauku sākotnējie SmartAI ieskaites notikumi un burvestības piecu sekunžu atdzišana saglabāti.
+
+`-BattleboarTroughs` izmantoja sākotnējos trīs trauku novietojumus un īsto lāpu. Pārbaudīts, ka tuvāka cita būtne nesaņem trāpījumu, tas pats trauks neaizstāj citu, iepriekšēja kvesta šāviņš pēc atmešanas un atkārtotas pieņemšanas nerada progresu un lāpu izņem pēc faktiskās atlīdzības paketes vai atmešanas. Atkārtoti pārbaudītas arī `-MonkeyBusiness` un `-FelfireSeedlings`. Lidojošās lāpas un trauku uguns attēlojums paliek pārbaudāms klientā.
+
+Pagaidu un kanoniskais Release `83AB34900F4778A280E9824C9B6BB8B5955554FD4F3C327EC3FFE6325F698663` sasniedza `ready` un korekti izslēdzās. Gala saitē apstiprināts `game:Spell.obj`. Produkcijas astoņas nosacījumu rindas un migrācijas kontrolsumma sakrīt ar pārbaudīto kopu. Migrācijas atkārtota izpilde rezultātu nemainīja. Gala pārbaudēs netika konstatētas jaunas servera kļūdas vai avārijas. Lokāli saglabātas 127 ar kontrolsummām pārbaudītas diagnostikas datnes `build-extractors/bin/Release/fixed/battleboar-troughs-2026-11-22/`, un pagaidu datņu izņemšana atbrīvoja 2 281 374 895 baitus.

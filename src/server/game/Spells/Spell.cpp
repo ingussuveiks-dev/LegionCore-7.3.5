@@ -127,6 +127,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == 49028)
                     quest = 14019;
                 break;
+            case 69228: // Throw Torch
+                if (m_CastItem->GetEntry() == 49539)
+                    quest = 14461;
+                break;
         }
         if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
             m_questItemCastReceipt = player->GetQuestCancellationReceipt(quest);
@@ -3101,7 +3105,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         return SPELL_MISS_EVADE;
 
     // These missiles must still belong to the quest attempt that launched them.
-    if ((m_spellInfo->Id == 65580 || m_spellInfo->Id == 67917) &&
+    if ((m_spellInfo->Id == 65580 || m_spellInfo->Id == 67917 || m_spellInfo->Id == 69228) &&
         (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_MISS_EVADE;
 
@@ -3112,6 +3116,16 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (!feeder || !monkey || monkey->GetEntry() != 34699 || !monkey->IsAlive() ||
             feeder->GetQuestStatus(14019) != QUEST_STATUS_INCOMPLETE || !feeder->HasItemCount(49028, 1, false) ||
             m_spellInfo->CheckTarget(feeder, monkey) != SPELL_CAST_OK)
+            return SPELL_MISS_EVADE;
+    }
+
+    if (m_spellInfo->Id == 69228)
+    {
+        Player* player = m_caster->ToPlayer();
+        Creature* trough = unit->ToCreature();
+        if (!player || !trough || !trough->IsAlive() ||
+            (trough->GetEntry() != 36727 && trough->GetEntry() != 37155 && trough->GetEntry() != 37156) ||
+            player->GetQuestStatus(14461) != QUEST_STATUS_INCOMPLETE || !player->HasItemCount(49539, 1, false))
             return SPELL_MISS_EVADE;
     }
 

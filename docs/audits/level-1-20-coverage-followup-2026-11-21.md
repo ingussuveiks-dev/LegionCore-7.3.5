@@ -72,6 +72,12 @@ Pēc `13988` vēlreiz eksportēta pasaules datubāze un hotfix dati. Izlasē pal
 
 `26446` paugurs prasa īsto stādīšanas burvestību un vienu stādu devu par katru ieskaiti. Serverī pārbaudīti astoņi pauguru novietojumi, nederīgs objekts, parastais klikšķis, atmešana stādīšanas laikā, vecais kvesta ieraksts `9526` un nodošana Gnarl. [Reclaiming Felfire Hill pārbaude](felfire-seedlings-2026-11-22.md)
 
+Pēc `26446` atkārtotajā eksportā joprojām ir 5 459 tvēruma ieraksti, 4 865 ieslēgti kvesti un visi 160 sākotnējai pasaulei piesaistītie C++ skriptu nosaukumi atrodami atbilstošajā Release. Pārskatā palika 56 priekšmetu lietošanas kandidāti un 17 ar statisko analīzi neizsekoti aktiera vai progresa ceļi starp kvestiem ar devēja novietojumu pasaulē. Eksports un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-seedlings/`.
+
+`14461` lāpa atlasa trīs faktiskos barības traukus, un iepriekšējās pieņemšanas reizes metiens vairs neieskaitās. Serverī pārbaudīti visi trīs trauki, ieskaites robežas, atmešana un nodošana pie Adana. [Feed of Evil pārbaude](battleboar-troughs-2026-11-22.md)
+
+Brazie the Botanist `49687` ir novietots Hillsbrad Foothills un piedāvā sešus aktīvus 20. līmeņa kvestus `28733/28617/28744/28747/28748/28751`. `28744` un `28747` datu pārskatā ir atrastas native ieskaites burvestības `92340` un `92435`, tāpēc tās neparādās četrās pilnībā neizsekotajās atlasēs. Pārbaudītajā datubāzē šīm divām burvestībām arī trūkst izsaukuma sasaistes ar minispēles kontroli. Visu sešu kvestu faktiskā iedarbināšana, viļņi un nodošana paliek atvērti.
+
 `27232` trīs esošajiem lielgabaliem atjaunots sēdeklis, Rocket Blast un peldētāju viļņi. Servera pārbaude apstiprināja 50 faktiskas nogalināšanas un nodošanu pie Admiral Hatchet. [The Waters Run Red pārbaude](waters-run-red-2026-11-22.md)
 
 `13885` Orseus `34392` jāatver hipogrifa posms, un Kathrena Winterwisp `34301` piedāvā un pieņem kvestu. 7.3.5 datiem atrasti `65401 → 65372` izsaukums, pasažiere `34376`, `65384` iekāpšana, `65385` pacelšanās un `65373` laukuma burvestība. 2017. gada 4:24 video visa ceļa kadri ar sešu sekunžu soli parāda divus braucējus, Kathrena vadītu lidojumu, spēlētāja darbību uz trīs sugām un nolaišanos pirms nodošanas. Pasaulē vēl trūkst Orseus funkcijas, transportlīdzekļa datu sasaistes, lidojuma koordinātu un progresa sasaistes ar `34323/34324/34325`. [2017. gada gājiens](https://www.youtube.com/watch?v=Rc2HWdXKOVo)
