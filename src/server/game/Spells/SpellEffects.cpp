@@ -3488,10 +3488,14 @@ void Spell::SendLoot(ObjectGuid const& guid, LootType loottype)
         }
         if (auto binding = QuestItemObjectUse::ForObject(gameObjTarget->GetEntry()))
         {
-            if (m_spellInfo->Id == binding->Spell && m_questItemCastReceipt &&
-                !m_questItemCastReceipt->load(std::memory_order_acquire))
+            if (m_spellInfo->Id != binding->Spell || !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire))
+                return;
+
+            if (gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_CHEST)
+            {
                 gameObjTarget->Use(m_caster, binding->Spell);
-            return;
+                return;
+            }
         }
 
         // Goobers already invoke GossipHello during normal use.

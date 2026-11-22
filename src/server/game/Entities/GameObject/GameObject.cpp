@@ -1484,7 +1484,8 @@ constexpr QuestItemObjectUse::Binding QuestItemObjects[] =
     {ProphecyOfAkida::Cage, 0, 530, 3571, ProphecyOfAkida::Quest, ProphecyOfAkida::Key, ProphecyOfAkida::OpenCage},
     {SavingPrincessStillpine::Cage, SavingPrincessStillpine::CageSpawn, 530, 3600, SavingPrincessStillpine::Quest,
         SavingPrincessStillpine::Key, SavingPrincessStillpine::OpenCage},
-    {LiberationDay::Chain, 0, 654, 0, LiberationDay::Quest, LiberationDay::Key, LiberationDay::OpenChain, true}
+    {LiberationDay::Chain, 0, 654, 0, LiberationDay::Quest, LiberationDay::Key, LiberationDay::OpenChain, true},
+    {IncendiciteOre::Vein, 0, 0, 0, IncendiciteOre::Quest, IncendiciteOre::Pick, IncendiciteOre::Mine}
 };
 
 Creature* FindLiberationCaptive(GameObject const& chain)
@@ -1636,6 +1637,8 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
         object->isSpawned() && !object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
     if (!eligible)
         return false;
+    if (binding.Quest == IncendiciteOre::Quest)
+        return object->GetZoneId() == 11 && object->GetDBTableGUIDLow() && player->HasQuestForItem(IncendiciteOre::Ore);
     if (binding.Quest == LiberationDay::Quest)
         return object->getLootState() == GO_READY && FindLiberationCaptive(*object);
     if (binding.Quest == SavingPrincessStillpine::Quest)

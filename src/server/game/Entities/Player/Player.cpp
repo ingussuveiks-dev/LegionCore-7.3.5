@@ -11949,6 +11949,15 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
             return;
         }
 
+        // Item-locked chests use the same quest admission as the lock and marker.
+        if (go->GetGoType() == GAMEOBJECT_TYPE_CHEST)
+            if (auto binding = QuestItemObjectUse::ForObject(go->GetEntry()); binding &&
+                (loot_type != LOOT_SKINNING || !QuestItemObjectUse::CanUse(go, this, *binding)))
+            {
+                SendLootRelease(guid);
+                return;
+            }
+
         //! Handler on  Garrison::CompleteShipments
         if (go->GetGOInfo()->type == GAMEOBJECT_TYPE_GARRISON_SHIPMENT)
             return;

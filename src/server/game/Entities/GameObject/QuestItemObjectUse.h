@@ -160,6 +160,15 @@ constexpr uint32 Chain = 201775;
 constexpr uint32 Captive = 37694;
 }
 
+namespace IncendiciteOre
+{
+constexpr uint32 Quest = 25735;
+constexpr uint32 Vein = 203188;
+constexpr uint32 Pick = 55240;
+constexpr uint32 Ore = 55241;
+constexpr uint32 Mine = 77020;
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

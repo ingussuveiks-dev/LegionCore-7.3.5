@@ -813,6 +813,14 @@ void Spell::SelectImplicitNearbyTargets(SpellEffIndex effIndex, SpellImplicitTar
         return;
     }
 
+    // The pick's second implicit target must refer to the vein selected for this cast.
+    if (m_spellInfo->Id == IncendiciteOre::Mine && targetType.GetTarget() == TARGET_GAMEOBJECT_NEARBY_ENTRY)
+    {
+        if (GameObject* target = m_targets.GetGOTarget())
+            AddGOTarget(target, effMask);
+        return;
+    }
+
     float range = 0.0f;
     switch (targetType.GetCheckType())
     {
