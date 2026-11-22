@@ -70,6 +70,17 @@
 
 extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
 
+namespace
+{
+bool CanLeashVileFin(Player const* player, Creature const* target)
+{
+    return player && player->IsAlive() && player->GetMapId() == 0 &&
+        player->GetQuestStatus(24974) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(52059, 1, false) &&
+        target && (target->GetEntry() == 1543 || target->GetEntry() == 1544) && target->GetAreaId() == 169 &&
+        target->IsAlive() && !target->IsDespawn() && target->GetHealthPct() <= 25.0f &&
+        (!target->hasLootRecipient() || target->isTappedBy(player));
+}
+}
 
 
 SpellValue::SpellValue(SpellInfo const* proto, uint8 diff)
@@ -134,6 +145,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
                     quest = 14461;
+                break;
+            case 73108: // Murloc Leash
+                if (m_CastItem->GetEntry() == 52059)
+                    quest = 24974;
                 break;
         }
         if (quest && player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
@@ -3115,6 +3130,10 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     // These missiles must still belong to the quest attempt that launched them.
     if ((m_spellInfo->Id == 65580 || m_spellInfo->Id == 67917 || m_spellInfo->Id == 69228) &&
         (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
+        return SPELL_MISS_EVADE;
+
+    if (m_spellInfo->Id == 73108 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !CanLeashVileFin(m_caster->ToPlayer(), unit->ToCreature())))
         return SPELL_MISS_EVADE;
 
     if (m_spellInfo->Id == 67915)
@@ -6667,6 +6686,14 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (m_spellInfo->Id == 67922 && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire)))
         return SPELL_FAILED_DONT_REPORT;
+
+    if (m_spellInfo->Id == 73108)
+    {
+        Unit* target = m_targets.GetUnitTarget();
+        if (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            !CanLeashVileFin(m_caster->ToPlayer(), target ? target->ToCreature() : nullptr))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
 
     SpellCastResult castResult = CallScriptCheckCastHandlers();
     

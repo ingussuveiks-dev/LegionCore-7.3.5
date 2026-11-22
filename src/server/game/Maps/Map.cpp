@@ -4403,6 +4403,24 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             return nullptr;
     }
 
+    Player* murlocOwner = nullptr;
+    if ((entry == 38923 && spellId == 73109) || (entry == 39078 && spellId == 73433))
+    {
+        murlocOwner = summoner ? summoner->ToPlayer() : nullptr;
+        Creature* source = GetCreature(targetGuid);
+        if (!murlocOwner || !murlocOwner->IsAlive() || GetId() != 0 || !properties || properties->ID != 496 ||
+            murlocOwner->GetQuestStatus(24974) != QUEST_STATUS_INCOMPLETE || !murlocOwner->HasItemCount(52059, 1, false) ||
+            !source || !source->IsAlive() || source->IsDespawn() || source->GetEntry() != (entry == 38923 ? 1543 : 1544) ||
+            !source->HasAura(73108, murlocOwner->GetGUID()))
+            return nullptr;
+
+        for (uint32 captiveEntry : {38923u, 39078u})
+            for (ObjectGuid const& guid : *murlocOwner->GetSummonList(captiveEntry))
+                if (Creature const* captive = GetCreature(guid))
+                    if (captive->IsAlive() && !captive->IsDespawn() && !captive->IsQuestObjectExpired())
+                        return nullptr;
+    }
+
     HallowsEndCrate::Route const* collectorRoute = nullptr;
     if (entry == 54114 && spellId == 100668)
     {
@@ -4581,6 +4599,12 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (chargeOwner)
         chargeOwner->BindQuestObject(14250, summon, false);
+
+    if (murlocOwner)
+    {
+        murlocOwner->BindQuestObject(24974, summon);
+        summon->SetReactState(REACT_PASSIVE);
+    }
 
     if (collectorRoute)
     {

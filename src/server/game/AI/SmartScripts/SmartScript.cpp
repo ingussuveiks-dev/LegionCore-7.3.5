@@ -148,6 +148,49 @@ bool DeliverHogtiedRazormane(Creature* captive)
     return true;
 }
 
+void CaptureVileFin(Player* player, Creature* source, uint32 forceSpell, uint32 captiveEntry)
+{
+    if (!player || !source->HasAura(73108, player->GetGUID()))
+        return;
+
+    auto const& summons = *player->GetSummonList(captiveEntry);
+    auto previous = summons.size();
+    source->CastSpell(player, forceSpell, true);
+    if (summons.size() > previous)
+        if (Creature* captive = ObjectAccessor::GetCreature(*player, summons.back()))
+            if (captive->HasQuestObjectScope() && !captive->IsQuestObjectExpired())
+            {
+                // A creature GUID would replace the shared capture marker with
+                // the Oracle's own template entry in the native credit handler.
+                player->KilledMonsterCredit(38923);
+                source->DespawnOrUnsummon();
+                return;
+            }
+
+    source->RemoveAura(73108, player->GetGUID());
+}
+
+bool ReturnVileFin(Creature* captive)
+{
+    TempSummon* summon = captive->ToTempSummon();
+    Player* player = summon ? ObjectAccessor::GetPlayer(*captive, summon->GetSummonerGUID()) : nullptr;
+    uint32 summonSpell = captive->GetEntry() == 38923 ? 73109 : 73433;
+    if (!player || !player->IsAlive() || !captive->IsAlive() || captive->IsDespawn() ||
+        !captive->HasQuestObjectScope() || captive->IsQuestObjectExpired() ||
+        captive->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != summonSpell ||
+        player->GetQuestStatus(24974) != QUEST_STATUS_INCOMPLETE || !player->HasItemCount(52059, 1, false) ||
+        !player->GetQuestObjectiveData(24974, 38923) || player->GetQuestObjectiveData(24974, 38887))
+        return false;
+
+    Creature* calston = captive->FindNearestCreature(38925, INTERACTION_DISTANCE, true);
+    if (!calston || !calston->IsWithinDistInMap(player, INTERACTION_DISTANCE) ||
+        !calston->IsWithinLOSInMap(captive) || !calston->IsWithinLOSInMap(player))
+        return false;
+
+    player->KilledMonsterCredit(38887);
+    return true;
+}
+
 void CreditTongaSummit(GameObject* focus)
 {
     if (focus->GetMapId() != 1 || focus->GetDBTableGUIDLow() != 32485)
@@ -852,6 +895,13 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 break;
             }
 
+            if (me && spell && spell->Id == 73108 && e.GetEventType() == SMART_EVENT_SPELLHIT &&
+                ((me->GetEntry() == 1543 && e.action.cast.spell == 73110) || (me->GetEntry() == 1544 && e.action.cast.spell == 73434)))
+            {
+                CaptureVileFin(unit ? unit->ToPlayer() : nullptr, me, e.action.cast.spell, me->GetEntry() == 1543 ? 38923 : 39078);
+                break;
+            }
+
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
             {
@@ -1435,6 +1485,14 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CALL_KILLEDMONSTER:
         {
+            if (me && (me->GetEntry() == 38923 || me->GetEntry() == 39078) &&
+                e.GetEventType() == SMART_EVENT_DATA_SET && e.action.killedMonster.creature == 38887)
+            {
+                if (!ReturnVileFin(me))
+                    return;
+                break;
+            }
+
             if (go && go->GetEntry() == 195146 && e.event_id == 0 && e.action.killedMonster.creature == 34631)
             {
                 CreditTongaSummit(go);

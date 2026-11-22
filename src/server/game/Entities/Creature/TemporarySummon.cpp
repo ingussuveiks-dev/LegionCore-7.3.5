@@ -475,6 +475,10 @@ void TempSummon::UnSummon(uint32 msTime)
 
     Unit* owner = GetSummoner();
 
+    uint32 spell = GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
+    if (owner && ((GetEntry() == 38923 && spell == 73109) || (GetEntry() == 39078 && spell == 73433)))
+        owner->RemoveAurasDueToSpell(spell);
+
     if (owner && owner->IsPlayer() && GetCreatureTemplate()->Type == CREATURE_TYPE_WILD_PET)
     {
         owner->SetGuidValue(PLAYER_FIELD_SUMMONED_BATTLE_PET_GUID, ObjectGuid::Empty);
