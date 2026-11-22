@@ -3630,6 +3630,12 @@ void SpellMgr::LoadSpellCustomAttr()
                     effect->MiscValue = 127;
     }
 
+    // Clarice's Pendant uses the kneeling lock on Yuriv's Tombstone.
+    ApplySpellFix({8001}, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0]->MiscValue = LOCKTYPE_OPEN_KNEELING;
+    });
+
     // Grapple points use neutral faction190 and protected unit flags. Native
     //182478's ally-only target fails before its point/launcher/range checks.
     ApplySpellFix({182478}, [](SpellInfo* spellInfo)
