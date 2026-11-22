@@ -19180,9 +19180,17 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
     return true;
 }
 
+namespace
+{
+constexpr uint32 LovelyCharmCollectorKit = 49661;
+}
+
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
     if (quest->GetQuestId() == 29433 && (GetMapId() != 974 || !sGameEventMgr->IsActiveEvent(75)))
+        return false;
+
+    if (quest->SourceItemId == LovelyCharmCollectorKit && !IsHolidayActive(HOLIDAY_LOVE_IS_IN_THE_AIR))
         return false;
 
     // A saved COMPLETE from the old zero-count objective proves no board visit.
@@ -19831,7 +19839,8 @@ private:
 bool AddProvidedQuestItem(Player& player, Quest const* quest, QuestItemRemoval& items, bool msg)
 {
     uint32 itemId = quest->SourceItemId;
-    if (!itemId)
+    // Peddlefeet also offers this kit through gossip. Keep it for other gifts and the vendors.
+    if (!itemId || itemId == LovelyCharmCollectorKit)
         return true;
 
     uint32 count = quest->SourceItemIdCount ? quest->SourceItemIdCount : 1;
