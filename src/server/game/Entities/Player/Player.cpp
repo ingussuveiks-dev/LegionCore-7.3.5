@@ -11939,6 +11939,12 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
             return;
         }
 
+        if (go->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*go, *this))
+        {
+            SendLootRelease(guid);
+            return;
+        }
+
         //! Handler on  Garrison::CompleteShipments
         if (go->GetGOInfo()->type == GAMEOBJECT_TYPE_GARRISON_SHIPMENT)
             return;

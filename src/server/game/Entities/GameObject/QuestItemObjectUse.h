@@ -66,6 +66,17 @@ constexpr uint32 ReadyForRescue = 1;
 Creature* FindPrincess(GameObject const& cage);
 }
 
+namespace BloodcupBraid
+{
+constexpr uint32 Quest = 13875;
+constexpr uint32 Plant = 194997;
+constexpr uint32 Flower = 46315;
+constexpr uint32 HairBraid = 46316;
+constexpr uint32 Weave = 65001;
+
+bool CanGather(GameObject const& plant, Player const& player);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

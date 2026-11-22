@@ -1517,6 +1517,11 @@ Creature* SavingPrincessStillpine::FindPrincess(GameObject const& cage)
     return nullptr;
 }
 
+bool BloodcupBraid::CanGather(GameObject const& plant, Player const& player)
+{
+    return player.IsAlive() && plant.GetMapId() == 1 && plant.GetZoneId() == 331 && plant.GetDBTableGUIDLow() && player.HasQuestForItem(Flower);
+}
+
 QuestItemObjectUse::Binding const* QuestItemObjectUse::ForObject(uint32 entry)
 {
     for (Binding const& binding : QuestItemObjects)
@@ -1576,6 +1581,9 @@ bool GameObject::ActivateToQuest(Player* target) const
 
     if (auto binding = QuestItemObjectUse::ForObject(GetEntry()))
         return QuestItemObjectUse::CanUse(this, target, *binding);
+
+    if (GetEntry() == BloodcupBraid::Plant)
+        return BloodcupBraid::CanGather(*this, *target);
 
     if (GetEntry() == 181690)
         return target->HasItemCount(23788, 1, false) &&

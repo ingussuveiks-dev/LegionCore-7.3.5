@@ -156,6 +156,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == Dozercism::Flaregun)
                     quest = Dozercism::Quest;
                 break;
+            case BloodcupBraid::Weave:
+                if (m_CastItem->GetEntry() == BloodcupBraid::HairBraid)
+                    quest = BloodcupBraid::Quest;
+                break;
             case 69228: // Throw Torch
                 if (m_CastItem->GetEntry() == 49539)
                     quest = 14461;
@@ -6718,6 +6722,15 @@ SpellCastResult Spell::CheckCast(bool strict)
         !QuestItemObjectUse::CanUse(m_targets.GetGOTarget(), m_caster->ToPlayer(), *binding)))
         return SPELL_FAILED_BAD_TARGETS;
 
+    if (m_spellInfo->Id == BloodcupBraid::Weave)
+    {
+        Player const* player = m_caster->ToPlayer();
+        if (!player || !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+            player->GetQuestStatus(BloodcupBraid::Quest) != QUEST_STATUS_INCOMPLETE ||
+            (m_targets.GetObjectTarget() && m_targets.GetObjectTarget() != player))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
+
     if (m_spellInfo->Id == 29773)
     {
         GameObject* mound = m_targets.GetGOTarget();
@@ -7614,6 +7627,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                     auto goInfo = target->GetGOInfo();
                     if (goInfo->type == GAMEOBJECT_TYPE_CHEST || goInfo->type == GAMEOBJECT_TYPE_GATHERING_NODE)
                     {
+                        if (target->GetEntry() == BloodcupBraid::Plant && !BloodcupBraid::CanGather(*target, *m_caster->ToPlayer()))
+                            return SPELL_FAILED_NO_VALID_TARGETS;
                         if ((target->GetEntry() == 13874 || target->GetEntry() == 13891) && target->GetMapId() == 43 &&
                             !m_caster->ToPlayer()->HasQuestForItem(5339))
                             return SPELL_FAILED_BAD_TARGETS;
