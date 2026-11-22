@@ -20,6 +20,7 @@
 #include "ScriptedEscortAI.h"
 #include "Vehicle.h"
 #include "CharmInfo.h"
+#include "QuestItemObjectUse.h"
 
 //Phase 1
 /*######
@@ -1908,11 +1909,18 @@ public:
 
         void Reset() override
         {
+            pendingLurker.Clear();
             me->InitCharmInfo();
             me->GetCharmInfo()->InitEmptyActionBar(false);
             me->GetCharmInfo()->SetActionBar(0, SPELL_ATTACK_LURKER, ACT_PASSIVE);
             me->SetReactState(REACT_DEFENSIVE);
             me->GetCharmInfo()->SetIsFollowing(true);
+        }
+
+        void IsSummonedBy(Unit* summoner) override
+        {
+            if (GilneanMastiff::IsQuestMastiff(me) && summoner && summoner == me->GetOwner())
+                me->GetMotionMaster()->MoveFollow(summoner, me->GetFollowDistance(), me->GetFollowAngle());
         }
 
         void UpdateAI(uint32 /*diff*/) override
@@ -1923,6 +1931,13 @@ public:
                 if (!player)
                     return;
 
+                if (me->GetEntry() == GilneanMastiff::Mastiff &&
+                    (!GilneanMastiff::IsQuestMastiff(me) || !GilneanMastiff::IsCityAttempt(player)))
+                {
+                    me->DespawnOrUnsummon(1);
+                    return;
+                }
+
                 if (player->GetQuestStatus(QUEST_FROM_THE_SHADOWS) == QUEST_STATUS_REWARDED)
                 {
                     me->DespawnOrUnsummon(1);
@@ -1930,6 +1945,10 @@ public:
 
                 if (!UpdateVictim())
                 {
+                    if (me->GetEntry() == GilneanMastiff::Mastiff &&
+                        me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW) && !pendingLurker &&
+                        me->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
+                        me->GetMotionMaster()->MoveFollow(player, me->GetFollowDistance(), me->GetFollowAngle());
                     me->GetCharmInfo()->SetIsFollowing(true);
                     me->SetReactState(REACT_DEFENSIVE);
                     return;
@@ -1946,15 +1965,32 @@ public:
             }
         }
 
-        void SpellHitTarget(Unit* Mastiff, SpellInfo const* cSpell) override
+        void SpellHitTarget(Unit* target, SpellInfo const* spell) override
         {
-            if (cSpell->Id == SPELL_ATTACK_LURKER)
+            if (spell->Id != SPELL_ATTACK_LURKER)
+                return;
+
+            if (me->GetEntry() == GilneanMastiff::Mastiff)
             {
-                Mastiff->RemoveAura(SPELL_SHADOWSTALKER_STEALTH);
-                Mastiff->AddThreat(me, 1.0f);
-                me->AddThreat(Mastiff, 1.0f);
-                me->AI()->AttackStart(Mastiff);
+                Player* owner = me->GetOwner() ? me->GetOwner()->ToPlayer() : nullptr;
+                if (!GilneanMastiff::IsQuestMastiff(me) || !GilneanMastiff::IsCityAttempt(owner) ||
+                    owner->GetQuestStatus(GilneanMastiff::Quest) != QUEST_STATUS_INCOMPLETE || !IsLurker(target))
+                    return;
+                target->RemoveAura(SPELL_SHADOWSTALKER_STEALTH);
+                pendingLurker = target->GetGUID();
+                if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != EFFECT_MOTION_TYPE)
+                    FinishAttack();
+                return;
             }
+
+            target->RemoveAura(SPELL_SHADOWSTALKER_STEALTH);
+            StartAttack(target);
+        }
+
+        void MovementInform(uint32 type, uint32 id) override
+        {
+            if (type == EFFECT_MOTION_TYPE && id == SPELL_ATTACK_LURKER && pendingLurker)
+                FinishAttack();
         }
 
         void JustDied(Unit* /*killer*/) override // Otherwise, player is stuck with pet corpse they cannot remove from world
@@ -1966,6 +2002,30 @@ public:
         {
             Reset();
         }
+
+    private:
+        bool IsLurker(Unit const* target) const
+        {
+            return target && target->IsAlive() && target->GetEntry() == GilneanMastiff::Lurker &&
+                me->IsInMap(target) && me->InSamePhase(target) && me->IsWithinLOSInMap(target);
+        }
+
+        void FinishAttack()
+        {
+            Unit* target = ObjectAccessor::GetUnit(*me, pendingLurker);
+            pendingLurker.Clear();
+            if (GilneanMastiff::IsQuestMastiff(me) && IsLurker(target) && me->IsWithinMeleeRange(target))
+                StartAttack(target);
+        }
+
+        void StartAttack(Unit* target)
+        {
+            target->AddThreat(me, 1.0f);
+            me->AddThreat(target, 1.0f);
+            AttackStart(target);
+        }
+
+        ObjectGuid pendingLurker;
     };
 };
 

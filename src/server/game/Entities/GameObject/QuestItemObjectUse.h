@@ -211,6 +211,20 @@ Creature* FindTobias(Player const* player);
 bool CanRally(Player* player);
 }
 
+namespace GilneanMastiff
+{
+constexpr uint32 Quest = 14204;
+constexpr uint32 Collar = 48707;
+constexpr uint32 Summon = 67807;
+constexpr uint32 AttackLurker = 67805;
+constexpr uint32 Mastiff = 35631;
+constexpr uint32 Lurker = 35463;
+
+bool IsCityAttempt(Player const* owner);
+bool CanSummon(Player* owner);
+bool IsQuestMastiff(Creature const* creature);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

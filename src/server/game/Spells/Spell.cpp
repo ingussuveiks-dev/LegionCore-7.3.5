@@ -6863,6 +6863,20 @@ bool Spell::CheckEffFromDummy(Unit* target, uint32 eff)
 
 SpellCastResult Spell::CheckCast(bool strict)
 {
+    if (m_spellInfo->Id == GilneanMastiff::Summon && (!GilneanMastiff::CanSummon(m_caster->ToPlayer()) ||
+        (m_CastItem && (m_CastItem->GetEntry() != GilneanMastiff::Collar ||
+            !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot())))))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    if (m_spellInfo->Id == GilneanMastiff::AttackLurker)
+    {
+        Unit* owner = m_caster->GetOwner();
+        Player* player = owner ? owner->ToPlayer() : nullptr;
+        if (!GilneanMastiff::IsQuestMastiff(m_caster->ToCreature()) || !GilneanMastiff::IsCityAttempt(player) ||
+            player->GetQuestStatus(GilneanMastiff::Quest) != QUEST_STATUS_INCOMPLETE || player->GetFirstControlled() != m_caster)
+            return SPELL_FAILED_BAD_TARGETS;
+    }
+
     // The guide's generic kill proc does not account for the actual recipients of XP or honor.
     if (m_spellInfo->Id == 100776 && m_questKillReward != 29433)
         return SPELL_FAILED_DONT_REPORT;

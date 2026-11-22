@@ -22,6 +22,8 @@
 #include "ObjectMgr.h"
 #include "TemporarySummon.h"
 #include "Dozercism.h"
+#include "QuestItemObjectUse.h"
+#include "WorldSession.h"
 #include "TotemPackets.h"
 #include "CharmInfo.h"
 
@@ -589,10 +591,17 @@ void Minion::RemoveFromWorld()
     if (!IsInWorld())
         return;
 
+    Player* mastiffOwner = nullptr;
     if (Unit* owner = GetSummoner())
+    {
+        if (HasQuestObjectScope() && GetEntry() == GilneanMastiff::Mastiff && GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == GilneanMastiff::Summon)
+            mastiffOwner = owner->ToPlayer();
         owner->SetMinion(this, false);
+    }
 
     TempSummon::RemoveFromWorld();
+    if (mastiffOwner && mastiffOwner->IsInWorld() && !mastiffOwner->GetSession()->PlayerLogout())
+        mastiffOwner->ResummonPetTemporaryUnSummonedIfAny();
 }
 
 bool Minion::IsGuardianPet() const

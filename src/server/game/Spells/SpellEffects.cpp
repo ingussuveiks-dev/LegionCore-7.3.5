@@ -91,6 +91,36 @@
 #include "WorldPacket.h"
 #include <G3D/Quat.h>
 
+bool GilneanMastiff::IsCityAttempt(Player const* owner)
+{
+    if (!owner || !owner->IsAlive() || !owner->IsInWorld() || owner->GetMapId() != 654 ||
+        owner->GetZoneId() != 4755 || !(owner->GetPhaseMask() & 4))
+        return false;
+
+    QuestStatus status = owner->GetQuestStatus(Quest);
+    return status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE;
+}
+
+bool GilneanMastiff::IsQuestMastiff(Creature const* creature)
+{
+    return creature && creature->IsAlive() && creature->IsInWorld() && creature->GetEntry() == Mastiff &&
+        creature->isSummon() && creature->HasQuestObjectScope() && !creature->IsQuestObjectExpired() &&
+        creature->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == Summon;
+}
+
+bool GilneanMastiff::CanSummon(Player* owner)
+{
+    if (!IsCityAttempt(owner) || owner->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE ||
+        owner->GetCharmGUID() || !owner->HasItemCount(Collar, 1, false))
+        return false;
+
+    for (ObjectGuid const& guid : *owner->GetSummonList(Mastiff))
+        if (IsQuestMastiff(owner->GetMap()->GetCreature(guid)))
+            return false;
+
+    return true;
+}
+
 bool WoodsEndCoffer::IsAtCabin(Player const* player)
 {
     return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 654 &&
@@ -1942,6 +1972,10 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     if (!unitTarget || m_caster == unitTarget)
         return;
 
+    if (m_spellInfo->Id == GilneanMastiff::AttackLurker && (unitTarget->GetEntry() != GilneanMastiff::Lurker ||
+        !unitTarget->IsAlive() || !m_caster->InSamePhase(unitTarget) || !m_caster->IsWithinLOSInMap(unitTarget)))
+        return;
+
     // Perform trigger spell at jumping.
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
     DelayCastEvent* delayCast = GetSpellTriggerDelay(effIndex, triggered_spell_id);
@@ -1984,7 +2018,11 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     // TC_LOG_DEBUG("spells", "EffectJump start xyz %f %f %f caster %u target %u damage %i distance %f targetSize %f casterSize %f",
     // pos.m_positionX, pos.m_positionY, pos.m_positionZ, m_caster->GetGUIDLow(), unitTarget->GetGUIDLow(), damage, distance, unitTarget->GetObjectSize(), m_caster->GetObjectSize());
 
-    m_caster->GetMotionMaster()->MoveJump(*unitTarget, speedXY, speedZ, m_spellInfo->Id, false, &arrivalCast);
+    // The Mastiff's speed is calculated for the contact point. Jump to that same point.
+    if (m_spellInfo->Id == GilneanMastiff::AttackLurker)
+        m_caster->GetMotionMaster()->MoveJump(pos, speedXY, speedZ, m_spellInfo->Id, false, &arrivalCast);
+    else
+        m_caster->GetMotionMaster()->MoveJump(*unitTarget, speedXY, speedZ, m_spellInfo->Id, false, &arrivalCast);
 }
 
 void Spell::EffectJumpDest(SpellEffIndex effIndex)

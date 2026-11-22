@@ -4301,6 +4301,14 @@ void ZoneMap::RemovePlayerFromMap(Player* player, bool remove)
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* mastiffOwner = nullptr;
+    if (entry == GilneanMastiff::Mastiff && spellId == GilneanMastiff::Summon)
+    {
+        mastiffOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!properties || properties->ID != 2161 || !pos.IsPositionValid() || !GilneanMastiff::CanSummon(mastiffOwner))
+            return nullptr;
+    }
+
     Player* trackerOwner = nullptr;
     if (entry == WoodsEndCoffer::Tracker && spellId == WoodsEndCoffer::SummonTracker)
     {
@@ -4621,6 +4629,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);
 
+    if (mastiffOwner)
+        mastiffOwner->BindQuestObject(GilneanMastiff::Quest, summon, false);
+
     if (trackerOwner)
     {
         trackerOwner->BindQuestObject(WoodsEndCoffer::Quest, summon, false);
@@ -4776,6 +4787,8 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     summon->SetHomePosition(pos);
 
+    if (mastiffOwner)
+        mastiffOwner->UnsummonPetTemporaryIfAny();
     summon->InitStats(duration);
 
     if (!viewerGuid.IsEmpty())
