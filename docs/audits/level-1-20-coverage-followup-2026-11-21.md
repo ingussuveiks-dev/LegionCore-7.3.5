@@ -190,3 +190,7 @@ Atkārtotais eksports aptver 5 459 ierakstus, 4 865 ieslēgtus kvestus un visus 
 `29664` krāsainie ugunskuri tagad prasa īsto iedegto lāpu un faktiskās iedegšanas ieskaiti. Pārbaudīta lāpas maiņa, visu trīs krāsu ieskaite, atmešana un atkārtota pieņemšana pēc lāpas pazaudēšanas, kā arī nodošana pie Li Fei. [The Challenger’s Fires pārbaude](challenger-fires-2026-11-22.md)
 
 `9670` servera zonde ar diviem tuvumā esošiem grupas dalībniekiem apstiprināja personisku ieskaiti sitiena izdarītājam vai mājdzīvnieka īpašniekam pēc faktiskas pētnieka atbrīvošanas. Jaunākā vietējā TrinityCore rekonstrukcija arī sasaista atbrīvoto pētnieku ar izsaucēju. Grupas uzvedība vēsturiskajā Legion klientā vēl jāapstiprina.
+
+`29422` Huo’s Offerings tagad sākas pie redzamā Huo un pabeidz kvestu tikai pēc īstās auras beigām. Pārbaudīta priekšmeta lietošana, dabiskā auras izbeigšanās, aiziešana, atmešana, atkārtots mēģinājums un nodošana. [Huo, the Spirit of Fire pārbaude](huo-offerings-2026-11-22.md)
+
+Atkārtotajā eksportā pēc Redridge un Svētnīcas labojumiem ir 5 459 ieraksti un 4 865 ieslēgti kvesti. Visi 167 atrastie skriptu nosaukumi ir kanoniskajā Release. Atlasē ar pasaulē novietotu devēju palika 17 aktieru vai kredīta atzīmes un 28 priekšmeta lietošanas atzīmes. Šajā priekšmetu atlasē turpināmi `14071` un `27088`. Eksports, kandidātu saraksti un kontrolsummas ir lokāli `.codex/quest-coverage-20261122-shrine/`.

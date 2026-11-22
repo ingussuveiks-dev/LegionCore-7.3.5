@@ -1,7 +1,12 @@
 #include "ScriptedEscortAI.h"
 #include "CreatureTextMgr.h"
+#include "Item.h"
 #include "MapManager.h"
+#include "QuestObjectScope.h"
 #include "ScriptMgr.h"
+#include "SpellAuraEffects.h"
+#include "SpellAuras.h"
+#include "SpellScript.h"
 #include "Packets/WorldStatePackets.h"
 
 enum panda_npc
@@ -1190,6 +1195,137 @@ public:
             DoMeleeAttackIfReady();
         }
     };
+};
+
+namespace
+{
+constexpr uint32 HuoQuest = 29422;
+constexpr uint32 HuoOffering = 72583;
+constexpr uint32 FanHuo = 102522;
+constexpr uint32 HuoOfferingTarget = 57779;
+constexpr uint32 HuoOfferingSpawn = 244099;
+constexpr uint32 ThrowKindling = 109090;
+constexpr uint32 FanWithWind = 109105;
+constexpr uint32 ReigniteHuo = 109107;
+
+Creature* FindHuoForOffering(Player& player)
+{
+    if (!player.IsAlive() || player.GetMapId() != 860 || player.GetAreaId() != 5849 ||
+        player.GetQuestStatus(HuoQuest) != QUEST_STATUS_INCOMPLETE || !player.HasItemCount(HuoOffering, 1, false))
+        return nullptr;
+
+    std::list<Creature*> spirits;
+    player.GetCreatureListWithEntryInGrid(spirits, HuoOfferingTarget, 10.0f);
+    for (Creature* spirit : spirits)
+        if (spirit->GetDBTableGUIDLow() == HuoOfferingSpawn && spirit->IsAlive() &&
+            player.canSeeOrDetect(spirit) && player.IsWithinLOSInMap(spirit))
+            return spirit;
+    return nullptr;
+}
+}
+
+class spell_wandering_isle_huo_offerings : public SpellScriptLoader
+{
+public:
+    spell_wandering_isle_huo_offerings() : SpellScriptLoader("spell_wandering_isle_huo_offerings") { }
+
+    class OfferingCast : public SpellScript
+    {
+        PrepareSpellScript(OfferingCast);
+
+        SpellCastResult CheckOffering()
+        {
+            Player* player = GetCaster()->ToPlayer();
+            Item* item = GetCastItem();
+            if (!player || !item || item->GetEntry() != HuoOffering || player->HasAura(FanHuo) || !FindHuoForOffering(*player))
+                return SPELL_FAILED_BAD_TARGETS;
+            return SPELL_CAST_OK;
+        }
+
+        void SelectHuo(WorldObject*& target)
+        {
+            Player* player = GetCaster()->ToPlayer();
+            target = player ? FindHuoForOffering(*player) : nullptr;
+        }
+
+        void Register() override
+        {
+            OnCheckCast += SpellCheckCastFn(OfferingCast::CheckOffering);
+            OnObjectTargetSelect += SpellObjectTargetSelectFn(OfferingCast::SelectHuo, EFFECT_1, TARGET_UNIT_NEARBY_ENTRY);
+        }
+    };
+
+    class OfferingAura : public AuraScript
+    {
+        PrepareAuraScript(OfferingAura);
+
+        bool Validate(SpellInfo const*) override
+        {
+            return ValidateSpellInfo({ThrowKindling, FanWithWind, ReigniteHuo});
+        }
+
+        void BindOffering(AuraEffect const*, AuraEffectHandleModes)
+        {
+            Player* player = GetTarget()->ToPlayer();
+            if (!player || GetCaster() != player)
+                return;
+            Item* item = player->GetItemByGuid(GetAura()->GetCastItemGUID());
+            if (!item || item->GetEntry() != HuoOffering)
+                return;
+            if (Creature* spirit = FindHuoForOffering(*player))
+            {
+                _spirit = spirit->GetGUID();
+                _attempt = player->GetQuestCancellationReceipt(HuoQuest);
+            }
+        }
+
+        Player* OfferingOwner()
+        {
+            Player* player = GetTarget()->ToPlayer();
+            if (!player || !_attempt || _attempt->load(std::memory_order_acquire) ||
+                player->GetQuestCancellationReceipt(HuoQuest) != _attempt)
+                return nullptr;
+            Creature* spirit = FindHuoForOffering(*player);
+            return spirit && spirit->GetGUID() == _spirit ? player : nullptr;
+        }
+
+        void FanFlames(AuraEffect const* effect)
+        {
+            Player* owner = OfferingOwner();
+            if (!owner)
+            {
+                GetAura()->Remove(AURA_REMOVE_BY_CANCEL);
+                return;
+            }
+
+            switch (urand(0, 3))
+            {
+                case 1: owner->CastSpell(owner, ThrowKindling, true, nullptr, effect); break;
+                case 2: owner->CastSpell(owner, FanWithWind, true, nullptr, effect); break;
+                default: break;
+            }
+        }
+
+        void FinishOffering(AuraEffect const* effect, AuraEffectHandleModes)
+        {
+            if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+                if (Player* owner = OfferingOwner())
+                    owner->CastSpell(owner, ReigniteHuo, true, nullptr, effect);
+        }
+
+        void Register() override
+        {
+            AfterEffectApply += AuraEffectApplyFn(OfferingAura::BindOffering, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            OnEffectPeriodic += AuraEffectPeriodicFn(OfferingAura::FanFlames, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+            AfterEffectRemove += AuraEffectRemoveFn(OfferingAura::FinishOffering, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        }
+
+        ObjectGuid _spirit;
+        std::shared_ptr<QuestCancellationReceipt const> _attempt;
+    };
+
+    SpellScript* GetSpellScript() const override { return new OfferingCast(); }
+    AuraScript* GetAuraScript() const override { return new OfferingAura(); }
 };
 
 class AreaTrigger_at_temple_entrance : public AreaTriggerScript
@@ -5452,6 +5588,7 @@ void AddSC_WanderingIsland()
     new boss_living_air();
     new boss_li_fei();
     new boss_li_fei_fight();
+    new spell_wandering_isle_huo_offerings();
     new AreaTrigger_at_temple_entrance();
     // east
     new at_going_to_east();
