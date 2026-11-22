@@ -294,6 +294,10 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
                 if (m_CastItem->GetEntry() == NoTanks::Grenade)
                     quest = NoTanks::Quest;
                 break;
+            case PaintItBlack::BlindSentry:
+                if (m_CastItem->GetEntry() == PaintItBlack::Paintinator)
+                    quest = PaintItBlack::Quest;
+                break;
             case PerfumedGuardAnalysis::Analysis:
                 if (m_CastItem->GetEntry() == PerfumedGuardAnalysis::Analyzer)
                     quest = PerfumedGuardAnalysis::ActiveQuest(player);
@@ -3339,6 +3343,10 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
     if (m_spellInfo->Id == NoTanks::ThrowGrenade && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
         !NoTanks::CanThrow(m_caster->ToPlayer(), unit)))
+        return SPELL_MISS_EVADE;
+
+    if (m_spellInfo->Id == PaintItBlack::BlindSentry && (!m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !PaintItBlack::CanPaint(m_caster->ToPlayer(), unit)))
         return SPELL_MISS_EVADE;
 
     if (m_spellInfo->Id == 67915)
@@ -6889,6 +6897,12 @@ SpellCastResult Spell::CheckCast(bool strict)
         !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
         !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
         !NoTanks::CanThrow(m_caster->ToPlayer(), m_targets.GetUnitTarget())))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    if (m_spellInfo->Id == PaintItBlack::BlindSentry && (!m_CastItem || m_CastItem->GetOwnerGUID() != m_caster->GetGUID() ||
+        !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
+        !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||
+        !PaintItBlack::CanPaint(m_caster->ToPlayer(), m_targets.GetUnitTarget())))
         return SPELL_FAILED_BAD_TARGETS;
 
     if (m_spellInfo->Id == GilneanMastiff::Summon && (!GilneanMastiff::CanSummon(m_caster->ToPlayer()) ||

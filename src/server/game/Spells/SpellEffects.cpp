@@ -144,6 +144,19 @@ bool NoTanks::CanThrow(Player const* player, Unit const* target)
         (placement->areaId == 5177 || placement->areaId == 801);
 }
 
+bool PaintItBlack::CanPaint(Player const* player, Unit* target)
+{
+    Creature* sentry = target ? target->ToCreature() : nullptr;
+    if (!player || !player->IsAlive() || !player->IsInWorld() || player->GetMapId() != 0 ||
+        player->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE || !player->HasItemCount(Paintinator, 1, false) ||
+        !sentry || !sentry->IsAlive() || !sentry->IsInWorld() || sentry->GetEntry() != Sentry ||
+        sentry->GetReactState() == REACT_PASSIVE || !player->IsInMap(sentry) || !player->InSamePhase(sentry))
+        return false;
+
+    CreatureData const* placement = sentry->GetCreatureData();
+    return placement && placement->id == Sentry && placement->mapid == 0 && placement->zoneId == 6457 && placement->areaId == 211;
+}
+
 bool WoodsEndCoffer::IsAtCabin(Player const* player)
 {
     return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 654 &&

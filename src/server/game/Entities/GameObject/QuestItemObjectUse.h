@@ -254,6 +254,17 @@ constexpr uint32 Tank = 42224;
 bool CanThrow(Player const* player, Unit const* target);
 }
 
+namespace PaintItBlack
+{
+    constexpr uint32 Quest = 26342;
+    constexpr uint32 Paintinator = 58203;
+    constexpr uint32 BlindSentry = 79781;
+    constexpr uint32 Sentry = 42291;
+    constexpr uint32 BlindedCredit = 42796;
+
+    bool CanPaint(Player const* player, Unit* target);
+}
+
 namespace QuestItemObjectUse
 {
 struct Binding

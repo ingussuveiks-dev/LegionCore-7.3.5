@@ -36,6 +36,7 @@
 #include "ObjectMgr.h"
 #include "ObjectVisitors.hpp"
 #include "QuestData.h"
+#include "QuestItemObjectUse.h"
 #include "ScenarioMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
@@ -1538,7 +1539,9 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             // These quest interactions belong to the actual item user.
             if (me && spell && e.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
                 ((spell->Id == 65188 && e.action.killedMonster.creature == 34373) ||
-                 (spell->Id == 67917 && me->GetEntry() == 34699 && e.action.killedMonster.creature == 35760)))
+                 (spell->Id == 67917 && me->GetEntry() == 34699 && e.action.killedMonster.creature == 35760) ||
+                 (spell->Id == PaintItBlack::BlindSentry && me->GetEntry() == PaintItBlack::Sentry &&
+                  e.action.killedMonster.creature == PaintItBlack::BlindedCredit)))
             {
                 if (Player* user = unit ? unit->ToPlayer() : nullptr)
                     user->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, user);
