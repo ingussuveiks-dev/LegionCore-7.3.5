@@ -7,3 +7,5 @@ The loader added the same `32842` ms from each of the four actor rows, then adde
 The installed 26972 UI treats `SOUNDKIT_FINISHED` as the end of facial animation and closes the portrait on `TALKINGHEAD_CLOSE`. Its existing FrameXML warning points to the initial model animation callback, a separate path from closing the frame. The migration corrects the server timeline. The user still needs to confirm the fade after the final line in the client.
 
 The user-owned server was running during the report and showed no new crash report or DBErrors. The migration is queued in the world updater for the next restart. No separate gameplay test or server startup was initiated.
+
+After the user stopped the server, the migration was applied to MariaDB. Readback confirmed four actor rows with a combined `32842` ms timeline. Updater receipt `616A8E38D8C5BE618BB166C96E90F2B15150862E` was committed in the same transaction. The in-game fade still needs confirmation.
