@@ -52,21 +52,7 @@ if($Live){
  $livePoints=@(Query 'SELECT QuestID,Idx1,X,Y FROM quest_poi_points WHERE QuestID=44923 ORDER BY Idx1,Idx2;')
  if(($livePoints -join '|') -ne ($points -join '|')){throw 'Live Vrekt point coordinates differ from the preserved fixture'}
 }
-function Export([string]$source,[string]$start,[string]$end,[string]$name){
- $a=$source.IndexOf($start);$b=$source.IndexOf($end,$a)
- if($a -lt 0 -or $b -le $a){throw "Missing native POI boundary $name"}
- [IO.File]::WriteAllText("$out/$name.inc",$source.Substring($a,$b-$a))
-}
-$header=Get-Content "$repo/src/server/game/Globals/QuestData.h" -Raw
-Export $header 'struct QuestPOIPoint' 'struct PointOfInterest' 'PoiTypes'
-$native=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
-Export $native 'QuestPOI::QuestPOI()' 'QuestDataStoreMgr::QuestDataStoreMgr()' 'PoiConstructors'
-Export $native 'void QuestDataStoreMgr::LoadQuestPOI()' 'void QuestDataStoreMgr::LoadQuestRelationsHelper(' 'PoiLoader'
-Export $native 'QuestPOIVector const* QuestDataStoreMgr::GetQuestPOIVector(' 'std::vector<QuestObjective> QuestDataStoreMgr::GetQuestObjectivesByType(' 'PoiLookup'
-$handler=Get-Content "$repo/src/server/game/Handlers/QueryHandler.cpp" -Raw
-$a=$handler.IndexOf('            WorldPackets::Query::QuestPOIData questPOIData;');$end='            response.QuestPOIDataStats.push_back(questPOIData);';$b=$handler.IndexOf($end,$a)
-if($a -lt 0 -or $b -le $a){throw 'Missing native response construction'}
-[IO.File]::WriteAllText("$out/PoiResponse.inc",$handler.Substring($a,$b-$a+$end.Length))
+& "$PSScriptRoot/Export-QuestPoiFixture.ps1" -OutputDirectory $out
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /I`"$out`" `"$PSScriptRoot/VrektPoiTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/before.tsv`" `"$out/after.tsv`" `"$out/points.tsv`"`nexit /b %errorlevel%`n"
 [IO.File]::WriteAllText("$out/run.cmd",$cmd)

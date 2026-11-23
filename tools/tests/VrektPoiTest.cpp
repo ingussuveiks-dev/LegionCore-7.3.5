@@ -52,7 +52,57 @@ static QueryResult Read(char const* path,unsigned columns){
   while(row>>value)fields.push_back({value});Require(fields.size()==columns,"Bad numeric fixture column count");result->rows.push_back(fields);}
  return result;
 }
-int Run(int argc,char**argv){Require(argc==4,"Expected before/after/points");
+static int RunDarkshore(char** argv)
+{
+    auto points = Read(argv[3], 4);
+    points->rows.insert(points->rows.begin(), {{13886}, {0}, {0}, {0}});
+    for (unsigned repaired = 0; repaired < 2; ++repaired)
+    {
+        errors = 0;
+        WorldDatabase.poi = Read(argv[1 + repaired], 15);
+        WorldDatabase.points = std::make_shared<Result>(*points);
+        store.LoadQuestPOI();
+        Require(!errors, "Darkshore POI loader errors");
+        auto response = BuildResponse(13885);
+        Require(response.QuestPOIDataStats.size() == 1, "Missing Darkshore quest map response");
+        auto const& blobs = response.QuestPOIDataStats.front().QuestPOIBlobDataStats;
+        Require(blobs.size() == (repaired ? 7u : 12u), "Wrong Darkshore response size");
+        unsigned wrong = 0, start = 0, tracking = 0;
+        std::map<int32, std::vector<size_t>> objectiveSizes;
+        for (auto const& blob : blobs)
+        {
+            Require(blob.MapID == 1 && blob.WorldMapAreaID == 42, "Wrong Darkshore map or UI map");
+            if (blob.ObjectiveIndex == -1)
+            {
+                ++start;
+                Require(blob.QuestPOIBlobPointStats.size() == 1 &&
+                    blob.QuestPOIBlobPointStats[0].X == 5007 && blob.QuestPOIBlobPointStats[0].Y == 95,
+                    "Original turn-in pin moved");
+            }
+            else if (blob.ObjectiveIndex == 32)
+            {
+                ++tracking;
+                Require(blob.SpawnTrackingID == 293859 && blob.QuestPOIBlobPointStats.empty(), "Native tracking entry changed");
+            }
+            else
+            {
+                int32 expectedIndex = blob.QuestObjectiveID - 267642;
+                Require(expectedIndex >= 0 && expectedIndex <= 2, "Unexpected Darkshore objective");
+                Require(blob.QuestObjectID == std::vector<int32>{34323, 34325, 34324}[expectedIndex], "Wrong objective entry");
+                wrong += blob.ObjectiveIndex != expectedIndex;
+                objectiveSizes[expectedIndex].push_back(blob.QuestPOIBlobPointStats.size());
+            }
+        }
+        Require(start == 1 && tracking == 1 && wrong == (repaired ? 0u : 4u), "Wrong Darkshore objective index or marker");
+        if (repaired)
+            Require(objectiveSizes == std::map<int32, std::vector<size_t>>{{0,{8}}, {1,{4,4,6}}, {2,{8}}}, "Original polygons changed");
+    }
+    std::cout << "PASS native Darkshore map builds 7 blobs from the corrected data and retains all 31 points\n";
+    return 0;
+}
+
+int Run(int argc,char**argv){Require(argc==4 || (argc==5 && std::string(argv[4])=="darkshore"),"Expected before/after/points and optional Darkshore mode");
+ if(argc==5)return RunDarkshore(argv);
  auto points=Read(argv[3],4);
  // The real database has quests above44923. Supply a higher row so the
  // unchanged native maximum-quest point-loader boundary matches that context.
