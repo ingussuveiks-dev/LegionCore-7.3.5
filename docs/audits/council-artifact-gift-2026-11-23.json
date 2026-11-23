@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-23",
+  "quest_ids": [45842, 45861, 45862, 45863, 45864, 45865, 45866],
+  "client_baseline": "In the Violet Citadel, pressing Acquire the Gift displaced and rotated the player. The 45866 objective remained 0/1 after repeated attempts, including after reconnecting.",
+  "source_and_data": {
+    "build": 26972,
+    "position": "World spell_target_position for 234679 specifies map 1220, -851.84, 4622.8, 749.37, facing 1.47943. The generic effect 43 placed the player next to the caster and reversed facing.",
+    "order": "Effect 2 of 234679 triggered 234681 in the launch phase before effect 0 initiated the near transfer. The scene aura took its position from the player at application.",
+    "completion": "The existing scene 1499 and package 1768 trigger its native completion spell 234684. The personal creature credit 118159 is shared by the seven quests. An artifact that already has the new tier needs no second upgrade or AP refund."
+  },
+  "repair": "Use the ritual's configured destination and native near-transfer ACK before casting its scene aura. Recheck the active specialization quest, equipped artifact and ritual position. Preserve the existing scene event, credit and turn-in path.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "3338B1AD7E88F9A3CBB7C7C5B6B828D25EE53B9587E8A24739BA0DC101A81B46",
+    "previous_sha256": "12E7F579849C0B8156268F998FD0BC4E16A1965FB0DF1A6BDEDF9B30A9FFB780",
+    "local_evidence": ".codex/council-gift-20261123",
+    "verification": "Release game and script libraries rebuilt. Staged world link used those Release paths and its map lists both ritual entry points from game:Player.obj. World and bnet servers were stopped before replacement. Staged and deployed SHA-256 matched. Prior executable retained for rollback."
+  },
+  "checks": "Source and matching data reviewed. Compilation and link succeeded. The game library emitted compiler warnings in existing code. Separate automated, native, address sanitizer, PE-verifier, regression and agent-owned startup tests were intentionally skipped during the user-led gameplay session.",
+  "diagnostics": "Pre-retest baseline captured. The canonical crash directory was empty. Existing DBErrors.log was 587 bytes and was preserved. Build and staging evidence remains available for the client retest.",
+  "pending": "User startup and client playback, objective 1/1 and turn-in to Modera. Sibling quests, first-time upgrade/refund, cancellation, retry and specialization changes were reviewed at source level only."
+}

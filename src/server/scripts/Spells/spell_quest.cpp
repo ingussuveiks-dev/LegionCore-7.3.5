@@ -1775,11 +1775,9 @@ public:
                         ChatHandler(player).PSendSysMessage("Error: You need 35 artifact Level, now you have %u", artifactLevel);
                         return;
                     }
-                    if (artifact->GetModifier(ITEM_MODIFIER_ARTIFACT_TIER)) // Fix cheats
-                    {
-                        ChatHandler(player).PSendSysMessage("Error: The artifact already has new tier");
+                    // Already upgraded artifacts can still receive the native quest credit.
+                    if (artifact->GetModifier(ITEM_MODIFIER_ARTIFACT_TIER))
                         return;
-                    }
 
                     if (artifactLevel > 35)
                     {

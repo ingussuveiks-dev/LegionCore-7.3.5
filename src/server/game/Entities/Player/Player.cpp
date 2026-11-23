@@ -17,6 +17,7 @@
  */
 
 #include "Player.h"
+#include "CouncilArtifactGift.h"
 #include "SkyholdArtifactReturn.h"
 #include "HealingAmount.h"
 #include "AcquisitionScenarioRoute.h"
@@ -2172,6 +2173,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
 
         // this will be used instead of the current location in SaveToDB
         m_teleport_dest = WorldLocation(mapid, x, y, z, orientation);
+        m_teleport_options = options;
         SetFallInformation(0, z);
 
         // code for finish transfer called in WorldSession::HandleMovementOpcodes()
@@ -39960,6 +39962,58 @@ uint32 Player::GetQuestForUnLockSecondTier()
             break;
     }
     return questID;
+}
+
+namespace
+{
+bool CanReceiveCouncilArtifactGift(Player& player)
+{
+    if (!player.IsInWorld() || !player.IsAlive() || player.IsBeingTeleported())
+        return false;
+
+    uint32 quest = player.GetQuestForUnLockSecondTier();
+    if (!quest || player.GetQuestStatus(quest) != QUEST_STATUS_INCOMPLETE)
+        return false;
+
+    Item* weapon = player.GetArtifactWeapon();
+    ArtifactEntry const* artifact = weapon ? sArtifactStore.LookupEntry(weapon->GetTemplate()->GetArtifactID()) : nullptr;
+    return artifact && artifact->ChrSpecializationID == player.GetSpecializationId() &&
+        weapon->GetTotalPurchasedArtifactPowers() >= 35;
+}
+}
+
+void CouncilArtifactGift::BeginTransfer(Player& player)
+{
+    if (!CanReceiveCouncilArtifactGift(player) || player.HasAura(PlayScene))
+        return;
+
+    SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(Acquire);
+    if (!ritual)
+    {
+        TC_LOG_ERROR("quest", "Council artifact gift: missing destination for spell %u", Acquire);
+        return;
+    }
+
+    if (player.GetMapId() != ritual->target_mapId ||
+        !player.IsWithinDist3d(ritual->target_X, ritual->target_Y, ritual->target_Z, 20.0f, false))
+        return;
+
+    if (!player.TeleportTo(ritual->target_mapId, ritual->target_X, ritual->target_Y, ritual->target_Z, ritual->target_Orientation,
+        TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET | TELE_TO_SPELL | NearTeleport))
+        TC_LOG_WARN("quest", "Council artifact gift: ritual transfer refused for player %u", player.GetGUIDLow());
+}
+
+void CouncilArtifactGift::OnArrival(Player& player)
+{
+    SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(Acquire);
+    if (!ritual || !CanReceiveCouncilArtifactGift(player) || !player.HasAura(Acquire) || player.HasAura(PlayScene) ||
+        player.GetMapId() != ritual->target_mapId ||
+        player.GetExactDist(ritual->target_X, ritual->target_Y, ritual->target_Z) > 0.01f)
+        return;
+
+    player.CastSpell(&player, PlayScene, true);
+    if (!player.HasAura(PlayScene))
+        TC_LOG_WARN("quest", "Council artifact gift: scene aura did not apply after ritual arrival for player %u", player.GetGUIDLow());
 }
 
 void Player::ApplyDotMod(uint32 spellId, SpellModOp op, float& basemod, float& baseadd, bool onapply)

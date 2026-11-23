@@ -18,6 +18,7 @@
 
 #include "AccountMgr.h"
 #include "ArtifactAcquisitionInventory.h"
+#include "CouncilArtifactGift.h"
 #include "AreaTrigger.h"
 #include "Battleground.h"
 #include "BattlegroundDeepwindGorge.h"
@@ -1613,6 +1614,10 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
         return;
 
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
+
+    // The ritual scene needs the client's new position and facing.
+    if (m_spellInfo->Id == CouncilArtifactGift::Acquire && effIndex == EFFECT_2 && triggered_spell_id == CouncilArtifactGift::PlayScene)
+        return;
 
     // todo: move those to spell scripts
     if (effectHandleMode == SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
@@ -4687,6 +4692,14 @@ void Spell::EffectTeleUnitsFaceCaster(SpellEffIndex effIndex)
 
     if (unitTarget->isInFlight())
         return;
+
+    if (m_spellInfo->Id == CouncilArtifactGift::Acquire && effIndex == EFFECT_0)
+    {
+        if (unitTarget == m_caster)
+            if (Player* player = unitTarget->ToPlayer())
+                CouncilArtifactGift::BeginTransfer(*player);
+        return;
+    }
 
     //float fx, fy, fz;
     //m_caster->GetClosePoint(fx, fy, fz, unitTarget->GetObjectSize(), m_spellInfo->GetEffect(effIndex, m_diffMode)->CalcRadius(m_caster));

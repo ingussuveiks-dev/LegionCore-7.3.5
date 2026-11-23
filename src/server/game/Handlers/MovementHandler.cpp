@@ -26,6 +26,7 @@
 #include "InstancePackets.h"
 #include "Vehicle.h"
 #include "BrokenShoreRavenSeat.h"
+#include "CouncilArtifactGift.h"
 #include "TimeSync.h"
 
 void WorldSession::HandleWorldPortResponse(WorldPackets::Movement::WorldPortResponse& /*packet*/)
@@ -208,6 +209,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
     if (packet.MoverGUID != plMover->GetGUID())
         return;
 
+    bool councilGiftArrival = plMover->GetTeleportOptions() & CouncilArtifactGift::NearTeleport;
     plMover->SetSemaphoreTeleportNear(false);
 
     uint32 old_zone = plMover->GetCurrentZoneID();
@@ -246,6 +248,9 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
         mover->ClearUnitState(UNIT_STATE_JUMPING);
     }
     SendInitialPacketsAfterMapLoading();
+
+    if (councilGiftArrival)
+        CouncilArtifactGift::OnArrival(*plMover);
 }
 
 void WorldSession::HandleMovementOpcodes(WorldPackets::Movement::ClientPlayerMovement& packet)
