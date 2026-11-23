@@ -1,0 +1,7 @@
+# Message from the Shadows note in the Legerdemain Lounge
+
+The player reached the second-floor Mysterious note during quest 45185. The click opened an empty Items window, the objective remained at 0/1, and the Nethersworn Assassin spoke. The live world database has chest 266619 at spawn 140862 in phase 7337. Chest field Data1 (chestLoot) was 0, so Player::SendLoot did not call FillLoot. Gameobject loot template 266619 already contained a single quest-required item 143494 at 100% chance. Objective 287665 requires one of that item. No other chest template referenced loot 266619.
+
+Migration 2026_11_23_07 links the chest to its existing loot. The native loot admission checks whether the player needs the quest item, and normal inventory pickup supplies the item objective. The existing lock, quest field, timed assassin summon and Karam's 45185 turn-in and 45187 follow-up are preserved. The assassin is not an objective or the source of this note. No character progress or loot rows were edited.
+
+After the user-owned worldserver shut down, the SQL updated one template in the runtime world database. Readback confirmed chest 266619 points to one quest-required 143494 at 100% and objective 287665 needs one copy. The enabled updater will record the idempotent migration on the next startup. No separate automated or startup test was run for the live gameplay session. The canonical DBErrors.log remained empty and Crashes contained no files. Client checks remain open for pickup, its 1/1 update, turn-in to Karam and the follow-up offer.
