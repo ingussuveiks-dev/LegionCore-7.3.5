@@ -32,6 +32,7 @@
 #include "EventProcessor.h"
 #include "Player.h"
 #include "Battleground.h"
+#include "BrokenShoreRavenSeat.h"
 #include "SharasdalWaveRide.h"
 
 Vehicle::Vehicle(Unit* unit, VehicleEntry const* vehInfo, uint32 creatureEntry, uint32 recAura) :
@@ -675,7 +676,8 @@ void Vehicle::RemovePassenger(Unit* unit)
     if (seat->second.SeatInfo->CanEnterOrExit() && ++UsableSeatNum && _me->CanVehicleAI() && _canSeat)
         _me->SetFlag(UNIT_FIELD_NPC_FLAGS, (_me->IsPlayer() ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
 
-    if (seat->second.SeatInfo->Flags & VEHICLE_SEAT_FLAG_DISABLE_GRAVITY && !seat->second.Passenger.IsGravityDisabled)
+    if (!seat->second.Passenger.IsGravityDisabled &&
+        ((seat->second.SeatInfo->Flags & VEHICLE_SEAT_FLAG_DISABLE_GRAVITY) || AssaultBrokenShore::IsArcaneRavenRider(*unit)))
         unit->SetDisableGravity(false);
 
     if (seat->second.SeatInfo->Flags & VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE && !seat->second.Passenger.IsUnselectable)
@@ -1117,7 +1119,8 @@ bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
             player->UnsummonPetTemporaryIfAny();
     }
 
-    if (veSeat->Flags & VEHICLE_SEAT_FLAG_DISABLE_GRAVITY)
+    // This scripted flight carries a non-steering rider through open air.
+    if ((veSeat->Flags & VEHICLE_SEAT_FLAG_DISABLE_GRAVITY) || AssaultBrokenShore::IsArcaneRavenRider(*Passenger))
         Passenger->SetDisableGravity(true);
 
     if (veSeat->Flags & VEHICLE_SEAT_FLAG_HIDE_PASSENGER)

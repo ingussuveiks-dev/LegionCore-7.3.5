@@ -25,6 +25,7 @@
 #include "PlayerDefines.h"
 #include "InstancePackets.h"
 #include "Vehicle.h"
+#include "BrokenShoreRavenSeat.h"
 #include "TimeSync.h"
 
 void WorldSession::HandleWorldPortResponse(WorldPackets::Movement::WorldPortResponse& /*packet*/)
@@ -284,6 +285,9 @@ void WorldSession::HandleMovementOpcode(OpcodeClient opcode, MovementInfo& movem
             movementInfo.RemoveMovementFlag(MOVEMENTFLAG_WALKING);
 
     RelocateMover(movementInfo);
+
+    if (AssaultBrokenShore::IsArcaneRavenRider(*mover))
+        return;
 
     // handle fall on server
     // fall damage generation (ignore in flight case that can be triggered also at lags in moment teleportation to another map).
@@ -687,6 +691,14 @@ void WorldSession::RelocateMover(MovementInfo &movementInfo)
     Unit* mover = _player->GetUnitBeingMoved();
     if (!mover)
         return;
+
+    // The raven's seat and boarding spline own the rider's position. Client
+    // movement and acknowledgements must not replace their local coordinates.
+    if (AssaultBrokenShore::IsArcaneRavenRider(*mover))
+    {
+        movementInfo = mover->m_movementInfo;
+        return;
+    }
 
     // ACKs still pass validation/anticheat bookkeeping in their handlers, but
     // stale pre-arrival movement must not replace the protected flags/position.
