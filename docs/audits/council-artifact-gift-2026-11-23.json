@@ -1,6 +1,14 @@
 {
   "date": "2026-11-23",
-  "quest_ids": [45842, 45861, 45862, 45863, 45864, 45865, 45866],
+  "quest_ids": [
+    45842,
+    45861,
+    45862,
+    45863,
+    45864,
+    45865,
+    45866
+  ],
   "client_baseline": "In the Violet Citadel, pressing Acquire the Gift displaced and rotated the player. The 45866 objective remained 0/1 after repeated attempts, including after reconnecting.",
   "source_and_data": {
     "build": 26972,
@@ -32,5 +40,25 @@
     "deployed_sha256": "D52DB4B638570876F7012BCCF69EDBB664A3F4EF0AAE2D3DAA6AE7EB5A73E03E",
     "evidence": ".codex/talonclaw-council-retest-20261123"
   },
-  "pending": "User startup and actual button, playback, objective 1/1 and turn-in to Modera on the button recovery build. Sibling quests, first-time upgrade/refund, cancellation, retry and specialization changes were reviewed at source level only."
+  "pending": "Client click, jump presentation, near ACK, scene playback and terminal receipt, objective 1/1 and turn-in to Modera. Actual scene animation, interrupted play and later sibling quests remain client checks.",
+  "button_retest": "The player remained in the Violet Citadel and reported that the extra action persisted after the visible ritual field went dark. Quest 45866 was still 0/1 in the preceding retest of the same build.",
+  "native_jump_and_field": {
+    "cause": "Native spell 234670 effect 2 is destination jump 42 with arrival spell 234679. Target 46 can reuse the selected object or fall back to the caster. The arrival descriptor carried an empty unit GUID. Finalize reached the ordinary Unit cast path, which refused the null target. The previous self-cast recovery aura 234667 could also persist independently of the short-lived field.",
+    "repair": "Use the configured jump destination and orientation. Bind the real player GUID to the existing native arrival cast. Require actual successful movement completion on the same map before that cast. Keep a retry possible at the exact landing point. The existing acknowledged near transfer, scene 1499 and terminal spell 234684 remain the route to 118159 credit.",
+    "field": "Recover only on the eligible exact event and Modera spawn. A live field can replay its own enter action only for an affected player still inside it. An expired field releases the leftover self aura and can republish the existing native Modera event. Log receipt of the original extra-action packet and preserve the transfer, ACK and scene diagnostics.",
+    "checks": [
+      "Pinned 3144efb56 launch counterfactual and repaired native movement/cast ASAN. Covers empty target, real self-arrival once, exact-center retry, launch failure, cancellation, dead owner, changed map, missing/wrong destination, flight and cleanup.",
+      "Extracted native circle and aura-maintenance ASAN with controlled data and actors. Covers field membership, geometry, exact actor, eligibility, pending transfer, stale aura and expiry.",
+      "Native 26972 DB2 and live world data for the jump, self-cast aura, phase 7317, native field enter/exit, scene and terminal quest credit. Linked canonical PE inspection follows spell, motion, field and teleport ACK call paths.",
+      "Retained ASAN Skyhold departure and return tests, Heroic Leap impact, and Stormheim grappling dispatch and admission regression."
+    ],
+    "deployment": {
+      "worldserver_sha256": "E829E429BE53E3E2C8F1AFBFD873E0B76D1724C051B0831D79693C09FE1A2FDE",
+      "link_map_sha256": "0AA8890FA90780DFE7B6C4499A935506A0D960E6D65D92A368D192C66DF55CE7",
+      "startup": "The installed Release binary reached a fresh ready message. The owned process was shut down gracefully with exit 0 and empty stderr. Crash files and appended server/DB diagnostics were clean. Runtime configuration, DLLs, certificates and bnetserver hashes matched.",
+      "local_evidence": ".codex/open-ritual-boost-talonclaw-20261123",
+      "diagnostic_archive": "build-extractors/bin/Release/fixed/2026-11-23-council-talonclaw-boost",
+      "cleanup_manifest": ".codex/open-ritual-boost-talonclaw-20261123/cleanup-manifest.json"
+    }
+  }
 }

@@ -40,6 +40,13 @@ def resolve(address):
     raise ValueError("Incremental-link thunk cycle")
 
 
+def resolves_to(address, expected):
+    try:
+        return resolve(address) == expected
+    except (ValueError, IndexError, struct.error):
+        return False
+
+
 symbols = {}
 with (args.release / "worldserver.map").open(errors="replace") as stream:
     for line in stream:
@@ -99,25 +106,6 @@ def calls(prefix):
     return result
 
 
-checks = [
-    ("?ProcessAction@SmartScript@@", "?BeginLinkedCastAttempt@SmartScript@@"),
-    ("?ProcessAction@SmartScript@@", "?FinishLinkedCastAttempt@SmartScript@@"),
-    ("?ProcessAction@SmartScript@@", "?QueueLinkedCastRetry@SmartScript@@"),
-    ("?OnUpdate@SmartScript@@", "?UpdateLinkedCastRetries@SmartScript@@"),
-    ("?OnCorpseUpdate@SmartScript@@", "?UpdateLinkedCastRetries@SmartScript@@"),
-    ("?UpdateCorpseAI@SmartAI@@", "?OnCorpseUpdate@SmartScript@@"),
-    ("?UpdateLinkedCastRetries@SmartScript@@", "?ProcessEvent@SmartScript@@"),
-    ("?UpdateLinkedCastRetries@SmartScript@@", "?GetUnit@ObjectAccessor@@"),
-    ("?UpdateLinkedCastRetries@SmartScript@@", "?GetGameObject@ObjectAccessor@@"),
-    ("?OnReset@SmartScript@@", "?ResetLinkedCastRetries@SmartScript@@"),
-    ("?OnInitialize@SmartScript@@", "?ResetLinkedCastRetries@SmartScript@@"),
-]
-for caller, target in checks:
-    if symbol(caller) != symbol(target) and symbol(target) not in calls(caller):
-        raise AssertionError(f"Linked executable lacks {caller} -> {target}")
-for message in (b"linked cast %u expired without success.", b"linked cast %u failed after ten retries."):
-    assert message in binary
-
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM, CS_OP_REG
 md=Cs(CS_ARCH_X86, CS_MODE_64);md.detail=True
 
@@ -135,29 +123,50 @@ def instructions(prefix):
             end=following_end
     return list(md.disasm(binary[offset(address):offset(address)+base+end-address],address))
 
-# Resolve the actual virtual slot from the linked SmartAI vtable, including
-# incremental thunks. Then find its virtual dispatch in Creature::Update.
-maptext=(args.release/'worldserver.map').read_text(errors='replace')
-vtable=re.findall(r"\s+\w+:\w+\s+(\?\?_7SmartAI@@6B@)\s+([0-9a-fA-F]{16})",maptext)
-assert len(vtable)==1
-vaddress=int(vtable[0][1],16)
-slots=struct.unpack_from('<'+str(160)+'Q',binary,offset(vaddress))
-slot=[i for i,value in enumerate(slots) if value==symbol('?UpdateCorpseAI@SmartAI@@') or value in symbols.values() and resolve(value)==symbol('?UpdateCorpseAI@SmartAI@@')]
-assert len(slot)==1
-creature=instructions('?Update@Creature@@')
-assert any(x.mnemonic in ('call','jmp') and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==slot[0]*8 for x in creature)
-assert symbol('?OnUpdate@SmartScript@@') not in calls('?OnCorpseUpdate@SmartScript@@')
-loader=instructions('?IsEventValid@SmartAIMgr@@')
-site=[i for i,x in enumerate(loader) if x.mnemonic=='bt' and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==9]
-assert len(site)==1
-window=loader[site[0]:site[0]+22]
-for displacement,value in ((0x30,61),(8,0),(0x70,1)):
-    assert any(x.mnemonic=='cmp' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==displacement and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==value for x in window),(displacement,value,[(x.mnemonic,x.op_str) for x in window])
-assert any(x.mnemonic=='test' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x3c and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==1 for x in window)
-assert any(x.mnemonic=='cmp' and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==11 for x in window)
-flag=loader[site[0]].operands[0]
-assert flag.type==CS_OP_REG
-assert any(x.mnemonic=='mov' and x.operands[0].type==CS_OP_REG and x.operands[0].reg==flag.reg and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.disp==0x5c for x in loader[site[0]-8:site[0]])
-assert any(x.mnemonic=='cmp' and x.operands[0].type==CS_OP_REG and x.operands[0].reg==flag.reg and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==512 for x in window)
-print('PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics')
-print(json.dumps({'exe_sha256':hashlib.sha256(binary).hexdigest(),'verified_calls':len(checks),'corpse_vtable_slot':slot[0]}))
+if not globals().get('PE_HELPERS_ONLY'):
+    checks = [
+        ("?ProcessAction@SmartScript@@", "?BeginLinkedCastAttempt@SmartScript@@"),
+        ("?ProcessAction@SmartScript@@", "?FinishLinkedCastAttempt@SmartScript@@"),
+        ("?ProcessAction@SmartScript@@", "?QueueLinkedCastRetry@SmartScript@@"),
+        ("?OnUpdate@SmartScript@@", "?UpdateLinkedCastRetries@SmartScript@@"),
+        ("?OnCorpseUpdate@SmartScript@@", "?UpdateLinkedCastRetries@SmartScript@@"),
+        ("?UpdateCorpseAI@SmartAI@@", "?OnCorpseUpdate@SmartScript@@"),
+        ("?UpdateLinkedCastRetries@SmartScript@@", "?ProcessEvent@SmartScript@@"),
+        ("?UpdateLinkedCastRetries@SmartScript@@", "?GetUnit@ObjectAccessor@@"),
+        ("?UpdateLinkedCastRetries@SmartScript@@", "?GetGameObject@ObjectAccessor@@"),
+        ("?OnReset@SmartScript@@", "?ResetLinkedCastRetries@SmartScript@@"),
+        ("?OnInitialize@SmartScript@@", "?ResetLinkedCastRetries@SmartScript@@"),
+    ]
+    for caller, target in checks:
+        if symbol(caller) != symbol(target) and symbol(target) not in calls(caller):
+            raise AssertionError(f"Linked executable lacks {caller} -> {target}")
+    for message in (b"linked cast %u expired without success.", b"linked cast %u failed after ten retries."):
+        assert message in binary
+
+    # Resolve the actual virtual slot from the linked SmartAI vtable, including
+    # incremental thunks. Then find its virtual dispatch in Creature::Update.
+    maptext=(args.release/'worldserver.map').read_text(errors='replace')
+    vtable=re.findall(r"\s+\w+:\w+\s+(\?\?_7SmartAI@@6B@)\s+([0-9a-fA-F]{16})",maptext)
+    assert len(vtable)==1
+    vaddress=int(vtable[0][1],16)
+    slots=struct.unpack_from('<'+str(160)+'Q',binary,offset(vaddress))
+    target=symbol('?UpdateCorpseAI@SmartAI@@')
+    slot=[i for i,value in enumerate(slots) if resolves_to(value,target)]
+    assert len(slot)==1
+    creature=instructions('?Update@Creature@@')
+    assert any(x.mnemonic in ('call','jmp') and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==slot[0]*8 for x in creature)
+    assert symbol('?OnUpdate@SmartScript@@') not in calls('?OnCorpseUpdate@SmartScript@@')
+    loader=instructions('?IsEventValid@SmartAIMgr@@')
+    site=[i for i,x in enumerate(loader) if x.mnemonic=='bt' and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==9]
+    assert len(site)==1
+    window=loader[site[0]:site[0]+22]
+    for displacement,value in ((0x30,61),(8,0),(0x70,1)):
+        assert any(x.mnemonic=='cmp' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==displacement and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==value for x in window),(displacement,value,[(x.mnemonic,x.op_str) for x in window])
+    assert any(x.mnemonic=='test' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x3c and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==1 for x in window)
+    assert any(x.mnemonic=='cmp' and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==11 for x in window)
+    flag=loader[site[0]].operands[0]
+    assert flag.type==CS_OP_REG
+    assert any(x.mnemonic=='mov' and x.operands[0].type==CS_OP_REG and x.operands[0].reg==flag.reg and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.disp==0x5c for x in loader[site[0]-8:site[0]])
+    assert any(x.mnemonic=='cmp' and x.operands[0].type==CS_OP_REG and x.operands[0].reg==flag.reg and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==512 for x in window)
+    print('PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics')
+    print(json.dumps({'exe_sha256':hashlib.sha256(binary).hexdigest(),'verified_calls':len(checks),'corpse_vtable_slot':slot[0]}))

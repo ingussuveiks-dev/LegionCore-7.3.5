@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -10,6 +11,7 @@ using uint32=uint32_t;
 using uint8=uint8_t;
 using int32=int32_t;
 #include "../../src/server/game/Movement/SkyholdDeparture.h"
+#include "CouncilGiftJumpFixture.h"
 using SpellEffIndex=uint32;
 #define TC_LOG_DEBUG(...) ((void)0)
 enum { SPELL_EFFECT_HANDLE_LAUNCH=1, TARGET_DEST_TARGET_BACK=55, UNIT_STATE_LONG_JUMP=1, MOTION_SLOT_CONTROLLED=1, EFFECT_MOTION_TYPE=3, EVENT_JUMP=0 };
@@ -30,6 +32,7 @@ struct Position {
     float GetOrientation() const { return m_orientation; }
     void GetPosition(float& positionX,float& positionY,float& positionZ) const { positionX=m_positionX;positionY=m_positionY;positionZ=m_positionZ; }
     float GetRelativeAngle(void*) const { return 0; }
+    void Relocate(float x, float y, float z, float orientation) { Relocate(x, y, z); m_orientation = orientation; }
 #include "Relocate.inc"
 };
 struct JumpArrivalCastArgs { uint32 SpellId=0;ObjectGuid Target{}; };
@@ -88,6 +91,7 @@ struct Unit {
         float deltaX=positionX-pose.m_positionX,deltaY=positionY-pose.m_positionY,deltaZ=positionZ-pose.m_positionZ;
         return std::sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
     }
+    bool IsWithinDist3d(float x, float y, float z, float distance, bool) const { return GetExactDist(x, y, z) < distance; }
     void SetSplineTimer(uint32 value) { splineTimer=value; }
     void AddUnitState(uint32 value) { state|=value; }
     void ClearUnitState(uint32 value) { state&=~value; }
@@ -111,6 +115,8 @@ struct Creature : Unit {
     Brain* AI() { return &brain; }
 };
 struct ObjectAccessor { static Unit* GetUnit(Unit& owner,ObjectGuid identity) { return identity.value==99?&owner:nullptr; } };
+struct ScriptMgr { void OnMovementInform(Player*, uint32, uint32) { assert(false); } } scriptMgr;
+auto* sScriptMgr = &scriptMgr;
 struct EffectMovementGenerator {
     uint32 _pointId,_arrivalSpellId;
     ObjectGuid _arrivalSpellTargetGuid;
@@ -130,6 +136,9 @@ int32 Movement::MoveSplineInit::Launch() { ++owner.jumps; owner.spline.done=fals
 struct SpellTriggerDelay { uint32 spell_trigger=0,targetaura=0,target=0,caster=0,effectMask=7;int aura=0; };
 struct SpellMgr {
     std::vector<SpellTriggerDelay> delays;
+    bool ritualAvailable = true;
+    SpellTargetPosition ritual;
+    SpellTargetPosition const* GetSpellTargetPosition(uint32 id) const { return ritualAvailable && id == CouncilArtifactGift::Button ? &ritual : nullptr; }
     std::vector<SpellTriggerDelay> const* GetSpellTriggerDelay(uint32 identity) { return identity==192085?&delays:nullptr; }
 } spellManager;
 auto* sSpellMgr=&spellManager;
@@ -176,6 +185,65 @@ struct Spell {
 #include "Jump.inc"
 #include "Speeds.inc"
 
+#ifdef COUNCIL_GIFT
+int main()
+{
+    using namespace CouncilArtifactGift;
+    auto const& ritual = spellManager.ritual;
+    for (unsigned state = 0; state < 11; ++state)
+    {
+        Player player;
+        player.map = state == 8 ? 0 : 1220;
+        player.pose.Relocate(ritual.target_X + (state == 9 ? 21.f : state == 6 ? 0.f : 2.f),
+            ritual.target_Y, ritual.target_Z);
+        Spell spell(player);
+        spell.info.Id = Button;
+        spell.info.effect.TriggerSpell = Acquire;
+        spell.location.Relocate(ritual.target_X + 1.f, ritual.target_Y, ritual.target_Z);
+#ifdef BASELINE
+        spell.EffectJumpDest(2);
+        assert(player.movement.current && player.movement.current->_arrivalSpellTargetGuid.IsEmpty());
+        player.movement.Complete();
+        assert(!player.casts);
+#else
+        if (state == 1) player.launchResult = 0;
+        if (state == 7) spellManager.ritualAvailable = false;
+        if (state == 10) player.flying = true;
+        spell.EffectJumpDest(2);
+        spellManager.ritualAvailable = true;
+        assert(!player.casts);
+        if (state == 1 || state >= 7)
+        {
+            assert(!player.movement.current && !(player.state & UNIT_STATE_LONG_JUMP));
+            continue;
+        }
+        assert(player.movement.current && player.movement.current->_arrivalMapId == 1220);
+        assert(player.destination.GetPositionX() == ritual.target_X && player.destination.GetPositionY() == ritual.target_Y &&
+            player.destination.GetPositionZ() == ritual.target_Z && spell.location.GetOrientation() == ritual.target_Orientation);
+        assert(player.movement.current->_arrivalSpellTargetGuid.value == player.GetGUID().value);
+        if (state == 2)
+        {
+            auto interrupted = std::move(player.movement.current);
+            interrupted->Finalize(player);
+            assert(!player.casts);
+            continue;
+        }
+        if (state == 3) player.alive = false;
+        if (state == 4) player.map = 0;
+        if (state == 5) player.m_cleanupDone = true;
+        player.movement.Complete();
+        player.movement.Complete();
+        assert(player.casts == (state == 0 || state == 6 ? 1u : 0u));
+        if (player.casts) assert(player.castSpell == Acquire);
+#endif
+    }
+#ifdef BASELINE
+    std::cout << "PASS pinned counterfactual: Council jump runs, but the real Unit cast rejects its empty arrival target\n";
+#else
+    std::cout << "PASS Council native jump, self-cast once on actual arrival, center retry, and launch/cancel/death/map/position guards\n";
+#endif
+}
+#else
 int main(int argc,char**argv){
  assert(argc==2);std::ifstream input(argv[1]);uint32 id,arrival,index;uint32 cases=0,pairs=0;
  while(input>>id>>arrival>>index){
@@ -218,3 +286,5 @@ int main(int argc,char**argv){
  std::cout<<"PASS actual destination jump, native Unit null/cleanup guard, MoveJump and real arrival Update/Finalize:"<<pairs<<" native pairs, successful self arrival, zero launch, interruption/death/map change/cleanup, failed cast, repeat completion, launch guards and unchanged foreign/NPC/metadata paths. Cast endpoint/spline lifecycle services controlled; actual client effects remain separate.\n";
 #endif
 }
+
+#endif

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -10,6 +11,7 @@ using uint32=uint32_t;
 using uint8=uint8_t;
 using int32=int32_t;
 #include "../../src/server/game/Movement/SkyholdDeparture.h"
+#include "CouncilGiftJumpFixture.h"
 using SpellEffIndex=uint32;
 #define TC_LOG_DEBUG(...) ((void)0)
 enum { SPELL_EFFECT_HANDLE_LAUNCH=1, TARGET_DEST_TARGET_BACK=55, UNIT_STATE_LONG_JUMP=1, MOTION_SLOT_CONTROLLED=1, EFFECT_MOTION_TYPE=3, EVENT_JUMP=0 };
@@ -30,6 +32,7 @@ struct Position {
     float GetOrientation() const { return m_orientation; }
     void GetPosition(float& positionX,float& positionY,float& positionZ) const { positionX=m_positionX;positionY=m_positionY;positionZ=m_positionZ; }
     float GetRelativeAngle(void*) const { return 0; }
+    void Relocate(float x, float y, float z, float orientation) { Relocate(x, y, z); m_orientation = orientation; }
 #include "Relocate.inc"
 };
 struct JumpArrivalCastArgs { uint32 SpellId=0;ObjectGuid Target{}; };
@@ -87,6 +90,7 @@ struct Unit {
         float deltaX=positionX-pose.m_positionX,deltaY=positionY-pose.m_positionY,deltaZ=positionZ-pose.m_positionZ;
         return std::sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
     }
+    bool IsWithinDist3d(float x, float y, float z, float distance, bool) const { return GetExactDist(x, y, z) < distance; }
     void SetSplineTimer(uint32 value) { splineTimer=value; }
     void AddUnitState(uint32 value) { state|=value; }
     void ClearUnitState(uint32 value) { state&=~value; }
@@ -108,6 +112,8 @@ struct Creature : Unit {
     Brain* AI() { return &brain; }
 };
 struct ObjectAccessor { static Unit* GetUnit(Unit& owner,ObjectGuid identity) { return identity.value==99?&owner:nullptr; } };
+struct ScriptMgr { void OnMovementInform(Player*, uint32, uint32) { assert(false); } } scriptMgr;
+auto* sScriptMgr = &scriptMgr;
 struct EffectMovementGenerator {
     uint32 _pointId,_arrivalSpellId;
     ObjectGuid _arrivalSpellTargetGuid;
@@ -126,6 +132,7 @@ int32 Movement::MoveSplineInit::Launch() { ++owner.jumps;owner.spline.done=false
 #include "MoveJump.inc"
 struct SpellTriggerDelay { uint32 spell_trigger=0,targetaura=0,target=0,caster=0,effectMask=7;int aura=0; };
 struct SpellMgr {
+    SpellTargetPosition const* GetSpellTargetPosition(uint32) const { return nullptr; }
     std::vector<SpellTriggerDelay> delays;
     std::vector<SpellTriggerDelay> const* GetSpellTriggerDelay(uint32 identity) { return identity==192085?&delays:nullptr; }
 } spellManager;

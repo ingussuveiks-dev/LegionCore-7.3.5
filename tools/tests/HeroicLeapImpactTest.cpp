@@ -7,7 +7,9 @@
 #include <set>
 #include <map>
 using uint32=uint32_t;using uint8=uint8_t;using int32=int32_t;
+using uint64 = uint64_t;
 #include "../../src/server/game/Movement/SkyholdDeparture.h"
+#include "../../src/server/game/Entities/Player/CouncilArtifactGift.h"
 #define TC_LOG_DEBUG(...) ((void)0)
 enum {EFFECT_MOTION_TYPE,MMCF_UPDATE=1,MOTION_SLOT_CONTROLLED=2};using MovementSlot=int;
 using MovementGeneratorType=int;
@@ -25,6 +27,10 @@ struct SpellMgr{SpellInfo info;SpellInfo const* GetSpellInfo(uint32 id){return i
 auto sSpellMgr=&spellMgr;
 #define ASSERT(x) assert(x)
 template<class T>void AddPct(T& value,float percent){value+=value*percent/100;}
+namespace HealingAmount
+{
+    uint64 ApplySpellMod(uint64, float, float) { assert(false); return 0; }
+}
 #include "SpellMask.inc"
 struct Spline{bool done=false;bool Finalized(){return done;}};
 struct Unit;struct Creature;
@@ -38,11 +44,14 @@ struct Unit {
  bool HasAura(int32 id){return id==202163&&talent;}
  void CastSpell(Unit*,uint32 id,bool){++damageCasts;if(id==52174&&!SkipCasterAura(this,202163))++speedCasts;}
  Creature* ToCreature(){return nullptr;}
+ Player* ToPlayer(){return nullptr;}
  bool SkipCasterAura(Unit* caster,int32 hastalent){
 #include "CasterAuraGate.inc"
  return false;}
 };
 namespace ObjectAccessor{Unit* GetUnit(Unit& owner,ObjectGuid){return &owner;}}
+struct ScriptMgr { void OnMovementInform(Player*, uint32, uint32) { assert(false); } } scriptMgr;
+auto* sScriptMgr = &scriptMgr;
 struct MovementGenerator {
  virtual ~MovementGenerator()=default;virtual void Initialize(Unit&){};virtual void Finalize(Unit&)=0;
  virtual void Reset(Unit&){};virtual bool Update(Unit&,uint32)=0;virtual int GetMovementGeneratorType()const=0;

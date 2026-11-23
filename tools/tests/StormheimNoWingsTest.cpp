@@ -7,6 +7,8 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include "CouncilGiftJumpFixture.h"
+#include "../../src/server/game/Movement/SkyholdDeparture.h"
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
 using SpellEffIndex=uint8;using SpellCastResult=int;using AuraEffectHandleModes=int;
 enum {ALLIANCE=469,HORDE=67,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_INCOMPLETE=3,
@@ -15,12 +17,13 @@ enum {ALLIANCE=469,HORDE=67,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_ST
  SPELL_EFFECT_SUMMON=28,SPELL_AURA_DUMMY=4,AURA_EFFECT_HANDLE_REAL=1,AURA_REMOVE_BY_EXPIRE=1,
  SPELL_EFFECT_HANDLE_LAUNCH=1,TARGET_DEST_TARGET_BACK=65,TARGET_UNIT_TARGET_ANY=25,UNIT_FIELD_NPC_FLAGS=1,UNIT_NPC_FLAG_SPELLCLICK=16777216};
 struct ObjectGuid {uint32 value=0;bool IsEmpty()const{return !value;}bool operator==(ObjectGuid g)const{return value==g.value;}bool operator!=(ObjectGuid g)const{return !(*this==g);}bool operator<(ObjectGuid g)const{return value<g.value;}static ObjectGuid const Empty;};ObjectGuid const ObjectGuid::Empty{};
-struct Position {float x=0,y=0,z=0,o=0;void GetPosition(float& a,float& b,float& c){a=x;b=y;c=z;}void Relocate(float a,float b,float c){x=a;y=b;z=c;}void Relocate(Position const& p){*this=p;}float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}float GetOrientation()const{return o;}float GetRelativeAngle(Position*){return 0;}};
+struct Position {float x=0,y=0,z=0,o=0;void GetPosition(float& a,float& b,float& c){a=x;b=y;c=z;}void Relocate(float a,float b,float c){x=a;y=b;z=c;}void Relocate(float a,float b,float c,float direction){Relocate(a,b,c);o=direction;}void Relocate(Position const& p){*this=p;}float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}float GetOrientation()const{return o;}float GetRelativeAngle(Position*){return 0;}};
 struct Spline {uint32 id=1;bool done=true;Position end;uint32 GetId(){return id;}bool Finalized(){return done;}Position FinalDestination(){return end;}};
 struct Player;struct Creature;struct TempSummon;struct Motion;struct SpellInfo;
 struct WorldObject:Position {uint32 map=1220,zone=7541,instance=0;bool world=true,alive=true,expired=false;ObjectGuid guid;std::weak_ptr<uint8> bound;
  virtual ~WorldObject()=default;bool IsInWorld()const{return world;}bool IsAlive()const{return alive;}uint32 GetMapId()const{return map;}uint32 GetZoneId()const{return zone;}uint32 GetInstanceId()const{return instance;}ObjectGuid GetGUID()const{return guid;}bool IsQuestObjectExpired(){return expired || (!bound.expired()?false:bound.use_count()==0&&scoped);}bool scoped=false;
  float GetExactDist(float a,float b,float c)const{return std::sqrt((x-a)*(x-a)+(y-b)*(y-b)+(z-c)*(z-c));}
+ bool IsWithinDist3d(float a,float b,float c,float limit,bool)const{return GetExactDist(a,b,c)<limit;}
  float GetExactDist(WorldObject const* t)const{return GetExactDist(t->x,t->y,t->z);}
  bool IsWithinDistInMap(WorldObject const* t,float d)const{return t&&map==t->map&&instance==t->instance&&GetExactDist(t)<=d;}
 };
@@ -38,7 +41,7 @@ struct Motion {Player* owner;uint32 type=0;explicit Motion(Player* p):owner(p){}
 struct SpellCastTargets {Unit* unit=nullptr;Position dest;bool dst=false;void SetUnitTarget(Unit* p){unit=p;}void SetDst(Position const& p){dest=p;dst=true;}bool HasDst(){return dst;}Unit* GetUnitTarget(){return unit;}ObjectGuid GetObjectTargetGUID(){return unit?unit->guid:ObjectGuid::Empty;}};
 struct Effect {uint32 MiscValue=0,MiscValueB=0,TriggerSpell=0;struct Target {uint32 value=46;uint32 GetTarget(){return value;}Target& operator=(uint32 v){value=v;return *this;}} TargetA;};
 struct SpellInfo {uint32 Id=182469;Effect effect;Effect* Effects[1]{&effect};Effect* GetEffect(uint8,uint32){return &effect;}};
-struct SpellMgr {SpellInfo summon;SpellInfo const* GetSpellInfo(uint32 id){summon.Id=id;return &summon;}} mgr;auto sSpellMgr=&mgr;
+struct SpellMgr {SpellTargetPosition const* GetSpellTargetPosition(uint32)const{return nullptr;}SpellInfo summon;SpellInfo const* GetSpellInfo(uint32 id){summon.Id=id;return &summon;}} mgr;auto sSpellMgr=&mgr;
 std::map<ObjectGuid,Creature*> creatures;
 struct Player:Unit {uint32 team=ALLIANCE;bool item=true,teleport=false,vehicle=false,transport=false,phase=true,visible=true,los=true,grantFails=false,auraFails=false,jumpFails=false,clickVisible=true;uint32 updates=0,completions=0,casts=0;ObjectGuid selection;
  std::map<uint32,QuestStatusData> quests{{38318,{}},{38613,{}}};std::map<uint32,uint32> progress;std::vector<std::function<void()>> events;std::vector<ObjectGuid> hooks;std::map<uint32,bool> auras;Motion motion{this};

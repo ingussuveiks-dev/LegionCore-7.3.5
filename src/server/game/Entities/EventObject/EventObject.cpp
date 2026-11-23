@@ -124,8 +124,8 @@ void EventObject::Update(uint32 /*p_time*/)
 
         if (ActivatedForPlayer(player))
         {
-            if (councilRitual)
-                CouncilArtifactGift::UpdateButton(*player);
+            if (councilRitual && CouncilArtifactGift::MaintainRitual(*player) && sScriptMgr->IsEOMeetConditions(player, this))
+                sScriptMgr->OnEventObject(player, this, true);
             continue;
         }
 

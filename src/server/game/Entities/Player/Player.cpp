@@ -26,6 +26,7 @@
 #include "AchievementMgr.h"
 #include "AlliedRaceCityBoard.h"
 #include "Anticheat.h"
+#include "AreaTrigger.h"
 #include "AreaTriggerData.h"
 #include "ArtifactPackets.h"
 #include "AuctionHouseMgr.h"
@@ -40047,27 +40048,38 @@ void CouncilArtifactGift::OnArrival(Player& player)
         TC_LOG_WARN("quest", "Council artifact gift: scene cast refused for player %u with result %u", player.GetGUIDLow(), unsigned(result));
 }
 
-void CouncilArtifactGift::UpdateButton(Player& player)
+bool CouncilArtifactGift::MaintainRitual(Player& player)
 {
     SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(Acquire);
-    if (!ritual || player.GetMapId() != ritual->target_mapId ||
-        !player.IsWithinDist3d(ritual->target_X, ritual->target_Y, ritual->target_Z, 5.0f, false))
+    if (!ritual || !CanReceiveCouncilArtifactGift(player) || player.HasPendingTeleport() ||
+        player.GetMapId() != ritual->target_mapId ||
+        !player.IsWithinDist3d(ritual->target_X, ritual->target_Y, ritual->target_Z, 5.0f, false) ||
+        player.HasAura(Button) || player.HasAura(Acquire) || player.HasAura(PlayScene))
+        return false;
+
+    std::list<Creature*> candidates;
+    player.GetCreatureListWithEntryInGrid(candidates, 90418, 25.0f);
+    auto modera = std::find_if(candidates.begin(), candidates.end(), [&player](Creature const* actor)
     {
-        RemoveRecoveredButton(player);
-        return;
+        return actor->GetDBTableGUIDLow() == 377268 && actor->IsAlive() && actor->InSamePhase(&player);
+    });
+    if (modera != candidates.end())
+    {
+        std::list<AreaTrigger*> circles;
+        (*modera)->GetAreaObjectList(circles, 0);
+        for (AreaTrigger* circle : circles)
+            if (circle->GetCustomEntry() == 13567 && circle->IsInWorld() && circle->GetDuration() > 0)
+            {
+                if (!player.HasAura(CouncilGiftButtonAura) && circle->IsUnitAffected(player.GetGUID()) && circle->IsInArea(&player))
+                    circle->AffectUnit(&player, AT_ACTION_MOMENT_ENTER);
+                return false;
+            }
     }
 
-    // The authored Modera area trigger grants the button on entry. After
-    // expiry or an interrupted attempt, restore the same aura inside the circle.
-    if (player.HasPendingTeleport() || player.HasAura(Button) || player.HasAura(Acquire) || player.HasAura(PlayScene))
-        return;
-    if (!CanReceiveCouncilArtifactGift(player))
-    {
-        RemoveRecoveredButton(player);
-        return;
-    }
-    if (!player.HasAura(CouncilGiftButtonAura))
-        player.CastSpell(&player, CouncilGiftButtonAura, true);
+    // Both the native field and the earlier recovery cast this aura on self.
+    // Remove a leftover aura only after verifying there is no live field.
+    RemoveRecoveredButton(player);
+    return modera != candidates.end(); // Re-run the original event to publish a new field.
 }
 
 void CouncilArtifactGift::RemoveRecoveredButton(Player& player)

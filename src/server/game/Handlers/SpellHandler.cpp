@@ -17,6 +17,7 @@
  */
 
 #include "SpellPackets.h"
+#include "CouncilArtifactGift.h"
 #include "ScriptMgr.h"
 #include "Garrison.h"
 #include "GameObjectAI.h"
@@ -238,6 +239,10 @@ void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjRe
 void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
 {
     Unit* mover = _player->GetUnitBeingMoved();
+    if (cast.Cast.SpellID == CouncilArtifactGift::Button && mover == _player)
+        TC_LOG_INFO("quest", "Council artifact gift: client requested extra action for player %u, override active %u",
+            _player->GetGUIDLow(), unsigned(_player->HasActiveSpell(cast.Cast.SpellID)));
+
     if (mover != _player && mover->IsPlayer())
     {
         TC_LOG_ERROR("network", "WORLD: mover != _player id %u", cast.Cast.SpellID);

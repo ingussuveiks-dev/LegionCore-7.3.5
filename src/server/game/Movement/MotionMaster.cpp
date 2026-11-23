@@ -20,6 +20,7 @@
 #include "SkyholdDeparture.h"
 #include "ConfusedMovementGenerator.h"
 #include "Creature.h"
+#include "CouncilArtifactGift.h"
 #include "CreatureAISelector.h"
 #include "FleeingMovementGenerator.h"
 #include "FlightPathMovementGenerator.h"
@@ -564,7 +565,9 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
         _owner->IsPlayer() && _owner->GetMapId() == 1511;
     bool sharasdalAcquisition = arrivalCast && id == 209683 && arrivalCast->SpellId == 209684 &&
         _owner->IsPlayer() && _owner->GetMapId() == 1600;
-    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution || stromkarRecoil || skyholdReturn || sharasdalAcquisition || warswordsLanding))
+    bool councilGift = arrivalCast && CouncilArtifactGift::MatchesJump(id, arrivalCast->SpellId) &&
+        _owner->IsPlayer() && _owner->GetMapId() == 1220;
+    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution || stromkarRecoil || skyholdReturn || sharasdalAcquisition || warswordsLanding || councilGift))
     {
         _owner->ClearUnitState(UNIT_STATE_LONG_JUMP);
         return;
@@ -579,7 +582,7 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
     }
 
     Mutate(new EffectMovementGenerator(id, arrivalSpellId, arrivalSpellTargetGuid,
-        (skyholdReturn || sharasdalAcquisition || warswordsLanding) ? _owner->GetMapId() : uint32(-1)), MOTION_SLOT_CONTROLLED);
+        (skyholdReturn || sharasdalAcquisition || warswordsLanding || councilGift) ? _owner->GetMapId() : uint32(-1)), MOTION_SLOT_CONTROLLED);
 }
 
 void MotionMaster::MoveFall(uint32 id/*=0*/)

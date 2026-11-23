@@ -14,9 +14,14 @@ namespace CouncilArtifactGift
     // Player::SafeTeleport option carried with this ritual's near transfer.
     constexpr unsigned NearTeleport = 0x100;
 
+    constexpr bool MatchesJump(unsigned spell, unsigned arrival)
+    {
+        return spell == Button && arrival == Acquire;
+    }
+
     void BeginTransfer(Player& player);
     void OnArrival(Player& player);
-    void UpdateButton(Player& player);
+    bool MaintainRitual(Player& player);
     void RemoveRecoveredButton(Player& player);
 }
 

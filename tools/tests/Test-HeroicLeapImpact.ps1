@@ -8,7 +8,7 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  [IO.File]::WriteAllText("$out/EffectMethods.inc",(Block $s 'bool EffectMovementGenerator::Update(')+"`n"+(Block $s 'void EffectMovementGenerator::Finalize(')+"`n"+(Block $s 'void EffectMovementGenerator::MovementInform('))
  $s=Get-Content "$repo/src/server/game/Movement/MotionMaster.cpp" -Raw
  [IO.File]::WriteAllText("$out/MotionMethods.inc",(Block $s 'void MotionMaster::Mutate(')+"`n"+(Block $s 'void MotionMaster::DirectDelete('))
- [IO.File]::WriteAllText("$out/Jump.inc",(Block $s 'void MotionMaster::MoveJump(float'))
+ [IO.File]::WriteAllText("$out/Jump.inc",(Block $s 'void MotionMaster::MoveJump(float x, float y, float z, float o,'))
  $s=Get-Content "$repo/src/server/scripts/Spells/spell_warrior.cpp" -Raw
  [IO.File]::WriteAllText("$out/SuppressOuter.inc",(Block $s 'void HandleOuterJump('))
  $s=$s.Substring($s.IndexOf('class spell_warr_heroic_leap_jump'))

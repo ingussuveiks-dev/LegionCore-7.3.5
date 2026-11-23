@@ -1931,9 +1931,6 @@ void Spell::EffectForceCast(SpellEffIndex effIndex)
 
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
 
-    if (m_spellInfo->Id == CouncilArtifactGift::Button && triggered_spell_id == CouncilArtifactGift::Acquire && unitTarget == m_caster)
-        TC_LOG_INFO("quest", "Council artifact gift: extra action requested by player %u", unitTarget->GetGUIDLow());
-
     // normal case
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(triggered_spell_id);
 
@@ -2082,6 +2079,17 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
     // Perform trigger spell at jumping.
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
+    bool councilGiftJump = CouncilArtifactGift::MatchesJump(m_spellInfo->Id, triggered_spell_id);
+    if (councilGiftJump)
+    {
+        SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(CouncilArtifactGift::Button);
+        if (!ritual || !m_caster->IsPlayer() || m_caster->GetMapId() != ritual->target_mapId ||
+            !m_caster->IsWithinDist3d(ritual->target_X, ritual->target_Y, ritual->target_Z, 20.0f, false))
+            return;
+
+        destTarget->Relocate(ritual->target_X, ritual->target_Y, ritual->target_Z, ritual->target_Orientation);
+        TC_LOG_INFO("quest", "Council artifact gift: starting ritual jump for player %u", m_caster->GetGUIDLow());
+    }
     // This descriptor supplies arrival arguments; it is not queued as an event.
     std::unique_ptr<DelayCastEvent> delayCast(GetSpellTriggerDelay(effIndex, triggered_spell_id));
 
@@ -2138,6 +2146,8 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     float speedXY, speedZ;
     float distance = m_caster->GetExactDist(x, y, z);
     CalculateJumpSpeeds(effIndex, distance, speedXY, speedZ);
+    if (councilGiftJump)
+        speedXY = std::max(speedXY, 0.01f); // A retry may start on the exact landing point.
     m_caster->SetSplineTimer(0);
 
     if (Player* plr = m_caster->ToPlayer())
@@ -2160,7 +2170,7 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
         m_spellInfo->Id == 209683 && arrivalCast.SpellId == 209684;
     bool warswordsLanding = m_caster->GetMapId() == 1511 &&
         m_spellInfo->Id == 205744 && arrivalCast.SpellId == 191477;
-    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil || sharasdalAcquisition || warswordsLanding))
+    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil || sharasdalAcquisition || warswordsLanding || councilGiftJump))
         arrivalCast.Target = m_caster->GetGUID();
     if (!arrivalCast.SpellId && delayCast)
     {
@@ -2169,7 +2179,7 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     }
     // Destination106 intentionally has no explicit object after normalization.
     // Keep this scoped recoil's script-validated landing facing in the spline.
-    bool hasOrientation = (m_caster->IsPlayer() && stromkarRecoil) || !m_targets.GetObjectTargetGUID().IsEmpty();
+    bool hasOrientation = councilGiftJump || (m_caster->IsPlayer() && stromkarRecoil) || !m_targets.GetObjectTargetGUID().IsEmpty();
     m_caster->GetMotionMaster()->MoveJump(*destTarget, speedXY, speedZ, m_spellInfo->Id, hasOrientation, &arrivalCast);
 }
 
