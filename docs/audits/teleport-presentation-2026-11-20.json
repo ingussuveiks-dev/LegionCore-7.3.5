@@ -39,6 +39,11 @@
     "diagnostics": "No appended warnings, errors or assertions between startup and this transfer, no change to DBErrors.log, and no crash reports.",
     "limits": "One user-observed cross-map arrival. The retained logs do not identify the initiating spell or GM command, and movement availability is confirmed by the user. This does not establish arrival behavior on the separate map-0 Legion introduction platform or in a cold-cache run."
   },
-  "client_comparison_pending": "Measure request-to-first-transfer packet, screen duration, first visible player and terrain/model frame, landing Z and first accepted movement. Compare a fresh login, a short near teleport, a long same-map teleport to a dynamic platform and a far map transfer onto Dalaran's verified city floor. Include the moving boost ships before reducing any dynamic-floor hold. The near teleport packet exposes a PreloadWorld byte, but its effect on cold model streaming has not been measured in client build 26972.",
+  "canonical_boost_arrival_2026_11_23": {
+    "result": "The user confirmed that the level 100 Alliance Monk entered the boost tutorial on the ship deck without falling through. The canonical server logged entry to scenario 1095 on map 1554 and visible deck passengers. This confirms deck arrival for the reported route. The later Fists of Fury lesson is a separate report.",
+    "canonical_binary_sha256": "D52DB4B638570876F7012BCCF69EDBB664A3F4EF0AAE2D3DAA6AE7EB5A73E03E",
+    "cleanup": "At the user's request, removed only the generated worldserver.exe and linker map from .codex/teleport-presentation-20261120/stage after verifying their exact paths, hashes and lack of a running process. Recovered 164178393 bytes. Preserved the canonical realm, separate geometry comparison build, stage logs, and verified diagnostic archive. Local deletion record: .codex/teleport-presentation-20261120/client-confirmed-removal-20261123.json."
+  },
+  "client_comparison_pending": "Cold-cache timing, the separate map-0 introduction platform and client handling of the near-teleport PreloadWorld byte remain unmeasured. The user accepted the canonical normal, far and boost arrival observations and authorized removal of the independent November 20 staging build.",
   "protocol_reference": "https://github.com/TrinityCore/WowPacketParser/blob/master/WowPacketParserModule.V7_0_3_22248/Parsers/MovementHandler.cs#L303-L334"
 }
