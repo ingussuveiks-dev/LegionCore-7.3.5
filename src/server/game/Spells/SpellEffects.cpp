@@ -8370,6 +8370,10 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* 
     //TempSummonType summonType = (duration == 0) ? TEMPSUMMON_DEAD_DESPAWN : TEMPSUMMON_TIMED_DESPAWN;
     Map* map = caster->GetMap();
     ObjectGuid targetGUID = m_targets.GetUnitTargetGUID();
+    // The Talonclaw ride binds on native publication to the clicked source.
+    if (m_spellInfo->Id == 198941 && entry == 100967)
+        targetGUID = m_originalTargetGUID;
+
     switch (properties->ID)
     {
         case 3655:

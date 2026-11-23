@@ -11,5 +11,12 @@
     "startup": "User-owned worldserver reached ready at 16:26:52 Europe/Riga. No agent-owned process was started."
   },
   "checks": "Matching 26972 DB2 effects, live spell-click and SmartAI data, and the source handoff were inspected. Separate automated, native, ASAN, PE-verifier, regression and agent-owned startup tests were intentionally skipped during the active user-led flow.",
-  "pending": "Client boarding, exit, accepted trip to Stormheim and objective 1/1. The first screenshot does not prove which cast phase lost the original source. No complete 40385 traversal or alternate paths are certified."
+  "first_retest": "The user reached Krasus' Landing in the linked build. A Krau-owned guardian hippogryph appeared, but did not take the player and the objective stayed 0/1. No Talonclaw controller deadline or seat diagnostic appeared. Crash directory and DBErrors were unchanged. The distinct intermittent instance login timeout occurred before a successful reconnect.",
+  "native_summon_handoff": {
+    "repair": "Transfer the exact original click GUID through the native guardian summon. Start the controller from that creature's IsSummonedBy notification, validating the native 198941-created ride, exact source spawn, quest, owner and vehicle. Request seat 0 on the next AI update after native vehicle initialization. Preserve boarded and accepted native transfer as the only route to the existing 100111 SmartAI credit.",
+    "deployed_sha256": "D52DB4B638570876F7012BCCF69EDBB664A3F4EF0AAE2D3DAA6AE7EB5A73E03E",
+    "evidence": ".codex/talonclaw-council-retest-20261123",
+    "diagnostics": "Trace native owned-ride binding, failures and actual seat acknowledgement. Rebuilt and verified current Release final-link inputs and the native summon callback in the link map. The matching final binary replaced the stopped server, with rollback and pre-client crash/log snapshots retained."
+  },
+  "pending": "Client boarding, exit, accepted trip to Stormheim and objective 1/1 on the native summon handoff build. No complete 40385 traversal or alternate paths are certified."
 }

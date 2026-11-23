@@ -104,7 +104,23 @@ struct npc_talonclaw_boarded_ride : ScriptedAI
         me->SetReactState(REACT_PASSIVE);
         me->setActive(true);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        Join(player);
+    }
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 198941)
+            return;
+
+        Player* player = summoner ? summoner->ToPlayer() : nullptr;
+        Creature* actor = ObjectAccessor::GetCreature(*me, me->GetTargetGUID());
+        Begin(player, actor);
+        if (stage == Stage::Joining)
+            TC_LOG_INFO("scripts", "Talonclaw boarding: native ride ready for player %u", player->GetGUIDLow());
+        else
+        {
+            TC_LOG_WARN("scripts", "Talonclaw boarding: native summon could not bind its clicked source and owner (entry %u, vehicle %u)",
+                actor ? actor->GetEntry() : 0, unsigned(me->GetVehicleKit() != nullptr));
+            me->DespawnOrUnsummon(1);
+        }
     }
     void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
     {
@@ -123,6 +139,7 @@ struct npc_talonclaw_boarded_ride : ScriptedAI
                 boarded = true;
                 stage = Stage::Boarded;
                 timer = 0;
+                TC_LOG_INFO("scripts", "Talonclaw boarding: player %u seated on native ride", player->GetGUIDLow());
             }
         }
         else if (player && passenger->GetGUID() == owner)
@@ -260,26 +277,9 @@ class spell_talonclaw_boarding_summon : public SpellScript
         originalSource = source->GetGUID(); lifetime = quest->ScriptLifetime; bound = true;
         return SPELL_CAST_OK;
     }
-    void After()
-    {
-        if (!bound) return;
-        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
-        Creature* source = ClickedSource(player);
-        QuestStatusData* quest = player ? player->getQuestStatus(TalonclawBoardedDeparture::QuestId) : nullptr;
-        auto ride = TalonclawBoardedDeparture::Owned(player);
-        if (!ride) return;
-        if (source && source->GetGUID() == originalSource && quest && !lifetime.expired() &&
-            quest->ScriptLifetime == lifetime.lock()) ride->Begin(player, source);
-        // Check() observed no earlier owned ride. Retire only this native
-        // summon if the attempt/source changed before its actual AfterCast.
-        if (ride->stage == npc_talonclaw_boarded_ride::Stage::Unbound &&
-            ride->me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 198941)
-            ride->me->DespawnOrUnsummon(1);
-    }
     void Register() override
     {
         OnCheckCast += SpellCheckCastFn(spell_talonclaw_boarding_summon::Check);
-        AfterCast += SpellCastFn(spell_talonclaw_boarding_summon::After);
     }
 };
 
