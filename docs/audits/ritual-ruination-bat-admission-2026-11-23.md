@@ -7,3 +7,5 @@ Migration `2026_11_23_06` adds source-18 conditions for that spell and entry. Th
 The user-owned worldserver was running during diagnosis. The migration is queued for the next startup. No client retest or separate test was run. Verify the riding cursor on a fresh eligible attempt and its absence after return or reward.
 
 After shutdown, the six spell-click filters were read back in MariaDB and committed with updater receipt `623B44035CE2F71165DF1DBCCB3371D357B8F87E`. The next worldserver process will load them.
+
+After the user started the updated canonical server on 23 November, the user confirmed the Fel Bat no longer offered boarding for the character who had already redeemed quest `43254`. The observed run had no new DBErrors or crashes. An eligible character's initial boarding and active-quest recovery were not retested.
