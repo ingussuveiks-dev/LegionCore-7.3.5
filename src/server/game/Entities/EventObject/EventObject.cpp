@@ -20,6 +20,7 @@
 #include "CellImpl.h"
 #include "DatabaseEnv.h"
 #include "EventObject.h"
+#include "CouncilArtifactGift.h"
 #include "EventObjectData.h"
 #include "GridNotifiersImpl.h"
 #include "ObjectAccessor.h"
@@ -80,6 +81,8 @@ void EventObject::Update(uint32 /*p_time*/)
 
     m_isUpdate = true;
 
+    bool councilRitual = GetMapId() == 1220 && GetEntry() == CouncilArtifactGift::RitualEvent &&
+        GetDBTableGUIDLow() == CouncilArtifactGift::RitualSpawn;
     for (GuidSet::iterator itr = affectedPlayers.begin(), next; itr != affectedPlayers.end(); itr = next)
     {
         next = itr;
@@ -90,7 +93,11 @@ void EventObject::Update(uint32 /*p_time*/)
         {
             affectedPlayers.erase(itr);
             if (player)
+            {
+                if (councilRitual)
+                    CouncilArtifactGift::RemoveRecoveredButton(*player);
                 sScriptMgr->OnEventObject(player, this, false);
+            }
         }
     }
 
@@ -109,10 +116,18 @@ void EventObject::Update(uint32 /*p_time*/)
             continue;
 
         if (!player->InSamePhase(this))
+        {
+            if (councilRitual)
+                CouncilArtifactGift::RemoveRecoveredButton(*player);
             continue;
+        }
 
         if (ActivatedForPlayer(player))
+        {
+            if (councilRitual)
+                CouncilArtifactGift::UpdateButton(*player);
             continue;
+        }
 
         if (!sScriptMgr->IsEOMeetConditions(player, this))
             continue;

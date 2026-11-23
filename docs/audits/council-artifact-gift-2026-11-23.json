@@ -25,5 +25,12 @@
     "changes": "Use the acknowledged ritual-issued near transfer as the attempt receipt and report the transient stun separately. Register the scene instance before sending its packet. Trace transfer admission, near ACK, cast rejection, scene publication, retirement and quest status after a terminal receipt.",
     "deployment": "Release rebuilt and linked against the current Release game and script libraries. Matching staged and canonical hashes verified after offline replacement. Old executable and crash/log baseline retained."
   },
-  "pending": "User startup and client playback on the diagnostic build, objective 1/1 and turn-in to Modera. The follow-up client activity was the Hunter Talonclaw chain. Sibling quests, first-time upgrade/refund, cancellation, retry and specialization changes were reviewed at source level only."
+  "diagnostic_retest": "On the combined build E18963DFD839694F71338B289FDDA814938FACDC1A8393178B4E68B87B5CCC20, the user logged in and again saw 0/1. No ritual transfer or scene messages appeared. This leaves open whether the button cast reached spell handling.",
+  "button_recovery": {
+    "data": "Native eventobject 1516/spawn 10016 in phase 7317 triggers Modera 90418 DATA0/1. Her action 208 spawns custom area trigger 13567 for 30 seconds. It casts button aura 234667 on entry and removes it on exit or retirement. The native first entry and scene are preserved.",
+    "repair": "While the accepted player remains in the same phase and within the native five-yard circle of this exact event, restore the native button aura after the transient Modera trigger expires or an interrupted attempt ends. Remove only the recovery aura when leaving. Retain equipped artifact and active specialization quest checks, and trace the button's force-cast effect and admission rejection.",
+    "deployed_sha256": "D52DB4B638570876F7012BCCF69EDBB664A3F4EF0AAE2D3DAA6AE7EB5A73E03E",
+    "evidence": ".codex/talonclaw-council-retest-20261123"
+  },
+  "pending": "User startup and actual button, playback, objective 1/1 and turn-in to Modera on the button recovery build. Sibling quests, first-time upgrade/refund, cancellation, retry and specialization changes were reviewed at source level only."
 }

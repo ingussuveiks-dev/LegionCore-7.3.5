@@ -1931,6 +1931,9 @@ void Spell::EffectForceCast(SpellEffIndex effIndex)
 
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
 
+    if (m_spellInfo->Id == CouncilArtifactGift::Button && triggered_spell_id == CouncilArtifactGift::Acquire && unitTarget == m_caster)
+        TC_LOG_INFO("quest", "Council artifact gift: extra action requested by player %u", unitTarget->GetGUIDLow());
+
     // normal case
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(triggered_spell_id);
 

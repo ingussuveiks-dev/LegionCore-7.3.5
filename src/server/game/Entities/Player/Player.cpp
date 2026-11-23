@@ -39981,6 +39981,8 @@ uint32 Player::GetQuestForUnLockSecondTier()
 
 namespace
 {
+constexpr uint32 CouncilGiftButtonAura = 234667;
+
 bool CanReceiveCouncilArtifactGift(Player& player)
 {
     if (!player.IsInWorld() || !player.IsAlive() || player.IsBeingTeleported())
@@ -40000,7 +40002,13 @@ bool CanReceiveCouncilArtifactGift(Player& player)
 void CouncilArtifactGift::BeginTransfer(Player& player)
 {
     if (!CanReceiveCouncilArtifactGift(player) || player.HasAura(PlayScene))
+    {
+        Item* weapon = player.GetArtifactWeapon();
+        TC_LOG_INFO("quest", "Council artifact gift: ritual spell hit player %u but admission failed (quest %u, rank %u, scene aura %u)",
+            player.GetGUIDLow(), player.GetQuestForUnLockSecondTier(), weapon ? weapon->GetTotalPurchasedArtifactPowers() : 0,
+            unsigned(player.HasAura(PlayScene)));
         return;
+    }
 
     SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(Acquire);
     if (!ritual)
@@ -40037,6 +40045,34 @@ void CouncilArtifactGift::OnArrival(Player& player)
     SpellCastResult result = player.CastSpell(&player, PlayScene, true);
     if (result != SPELL_CAST_OK)
         TC_LOG_WARN("quest", "Council artifact gift: scene cast refused for player %u with result %u", player.GetGUIDLow(), unsigned(result));
+}
+
+void CouncilArtifactGift::UpdateButton(Player& player)
+{
+    SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(Acquire);
+    if (!ritual || player.GetMapId() != ritual->target_mapId ||
+        !player.IsWithinDist3d(ritual->target_X, ritual->target_Y, ritual->target_Z, 5.0f, false))
+    {
+        RemoveRecoveredButton(player);
+        return;
+    }
+
+    // The authored Modera area trigger grants the button on entry. After
+    // expiry or an interrupted attempt, restore the same aura inside the circle.
+    if (player.HasPendingTeleport() || player.HasAura(Button) || player.HasAura(Acquire) || player.HasAura(PlayScene))
+        return;
+    if (!CanReceiveCouncilArtifactGift(player))
+    {
+        RemoveRecoveredButton(player);
+        return;
+    }
+    if (!player.HasAura(CouncilGiftButtonAura))
+        player.CastSpell(&player, CouncilGiftButtonAura, true);
+}
+
+void CouncilArtifactGift::RemoveRecoveredButton(Player& player)
+{
+    player.RemoveAurasDueToSpell(CouncilGiftButtonAura, player.GetGUID());
 }
 
 void Player::ApplyDotMod(uint32 spellId, SpellModOp op, float& basemod, float& baseadd, bool onapply)
