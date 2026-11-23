@@ -15,5 +15,13 @@
     "local_evidence": ".codex/open-ritual-boost-talonclaw-20261123",
     "diagnostic_archive": "build-extractors/bin/Release/fixed/2026-11-23-council-talonclaw-boost",
     "cleanup_manifest": ".codex/open-ritual-boost-talonclaw-20261123/cleanup-manifest.json"
+  },
+  "temporary_build_cleanup": {
+    "scope": "Council, Talonclaw and boost validation of 2026-11-23",
+    "files_removed": 91,
+    "reclaimed_bytes": 2367186834.0,
+    "archived_diagnostic_files": 54,
+    "preserved": "Canonical executable and its matching link map, previous rollback, testing source and diagnostic evidence. The earlier mixed DBErrors.log remained 587 bytes. The active crash folder remained empty.",
+    "manifest": ".codex/open-ritual-boost-talonclaw-20261123/cleanup-manifest.json"
   }
 }
