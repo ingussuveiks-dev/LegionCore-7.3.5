@@ -14,7 +14,7 @@ SET `p`.`Idx1` = 4
 WHERE `p`.`QuestID` = 46765 AND `p`.`BlobIndex` = 1 AND `p`.`Idx1` = 2
   AND `p`.`ObjectiveIndex` = 0 AND `p`.`QuestObjectiveID` = 289571
   AND `p`.`QuestObjectID` = 147430 AND `p`.`MapID` = 1220
-  AND `p`.`WorldMapAreaId` = 1021 AND `p`.`WorldEffectID` = 48140
+  AND `p`.`WorldMapAreaId` = 1021 AND `p`.`PlayerConditionID` = 48140
   AND `reserved`.`QuestID` IS NULL AND `existing`.`QuestID` IS NULL;
 
 CREATE TEMPORARY TABLE `twins_restored_poi_points` LIKE `quest_poi_points`;
