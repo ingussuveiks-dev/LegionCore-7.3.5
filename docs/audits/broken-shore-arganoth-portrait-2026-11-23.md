@@ -1,0 +1,9 @@
+# Arganoth portrait at the start of Rifts of Chaos
+
+The 26972 client showed Dread Commander Arganoth's portrait and final line after the voice had finished. The line belongs to conversation `4887`, created on entering stage 4. World data assigns the terminal line `10858` to actor slot 0 at `27014` ms. The extracted `ConversationLine.db2` links it to the expected BroadcastText `131070`, with a `1000` ms additional duration and no next line. The English broadcast resolves to SoundKit `53374` and FileDataID `1248434`. The installed client's full Vorbis stream reports `4782.993` ms. This puts the final line end near the stored `32842` ms conversation length.
+
+The loader added the same `32842` ms from each of the four actor rows, then added its ordinary `5000` ms grace. The conversation therefore published `136368` ms as its last line end. The guarded world migration keeps the full timeline on the first actor and clears the three duplicate duration contributions. This makes the published end `37842` ms with the existing grace. All six line records, their start offsets, actor identities, model, voice and scenario rules stay intact. MariaDB `EXPLAIN` resolves the update to the expected first actor and three duplicate rows.
+
+The installed 26972 UI treats `SOUNDKIT_FINISHED` as the end of facial animation and closes the portrait on `TALKINGHEAD_CLOSE`. Its existing FrameXML warning points to the initial model animation callback, a separate path from closing the frame. The migration corrects the server timeline. The user still needs to confirm the fade after the final line in the client.
+
+The user-owned server was running during the report and showed no new crash report or DBErrors. The migration is queued in the world updater for the next restart. No separate gameplay test or server startup was initiated.
