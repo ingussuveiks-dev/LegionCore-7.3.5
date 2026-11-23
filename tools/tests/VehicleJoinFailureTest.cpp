@@ -279,6 +279,14 @@ struct VehicleJoinEvent : BasicEvent
 #include "Construct.inc"
 #include "Destroy.inc"
 #include "Abort.inc"
+namespace AssaultBrokenShore
+{
+    bool IsArcaneRavenRider(Unit const& rider)
+    {
+        assert(rider.GetMapId() != 1666);
+        return false;
+    }
+}
 #include "Execute.inc"
 struct TrackedJoin : VehicleJoinEvent
 {

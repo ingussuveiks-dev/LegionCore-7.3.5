@@ -18,5 +18,22 @@
     "evidence": ".codex/talonclaw-council-retest-20261123",
     "diagnostics": "Trace native owned-ride binding, failures and actual seat acknowledgement. Rebuilt and verified current Release final-link inputs and the native summon callback in the link map. The matching final binary replaced the stopped server, with rollback and pre-client crash/log snapshots retained."
   },
-  "pending": "Client boarding, exit, accepted trip to Stormheim and objective 1/1 on the native summon handoff build. No complete 40385 traversal or alternate paths are certified."
+  "pending": "Actual client boarding and travel to Stormheim, objective 1/1, camera and pet UI, and continued 40385 traversal.",
+  "second_retest": "The user reported being seated and turned without continued travel. The live worldserver log shows native ride readiness and actual seat acknowledgement, with the player still in Dalaran and objective 0/1.",
+  "guardian_exit_repair": {
+    "cause": "Native summon properties 61 create an owned Guardian Minion. The standard owner-exit tail queued its removal for 200 ms. The native controller waits for real exit-spline completion and the original invoker action queues its transfer another 200 ms later. The transfer could no longer find its real scoped ride and was rejected.",
+    "repair": "Keep the exact 198941-created personal guardian 100967 on map 1220 alive under its controller during the exit and native transfer. Standard delayed removal continues for ordinary owned minions. Recheck the original click GUID and accepted attempt at summon effect dispatch. Retain real seat and movement receipts, finite cancellation/retry, accepted transfer 198950 and original native group credit 100111.",
+    "checks": [
+      "Native extracted boarding/departure ASAN, pinned early credit and owner-exit counterfactuals, current receipt, local DB2 and live SmartAI context checks, and linked canonical factories, vtable callbacks and transfer executable.",
+      "192 native usable-seat admission cases and retained Talonclaw acquisition SQL graph checks."
+    ],
+    "deployment": {
+      "worldserver_sha256": "E829E429BE53E3E2C8F1AFBFD873E0B76D1724C051B0831D79693C09FE1A2FDE",
+      "link_map_sha256": "0AA8890FA90780DFE7B6C4499A935506A0D960E6D65D92A368D192C66DF55CE7",
+      "startup": "The installed Release binary reached a fresh ready message. The owned process was shut down gracefully with exit 0 and empty stderr. Crash files and appended server/DB diagnostics were clean. Runtime configuration, DLLs, certificates and bnetserver hashes matched.",
+      "local_evidence": ".codex/open-ritual-boost-talonclaw-20261123",
+      "diagnostic_archive": "build-extractors/bin/Release/fixed/2026-11-23-council-talonclaw-boost",
+      "cleanup_manifest": ".codex/open-ritual-boost-talonclaw-20261123/cleanup-manifest.json"
+    }
+  }
 }

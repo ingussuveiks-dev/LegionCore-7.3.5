@@ -19,6 +19,7 @@ using uint8=uint8_t;using int8=int8_t;using uint32=uint32_t;using uint64=uint64_
 constexpr uint32 CLASS_HUNTER=3,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,SMART_EVENT_DATA_SET=38,SMART_EVENT_ON_SPELLCLICK=73;
 constexpr uint32 UNIT_FIELD_FLAGS=0,UNIT_FIELD_NPC_FLAGS=1,UNIT_FIELD_CREATED_BY_SPELL=2,UNIT_FLAG_NON_ATTACKABLE=2,UNIT_FLAG_IMMUNE_TO_PC=256,UNIT_FLAG_IMMUNE_TO_NPC=512,UNIT_NPC_FLAG_SPELLCLICK=16777216,REACT_PASSIVE=0;
 constexpr float INTERACTION_DISTANCE=5;
+constexpr uint32 UNIT_MASK_MINION=1,SPELL_EFFECT_SUMMON=28;
 constexpr uint32 EFFECT_0=0,SPELL_EFFECT_TELEPORT=227,VEHICLE_SPELL_RIDE_HARDCODED=46598,SPELLVALUE_BASE_POINT0=0;
 using SpellEffIndex=uint32;enum SpellCastResult{SPELL_CAST_OK,SPELL_FAILED_BAD_TARGETS,SPELL_FAILED_NOT_READY};
 struct ObjectGuid{uint64 high=0,low=0;bool IsEmpty()const{return !high&&!low;}bool operator==(ObjectGuid const& b)const{return high==b.high&&low==b.low;}bool operator!=(ObjectGuid const& b)const{return !(*this==b);}bool operator<(ObjectGuid const& b)const{return high<b.high||(high==b.high&&low<b.low);}};
@@ -32,6 +33,7 @@ struct Unit;
 std::map<ObjectGuid,Unit*> registry;uint64 nextGuid=1;unsigned warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
 #define TC_LOG_DEBUG(...) ((void)0)
+#define TC_LOG_INFO(...) ((void)0)
 struct Unit{ObjectGuid guid;Map* map=&firstMap;bool world=true,alive=true,phase=true;FunctionProcessor functions;
  Unit(uint64 type=2):guid{type,nextGuid++}{registry[guid]=this;}virtual ~Unit(){registry.erase(guid);}virtual Player* ToPlayer(){return nullptr;}virtual Creature* ToCreature(){return nullptr;}Unit* ToUnit(){return this;}
  ObjectGuid GetGUID()const{return guid;}uint32 GetGUIDLow()const{return uint32(guid.low);}Map* GetMap()const{return map;}uint32 GetMapId()const{return map->id;}bool IsInWorld()const{return world;}bool IsAlive()const{return alive;}bool InSamePhase(Unit* u)const{return phase&&u&&u->phase;}virtual Creature* GetVehicleBase()const{return nullptr;}virtual Vehicle* GetVehicleKit(){return nullptr;}virtual void ExitVehicle(){};
@@ -47,13 +49,15 @@ struct Player:Unit{QuestStatusData quest;uint32 klass=CLASS_HUNTER,credit=0,cred
  bool canSeeOrDetect(Unit*)const{return visible;}bool IsWithinDistInMap(Unit* u,float d)const{return map==u->map&&sourceDistance<=d;}bool IsWithinLOSInMap(Unit*)const{return los;}float GetDistance(float,float,float)const{return sourceDistance;}
  void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);void BindQuestObject(uint32,Creature*);GuidList* GetSummonList(uint32 entry){auto i=summons.find(entry);return i==summons.end()?nullptr:&i->second;}
  void EnterVehicle(Unit*,int8,bool);void CastCustomSpell(uint32,uint32,int,Unit*,bool);void ExitVehicle()override;
+ void ApplyPinnedExitCleanup(Creature*);
  Unit* GetUnitBeingMoved()const{return moved;}Unit* GetViewpoint()const{return viewpoint;}void SetClientControl(Unit* u,bool on){assert(u==this&&on);moved=this;++restores;}void SetViewpoint(Unit* u,bool apply){assert(u==viewpoint&&!apply);viewpoint=nullptr;}
  WorldLocation& GetTeleportDest(){return destination;}uint32 GetQuestObjectiveData(uint32 q,uint32 c)const{assert(q==40385&&c==100111);return credit;}
  void RewardPlayerAndGroupAtEvent(uint32 c,Unit*){assert(c==100111);++creditCalls;if(quest.Status==3&&!rewarded)credit=1;for(auto p:group)if(p->quest.Status==3&&!p->rewarded){++p->creditCalls;p->credit=1;}}
 };
-struct Creature:Unit{uint32 entry=100965,db=366115,flags=0,npcFlags=UNIT_NPC_FLAG_SPELLCLICK,despawn=0;ObjectGuid summoner;CreatureAI* ai=nullptr;Vehicle kit;bool hasKit=true,expired=false,bound=false,receiptAllows=true;std::weak_ptr<uint8> lease;
- Creature(uint32 e=100965,uint32 d=366115):entry(e),db(d){}Creature* ToCreature()override{return this;}Creature* ToTempSummon(){return summoner.IsEmpty()?nullptr:this;}ObjectGuid GetSummonerGUID()const{return summoner;}uint32 GetEntry()const{return entry;}uint32 GetDBTableGUIDLow()const{return db;}uint32 GetUInt32Value(uint32 field)const{assert(field==2);return entry==100967?198941:0;}CreatureAI* AI()const{return ai;}Vehicle* GetVehicleKit()override{return hasKit?&kit:nullptr;}bool IsQuestObjectExpired()const{return expired||(bound&&lease.expired());}bool HasFlag(uint32 field,uint32 bit)const{return ((field==UNIT_FIELD_FLAGS?flags:npcFlags)&bit)!=0;}void SetFlag(uint32,uint32 mask){flags|=mask;}void SetReactState(uint32){}void setActive(bool){}void DespawnOrUnsummon(uint32 ms=0){despawn=ms?ms:1;}Player* GetLootRecipient(){return nullptr;}
+struct Creature:Unit{uint32 entry=100965,db=366115,flags=0,npcFlags=UNIT_NPC_FLAG_SPELLCLICK,despawn=0;ObjectGuid summoner,clickedSource;CreatureAI* ai=nullptr;Vehicle kit;bool hasKit=true,expired=false,bound=false,receiptAllows=true;std::weak_ptr<uint8> lease;
+ Creature(uint32 e=100965,uint32 d=366115):entry(e),db(d){}Creature* ToCreature()override{return this;}Creature* ToTempSummon(){return summoner.IsEmpty()?nullptr:this;}ObjectGuid GetSummonerGUID()const{return summoner;}uint32 GetEntry()const{return entry;}uint32 GetDBTableGUIDLow()const{return db;}uint32 GetUInt32Value(uint32 field)const{assert(field==2);return entry==100967?198941:0;}ObjectGuid GetTargetGUID() const {return clickedSource;} bool HasUnitTypeMask(uint32 mask) const {return entry==100967&&mask==UNIT_MASK_MINION;} bool IsCreature() const {return true;} Player* GetOwner(){return ObjectAccessor::GetPlayer(*this,summoner);} bool HasQuestObjectScope() const override {return bound;} CreatureAI* AI()const{return ai;}Vehicle* GetVehicleKit()override{return hasKit?&kit:nullptr;}bool IsQuestObjectExpired()const{return expired||(bound&&lease.expired());}bool HasFlag(uint32 field,uint32 bit)const{return ((field==UNIT_FIELD_FLAGS?flags:npcFlags)&bit)!=0;}void SetFlag(uint32,uint32 mask){flags|=mask;}void SetReactState(uint32){}void setActive(bool){}void DespawnOrUnsummon(uint32 ms=0){despawn=ms?ms:1;}Player* GetLootRecipient(){return nullptr;}
 };
+using Minion=Creature;
 Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself()const{return const_cast<Unit*>(this)->ToPlayer();}
 bool Unit::IsWithinDistInMap(Unit* u,float d)const{if(auto p=const_cast<Unit*>(this)->ToPlayer())return p->IsWithinDistInMap(u,d);return map==u->map;}
 Player* ObjectAccessor::GetPlayer(Unit const& b,ObjectGuid id){auto u=GetUnit(b,id);return u?u->ToPlayer():nullptr;}Creature* ObjectAccessor::GetCreature(Unit const& b,ObjectGuid id){auto u=GetUnit(b,id);return u?u->ToCreature():nullptr;}Player* ObjectAccessor::FindPlayer(ObjectGuid id){auto i=registry.find(id);return i==registry.end()?nullptr:i->second->ToPlayer();}
@@ -65,12 +69,12 @@ using ObjectList=std::vector<Unit*>;bool IsUnit(Unit* u){return u!=nullptr;}
 #include "CreditPlayer.inc"
 struct Row{uint32 id=0,event=0,action=0,link=0,param=0,second=0,target=0,dist=0,p1=0,p2=0;};
 struct SmartScript{Creature* me;std::vector<Row> rows;uint32 nativeClicks=0,dataCalls=0;explicit SmartScript(Creature* c):me(c){}Creature* GetBaseObject(){return me;}ObjectList* GetTargets(Row const&,Unit* u){auto list=new ObjectList;if(u)list->push_back(u);return list;}void ProcessEventsFor(uint32,Unit*,uint32=0,uint32=0);};
-struct CreatureAI{Creature* me;explicit CreatureAI(Creature* c):me(c){}virtual ~CreatureAI()=default;virtual void UpdateAI(uint32){}virtual void PassengerBoarded(Unit*,int8,bool){}virtual void JustDied(Unit*){}virtual void OnSpellClick(Unit*){}};
+struct CreatureAI{Creature* me;explicit CreatureAI(Creature* c):me(c){}virtual ~CreatureAI()=default;virtual void UpdateAI(uint32){}virtual void PassengerBoarded(Unit*,int8,bool){}virtual void JustDied(Unit*){}virtual void OnSpellClick(Unit*){}virtual void IsSummonedBy(Unit*){}};
 struct ScriptedAI:CreatureAI{using CreatureAI::CreatureAI;};
 struct SmartAI:CreatureAI{SmartScript script;explicit SmartAI(Creature* c):CreatureAI(c),script(c){}SmartScript* GetScript(){return &script;}void OnSpellClick(Unit*)override;};
 #include "SmartClick.inc"
 struct Hook{template<class T>void operator+=(T){}};struct SpellInfo{uint32 Id=0;};
-struct SpellScript{Unit* caster=nullptr;ObjectGuid target,hit;SpellInfo info;bool prevented=false;Hook OnCheckCast,AfterCast,OnEffectHitTarget,AfterHit;virtual ~SpellScript()=default;virtual bool Load(){return true;}virtual void Register(){}Unit* GetCaster(){return caster;}Unit* GetExplTargetUnit(){return caster?ObjectAccessor::GetUnit(*caster,target):nullptr;}Unit* GetHitUnit(){return caster?ObjectAccessor::GetUnit(*caster,hit):nullptr;}SpellInfo const* GetSpellInfo(){return &info;}void PreventHitDefaultEffect(uint32){prevented=true;}};
+struct SpellScript{Unit* caster=nullptr;ObjectGuid target,originalTarget,hit;SpellInfo info;bool prevented=false;Hook OnCheckCast,AfterCast,OnEffectHit,OnEffectHitTarget,AfterHit;virtual ~SpellScript()=default;virtual bool Load(){return true;}virtual void Register(){}Unit* GetCaster(){return caster;}ObjectGuid GetOriginalTargetGUID() const {return originalTarget;}Unit* GetExplTargetUnit(){return caster?ObjectAccessor::GetUnit(*caster,target):nullptr;}Unit* GetHitUnit(){return caster?ObjectAccessor::GetUnit(*caster,hit):nullptr;}SpellInfo const* GetSpellInfo(){return &info;}void PreventHitDefaultEffect(uint32){prevented=true;}};
 #define PrepareSpellScript(x) public:
 #define SpellCheckCastFn(x) 0
 #define SpellCastFn(x) 0
@@ -80,7 +84,13 @@ struct SpellScript{Unit* caster=nullptr;ObjectGuid target,hit;SpellInfo info;boo
 std::function<void(Unit*,Unit*,uint32,bool)> castEndpoint;
 void Unit::CastSpell(Unit* target,uint32 spell,bool triggered){castEndpoint(this,target,spell,triggered);}
 void Player::CastCustomSpell(uint32 spell,uint32 mod,int seat,Unit* target,bool triggered){assert(spell==46598&&mod==0&&seat==1&&triggered);assert(target);++joins;if(joinAccepted)waitOnSeat=true;}
-void Player::ExitVehicle(){++exits;if(!base)return;auto old=base;old->kit.passenger=nullptr;old->kit.Seats[0].Passenger.Guid={};old->AI()->PassengerBoarded(this,0,false);base=nullptr;vehicle=nullptr;spline.done=false;}
+void Player::ExitVehicle(){++exits;if(!base)return;auto old=base;old->kit.passenger=nullptr;old->kit.Seats[0].Passenger.Guid={};old->AI()->PassengerBoarded(this,0,false);base=nullptr;vehicle=nullptr;spline.done=false;auto veh=old;auto player=this;
+#include "OwnerVehicleExit.inc"
+}
+void Player::ApplyPinnedExitCleanup(Creature* veh)
+{
+#include "OwnerVehicleExitBaseline.inc"
+}
 void SmartScript::ProcessEventsFor(uint32 kind,Unit* unit,uint32 var0,uint32 var1){
  if(kind==73)++nativeClicks;if(kind==38)++dataCalls;
  for(auto const& row:rows){if(row.event!=kind)continue;if(kind==38&&(row.p1!=var0||row.p2!=var1))continue;
@@ -99,16 +109,17 @@ static std::vector<Row> Read(char const* path){std::ifstream f(path);std::string
 struct Fixture{Player owner,party,stranger;Creature source;std::unique_ptr<Creature> ride;std::unique_ptr<npc_talonclaw_boarded_ride> ai;std::unique_ptr<npc_talonclaw_boarding_source> sourceAI;std::vector<Row> rows;unsigned transfers=0;int transferMode=0;ObjectGuid originalPet;std::unique_ptr<spell_talonclaw_boarded_transfer> lastTransfer;
  explicit Fixture(std::vector<Row> r):rows(std::move(r)),originalPet(owner.primaryPet){warnings=0;manager.present=true;sourceAI=std::make_unique<npc_talonclaw_boarding_source>(&source);source.ai=sourceAI.get();sourceAI->script.rows=rows;castEndpoint=[this](Unit* caster,Unit* target,uint32 spell,bool triggered){assert(caster==&owner&&target==&owner&&spell==198950&&!triggered);++transfers;if(transferMode==1)return;lastTransfer=std::make_unique<spell_talonclaw_boarded_transfer>();auto& s=*lastTransfer;s.caster=&owner;s.target=s.hit=owner.GetGUID();s.info.Id=198950;assert(s.Load());if(s.Check()!=SPELL_CAST_OK)return;s.Guard(0);if(s.prevented)return;owner.pending=true;owner.contact=false;owner.destination=WorldLocation{};if(transferMode==2)owner.destination.map=1512;s.After();};}
  ~Fixture(){assert(owner.primaryPet==originalPet);castEndpoint={};}
- void Spawn(){ride=std::make_unique<Creature>(100967,0);ride->summoner=owner.GetGUID();ai=std::make_unique<npc_talonclaw_boarded_ride>(ride.get());ride->ai=ai.get();owner.summons[100967].push_back(ride->GetGUID());}
- SpellCastResult Start(bool spawn=true){spell_talonclaw_boarding_summon cast;cast.info.Id=198941;cast.caster=&owner;cast.target=source.GetGUID();assert(cast.Load());auto result=cast.Check();if(result!=SPELL_CAST_OK)return result;sourceAI->OnSpellClick(&owner);assert(!owner.credit&&!transfers);if(spawn)Spawn();cast.After();return result;}
+ void Spawn(){ride=std::make_unique<Creature>(100967,0);ride->summoner=owner.GetGUID();ride->clickedSource=source.GetGUID();ai=std::make_unique<npc_talonclaw_boarded_ride>(ride.get());ride->ai=ai.get();owner.summons[100967].push_back(ride->GetGUID());}
+ SpellCastResult Start(bool spawn=true){spell_talonclaw_boarding_summon cast;cast.info.Id=198941;cast.caster=&owner;cast.originalTarget=source.GetGUID();assert(cast.Load());auto result=cast.Check();if(result!=SPELL_CAST_OK)return result;sourceAI->OnSpellClick(&owner);assert(!owner.credit&&!transfers);cast.GuardSummon(0);assert(!cast.prevented);if(spawn){Spawn();ai->IsSummonedBy(&owner);Tick(1);}return result;}
  void Board(){assert(ride&&ai);owner.waitOnSeat=false;owner.vehicle=&ride->kit;owner.base=ride.get();ride->kit.passenger=&owner;ride->kit.Seats[0].Passenger.Guid=owner.GetGUID();owner.moved=ride.get();ai->PassengerBoarded(&owner,0,true);}
  void Tick(uint32 ms){owner.functions.Update(ms);if(ai)ai->UpdateAI(ms);}
- void Casting(){Board();Tick(1);assert(!owner.credit&&owner.exits==1&&!owner.spline.done);owner.spline.done=true;Tick(1);assert(ai->stage==npc_talonclaw_boarded_ride::Stage::Casting&&!owner.credit&&!transfers);}
+ void Casting(){Board();Tick(1);assert(!owner.credit&&owner.exits==1&&!owner.spline.done&&!ride->despawn);owner.spline.done=true;Tick(1);assert(ai->stage==npc_talonclaw_boarded_ride::Stage::Casting&&!owner.credit&&!transfers);}
 };
 int main(int argc,char** argv){assert(argc==3);auto old=Read(argv[1]),fixed=Read(argv[2]);assert(old.size()==2&&fixed.size()==2);assert(old[0].event==73&&old[0].action==33&&old[0].link==1);assert(fixed[0].event==38&&fixed[0].link==0&&fixed[1].event==73&&fixed[1].second==128&&fixed[1].target==130&&fixed[1].dist==15);
  // Pinned original graph's actual action33 can credit without a summon/seat.
  {Fixture f(old);f.sourceAI->script.ProcessEventsFor(73,&f.owner);assert(f.owner.credit==1&&!f.ride&&!f.owner.joins);}
  unsigned cases=1;
+ {++cases;Fixture f(fixed);assert(f.Start()==SPELL_CAST_OK);f.Casting();f.owner.ApplyPinnedExitCleanup(f.ride.get());assert(f.ride->despawn==200);f.ride->world=false;f.Tick(200);assert(f.transfers==1&&!f.owner.pending&&!f.owner.credit);}
  {++cases;Fixture f(fixed);f.owner.group={&f.party};assert(f.Start()==SPELL_CAST_OK&&!f.owner.credit&&f.owner.joins==1);f.sourceAI->OnSpellClick(&f.owner);assert(f.owner.joins==1&&!f.sourceAI->script.nativeClicks);f.Casting();f.Tick(199);assert(!f.transfers&&!f.owner.credit);f.Tick(1);assert(f.transfers==1&&f.owner.credit==1&&f.owner.creditCalls==1&&f.party.credit==1&&f.sourceAI->script.dataCalls==1&&!warnings);f.lastTransfer->After();f.Tick(1000);assert(f.owner.creditCalls==1&&f.transfers==1&&f.owner.restores>=1);}
  {++cases;Fixture f(fixed);assert(f.Start(false)==SPELL_CAST_OK&&!f.owner.credit&&!f.owner.joins&&!f.transfers);}
  for(unsigned bad=0;bad<12;++bad){++cases;Fixture f(fixed);switch(bad){case 0:f.owner.quest.Status=0;break;case 1:f.owner.rewarded=true;break;case 2:f.owner.klass=1;break;case 3:f.owner.alive=false;break;case 4:f.source.alive=false;break;case 5:f.owner.phase=false;break;case 6:f.owner.los=false;break;case 7:f.owner.visible=false;break;case 8:f.owner.sourceDistance=5.01f;break;case 9:f.owner.pending=true;break;case 10:f.owner.transport=true;break;case 11:f.source.npcFlags=0;break;}assert(f.Start()!=SPELL_CAST_OK&&!f.owner.credit&&!f.ride);}
@@ -122,13 +133,15 @@ int main(int argc,char** argv){assert(argc==3);auto old=Read(argv[1]),fixed=Read
  {++cases;Fixture f(fixed);f.transferMode=1;f.Start();f.Casting();for(unsigned i=0;i<3;++i){f.Tick(200);f.Tick(5000);f.Tick(1);}assert(f.transfers==3&&!f.owner.credit&&f.ride->despawn);}
  {++cases;Fixture f(fixed);f.Start();f.Board();f.owner.ExitVehicle();assert(f.ride->despawn&&!f.owner.credit);}
  {++cases;Fixture f(fixed);f.Start();f.ai->PassengerBoarded(&f.stranger,0,true);assert(!f.owner.credit&&f.ai->stage==npc_talonclaw_boarded_ride::Stage::Joining);}
- {++cases;Fixture f(fixed);f.Start();spell_talonclaw_boarding_summon again;again.caster=&f.owner;again.target=f.source.GetGUID();again.info.Id=198941;assert(again.Load()&&again.Check()==SPELL_FAILED_NOT_READY);}
+ {++cases;Fixture f(fixed);f.Start();spell_talonclaw_boarding_summon again;again.caster=&f.owner;again.originalTarget=f.source.GetGUID();again.info.Id=198941;assert(again.Load()&&again.Check()==SPELL_FAILED_NOT_READY);}
  {++cases;Fixture f(fixed);f.Start();f.Casting();f.source.receiptAllows=false;f.Tick(200);assert(f.owner.credit==0&&f.ride->despawn==1000&&warnings==1);}
- for(unsigned mode=0;mode<3;++mode){++cases;Fixture f(fixed);spell_talonclaw_boarding_summon cast;cast.caster=&f.owner;cast.target=f.source.GetGUID();cast.info.Id=198941;assert(cast.Load()&&cast.Check()==SPELL_CAST_OK);f.Spawn();if(mode==0)f.owner.quest.ScriptLifetime=std::make_shared<uint8>();if(mode==1)f.source.world=false;if(mode==2)f.owner.visible=false;cast.After();assert(f.ride->despawn==1&&f.ai->stage==npc_talonclaw_boarded_ride::Stage::Unbound&&!f.owner.joins&&!f.owner.credit);}
+ for(unsigned mode=0;mode<3;++mode){++cases;Fixture f(fixed);spell_talonclaw_boarding_summon cast;cast.caster=&f.owner;cast.originalTarget=f.source.GetGUID();cast.info.Id=198941;assert(cast.Load()&&cast.Check()==SPELL_CAST_OK);if(mode==0)f.owner.quest.ScriptLifetime=std::make_shared<uint8>();if(mode==1)f.source.world=false;if(mode==2)f.owner.visible=false;cast.GuardSummon(0);assert(cast.prevented&&!f.ride&&!f.owner.joins&&!f.owner.credit);}
+ {++cases;Fixture f(fixed);f.Spawn();f.ride->clickedSource=f.stranger.GetGUID();f.ai->IsSummonedBy(&f.owner);assert(f.ride->despawn==1&&!f.owner.joins&&!f.owner.credit);}
+ {++cases;Fixture f(fixed);f.Start();f.Board();f.ride->bound=false;f.owner.ExitVehicle();assert(f.ride->despawn==200&&!f.owner.credit);}
  {++cases;Fixture f(fixed);f.Start();f.Casting();f.owner.credit=1;f.Tick(200);assert(f.owner.credit==1&&!f.owner.creditCalls&&f.ai->stage==npc_talonclaw_boarded_ride::Stage::Finished&&!warnings);}
  {++cases;Fixture f(fixed);f.Start();f.ride->kit.passenger=&f.stranger;f.Tick(5000);assert(f.owner.joins==1&&!f.owner.credit);}
  {++cases;Fixture f(fixed);f.Start();Creature other(100,0);f.stranger.base=&other;f.ai->PassengerBoarded(&f.stranger,0,true);assert(!f.stranger.exits&&f.stranger.base==&other);}
  {++cases;Fixture f(fixed);f.Start();f.Board();f.ai->PassengerBoarded(&f.owner,0,true);f.Tick(1);assert(f.owner.exits==1&&!f.owner.credit);}
  {++cases;Fixture f(fixed);f.Start();f.Tick(0xffffffffu);assert(f.ride->despawn&&!f.owner.credit&&warnings==1);}
- std::printf("PASS %u extracted production boarding/source/summon/transfer cases + actual FunctionProcessor/quest lease/EnterVehicle/SmartAI callback/native action33 and200ms invoker closure. Old early-credit counterfactual paired with actual-board/native-exit/accepted-target receipt; casts,world/seat/spline/teleport/group endpoints controlled; client flight/camera/pet rendering separate.\n",cases);
+ std::printf("PASS %u extracted production boarding/source/summon/transfer cases + actual FunctionProcessor/quest lease/EnterVehicle/SmartAI callback/native action33 and200ms invoker closure. Pinned early-credit and guardian cleanup counterfactuals paired with actual boarding/native exit/accepted transfer; casts,world/seat/spline/teleport/group endpoints controlled; client flight/camera/pet rendering separate.\n",cases);
 }

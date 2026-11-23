@@ -9,7 +9,6 @@ def callback_slot(native, callback):
     assert len(addresses) == 1, 'Expected exactly one linked SmartAI base vtable'
     slots = struct.unpack_from('<80Q', native['binary'], native['offset'](int(addresses[0], 16)))
     expected = native['symbol'](callback)
-    matches = [i for i, raw in enumerate(slots) if raw == expected or
-               raw in native['symbols'].values() and native['resolve'](raw) == expected]
+    matches = [i for i, raw in enumerate(slots) if native['resolves_to'](raw, expected)]
     assert len(matches) == 1, ('Native SmartAI callback is absent or ambiguous', callback, matches)
     return matches[0]

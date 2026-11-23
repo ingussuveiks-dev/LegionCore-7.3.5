@@ -167,6 +167,8 @@ struct npc_talonclaw_boarded_ride : ScriptedAI
                 smart->GetScript()->ProcessEventsFor(SMART_EVENT_DATA_SET, player, Receipt, 1);
         if (!player->GetQuestObjectiveData(QuestId, Credit))
             TC_LOG_WARN("scripts", "Talonclaw boarding: native accepted transfer did not deliver source100965 receipt100111; investigate source22/data dispatch");
+        else
+            TC_LOG_INFO("scripts", "Talonclaw boarding: acknowledged native Stormheim departure and objective for player %u", player->GetGUIDLow());
         me->DespawnOrUnsummon(1000);
     }
     void UpdateAI(uint32 diff) override
@@ -277,9 +279,21 @@ class spell_talonclaw_boarding_summon : public SpellScript
         originalSource = source->GetGUID(); lifetime = quest->ScriptLifetime; bound = true;
         return SPELL_CAST_OK;
     }
+    void GuardSummon(SpellEffIndex effect)
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        Creature* source = ClickedSource(player);
+        QuestStatusData* quest = player ? player->getQuestStatus(TalonclawBoardedDeparture::QuestId) : nullptr;
+        if (!bound || !quest || lifetime.expired() || quest->ScriptLifetime != lifetime.lock() ||
+            !TalonclawBoardedDeparture::Contact(player, source, INTERACTION_DISTANCE) ||
+            source->GetGUID() != originalSource || player->HasPendingTeleport() || player->GetVehicle() ||
+            player->waitOnSeat || player->GetTransport() || player->isInFlight() || TalonclawBoardedDeparture::Owned(player))
+            PreventHitDefaultEffect(effect);
+    }
     void Register() override
     {
         OnCheckCast += SpellCheckCastFn(spell_talonclaw_boarding_summon::Check);
+        OnEffectHit += SpellEffectFn(spell_talonclaw_boarding_summon::GuardSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
     }
 };
 

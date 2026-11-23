@@ -7,10 +7,23 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
  [IO.File]::WriteAllText("$out/FunctionProcessor.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $header 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$methods.Substring($methods.IndexOf('FunctionProcessor::FunctionProcessor()')))
  [IO.File]::WriteAllText("$out/QuestDelay.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'void Player::AddQuestDelayedEvent('))
  [IO.File]::WriteAllText("$out/EnterVehicle.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'void Unit::EnterVehicle(').Replace('Unit::EnterVehicle','Player::EnterVehicle'))
+ $vehicleExit=Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'void Unit::_ExitVehicle('
+ $ownerExit=Block $vehicleExit 'if (veh->HasUnitTypeMask(UNIT_MASK_MINION)'
+ [IO.File]::WriteAllText("$out/OwnerVehicleExit.inc",$ownerExit)
+ $oldUnit=(& git -C $repo show '3144efb56:src/server/game/Entities/Unit/Unit.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned Talonclaw guardian exit baseline missing'}
+ $oldExit=Block $oldUnit 'void Unit::_ExitVehicle('
+ $start=$oldExit.IndexOf('if (veh->HasUnitTypeMask(UNIT_MASK_MINION)')
+ $end=$oldExit.IndexOf('if (HasUnitTypeMask(UNIT_MASK_ACCESSORY))',$start)
+ [IO.File]::WriteAllText("$out/OwnerVehicleExitBaseline.inc",$oldExit.Substring($start,$end-$start))
  [IO.File]::WriteAllText("$out/SmartClick.inc",(Block (Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw) 'void SmartAI::OnSpellClick('))
  $smart=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
  [IO.File]::WriteAllText("$out/CreditPlayer.inc",(Block $smart 'Player* GetScriptCreditPlayer('))
- $a=$smart.IndexOf('        case SMART_ACTION_CALL_KILLEDMONSTER:');$b=$smart.IndexOf('        case SMART_ACTION_SET_INST_DATA:',$a);[IO.File]::WriteAllText("$out/CreditAction.inc",$smart.Substring($a,$b-$a).Replace('SMART_ACTION_CALL_KILLEDMONSTER','33'))
+ $a=$smart.IndexOf('        case SMART_ACTION_CALL_KILLEDMONSTER:');$b=$smart.IndexOf('        case SMART_ACTION_SET_INST_DATA:',$a)
+ $credit=$smart.Substring($a,$b-$a)
+ $genericCredit=$credit.IndexOf('            Player* player = nullptr;')
+ if($genericCredit -lt 0){throw 'Missing generic native action33 credit'}
+ [IO.File]::WriteAllText("$out/CreditAction.inc",("        case 33:{`n"+$credit.Substring($genericCredit)))
  $a=$smart.IndexOf('tempLastInvoker->AddDelayedEvent(200,');$b=$smart.IndexOf('});',$a)+3;[IO.File]::WriteAllText("$out/InvokerQueue.inc",$smart.Substring($a,$b-$a))
  Copy-Item -LiteralPath "$repo/src/server/scripts/Legion/ClassHalls/talonclaw_boarded_departure.h" -Destination "$out/TalonclawBoardedDeparture.inc"
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

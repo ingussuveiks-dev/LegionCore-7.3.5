@@ -24674,7 +24674,15 @@ void Unit::_ExitVehicle(Position const* exitPosition)
 
     if (veh->HasUnitTypeMask(UNIT_MASK_MINION) && veh->IsCreature())
         if (static_cast<Minion*>(veh)->GetOwner() == this)
-            veh->ToCreature()->DespawnOrUnsummon(200);
+        {
+            // The native Talonclaw ride is a guardian. Its quest controller
+            // still has to observe the exit spline and accept the transfer.
+            bool talonclawDeparture = player && veh->GetMapId() == 1220 && veh->GetEntry() == 100967 &&
+                veh->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 198941 &&
+                veh->HasQuestObjectScope() && !veh->IsQuestObjectExpired();
+            if (!talonclawDeparture)
+                veh->ToCreature()->DespawnOrUnsummon(200);
+        }
 
     if (HasUnitTypeMask(UNIT_MASK_ACCESSORY))
     {
