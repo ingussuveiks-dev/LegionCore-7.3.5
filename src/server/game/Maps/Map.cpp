@@ -33,6 +33,7 @@
 #include "Group.h"
 #include "QuestItemObjectUse.h"
 #include "OldFriendsFlight.h"
+#include "DarkshoreWildlifeFlight.h"
 #include "ScorpidVenom.h"
 #include "WestfallStew.h"
 #include "GameEventMgr.h"
@@ -4403,6 +4404,27 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         duration = 4 * MINUTE * IN_MILLISECONDS;
     }
 
+    Player* wildlifeRider = nullptr;
+    if (entry == DarkshoreWildlifeFlight::Hippogryph && spellId == DarkshoreWildlifeFlight::Summon)
+    {
+        using namespace DarkshoreWildlifeFlight;
+        wildlifeRider = summoner ? summoner->ToPlayer() : nullptr;
+        Creature const* orseus = GetCreature(targetGuid);
+        if (!wildlifeRider || GetId() != DarkshoreWildlifeFlight::Map || !properties || properties->ID != SummonProperties ||
+            !wildlifeRider->IsAlive() || wildlifeRider->GetVehicle() || wildlifeRider->isInFlight() ||
+            wildlifeRider->GetQuestStatus(QuestId) != QUEST_STATUS_INCOMPLETE || !orseus || !orseus->IsAlive() ||
+            orseus->GetEntry() != Orseus || orseus->GetDBTableGUIDLow() != OrseusSpawn ||
+            !wildlifeRider->IsWithinDistInMap(orseus, INTERACTION_DISTANCE) || !wildlifeRider->IsWithinLOSInMap(orseus) ||
+            !orseus->IsWithinDist3d(&pos, 40.0f))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *wildlifeRider->GetSummonList(entry))
+            if (Creature const* mount = GetCreature(guid))
+                if (!mount->IsDespawn() && !mount->IsQuestObjectExpired())
+                    return nullptr;
+        duration = 5 * MINUTE * IN_MILLISECONDS;
+    }
+
     Player* mastiffOwner = nullptr;
     if (entry == GilneanMastiff::Mastiff && spellId == GilneanMastiff::Summon)
     {
@@ -4727,6 +4749,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (bomberRider)
         bomberRider->BindQuestObject(OldFriendsFlight::Quest, summon);
+
+    if (wildlifeRider)
+        wildlifeRider->BindQuestObject(DarkshoreWildlifeFlight::QuestId, summon, false);
 
     if (totemOwner)
         totemOwner->BindQuestObject(ScorpidVenom::Quest, summon);

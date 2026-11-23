@@ -39,6 +39,7 @@
 #include "CreatureGroups.h"
 #include "Dozercism.h"
 #include "OldFriendsFlight.h"
+#include "DarkshoreWildlifeFlight.h"
 #include "Formulas.h"
 #include "Garrison.h"
 #include "GridNotifiersImpl.h"
@@ -24491,6 +24492,20 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
     {
         base->RemoveAura(const_cast<AuraApplication*>(aurApp));
         return;
+    }
+
+    if (base->GetEntry() == DarkshoreWildlifeFlight::Hippogryph && base->GetMapId() == DarkshoreWildlifeFlight::Map)
+    {
+        auto scope = base->GetQuestObjectScope().lock();
+        TempSummon* guide = ToTempSummon();
+        bool riderAllowed = scope && IsPlayer() && GetGUID() == scope->Owner && seatId == DarkshoreWildlifeFlight::RiderSeat;
+        bool guideAllowed = scope && guide && GetEntry() == DarkshoreWildlifeFlight::Kathrena &&
+            guide->GetSummonerGUID() == base->GetGUID() && GetQuestObjectScope().lock() == scope && seatId == DarkshoreWildlifeFlight::KathrenaSeat;
+        if (base->IsQuestObjectExpired() || (!riderAllowed && !guideAllowed))
+        {
+            base->RemoveAura(const_cast<AuraApplication*>(aurApp));
+            return;
+        }
     }
 
     if (m_vehicle)
