@@ -31,7 +31,13 @@
   "canonical_client_observation_2026_11_23": {
     "route": "Mage Tower to NewDalaran on map 1220 using the GM teleport discussed with the user. The saved position remained at destination height in Dalaran.",
     "result": "The user reported quick arrival and immediate movement. Canonical worldserver SHA-256 was 12E7F579849C0B8156268F998FD0BC4E16A1965FB0DF1A6BDEDF9B30A9FFB780. Reviewed startup and gameplay logs contained no appended warnings, errors or assertions, DBErrors remained empty and no crash report was generated.",
-    "limits": "Qualitative confirmation of one long same-map arrival on the canonical build. Timing, cold-cache model loading and transfers between different maps were not measured. This is not a test of the separate November 20 staged executable."
+    "limits": "Qualitative confirmation of one long same-map arrival on the canonical build. Timing and cold-cache model loading were not measured on that route. See the separate far arrival below. This is not a test of the separate November 20 staged executable."
+  },
+  "canonical_far_arrival_2026_11_23": {
+    "route": "Orgrimmar (map 1) to Legion Dalaran (map 1220) on the canonical worldserver, SHA-256 12E7F579849C0B8156268F998FD0BC4E16A1965FB0DF1A6BDEDF9B30A9FFB780.",
+    "result": "The user reported fast loading and immediate movement. At 15:40:03.903 the client enabled the destination loading screen, at 15:40:07.242 it sent World Port Response, and at 15:40:07.613 it created the active player and dismissed the screen. Visible loading screen duration from the client log was 3.710 seconds, Europe/Riga.",
+    "diagnostics": "No appended warnings, errors or assertions between startup and this transfer, no change to DBErrors.log, and no crash reports.",
+    "limits": "One user-observed cross-map arrival. The retained logs do not identify the initiating spell or GM command, and movement availability is confirmed by the user. This does not establish arrival behavior on the separate map-0 Legion introduction platform or in a cold-cache run."
   },
   "client_comparison_pending": "Measure request-to-first-transfer packet, screen duration, first visible player and terrain/model frame, landing Z and first accepted movement. Compare a fresh login, a short near teleport, a long same-map teleport to a dynamic platform and a far map transfer onto Dalaran's verified city floor. Include the moving boost ships before reducing any dynamic-floor hold. The near teleport packet exposes a PreloadWorld byte, but its effect on cold model streaming has not been measured in client build 26972.",
   "protocol_reference": "https://github.com/TrinityCore/WowPacketParser/blob/master/WowPacketParserModule.V7_0_3_22248/Parsers/MovementHandler.cs#L303-L334"
