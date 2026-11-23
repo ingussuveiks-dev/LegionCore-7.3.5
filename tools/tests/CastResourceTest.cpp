@@ -9,7 +9,7 @@
 using uint8 = uint8_t; using int8 = int8_t; using uint32 = uint32_t; using int32 = int32_t;
 using uint64 = uint64_t; using int64 = int64_t;
 constexpr int IN_MILLISECONDS = 1000, MAX_POWERS = 18, MAX_POWERS_FOR_SPELL = 4;
-enum Powers { POWER_MANA = 0, POWER_RUNES = 5, POWER_HOLY_POWER = 9, POWER_HEALTH = -2 };
+enum Powers { POWER_MANA = 0, POWER_RUNES = 5, POWER_HOLY_POWER = 9, POWER_CHI = 12, POWER_HEALTH = -2 };
 enum SpellCastResult { SPELL_CAST_OK, SPELL_FAILED_CASTER_AURASTATE, SPELL_FAILED_NO_POWER };
 constexpr int SPELLMOD_COST = 1, SPELL_AURA_MOD_COOLDOWN = 2, SPELL_AURA_CHARGE_RECOVERY_MOD = 3,
     SPELL_AURA_CHARGE_RECOVERY_MULTIPLIER = 4, SPELL_AURA_CHARGE_RECOVERY_AFFECTED_BY_HASTE_REGEN = 5,
@@ -194,6 +194,17 @@ int main()
     spell.m_powerData.clear(); caster.holyChecks = 0;
     spell.CheckPower(); spell.CheckPower();
     Check(spell.m_powerData.size() == 1 && caster.holyChecks == 2, "Repeated preflight must not accumulate power rows");
+    SpellPowerEntry chi{POWER_CHI};
+    SpellInfo fistsOfFury;
+    fistsOfFury.Id = 113656;
+    fistsOfFury.powers = {&chi};
+    Spell fistCast{&caster, &fistsOfFury};
+    fistCast.m_powerCost[POWER_CHI] = 3;
+    caster.powers[POWER_CHI] = 2;
+    Check(fistCast.CheckPower() == SPELL_FAILED_NO_POWER && fistCast.m_failedArg[0] == POWER_CHI,
+        "Fists of Fury with two Chi must report its resource requirement");
+    caster.powers[POWER_CHI] = 3;
+    Check(fistCast.CheckPower() == SPELL_CAST_OK, "Fists of Fury with three Chi must pass resource preflight");
     Player saved;
     saved.TakeSpellCharge(info); saved.TakeSpellCharge(info); saved.UpdateSpellCharges(250);
     auto transaction = std::make_shared<Transaction>();

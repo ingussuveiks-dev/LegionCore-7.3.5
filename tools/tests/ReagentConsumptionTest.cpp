@@ -57,6 +57,7 @@ struct Spell
     Guid m_castItemGUID;
     uint32 m_castItemEntry = 0;
     Targets m_targets;
+    bool _preventCurrencyReagentConsumption = false;
     void TakeReagents();
 };
 #include "TakeReagents.inc"

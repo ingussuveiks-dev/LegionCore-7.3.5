@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-23",
+  "scope": "Windwalker level 100 boost lesson A Thousand Strikes",
+  "client_evidence": "The player had already verified arriving on the Alliance deck without falling. The later lesson screenshot shows two filled Chi points and a three-Chi Fists of Fury tooltip. It does not establish the resources at the moment of the initial press.",
+  "data_and_checks": [
+    "Native 26972 scenario 1095 step 2513 order 4 uses tree 48411 and criterion 30396 type 29 for one successful cast of spell 113656. Matching native SpellPower costs three Chi. Ordinary Spell::cast sends the criterion for the real player cast, routed to the active instance scenario.",
+    "Extracted production Spell::CheckPower refuses the two-Chi case with the Chi failure argument and accepts three Chi. Both equipped one-handed swords in the reported saved setup satisfy the native weapon class and subclass mask.",
+    "Cast-resource regressions, native boost lesson catalog and construct checks, both faction ship-arrival regressions and native 34338/34366 model deck-floor checks passed. Earlier arrival test build removal was recorded independently in the arrival audit."
+  ],
+  "disposition": "No spell or scenario production change was needed for the two-Chi case. A fresh accepted cast with at least three Chi and actual lesson progression remains a client check.",
+  "verification": {
+    "worldserver_sha256": "E829E429BE53E3E2C8F1AFBFD873E0B76D1724C051B0831D79693C09FE1A2FDE",
+    "link_map_sha256": "0AA8890FA90780DFE7B6C4499A935506A0D960E6D65D92A368D192C66DF55CE7",
+    "startup": "The installed Release binary reached a fresh ready message. The owned process was shut down gracefully with exit 0 and empty stderr. Crash files and appended server/DB diagnostics were clean. Runtime configuration, DLLs, certificates and bnetserver hashes matched.",
+    "local_evidence": ".codex/open-ritual-boost-talonclaw-20261123",
+    "diagnostic_archive": "build-extractors/bin/Release/fixed/2026-11-23-council-talonclaw-boost",
+    "cleanup_manifest": ".codex/open-ritual-boost-talonclaw-20261123/cleanup-manifest.json"
+  }
+}

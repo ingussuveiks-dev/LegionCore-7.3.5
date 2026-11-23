@@ -16,7 +16,8 @@ int main(int argc,char** argv){
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2",CriteriaTreeLoadInfo::Instance());
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2",ScenarioStepLoadInfo::Instance());
     DB2Storage<CreatureDisplayInfoEntry> displays("CreatureDisplayInfo.db2",CreatureDisplayInfoLoadInfo::Instance());
-    assert(criteria.Load(argv[1],0)&&trees.Load(argv[1],0)&&steps.Load(argv[1],0)&&displays.Load(argv[1],0));
+    DB2Storage<SpellPowerEntry> powers("SpellPower.db2", SpellPowerLoadInfo::Instance());
+    assert(criteria.Load(argv[1],0)&&trees.Load(argv[1],0)&&steps.Load(argv[1],0)&&displays.Load(argv[1],0)&&powers.Load(argv[1],0));
     assert(displays.LookupEntry(56111));
     std::map<int32,Criteria> records;
     std::map<int32,CriteriaTree> nodes;
@@ -44,5 +45,15 @@ int main(int argc,char** argv){
     assert(hunter&&(found==std::set<int32>{47514,47793,48073,48081,48841,51837,55422,55639}));
     assert(criteria.LookupEntry(29840)->Type==CRITERIA_TYPE_SCRIPT_EVENT_2&&criteria.LookupEntry(29840)->Asset==50571);
     assert(criteria.LookupEntry(30919)->Asset==48772);
+    auto monkLesson = steps.LookupEntry(2513);
+    assert(monkLesson && monkLesson->ScenarioID == 1095 && monkLesson->OrderIndex == 4 && monkLesson->Criteriatreeid == 48411);
+    assert(HasLessonCriterion(&nodes.at(48411), CRITERIA_TYPE_CAST_SPELL, 113656));
+    assert(trees.LookupEntry(48423)->CriteriaID == 30396 && trees.LookupEntry(48423)->Amount == 1);
+    bool fistsOfFuryCost = false;
+    for (auto power : powers)
+        if (power->SpellID == 113656 && power->PowerType == POWER_CHI && !power->RequiredAuraSpellID)
+            fistsOfFuryCost = power->ManaCost == 3;
+    assert(fistsOfFuryCost);
+    std::cout << "PASS Windwalker native 1095 lesson 2513 requires an actual 113656 cast and three Chi\n";
     std::cout<<"PASS: production lesson selection over native 7.3.5 ScenarioStep/CriteriaTree/Criteria; all eight construct lessons, independent hunter cast/event, ordinary Warlock and sparring event preserved\n";
 }
