@@ -194,6 +194,15 @@ void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjRe
     if (!go->IsWithinDistInMap(_player, go->GetInteractionDistance()))
         return;
 
+    // Broken Shore boarding is credited by the completed jump. Both client
+    // interaction opcodes must use the gate AI without awarding a click credit.
+    if (go->GetMapId() == 1666 && (go->GetEntry() == 267955 || go->GetEntry() == 267956))
+    {
+        if (_player->GetUnitBeingMoved() == _player && _player->CanContact() && !_player->IsSpectator())
+            go->Use(_player);
+        return;
+    }
+
     switch (go->GetEntry())
     {
         case 193905: //Chest Alexstrasza's Gift | Chest Heart of Magic

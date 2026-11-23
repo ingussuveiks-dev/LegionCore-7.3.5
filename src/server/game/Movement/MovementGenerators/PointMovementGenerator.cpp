@@ -188,4 +188,8 @@ void EffectMovementGenerator::MovementInform(Unit& owner)
     if (Creature* creature = owner.ToCreature())
         if (creature->AI())
             creature->AI()->MovementInform(EFFECT_MOTION_TYPE, _pointId);
+
+    if (_arrived && owner.GetMapId() == 1666 && (_pointId == 236671 || _pointId == 236762))
+        if (Player* player = owner.ToPlayer())
+            sScriptMgr->OnMovementInform(player, EFFECT_MOTION_TYPE, _pointId);
 }

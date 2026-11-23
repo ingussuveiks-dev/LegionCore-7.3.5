@@ -7,6 +7,7 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "QuestData.h"
+#include "SpellMgr.h"
 #include "ObjectVisitors.hpp" 
 #include "AssaultBrokenShoreLanding.h"
 
@@ -498,7 +499,19 @@ public:
     };
 };
 
-// 267955
+namespace
+{
+    constexpr uint32 AssaultQuest = 46734;
+    constexpr uint32 AssaultMap = 1666;
+    constexpr uint32 ShoreGate = 267955;
+    constexpr uint32 UnderShipGate = 267956;
+    constexpr uint32 ShoreGateJump = 236671;
+    constexpr uint32 UnderShipGateJump = 236762;
+    // Scenario step indices start at zero.
+    constexpr uint32 GatewayToRuin = 5;
+    constexpr uint32 Mephistroth = 7;
+}
+
 class go_bs_demoic_gates : public GameObjectScript
 {
 public:
@@ -506,33 +519,35 @@ public:
 
     struct go_bs_demoic_gatesAI : public GameObjectAI
     {
-        go_bs_demoic_gatesAI(GameObject* go) : GameObjectAI(go){}
+        go_bs_demoic_gatesAI(GameObject* go) : GameObjectAI(go) { }
 
-
-        bool GossipHello(Player* player, bool isUse) override
+        bool GossipUse(Player* player) override
         {
-            if (!isUse)
+            uint32 const entry = go->GetEntry();
+            if (go->GetMapId() != AssaultMap || (entry != ShoreGate && entry != UnderShipGate))
+                return false;
+
+            if (!player->IsAlive() || player->GetQuestStatus(AssaultQuest) != QUEST_STATUS_INCOMPLETE ||
+                player->HasPendingTeleport() || player->isInFlight() ||
+                player->GetMotionMaster()->GetCurrentMovementGeneratorType() == EFFECT_MOTION_TYPE ||
+                !go->isSpawned() || go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) ||
+                !go->InSamePhase(player) || !go->IsWithinDistInMap(player, go->GetInteractionDistance()) ||
+                !player->IsWithinLOSInMap(go))
                 return true;
 
-            if (InstanceScript* instance = go->GetInstanceScript())
-            {
-                if (instance->getScenarionStep() < 5)
-                    return false;
-            }
-            else
-                return false;
-            
-            Map::PlayerList const &PlList = player->GetMap()->GetPlayers();
+            InstanceScript const* instance = go->GetInstanceScript();
+            if (!instance || instance->getScenarionStep() < GatewayToRuin || instance->getScenarionStep() > Mephistroth)
+                return true;
 
-            if (PlList.isEmpty())
-                return false;
-            
-            for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-                if (Player* pPlayer = i->getSource())
-                {
-                    pPlayer->CastSpell(pPlayer, 236671);
-                    pPlayer->UpdateAchievementCriteria(CRITERIA_TYPE_USE_GAMEOBJECT, 267955);
-                }
+            uint32 const spell = entry == ShoreGate ? ShoreGateJump : UnderShipGateJump;
+            SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(spell);
+            if (!destination || destination->target_mapId != AssaultMap)
+            {
+                TC_LOG_ERROR("scripts", "Broken Shore gate %u has no boarding destination on map %u for spell %u", entry, AssaultMap, spell);
+                return true;
+            }
+
+            player->CastSpell(player, spell, false);
             return true;
         }
     };
@@ -551,6 +566,21 @@ class player_scripts_for_start_assault : public PlayerScript
             checktimer = 1000;
         }
         uint32 checktimer;
+
+        void OnMovementInform(Player* player, uint32 type, uint32 id) override
+        {
+            if (type != EFFECT_MOTION_TYPE || (id != ShoreGateJump && id != UnderShipGateJump) ||
+                player->GetMapId() != AssaultMap || !player->IsAlive() || player->HasPendingTeleport() ||
+                player->GetQuestStatus(AssaultQuest) != QUEST_STATUS_INCOMPLETE)
+                return;
+
+            InstanceScript const* instance = player->GetInstanceScript();
+            SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(id);
+            if (instance && instance->getScenarionStep() == GatewayToRuin && destination &&
+                destination->target_mapId == AssaultMap &&
+                player->GetExactDist(destination->target_X, destination->target_Y, destination->target_Z) < 2.0f)
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_USE_GAMEOBJECT, ShoreGate);
+        }
         
         void OnUpdate(Player* player, uint32 diff) override
         {
