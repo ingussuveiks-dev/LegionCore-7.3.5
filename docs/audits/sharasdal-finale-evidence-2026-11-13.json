@@ -51,6 +51,10 @@
       }
     ]
   },
+  "source_recheck_2026_11_23": {
+    "archived_blizzard_thread": "https://www.wowhead.com/blue-tracker/topic/bug-throne-of-the-tides-azsharas-power-17618064529",
+    "finding": "This readable mirror explicitly labels the March 2018 player report and Blizzard reply patch 7.3.5. The player reports Sharas'dal was already looted while Lady Zithreen remained at 1 HP and the return bubble was missing. Blizzard's reply suggests a sometimes-effective class-hall portal recovery after real loot. This is a documented failure and workaround. The report does not identify the intended surrender trigger, Grash health requirement or exit bubble timing."
+  },
   "primary_reports": [
     {
       "url": "https://www.bluetracker.gg/wow/topic/gb-en/0-bug-throne-of-the-tides-azsharas-power/",

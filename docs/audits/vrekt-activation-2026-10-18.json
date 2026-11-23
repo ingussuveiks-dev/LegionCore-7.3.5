@@ -1,6 +1,7 @@
 {
   "quest": 44923,
   "title": "Helarjar Landing: Vrekt",
+  "sourceRecheck2026-11-23": "The public Wowhead quest page was readable through its indexed result. Its current quest data show 10 Helarjar kills and one Vaettfang kill, consistent with the native 7.3.5 objectives. Player comments describe low spawn availability but provide no exact build-matched respawn interval or rotation cadence. The original client checks remain open.",
   "date": "2026-10-18",
   "baseline": "e9d85586",
   "followUp": "The separately recorded corrupt-POI finding below is repaired in vrekt-poi-2026-10-18.json. All other original evidence boundaries remain.",
