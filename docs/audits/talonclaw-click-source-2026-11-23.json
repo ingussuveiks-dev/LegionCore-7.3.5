@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-23",
+  "scope": "Krasus' Landing departure for The Spear in the Shadow 40385",
+  "client_baseline": "After turning in Preparation for the Hunt and accepting 40385, the user clicked the Highmountain Hippogryph. Two hippogryphs were visible and the flight objective stayed 0/1. The saved quest remained active with all three objective counts at zero.",
+  "source": "Live world data identifies public spell-click source 100965/spawn 366115, native summon spell 198941 with target 46, owned ride 100967/properties 61, and transfer 198950. CastFlags 1 sends the clicked creature as the original unit. The old script depended on GetExplTargetUnit for script loading, check and AfterCast. The cast's original GUID identifies the clicked source even when destination target processing alters the explicit target.",
+  "repair": "Load the bound 198941 script by spell ID and resolve the clicked creature by Spell::m_originalTargetGUID in both cast admission and AfterCast. Retain the exact spawn, range, line of sight, phase, quest lease and owned ride checks. Keep actual boarding and accepted departure as prerequisites to native 100111 credit.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "E18963DFD839694F71338B289FDDA814938FACDC1A8393178B4E68B87B5CCC20",
+    "link": "Rebuilt artifact_acquisition.cpp in Release scripts.lib. Staged final link used the original Release scripts.lib and game.lib paths and lists the Talonclaw cast handlers from scripts:artifact_acquisition.obj. The staged and deployed executables matched by SHA-256 after replacing the stopped server. A rollback and pre-test diagnostic snapshot are retained under .codex/talonclaw-click-20261123.",
+    "startup": "User-owned worldserver reached ready at 16:26:52 Europe/Riga. No agent-owned process was started."
+  },
+  "checks": "Matching 26972 DB2 effects, live spell-click and SmartAI data, and the source handoff were inspected. Separate automated, native, ASAN, PE-verifier, regression and agent-owned startup tests were intentionally skipped during the active user-led flow.",
+  "pending": "Client boarding, exit, accepted trip to Stormheim and objective 1/1. The first screenshot does not prove which cast phase lost the original source. No complete 40385 traversal or alternate paths are certified."
+}

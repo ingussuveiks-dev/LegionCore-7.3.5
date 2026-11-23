@@ -236,13 +236,19 @@ class spell_talonclaw_boarding_summon : public SpellScript
     bool bound = false;
     bool Load() override
     {
-        return GetSpellInfo()->Id == 198941 && TalonclawBoardedDeparture::SourceActor(
-            GetExplTargetUnit() ? GetExplTargetUnit()->ToCreature() : nullptr);
+        return GetSpellInfo()->Id == 198941;
+    }
+    Creature* ClickedSource(Player* player) const
+    {
+        // Destination targeting can clear the explicit unit. Keep the actual
+        // spell-click actor and resolve it again for each cast phase.
+        ObjectGuid guid = GetOriginalTargetGUID();
+        return player && !guid.IsEmpty() ? ObjectAccessor::GetCreature(*player, guid) : nullptr;
     }
     SpellCastResult Check()
     {
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
-        Creature* source = GetExplTargetUnit() ? GetExplTargetUnit()->ToCreature() : nullptr;
+        Creature* source = ClickedSource(player);
         if (!TalonclawBoardedDeparture::Contact(player, source, INTERACTION_DISTANCE) ||
             player->HasPendingTeleport() || player->GetTransport() || player->isInFlight()) return SPELL_FAILED_BAD_TARGETS;
         if (TalonclawBoardedDeparture::Owned(player) || player->GetVehicle() || player->waitOnSeat) return SPELL_FAILED_NOT_READY;
@@ -256,12 +262,13 @@ class spell_talonclaw_boarding_summon : public SpellScript
     }
     void After()
     {
+        if (!bound) return;
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
-        Creature* source = GetExplTargetUnit() ? GetExplTargetUnit()->ToCreature() : nullptr;
+        Creature* source = ClickedSource(player);
         QuestStatusData* quest = player ? player->getQuestStatus(TalonclawBoardedDeparture::QuestId) : nullptr;
         auto ride = TalonclawBoardedDeparture::Owned(player);
         if (!ride) return;
-        if (bound && source && source->GetGUID() == originalSource && quest && !lifetime.expired() &&
+        if (source && source->GetGUID() == originalSource && quest && !lifetime.expired() &&
             quest->ScriptLifetime == lifetime.lock()) ride->Begin(player, source);
         // Check() observed no earlier owned ride. Retire only this native
         // summon if the attempt/source changed before its actual AfterCast.
