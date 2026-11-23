@@ -1,0 +1,7 @@
+# PvE targets in Assault on Broken Shore
+
+The Legion 26972 faction template `2780` has flags `0x821`, including the native PvP flag. The scenario populates faction `2780` on 338 spawns across 33 creature entries, including Felguard Destroyer `118456`, Dreadborne Overfiend `118453`, and Infernal Siegebreaker `118416`. The client refused offensive actions against Felguard Destroyer with PvP disabled. A creature's spawn-level unit flags do not override the PvP byte set by its faction template during `Creature::UpdateEntry`.
+
+Creature initialization now leaves the PvP byte clear for faction `2780` on scenario map `1666`, including normal respawn initialization. The same faction template, hostilities, immunities, unit flags, spawn data and kill criteria are retained. Other maps still use the native faction flag. The patch grants no credit and does not change player or pet PvP settings.
+
+The original Release game library rebuilt and linked into the staged executable, which was copied to the stopped canonical runtime with matching SHA-256 `31F06E1211C270C22445434A3471F685B4D117BC03BA6EA1D7C8F9C3B0B5C070`. The final linker map shows `Creature::UpdateEntry` and the prior raven landing and map arrival handlers. Separate automated checks and agent-owned startup were skipped during the live gameplay check. Actual spell, pet and scenario credit behavior after this change remains for the client retest.

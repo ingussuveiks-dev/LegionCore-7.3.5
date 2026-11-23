@@ -821,10 +821,10 @@ bool Creature::UpdateEntry(uint32 entry, uint32 team, const CreatureData* data)
 
     if (FactionTemplateEntry const* factionTemplate = sFactionTemplateStore.LookupEntry(cInfo->faction))
     {
-        if (factionTemplate->Flags & FACTION_TEMPLATE_FLAG_PVP)
-            SetPvP(true);
-        else
-            SetPvP(false);
+        // Legion faction 2780 is shared with the outdoor world. Its demons
+        // are PvE enemies inside Assault on Broken Shore.
+        bool const isBrokenShoreAssaultDemon = GetMapId() == 1666 && cInfo->faction == 2780;
+        SetPvP(!isBrokenShoreAssaultDemon && (factionTemplate->Flags & FACTION_TEMPLATE_FLAG_PVP));
     }
 
     // trigger creature is always not selectable and can not be attacked
