@@ -13,3 +13,11 @@ A later read-only check found that the `Cache` directory was created at 10:12:44
 Failed and successful client logs and the failed server network excerpt are preserved in the ignored local incident directory `build-extractors/runtime-test/handshake-incidents/20261123-101519-067`. The failed TCP endpoint was already closed at capture, so the snapshot cannot establish application receive or dispatch. The crash directory and `DBErrors.log` were empty. No server, client, protocol, timeout or character state changes were made for this diagnosis.
 
 This matches the unresolved pre-login failure in the [October incident](instance-login-handshake-2026-10-23.json), including its recovery by restarting only the client. A failed-run application-level receive or dispatch trace is still needed to distinguish where the client stopped processing the handshake.
+
+## Recurrence after 14:05 startup
+
+The deployed worldserver SHA-256 was `12E7F579849C0B8156268F998FD0BC4E16A1965FB0DF1A6BDEDF9B30A9FFB780`. At 14:05:50 the updater registered the Message from the Shadows note migration, and worldserver reached ready at 14:06:03. DBErrors.log and the crash directory were empty. Both local listeners were active.
+
+At 14:06:16 the realm connection authenticated on 8085. The client log shows map 1220 loaded and Character Login SEND at 14:06:26.175. The server accepted the instance socket on 8086 for serial 17, sent the 48-byte greeting, and reached the deadline at 14:06:36 with zero client payload bytes, zero unacknowledged bytes and zero retransmissions. The other four serials failed without another accepted socket. A second login on the same client process at 14:06:46.846 failed all five instance attempts without a new TCP acceptance. The client reported `World server is down` and never recorded Active Player Created for either attempt.
+
+This recurrence used an existing Cache directory and WDB files from the morning session and an existing DBCache.bin. The morning failed run used a newly created Cache directory. The failure occurs in both observed cache states. Client application receipt of the instance greeting and the underlying cause remain unverified. No protocol, timeout, cache or server changes were made during diagnosis.
