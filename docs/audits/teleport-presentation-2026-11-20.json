@@ -28,6 +28,11 @@
     "manifest_sha256": "0487208ed2018ed727848b1f3891b9b8925f8a39d0ba81e85f7dc9064687af55",
     "cleanup": "Archived 83 files with byte-identical checks. After the owned worldserver and MariaDB exited, removed the disposable schemas and generated native test binaries and symbols, 15 paths totaling 1539708210 bytes. Retained the staged executable and map for the client check. Canonical Crashes remained empty and DBErrors.log was zero bytes."
   },
+  "canonical_client_observation_2026_11_23": {
+    "route": "Mage Tower to NewDalaran on map 1220 using the GM teleport discussed with the user. The saved position remained at destination height in Dalaran.",
+    "result": "The user reported quick arrival and immediate movement. Canonical worldserver SHA-256 was 12E7F579849C0B8156268F998FD0BC4E16A1965FB0DF1A6BDEDF9B30A9FFB780. Reviewed startup and gameplay logs contained no appended warnings, errors or assertions, DBErrors remained empty and no crash report was generated.",
+    "limits": "Qualitative confirmation of one long same-map arrival on the canonical build. Timing, cold-cache model loading and transfers between different maps were not measured. This is not a test of the separate November 20 staged executable."
+  },
   "client_comparison_pending": "Measure request-to-first-transfer packet, screen duration, first visible player and terrain/model frame, landing Z and first accepted movement. Compare a fresh login, a short near teleport, a long same-map teleport to a dynamic platform and a far map transfer onto Dalaran's verified city floor. Include the moving boost ships before reducing any dynamic-floor hold. The near teleport packet exposes a PreloadWorld byte, but its effect on cold model streaming has not been measured in client build 26972.",
   "protocol_reference": "https://github.com/TrinityCore/WowPacketParser/blob/master/WowPacketParserModule.V7_0_3_22248/Parsers/MovementHandler.cs#L303-L334"
 }
