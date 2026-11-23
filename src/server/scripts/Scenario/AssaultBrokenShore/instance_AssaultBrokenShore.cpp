@@ -4,6 +4,7 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "AssaultBrokenShoreLanding.h"
 
 class instance_AssaultBrokenShore : public InstanceMapScript
 {
@@ -37,9 +38,14 @@ public:
         }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
-        // OnPlayerDeath
         {
-            // Init data
+            Position landing;
+            if (IsBelowRavenBeach(x, y, z, landing))
+            {
+                loc_res_pla.WorldRelocate(1666, landing.GetPositionX(), landing.GetPositionY(), landing.GetPositionZ(), landing.GetOrientation());
+                return &loc_res_pla;
+            }
+
             loc_res_pla.WorldRelocate(1666, x, y, z);
 
             return &loc_res_pla;
@@ -105,6 +111,25 @@ public:
             if (!player)
                 return;
 
+            if (!player->IsAlive())
+            {
+                Position landing;
+                if (IsBelowRavenBeach(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), landing))
+                {
+                    uint32 const instanceId = player->GetInstanceId();
+                    player->AddDelayedEvent(1, [player, instanceId]
+                    {
+                        if (player->IsInWorld() && !player->IsAlive() && !player->HasPendingTeleport() &&
+                            player->GetMapId() == 1666 && player->GetInstanceId() == instanceId)
+                            player->RepopAtGraveyard();
+                    });
+                }
+                return;
+            }
+
+            if (player->GetPositionZ() < 700.0f || getScenarionStep() > 1)
+                return;
+
             auto attempt = std::make_shared<uint8>(0);
             entryAttempts[player->GetGUID()] = attempt;
             std::weak_ptr<uint8> weakAttempt = attempt;
@@ -132,6 +157,12 @@ public:
                     player->CreateConversation(4526);
                 });
             });
+        }
+
+        bool IsBelowRavenBeach(float x, float y, float z, Position& landing) const
+        {
+            return z < -50.0f && AssaultBrokenShore::GetRavenLanding(*instance, landing) &&
+                landing.GetExactDist2d(x, y) < 40.0f;
         }
 
         void updateCriteriaForPlayers(uint32 objective)

@@ -8,6 +8,7 @@
 #include "GameObjectAI.h"
 #include "QuestData.h"
 #include "ObjectVisitors.hpp" 
+#include "AssaultBrokenShoreLanding.h"
 
 // + Smart: 122105 120515 118444 119130
 // 119133, 118412, 121232, 118966, 121146, 118969, 118945
@@ -320,8 +321,6 @@ public:
     {
         npc_arcane_ravenAI(Creature* creature) : ScriptedAI(creature) {}
 
-        void Reset() override {}
-
         void IsSummonedBy(Unit* summoner) override
         {
             SetFlyMode(true);
@@ -330,43 +329,122 @@ public:
         
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
-            bool isPlayer = who->IsPlayer();
-            me->AddDelayedEvent(4000, [this, isPlayer, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
-            {
-                if (aiLifetimeGuard.expired()) return;
-                if (isPlayer)
-                    me->GetMotionMaster()->MovePath(11322708, false);
-                else
-                    me->GetMotionMaster()->MovePath(11322708, false, irand(-15, 15), irand(-15, 15));
-            });
-        }
-        
-        void MovementInform(uint32 moveType, uint32 pointId) override
-        {
-            if (moveType != WAYPOINT_MOTION_TYPE)
+            if (!apply || who != me->GetAnyOwner())
                 return;
 
-            if (pointId == 20 && me->GetAnyOwner())
+            me->AddDelayedEvent(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
             {
-                if (me->GetAnyOwner()->IsPlayer())
+                if (aiLifetimeGuard.expired() || _flightStarted)
+                    return;
+
+                Unit* rider = me->GetAnyOwner();
+                if (!rider || rider->GetVehicleBase() != me)
+                    return;
+
+                _flightStarted = true;
+                if (rider->IsPlayer())
+                    me->GetMotionMaster()->MovePath(AssaultBrokenShore::RavenPath, false);
+                else
+                    me->GetMotionMaster()->MovePath(AssaultBrokenShore::RavenPath, false, irand(-15, 15), irand(-15, 15));
+            });
+        }
+
+        void LastWPReached() override
+        {
+            Unit* rider = me->GetAnyOwner();
+            if (!rider || !rider->IsPlayer())
+            {
+                me->DespawnOrUnsummon(500);
+                return;
+            }
+
+            if (_landingState == LandingState::Flying && rider->GetVehicleBase() == me)
+                _landingState = LandingState::AtBeach;
+        }
+
+        void CalcExitVehiclePos(Position& position) override
+        {
+            if (_landingState == LandingState::AwaitingTeleport)
+                position = _landing;
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (_landingState == LandingState::Flying || _landingState == LandingState::Finished)
+                return;
+
+            Unit* owner = me->GetAnyOwner();
+            Player* rider = owner ? owner->ToPlayer() : nullptr;
+            if (!rider || !rider->IsAlive() || !rider->IsInWorld() || rider->GetMap() != me->GetMap())
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
+
+            if (_landingState == LandingState::AtBeach)
+            {
+                if (rider->GetVehicleBase() != me)
                 {
-                    me->GetAnyOwner()->CreateConversation(4828);
-                    me->GetAnyOwner()->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56460);
-                    if (Creature* infernal = me->SummonCreature(118416, me->GetPositionX() + 5, me->GetPositionY() + 5, me->GetPositionZ()))
-                    {
-                        infernal->CastSpell(infernal, 205266);
-                        if (Creature* mag = infernal->FindNearestCreature(118412, 30.0f, true))
-                        {
-                            mag->CastSpell(mag, 46604);
-                            mag->AI()->Talk(0);
-                        }
-                        infernal->CastSpell(infernal, 239649);
-                    }
+                    me->DespawnOrUnsummon();
+                    return;
                 }
+
+                // Keep the real rider seated while the movie hides the dismount.
+                if (rider->isWatchingMovie() || rider->HasPendingTeleport())
+                    return;
+
+                if (!AssaultBrokenShore::GetRavenLanding(*me->GetMap(), _landing))
+                {
+                    TC_LOG_ERROR("scripts", "Assault on Broken Shore: no solid ground at the Arcane Raven's last waypoint.");
+                    _landingState = LandingState::Finished;
+                    return;
+                }
+
+                _landingState = LandingState::AwaitingTeleport;
+                _landingTimeout = 15 * IN_MILLISECONDS;
+                rider->ExitVehicle();
+                if (rider->GetVehicleBase() || !rider->TeleportTo(me->GetMapId(), &_landing))
+                {
+                    TC_LOG_ERROR("scripts", "Assault on Broken Shore: Arcane Raven beach landing was rejected.");
+                    _landingState = LandingState::Finished;
+                    me->DespawnOrUnsummon(500);
+                }
+                return;
+            }
+
+            // Award the original arrival only after the real rider reaches the beach.
+            if (!rider->HasPendingTeleport() && rider->GetExactDist(&_landing) < 2.0f)
+            {
+                _landingState = LandingState::Finished;
+                rider->CreateConversation(4828);
+                rider->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56460);
+                if (Creature* infernal = me->SummonCreature(118416, me->GetPositionX() + 5, me->GetPositionY() + 5, me->GetPositionZ()))
+                {
+                    infernal->CastSpell(infernal, 205266);
+                    if (Creature* mag = infernal->FindNearestCreature(118412, 30.0f, true))
+                    {
+                        mag->CastSpell(mag, 46604);
+                        mag->AI()->Talk(0);
+                    }
+                    infernal->CastSpell(infernal, 239649);
+                }
+                me->DespawnOrUnsummon(500);
+            }
+            else if (diff < _landingTimeout)
+                _landingTimeout -= diff;
+            else
+            {
+                TC_LOG_ERROR("scripts", "Assault on Broken Shore: Arcane Raven beach landing was not acknowledged.");
+                _landingState = LandingState::Finished;
                 me->DespawnOrUnsummon(500);
             }
         }
     private:
+        enum class LandingState { Flying, AtBeach, AwaitingTeleport, Finished };
+        LandingState _landingState = LandingState::Flying;
+        Position _landing;
+        uint32 _landingTimeout = 0;
+        bool _flightStarted = false;
         // Unit-owned queues may outlive this AI object.
         std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
