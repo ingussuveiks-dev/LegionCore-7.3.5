@@ -408,9 +408,9 @@ WorldPacket const* WorldPackets::Quest::QuestGiverQuestDetails::Write()
     _worldPacket.WriteBits(PortraitGiverName.size(), 8);
     _worldPacket.WriteBits(PortraitTurnInText.size(), 10);
     _worldPacket.WriteBits(PortraitTurnInName.size(), 8);
-    _worldPacket.WriteBit(AutoLaunched);
-    _worldPacket.WriteBit(StartCheat);
     _worldPacket.WriteBit(DisplayPopup);
+    _worldPacket.WriteBit(StartCheat);
+    _worldPacket.WriteBit(AutoLaunched);
     _worldPacket.FlushBits();
 
     _worldPacket << Rewards;
