@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-23",
+  "scope": "Remove reviewed obsolete test server binaries and regenerable linker products. Identify the existing teleport delay repair and check the canonical executable for it.",
+  "cleanup": {
+    "files": 162,
+    "workspaces": 72,
+    "executables": 79,
+    "linker_maps": 69,
+    "incremental_link_files": 14,
+    "skipped_selected_files": 0,
+    "logical_bytes": 14726855048,
+    "free_bytes_before": 127213498368,
+    "free_bytes_after": 141234561024,
+    "observed_free_bytes_increase": 14021062656,
+    "deletion_manifest_sha256": "4130DE5E71D0728CF74DFDD17E8674EE529B1B9D88F400F6E76942F1D3CBDA12"
+  },
+  "verification": {
+    "filesystem": "Confirmed all 162 selected paths absent. The deletion checked resolved paths, reparse flags, file metadata and running process paths. SHA-256 confirmed 27 canonical runtime and required final-link files unchanged.",
+    "diagnostics": "Verified original and archived bytes for all 64 diagnostic pairs in the selected workspaces. Preserved the original logs and crash evidence. The canonical crash inventory was empty and no server or database errors were appended during cleanup. No server was started or stopped.",
+    "retained": "Kept shared extracted assets, personal and database backups, regression source and tools, open crash and test workspaces, the two recent Forest Ettin and Kezan Hot Rod rollbacks, and the teleport presentation and geometry-prelude builds for the pending client comparison."
+  },
+  "teleport": {
+    "repair_commit": "96a8d103f",
+    "canonical_worldserver_sha256": "945D60A6F1A4F4CADC25C40D3E0C5811A972D19FC54FE5DC907378ACD3210D04",
+    "verification": "Compared the linked Map::BuildPlayerArrivalObjects in the staged repair and canonical executable. The instructions matched after address normalization. This was a passive inspection of the existing binaries.",
+    "client_pending": "Measure loading and time to first movement on a short teleport over static ground and the Orgrimmar portal to Dalaran. Confirm that the dynamic Dalaran platform is visible and supports the character. The existing dynamic-platform movement hold is expected to remain."
+  },
+  "evidence": {
+    "local": ".codex/server-build-cleanup-20261123",
+    "archive": "build-extractors/bin/Release/fixed/2026-11-23-old-testservers-cleanup",
+    "archived_metadata_files": 9,
+    "archive_manifest_sha256": "9DF1E291CDC17E33D22F021FD47B05DB4769679FFE6DF31250D7350C0408FC95"
+  }
+}
