@@ -18,5 +18,12 @@
   },
   "checks": "Source and matching data reviewed. Compilation and link succeeded. The game library emitted compiler warnings in existing code. Separate automated, native, address sanitizer, PE-verifier, regression and agent-owned startup tests were intentionally skipped during the user-led gameplay session.",
   "diagnostics": "Pre-retest baseline captured. The canonical crash directory was empty. Existing DBErrors.log was 587 bytes and was preserved. Build and staging evidence remains available for the client retest.",
-  "pending": "User startup and client playback, objective 1/1 and turn-in to Modera. Sibling quests, first-time upgrade/refund, cancellation, retry and specialization changes were reviewed at source level only."
+  "first_retest": "The user started the matching build and repeated the ritual. Character position reached the configured circle coordinates. Objective remained 0/1. No new crashes or DBErrors appeared. A separate instance login handshake timeout preceded the successful login and is retained in the live logs. Scene publication or termination could not be established with the first build.",
+  "diagnostic_build": {
+    "sha256": "72A2EA4C0443D25BD2E3376E4822CD1289815223D2E56B7337920B458B304446",
+    "evidence": ".codex/council-gift-retest-20261123",
+    "changes": "Use the acknowledged ritual-issued near transfer as the attempt receipt and report the transient stun separately. Register the scene instance before sending its packet. Trace transfer admission, near ACK, cast rejection, scene publication, retirement and quest status after a terminal receipt.",
+    "deployment": "Release rebuilt and linked against the current Release game and script libraries. Matching staged and canonical hashes verified after offline replacement. Old executable and crash/log baseline retained."
+  },
+  "pending": "User startup and client playback on the diagnostic build, objective 1/1 and turn-in to Modera. The follow-up client activity was the Hunter Talonclaw chain. Sibling quests, first-time upgrade/refund, cancellation, retry and specialization changes were reviewed at source level only."
 }

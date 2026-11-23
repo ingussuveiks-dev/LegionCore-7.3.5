@@ -37677,11 +37677,13 @@ void Player::SendSpellScene(uint32 miscValue, SpellInfo const* /*spellInfo*/, bo
         scene.SceneInstanceID = ++sceneInstanceID;
         scene.SceneScriptPackageID = spellScene->SceneScriptPackageID;
         scene.Pos = pos->GetPosition();
-        SendDirectMessage(scene.Write());
 
-        // Link aura effect
         m_sceneInstanceID[sceneInstanceID] = miscValue;
         m_sceneStatus[miscValue] = SCENE_LAUNCH;
+        if (miscValue == CouncilArtifactGift::Scene)
+            TC_LOG_INFO("quest", "Council artifact gift: publishing scene %u package %u instance %u for player %u",
+                scene.SceneID, scene.SceneScriptPackageID, scene.SceneInstanceID, GetGUIDLow());
+        SendDirectMessage(scene.Write());
     }
     else
     {
@@ -37692,6 +37694,10 @@ void Player::SendSpellScene(uint32 miscValue, SpellInfo const* /*spellInfo*/, bo
 
         if (instances.empty())
             return;
+
+        if (miscValue == CouncilArtifactGift::Scene)
+            TC_LOG_INFO("quest", "Council artifact gift: retiring scene for player %u, terminal receipt %u",
+                GetGUIDLow(), unsigned(HasSceneStatus(miscValue, SCENE_COMPLETE)));
 
         //TODO: this is a hack to "properly" reload the phase when completing the Keystone quest + scene
         // this should probably always be happening, but this I'd rather not break anything
@@ -37742,8 +37748,17 @@ void Player::SceneCompleted(uint32 instance)
         }
     m_sceneStatus[sceneId] = SCENE_COMPLETE;
 
+    uint32 giftQuest = sceneId == CouncilArtifactGift::Scene ? GetQuestForUnLockSecondTier() : 0;
+    if (giftQuest)
+        TC_LOG_INFO("quest", "Council artifact gift: terminal receipt for player %u instance %u quest %u",
+            GetGUIDLow(), instance, giftQuest);
+
     // Triger some events at complete scene.
     TrigerScene(instance, "complete");
+
+    if (giftQuest)
+        TC_LOG_INFO("quest", "Council artifact gift: quest %u status %u after terminal receipt for player %u",
+            giftQuest, unsigned(GetQuestStatus(giftQuest)), GetGUIDLow());
 
     for (auto const& other : m_sceneInstanceID)
         if (other.second == sceneId && other.first > instance)
@@ -39998,22 +40013,30 @@ void CouncilArtifactGift::BeginTransfer(Player& player)
         !player.IsWithinDist3d(ritual->target_X, ritual->target_Y, ritual->target_Z, 20.0f, false))
         return;
 
-    if (!player.TeleportTo(ritual->target_mapId, ritual->target_X, ritual->target_Y, ritual->target_Z, ritual->target_Orientation,
+    if (player.TeleportTo(ritual->target_mapId, ritual->target_X, ritual->target_Y, ritual->target_Z, ritual->target_Orientation,
         TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET | TELE_TO_SPELL | NearTeleport))
+        TC_LOG_INFO("quest", "Council artifact gift: ritual transfer accepted for player %u", player.GetGUIDLow());
+    else
         TC_LOG_WARN("quest", "Council artifact gift: ritual transfer refused for player %u", player.GetGUIDLow());
 }
 
 void CouncilArtifactGift::OnArrival(Player& player)
 {
     SpellTargetPosition const* ritual = sSpellMgr->GetSpellTargetPosition(Acquire);
-    if (!ritual || !CanReceiveCouncilArtifactGift(player) || !player.HasAura(Acquire) || player.HasAura(PlayScene) ||
-        player.GetMapId() != ritual->target_mapId ||
-        player.GetExactDist(ritual->target_X, ritual->target_Y, ritual->target_Z) > 0.01f)
+    bool atRitual = ritual && player.GetMapId() == ritual->target_mapId &&
+        player.GetExactDist(ritual->target_X, ritual->target_Y, ritual->target_Z) <= 0.01f;
+    bool eligible = CanReceiveCouncilArtifactGift(player);
+    bool sceneActive = player.HasAura(PlayScene);
+    TC_LOG_INFO("quest", "Council artifact gift: near ACK for player %u, at ritual %u, eligible %u, ritual stun %u, scene aura %u",
+        player.GetGUIDLow(), unsigned(atRitual), unsigned(eligible), unsigned(player.HasAura(Acquire)), unsigned(sceneActive));
+    if (!atRitual || !eligible || sceneActive)
         return;
 
-    player.CastSpell(&player, PlayScene, true);
-    if (!player.HasAura(PlayScene))
-        TC_LOG_WARN("quest", "Council artifact gift: scene aura did not apply after ritual arrival for player %u", player.GetGUIDLow());
+    // The marked teleport was issued by the actual ritual spell's hit. Its
+    // temporary stun is presentation and may be removed by the time ACK arrives.
+    SpellCastResult result = player.CastSpell(&player, PlayScene, true);
+    if (result != SPELL_CAST_OK)
+        TC_LOG_WARN("quest", "Council artifact gift: scene cast refused for player %u with result %u", player.GetGUIDLow(), unsigned(result));
 }
 
 void Player::ApplyDotMod(uint32 spellId, SpellModOp op, float& basemod, float& baseadd, bool onapply)

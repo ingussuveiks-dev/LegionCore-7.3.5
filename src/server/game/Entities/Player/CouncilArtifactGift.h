@@ -7,6 +7,7 @@ namespace CouncilArtifactGift
 {
     constexpr unsigned Acquire = 234679;
     constexpr unsigned PlayScene = 234681;
+    constexpr unsigned Scene = 1499;
     // Player::SafeTeleport option carried with this ritual's near transfer.
     constexpr unsigned NearTeleport = 0x100;
 
