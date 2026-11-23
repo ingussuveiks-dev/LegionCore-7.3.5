@@ -249,6 +249,10 @@ Parastā Windows Chrome sesijā atvērās pilna `9670` kvesta lapa. Tiešais tī
 
 `13885` servera labojums ir uzlikts. Pārbaudīta Orseus izvēle, divu pasažieru iekāpšana, viss rekonstruētais lidojums, katrai sugai atsevišķa `8/8` ieskaite pēc trāpījumiem, nolaišanās, nodošana pie Kathrenas un jauns mēģinājums pēc atmešanas. Klientā vēl jāapstiprina kamera, mērķēšana un animācijas. [Lidojuma pārbaudes un būvējums](darkshore-wildlife-flight-2026-11-23.md)
 
+## Basic Botany, 2026-11-24
+
+`28733` servera labojums ir uzlikts. Pārbaudīti divi privāti laukumi vienlaikus, stādīšana, saules enerģija, īstas pretinieku nāves, nodošana un jauns mēģinājums. Klientā vēl jāapstiprina kameras skats, stādīšanas un kaujas vizuālie efekti. `28617/28744/28747/28748/28751` spēles gaita vēl ir atvērta. [Pamācības pārbaudes un būvējums](brazie-basic-botany-2026-11-24.md)
+
 Kanoniskais worldserver reģistrēja `2026_11_23_11_brazie_daily_prerequisite.sql` ar SHA-1 `FD84B6BB736B74DC86C67FEE071E8D3F157AED6E`, sasniedza gatavību un korekti apstājās. Darba MariaDB pārbaudīta ar `-VerifyLiveData`. Startupā, datu pārbaudēs un zondē nebija jaunu avāriju vai servera un datubāzes kļūdu. Diagnostikas arhīvs ir `build-extractors/bin/Release/fixed/2026-11-23-open-level-quests/`.
 
 Visiem sešiem Brazie kvestiem joprojām jāatjauno personīgā laukuma spēle. Vietējais 26972 katalogs rāda `91683 → 49176` ar transportlīdzekļa izsaukuma kategoriju, kā arī `91688 → 49194` saules enerģijai un `91680 → 49192` Fertilize-o-tron. `91683` parastā iekāpšana prasa `49176` transportlīdzekļa komplektu, bet darba MariaDB un 7.3.5 TDB šai veidnei transportlīdzekļa ID ir nulle. Sēdeklis, personīgās kameras iedarbināšana un viļņu saites paliek atvērtas. `28752` Unstoppable Onslaught datubāzē ir tikai nodošanas saite, kas saskan ar ziņojumu par beta brīvās spēles variantu. [Unstoppable Onslaught vēsture](https://www.wowhead.com/quest=28752/unstoppable-onslaught)

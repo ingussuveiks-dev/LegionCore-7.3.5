@@ -15,6 +15,8 @@
 * with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "hillsbrad_basic_botany.h"
+
 // This is where scripts' loading functions should be declared:
 void AddSC_alterac_valley();                 // Alterac Valley
 void AddSC_boss_balinda();
@@ -498,6 +500,7 @@ void AddEasternKingdomsScripts()
     AddSC_eversong_woods();
     AddSC_ghostlands();
     AddSC_hinterlands();
+    AddSC_hillsbrad_basic_botany();
     AddSC_ironforge();
     AddSC_isle_of_queldanas();
     AddSC_loch_modan();

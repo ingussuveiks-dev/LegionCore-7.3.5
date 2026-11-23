@@ -34,6 +34,7 @@
 #include "QuestItemObjectUse.h"
 #include "OldFriendsFlight.h"
 #include "DarkshoreWildlifeFlight.h"
+#include "BrazieBotany.h"
 #include "ScorpidVenom.h"
 #include "WestfallStew.h"
 #include "GameEventMgr.h"
@@ -4425,6 +4426,25 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         duration = 5 * MINUTE * IN_MILLISECONDS;
     }
 
+    Player* botanist = nullptr;
+    if (entry == BrazieBotany::Board && spellId == BrazieBotany::SummonBoard)
+    {
+        using namespace BrazieBotany;
+        botanist = summoner ? summoner->ToPlayer() : nullptr;
+        CreatureData const* giver = sObjectMgr->GetCreatureData(GiverSpawn);
+        if (!botanist || GetId() != BrazieBotany::Map || !properties || properties->ID != BoardProperties ||
+            !botanist->IsAlive() || botanist->GetVehicle() || botanist->IsBeingTeleported() ||
+            botanist->GetQuestStatus(BasicBotany) != QUEST_STATUS_INCOMPLETE || !giver || giver->id != Giver ||
+            !botanist->IsWithinDist3d(giver->posX, giver->posY, giver->posZ, INTERACTION_DISTANCE + 1.0f) ||
+            !botanist->IsWithinDist3d(&pos, 1.0f))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *botanist->GetSummonList(entry))
+            if (Creature const* board = GetCreature(guid))
+                if (!board->IsDespawn() && !board->IsQuestObjectExpired())
+                    return nullptr;
+    }
+
     Player* mastiffOwner = nullptr;
     if (entry == GilneanMastiff::Mastiff && spellId == GilneanMastiff::Summon)
     {
@@ -4628,6 +4648,10 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     {
         std::list<Creature*> creatures;
         summoner->GetAliveCreatureListWithEntryInGrid(creatures, entry, 110.0f);
+        // Each private lawn must fit its own forty plots under the usual cap.
+        if (summoner->GetEntry() == BrazieBotany::Board && GetId() == BrazieBotany::Map)
+            if (auto scope = summoner->GetQuestObjectScope().lock())
+                creatures.remove_if([&](Creature const* creature) { return creature->GetQuestObjectScope().lock() != scope; });
         if (creatures.size() > (GetInstanceId() ? 100 : 50))
             return nullptr;
     }
@@ -4752,6 +4776,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (wildlifeRider)
         wildlifeRider->BindQuestObject(DarkshoreWildlifeFlight::QuestId, summon, false);
+
+    if (botanist)
+        botanist->BindQuestObject(BrazieBotany::BasicBotany, summon);
 
     if (totemOwner)
         totemOwner->BindQuestObject(ScorpidVenom::Quest, summon);

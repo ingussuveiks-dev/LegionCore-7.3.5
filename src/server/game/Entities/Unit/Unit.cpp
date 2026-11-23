@@ -40,6 +40,7 @@
 #include "Dozercism.h"
 #include "OldFriendsFlight.h"
 #include "DarkshoreWildlifeFlight.h"
+#include "BrazieBotany.h"
 #include "Formulas.h"
 #include "Garrison.h"
 #include "GridNotifiersImpl.h"
@@ -24502,6 +24503,16 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
         bool guideAllowed = scope && guide && GetEntry() == DarkshoreWildlifeFlight::Kathrena &&
             guide->GetSummonerGUID() == base->GetGUID() && GetQuestObjectScope().lock() == scope && seatId == DarkshoreWildlifeFlight::KathrenaSeat;
         if (base->IsQuestObjectExpired() || (!riderAllowed && !guideAllowed))
+        {
+            base->RemoveAura(const_cast<AuraApplication*>(aurApp));
+            return;
+        }
+    }
+
+    if (base->GetEntry() == BrazieBotany::Board && base->GetMapId() == BrazieBotany::Map)
+    {
+        auto scope = base->GetQuestObjectScope().lock();
+        if (!scope || base->IsQuestObjectExpired() || !IsPlayer() || GetGUID() != scope->Owner || (seatId != -1 && seatId != 0))
         {
             base->RemoveAura(const_cast<AuraApplication*>(aurApp));
             return;

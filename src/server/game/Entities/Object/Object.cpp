@@ -18,6 +18,7 @@
 
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
+#include "BrazieBotany.h"
 #include "CellImpl.h"
 #include "CharmInfo.h"
 #include "ChatTextBuilder.h"
@@ -3024,6 +3025,11 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 67962 || !basaltScope || basaltScope->Cancelled))
         return nullptr;
 
+    bool const privatePlant = entry == BrazieBotany::SpitterModel && GetEntry() == BrazieBotany::Board &&
+        GetMapId() == BrazieBotany::Map;
+    if (privatePlant && (!HasQuestObjectScope() || IsQuestObjectExpired()))
+        return nullptr;
+
     GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(entry);
     if (!goinfo)
     {
@@ -3048,7 +3054,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     if (digger)
         digger->BindQuestObject(13918, go);
 
-    if ((digger || entry == 195602) && !go->EnableQuestScopedCollision())
+    if ((digger || entry == 195602 || privatePlant) && !go->EnableQuestScopedCollision())
     {
         go->CleanupsBeforeDelete();
         delete go;
