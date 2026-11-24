@@ -25,6 +25,7 @@ namespace MS
                 Skirmish,
 
                 BrawlSix,
+                RatedBattleground,
                 Max
             };
         }
@@ -570,8 +571,6 @@ namespace MS
                 ERR_GROUP_JOIN_BATTLEGROUND_DEAD                = 57
             };
         }
-
-        static std::initializer_list<uint16> RatedBattlegroundsContainer = {BattlegroundTypeId::BattlegroundArathiBasin, BattlegroundTypeId::BattlegroundDeepwindGorge, BattlegroundTypeId::BattlegroundWarsongGulch, BattlegroundTypeId::BattlegroundBattleForGilneas, BattlegroundTypeId::BattlegroundTwinPeaks, BattlegroundTypeId::BattlegroundRatedEyeOfTheStorm, BattlegroundTypeId::BattlegroundSilvershardMines};
 
         static auto IsRandomGeneratedBg = [](uint32 bgTypeID) -> bool
         {

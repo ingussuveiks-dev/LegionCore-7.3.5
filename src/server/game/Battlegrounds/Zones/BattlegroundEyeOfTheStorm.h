@@ -370,6 +370,7 @@ class BattlegroundEyeOfTheStorm : public Battleground
         void RemovePlayer(Player* player, ObjectGuid guid, uint32 team) override;
         void HandleKillPlayer(Player* player, Player* killer) override;
         WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
+        WorldSafeLocsEntry const* GetGraveyard(uint32 id) const;
         bool SetupBattleground() override;
         void Reset() override;
         void UpdateTeamScore(TeamId teamID);

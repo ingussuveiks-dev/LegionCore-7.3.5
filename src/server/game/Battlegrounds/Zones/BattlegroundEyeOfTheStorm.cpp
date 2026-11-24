@@ -477,14 +477,14 @@ bool BattlegroundEyeOfTheStorm::SetupBattleground()
             TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm: Cannot spawn buff");
     }
 
-    WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(EY_GRAVEYARD_MAIN_ALLIANCE);
+    WorldSafeLocsEntry const* sg = GetGraveyard(EY_GRAVEYARD_MAIN_ALLIANCE);
     if (!sg || !AddSpiritGuide(EY_SPIRIT_MAIN_ALLIANCE, sg->Loc, TEAM_ALLIANCE))
     {
         TC_LOG_ERROR("sql.sql", "BatteGroundEY: Failed to spawn spirit guide! Battleground not created!");
         return false;
     }
 
-    sg = sWorldSafeLocsStore.LookupEntry(EY_GRAVEYARD_MAIN_HORDE);
+    sg = GetGraveyard(EY_GRAVEYARD_MAIN_HORDE);
     if (!sg || !AddSpiritGuide(EY_SPIRIT_MAIN_HORDE, sg->Loc, TEAM_HORDE))
     {
         TC_LOG_ERROR("sql.sql", "BatteGroundEY: Failed to spawn spirit guide! Battleground not created!");
@@ -730,7 +730,7 @@ void BattlegroundEyeOfTheStorm::EventTeamCapturedPoint(Player* Source, uint32 Po
     if (!BgCreatures[Point].IsEmpty())
         DelCreature(Point);
 
-    WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(m_CapturingPointTypes[Point].GraveYardId);
+    WorldSafeLocsEntry const* sg = GetGraveyard(m_CapturingPointTypes[Point].GraveYardId);
     if (!sg || !AddSpiritGuide(Point, sg->Loc, Source->GetBGTeamId()))
         TC_LOG_ERROR("bg.battleground", "BatteGroundEY: Failed to spawn spirit guide! point: %u, team: %u, graveyard_id: %u", Point, Team, m_CapturingPointTypes[Point].GraveYardId);
 
@@ -847,6 +847,24 @@ void BattlegroundEyeOfTheStorm::FillInitialWorldStates(WorldPackets::WorldState:
     packet.Worldstates.emplace_back(static_cast<WorldStates>(10537), 1);
 }
 
+WorldSafeLocsEntry const* BattlegroundEyeOfTheStorm::GetGraveyard(uint32 id) const
+{
+    if (GetMapId() == 968)
+    {
+        switch (id)
+        {
+            case EY_GRAVEYARD_MAIN_ALLIANCE: id = 2843; break;
+            case EY_GRAVEYARD_MAIN_HORDE:    id = 2841; break;
+            case EY_GRAVEYARD_FEL_REAVER:    id = 2851; break;
+            case EY_GRAVEYARD_BLOOD_ELF:     id = 2847; break;
+            case EY_GRAVEYARD_DRAENEI_RUINS: id = 2849; break;
+            case EY_GRAVEYARD_MAGE_TOWER:    id = 2853; break;
+        }
+    }
+
+    return sWorldSafeLocsStore.LookupEntry(id);
+}
+
 WorldSafeLocsEntry const* BattlegroundEyeOfTheStorm::GetClosestGraveYard(Player* player)
 {
     uint32 g_id = 0;
@@ -858,7 +876,7 @@ WorldSafeLocsEntry const* BattlegroundEyeOfTheStorm::GetClosestGraveYard(Player*
         default:       return nullptr;
     }
 
-    WorldSafeLocsEntry const* entry = sWorldSafeLocsStore.LookupEntry(g_id);
+    WorldSafeLocsEntry const* entry = GetGraveyard(g_id);
     WorldSafeLocsEntry const* nearestEntry = entry;
     if (!entry)
     {
@@ -877,7 +895,7 @@ WorldSafeLocsEntry const* BattlegroundEyeOfTheStorm::GetClosestGraveYard(Player*
     {
         if (_pointOwnedByTeam[i] == player->GetBGTeam() && _pointState[i] == EY_POINT_UNDER_CONTROL)
         {
-            entry = sWorldSafeLocsStore.LookupEntry(m_CapturingPointTypes[i].GraveYardId);
+            entry = GetGraveyard(m_CapturingPointTypes[i].GraveYardId);
             if (!entry)
                 TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm: Not found graveyard: %u", m_CapturingPointTypes[i].GraveYardId);
             else

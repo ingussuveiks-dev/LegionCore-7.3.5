@@ -335,8 +335,12 @@ Battleground* BattlegroundMgr::CreateNewBattleground(uint16 bgTypeId, PVPDifficu
         bgTypeId = generatedType;
     }
 
-    if (oldbgTypeId == MS::Battlegrounds::BattlegroundTypeId::RatedBattleground)
-        bgTypeId = Trinity::Containers::SelectRandomContainerElement(MS::Battlegrounds::RatedBattlegroundsContainer);
+    bgData = GetBattlegroundData(bgTypeId);
+    if (!bgData)
+    {
+        TC_LOG_ERROR("bg.battleground", "Battleground: CreateNewBattleground - bg template not found for %u", bgTypeId);
+        return nullptr;
+    }
 
     Battleground* bg;
     switch (bgTypeId)
@@ -433,13 +437,6 @@ Battleground* BattlegroundMgr::CreateNewBattleground(uint16 bgTypeId, PVPDifficu
             return nullptr;
         default:
             return nullptr;
-    }
-
-    bgData = GetBattlegroundData(bgTypeId);
-    if (!bgData)
-    {
-        TC_LOG_ERROR("bg.battleground", "Battleground: CreateNewBattleground - bg template not found for %u", bgTypeId);
-        return nullptr;
     }
 
     bg->Initialize(bgData);
@@ -596,6 +593,7 @@ void BattlegroundMgr::CreateInitialBattlegrounds()
         return;
     }
 
+    auto const* ratedList = sBattlemasterListStore.LookupEntry(MS::Battlegrounds::BattlegroundTypeId::RatedBattleground);
     uint32 count = 0;
 
     do
@@ -680,7 +678,16 @@ void BattlegroundMgr::CreateInitialBattlegrounds()
         }
         ///  TODO
         else if (bl->MapID[1] <= 0 && bl->MapID[0] != 1101) // no deathmatch
-            _selectionWeights[MS::Battlegrounds::IternalPvpTypes::Battleground][data.bgTypeId] = selectionWeight;
+        {
+            if (data.bgTypeId != MS::Battlegrounds::BattlegroundTypeId::BattlegroundRatedEyeOfTheStorm)
+                _selectionWeights[MS::Battlegrounds::IternalPvpTypes::Battleground][data.bgTypeId] = selectionWeight;
+
+            // Seething Shore entered the rated pool in Season 7 after the map list was authored.
+            if (ratedList && bl->RatedPlayers == MS::Battlegrounds::JoinType::RatedBG && selectionWeight &&
+                (std::find(std::begin(ratedList->MapID), std::end(ratedList->MapID), data.MapID) != std::end(ratedList->MapID) ||
+                    data.bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundSeethingShore))
+                _selectionWeights[MS::Battlegrounds::IternalPvpTypes::RatedBattleground][data.bgTypeId] = selectionWeight;
+        }
 
         CreateBattleground(data);
         ++count;

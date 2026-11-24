@@ -1077,7 +1077,9 @@ uint16 BattlegroundQueue::GenerateRandomMap(uint16 bgTypeId)
 
     if (bl->InstanceType == MS::Battlegrounds::PvpInstanceType::Arena)
         selectionWeights = sBattlegroundMgr->GetSelectionWeight(MS::Battlegrounds::IternalPvpTypes::Arena);
-    else if (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundRandom || bgTypeId == MS::Battlegrounds::BattlegroundTypeId::RatedBattleground)
+    else if (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::RatedBattleground)
+        selectionWeights = sBattlegroundMgr->GetSelectionWeight(MS::Battlegrounds::IternalPvpTypes::RatedBattleground);
+    else if (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundRandom)
         selectionWeights = sBattlegroundMgr->GetSelectionWeight(MS::Battlegrounds::IternalPvpTypes::Battleground);
     else if (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BrawlArenaAll)
         selectionWeights = sBattlegroundMgr->GetSelectionWeight(MS::Battlegrounds::IternalPvpTypes::Brawl);
@@ -1104,9 +1106,6 @@ uint16 BattlegroundQueue::GenerateRandomMap(uint16 bgTypeId)
     {
         BattlemasterListEntry const* bl2 = sBattlemasterListStore.LookupEntry(it->first);
         if (!bl2)
-            continue;
-
-        if (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::RatedBattleground && bl2->RatedPlayers != 10)
             continue;
 
         if (bl2->MinPlayers > players && !sBattlegroundMgr->isTesting())
@@ -1272,6 +1271,9 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
 
         if (!aTeam || !hTeam)
             return;
+
+        m_SelectionPools[TEAM_ALLIANCE].AddGroup(aTeam, aTeam->Players.size());
+        m_SelectionPools[TEAM_HORDE].AddGroup(hTeam, hTeam->Players.size());
 
         Battleground* bg = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, joinType, true, GenerateRandomMap(bgTypeId));
         if (!bg)
