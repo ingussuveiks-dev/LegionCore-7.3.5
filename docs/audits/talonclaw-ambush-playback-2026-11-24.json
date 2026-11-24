@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-24",
+  "scope": "Survival Hunter, The Spear in the Shadow 40385, scenario 973 on map 1511",
+  "client_report": "The player reported the Apata farewell replaying. The screenshot matches the dying farewell in scene 1145, package 1517.",
+  "root_cause": "Both source-13 EO108 invoker actions use SmartScript's 200 ms native queue. The controller sampled the aura and scene in the same call as the dispatch, before the queued action could run. When scene completion removed the aura, the controller still considered it a failed dispatch and rearmed. The same timing gap could leave the earlier self-cast Dangerous Mists aura untracked. Read-only character data showed a persisted Dangerous Mists aura after the reported session.",
+  "local_evidence": [
+    "Live world data binds EO108 to the scoped script, with native stage 10 root 0 for 198883 and stage 11 root 2 for 197615. No other SmartAI or linked-spell source for 197615 was found in the live data.",
+    "Matching 26972 DB2 gives 197615 effect 0 aura 430 keyed by 1145. The native package 1517 uses both original Apata lines and ends after the scene script's 15-second sequence. Dangerous Mists 198883 periodically triggers 200331 every seven seconds and has a seven-day duration.",
+    "The repair records a pending request, observes actual native launch or a new terminal receipt after dispatch, then retains the launch for the current quest attempt and instance. The 500 ms window still permits a genuine failure to retry. The two native delayed actions revalidate the original quest attempt and actual source object, phase, radius and native stage condition before casting.",
+    "Self-cast mist from the late application or a prior session is recognized in the active encounter and removed outside its stage. The controller cleans self-cast effects before the logout save. It retains all native package data, SmartAI rows, kill criteria and artifact pickup and return."
+  ],
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "BD123B43D56930EDD12B0D62CBC036C4F08F8E9DD2253DCE07254B71247A11BA",
+    "link_map_sha256": "C59A941448CEFE5F6833CA90A70F4A039784555939440D18DA0E06626ECE73A6",
+    "checks": "Release compilation and final-link input review confirmed game.lib and scripts.lib, including the changed SmartScript and Talonclaw controller and the previously staged boost deck repair. Canonical binary and map hashes match the staged artifacts. The replaced binary and map were retained as one rollback.",
+    "diagnostics": "Canonical crash folder was empty at promotion. Server.log and DBErrors.log were recorded before the client retest and left intact. DBErrors.log was still 587 bytes from the prior day.",
+    "pending": "No standalone native or PE regression, agent-owned startup, or client playback was run during the live player-led workflow. The retained regression was updated to represent the delayed queue. Await one in-game playback, camera return, mist removal and continued progress to the final fight."
+  }
+}

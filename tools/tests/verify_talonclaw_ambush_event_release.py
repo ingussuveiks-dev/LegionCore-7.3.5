@@ -8,16 +8,15 @@ native = previous['native']
 instructions = previous['instructions']
 for caller, callee in [
     ('?IsTriggerMeets@eventobject_talonclaw_ambush@@', '?Eligible@TalonclawAmbushEvent@@'),
-    ('?OnTrigger@eventobject_talonclaw_ambush@@', '?Enter@TalonclawAmbushEvent@@'),
+    ('?OnTrigger@eventobject_talonclaw_ambush@@', '?Eligible@TalonclawAmbushEvent@@'),
     ('?OnTrigger@eventobject_talonclaw_ambush@@', '?Dispatch@TalonclawAmbushEvent@@'),
     ('?OnUpdate@player_talonclaw_ambush_event@@', '?Update@TalonclawAmbushEvent@@'),
-    ('?OnLogout@player_talonclaw_ambush_event@@', '?Clear@TalonclawAmbushEvent@@'),
+    ('?OnBeforeLogout@player_talonclaw_ambush_event@@', '?Clear@TalonclawAmbushEvent@@'),
     ('?Eligible@TalonclawAmbushEvent@@', '?Current@TalonclawAmbushEvent@@'),
     ('?Eligible@TalonclawAmbushEvent@@', '?GetConditionsForSmartEvent@ConditionMgr@@'),
     ('?Eligible@TalonclawAmbushEvent@@', '?IsObjectMeetingSmartEventConditions@ConditionMgr@@'),
-    ('?Enter@TalonclawAmbushEvent@@', '?Dispatch@TalonclawAmbushEvent@@'),
-    ('?Enter@TalonclawAmbushEvent@@', '?HasAura@Unit@@'),
-    ('?Enter@TalonclawAmbushEvent@@', '?HasSceneStatus@Player@@'),
+    ('?Update@TalonclawAmbushEvent@@', '?HasAura@Unit@@'),
+    ('?Update@TalonclawAmbushEvent@@', '?HasSceneStatus@Player@@'),
     ('?Clear@TalonclawAmbushEvent@@', '?RemoveAurasDueToSpell@Unit@@'),
     ('?Dispatch@TalonclawAmbushEvent@@', '?ProcessEventsFor@SmartScript@@'),
 ]:
@@ -26,8 +25,8 @@ for caller, callee in [
 def constants(prefix):
     return {operand.imm for entry in instructions(prefix) for operand in entry.operands if operand.type == CS_OP_IMM}
 
-assert {1511, 973, 40385, 10, 11}.issubset(constants('?Current@TalonclawAmbushEvent@@')), 'Wrong player/quest/scenario scope'
-assert {198883, 197615, 1145}.issubset(constants('?Enter@TalonclawAmbushEvent@@')), 'Success acknowledgment ignores actual self aura or native scene'
+assert {1511, 973, 40385}.issubset(constants('?Current@TalonclawAmbushEvent@@')), 'Wrong player/quest/scenario scope'
+assert {10, 11, 198883, 197615, 1145}.issubset(constants('?Update@TalonclawAmbushEvent@@')), 'Wrong stage, self aura, or native scene acknowledgment'
 assert {198883, 197615}.issubset(constants('?Clear@TalonclawAmbushEvent@@')), 'Owned cleanup missing one effect'
 assert 500 in constants('?Update@TalonclawAmbushEvent@@'), 'Failed-cast/in-place poll is not bounded'
 dispatch = [(entry.mnemonic, entry.op_str) for entry in instructions('?Dispatch@TalonclawAmbushEvent@@')]

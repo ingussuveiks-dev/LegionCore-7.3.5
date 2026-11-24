@@ -352,8 +352,11 @@ namespace TalonclawAmbushEvent
 {
 struct State
 {
+    std::shared_ptr<QuestCancellationReceipt const> attempt;
     uint32 instance = 0;
     uint32 wait = 0;
+    uint32 pendingStep = 0;
+    bool sceneWasComplete = false;
     bool mist = false;
     bool scene = false;
 };
@@ -377,9 +380,9 @@ void Clear(Player* player)
         state = found->second;
         states.erase(found);
     }
-    if (state.mist)
+    if (state.mist || state.pendingStep == 10)
         player->RemoveAurasDueToSpell(198883, player->GetGUID());
-    if (state.scene)
+    if (state.scene || state.pendingStep == 11)
         player->RemoveAurasDueToSpell(197615, player->GetGUID());
 }
 
@@ -392,10 +395,12 @@ State Load(Player* player)
         if (found != states.end())
             state = found->second;
     }
-    if (state.instance != player->GetInstanceId())
+    auto attempt = player->GetQuestCancellationReceipt(40385);
+    if (state.instance != player->GetInstanceId() || state.attempt != attempt)
     {
         Clear(player);
         state = State{};
+        state.attempt = attempt;
         state.instance = player->GetInstanceId();
         Save(player, state);
     }
@@ -404,12 +409,12 @@ State Load(Player* player)
 
 Scenario* Current(Player* player)
 {
-    if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
-        player->GetMapId() != 1511 || player->getClass() != CLASS_HUNTER || player->GetQuestRewardStatus(40385) ||
+    if (!player || !player->IsInWorld() || player->GetMapId() != 1511 ||
+        player->getClass() != CLASS_HUNTER || player->GetQuestRewardStatus(40385) ||
         (player->GetQuestStatus(40385) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40385) != QUEST_STATUS_COMPLETE))
         return nullptr;
     Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
-    return scenario && scenario->GetScenarioId() == 973 && (scenario->GetCurrentStep() == 10 || scenario->GetCurrentStep() == 11) ? scenario : nullptr;
+    return scenario && scenario->GetScenarioId() == 973 ? scenario : nullptr;
 }
 
 bool Scoped(EventObject* event)
@@ -420,7 +425,9 @@ bool Scoped(EventObject* event)
 bool Eligible(Player* player, EventObject* event)
 {
     Scenario* scenario = Current(player);
-    if (!scenario || !Scoped(event) || !event->eventTemplate || event->eventTemplate->radius != 24.0f ||
+    if (!scenario || (scenario->GetCurrentStep() != 10 && scenario->GetCurrentStep() != 11) ||
+        !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        !Scoped(event) || !event->eventTemplate || event->eventTemplate->radius != 24.0f ||
         player->GetMap() != event->GetMap() || !player->InSamePhase(event) || !player->IsWithinDistInMap(event, event->eventTemplate->radius))
         return false;
     uint32 root = scenario->GetCurrentStep() == 10 ? 0 : 2;
@@ -428,7 +435,7 @@ bool Eligible(Player* player, EventObject* event)
         !sConditionMgr->IsObjectMeetingSmartEventConditions(108, root, SMART_SCRIPT_TYPE_EVENTOBJECT, player, event))
         return false;
     State state = Load(player);
-    return root == 0 ? !player->HasAura(198883) : !state.scene && !player->HasAura(197615);
+    return !state.pendingStep && (root == 0 ? !player->HasAura(198883) : !state.scene && !player->HasAura(197615));
 }
 
 bool Dispatch(Player* player, EventObject* event, bool enter)
@@ -445,22 +452,13 @@ bool Enter(Player* player, EventObject* event)
 {
     if (!Eligible(player, event))
         return false;
-    uint32 step = Current(player)->GetCurrentStep();
-    Dispatch(player, event, true);
     State state = Load(player);
-    if (step == 10)
-        state.mist = player->HasAura(198883, player->GetGUID());
-    else
-    {
-        state.scene = player->HasAura(197615, player->GetGUID()) && player->HasSceneStatus(1145, SCENE_LAUNCH);
-        if (!state.scene && player->HasAura(197615, player->GetGUID()))
-        {
-            player->RemoveAurasDueToSpell(197615, player->GetGUID());
-            TC_LOG_ERROR("scripts", "Talonclaw: ambush scene aura applied without native scene launch for player %u", player->GetGUIDLow());
-        }
-    }
+    // The native invoker action schedules the cast 200 ms after dispatch.
+    state.pendingStep = Current(player)->GetCurrentStep();
+    state.wait = 500;
+    state.sceneWasComplete = player->HasSceneStatus(1145, SCENE_COMPLETE);
     Save(player, state);
-    return step == 10 ? state.mist : state.scene;
+    return Dispatch(player, event, true);
 }
 
 void Update(Player* player, uint32 diff)
@@ -473,10 +471,31 @@ void Update(Player* player, uint32 diff)
         return;
     }
     State state = Load(player);
-    if (state.mist && scenario->GetCurrentStep() != 10)
+    uint32 const step = scenario->GetCurrentStep();
+    // EO108 is the encounter source. Recognize its self-cast mist after a
+    // late application or a reconnect with an aura saved by the old server.
+    if (player->HasAura(198883, player->GetGUID()))
+    {
+        state.mist = true;
+        if (state.pendingStep == 10)
+            state.pendingStep = 0;
+    }
+    if (state.mist && step != 10)
     {
         player->RemoveAurasDueToSpell(198883, player->GetGUID());
         state.mist = false;
+    }
+    if (state.pendingStep == 11)
+    {
+        bool const completed = player->HasSceneStatus(1145, SCENE_COMPLETE);
+        bool const published = !completed && player->HasAura(197615, player->GetGUID()) &&
+            player->HasSceneStatus(1145, SCENE_LAUNCH);
+        if (published || (completed && !state.sceneWasComplete))
+        {
+            state.scene = true;
+            state.pendingStep = 0;
+            TC_LOG_INFO("scripts", "Talonclaw: acknowledged native ambush scene playback for player %u", player->GetGUIDLow());
+        }
     }
     if (state.wait > diff)
     {
@@ -484,9 +503,15 @@ void Update(Player* player, uint32 diff)
         Save(player, state);
         return;
     }
+    if (state.pendingStep == 11 && player->HasAura(197615, player->GetGUID()))
+    {
+        player->RemoveAurasDueToSpell(197615, player->GetGUID());
+        TC_LOG_ERROR("scripts", "Talonclaw: ambush scene aura applied without native scene launch for player %u", player->GetGUIDLow());
+    }
+    state.pendingStep = 0;
     state.wait = 500;
     Save(player, state);
-    if ((scenario->GetCurrentStep() == 10 && player->HasAura(198883)) || (scenario->GetCurrentStep() == 11 && state.scene))
+    if ((step != 10 && step != 11) || (step == 10 && player->HasAura(198883)) || (step == 11 && state.scene))
         return;
     auto rearm = [player](WorldObject* object)
     {
@@ -520,6 +545,7 @@ class player_talonclaw_ambush_event : public PlayerScript
 public:
     player_talonclaw_ambush_event() : PlayerScript("player_talonclaw_ambush_event") { }
     void OnUpdate(Player* player, uint32 diff) override { TalonclawAmbushEvent::Update(player, diff); }
+    void OnBeforeLogout(Player* player) override { TalonclawAmbushEvent::Clear(player); }
     void OnLogout(Player* player) override { TalonclawAmbushEvent::Clear(player); }
 };
 

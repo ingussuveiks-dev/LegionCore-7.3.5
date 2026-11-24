@@ -1118,9 +1118,16 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     ObjectGuid targetGUID = castTarget->GetGUID();
                     uint32 spellID = e.action.cast.spell;
                     bool isTrigger = (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0;
+                    Player* ambushPlayer = event && event->GetMapId() == 1511 && event->GetEntry() == 108 &&
+                        ((e.event_id == 0 && spellID == 198883) || (e.event_id == 2 && spellID == 197615)) ?
+                        tempLastInvoker->ToPlayer() : nullptr;
+                    ObjectGuid ambushEvent = ambushPlayer ? event->GetGUID() : ObjectGuid::Empty;
+                    auto ambushAttempt = ambushPlayer ? ambushPlayer->GetQuestCancellationReceipt(40385) : nullptr;
+                    uint32 eventId = e.event_id;
                     if (!(e.action.cast.flags & SMARTCAST_AURA_NOT_PRESENT) || !castTarget->HasAura(e.action.cast.spell))
                     {
-                        tempLastInvoker->AddDelayedEvent(200, [tempLastInvoker, targetGUID, spellID, isTrigger, castSource, playerCastDistance]() -> void
+                        tempLastInvoker->AddDelayedEvent(200, [tempLastInvoker, targetGUID, spellID, isTrigger, castSource, playerCastDistance,
+                            ambushPlayer, ambushEvent, ambushAttempt, eventId]()
                         {
                             if (!tempLastInvoker)
                                 return;
@@ -1128,6 +1135,21 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                             Unit* target = ObjectAccessor::GetUnit(*tempLastInvoker, targetGUID);
                             if (!target)
                                 return;
+
+                            // The hunter can change stage or leave the event object in the 200 ms queue.
+                            if (ambushPlayer)
+                            {
+                                EventObject* source = ObjectAccessor::GetEventObject(*ambushPlayer, ambushEvent);
+                                if (target != ambushPlayer || !ambushAttempt || !ambushPlayer->CanContact() ||
+                                    !ambushPlayer->IsAlive() || ambushPlayer->IsBeingTeleported() ||
+                                    ambushPlayer->GetQuestCancellationReceipt(40385) != ambushAttempt ||
+                                    !source || !source->IsInWorld() || source->GetMap() != ambushPlayer->GetMap() ||
+                                    !source->eventTemplate || !ambushPlayer->InSamePhase(source) ||
+                                    !ambushPlayer->IsWithinDistInMap(source, source->eventTemplate->radius) ||
+                                    !sConditionMgr->IsObjectMeetingSmartEventConditions(108, eventId, SMART_SCRIPT_TYPE_EVENTOBJECT, ambushPlayer, source) ||
+                                    ambushPlayer->HasAura(spellID))
+                                    return;
+                            }
 
                             if (playerCastDistance)
                             {

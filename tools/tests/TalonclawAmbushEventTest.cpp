@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -5,6 +6,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <unordered_map>
 #include <unordered_set>
@@ -14,12 +16,14 @@ constexpr double M_PI=3.14159265358979323846;
 struct ObjectGuid {uint32 value=0;bool operator==(ObjectGuid const& other)const{return value==other.value;}bool operator!=(ObjectGuid const& other)const{return !(*this==other);}};
 namespace std {template<>struct hash<ObjectGuid>{size_t operator()(ObjectGuid const& value)const{return value.value;}};}
 using GuidSet=std::unordered_set<ObjectGuid>;
-enum {CLASS_HUNTER=3,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,SCENE_LAUNCH=1,
+enum {CLASS_HUNTER=3,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,SCENE_LAUNCH=1,SCENE_COMPLETE=3,
     SMART_SCRIPT_TYPE_EVENTOBJECT=13,SMART_EVENT_EVENTOBJECT_ONTRIGGER=89,SMART_EVENT_EVENTOBJECT_OFFTRIGGER=91,
     TYPEID_EVENTOBJECT=11,GRID_MAP_TYPE_MASK_EVENTOBJECT=128,PLAYER_FIELD_PLAYER_FLAGS=1,PLAYER_FLAGS_GHOST=1,EO_FLAG_ONE_ACTION=1};
 uint32 errors=0;
 #define TC_LOG_ERROR(...) (++errors)
 #define TC_LOG_DEBUG(...) ((void)0)
+#define TC_LOG_INFO(...) ((void)0)
+struct QuestCancellationReceipt {};
 struct Map {uint32 identity=1511;template<class Visitor>void VisitAll(float,float,float,Visitor& visitor){visitor.Visit();}};
 struct WorldObject {
     Map* map=nullptr;float position=0;uint32 phase=1,type=0;
@@ -31,20 +35,30 @@ struct WorldObject {
 };
 struct Player:WorldObject {
     ObjectGuid guid{1};uint32 instance=42,klass=3,quest=QUEST_STATUS_INCOMPLETE,attemptMist=0,attemptScene=0,mistCasts=0,sceneCasts=0;
-    bool alive=true,world=true,contact=true,teleport=false,rewarded=false,failMist=false,failScene=false,partialScene=false,launch=false;
+    bool alive=true,world=true,contact=true,teleport=false,rewarded=false,failMist=false,failScene=false,partialScene=false,launch=false,complete=false;
+    std::shared_ptr<QuestCancellationReceipt const> attempt=std::make_shared<QuestCancellationReceipt>();
+    std::vector<std::pair<uint32,uint32>> casts;
     std::map<uint32,ObjectGuid> auras;
     ObjectGuid GetGUID(){return guid;}uint32 GetGUIDLow(){return guid.value;}uint32 GetInstanceId(){return instance;}
     bool IsInWorld(){return world;}bool CanContact(){return contact;}bool IsAlive(){return alive;}bool IsBeingTeleported(){return teleport;}
     uint32 getClass(){return klass;}bool GetQuestRewardStatus(uint32){return rewarded;}uint32 GetQuestStatus(uint32){return quest;}
+    auto GetQuestCancellationReceipt(uint32){return attempt;}
     bool HasAura(uint32 spell,ObjectGuid caster={}){auto found=auras.find(spell);return found!=auras.end()&&(!caster.value||found->second==caster);}
     void RemoveAurasDueToSpell(uint32 spell,ObjectGuid caster={}){if(HasAura(spell,caster))auras.erase(spell);}
-    bool HasSceneStatus(uint32 scene,uint32 status){assert(scene==1145&&status==SCENE_LAUNCH);return launch;}
+    bool HasSceneStatus(uint32 scene,uint32 status){assert(scene==1145);return status==SCENE_COMPLETE?complete:launch||complete;}
     float GetDistance(WorldObject* other){return std::fabs(position-other->position);}bool HasFlag(uint32,uint32){return false;}
     void TeleportTo(uint32,float,float,float,float){assert(false);}
     void CastSpell(Player*,uint32,bool){assert(false);}
     void Cast(uint32 spell){
         if(spell==198883){++attemptMist;if(!failMist){auras[spell]=guid;++mistCasts;}}
-        else{assert(spell==197615);++attemptScene;if(!failScene){auras[spell]=guid;if(!partialScene){launch=true;++sceneCasts;}}}
+        else{assert(spell==197615);++attemptScene;if(!failScene){auras[spell]=guid;if(!partialScene){launch=true;complete=false;++sceneCasts;}}}
+    }
+    void AdvanceCasts(uint32 diff){
+        for(auto cast=casts.begin();cast!=casts.end();){
+            if(cast->second>diff){cast->second-=diff;++cast;continue;}
+            Cast(cast->first);
+            cast=casts.erase(cast);
+        }
     }
 };
 struct EventObjectTemplate {float radius=24;uint32 WorldSafeLocID=0,SpellID=0,Flags=0;};
@@ -52,9 +66,15 @@ struct EventObject:WorldObject {
     EventObjectTemplate definition;EventObjectTemplate* eventTemplate=&definition;
     GuidSet affectedPlayers,affectedPermamentPlayers;bool m_isUpdate=false;uint32 entry=108;
     EventObject(){type=TYPEID_EVENTOBJECT;}uint32 GetEntry(){return entry;}
+    uint32 GetDBTableGUIDLow()const{return 0;}
     bool ActivatedForPlayer(Player* player)const;
     void Update(uint32);
 };
+namespace CouncilArtifactGift {
+constexpr uint32 RitualEvent=0,RitualSpawn=0;
+bool MaintainRitual(Player&){return false;}
+void RemoveRecoveredButton(Player&){}
+}
 struct Scenario {uint32 identity=973,step=9;uint32 GetScenarioId(){return identity;}uint32 GetCurrentStep(){return step;}};
 struct ScenarioMgr {bool present=true;uint32 instance=42;Scenario scenario;Scenario* GetScenario(uint32 identity){return present&&identity==instance?&scenario:nullptr;}} scenarios;
 auto sScenarioMgr=&scenarios;
@@ -93,12 +113,12 @@ struct SmartScript {
         assert(actor&&entry==actor->entry);++calls;
         if(type==91){++exits;return;}
         assert(type==89);if(entry!=108)return;
-        if(sConditionMgr->IsObjectMeetingSmartEventConditions(108,0,13,player,actor))player->Cast(198883);
-        if(sConditionMgr->IsObjectMeetingSmartEventConditions(108,2,13,player,actor))player->Cast(197615);
+        if(sConditionMgr->IsObjectMeetingSmartEventConditions(108,0,13,player,actor))player->casts.emplace_back(198883,200);
+        if(sConditionMgr->IsObjectMeetingSmartEventConditions(108,2,13,player,actor))player->casts.emplace_back(197615,200);
     }
 };
 struct EventObjectScript {explicit EventObjectScript(char const*){}virtual bool IsTriggerMeets(Player*,EventObject*){return true;}virtual bool OnTrigger(Player*,EventObject*,bool){return false;}};
-struct PlayerScript {explicit PlayerScript(char const*){}virtual void OnUpdate(Player*,uint32){}virtual void OnLogout(Player*){}};
+struct PlayerScript {explicit PlayerScript(char const*){}virtual void OnUpdate(Player*,uint32){}virtual void OnBeforeLogout(Player*){}virtual void OnLogout(Player*){}};
 #include "Lifecycle.inc"
 #include "Legacy.inc"
 struct ScriptManager {
@@ -120,6 +140,7 @@ struct Fixture {
     }
     ~Fixture(){recovery.OnLogout(&player);recovery.OnLogout(&party);}
     void Tick(uint32 diff=500){
+        for(auto member:players)member->AdvanceCasts(diff);
 #ifndef BASELINE
         for(auto member:players)recovery.OnUpdate(member,diff);
 #endif
@@ -129,41 +150,42 @@ struct Fixture {
 int main(){
     _set_abort_behavior(0,_CALL_REPORTFAULT);
     {
-        Fixture fixture;fixture.Tick();scenarios.scenario.step=10;fixture.Tick();
+        Fixture fixture;fixture.Tick();scenarios.scenario.step=10;fixture.Tick();fixture.Tick(200);
         assert(fixture.player.mistCasts==1);
         for(uint32 repeat=0;repeat<10;++repeat)fixture.Tick(16);assert(fixture.player.mistCasts==1);
-        scenarios.scenario.step=11;fixture.Tick(500);assert(fixture.player.sceneCasts==1&&!fixture.player.HasAura(198883));
+        scenarios.scenario.step=11;fixture.Tick(500);fixture.Tick(200);assert(fixture.player.sceneCasts==1&&!fixture.player.HasAura(198883));
         for(uint32 repeat=0;repeat<10;++repeat)fixture.Tick();assert(fixture.player.sceneCasts==1);
-        fixture.player.RemoveAurasDueToSpell(197615,fixture.player.guid);fixture.player.launch=false;
+        fixture.player.RemoveAurasDueToSpell(197615,fixture.player.guid);fixture.player.launch=false;fixture.player.complete=true;
         fixture.Tick();assert(fixture.player.sceneCasts==1);
         fixture.player.position=30;fixture.Tick();fixture.player.position=0;fixture.Tick();assert(fixture.player.sceneCasts==1);
-        fixture.party.position=0;fixture.Tick();assert(fixture.party.sceneCasts==1&&fixture.player.sceneCasts==1);
+        fixture.party.position=0;fixture.Tick();fixture.Tick(200);assert(fixture.party.sceneCasts==1&&fixture.player.sceneCasts==1);
     }
     for(bool scene:{false,true}){
         Fixture fixture;scenarios.scenario.step=scene?11:10;fixture.player.failMist=!scene;fixture.player.failScene=scene;
-        fixture.Tick();assert(!fixture.player.mistCasts&&!fixture.player.sceneCasts);
-        fixture.player.failMist=fixture.player.failScene=false;fixture.Tick();
+        fixture.Tick();fixture.Tick(200);assert(!fixture.player.mistCasts&&!fixture.player.sceneCasts);
+        fixture.player.failMist=fixture.player.failScene=false;fixture.Tick();fixture.Tick(200);
         assert((scene?fixture.player.sceneCasts:fixture.player.mistCasts)==1);
     }
     {
-        Fixture fixture;scenarios.scenario.step=11;fixture.player.failScene=true;fixture.Tick();fixture.player.failScene=false;
-        fixture.Tick(16);assert(fixture.player.attemptScene==1);fixture.Tick(484);assert(fixture.player.sceneCasts==1);
+        Fixture fixture;scenarios.scenario.step=11;fixture.player.failScene=true;fixture.Tick();
+        fixture.Tick(16);assert(fixture.player.attemptScene==0);fixture.Tick(184);
+        assert(fixture.player.attemptScene==1);fixture.player.failScene=false;fixture.Tick(300);fixture.Tick(200);assert(fixture.player.sceneCasts==1);
     }
     {
         Fixture fixture;scenarios.scenario.step=11;fixture.event.affectedPlayers.insert(fixture.player.guid);objects.clear();fixture.Tick();assert(!fixture.player.sceneCasts);
-        objects.push_back(&fixture.event);fixture.Tick();assert(fixture.player.sceneCasts==1);
+        objects.push_back(&fixture.event);fixture.Tick();fixture.Tick(200);assert(fixture.player.sceneCasts==1);
     }
     {
-        Fixture fixture;scenarios.scenario.step=11;fixture.player.partialScene=true;fixture.Tick();
+        Fixture fixture;scenarios.scenario.step=11;fixture.player.partialScene=true;fixture.Tick();fixture.Tick(500);
         assert(errors==1&&!fixture.player.HasAura(197615)&&!fixture.player.sceneCasts);
-        fixture.player.partialScene=false;fixture.Tick();assert(fixture.player.sceneCasts==1);
+        fixture.player.partialScene=false;fixture.Tick(200);assert(fixture.player.sceneCasts==1);
     }
     {
-        Fixture fixture;scenarios.scenario.step=10;fixture.Tick();fixture.player.quest=QUEST_STATUS_NONE;fixture.Tick();assert(!fixture.player.HasAura(198883));
-        fixture.player.quest=QUEST_STATUS_INCOMPLETE;fixture.Tick();assert(fixture.player.mistCasts==2);
-        fixture.player.instance=scenarios.instance=43;fixture.Tick();assert(fixture.player.mistCasts==3);
-        scenarios.scenario.step=11;fixture.Tick();assert(fixture.player.sceneCasts==1);
-        fixture.recovery.OnLogout(&fixture.player);assert(!fixture.player.HasAura(197615));fixture.Tick();assert(fixture.player.sceneCasts==2);
+        Fixture fixture;scenarios.scenario.step=10;fixture.Tick();fixture.Tick(200);fixture.player.quest=QUEST_STATUS_NONE;fixture.Tick();assert(!fixture.player.HasAura(198883));
+        fixture.player.quest=QUEST_STATUS_INCOMPLETE;fixture.Tick();fixture.Tick(200);assert(fixture.player.mistCasts==2);
+        fixture.player.instance=scenarios.instance=43;fixture.Tick();fixture.Tick(200);assert(fixture.player.mistCasts==3);
+        scenarios.scenario.step=11;fixture.Tick();fixture.Tick(200);assert(fixture.player.sceneCasts==1);
+        fixture.recovery.OnBeforeLogout(&fixture.player);assert(!fixture.player.HasAura(197615));fixture.Tick();fixture.Tick(200);assert(fixture.player.sceneCasts==2);
     }
     for(uint32 failure=0;failure<12;++failure){
         Fixture fixture;scenarios.scenario.step=11;
@@ -178,7 +200,7 @@ int main(){
         fixture.recovery.OnLogout(&fixture.player);assert(fixture.player.HasAura(197615,{99}));
     }
     {
-        Fixture fixture;scenarios.scenario.step=11;fixture.player.quest=QUEST_STATUS_COMPLETE;fixture.Tick();assert(fixture.player.sceneCasts==1);
+        Fixture fixture;scenarios.scenario.step=11;fixture.player.quest=QUEST_STATUS_COMPLETE;fixture.Tick();fixture.Tick(200);assert(fixture.player.sceneCasts==1);
         fixture.map.identity=1220;fixture.Tick();assert(!fixture.player.HasAura(197615));
     }
     {
