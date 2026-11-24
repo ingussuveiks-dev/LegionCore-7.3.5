@@ -182,6 +182,9 @@ struct instance_monk_intro : public InstanceScript
     std::unique_ptr<MonkHaitOpening::State> haitOpening;
     void OnCreatureDamageTaken(Creature* actor, Unit*, uint32& damage) override { haitOpening->Protect(actor, damage); }
     void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); nineArrival.Observe(actor); nineRescue->Observe(actor); haitOpening->Observe(actor); }
+    void OnGameObjectCreate(GameObject* door) override { InstanceScript::OnGameObjectCreate(door); haitOpening->ObserveDoor(door); }
+    void OnPlayerEnter(Player*) override { haitOpening->RestoreCourtyardDoor(); }
+    void onScenarionNextStep(uint32) override { haitOpening->RestoreCourtyardDoor(); }
     void CreatureDies(Creature* actor, Unit* killer) override { haitOpening->Death(actor, killer); nineRescue->Death(actor, killer); chenRescue.Death(actor, killer); jorvinax.Death(actor, killer); }
     ObjectGuid GetGuidData(uint32 type) const override
     {

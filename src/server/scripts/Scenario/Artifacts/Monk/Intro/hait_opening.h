@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CreatureTextMgr.h"
+#include "GameObject.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
 #include "Scenario.h"
@@ -38,6 +39,7 @@ struct State
     uint8 outroIssued = 0;
     bool defeated = false, credited = false, moving = false, arrived = false;
     bool defeatBusy = false, retrying = false, creditWarned = false, moveWarned = false;
+    ObjectGuid courtyardDoor;
 
     Scenario* Progress() const
     {
@@ -69,6 +71,34 @@ struct State
         if (Source(actor) && hait.IsEmpty()) hait = actor->GetGUID();
         if (actor->GetEntry() == 98001 && actor->GetDBTableGUIDLow() == 362111 && chuan.IsEmpty()) chuan = actor->GetGUID();
         if (actor->GetEntry() == 98011 && actor->GetDBTableGUIDLow() == 362135 && demon.IsEmpty()) demon = actor->GetGUID();
+    }
+
+    void OpenCourtyardDoor(GameObject* door = nullptr) const
+    {
+        if (!door)
+            door = map->GetGameObject(courtyardDoor);
+        if (door && door->GetGoState() != GO_STATE_ACTIVE)
+            door->SetGoState(GO_STATE_ACTIVE);
+    }
+
+    void RestoreCourtyardDoor(GameObject* door = nullptr) const
+    {
+        auto scenario = sScenarioMgr->GetScenario(map->GetInstanceId());
+        if (scenario && scenario->GetScenarioId() == 943 && scenario->GetCurrentStep() >= 1 && Victory())
+            OpenCourtyardDoor(door);
+    }
+
+    void ObserveDoor(GameObject* door)
+    {
+        // The other Temple Door (134304) is across the shrine from the courtyard exit.
+        if (door->GetMap() != map || map->GetId() != 1014 || door->GetEntry() != 244682 || door->GetDBTableGUIDLow() != 134303)
+            return;
+
+        courtyardDoor = door->GetGUID();
+        if (launched)
+            OpenCourtyardDoor(door);
+        else
+            RestoreCourtyardDoor(door);
     }
 
     void Protect(Creature* actor, uint32& damage) const
@@ -141,7 +171,7 @@ struct State
         if (!(issued & 64))
         {
             issued |= 64;
-            if (GameObject* door = pupil->FindNearestGameObject(244682, 40.0f)) door->UseDoorOrButton(0, false, pupil);
+            OpenCourtyardDoor();
         }
         if (!valid()) return;
         launched = true;
