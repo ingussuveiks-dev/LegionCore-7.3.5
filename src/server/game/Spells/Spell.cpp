@@ -76,6 +76,11 @@ extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
 
 namespace
 {
+constexpr uint32 FistsOfFury = 113656;
+// The explicit enemy receives a dummy cast effect. The periodic auras
+// belong to the monk and select their own cone targets on each tick.
+constexpr uint32 FistsOfFuryEnemyEffect = 1u << EFFECT_0;
+
 struct QuestAssembly
 {
     uint32 Spell;
@@ -3798,11 +3803,13 @@ bool Spell::UpdateChanneledTargetList()
         if (m_targets.GetUnitTarget())
             m_caster->SetInFront(m_targets.GetUnitTarget());
 
-    // Not need check return true
-    if (m_channelTargetEffectMask == 0)
+    uint32 channelTargetEffectMask = m_channelTargetEffectMask;
+    if (m_spellInfo->Id == FistsOfFury)
+        channelTargetEffectMask &= ~FistsOfFuryEnemyEffect;
+
+    if (channelTargetEffectMask == 0)
         return true;
 
-    uint32 channelTargetEffectMask = m_channelTargetEffectMask;
     uint32 channelAuraMask = 0;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
@@ -5256,7 +5263,8 @@ void Spell::update(uint32 difftime)
     // update pointers based at it's GUIDs
     UpdatePointers();
 
-    if (m_targets.GetUnitTargetGUID() && !m_targets.GetUnitTarget())
+    if (m_targets.GetUnitTargetGUID() && !m_targets.GetUnitTarget() &&
+        !(m_spellInfo->Id == FistsOfFury && m_spellState == SPELL_STATE_CASTING))
     {
         TC_LOG_DEBUG("spells", "Spell %u is cancelled due to removal of target.", m_spellInfo->Id);
         cancel();
@@ -6002,7 +6010,8 @@ void Spell::SendChannelStart(uint32 duration)
         return;
 
     for (auto const& target : m_UniqueTargetInfo)
-        m_caster->AddChannelObject(target->targetGUID);
+        if (m_spellInfo->Id != FistsOfFury || (target->effectMask & ~FistsOfFuryEnemyEffect))
+            m_caster->AddChannelObject(target->targetGUID);
 
     for (GOTargetInfo const& target : m_UniqueGOTargetInfo)
         m_caster->AddChannelObject(target.targetGUID);

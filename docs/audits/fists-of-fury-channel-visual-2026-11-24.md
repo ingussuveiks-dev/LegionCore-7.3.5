@@ -1,0 +1,7 @@
+# Fists of Fury channel visual after a target dies
+
+The player confirmed that the Fists of Fury punches animate at the start, then vanish when the target dies while the spell is still running. Matching 26972 data identifies spell 113656, its parent channel visual 51799, effect 0 as a dummy on the selected enemy, and effects 1–3 as auras on the caster. Periodic effects 120086 and 117418 select their own cone targets. Spell 123154 is the separate on-target visual.
+
+The core previously treated the dummy's enemy as a required live channel target and sent a zero-duration channel update when that effect had no living target, even while the caster's periodic aura still existed. The same enemy was included among the client's channel objects. The repair omits that dummy effect from the parent channel's lifetime and client binding, and allows only this already started channel to survive removal of the original enemy object. Cast validation, caster aura lifetime, interruption, costs, target-facing rules and the cone ticks continue through their existing paths.
+
+Read the native spell/visual records and inspected the existing cast, death, target-removal and channel packet paths. Built and linked the changed Release game library using the normal final-link inputs. Actual client animation after an early kill and ordinary interruption remains pending. No independent gameplay test or owned startup was run in the current user-led flow.
