@@ -18,6 +18,7 @@
 
 #include "Battleground.h"
 #include "BattlegroundDeepwindGorge.h"
+#include "BattlegroundPackets.h"
 #include "Cell.h"
 #include "CellImpl.h"
 #include "GridNotifiers.h"
@@ -301,17 +302,21 @@ void BattlegroundDeepwindGorge::Reset()
         _points[i] = nullptr;
 }
 
+static bool AddDeepwindGates(Battleground& bg)
+{
+    return bg.AddObject(BG_DG_DOOR_1, BG_DG_ENTRY_DOOR_1, -263.455f, 218.163f, 132.43f, 4.72984f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
+        && bg.AddObject(BG_DG_DOOR_2, BG_DG_ENTRY_DOOR_2, -213.712f, 201.043f, 132.488f, 3.9619f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
+        && bg.AddObject(BG_DG_DOOR_3, BG_DG_ENTRY_DOOR_3, -69.8785f, 781.837f, 132.43f, 1.58825f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
+        && bg.AddObject(BG_DG_DOOR_4, BG_DG_ENTRY_DOOR_4, -119.621f, 798.957f, 132.488f, 0.820303f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY);
+}
+
 bool BattlegroundDeepwindGorge::SetupBattleground()
 {
     _points[0] = new BotPoint(this);
     _points[1] = new MiddlePoint(this);
     _points[2] = new TopPoint(this);
 
-    if (!AddObject(BG_DG_DOOR_1, BG_DG_ENTRY_DOOR_1, -263.455f, 218.163f, 132.43f, 4.72984f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
-        || !AddObject(BG_DG_DOOR_2, BG_DG_ENTRY_DOOR_2, -213.712f, 201.043f, 132.488f, 3.9619f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
-        || !AddObject(BG_DG_DOOR_3, BG_DG_ENTRY_DOOR_3, -69.8785f, 781.837f, 132.43f, 1.58825f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
-        || !AddObject(BG_DG_DOOR_4, BG_DG_ENTRY_DOOR_4, -119.621f, 798.957f, 132.488f, 0.820303f, 0, 0, 1.43143f, 4.48416f, RESPAWN_IMMEDIATELY)
-
+    if (!AddDeepwindGates(*this)
         || !AddObject(BG_DG_CART_ALLIANCE, BG_DG_ENTRY_CART_ALLIANCE, -241.741f, 208.611f, 133.747f, 0.84278f, 0, 0, 1.93617f, 4.48416f, RESPAWN_IMMEDIATELY)
         || !AddObject(BG_DG_CART_HORDE, BG_DG_ENTRY_CART_HORDE, -91.6163f, 791.361f, 133.747f, 4.02356f, 0, 0, 1.93617f, 4.48416f, RESPAWN_IMMEDIATELY))
         return false;
@@ -706,5 +711,328 @@ void BattlegroundDeepwindGorge::GetPlayerPositionData(std::vector<WorldPackets::
         position.IconID = PLAYER_POSITION_ICON_HORDE_FLAG;
         position.ArenaSlot = PLAYER_POSITION_ARENA_SLOT_NONE;
         positions->push_back(position);
+    }
+}
+
+namespace
+{
+enum DunkObjects : uint32
+{
+    BallHome = BG_DG_CART_ALLIANCE,
+    BallDrop = BallHome + 3,
+    Basket = BallDrop + 3,
+    DunkObjectCount = Basket + MAX_TEAMS
+};
+
+struct DunkballPlacement
+{
+    uint32 HomeEntry;
+    uint32 DropEntry;
+    uint32 Aura;
+    Position Home;
+};
+
+std::array<DunkballPlacement, 3> const Dunkballs =
+{{
+    {266600, 266599, 231529, {-167.5035f, 499.059f, 92.62903f, 1.249549f}},
+    {266679, 266678, 231814, {68.39236f, 431.1771f, 111.4928f, 1.229f}},
+    {266681, 266680, 231813, {-397.7726f, 574.368f, 111.0529f, 1.437866f}}
+}};
+
+constexpr uint32 LongRangeAction = 231658;
+constexpr uint32 DunkRangeAction = 231660;
+constexpr uint32 DunkScoreLimit = 1500;
+constexpr float DunkRange = 5.0f;
+constexpr float ShotRange = 60.0f;
+
+struct DunkScore : BattlegroundScore
+{
+    DunkScore(ObjectGuid guid, TeamId team) : BattlegroundScore(guid, team) { }
+    void BuildObjectivesBlock(std::vector<int32>&) override { }
+};
+}
+
+BattlegroundDeepwindDunk::BattlegroundDeepwindDunk()
+{
+    BgObjects.resize(DunkObjectCount);
+    BgCreatures.resize(MAX_TEAMS);
+}
+
+void BattlegroundDeepwindDunk::Reset()
+{
+    Battleground::Reset();
+    _balls = {};
+    _elapsed = Milliseconds::zero();
+}
+
+BattlegroundDeepwindDunk* BattlegroundDeepwindDunk::ForPlayer(Player* player)
+{
+    return player ? dynamic_cast<BattlegroundDeepwindDunk*>(player->GetBattleground()) : nullptr;
+}
+
+bool BattlegroundDeepwindDunk::SetupBattleground()
+{
+    if (!AddDeepwindGates(*this))
+        return false;
+
+    for (uint32 index = 0; index < Dunkballs.size(); ++index)
+        if (!AddObject(BallHome + index, Dunkballs[index].HomeEntry, Dunkballs[index].Home, G3D::Quat()))
+            return false;
+
+    if (!AddObject(Basket + TEAM_ALLIANCE, 267282, Position(-241.976f, 208.649f, 133.746f, 0.84278f), G3D::Quat()) ||
+        !AddObject(Basket + TEAM_HORDE, 267283, Position(-91.5573f, 791.441f, 133.747f, 4.02356f), G3D::Quat()))
+        return false;
+
+    for (TeamId team : {TEAM_ALLIANCE, TEAM_HORDE})
+    {
+        auto const* graveyard = sWorldSafeLocsStore.LookupEntry(team == TEAM_ALLIANCE ? BG_DG_LOC_SPIRIT_ALLIANCE_BOT : BG_DG_LOC_SPIRIT_HORDE_BOT);
+        if (!graveyard || !AddSpiritGuide(team, graveyard->Loc, team))
+            return false;
+    }
+    return true;
+}
+
+void BattlegroundDeepwindDunk::StartingEventCloseDoors()
+{
+    for (uint32 gate = BG_DG_DOOR_1; gate <= BG_DG_DOOR_4; ++gate)
+        SpawnBGObject(gate, RESPAWN_IMMEDIATELY);
+}
+
+void BattlegroundDeepwindDunk::StartingEventOpenDoors()
+{
+    for (uint32 gate = BG_DG_DOOR_1; gate <= BG_DG_DOOR_4; ++gate)
+        DoorOpen(gate);
+}
+
+void BattlegroundDeepwindDunk::AddPlayer(Player* player)
+{
+    Battleground::AddPlayer(player);
+    PlayerScores[player->GetGUID()] = new DunkScore(player->GetGUID(), player->GetBGTeamId());
+    player->SendDirectMessage(WorldPackets::Battleground::Init(DunkScoreLimit).Write());
+    SendBattleGroundPoints(false, m_TeamScores[TEAM_ALLIANCE], false, player);
+    SendBattleGroundPoints(true, m_TeamScores[TEAM_HORDE], false, player);
+}
+
+WorldSafeLocsEntry const* BattlegroundDeepwindDunk::GetClosestGraveYard(Player* player)
+{
+    return sWorldSafeLocsStore.LookupEntry(player->GetBGTeamId() == TEAM_ALLIANCE ? BG_DG_LOC_SPIRIT_ALLIANCE_BOT : BG_DG_LOC_SPIRIT_HORDE_BOT);
+}
+
+void BattlegroundDeepwindDunk::EventPlayerClickedOnFlag(Player* player, GameObject* object, bool& canRemove)
+{
+    canRemove = false;
+    if (GetStatus() != STATUS_IN_PROGRESS || !player->IsAlive() || !object->isSpawned() ||
+        !player->IsWithinDistInMap(object, INTERACTION_DISTANCE) || !player->IsWithinLOSInMap(object))
+        return;
+
+    ObjectGuid guid = player->GetGUID();
+    for (Ball const& ball : _balls)
+        if (ball.Carrier == guid || ball.CapturingPlayer == guid)
+            return;
+
+    for (uint32 index = 0; index < _balls.size(); ++index)
+    {
+        Ball& ball = _balls[index];
+        auto target = object->GetGUID();
+        bool atHome = target == BgObjects[BallHome + index] && ball.Returning == Milliseconds::zero();
+        bool dropped = target == BgObjects[BallDrop + index] && ball.Returning > Milliseconds::zero();
+        if ((!atHome && !dropped) || !ball.Carrier.IsEmpty() || !ball.CapturingPlayer.IsEmpty())
+            continue;
+
+        ball.CapturingPlayer = guid;
+        ball.CaptureTarget = target;
+        if (player->CastSpell(player, CaptureSpell, false) != SPELL_CAST_OK)
+        {
+            ball.CapturingPlayer.Clear();
+            ball.CaptureTarget.Clear();
+        }
+        return;
+    }
+}
+
+void BattlegroundDeepwindDunk::OnObjectiveCastFinished(Player* player, uint32 spellId, bool succeeded)
+{
+    if (spellId == CaptureSpell)
+    {
+        for (uint32 index = 0; index < _balls.size(); ++index)
+        {
+            Ball& ball = _balls[index];
+            if (ball.CapturingPlayer != player->GetGUID())
+                continue;
+
+            ObjectGuid target = ball.CaptureTarget;
+            ball.CapturingPlayer.Clear();
+            ball.CaptureTarget.Clear();
+            if (!succeeded || GetStatus() != STATUS_IN_PROGRESS || !player->IsAlive())
+                return;
+
+            auto* object = GetBgMap()->GetGameObject(target);
+            if (!object || !object->isSpawned() ||
+                !player->IsWithinDistInMap(object, INTERACTION_DISTANCE) || !player->IsWithinLOSInMap(object))
+                return;
+
+            auto const& placement = Dunkballs[index];
+            if (player->CastSpell(player, placement.Aura, true) != SPELL_CAST_OK || !player->HasAura(placement.Aura))
+                return;
+
+            ball.Carrier = player->GetGUID();
+            ball.Returning = Milliseconds::zero();
+            if (!BgObjects[BallDrop + index].IsEmpty())
+                DelObject(BallDrop + index);
+            SpawnBGObject(BallHome + index, RESPAWN_ONE_DAY);
+            UpdateShotAction(player);
+            return;
+        }
+    }
+    else if (succeeded && GetScoringBasket(player, spellId))
+    {
+        for (uint32 index = 0; index < _balls.size(); ++index)
+            if (_balls[index].Carrier == player->GetGUID())
+            {
+                ReturnBall(index, player);
+                AddPoints(player->GetBGTeamId(), 100);
+                return;
+            }
+    }
+}
+
+GameObject* BattlegroundDeepwindDunk::GetScoringBasket(Player* player, uint32 spellId)
+{
+    if (GetStatus() != STATUS_IN_PROGRESS || !player->IsAlive() || player->GetBGTeamId() >= MAX_TEAMS ||
+        (spellId != DunkSpell && spellId != ShotSpell))
+        return nullptr;
+
+    bool carrying = false;
+    for (uint32 index = 0; index < _balls.size(); ++index)
+        if (_balls[index].Carrier == player->GetGUID() && player->HasAura(Dunkballs[index].Aura))
+            carrying = true;
+    if (!carrying)
+        return nullptr;
+
+    auto* target = GetBGObject(Basket + MS::Battlegrounds::GetOtherTeamID(player->GetBGTeamId()));
+    float range = spellId == DunkSpell ? DunkRange : ShotRange;
+    return target && player->IsWithinDistInMap(target, range) && player->IsWithinLOSInMap(target) ? target : nullptr;
+}
+
+void BattlegroundDeepwindDunk::UpdateShotAction(Player* carrier)
+{
+    bool dunk = GetScoringBasket(carrier, DunkSpell) != nullptr;
+    bool shot = !dunk && GetScoringBasket(carrier, ShotSpell) != nullptr;
+    if (!dunk)
+        carrier->RemoveAurasDueToSpell(DunkRangeAction);
+    if (!shot)
+        carrier->RemoveAurasDueToSpell(LongRangeAction);
+    if (dunk && !carrier->HasAura(DunkRangeAction))
+        carrier->CastSpell(carrier, DunkRangeAction, true);
+    else if (shot && !carrier->HasAura(LongRangeAction))
+        carrier->CastSpell(carrier, LongRangeAction, true);
+}
+
+void BattlegroundDeepwindDunk::ReturnBall(uint32 index, Player* carrier)
+{
+    Ball& ball = _balls[index];
+    ball.Carrier.Clear();
+    ball.CapturingPlayer.Clear();
+    ball.CaptureTarget.Clear();
+    ball.Returning = Seconds(20);
+    if (carrier)
+    {
+        carrier->RemoveAurasDueToSpell(Dunkballs[index].Aura);
+        carrier->RemoveAurasDueToSpell(DunkRangeAction);
+        carrier->RemoveAurasDueToSpell(LongRangeAction);
+    }
+}
+
+void BattlegroundDeepwindDunk::DropBall(uint32 index, Player* carrier)
+{
+    ReturnBall(index, carrier);
+    if (carrier && GetStatus() == STATUS_IN_PROGRESS &&
+        !AddObject(BallDrop + index, Dunkballs[index].DropEntry, carrier->GetPosition(), G3D::Quat()))
+        TC_LOG_ERROR("bg.battleground", "Deepwind Dunk: could not spawn dropped ball %u.", Dunkballs[index].DropEntry);
+}
+
+void BattlegroundDeepwindDunk::RemovePlayer(Player* player, ObjectGuid guid, uint32 /*team*/)
+{
+    for (uint32 index = 0; index < _balls.size(); ++index)
+    {
+        Ball& ball = _balls[index];
+        if (ball.Carrier == guid)
+            ReturnBall(index, player);
+        if (ball.CapturingPlayer == guid)
+        {
+            ball.CapturingPlayer.Clear();
+            ball.CaptureTarget.Clear();
+        }
+    }
+}
+
+void BattlegroundDeepwindDunk::HandleKillPlayer(Player* player, Player* killer)
+{
+    if (GetStatus() != STATUS_IN_PROGRESS || !player)
+        return;
+
+    bool enemyKill = killer && IsPlayerInBattleground(killer->GetGUID()) && player->GetBGTeam() != killer->GetBGTeam();
+    Battleground::HandleKillPlayer(player, enemyKill ? killer : nullptr);
+    for (uint32 index = 0; index < _balls.size(); ++index)
+        if (_balls[index].Carrier == player->GetGUID())
+            DropBall(index, player);
+    if (enemyKill)
+        AddPoints(killer->GetBGTeamId(), 5);
+}
+
+void BattlegroundDeepwindDunk::AddPoints(TeamId team, uint32 points)
+{
+    auto& score = m_TeamScores[team];
+    score = std::min(score + points, DunkScoreLimit);
+    SendBattleGroundPoints(team == TEAM_HORDE, score);
+    if (score == DunkScoreLimit)
+        EndBattleground(MS::Battlegrounds::GetTeamByTeamId(team));
+}
+
+void BattlegroundDeepwindDunk::EndBattleground(uint32 victor)
+{
+    for (uint32 index = 0; index < _balls.size(); ++index)
+        if (!_balls[index].Carrier.IsEmpty())
+            ReturnBall(index, ObjectAccessor::FindPlayer(_balls[index].Carrier));
+    Battleground::EndBattleground(victor);
+}
+
+void BattlegroundDeepwindDunk::PostUpdateImpl(uint32 diff)
+{
+    if (GetStatus() != STATUS_IN_PROGRESS)
+        return;
+
+    _elapsed += Milliseconds(diff);
+    if (_elapsed >= Minutes(15))
+    {
+        BattlegroundTimedWin();
+        return;
+    }
+
+    for (uint32 index = 0; index < _balls.size(); ++index)
+    {
+        Ball& ball = _balls[index];
+        if (!ball.Carrier.IsEmpty())
+        {
+            Player* carrier = ObjectAccessor::FindPlayer(ball.Carrier);
+            if (!carrier || carrier->GetBattleground() != this)
+                ReturnBall(index, carrier);
+            else if (!carrier->IsAlive() || !carrier->HasAura(Dunkballs[index].Aura))
+                DropBall(index, carrier);
+            else
+                UpdateShotAction(carrier);
+        }
+        else if (ball.Returning > Milliseconds::zero())
+        {
+            ball.Returning -= std::min(ball.Returning, Milliseconds(diff));
+            if (ball.Returning == Milliseconds::zero())
+            {
+                if (!BgObjects[BallDrop + index].IsEmpty())
+                    DelObject(BallDrop + index);
+                ball.CapturingPlayer.Clear();
+                ball.CaptureTarget.Clear();
+                SpawnBGObject(BallHome + index, RESPAWN_IMMEDIATELY);
+            }
+        }
     }
 }

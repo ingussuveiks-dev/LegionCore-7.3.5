@@ -19,6 +19,7 @@
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
+#include "BattlegroundDeepwindGorge.h"
 #include "CellImpl.h"
 #include "CharmInfo.h"
 #include "CombatLogPackets.h"
@@ -848,6 +849,16 @@ void Spell::SelectEffectImplicitTargets(SpellEffIndex effIndex, SpellImplicitTar
 
 void Spell::SelectImplicitChannelTargets(SpellEffIndex effIndex, SpellImplicitTargetInfo const& targetType)
 {
+    if (targetType.GetTarget() == TARGET_DEST_CHANNEL_CASTER &&
+        (m_spellInfo->Id == BattlegroundDeepwindDunk::DunkSpell || m_spellInfo->Id == BattlegroundDeepwindDunk::ShotSpell))
+    {
+        Player* player = m_caster->ToPlayer();
+        if (auto* dunk = BattlegroundDeepwindDunk::ForPlayer(player))
+            if (GameObject* basket = dunk->GetScoringBasket(player, m_spellInfo->Id))
+                m_targets.SetDst(*basket);
+        return;
+    }
+
     if (targetType.GetReferenceType() != TARGET_REFERENCE_TYPE_CASTER)
     {
         ASSERT(false && "Spell::SelectImplicitChannelTargets: received not implemented target reference type");
@@ -5373,6 +5384,12 @@ void Spell::finish(bool ok)
     if (m_caster->IsCreature())
         m_caster->ReleaseFocus(this);
 
+    if (m_spellInfo->Id == BattlegroundDeepwindDunk::CaptureSpell ||
+        m_spellInfo->Id == BattlegroundDeepwindDunk::DunkSpell || m_spellInfo->Id == BattlegroundDeepwindDunk::ShotSpell)
+        if (auto* dunk = BattlegroundDeepwindDunk::ForPlayer(m_caster->ToPlayer()))
+            dunk->OnObjectiveCastFinished(m_caster->ToPlayer(), m_spellInfo->Id,
+                ok && (m_spellInfo->Id == BattlegroundDeepwindDunk::CaptureSpell || m_targets.HasDst()));
+
     if (!ok)
     {
         LinkedSpell(m_caster, m_targets.GetUnitTarget(), SPELL_LINK_FAILED_CAST);
@@ -6898,6 +6915,14 @@ bool Spell::CheckEffFromDummy(Unit* target, uint32 eff)
 
 SpellCastResult Spell::CheckCast(bool strict)
 {
+    if (m_spellInfo->Id == BattlegroundDeepwindDunk::DunkSpell || m_spellInfo->Id == BattlegroundDeepwindDunk::ShotSpell)
+    {
+        Player* player = m_caster->ToPlayer();
+        auto* dunk = BattlegroundDeepwindDunk::ForPlayer(player);
+        if (!dunk || !dunk->GetScoringBasket(player, m_spellInfo->Id))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
+
     if (m_spellInfo->Id == Volcanoth::Fire && (!m_CastItem ||
         !Player::IsInventoryPos(m_CastItem->GetBagSlot(), m_CastItem->GetSlot()) ||
         !m_questItemCastReceipt || m_questItemCastReceipt->load(std::memory_order_acquire) ||

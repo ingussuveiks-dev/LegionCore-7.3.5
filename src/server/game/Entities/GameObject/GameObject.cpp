@@ -2599,6 +2599,13 @@ void GameObject::Use(Unit* user, uint32 activationSpell)
                             }
                             break;
                         }
+                        case 266599: // Purple Dunkball
+                        case 266678: // Orange Dunkball
+                        case 266680: // Green Dunkball
+                            if (bg->GetTypeID(true) == MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground5 ||
+                                bg->GetTypeID(true) == MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground6)
+                                bg->EventPlayerClickedOnFlag(player, this, needDelete);
+                            break;
                         default:
                             break;
                     }

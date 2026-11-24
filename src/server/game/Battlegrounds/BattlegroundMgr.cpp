@@ -407,6 +407,10 @@ Battleground* BattlegroundMgr::CreateNewBattleground(uint16 bgTypeId, PVPDifficu
         case MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeepwindGorge:
             bg = new BattlegroundDeepwindGorge;
             break;
+        case MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground5:
+        case MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground6:
+            bg = new BattlegroundDeepwindDunk;
+            break;
         case MS::Battlegrounds::BattlegroundTypeId::BattlegroundTwinPeaks:
             bg = new BattlegroundTwinPeaks;
             break;
@@ -555,6 +559,10 @@ void BattlegroundMgr::CreateBattleground(CreateBattlegroundData& data)
             break;
         case MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeepwindGorge:
             bg = new BattlegroundDeepwindGorge;
+            break;
+        case MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground5:
+        case MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground6:
+            bg = new BattlegroundDeepwindDunk;
             break;
         case MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundShadoPan:
             bg = new BrawlBattlegroundShadoPan;
@@ -1148,7 +1156,7 @@ void BattlegroundMgr::InitializeBrawlData()
     _brawlTemplatesContainer[5] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundHotmoguTemplate, 264, 323, "PvP Brawl: Temple of Hotmogu", "", "", MS::Battlegrounds::BrawlTypes::Battleground); // 240
     _brawlTemplatesContainer[6] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlAllSix, 267, 348, "Brawl: the magnificent six", "���� ��� 6 �� 6", "� 6 ������� �� ������� � ����� ������ ����", MS::Battlegrounds::BrawlTypes::Battleground); // 240
     _brawlTemplatesContainer[7] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundSouthshoreVsTarrenMill, 256, 328, "PvP Brawl: Southshore vs. Tarren Mill", "", "", MS::Battlegrounds::BrawlTypes::Battleground);
-    _brawlTemplatesContainer[8] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlEyeOfStorm, 255, 324, "PvP Brawl: Gravity Lapse", "���������� ����", "- ���������� ��������� ��������- �������� ����� ���������� ������� - ��� ��������� ������ �������� � ������", MS::Battlegrounds::BrawlTypes::Battleground); // 239
+    _brawlTemplatesContainer[8] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground5, 263, 325, "PvP Brawl: Deepwind Dunk", "", "", MS::Battlegrounds::BrawlTypes::Battleground);
    
 
     //_brawlTemplatesContainer[2] = BrawlData( 0 /*MS::Battlegrounds::BattlegroundTypeId::BrawlBattleground6 or BrawlBattleground5 */, 263, 325, "PvP Brawl: Deepwind Dunk", "", "", MS::Battlegrounds::BrawlTypes::Battleground); // 240

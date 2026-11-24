@@ -318,5 +318,46 @@ private:
         Milliseconds _goldUpdate;
 };
 
+class BattlegroundDeepwindDunk : public Battleground
+{
+public:
+    static constexpr uint32 CaptureSpell = 97388;
+    static constexpr uint32 DunkSpell = 231651;
+    static constexpr uint32 ShotSpell = 231789;
+
+    BattlegroundDeepwindDunk();
+    static BattlegroundDeepwindDunk* ForPlayer(Player* player);
+    GameObject* GetScoringBasket(Player* player, uint32 spellId);
+    void OnObjectiveCastFinished(Player* player, uint32 spellId, bool succeeded);
+
+    bool SetupBattleground() override;
+    void Reset() override;
+    void StartingEventCloseDoors() override;
+    void StartingEventOpenDoors() override;
+    void PostUpdateImpl(uint32 diff) override;
+    void AddPlayer(Player* player) override;
+    void EndBattleground(uint32 victor) override;
+    void RemovePlayer(Player* player, ObjectGuid guid, uint32 team) override;
+    void HandleKillPlayer(Player* player, Player* killer) override;
+    void EventPlayerClickedOnFlag(Player* player, GameObject* object, bool& canRemove) override;
+    WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
+
+private:
+    struct Ball
+    {
+        ObjectGuid Carrier;
+        ObjectGuid CapturingPlayer;
+        ObjectGuid CaptureTarget;
+        Milliseconds Returning = Milliseconds::zero();
+    };
+
+    void ReturnBall(uint32 index, Player* carrier);
+    void DropBall(uint32 index, Player* carrier);
+    void AddPoints(TeamId team, uint32 points);
+    void UpdateShotAction(Player* carrier);
+    std::array<Ball, 3> _balls;
+    Milliseconds _elapsed = Milliseconds::zero();
+};
+
 #endif
 
