@@ -4440,7 +4440,7 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             !botanist->IsWithinDist3d(&pos, 1.0f))
             return nullptr;
 
-        for (uint32 quest : {BasicBotany, FlowerPower})
+        for (uint32 quest : Quests)
             if (botanist->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
             {
                 botanyQuest = quest;

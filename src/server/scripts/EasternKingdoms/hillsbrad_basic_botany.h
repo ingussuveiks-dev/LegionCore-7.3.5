@@ -9,6 +9,7 @@
 #include "MotionMaster.h"
 #include "MoveSpline.h"
 #include "ObjectAccessor.h"
+#include "PassiveAI.h"
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,14 +30,23 @@ constexpr uint32 Spitter = 49200;
 constexpr uint32 Sunflower = 49193;
 constexpr uint32 Freezya = 49618;
 constexpr uint32 FreezyaSeeds = 49604;
+constexpr uint32 Rocknut = 49205;
+constexpr uint32 Strangler = 49207;
+constexpr uint32 StranglerSeeds = 49560;
 constexpr uint32 Zombie = 49209;
 constexpr uint32 Ghoul = 49232;
+constexpr uint32 Aberration = 49485;
 constexpr uint32 IntroduceBotany = 49189;
 constexpr uint32 FlowerWave = 49542;
+constexpr uint32 GrainsWave = 49553;
 constexpr uint32 PlantSpitter = 91649;
 constexpr uint32 PlantSunflower = 91646;
 constexpr uint32 PlantFreezya = 92440;
 constexpr uint32 PickFreezyaSeeds = 92434;
+constexpr uint32 PlantRocknut = 91704;
+constexpr uint32 PlantStrangler = 91710;
+constexpr uint32 StrangleTarget = 91786;
+constexpr uint32 Strangle = 91791;
 constexpr uint32 GainSolarPower = 91687;
 constexpr uint32 SunSphere = 91707;
 constexpr uint32 SeedSparkles = 92406;
@@ -63,7 +73,9 @@ constexpr PlantDefinition Plants[] =
 {
     {PlantSpitter, Spitter, SpitterModel, 360},
     {PlantSunflower, Sunflower, SunflowerModel, 484},
-    {PlantFreezya, Freezya, FreezyaModel, 484}
+    {PlantFreezya, Freezya, FreezyaModel, 484},
+    {PlantRocknut, Rocknut, RocknutModel, 2420},
+    {PlantStrangler, Strangler, StranglerModel, 1936}
 };
 
 struct SpawnTime
@@ -89,9 +101,23 @@ constexpr SpawnTime FlowerPowerWave[] =
     {120000, 1, Ghoul}, {120000, 3, Ghoul}, {124000, 2, Zombie}, {128000, 1, Zombie}, {128000, 3, Zombie}
 };
 
+constexpr SpawnTime GrainsFirstWave[] =
+{
+    {17000, 2, Ghoul}, {35000, 1, Zombie}, {47000, 3, Zombie}, {56000, 0, Ghoul}, {67000, 4, Zombie},
+    {90000, 0, Zombie}, {90000, 1, Ghoul}, {90000, 2, Ghoul}, {90000, 3, Zombie}, {90000, 4, Ghoul},
+    {96000, 0, Ghoul}, {96000, 2, Zombie}, {96000, 4, Zombie}
+};
+
+constexpr SpawnTime GrainsFinalWave[] =
+{
+    {28000, 1, Zombie}, {38000, 3, Ghoul}, {48000, 0, Ghoul},
+    {62000, 0, Zombie}, {62000, 1, Ghoul}, {62000, 2, Aberration}, {62000, 3, Ghoul}, {62000, 4, Zombie},
+    {70000, 0, Ghoul}, {70000, 1, Zombie}, {70000, 3, Zombie}, {70000, 4, Ghoul}
+};
+
 inline uint32 ActiveQuest(Player const& player)
 {
-    for (uint32 quest : {BasicBotany, FlowerPower})
+    for (uint32 quest : Quests)
         if (player.GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
             return quest;
     return 0;
@@ -144,6 +170,7 @@ struct Plot
     ObjectGuid Spot;
     ObjectGuid Plant;
     ObjectGuid Model;
+    ObjectGuid Grappled;
     uint32 PlantEntry = 0;
     uint32 NextSolar = 0;
 };
@@ -171,8 +198,14 @@ public:
         me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 0);
-        if (_quest == FlowerPower)
+        if (_quest != BasicBotany)
             me->m_templateSpells[1] = PlantSunflower;
+        if (_quest == GhoulsHateMyGrains)
+        {
+            me->m_templateSpells[2] = PlantFreezya;
+            me->m_templateSpells[3] = PlantRocknut;
+            _secondWave = summoner->ToPlayer()->GetQuestObjectiveData(_quest, GrainsWave) > 0;
+        }
     }
 
     void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
@@ -194,7 +227,7 @@ public:
         summon->SetReactState(REACT_PASSIVE);
         if (summon->GetEntry() == SolarPower)
             summon->CastSpell(summon, SunSphere, true);
-        else if (summon->GetEntry() == FreezyaSeeds)
+        else if (summon->GetEntry() == FreezyaSeeds || summon->GetEntry() == StranglerSeeds)
             summon->CastSpell(summon, SeedSparkles, true);
     }
 
@@ -210,9 +243,15 @@ public:
         if (!_enemies.erase(summon->GetGUID()))
             return;
         ++_defeated;
-        if (_quest == FlowerPower && _defeated >= 3 && !_freezyaUnlocked && !_seeds)
-            if (TempSummon* seedBag = me->SummonCreature(FreezyaSeeds, summon->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN))
-                _seeds = seedBag->GetGUID();
+        if (_quest == FlowerPower && _defeated >= 3)
+            DropSeeds(FreezyaSeeds, summon->GetPosition());
+        else if (_quest == GhoulsHateMyGrains)
+        {
+            if (_secondWave && _defeated >= 2)
+                DropSeeds(StranglerSeeds, summon->GetPosition());
+            else if (!_secondWave && _defeated == std::size(GrainsFirstWave))
+                _firstWaveLastKill = summon->GetPosition();
+        }
     }
 
     Player* Rider() const
@@ -257,6 +296,13 @@ public:
 
         if (_quest == FlowerPower)
             UpdateDefense(*player, diff, FlowerPowerWave, std::size(FlowerPowerWave), 8, FlowerWave);
+        else if (_quest == GhoulsHateMyGrains)
+        {
+            if (_secondWave)
+                UpdateDefense(*player, diff, GrainsFinalWave, std::size(GrainsFinalWave), 3, GrainsWave);
+            else
+                UpdateDefense(*player, diff, GrainsFirstWave, std::size(GrainsFirstWave), 5, GrainsWave);
+        }
         else if (_defendedLane)
             UpdateDefense(*player, diff, TutorialWave, std::size(TutorialWave), 3, IntroduceBotany);
     }
@@ -294,6 +340,7 @@ public:
         TempSummon* plant = me->SummonCreature(definition.Actor, spot->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN);
         if (!plant)
             return false;
+        plant->AIM_Initialize(new NullCreatureAI(plant));
         GameObject* model = me->SummonGameObject(definition.Model, spot->GetPosition(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0);
         if (!model)
         {
@@ -301,6 +348,7 @@ public:
             return false;
         }
         plant->setFaction(2263);
+        plant->setRegeneratingHealth(false);
         plant->SetMaxHealth(definition.Health);
         plant->SetHealth(definition.Health);
         plot.Plant = plant->GetGUID();
@@ -325,10 +373,15 @@ public:
 
     bool CollectSeeds(Creature& seeds, Player& player)
     {
-        if (_quest != FlowerPower || &player != Rider() || _freezyaUnlocked || seeds.GetGUID() != _seeds || seeds.IsDespawn())
+        if (&player != Rider() || _seedPlantUnlocked || seeds.GetGUID() != _seeds || seeds.IsDespawn())
             return false;
-        _freezyaUnlocked = true;
-        me->m_templateSpells[2] = PlantFreezya;
+        if (_quest == FlowerPower && seeds.GetEntry() == FreezyaSeeds)
+            me->m_templateSpells[2] = PlantFreezya;
+        else if (_quest == GhoulsHateMyGrains && seeds.GetEntry() == StranglerSeeds)
+            me->m_templateSpells[4] = PlantStrangler;
+        else
+            return false;
+        _seedPlantUnlocked = true;
         player.VehicleSpellInitialize();
         return true;
     }
@@ -346,6 +399,13 @@ private:
     {
         position.m_positionZ += 1.0f;
         me->SummonCreature(SolarPower, position, TEMPSUMMON_TIMED_DESPAWN, 10000);
+    }
+
+    void DropSeeds(uint32 entry, Position const& position)
+    {
+        if (!_seedPlantUnlocked && !_seeds)
+            if (TempSummon* seedBag = me->SummonCreature(entry, position, TEMPSUMMON_MANUAL_DESPAWN))
+                _seeds = seedBag->GetGUID();
     }
 
     Position Ground(uint8 row, uint8 column) const
@@ -376,7 +436,7 @@ private:
     void UpdateDefense(Player& player, uint32 diff, SpawnTime const* schedule, size_t count, size_t finalWave, uint32 credit)
     {
         _elapsed += diff;
-        while (_published < count && _elapsed >= schedule[_published].Delay)
+        while (_published < count && _elapsed - _waveStart >= schedule[_published].Delay)
         {
             SpawnTime const& spawn = schedule[_published];
             Position start = Ground(spawn.Row, Columns - 1);
@@ -384,12 +444,16 @@ private:
             TempSummon* zombie = me->SummonCreature(spawn.Entry, start, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
             if (!zombie)
                 break;
-            uint32 health = spawn.Entry == Ghoul ? 968 : 390;
+            // The lawn owns movement, melee and spell selection. Ordinary creature
+            // AI can evade and reset health when the lawn issues a melee swing.
+            zombie->AIM_Initialize(new NullCreatureAI(zombie));
+            uint32 health = spawn.Entry == Aberration ? 3388 : spawn.Entry == Ghoul ? 968 : 390;
             zombie->SetMaxHealth(health);
             zombie->SetHealth(health);
+            zombie->setRegeneratingHealth(false);
             zombie->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
             zombie->SetWalk(true);
-            zombie->SetSpeed(MOVE_WALK, spawn.Entry == Ghoul ? 0.85f : 0.6f);
+            zombie->SetSpeed(MOVE_WALK, spawn.Entry == Zombie ? 0.6f : 0.85f);
             zombie->GetMotionMaster()->MovePoint(1, Ground(spawn.Row, 0), false);
             _enemies.emplace(zombie->GetGUID(), spawn.Row);
             if (_quest == BasicBotany && _published == 1)
@@ -401,6 +465,15 @@ private:
         if (_defeated == count)
         {
             player.KilledMonsterCredit(credit);
+            if (credit == GrainsWave && !_secondWave)
+            {
+                _secondWave = true;
+                _waveStart = _elapsed;
+                _published = 0;
+                _defeated = 0;
+                DropSeeds(StranglerSeeds, _firstWaveLastKill);
+                return;
+            }
             Notify(player, _quest == BasicBotany ? 49552 : 49551);
             Finish();
             return;
@@ -435,14 +508,20 @@ private:
         {
             if (GameObject* model = me->GetMap()->GetGameObject(plot.Model))
                 model->Delete();
+            if (plot.Grappled)
+                if (Creature* enemy = ObjectAccessor::GetCreature(*me, plot.Grappled))
+                    enemy->RemoveAurasDueToSpell(Strangle, plot.Plant);
             plot.Plant.Clear();
             plot.Model.Clear();
+            plot.Grappled.Clear();
             return;
         }
         if (plot.PlantEntry == Spitter)
             plant->CastSpell(plant, VenomSpit, true);
         else if (plot.PlantEntry == Freezya)
             plant->CastSpell(plant, FreezyaBlast, true);
+        else if (plot.PlantEntry == Strangler)
+            UpdateStrangler(plot, *plant);
         else if (plot.PlantEntry == Sunflower && _elapsed >= plot.NextSolar)
         {
             plot.NextSolar = _elapsed + 9000;
@@ -450,8 +529,38 @@ private:
         }
     }
 
+    void UpdateStrangler(Plot& plot, Creature& plant)
+    {
+        if (Creature* held = ObjectAccessor::GetCreature(*me, plot.Grappled); held && held->IsAlive() &&
+            held->HasAura(Strangle, plant.GetGUID()))
+            return;
+        Creature* nearest = nullptr;
+        float distance = PlotSpacing + 0.5f;
+        for (auto const& [guid, row] : _enemies)
+            if (Creature* enemy = ObjectAccessor::GetCreature(*me, guid); enemy && enemy->IsAlive() && !enemy->HasAura(Strangle) &&
+                std::abs(enemy->GetPositionY() - plant.GetPositionY()) < PlotSpacing * 0.5f)
+            {
+                float candidateDistance = plant.GetExactDist2d(enemy);
+                if (candidateDistance < distance)
+                {
+                    distance = candidateDistance;
+                    nearest = enemy;
+                }
+            }
+        if (!nearest || plant.CastSpell(nearest, Strangle, true) != SPELL_CAST_OK || !nearest->HasAura(Strangle, plant.GetGUID()))
+            return;
+        plot.Grappled = nearest->GetGUID();
+        plant.CastSpell(nearest, StrangleTarget, true);
+    }
+
     void UpdateZombie(Creature& zombie, uint8 row)
     {
+        if (zombie.HasAura(Strangle))
+        {
+            if (!zombie.movespline->Finalized())
+                zombie.StopMoving();
+            return;
+        }
         for (Plot const& plot : _plots[row])
         {
             Creature* plant = ObjectAccessor::GetCreature(*me, plot.Plant);
@@ -485,6 +594,7 @@ private:
     SummonList _summons;
     ObjectGuid _owner;
     ObjectGuid _seeds;
+    Position _firstWaveLastKill;
     std::array<std::array<Plot, Columns>, Rows> _plots{};
     std::unordered_map<ObjectGuid, uint8> _enemies;
     GuidUnorderedSet _spentSolar;
@@ -492,6 +602,7 @@ private:
     uint32 _remaining = 10000;
     uint32 _sunTimer = 0;
     uint32 _elapsed = 0;
+    uint32 _waveStart = 0;
     uint32 _attackTimer = 1000;
     uint8 _sunCursor = 0;
     size_t _published = 0;
@@ -499,7 +610,8 @@ private:
     bool _left = false;
     bool _started = false;
     bool _defendedLane = false;
-    bool _freezyaUnlocked = false;
+    bool _seedPlantUnlocked = false;
+    bool _secondWave = false;
 };
 
 inline npc_brazie_basic_botany_board* GetBoard(Unit* unit)
@@ -573,7 +685,8 @@ class spell_brazie_collect_freezya_seeds : public SpellScript
     {
         Creature* seeds = GetCaster()->ToCreature();
         Player* player = GetHitPlayer();
-        if (!seeds || seeds->GetEntry() != FreezyaSeeds || !seeds->IsAlive() || !player || !seeds->CanTargetQuestObject(player))
+        if (!seeds || (seeds->GetEntry() != FreezyaSeeds && seeds->GetEntry() != StranglerSeeds) ||
+            !seeds->IsAlive() || !player || !seeds->CanTargetQuestObject(player))
             return;
         if (auto board = GetBoard(player->GetVehicleBase()); board && board->CollectSeeds(*seeds, *player))
             seeds->DespawnOrUnsummon(1);
