@@ -34,7 +34,7 @@ struct State
         auto progress = context->Progress();
         if (!progress) return false;
         auto const* leaves = progress->GetAchievementMgr().GetCriteriaProgressMap();
-        auto found = leaves->find(29069);
+        auto found = leaves->find(45903);
         return found != leaves->end() && found->second.Counter;
     }
     Player* Current(MonkChenRescue::Member const& original, Creature* actor) const

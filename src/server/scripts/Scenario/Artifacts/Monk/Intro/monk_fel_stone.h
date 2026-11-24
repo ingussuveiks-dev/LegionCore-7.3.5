@@ -59,8 +59,8 @@ inline bool Active(Player* player)
         player->FindQuestSlot(QuestId) >= MAX_QUEST_LOG_SIZE) return false;
     auto status = player->GetQuestStatus(QuestId);
     uint32 step = scenario->GetCurrentStep();
-    return (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE) && Leaf(scenario, 29071) &&
-        (step == 6 || (step == 7 && Leaf(scenario, 29072))) &&
+    return (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE) && Leaf(scenario, 45909) &&
+        (step == 6 || (step == 7 && Leaf(scenario, 45911))) &&
         player->GetQuestObjectiveData(QuestId, 98514) > 0 && player->GetQuestObjectiveData(QuestId, 97778) > 0;
 }
 inline bool Current(Player* player, std::shared_ptr<Claim> const& claim)
@@ -262,7 +262,7 @@ inline void Tick(Player* player, std::shared_ptr<Claim> const& claim)
     if (claim->polling && GetMSTimeDiffToNow(claim->pollAt) < 100) return;
     claim->polling = true; claim->pollAt = getMSTime();
     auto scenario = World(player); claim->lastStep = scenario->GetCurrentStep();
-    bool portal = Leaf(scenario, 29072) && claim->lastStep == 7;
+    bool portal = Leaf(scenario, 45911) && claim->lastStep == 7;
     bool credit = player->GetQuestObjectiveData(QuestId, 98353) > 0;
     if (!claim->hit || !claim->sceneApplied || !credit || !portal || !claim->markerReceipt)
     {
@@ -368,7 +368,7 @@ class spell_monk_fel_stone : public SpellScript
             if (claim) MonkFelStone::Stop(player, claim);
             return;
         }
-        if ((effect == EFFECT_2 && MonkFelStone::Leaf(MonkFelStone::World(player), 29072)) ||
+        if ((effect == EFFECT_2 && MonkFelStone::Leaf(MonkFelStone::World(player), 45911)) ||
             (effect == EFFECT_3 && claim->hadMarker)) PreventHitDefaultEffect(effect);
     }
     void Before()
@@ -432,7 +432,7 @@ class spell_monk_fel_stone_event : public SpellScript
     {
         auto player = GetCaster()->ToPlayer();
         if (!MonkFelStone::Child(player, GetSpell()->m_castGuid[1], MonkFelStone::Find(player)) ||
-            MonkFelStone::Leaf(MonkFelStone::World(player), 29072)) PreventHitDefaultEffect(effect);
+            MonkFelStone::Leaf(MonkFelStone::World(player), 45911)) PreventHitDefaultEffect(effect);
     }
     void Register() override
     {

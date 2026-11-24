@@ -54,7 +54,7 @@ struct State
         Scenario* scenario = Progress();
         if (!scenario) return false;
         auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
-        auto found = progress->find(29047);
+        auto found = progress->find(45905);
         return found != progress->end() && found->second.Counter;
     }
 
@@ -190,7 +190,7 @@ struct State
         Scenario* scenario = Progress();
         if (!scenario) return false;
         auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
-        auto found = progress->find(29070);
+        auto found = progress->find(45907);
         return found != progress->end() && found->second.Counter;
     }
 
@@ -272,7 +272,7 @@ struct State
         if (scenario->GetCurrentStep() == 5) return true;
         if (scenario->GetCurrentStep() != 6 || !genuineBossDefeat) return false;
         auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
-        auto found = progress->find(29071);
+        auto found = progress->find(45909);
         return found != progress->end() && found->second.Counter;
     }
 

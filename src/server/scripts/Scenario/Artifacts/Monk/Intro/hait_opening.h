@@ -244,7 +244,7 @@ struct State
         auto progress = map ? sScenarioMgr->GetScenario(map->GetInstanceId()) : nullptr;
         if (!progress) return false;
         auto leaves = progress->GetAchievementMgr().GetCriteriaProgressMap();
-        auto found = leaves->find(29068);
+        auto found = leaves->find(45901); // Scenario progress is keyed by CriteriaTree ID.
         return found != leaves->end() && found->second.Counter;
     }
 
