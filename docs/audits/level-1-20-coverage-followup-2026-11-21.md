@@ -280,3 +280,11 @@ Darkshore lidojuma izpilde paliek atvērta. Pārbaudītajā Legion datubāzē un
 Noslēdzošais lasāmais eksports pret uzstādīto būvējumu atkal atrada 5 459 atlases ierakstus, 4 865 ieslēgtus kvestus un visus 170 atrastos skriptu nosaukumus Release failā. Salīdzinājumā ar 23. novembri nav jaunu statisko atzīmju aktiera vai ieskaites ceļiem, priekšmetu lietošanai vai priekšmetu ieguvei pie novietotiem devējiem. Statiskā atlase joprojām uzrāda 17 aktiera vai ieskaites, 27 lietošanas un divas ieguves atzīmes. Pēc iepriekš aprakstītajām servera pārbaudēm starp šīm atzīmēm nav jauna apstiprināta izpildes defekta. Pilns pārskats ar ievades kontrolsummām ir lokāli `.codex/quest-coverage-20261124-final/survey/`.
 
 Kanoniskais `worldserver.exe` ir uzstādīts, sasniedza gatavību un korekti apstājās. Pārbaudēs nebija jaunu avāriju vai servera un datubāzes kļūdu. Darkshore maršruts un Brazie viļņu laiki ir atjaunoti no pieejamiem datiem un spēles gaitas avotiem. To izpilde ar 7.3.5 klientu, attēlojums un vadība paliek jāpārbauda spēlē.
+
+### Izolētās klienta pārbaudes gatavība, 2026-11-24
+
+`worldserver` un `bnetserver` sasniedza gatavību ar izolētu MariaDB, testa kontu un tēlu shēmām un atsevišķiem lokālajiem portiem. Pirmā gatavības zonde atvēra un aizvēra TCP savienojumu pirms protokola sākuma. Tas izraisīja paredzamas nepabeigta pasaules un TLS savienojuma kļūdas. Atkārtotajā palaišanā gatavību noteica pēc serveru žurnāliem, un abu serveru stderr bija tukšs. Abi beidzās ar kodu 0. Izolētā MariaDB arī korekti apstājās. Atkārtotajā pārbaudē nebija jaunu avāriju vai DBErrors ierakstu.
+
+Instalētais Legion `7.3.5.26972` klients ar atsevišķu konfigurāciju sasniedza pieteikšanās ekrānu un aizvērās ar `Quit`. Parastās `Config.wtf` kontrolsumma sakrita pirms un pēc pārbaudes. Klienta diagnostikā nav jaunu avāriju. Pieteikšanās vēl jāveic lietotājam, tāpēc šī pārbaude neapstiprina ielādi pasaulē, Darkshore karti vai lidojuma vadību un Brazie kameru vai darbību joslu.
+
+18 diagnostikas failu pārbaudītās kopijas atrodas `build-extractors/bin/Release/fixed/2026-11-24-level-client-readiness/`. Palaisti esošie Release izpildfaili. Automātiskā komandu pārbaude bloķēja izolētās pieteikšanās konfigurācijas un sertifikāta kopiju dzēšanu no ignorētās testa mapes.
