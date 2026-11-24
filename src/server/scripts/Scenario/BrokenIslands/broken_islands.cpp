@@ -1469,7 +1469,7 @@ public:
 
                         GetNPCAroundAndDoAction([](Creature* cre)
                         {
-                            cre->SetReactState(REACT_AGGRESSIVE);
+                            cre->SetReactState(REACT_PASSIVE);
                             cre->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
                         });
 
@@ -1498,21 +1498,19 @@ public:
                         me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
                             if (aiLifetimeGuard.expired()) return;
-                            GetNPCAroundAndDoAction([](Creature* cre) {cre->GetMotionMaster()->Clear();  cre->GetMotionMaster()->MovePath(439146, false, irand(-1, 1), irand(-1, 1)); }, 3);
+                            GetNPCAroundAndDoAction([](Creature* cre)
+                            {
+                                cre->GetMotionMaster()->Clear();
+                                cre->ClearUnitState(UNIT_STATE_EVADE);
+                                cre->GetMotionMaster()->MovePath(439146, false, irand(-1, 1), irand(-1, 1));
+                            }, 3);
                         });
                         currentWP = 439146;
                     });
                 }
 
                 if (moveType == WAYPOINT_MOTION_TYPE && currentWP == 439146 && pointId == 10)
-                {
                     currentWP = 0;
-                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
-                    {
-                        if (aiLifetimeGuard.expired()) return;
-                        GetNPCAroundAndDoAction([](Creature* cre) {cre->GetMotionMaster()->Clear(); cre->SetReactState(REACT_AGGRESSIVE); }, 3);
-                    });
-                }
 
                 if (moveType == POINT_MOTION_TYPE || moveType == EFFECT_MOTION_TYPE || moveType == WAYPOINT_MOTION_TYPE)
                 {
@@ -1751,6 +1749,8 @@ public:
                     });
                     EnterEvadeMode();
                     me->SetReactState(REACT_PASSIVE);
+                    me->GetMotionMaster()->Clear();
+                    me->ClearUnitState(UNIT_STATE_EVADE);
                     me->GetMotionMaster()->MovePath(439145, false);
                     currentWP = 439145;
                     me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
@@ -1807,7 +1807,12 @@ public:
 
         void EnterEvadeMode() override
         {
-            if ((me->GetEntry() == 90717 || me->GetEntry() == NPC_JAINA) && IsFindingVarian())
+            InstanceScript* script = me->GetInstanceScript();
+            bool const walkingToTirion = me->GetMapId() == 1460 && script && script->getScenarionStep() == 6 &&
+                script->GetData(DATA_SCENARIO_TEAM) == ALLIANCE &&
+                me->GetMotionMaster()->GetMotionSlotType(MOTION_SLOT_IDLE) == WAYPOINT_MOTION_TYPE;
+            if (((me->GetEntry() == 90717 || me->GetEntry() == NPC_JAINA) && IsFindingVarian()) ||
+                ((me->GetEntry() == 90717 || me->GetEntry() == NPC_JAINA || me->GetEntry() == NPC_VARIAN) && walkingToTirion))
             {
                 // Clean up combat without replacing the march or deleting its scene timer.
                 _EnterEvadeMode();
@@ -2433,6 +2438,7 @@ public:
         bool step7_intro;
         bool step_8_waighting;
         bool step_8_intro;
+        uint32 tirionSearchTimer = 0;
 
         EventMap events;
         enum data
@@ -2468,94 +2474,89 @@ public:
             }
         }
 
-        void MoveInLineOfSight(Unit* who) override
+        void TryStartTirionScene(Player* player, InstanceScript* script)
         {
-            if (!me->IsWithinDist(who, 170.0))
+            if (step7_intro || me->GetMapId() != 1460 || script->getScenarionStep() != 6 || !player || !player->CanContact() ||
+                !player->IsAlive() || player->isInFlight() || player->GetMap() != me->GetMap() ||
+                player->GetTeam() != script->GetData(DATA_SCENARIO_TEAM) || !player->InSamePhase(me) ||
+                !me->IsWithinDistInMap(player, 170.0f))
                 return;
 
-            Player* p = who->ToPlayer();
-            if (!p)
+            Map* m = script->instance;
+            m->LoadGrid(1376.963f, 1744.453f);
+            Creature* tirion = m->GetCreature(script->GetGuidData(NPC_TIRION));
+            Creature* krosus = m->GetCreature(script->GetGuidData(NPC_KROSS));
+            if (!tirion || !tirion->IsAlive() || !player->InSamePhase(tirion) || !player->IsWithinDistInMap(tirion, 100.0f) ||
+                !krosus || !krosus->IsAlive() || !krosus->IsAIEnabled)
                 return;
 
-            InstanceScript *script = me->GetInstanceScript();
-            if (!script)
-                return;
-            if (!step7_intro)
+            // Keep the authored staging for champions arriving from both sides.
+            if (script->GetData(DATA_SCENARIO_TEAM) == ALLIANCE)
             {
-                Map *m = script->instance;
-                if (!m)
+                Creature* jaina = m->GetCreature(script->GetGuidData(NPC_JAINA));
+                if (!jaina)
+                    jaina = me->SummonCreature(NPC_JAINA, 1502.416f, 1816.275f, 37.43131f, 0.0f);
+                if (!jaina || !jaina->IsAlive() || !jaina->InSamePhase(me) || me->GetDistance2d(jaina) >= 100.0f)
                     return;
 
-                m->LoadGrid(1376.963f, 1744.453f);
-
-                //! champions movement not ready. so just hack for preapare. 
-                //! ToDo: create path movement for all champions
-                if (script->GetData(DATA_SCENARIO_TEAM) == ALLIANCE)
+                if (Creature* varian = m->GetCreature(script->GetGuidData(NPC_VARIAN)))
                 {
-
-                    if (Creature* jaina = m->GetCreature(script->GetGuidData(NPC_JAINA)))
+                    if (me->GetDistance2d(varian) >= 100.0f)
                     {
-                        if (me->GetDistance2d(jaina) >= 100.0f)
-                            return;
+                        varian->GetMotionMaster()->Clear();
+                        varian->NearTeleportTo(1482.425f, 1813.54f, 38.26539f, 0.0f);
                     }
-                    else
-                        me->SummonCreature(NPC_JAINA, 1502.416f, 1816.275f, 37.43131f, 0.0f);
-
-                    if (Creature* varian = m->GetCreature(script->GetGuidData(NPC_VARIAN)))
-                    {
-                        if (me->GetDistance2d(varian) >= 100.0f)
-                        {
-                            varian->GetMotionMaster()->Clear();
-                            varian->NearTeleportTo(1482.425f, 1813.54f, 38.26539f, 0.0f);
-                        }
-                    }
-                    else
-                        me->SummonCreature(NPC_VARIAN, 1482.425f, 1813.54f, 38.26539f, 0.0f);
-
-                    me->SummonCreature(NPC_SYLVANA, 1427.27f, 1776.18f, 34.23f, 0.0f);
-                    me->SummonCreature(90711, 1427.27f, 1776.18f, 34.23f, 0.0f);
-
-                    for (uint8 i = 0; i < 4; ++i)
-                        me->SummonCreature(97525, 1427.27f + frand(-5.0f, 5.0f), 1776.18f + frand(-5.0f, 5.0f), 34.23f, 0.0f);
-                    
-                    for (uint8 i = 0; i < 4; ++i)
-                        me->SummonCreature(112920, 1427.27f + frand(-5.0f, 5.0f), 1776.18f + frand(-5.0f, 5.0f), 34.23f, 0.0f);
                 }
                 else
-                {
-                    if (Creature* sylvana = m->GetCreature(script->GetGuidData(NPC_SYLVANA)))
-                    {
-                        if (me->GetDistance2d(sylvana) >= 140.0f)
-                            return;
-                    }
-                    else
-                        me->SummonCreature(NPC_SYLVANA, 1427.27f, 1776.18f, 34.23f, 0.0f);
-
-                    me->SummonCreature(NPC_JAINA, 1502.416f, 1816.275f, 37.43131f, 0.0f);
                     me->SummonCreature(NPC_VARIAN, 1482.425f, 1813.54f, 38.26539f, 0.0f);
 
-                    for (uint8 i = 0; i < 4; ++i)
-                        me->SummonCreature(97486, 1482.425f + frand(-5.0f, 5.0f), 1813.54f + frand(-5.0f, 5.0f), 38.26539f);
+                me->SummonCreature(NPC_SYLVANA, 1427.27f, 1776.18f, 34.23f, 0.0f);
+                me->SummonCreature(90711, 1427.27f, 1776.18f, 34.23f, 0.0f);
 
-                    for (uint8 i = 0; i < 5; ++i)
-                        me->SummonCreature(91353, 1482.425f + frand(-5.0f, 5.0f), 1813.54f + frand(-5.0f, 5.0f), 38.26539f);
+                for (uint8 i = 0; i < 4; ++i)
+                    me->SummonCreature(97525, 1427.27f + frand(-5.0f, 5.0f), 1776.18f + frand(-5.0f, 5.0f), 34.23f, 0.0f);
 
-                }
-
-                script->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50027);
-
-                step7_intro = true;
-
-                if (Creature* tirion = m->GetCreature(script->GetGuidData(NPC_TIRION)))
-                {
-                    me->CastSpell(tirion, 186589, true);
-                }
-
-                events.RescheduleEvent(EVENT_1, 100);
-                events.RescheduleEvent(EVENT_SPECIAL, 36000);
-                events.RescheduleEvent(EVENT_2, 55000);
-                events.RescheduleEvent(EVENT_3, 64000);
+                for (uint8 i = 0; i < 4; ++i)
+                    me->SummonCreature(112920, 1427.27f + frand(-5.0f, 5.0f), 1776.18f + frand(-5.0f, 5.0f), 34.23f, 0.0f);
             }
+            else
+            {
+                Creature* sylvanas = m->GetCreature(script->GetGuidData(NPC_SYLVANA));
+                if (!sylvanas)
+                    sylvanas = me->SummonCreature(NPC_SYLVANA, 1427.27f, 1776.18f, 34.23f, 0.0f);
+                if (!sylvanas || !sylvanas->IsAlive() || !sylvanas->InSamePhase(me) || me->GetDistance2d(sylvanas) >= 140.0f)
+                    return;
+
+                me->SummonCreature(NPC_JAINA, 1502.416f, 1816.275f, 37.43131f, 0.0f);
+                me->SummonCreature(NPC_VARIAN, 1482.425f, 1813.54f, 38.26539f, 0.0f);
+
+                for (uint8 i = 0; i < 4; ++i)
+                    me->SummonCreature(97486, 1482.425f + frand(-5.0f, 5.0f), 1813.54f + frand(-5.0f, 5.0f), 38.26539f);
+
+                for (uint8 i = 0; i < 5; ++i)
+                    me->SummonCreature(91353, 1482.425f + frand(-5.0f, 5.0f), 1813.54f + frand(-5.0f, 5.0f), 38.26539f);
+
+            }
+
+            step7_intro = true;
+            script->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50027);
+            me->CastSpell(tirion, 186589, true);
+            TC_LOG_INFO("scripts", "Broken Shore: started the Tirion scene in instance %u", me->GetInstanceId());
+
+            events.RescheduleEvent(EVENT_1, 100);
+            events.RescheduleEvent(EVENT_SPECIAL, 36000);
+            events.RescheduleEvent(EVENT_2, 55000);
+            events.RescheduleEvent(EVENT_3, 64000);
+        }
+
+        void MoveInLineOfSight(Unit* who) override
+        {
+            Player* player = who->ToPlayer();
+            InstanceScript* script = me->GetInstanceScript();
+            if (!player || !script || !me->IsWithinDist(who, 170.0f))
+                return;
+
+            TryStartTirionScene(player, script);
 
             if (step_8_waighting && !step_8_intro)
             {
@@ -2611,6 +2612,21 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (!step7_intro && tirionSearchTimer <= diff)
+            {
+                tirionSearchTimer = 1000;
+                if (InstanceScript* script = me->GetInstanceScript())
+                    if (script->getScenarionStep() == 6)
+                        for (auto const& reference : me->GetMap()->GetPlayers())
+                        {
+                            TryStartTirionScene(reference.getSource(), script);
+                            if (step7_intro)
+                                break;
+                        }
+            }
+            else if (!step7_intro)
+                tirionSearchTimer -= diff;
+
             events.Update(diff);
             if (uint32 eventId = events.ExecuteEvent())
             {

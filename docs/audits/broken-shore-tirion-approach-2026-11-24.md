@@ -1,0 +1,9 @@
+# Broken Shore Tirion approach
+
+Yim crossed the ice bridge into Tomb Approach, could target Tirion, and still had 0/1 in The Highlord. The persisted player position was 1492.66, 1808.23, 37.3817. The actual Tirion spawn 91951 is at 1494.65, 1750.54, 40.326. Matching 26972 data identifies criterion 29715, type 92 and event 50027, for this stage of Alliance 786 and Horde 1189.
+
+The Alliance march previously enabled combat before crossing and stopped every formation member two seconds after Varian reached the end of path 439146. This could cut off Jaina while the scene still required her near Gul'dan. The scene was also evaluated only from a player movement notification. An eligible player who reached the shore before the actors had to trigger another notification. The screenshot and logs do not establish which of these stopped that specific attempt.
+
+Varian now clears the old movement at the start of the march and the bridge party finishes its paths independently. The active story path survives ordinary combat cleanup for the principal Alliance actors, and combat reaction resumes at the existing next-stage handoff. Gul'dan checks for a live, same-faction player near the real captive and the existing appropriate champion and Krosus. It retries the same arrival condition while the player waits and uses the native event and original 36/55/64-second sequence once. No player teleport or boss credit is added by the fix.
+
+Release compilation, final-link review and installed-file identity are the checks for this active user-led fix. Separate automated regressions and an agent-owned startup were intentionally omitted. Verify the crossing, Tirion's scene, Krosus activation and the next fight in the client. The movement repair is Alliance-scoped. Horde shares the proximity recheck and retains original actor admission and scene timing.
