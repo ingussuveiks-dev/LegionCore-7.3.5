@@ -64,6 +64,7 @@ struct Transport:GameObject {
 };
 struct Session {std::vector<WorldPacket> packets;void SendPacket(WorldPacket* p){packets.push_back(*p);}};
 struct Destination {int map=0;int GetMapId()const{return map;}};
+struct MovementInfo {uint32 flags=0;};
 struct Player:WorldObject {
     Player():WorldObject(1){}
     Session session; Transport* transport=nullptr;
@@ -71,6 +72,8 @@ struct Player:WorldObject {
     uint32 flags=0,state=0;
     bool alive=true,vehicle=false,rootAura=false,gravityAura=false,selfCreateProtected=false,farTeleport=false,nearTeleport=false;
     int visibilityRefreshes=0,gravityOrders=0,rootOrders=0;
+    bool ravenRider=false;
+    MovementInfo m_movementInfo;
     Destination dest;
     int32 _mapObjectArrivalMap=-1,_mapObjectArrivalLoadedMap=-1;
     uint32 _mapObjectArrivalWait=0,_mapObjectArrivalSettle=0;
@@ -168,7 +171,10 @@ struct Cell {
 #include "BuildPlayerArrivalObjects.inc"
 #include "SendInitSelf.inc"
 using Unit=Player;
-struct MovementInfo {uint32 flags=0;};
+namespace AssaultBrokenShore
+{
+    bool IsArcaneRavenRider(Player const& player) { return player.ravenRider; }
+}
 struct WorldSession {
     Player* _player;int relocations=0;
     void RelocateMover(MovementInfo& movementInfo){
@@ -252,6 +258,10 @@ int main(){
     near.movieHeld=true;
     near.UpdateMapObjectArrival(8000);session.RelocateMover(stale);assert(!session.relocations);
     near.movieHeld=false;session.RelocateMover(stale);assert(session.relocations==1);
+    near.ravenRider=true;
+    near.m_movementInfo.flags=MOVEMENTFLAG_ROOT;
+    session.RelocateMover(stale);
+    assert(session.relocations==1&&stale.flags==MOVEMENTFLAG_ROOT);
     // Short movement on an already-visible platform must not root combat blinks.
     near.x=dest.x;auto visits=nearMap.loadingVisits;UpdateData shortBlink(0);nearMap.BuildPlayerArrivalObjects(&near,dest,shortBlink,true);
     assert(!near.IsMapObjectArrivalProtected()&&shortBlink.objects.empty());

@@ -30,6 +30,7 @@
 #include "SpellAuraEffects.h"
 #include "QuestItemObjectUse.h"
 #include "Chat.h"
+#include "Timer.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::ItemUse& cast)
 {
@@ -169,6 +170,8 @@ void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& 
                     _player->CastSpell(obj, binding->Spell, false, item);
             return;
         }
+        if (obj->GetEntry() == 216350 && obj->GetMapId() == 0)
+            TC_LOG_INFO("maps", "Stormwind Dalaran portal: use for player %u at tick %u", _player->GetGUIDLow(), getMSTime());
         if (obj->GetEntry() != 181690) // Fertile Dirt Mounds are activated by Plant Tree Seedling.
             obj->Use(_player);
     }

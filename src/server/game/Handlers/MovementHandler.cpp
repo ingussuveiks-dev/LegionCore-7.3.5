@@ -28,6 +28,8 @@
 #include "BrokenShoreRavenSeat.h"
 #include "CouncilArtifactGift.h"
 #include "TimeSync.h"
+#include "SpellMgr.h"
+#include "Timer.h"
 
 void WorldSession::HandleWorldPortResponse(WorldPackets::Movement::WorldPortResponse& /*packet*/)
 {
@@ -208,6 +210,13 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
 
     if (packet.MoverGUID != plMover->GetGUID())
         return;
+
+    if (plMover->GetMapId() == 0 && plMover->IsMapObjectArrivalProtected())
+        if (SpellTargetPosition const* portal = sSpellMgr->GetSpellTargetPosition(228327))
+            if (portal->target_mapId == 0 && plMover->GetTeleportDest().GetExactDist(
+                Position(portal->target_X, portal->target_Y, portal->target_Z)) < 0.1f)
+                TC_LOG_INFO("maps", "Stormwind Dalaran portal: teleport acknowledged for player %u at tick %u",
+                    plMover->GetGUIDLow(), getMSTime());
 
     bool councilGiftArrival = plMover->GetTeleportOptions() & CouncilArtifactGift::NearTeleport;
     plMover->SetSemaphoreTeleportNear(false);

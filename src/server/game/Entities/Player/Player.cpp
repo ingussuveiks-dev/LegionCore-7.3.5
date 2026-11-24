@@ -2186,6 +2186,8 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
         {
             Position newPos;
             newPos.Relocate(x, y, z, orientation);
+            bool const traceDalaranPortal = spellID == 228327 && mapid == 0;
+            uint32 const arrivalStart = traceDalaranPortal ? getMSTime() : 0;
             GetSession()->ResetMapLoadingScreen();
             NotifyMapObjectArrivalLoading(int32(mapid));
             UpdateData arrivalObjects(mapid);
@@ -2194,6 +2196,9 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
             if (arrivalObjects.BuildPacket(&arrivalPacket))
                 GetSession()->SendPacket(&arrivalPacket);
             SendTeleportPacket(newPos); // this automatically relocates to oldPos in order to broadcast the packet in the right place
+            if (traceDalaranPortal)
+                TC_LOG_INFO("maps", "Stormwind Dalaran portal: teleport sent for player %u at tick %u, preparation %u ms",
+                    GetGUIDLow(), getMSTime(), GetMSTimeDiffToNow(arrivalStart));
         }
     }
     else
