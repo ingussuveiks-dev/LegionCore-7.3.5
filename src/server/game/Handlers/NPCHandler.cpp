@@ -419,14 +419,14 @@ void WorldSession::SendSpiritResurrect()
     Corpse* corpse = player->GetCorpse();
     if (corpse)
         corpseGrave = sObjectMgr->GetClosestGraveYard(
-        corpse->GetPositionX(), corpse->GetPositionY(), corpse->GetPositionZ(), corpse->GetMapId(), player->GetTeam());
+            corpse->GetPositionX(), corpse->GetPositionY(), corpse->GetPositionZ(), corpse->GetMapId(), player->GetTeam(), false, player);
 
     player->SpawnCorpseBones();
 
     if (corpseGrave) // teleport to nearest from corpse graveyard, if different from nearest to player ghost
     {
         WorldSafeLocsEntry const* ghostGrave = sObjectMgr->GetClosestGraveYard(
-            player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+            player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam(), false, player);
 
         if (corpseGrave != ghostGrave)
             player->TeleportTo(corpseGrave->MapID, corpseGrave->Loc.X, corpseGrave->Loc.Y, corpseGrave->Loc.Z, player->GetOrientation());

@@ -7532,7 +7532,7 @@ void Player::RepopAtGraveyard(bool outInstance /*= false*/)
                 ClosestGrave = outdoorPvP->GetClosestGraveyard(this);
         }
         else
-            ClosestGrave = sObjectMgr->GetClosestGraveYard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetTeam());
+            ClosestGrave = sObjectMgr->GetClosestGraveYard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetTeam(), false, this);
     }
 
     // stop countdown until repop

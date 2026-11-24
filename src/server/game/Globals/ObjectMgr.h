@@ -569,7 +569,8 @@ class TC_GAME_API ObjectMgr
         NpcText const* GetNpcText(uint32 textID) const;
 
         WorldSafeLocsEntry const* GetDefaultGraveYard(uint32 team);
-        WorldSafeLocsEntry const* GetClosestGraveYard(float x, float y, float z, uint32 MapId, uint32 team, bool outInstance = false);
+        WorldSafeLocsEntry const* GetClosestGraveYard(float x, float y, float z, uint32 MapId, uint32 team,
+            bool outInstance = false, Player const* player = nullptr);
         bool AddGraveYardLink(uint32 id, uint32 zoneId, uint32 team, bool persist = true);
         void RemoveGraveYardLink(uint32 id, uint32 zoneId, uint32 team, bool persist = false);
         void LoadGraveyardZones();

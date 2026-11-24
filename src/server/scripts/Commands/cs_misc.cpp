@@ -1376,7 +1376,7 @@ public:
         uint32 zone_id = player->GetZoneId();
 
         WorldSafeLocsEntry const* graveyard = sObjectMgr->GetClosestGraveYard(
-            player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), team);
+            player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), team, false, player);
 
         if (graveyard)
         {

@@ -4703,7 +4703,8 @@ WorldSafeLocsEntry const* ObjectMgr::GetDefaultGraveYard(uint32 team)
     return nullptr;
 }
 
-WorldSafeLocsEntry const* ObjectMgr::GetClosestGraveYard(float x, float y, float z, uint32 MapId, uint32 team, bool outInstance /*= false*/)
+WorldSafeLocsEntry const* ObjectMgr::GetClosestGraveYard(float x, float y, float z, uint32 MapId, uint32 team,
+    bool outInstance, Player const* player)
 {
     // search for zone associated closest graveyard
     uint32 zoneId = sMapMgr->GetZoneId(MapId, x, y, z);
@@ -4762,6 +4763,11 @@ WorldSafeLocsEntry const* ObjectMgr::GetClosestGraveYard(float x, float y, float
         // skip enemy faction graveyard
         // team == 0 case can be at call from .neargrave
         if (data.team != 0 && team != 0 && data.team != team)
+            continue;
+
+        // The Imposter's boat is a personal graveyard for the phased Stormwind infiltration.
+        if (data.safeLocId == 5748 && (MapId != entry->MapID || !player ||
+            player->getClass() != CLASS_ROGUE || !player->HasPhaseId(7434)))
             continue;
 
         // find now nearest graveyard at other map
