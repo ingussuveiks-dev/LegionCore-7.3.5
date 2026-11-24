@@ -33,12 +33,15 @@ constexpr uint32 FreezyaSeeds = 49604;
 constexpr uint32 Rocknut = 49205;
 constexpr uint32 Strangler = 49207;
 constexpr uint32 StranglerSeeds = 49560;
+constexpr uint32 Pumpkin = 49474;
 constexpr uint32 Zombie = 49209;
 constexpr uint32 Ghoul = 49232;
 constexpr uint32 Aberration = 49485;
+constexpr uint32 Abomination = 49694;
 constexpr uint32 IntroduceBotany = 49189;
 constexpr uint32 FlowerWave = 49542;
 constexpr uint32 GrainsWave = 49553;
+constexpr uint32 PumpkinWave = 49561;
 constexpr uint32 PlantSpitter = 91649;
 constexpr uint32 PlantSunflower = 91646;
 constexpr uint32 PlantFreezya = 92440;
@@ -47,6 +50,9 @@ constexpr uint32 PlantRocknut = 91704;
 constexpr uint32 PlantStrangler = 91710;
 constexpr uint32 StrangleTarget = 91786;
 constexpr uint32 Strangle = 91791;
+constexpr uint32 PlantPumpkin = 92157;
+constexpr uint32 PumpkinExplosion = 92159;
+constexpr uint32 PumpkinFuse = 92825;
 constexpr uint32 GainSolarPower = 91687;
 constexpr uint32 SunSphere = 91707;
 constexpr uint32 SeedSparkles = 92406;
@@ -75,7 +81,8 @@ constexpr PlantDefinition Plants[] =
     {PlantSunflower, Sunflower, SunflowerModel, 484},
     {PlantFreezya, Freezya, FreezyaModel, 484},
     {PlantRocknut, Rocknut, RocknutModel, 2420},
-    {PlantStrangler, Strangler, StranglerModel, 1936}
+    {PlantStrangler, Strangler, StranglerModel, 1936},
+    {PlantPumpkin, Pumpkin, PumpkinBombModel, 484}
 };
 
 struct SpawnTime
@@ -114,6 +121,44 @@ constexpr SpawnTime GrainsFinalWave[] =
     {62000, 0, Zombie}, {62000, 1, Ghoul}, {62000, 2, Aberration}, {62000, 3, Ghoul}, {62000, 4, Zombie},
     {70000, 0, Ghoul}, {70000, 1, Zombie}, {70000, 3, Zombie}, {70000, 4, Ghoul}
 };
+
+constexpr SpawnTime PumpkinFirstWave[] =
+{
+    {17000, 2, Ghoul}, {34000, 0, Zombie}, {44000, 3, Ghoul}, {52500, 1, Zombie}, {62000, 4, Aberration},
+    {85000, 0, Aberration}, {85000, 1, Ghoul}, {85000, 2, Ghoul}, {85000, 3, Zombie}, {85000, 4, Zombie},
+    {93000, 1, Zombie}, {93000, 2, Aberration}, {93000, 3, Ghoul}
+};
+
+constexpr SpawnTime PumpkinFinalWave[] =
+{
+    {23000, 1, Ghoul}, {29000, 4, Aberration}, {39000, 3, Ghoul},
+    {55000, 0, Abomination}, {55000, 2, Abomination}, {55000, 4, Abomination},
+    {56000, 1, Aberration}, {56000, 3, Aberration}, {60000, 2, Ghoul}, {62000, 4, Zombie},
+    {66000, 0, Ghoul}, {66000, 1, Zombie}, {66000, 3, Ghoul}
+};
+
+struct DefenseWave
+{
+    SpawnTime const* Spawns;
+    size_t Count;
+    size_t Warning;
+};
+
+template <size_t Count>
+constexpr DefenseWave MakeWave(SpawnTime const (&spawns)[Count], size_t warning)
+{
+    return {spawns, Count, warning};
+}
+
+inline uint32 WaveCredit(uint32 quest)
+{
+    switch (quest)
+    {
+        case GhoulsHateMyGrains: return GrainsWave;
+        case PumpkinBombLesson: return PumpkinWave;
+        default: return 0;
+    }
+}
 
 inline uint32 ActiveQuest(Player const& player)
 {
@@ -172,7 +217,7 @@ struct Plot
     ObjectGuid Model;
     ObjectGuid Grappled;
     uint32 PlantEntry = 0;
-    uint32 NextSolar = 0;
+    uint32 NextAction = 0;
 };
 
 class npc_brazie_basic_botany_board : public ScriptedAI
@@ -200,11 +245,16 @@ public:
         me->SetPower(POWER_ENERGY, 0);
         if (_quest != BasicBotany)
             me->m_templateSpells[1] = PlantSunflower;
-        if (_quest == GhoulsHateMyGrains)
+        if (uint32 credit = WaveCredit(_quest))
         {
             me->m_templateSpells[2] = PlantFreezya;
             me->m_templateSpells[3] = PlantRocknut;
-            _secondWave = summoner->ToPlayer()->GetQuestObjectiveData(_quest, GrainsWave) > 0;
+            _secondWave = summoner->ToPlayer()->GetQuestObjectiveData(_quest, credit) > 0;
+        }
+        if (_quest == PumpkinBombLesson)
+        {
+            me->m_templateSpells[4] = PlantStrangler;
+            me->m_templateSpells[5] = PlantPumpkin;
         }
     }
 
@@ -295,16 +345,13 @@ public:
             _sunTimer -= diff;
 
         if (_quest == FlowerPower)
-            UpdateDefense(*player, diff, FlowerPowerWave, std::size(FlowerPowerWave), 8, FlowerWave);
+            UpdateDefense(*player, diff, MakeWave(FlowerPowerWave, 8), FlowerWave);
         else if (_quest == GhoulsHateMyGrains)
-        {
-            if (_secondWave)
-                UpdateDefense(*player, diff, GrainsFinalWave, std::size(GrainsFinalWave), 3, GrainsWave);
-            else
-                UpdateDefense(*player, diff, GrainsFirstWave, std::size(GrainsFirstWave), 5, GrainsWave);
-        }
+            UpdateDefense(*player, diff, _secondWave ? MakeWave(GrainsFinalWave, 3) : MakeWave(GrainsFirstWave, 5), GrainsWave);
+        else if (_quest == PumpkinBombLesson)
+            UpdateDefense(*player, diff, _secondWave ? MakeWave(PumpkinFinalWave, 3) : MakeWave(PumpkinFirstWave, 5), PumpkinWave);
         else if (_defendedLane)
-            UpdateDefense(*player, diff, TutorialWave, std::size(TutorialWave), 3, IntroduceBotany);
+            UpdateDefense(*player, diff, MakeWave(TutorialWave, 3), IntroduceBotany);
     }
 
     Plot* FindEmptyPlot(Position const* destination)
@@ -354,7 +401,9 @@ public:
         plot.Plant = plant->GetGUID();
         plot.Model = model->GetGUID();
         plot.PlantEntry = definition.Actor;
-        plot.NextSolar = _elapsed + 9000;
+        plot.NextAction = _elapsed + (definition.Actor == Pumpkin ? 3000 : 9000);
+        if (definition.Actor == Pumpkin)
+            plant->CastSpell(plant, PumpkinFuse, true);
         if (std::abs(spot->GetPositionY() - Ground(CenterRow, 0).GetPositionY()) < 0.5f)
             _defendedLane = true;
         return true;
@@ -433,12 +482,12 @@ private:
         return true;
     }
 
-    void UpdateDefense(Player& player, uint32 diff, SpawnTime const* schedule, size_t count, size_t finalWave, uint32 credit)
+    void UpdateDefense(Player& player, uint32 diff, DefenseWave wave, uint32 credit)
     {
         _elapsed += diff;
-        while (_published < count && _elapsed - _waveStart >= schedule[_published].Delay)
+        while (_published < wave.Count && _elapsed - _waveStart >= wave.Spawns[_published].Delay)
         {
-            SpawnTime const& spawn = schedule[_published];
+            SpawnTime const& spawn = wave.Spawns[_published];
             Position start = Ground(spawn.Row, Columns - 1);
             start.m_positionX += PlotSpacing;
             TempSummon* zombie = me->SummonCreature(spawn.Entry, start, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
@@ -447,31 +496,32 @@ private:
             // The lawn owns movement, melee and spell selection. Ordinary creature
             // AI can evade and reset health when the lawn issues a melee swing.
             zombie->AIM_Initialize(new NullCreatureAI(zombie));
-            uint32 health = spawn.Entry == Aberration ? 3388 : spawn.Entry == Ghoul ? 968 : 390;
+            uint32 health = spawn.Entry == Abomination ? 7260 : spawn.Entry == Aberration ? 3388 : spawn.Entry == Ghoul ? 968 : 390;
             zombie->SetMaxHealth(health);
             zombie->SetHealth(health);
             zombie->setRegeneratingHealth(false);
             zombie->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
             zombie->SetWalk(true);
-            zombie->SetSpeed(MOVE_WALK, spawn.Entry == Zombie ? 0.6f : 0.85f);
+            zombie->SetSpeed(MOVE_WALK, spawn.Entry == Abomination ? 0.5f : spawn.Entry == Zombie ? 0.6f : 0.85f);
             zombie->GetMotionMaster()->MovePoint(1, Ground(spawn.Row, 0), false);
             _enemies.emplace(zombie->GetGUID(), spawn.Row);
             if (_quest == BasicBotany && _published == 1)
                 Notify(player, 49558);
-            else if (_published == finalWave)
+            else if (_published == wave.Warning)
                 Notify(player, 49409);
             ++_published;
         }
-        if (_defeated == count)
+        if (_defeated == wave.Count)
         {
             player.KilledMonsterCredit(credit);
-            if (credit == GrainsWave && !_secondWave)
+            if (WaveCredit(_quest) && !_secondWave)
             {
                 _secondWave = true;
                 _waveStart = _elapsed;
                 _published = 0;
                 _defeated = 0;
-                DropSeeds(StranglerSeeds, _firstWaveLastKill);
+                if (_quest == GhoulsHateMyGrains)
+                    DropSeeds(StranglerSeeds, _firstWaveLastKill);
                 return;
             }
             Notify(player, _quest == BasicBotany ? 49552 : 49551);
@@ -504,8 +554,12 @@ private:
         if (!plot.Plant)
             return;
         Creature* plant = ObjectAccessor::GetCreature(*me, plot.Plant);
-        if (!plant || !plant->IsAlive())
+        bool firedBomb = plant && plant->IsAlive() && plot.PlantEntry == Pumpkin && _elapsed >= plot.NextAction &&
+            plant->CastSpell(plant, PumpkinExplosion, true) == SPELL_CAST_OK;
+        if (!plant || !plant->IsAlive() || firedBomb)
         {
+            if (firedBomb)
+                plant->DespawnOrUnsummon(1);
             if (GameObject* model = me->GetMap()->GetGameObject(plot.Model))
                 model->Delete();
             if (plot.Grappled)
@@ -522,9 +576,9 @@ private:
             plant->CastSpell(plant, FreezyaBlast, true);
         else if (plot.PlantEntry == Strangler)
             UpdateStrangler(plot, *plant);
-        else if (plot.PlantEntry == Sunflower && _elapsed >= plot.NextSolar)
+        else if (plot.PlantEntry == Sunflower && _elapsed >= plot.NextAction)
         {
-            plot.NextSolar = _elapsed + 9000;
+            plot.NextAction = _elapsed + 9000;
             CreateSolarPower(plant->GetPosition());
         }
     }
@@ -555,7 +609,7 @@ private:
 
     void UpdateZombie(Creature& zombie, uint8 row)
     {
-        if (zombie.HasAura(Strangle))
+        if (zombie.GetEntry() != Abomination && zombie.HasAura(Strangle))
         {
             if (!zombie.movespline->Finalized())
                 zombie.StopMoving();
@@ -742,6 +796,38 @@ class spell_brazie_freezya_blast : public SpellScript
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_freezya_blast::TargetLane, EFFECT_2, TARGET_UNIT_CONE_ENEMY_104);
     }
 };
+
+class spell_brazie_pumpkin_explosion : public SpellScript
+{
+    PrepareSpellScript(spell_brazie_pumpkin_explosion);
+
+    void SelectPlots(std::list<WorldObject*>& targets, bool center)
+    {
+        TempSummon* bomb = GetCaster()->ToTempSummon();
+        auto board = bomb && bomb->GetEntry() == Pumpkin ? GetBoard(bomb->GetSummoner()) : nullptr;
+        if (!board || !board->Rider())
+        {
+            targets.clear();
+            return;
+        }
+        targets.remove_if([&](WorldObject* target)
+        {
+            float distance = std::max(std::abs(bomb->GetPositionX() - target->GetPositionX()),
+                std::abs(bomb->GetPositionY() - target->GetPositionY()));
+            return !board->IsEnemy(*target) || distance > PlotSpacing * 1.5f ||
+                (distance <= PlotSpacing * 0.5f) != center;
+        });
+    }
+
+    void Center(std::list<WorldObject*>& targets) { SelectPlots(targets, true); }
+    void Adjacent(std::list<WorldObject*>& targets) { SelectPlots(targets, false); }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_pumpkin_explosion::Center, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_pumpkin_explosion::Adjacent, EFFECT_1, TARGET_UNIT_DEST_AREA_ENTRY);
+    }
+};
 }
 
 inline void AddSC_hillsbrad_basic_botany()
@@ -754,6 +840,7 @@ inline void AddSC_hillsbrad_basic_botany()
     RegisterSpellScript(spell_brazie_collect_freezya_seeds);
     RegisterSpellScript(spell_brazie_spitter_venom);
     RegisterSpellScript(spell_brazie_freezya_blast);
+    RegisterSpellScript(spell_brazie_pumpkin_explosion);
 }
 
 #endif

@@ -17,7 +17,7 @@ Quest const* LoadBotanyInputs()
     auto row = WorldDatabase.Query(
 #include "NativeBrazieBasicBotany.inc"
     );
-    Require(row && row->GetRowCount() == 3, "Missing a Brazie quest template");
+    Require(row && row->GetRowCount() == std::size(Quests), "Missing a Brazie quest template");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -28,23 +28,24 @@ Quest const* LoadBotanyInputs()
         const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates()).emplace(quest->GetQuestId(), quest);
     } while (row->NextRow());
     auto objective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN(28733,28617,28744)");
-    Require(objective && objective->GetRowCount() == 3, "Missing original Brazie victory objectives");
+        "FROM quest_objectives WHERE QuestID IN(28733,28617,28744,28747)");
+    Require(objective && objective->GetRowCount() == std::size(Quests), "Missing original Brazie victory objectives");
     do
     {
         auto data = objective->Fetch();
         auto* quest = quests[data[1].GetUInt32()];
-        uint32 credit = quest->GetQuestId() == BasicBotany ? IntroduceBotany : quest->GetQuestId() == FlowerPower ? FlowerWave : GrainsWave;
-        Require(data[4].GetUInt32() == credit && data[5].GetInt32() == (credit == GrainsWave ? 2 : 1), "Original credit changed");
+        uint32 multiWave = WaveCredit(quest->GetQuestId());
+        uint32 credit = multiWave ? multiWave : quest->GetQuestId() == BasicBotany ? IntroduceBotany : FlowerWave;
+        Require(data[4].GetUInt32() == credit && data[5].GetInt32() == (multiWave ? 2 : 1), "Original credit changed");
         quest->LoadQuestObjective(data);
         quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     } while (objective->NextRow());
-    auto predecessor = WorldDatabase.Query("SELECT PrevQuestID FROM quest_template_addon WHERE ID=28617");
-    Require(predecessor && predecessor->Fetch()[0].GetInt32() == BasicBotany, "Flower Power must follow Basic Botany");
-    quests[FlowerPower]->prevQuests.push_back(BasicBotany);
-    predecessor = WorldDatabase.Query("SELECT PrevQuestID FROM quest_template_addon WHERE ID=28744");
-    Require(predecessor && predecessor->Fetch()[0].GetInt32() == FlowerPower, "Ghouls Hate My Grains must follow Flower Power");
-    quests[GhoulsHateMyGrains]->prevQuests.push_back(FlowerPower);
+    for (size_t i = 1; i < std::size(Quests); ++i)
+    {
+        auto predecessor = WorldDatabase.PQuery("SELECT PrevQuestID FROM quest_template_addon WHERE ID=%u", Quests[i]);
+        Require(predecessor && predecessor->Fetch()[0].GetUInt32() == Quests[i - 1], "Brazie stages must follow the original order");
+        quests[Quests[i]]->prevQuests.push_back(Quests[i - 1]);
+    }
 
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -56,9 +57,9 @@ Quest const* LoadBotanyInputs()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid=131600");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(49194,49604,49560)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(91646,91649,91687,91704,91710,91748,92339,92434,92440,92441)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(28733,28617,28744)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(28733,28617,28744)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(91646,91649,91687,91704,91710,91748,92157,92159,92339,92434,92440,92441)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(28733,28617,28744,28747)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(28733,28617,28744,28747)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
@@ -113,7 +114,8 @@ void Advance(::Map& map, LootPlayer& owner, Creature& board, uint32 diff)
 {
     Tick(owner, diff);
     board.Update(diff);
-    for (uint32 entry : {SolarPower, Spitter, Sunflower, Freezya, FreezyaSeeds, Rocknut, Strangler, StranglerSeeds, Zombie, Ghoul, Aberration})
+    for (uint32 entry : {SolarPower, Spitter, Sunflower, Freezya, FreezyaSeeds, Rocknut, Strangler, StranglerSeeds, Pumpkin,
+        Zombie, Ghoul, Aberration, Abomination})
         for (Creature* actor : Children(board, entry))
             actor->Update(diff);
     map.MoveAllCreaturesInMoveList();
@@ -246,12 +248,14 @@ void CheckFlower(Quest const* quest)
     std::cout << "PASS Flower Power native prerequisite, 3 lanes, Sunflower production, seed unlock, Freezya slow, clear and reward\n";
 }
 
-void CheckGrains(Quest const* quest)
+void CheckMultiWave(Quest const* quest)
 {
+    uint32 questId = quest->GetQuestId(), objective = WaveCredit(questId);
+    bool pumpkinStage = questId == PumpkinBombLesson;
     ::Map map(0, 300, 0, DIFFICULTY_NONE);
     BotanyGiver brazie(map);
-    LootPlayer owner(SupplySession(), map, 2874401, brazie.GetNearPosition(2.0f, 0.0f));
-    LootPlayer visitor(SupplySession(), map, 2874402, brazie.GetNearPosition(2.0f, 0.0f));
+    LootPlayer owner(SupplySession(), map, questId * 100 + 1, brazie.GetNearPosition(2.0f, 0.0f));
+    LootPlayer visitor(SupplySession(), map, questId * 100 + 2, brazie.GetNearPosition(2.0f, 0.0f));
     for (auto* player : {&owner, &visitor})
     {
         player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_ORC);
@@ -263,15 +267,16 @@ void CheckGrains(Quest const* quest)
         for (uint16 field : {UNIT_FIELD_MOD_TIME_RATE, UNIT_FIELD_MOD_CASTING_SPEED, UNIT_FIELD_MOD_SPELL_HASTE, UNIT_FIELD_MOD_HASTE, UNIT_FIELD_MOD_HASTE_REGEN})
             player->SetFloatValue(field, 1.0f);
     }
-    Require(!owner.CanTakeQuest(quest, false), "Ghouls Hate My Grains was available before Flower Power's reward");
-    owner.SetRewardedQuest(FlowerPower);
+    Require(!owner.CanTakeQuest(quest, false), "A Brazie stage was available before the previous reward");
+    owner.SetRewardedQuest(pumpkinStage ? GhoulsHateMyGrains : FlowerPower);
     WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
     accept.QuestGiverGUID = brazie.GetGUID();
-    accept.QuestID = GhoulsHateMyGrains;
+    accept.QuestID = questId;
     owner.GetSession()->HandleQuestGiverAcceptQuest(accept);
     Creature* board = CurrentBoard(owner);
-    Require(board && board->HasSpell(PlantRocknut) && board->HasSpell(PlantFreezya) && !board->HasSpell(PlantStrangler),
-        "Ghouls Hate My Grains did not start with the earned plants and Rocknut");
+    Require(board && board->HasSpell(PlantRocknut) && board->HasSpell(PlantFreezya) &&
+        board->HasSpell(PlantStrangler) == pumpkinStage && board->HasSpell(PlantPumpkin) == pumpkinStage,
+        "Brazie did not start with the earned plants only");
     for (unsigned i = 0; i < 40 && owner.GetVehicleBase() != board; ++i)
         Advance(map, owner, *board, 50);
     Advance(map, owner, *board, 1000);
@@ -281,6 +286,7 @@ void CheckGrains(Quest const* quest)
     std::array<bool, Rows> rows{};
     bool firstWave = false, seeds = false, held = false, aberration = false, wallBitten = false;
     bool wallMesh = false, vineMesh = false;
+    bool bombMesh = false, litBomb = false, blastDamage = false, abomination = false;
     auto plant = [&](uint32 spell, uint32 entry, int32 cost, uint8 row, uint8 column)
     {
         if (board->GetPower(POWER_ENERGY) < cost)
@@ -309,9 +315,22 @@ void CheckGrains(Quest const* quest)
             plant(PlantSunflower, Sunflower, 10, row, 1);
         for (uint8 row : {2, 1, 3, 0, 4})
             plant(PlantFreezya, Freezya, 20, row, 3);
-        if (seeds)
+        if (pumpkinStage && Children(*board, Pumpkin).empty())
+            for (uint32 entry : {Abomination, Aberration})
+            {
+                for (Creature* enemy : Children(*board, entry))
+                    if (enemy->IsAlive() && enemy->GetPositionX() >= FirstColumnX + 5.5f * PlotSpacing)
+                    {
+                        uint8 row = uint8(std::lround((FirstRowY - enemy->GetPositionY()) / PlotSpacing));
+                        plant(PlantPumpkin, Pumpkin, 40, row, 7);
+                        break;
+                    }
+                if (!Children(*board, Pumpkin).empty())
+                    break;
+            }
+        if (seeds || pumpkinStage)
             for (uint8 row : {2, 1, 3, 0, 4})
-                plant(PlantStrangler, Strangler, 30, row, 7);
+                plant(PlantStrangler, Strangler, 30, row, pumpkinStage ? 6 : 7);
         for (uint8 row : {2, 1, 3, 0, 4})
         {
             plant(PlantSpitter, Spitter, 20, row, 4);
@@ -331,9 +350,10 @@ void CheckGrains(Quest const* quest)
         };
         verifyModel(RocknutModel, wallMesh);
         verifyModel(StranglerModel, vineMesh);
-        if (owner.GetQuestObjectiveData(GhoulsHateMyGrains, GrainsWave) == 1)
+        verifyModel(PumpkinBombModel, bombMesh);
+        if (owner.GetQuestObjectiveData(questId, objective) == 1)
         {
-            Require(owner.GetQuestStatus(GhoulsHateMyGrains) == QUEST_STATUS_INCOMPLETE && owner.GetVehicleBase() == board,
+            Require(owner.GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE && owner.GetVehicleBase() == board,
                 "First wave handed off before the second real fight");
             firstWave = true;
         }
@@ -347,36 +367,46 @@ void CheckGrains(Quest const* quest)
             bag->HandleSpellClick(&owner);
             Require(board->HasSpell(PlantStrangler), "The real seed click did not unlock the native Vine cast");
             bag->HandleSpellClick(&owner);
-            Require(owner.GetQuestObjectiveData(GhoulsHateMyGrains, GrainsWave) == 1, "Seed replay advanced the quest");
+            Require(owner.GetQuestObjectiveData(questId, objective) == 1, "Seed replay advanced the quest");
             seeds = true;
         }
-        for (uint32 entry : {Zombie, Ghoul, Aberration})
+        litBomb = litBomb || !Children(*board, Pumpkin).empty();
+        std::vector<std::pair<ObjectGuid, uint64>> targetsNearBomb;
+        for (uint32 entry : {Zombie, Ghoul, Aberration, Abomination})
             for (Creature* actor : Children(*board, entry))
             {
                 uint8 row = uint8(std::lround((FirstRowY - actor->GetPositionY()) / PlotSpacing));
                 Require(row < Rows, "Grains enemy left the valid lanes");
                 rows[row] = true;
                 aberration = aberration || entry == Aberration;
+                abomination = abomination || entry == Abomination;
                 held = held || actor->HasAura(Strangle);
+                if (actor->IsAlive() && !Children(*board, Pumpkin).empty())
+                    targetsNearBomb.emplace_back(actor->GetGUID(), actor->GetHealth());
             }
         Advance(map, owner, *board, 1000);
+        if (owner.GetVehicleBase() == board && Children(*board, Pumpkin).empty())
+            for (auto const& [guid, healthBefore] : targetsNearBomb)
+                if (Creature* enemy = map.GetCreature(guid); enemy && healthBefore > enemy->GetHealth() + 1500)
+                    blastDamage = true;
     }
     std::cout << "CASE Grains first " << firstWave << " seeds " << seeds << " grapple " << held
         << " aberration " << aberration << " wall bitten " << wallBitten << " credit "
-        << owner.GetQuestObjectiveData(GhoulsHateMyGrains, GrainsWave) << '\n';
-    Require(firstWave && seeds && held && aberration && wallBitten && wallMesh && vineMesh &&
+        << owner.GetQuestObjectiveData(questId, objective) << " bomb " << litBomb << " blast " << blastDamage << " abomination " << abomination << '\n';
+    Require(firstWave && held && aberration && wallBitten && wallMesh && vineMesh &&
+        (pumpkinStage ? litBomb && blastDamage && bombMesh && abomination : seeds) &&
         std::all_of(rows.begin(), rows.end(), [](bool row) { return row; }),
         "Grains did not exercise both waves, all five lanes, a wall, a grapple and the original final-wave enemy");
-    Require(owner.GetQuestStatus(GhoulsHateMyGrains) == QUEST_STATUS_COMPLETE && !owner.GetVehicle() &&
-        owner.GetQuestObjectiveData(GhoulsHateMyGrains, GrainsWave) == 2 && !visitor.GetQuestObjectiveData(GhoulsHateMyGrains, GrainsWave),
+    Require(owner.GetQuestStatus(questId) == QUEST_STATUS_COMPLETE && !owner.GetVehicle() &&
+        owner.GetQuestObjectiveData(questId, objective) == 2 && !visitor.GetQuestObjectiveData(questId, objective),
         "Grains did not finish on the original two real waves for the owner");
     map.RemoveAllObjectsInRemoveList();
     WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
-    reward.QuestID = GhoulsHateMyGrains;
+    reward.QuestID = questId;
     reward.QuestGiverGUID = brazie.GetGUID();
     owner.GetSession()->HandleQuestGiverChooseReward(reward);
-    Require(owner.GetQuestRewardStatus(GhoulsHateMyGrains), "Brazie did not accept the two waves for reward");
-    std::cout << "PASS Ghouls Hate My Grains native acceptance, original wall/vine, first-wave seeds, five lanes, Aberration and reward\n";
+    Require(owner.GetQuestRewardStatus(questId), "Brazie did not accept the two waves for reward");
+    std::cout << "PASS Brazie two-wave native fight and reward " << questId << '\n';
 }
 
 void CheckBotany(Quest const* quest)
@@ -537,7 +567,9 @@ int main(int argc, char** argv)
         if (BrazieStage >= 2)
             CheckFlower(sQuestDataStore->GetQuestTemplate(FlowerPower));
         if (BrazieStage >= 3)
-            CheckGrains(sQuestDataStore->GetQuestTemplate(GhoulsHateMyGrains));
+            CheckMultiWave(sQuestDataStore->GetQuestTemplate(GhoulsHateMyGrains));
+        if (BrazieStage >= 4)
+            CheckMultiWave(sQuestDataStore->GetQuestTemplate(PumpkinBombLesson));
         CharacterDatabase.Close();
         LoginDatabase.Close();
         HotfixDatabase.Close();
