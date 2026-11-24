@@ -4427,6 +4427,7 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     }
 
     Player* botanist = nullptr;
+    uint32 botanyQuest = 0;
     if (entry == BrazieBotany::Board && spellId == BrazieBotany::SummonBoard)
     {
         using namespace BrazieBotany;
@@ -4434,9 +4435,18 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         CreatureData const* giver = sObjectMgr->GetCreatureData(GiverSpawn);
         if (!botanist || GetId() != BrazieBotany::Map || !properties || properties->ID != BoardProperties ||
             !botanist->IsAlive() || botanist->GetVehicle() || botanist->IsBeingTeleported() ||
-            botanist->GetQuestStatus(BasicBotany) != QUEST_STATUS_INCOMPLETE || !giver || giver->id != Giver ||
+            !giver || giver->id != Giver ||
             !botanist->IsWithinDist3d(giver->posX, giver->posY, giver->posZ, INTERACTION_DISTANCE + 1.0f) ||
             !botanist->IsWithinDist3d(&pos, 1.0f))
+            return nullptr;
+
+        for (uint32 quest : {BasicBotany, FlowerPower})
+            if (botanist->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+            {
+                botanyQuest = quest;
+                break;
+            }
+        if (!botanyQuest)
             return nullptr;
 
         for (ObjectGuid const& guid : *botanist->GetSummonList(entry))
@@ -4778,7 +4788,7 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         wildlifeRider->BindQuestObject(DarkshoreWildlifeFlight::QuestId, summon, false);
 
     if (botanist)
-        botanist->BindQuestObject(BrazieBotany::BasicBotany, summon);
+        botanist->BindQuestObject(botanyQuest, summon);
 
     if (totemOwner)
         totemOwner->BindQuestObject(ScorpidVenom::Quest, summon);

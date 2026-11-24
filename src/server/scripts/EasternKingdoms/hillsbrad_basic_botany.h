@@ -13,6 +13,7 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
+#include "SpellInfo.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include "Vehicle.h"
@@ -25,12 +26,22 @@ using namespace BrazieBotany;
 constexpr uint32 EmptySpot = 49190;
 constexpr uint32 SolarPower = 49194;
 constexpr uint32 Spitter = 49200;
+constexpr uint32 Sunflower = 49193;
+constexpr uint32 Freezya = 49618;
+constexpr uint32 FreezyaSeeds = 49604;
 constexpr uint32 Zombie = 49209;
+constexpr uint32 Ghoul = 49232;
 constexpr uint32 IntroduceBotany = 49189;
+constexpr uint32 FlowerWave = 49542;
 constexpr uint32 PlantSpitter = 91649;
+constexpr uint32 PlantSunflower = 91646;
+constexpr uint32 PlantFreezya = 92440;
+constexpr uint32 PickFreezyaSeeds = 92434;
 constexpr uint32 GainSolarPower = 91687;
 constexpr uint32 SunSphere = 91707;
+constexpr uint32 SeedSparkles = 92406;
 constexpr uint32 VenomSpit = 91748;
+constexpr uint32 FreezyaBlast = 92441;
 constexpr uint32 AddSolarPower = 94068;
 constexpr uint8 Rows = 5;
 constexpr uint8 Columns = 8;
@@ -40,6 +51,52 @@ constexpr float FirstColumnX = -108.0f;
 constexpr float FirstRowY = 236.0f;
 constexpr uint32 Retry = GOSSIP_ACTION_INFO_DEF + 1;
 
+struct PlantDefinition
+{
+    uint32 Spell;
+    uint32 Actor;
+    uint32 Model;
+    uint32 Health;
+};
+
+constexpr PlantDefinition Plants[] =
+{
+    {PlantSpitter, Spitter, SpitterModel, 360},
+    {PlantSunflower, Sunflower, SunflowerModel, 484},
+    {PlantFreezya, Freezya, FreezyaModel, 484}
+};
+
+struct SpawnTime
+{
+    uint32 Delay;
+    uint8 Row;
+    uint32 Entry;
+};
+
+constexpr SpawnTime TutorialWave[] =
+{
+    {4000, CenterRow, Zombie}, {12000, CenterRow, Zombie}, {20000, CenterRow, Zombie}, {30000, CenterRow, Zombie},
+    {32000, CenterRow, Zombie}, {34000, CenterRow, Zombie}, {36000, CenterRow, Zombie}, {38000, CenterRow, Zombie}
+};
+
+// Flower Power leaves the outer rows safe. The middle rows introduce ghouls
+// after the first zombies, followed by one large mixed wave.
+constexpr SpawnTime FlowerPowerWave[] =
+{
+    {26000, 2, Zombie}, {37000, 1, Zombie}, {48000, 3, Zombie}, {57000, 2, Zombie},
+    {70000, 1, Ghoul}, {78000, 3, Zombie}, {84000, 3, Ghoul}, {92000, 2, Ghoul},
+    {112000, 1, Zombie}, {112000, 2, Zombie}, {112000, 3, Zombie}, {116000, 2, Ghoul},
+    {120000, 1, Ghoul}, {120000, 3, Ghoul}, {124000, 2, Zombie}, {128000, 1, Zombie}, {128000, 3, Zombie}
+};
+
+inline uint32 ActiveQuest(Player const& player)
+{
+    for (uint32 quest : {BasicBotany, FlowerPower})
+        if (player.GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+            return quest;
+    return 0;
+}
+
 class npc_brazie_basic_botany : public CreatureScript
 {
 public:
@@ -47,7 +104,7 @@ public:
 
     bool OnQuestAccept(Player* player, Creature* giver, Quest const* quest) override
     {
-        if (quest->GetQuestId() == BasicBotany && CanStart(player, giver))
+        if (quest->GetQuestId() == ActiveQuest(*player) && CanStart(player, giver))
             player->CastSpell(player, SummonBoard, true);
         return false;
     }
@@ -58,7 +115,7 @@ public:
             return false;
         player->PlayerTalkClass->ClearMenus();
         player->PrepareQuestMenu(giver->GetGUID());
-        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I'm ready to try Basic Botany again.", GOSSIP_SENDER_MAIN, Retry);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I'm ready to try again.", GOSSIP_SENDER_MAIN, Retry);
         player->PlayerTalkClass->SendGossipMenu(player->GetGossipTextId(giver), giver->GetGUID());
         return true;
     }
@@ -78,7 +135,7 @@ private:
         return giver->GetDBTableGUIDLow() == GiverSpawn && giver->GetMapId() == BrazieBotany::Map && giver->IsAlive() &&
             player->IsAlive() && !player->GetVehicle() && !player->isInCombat() && !player->isInFlight() &&
             player->IsWithinDistInMap(giver, INTERACTION_DISTANCE) && player->IsWithinLOSInMap(giver) &&
-            player->GetQuestStatus(BasicBotany) == QUEST_STATUS_INCOMPLETE;
+            ActiveQuest(*player) != 0;
     }
 };
 
@@ -87,6 +144,8 @@ struct Plot
     ObjectGuid Spot;
     ObjectGuid Plant;
     ObjectGuid Model;
+    uint32 PlantEntry = 0;
+    uint32 NextSolar = 0;
 };
 
 class npc_brazie_basic_botany_board : public ScriptedAI
@@ -105,12 +164,15 @@ public:
             return;
         }
         _owner = summoner->GetGUID();
+        _quest = ActiveQuest(*summoner->ToPlayer());
         me->setFaction(summoner->getFaction());
         me->SetReactState(REACT_PASSIVE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 0);
+        if (_quest == FlowerPower)
+            me->m_templateSpells[1] = PlantSunflower;
     }
 
     void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
@@ -132,14 +194,25 @@ public:
         summon->SetReactState(REACT_PASSIVE);
         if (summon->GetEntry() == SolarPower)
             summon->CastSpell(summon, SunSphere, true);
+        else if (summon->GetEntry() == FreezyaSeeds)
+            summon->CastSpell(summon, SeedSparkles, true);
     }
 
-    void SummonedCreatureDespawn(Creature* summon) override { _summons.Despawn(summon); }
+    void SummonedCreatureDespawn(Creature* summon) override
+    {
+        _summons.Despawn(summon);
+        if (_seeds == summon->GetGUID())
+            _seeds.Clear();
+    }
 
     void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
     {
-        if (summon->GetEntry() == Zombie && _zombies.erase(summon->GetGUID()))
-            ++_defeated;
+        if (!_enemies.erase(summon->GetGUID()))
+            return;
+        ++_defeated;
+        if (_quest == FlowerPower && _defeated >= 3 && !_freezyaUnlocked && !_seeds)
+            if (TempSummon* seedBag = me->SummonCreature(FreezyaSeeds, summon->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN))
+                _seeds = seedBag->GetGUID();
     }
 
     Player* Rider() const
@@ -148,7 +221,7 @@ public:
         Unit* rider = kit ? kit->GetPassenger(0) : nullptr;
         Player* player = rider ? rider->ToPlayer() : nullptr;
         return player && player->GetGUID() == _owner && player->IsAlive() && !player->IsBeingTeleported() &&
-            player->GetQuestStatus(BasicBotany) == QUEST_STATUS_INCOMPLETE && !me->IsQuestObjectExpired() ? player : nullptr;
+            _quest && player->GetQuestStatus(_quest) == QUEST_STATUS_INCOMPLETE && !me->IsQuestObjectExpired() ? player : nullptr;
     }
 
     void UpdateAI(uint32 diff) override
@@ -171,21 +244,21 @@ public:
                 Finish();
                 return;
             }
-            Notify(*player, 49559);
+            Notify(*player, _quest == BasicBotany ? 49559 : 49566);
         }
         if (diff >= _sunTimer)
         {
             _sunTimer = 2000;
             constexpr uint8 sunColumns[] = {2, 5, 3, 6, 1, 4, 7, 0};
-            Position sun = Ground(CenterRow, sunColumns[_sunCursor++ % Columns]);
-            sun.m_positionZ += 1.0f;
-            me->SummonCreature(SolarPower, sun, TEMPSUMMON_TIMED_DESPAWN, 10000);
+            CreateSolarPower(Ground(CenterRow, sunColumns[_sunCursor++ % Columns]));
         }
         else
             _sunTimer -= diff;
 
-        if (_defendedLane)
-            UpdateTutorial(*player, diff);
+        if (_quest == FlowerPower)
+            UpdateDefense(*player, diff, FlowerPowerWave, std::size(FlowerPowerWave), 8, FlowerWave);
+        else if (_defendedLane)
+            UpdateDefense(*player, diff, TutorialWave, std::size(TutorialWave), 3, IntroduceBotany);
     }
 
     Plot* FindEmptyPlot(Position const* destination)
@@ -203,25 +276,37 @@ public:
         return nullptr;
     }
 
-    bool PlaceSpitter(Plot& plot)
+    PlantDefinition const* AllowedPlant(uint32 spell) const
+    {
+        if (!me->HasSpell(spell))
+            return nullptr;
+        for (auto const& plant : Plants)
+            if (plant.Spell == spell)
+                return &plant;
+        return nullptr;
+    }
+
+    bool PlacePlant(Plot& plot, PlantDefinition const& definition)
     {
         Creature* spot = ObjectAccessor::GetCreature(*me, plot.Spot);
         if (!spot || plot.Plant || !Rider())
             return false;
-        TempSummon* plant = me->SummonCreature(Spitter, spot->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN);
+        TempSummon* plant = me->SummonCreature(definition.Actor, spot->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN);
         if (!plant)
             return false;
-        GameObject* model = me->SummonGameObject(SpitterModel, spot->GetPosition(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0);
+        GameObject* model = me->SummonGameObject(definition.Model, spot->GetPosition(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0);
         if (!model)
         {
             plant->DespawnOrUnsummon(1);
             return false;
         }
         plant->setFaction(2263);
-        plant->SetMaxHealth(360);
-        plant->SetHealth(360);
+        plant->SetMaxHealth(definition.Health);
+        plant->SetHealth(definition.Health);
         plot.Plant = plant->GetGUID();
         plot.Model = model->GetGUID();
+        plot.PlantEntry = definition.Actor;
+        plot.NextSolar = _elapsed + 9000;
         if (std::abs(spot->GetPositionY() - Ground(CenterRow, 0).GetPositionY()) < 0.5f)
             _defendedLane = true;
         return true;
@@ -238,13 +323,29 @@ public:
         return false;
     }
 
-    bool IsTutorialZombie(WorldObject* object) const { return _zombies.count(object->GetGUID()) != 0; }
+    bool CollectSeeds(Creature& seeds, Player& player)
+    {
+        if (_quest != FlowerPower || &player != Rider() || _freezyaUnlocked || seeds.GetGUID() != _seeds || seeds.IsDespawn())
+            return false;
+        _freezyaUnlocked = true;
+        me->m_templateSpells[2] = PlantFreezya;
+        player.VehicleSpellInitialize();
+        return true;
+    }
+
+    bool IsEnemy(WorldObject const& object) const { return _enemies.count(object.GetGUID()) != 0; }
 
 private:
     static void Notify(Player& player, uint32 textId)
     {
         if (BroadcastTextEntry const* text = sBroadcastTextStore.LookupEntry(textId))
             player.GetSession()->SendNotification("%s", DB2Manager::GetBroadcastTextValue(text, player.GetSession()->GetSessionDbLocaleIndex()));
+    }
+
+    void CreateSolarPower(Position position)
+    {
+        position.m_positionZ += 1.0f;
+        me->SummonCreature(SolarPower, position, TEMPSUMMON_TIMED_DESPAWN, 10000);
     }
 
     Position Ground(uint8 row, uint8 column) const
@@ -272,33 +373,35 @@ private:
         return true;
     }
 
-    void UpdateTutorial(Player& player, uint32 diff)
+    void UpdateDefense(Player& player, uint32 diff, SpawnTime const* schedule, size_t count, size_t finalWave, uint32 credit)
     {
-        // Three examples introduce the lane, followed by the tutorial's five-zombie wave.
-        constexpr uint32 waves[] = {4000, 12000, 20000, 30000, 32000, 34000, 36000, 38000};
         _elapsed += diff;
-        if (_published < std::size(waves) && _elapsed >= waves[_published])
+        while (_published < count && _elapsed >= schedule[_published].Delay)
         {
-            Position start = Ground(CenterRow, Columns - 1);
+            SpawnTime const& spawn = schedule[_published];
+            Position start = Ground(spawn.Row, Columns - 1);
             start.m_positionX += PlotSpacing;
-            if (TempSummon* zombie = me->SummonCreature(Zombie, start, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000))
-            {
-                zombie->SetMaxHealth(390);
-                zombie->SetHealth(390);
-                zombie->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
-                zombie->GetMotionMaster()->MovePoint(1, Ground(CenterRow, 0), false, 1.5f);
-                _zombies.insert(zombie->GetGUID());
-                if (_published == 1)
-                    Notify(player, 49558);
-                else if (_published == 3)
-                    Notify(player, 49409);
-                ++_published;
-            }
+            TempSummon* zombie = me->SummonCreature(spawn.Entry, start, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
+            if (!zombie)
+                break;
+            uint32 health = spawn.Entry == Ghoul ? 968 : 390;
+            zombie->SetMaxHealth(health);
+            zombie->SetHealth(health);
+            zombie->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+            zombie->SetWalk(true);
+            zombie->SetSpeed(MOVE_WALK, spawn.Entry == Ghoul ? 0.85f : 0.6f);
+            zombie->GetMotionMaster()->MovePoint(1, Ground(spawn.Row, 0), false);
+            _enemies.emplace(zombie->GetGUID(), spawn.Row);
+            if (_quest == BasicBotany && _published == 1)
+                Notify(player, 49558);
+            else if (_published == finalWave)
+                Notify(player, 49409);
+            ++_published;
         }
-        if (_defeated == std::size(waves))
+        if (_defeated == count)
         {
-            player.KilledMonsterCredit(IntroduceBotany);
-            Notify(player, 49552);
+            player.KilledMonsterCredit(credit);
+            Notify(player, _quest == BasicBotany ? 49552 : 49551);
             Finish();
             return;
         }
@@ -308,21 +411,10 @@ private:
             return;
         }
         _attackTimer = 1000;
-        for (Plot& plot : _plots[CenterRow])
-        {
-            if (!plot.Plant)
-                continue;
-            if (Creature* plant = ObjectAccessor::GetCreature(*me, plot.Plant); plant && plant->IsAlive())
-            {
-                plant->CastSpell(plant, VenomSpit, true);
-                continue;
-            }
-            if (GameObject* model = me->GetMap()->GetGameObject(plot.Model))
-                model->Delete();
-            plot.Plant.Clear();
-            plot.Model.Clear();
-        }
-        for (ObjectGuid guid : _zombies)
+        for (auto& row : _plots)
+            for (Plot& plot : row)
+                UpdatePlant(plot);
+        for (auto const& [guid, row] : _enemies)
             if (Creature* zombie = ObjectAccessor::GetCreature(*me, guid); zombie && zombie->IsAlive())
             {
                 if (zombie->GetPositionX() <= FirstColumnX + 0.75f)
@@ -330,13 +422,37 @@ private:
                     Finish();
                     return;
                 }
-                UpdateZombie(*zombie);
+                UpdateZombie(*zombie, row);
             }
     }
 
-    void UpdateZombie(Creature& zombie)
+    void UpdatePlant(Plot& plot)
     {
-        for (Plot const& plot : _plots[CenterRow])
+        if (!plot.Plant)
+            return;
+        Creature* plant = ObjectAccessor::GetCreature(*me, plot.Plant);
+        if (!plant || !plant->IsAlive())
+        {
+            if (GameObject* model = me->GetMap()->GetGameObject(plot.Model))
+                model->Delete();
+            plot.Plant.Clear();
+            plot.Model.Clear();
+            return;
+        }
+        if (plot.PlantEntry == Spitter)
+            plant->CastSpell(plant, VenomSpit, true);
+        else if (plot.PlantEntry == Freezya)
+            plant->CastSpell(plant, FreezyaBlast, true);
+        else if (plot.PlantEntry == Sunflower && _elapsed >= plot.NextSolar)
+        {
+            plot.NextSolar = _elapsed + 9000;
+            CreateSolarPower(plant->GetPosition());
+        }
+    }
+
+    void UpdateZombie(Creature& zombie, uint8 row)
+    {
+        for (Plot const& plot : _plots[row])
         {
             Creature* plant = ObjectAccessor::GetCreature(*me, plot.Plant);
             if (!plant || !plant->IsAlive() || !zombie.IsWithinMeleeRange(plant))
@@ -347,7 +463,7 @@ private:
             return;
         }
         if (zombie.movespline->Finalized())
-            zombie.GetMotionMaster()->MovePoint(1, Ground(CenterRow, 0), false, 1.5f);
+            zombie.GetMotionMaster()->MovePoint(1, Ground(row, 0), false);
     }
 
     void Finish()
@@ -368,9 +484,11 @@ private:
 
     SummonList _summons;
     ObjectGuid _owner;
+    ObjectGuid _seeds;
     std::array<std::array<Plot, Columns>, Rows> _plots{};
-    GuidUnorderedSet _zombies;
+    std::unordered_map<ObjectGuid, uint8> _enemies;
     GuidUnorderedSet _spentSolar;
+    uint32 _quest = 0;
     uint32 _remaining = 10000;
     uint32 _sunTimer = 0;
     uint32 _elapsed = 0;
@@ -381,6 +499,7 @@ private:
     bool _left = false;
     bool _started = false;
     bool _defendedLane = false;
+    bool _freezyaUnlocked = false;
 };
 
 inline npc_brazie_basic_botany_board* GetBoard(Unit* unit)
@@ -398,7 +517,8 @@ class spell_brazie_plant_spitter : public SpellScript
     SpellCastResult CheckPlot()
     {
         auto board = GetBoard(GetCaster());
-        return board && board->FindEmptyPlot(GetExplTargetDest()) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+        return board && board->AllowedPlant(GetSpellInfo()->Id) && board->FindEmptyPlot(GetExplTargetDest()) ?
+            SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
     }
 
     void RememberEnergy() { _energyBefore = GetCaster()->GetPower(POWER_ENERGY); }
@@ -409,8 +529,9 @@ class spell_brazie_plant_spitter : public SpellScript
         auto board = GetBoard(GetCaster());
         if (!board)
             return;
+        auto plant = board->AllowedPlant(GetSpellInfo()->Id);
         Plot* plot = board->FindEmptyPlot(GetExplTargetDest());
-        if ((!plot || !board->PlaceSpitter(*plot)) && GetCaster()->GetPower(POWER_ENERGY) < _energyBefore)
+        if ((!plant || !plot || !board->PlacePlant(*plot, *plant)) && GetCaster()->GetPower(POWER_ENERGY) < _energyBefore)
             GetCaster()->SetPower(POWER_ENERGY, _energyBefore);
     }
 
@@ -444,30 +565,68 @@ class spell_brazie_collect_solar_power : public SpellScript
     }
 };
 
-class spell_brazie_spitter_venom : public SpellScript
+class spell_brazie_collect_freezya_seeds : public SpellScript
 {
-    PrepareSpellScript(spell_brazie_spitter_venom);
+    PrepareSpellScript(spell_brazie_collect_freezya_seeds);
 
-    void TargetLane(std::list<WorldObject*>& targets)
+    void Collect(SpellEffIndex /*effect*/)
     {
-        TempSummon* plant = GetCaster()->ToTempSummon();
-        auto board = plant && plant->GetEntry() == Spitter ? GetBoard(plant->GetSummoner()) : nullptr;
-        if (!board)
+        Creature* seeds = GetCaster()->ToCreature();
+        Player* player = GetHitPlayer();
+        if (!seeds || seeds->GetEntry() != FreezyaSeeds || !seeds->IsAlive() || !player || !seeds->CanTargetQuestObject(player))
             return;
-        targets.remove_if([&](WorldObject* object)
-        {
-            return !board->IsTutorialZombie(object) || std::abs(object->GetPositionY() - plant->GetPositionY()) > PlotSpacing * 0.5f;
-        });
-        if (targets.size() > 1)
-        {
-            targets.sort([&](WorldObject* first, WorldObject* second) { return plant->GetExactDistSq(first) < plant->GetExactDistSq(second); });
-            targets.resize(1);
-        }
+        if (auto board = GetBoard(player->GetVehicleBase()); board && board->CollectSeeds(*seeds, *player))
+            seeds->DespawnOrUnsummon(1);
     }
 
     void Register() override
     {
+        OnEffectHitTarget += SpellEffectFn(spell_brazie_collect_freezya_seeds::Collect, EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
+};
+
+inline void SelectLaneTarget(Unit* caster, std::list<WorldObject*>& targets)
+{
+    TempSummon* plant = caster->ToTempSummon();
+    if (!plant || (plant->GetEntry() != Spitter && plant->GetEntry() != Freezya))
+        return;
+    auto board = GetBoard(plant->GetSummoner());
+    if (!board)
+        return;
+    targets.remove_if([&](WorldObject* object)
+    {
+        return !board->IsEnemy(*object) || std::abs(object->GetPositionY() - plant->GetPositionY()) > PlotSpacing * 0.5f;
+    });
+    if (targets.size() > 1)
+    {
+        targets.sort([&](WorldObject* first, WorldObject* second) { return plant->GetExactDistSq(first) < plant->GetExactDistSq(second); });
+        targets.resize(1);
+    }
+}
+
+class spell_brazie_spitter_venom : public SpellScript
+{
+    PrepareSpellScript(spell_brazie_spitter_venom);
+
+    void TargetLane(std::list<WorldObject*>& targets) { SelectLaneTarget(GetCaster(), targets); }
+
+    void Register() override
+    {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_spitter_venom::TargetLane, EFFECT_0, TARGET_UNIT_CONE_ENEMY_104);
+    }
+};
+
+class spell_brazie_freezya_blast : public SpellScript
+{
+    PrepareSpellScript(spell_brazie_freezya_blast);
+
+    void TargetLane(std::list<WorldObject*>& targets) { SelectLaneTarget(GetCaster(), targets); }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_freezya_blast::TargetLane, EFFECT_0, TARGET_UNIT_CONE_ENEMY_104);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_freezya_blast::TargetLane, EFFECT_1, TARGET_UNIT_CONE_ENEMY_104);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_brazie_freezya_blast::TargetLane, EFFECT_2, TARGET_UNIT_CONE_ENEMY_104);
     }
 };
 }
@@ -479,7 +638,9 @@ inline void AddSC_hillsbrad_basic_botany()
     RegisterCreatureAI(npc_brazie_basic_botany_board);
     RegisterSpellScript(spell_brazie_plant_spitter);
     RegisterSpellScript(spell_brazie_collect_solar_power);
+    RegisterSpellScript(spell_brazie_collect_freezya_seeds);
     RegisterSpellScript(spell_brazie_spitter_venom);
+    RegisterSpellScript(spell_brazie_freezya_blast);
 }
 
 #endif

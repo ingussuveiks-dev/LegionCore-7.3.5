@@ -3025,7 +3025,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 67962 || !basaltScope || basaltScope->Cancelled))
         return nullptr;
 
-    bool const privatePlant = entry == BrazieBotany::SpitterModel && GetEntry() == BrazieBotany::Board &&
+    bool const privatePlant = BrazieBotany::IsLivingPlantModel(entry) && GetEntry() == BrazieBotany::Board &&
         GetMapId() == BrazieBotany::Map;
     if (privatePlant && (!HasQuestObjectScope() || IsQuestObjectExpired()))
         return nullptr;
