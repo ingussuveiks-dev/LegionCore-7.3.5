@@ -97,7 +97,7 @@ class TC_GAME_API MapManager
         uint32 i_gridCleanUpDelay;
         MapMapType i_maps;
 
-        uint32 _nextInstanceId;
+        std::atomic<uint32> _nextInstanceId;
         uint8 _mapInfoCounter;
 
         // atomic op counter for active scripts amount

@@ -257,6 +257,7 @@ public:
         bool _alliance;
         uint32 _setupTimer;
         bool _setupComplete;
+        bool _foreignScenarioReported = false;
         bool _arrivalBarsPending = false;
         uint32 _visibilityTimer;
         bool _trainingDummySpawned;
@@ -749,6 +750,18 @@ public:
             if (!scenario)
                 return false;
 
+            Map* scenarioMap = scenario->GetMap();
+            if (scenarioMap != instance || scenario->GetScenarioId() != scenarioId)
+            {
+                if (!_foreignScenarioReported)
+                {
+                    TC_LOG_ERROR("scripts", "Boost tutorial instance %u on map %u found scenario %u on map %u, expected %u",
+                        instance->GetInstanceId(), instance->GetId(), scenario->GetScenarioId(), scenarioMap ? scenarioMap->GetId() : 0, scenarioId);
+                    _foreignScenarioReported = true;
+                }
+                return false;
+            }
+
             if (!_setupComplete)
                 SpawnStaticPassengers(transport);
 
@@ -757,8 +770,9 @@ public:
             scenario->SendStepUpdate(player, true);
             player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
-            TC_LOG_INFO("scripts", "Started boost tutorial scenario %u for %s on map %u (player phases: %u, transport phases: %u)",
-                scenarioId, player->GetName(), instance->GetId(), uint32(player->GetPhases().size()), uint32(transport->GetPhases().size()));
+            TC_LOG_INFO("scripts", "Started boost tutorial scenario %u for %s on map %u instance %u (player phases: %u, transport phases: %u)",
+                scenario->GetScenarioId(), player->GetName(), instance->GetId(), instance->GetInstanceId(),
+                uint32(player->GetPhases().size()), uint32(transport->GetPhases().size()));
             return true;
         }
 

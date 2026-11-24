@@ -455,26 +455,21 @@ uint32 MapManager::GetNumPlayersInInstances()
 
 void MapManager::InitInstanceIds()
 {
-    _nextInstanceId = 1;
+    uint32 highestSavedId = 0;
 
     if (QueryResult result = CharacterDatabase.Query("SELECT MAX(instance) FROM character_instance"))
-    {
-        uint32 instanceId = (*result)[0].GetUInt32();
-        if (instanceId > _nextInstanceId)
-            _nextInstanceId = instanceId + 1;
-    }
+        highestSavedId = (*result)[0].GetUInt32();
 
     if (QueryResult result = CharacterDatabase.Query("SELECT MAX(instance) FROM group_instance"))
-    {
-        uint32 instanceId = (*result)[0].GetUInt32();
-        if (instanceId > _nextInstanceId)
-            _nextInstanceId = instanceId + 1;
-    }
+        highestSavedId = std::max(highestSavedId, (*result)[0].GetUInt32());
+
+    // The counter stores the first free ID. ID 1 can already be a saved bind.
+    _nextInstanceId.store(highestSavedId + 1, std::memory_order_relaxed);
 }
 
 uint32 MapManager::GenerateInstanceId()
 {
-    return _nextInstanceId++;
+    return _nextInstanceId.fetch_add(1, std::memory_order_relaxed);
 }
 
 void MapManager::FindSessionInAllMaps(uint32 accId, ChatHandler* handler)
