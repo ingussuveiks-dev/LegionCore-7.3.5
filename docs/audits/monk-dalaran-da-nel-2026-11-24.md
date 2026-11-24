@@ -1,0 +1,14 @@
+# Da-Nel's Dalaran invitation
+
+Yim completed the Legion introduction, reached Broken Isles Dalaran, and saw a pandaren approach and disappear before taking the Monk opening quest. The read-only character state showed `In the Blink of an Eye` rewarded and `Before the Storm` (12103) absent. The live `spell_area` row already admitted a level-eligible Monk with that quest absent. Its native 26972 spell 193978, Summon Da-Nel, is a single summon effect for actor 98519, properties 3705, with duration -1. The disappearance is accounted for by the local linked SmartAI action that started a 30-second despawn on summon.
+
+The derived SmartAI keeps the native personal visibility and follow actions. It retains the actual player's offer while they are in Legion Dalaran with the quest available, discards the actor when that ownership or eligibility ends, and replaces an older copy from the same spell on a new native summon. After actual quest acceptance, the original acceptance speech, Zen Pilgrimage spell 194004, and five-second cleanup finish normally. The scoped migration rewires the original follow link to the existing personal visibility row and removes the now unreferenced 30-second action. Entry 98519 remains the actual quest giver.
+
+The earlier hop through old Dalaran is part of quest 44663. In 26972, portal spell 228327 has zero cast time, and scene 1449 completion uses 230156 to reach map 1220. The current world core intentionally holds arrivals aboard the old Dalaran map object for eight seconds after the loading acknowledgement, to let its collision geometry load. Prior client evidence recorded falling through before that safeguard. The prior logs do not time portal interaction to teleport start, so the reported pre-transfer delay has no established cause. Arrival at map 1220 worked for the player.
+
+## Verification
+
+- Read the current character quest state, live invitation, SmartAI event chain, scene/portal data and relevant native spell records. Reviewed the eligibility and summon lifecycle against the production code. MariaDB parsed the migration statements against the live schema using `EXPLAIN` before applying them.
+- Built Release with the rebuilt scripts library as final-link input. The linker map resolves the Da-Nel delegate to `scripts:class_hall_artifact_onboarding.obj`. The executable SHA-256 is `4A12D9B9F65AE0FCD25988277796E61E4E4F28E707A60E30880466805DB24759`.
+- While the server was stopped, installed the matching canonical executable and map and applied the paired migration to the live World database. A readback confirmed the new script, follow-to-personal link, removal of the 30-second row, and the unchanged five-second acceptance chain and `spell_area` gate.
+- The user-led replay is pending for the longer-lived personal offer, re-entry, actual acceptance and the trip onward. No independent automated gameplay or server startup was run for this repair.

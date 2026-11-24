@@ -16,6 +16,9 @@
 #include "Creature.h"
 #include "GossipData.h"
 #include "GossipDef.h"
+#include "ObjectAccessor.h"
+#include "SmartAI.h"
+#include "TemporarySummon.h"
 
 #include <array>
 
@@ -241,7 +244,78 @@ public:
     }
 };
 
+class npc_dalaran_da_nel : public SmartAI
+{
+public:
+    explicit npc_dalaran_da_nel(Creature* creature) : SmartAI(creature) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        Player* player = summoner ? summoner->ToPlayer() : nullptr;
+        if (!player || !CanOffer(*player) || me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != SummonSpell)
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+
+        // Re-entering the zone can cast the native summon again before the old actor updates.
+        GuidList const summons = *player->GetSummonList(me->GetEntry());
+        for (ObjectGuid const& guid : summons)
+            if (guid != me->GetGUID())
+                if (Creature* previous = ObjectAccessor::GetCreature(*player, guid))
+                    if (previous->ToTempSummon() && previous->ToTempSummon()->GetSummonerGUID() == player->GetGUID() &&
+                        previous->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == SummonSpell)
+                        previous->DespawnOrUnsummon();
+
+        SmartAI::IsSummonedBy(summoner);
+    }
+
+    void sQuestAccept(Player* player, Quest const* quest) override
+    {
+        if (quest->GetQuestId() == IntroQuest)
+        {
+            if (!player || !me->ToTempSummon() || me->ToTempSummon()->GetSummonerGUID() != player->GetGUID())
+                return;
+
+            // Let the original acceptance line, Pilgrimage and delayed despawn finish.
+            _accepted = true;
+        }
+
+        SmartAI::sQuestAccept(player, quest);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_accepted)
+        {
+            TempSummon* summon = me->ToTempSummon();
+            Unit* summoner = summon ? summon->GetSummoner() : nullptr;
+            Player* player = summoner ? summoner->ToPlayer() : nullptr;
+            if (!player || !CanOffer(*player))
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
+        }
+
+        SmartAI::UpdateAI(diff);
+    }
+
+private:
+    static constexpr uint32 IntroQuest = 12103;
+    static constexpr uint32 SummonSpell = 193978;
+    bool _accepted = false;
+
+    bool CanOffer(Player const& owner) const
+    {
+        return owner.IsInWorld() && owner.GetMap() == me->GetMap() && owner.GetMapId() == 1220 && owner.GetCurrentZoneID() == 7502 &&
+            owner.getClass() == CLASS_MONK && owner.GetQuestStatus(IntroQuest) == QUEST_STATUS_NONE &&
+            !owner.GetQuestRewardStatus(IntroQuest);
+    }
+};
+
 void AddSC_class_hall_artifact_onboarding()
 {
     new class_hall_artifact_onboarding();
+    RegisterCreatureAI(npc_dalaran_da_nel);
 }
