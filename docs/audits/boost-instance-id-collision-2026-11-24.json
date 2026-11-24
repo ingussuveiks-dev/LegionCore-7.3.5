@@ -5,12 +5,13 @@
   "cause": "The live character database showed both maps 1511 and 1554 using numeric instance 1, with one saved bind at ID 1 for the Alliance ship and no group bind. ScenarioMgr is keyed by the numeric ID. Startup initialized the next ID to 1 and only skipped a saved maximum strictly greater than that value. The earlier unbound Hunter login could therefore allocate ID 1 before the Windwalker restored the ship bind. Setup reused the existing scenario and logged the desired scenario ID 1095, even though the attached scenario could be Hunter 973.",
   "repair": [
     "Initialize the counter to one more than the highest persisted player or group bind, with 1 for an empty database. Use an atomic increment for allocations arriving from different map threads.",
-    "The boost setup confirms that the scenario belongs to the actual map instance and expected class route before sending any scenario state or configuring a lesson. A conflicting state produces a scoped diagnostic once. Successful setup now logs the actual scenario ID and instance number."
+    "The boost setup confirms map ownership and checks the expected route on initial setup before sending any scenario state or configuring a lesson. An established tutorial remains selected across a specialization change. A conflicting state produces one diagnostic. Successful setup logs the actual scenario ID and instance number."
   ],
   "verification": {
-    "staged_worldserver_sha256": "605863AA60942E1F3CEFDD455650498267ABDEEF37C18244843BEBF0E5DA4B74",
-    "staged_link_map_sha256": "611E90BEAC0320BA32EB4D7108333172333CBEF397A664435954D43C17322B54",
+    "worldserver_sha256": "AF5A136A341C309D539DEE6164348463785573FC1C3F0D15B42BFAFA496AD61B",
+    "link_map_sha256": "50048C428D6D449CE7AEAC0E339964E332C184D014D6F041C69EB2EBB17C66B0",
     "build": "Release compilation and final link used native Release game.lib and scripts.lib. The link map contains MapManager initialization and allocation plus the deployed boost setup implementation.",
+    "promotion": "Installed in build-extractors/bin/Release after user shutdown. Installed binary and link map hashes match the staged pair. The previous pair was retained. Active Crashes was empty and DBErrors.log retained its prior 587 bytes before client testing.",
     "client": "The player-led flow uses its normal client retest after promotion instead of separate automated or agent-owned startup tests. The Hunter to Windwalker switch, correct Monk tasks, and further ship combat remain live client checks."
   }
 }

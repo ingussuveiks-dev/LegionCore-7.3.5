@@ -751,7 +751,8 @@ public:
                 return false;
 
             Map* scenarioMap = scenario->GetMap();
-            if (scenarioMap != instance || scenario->GetScenarioId() != scenarioId)
+            // Keep the already selected tutorial when a trainee changes specialization.
+            if (scenarioMap != instance || (!_setupComplete && scenario->GetScenarioId() != scenarioId))
             {
                 if (!_foreignScenarioReported)
                 {
