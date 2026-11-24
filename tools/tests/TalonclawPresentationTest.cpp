@@ -70,6 +70,8 @@ struct PickupActions {
 };
 int warnings = 0;
 #define TC_LOG_WARN(...) (++warnings)
+enum { AURA_REMOVE_BY_EXPIRE = 1 };
+struct AuraApplication { int GetRemoveMode() const { return 0; } };
 struct Aura { Unit* owner = nullptr; Unit* GetUnitOwner() const { return owner; } };
 struct AuraScript;
 struct ApplyHook {
@@ -82,12 +84,14 @@ struct UpdateHook {
 };
 struct AuraScript {
     Aura* m_aura = nullptr;
-    ApplyHook AfterEffectApply, AfterEffectRemove;
+    AuraApplication application;
+    ApplyHook AfterEffectApply, OnEffectRemove, AfterEffectRemove;
     UpdateHook OnEffectUpdate;
     std::function<void()> remove;
     virtual bool Validate(SpellInfo const*) { return true; }
     virtual void Register() {}
     Unit* GetUnitOwner() const;
+    AuraApplication const* GetTargetApplication() const { return &application; }
     bool ValidateSpellInfo(std::initializer_list<int> spells) { return spells.size() == 1 && *spells.begin() == EquipSpell; }
     void Remove() { remove(); }
 };

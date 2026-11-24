@@ -1044,7 +1044,7 @@ struct State
     {
         return player && player->IsInWorld() && player->IsAlive() && !player->IsBeingTeleported() &&
             player->getClass() == CLASS_HUNTER && player->GetMapId() == 1511 &&
-            ArtifactAcquisition::Active(player, 40385) && player->HasItemCount(128808, 1);
+            ArtifactAcquisition::Active(player, 40385) && player->HasItemCount(128808, 1, false);
     }
 
     void Begin(Player* player)
@@ -1308,9 +1308,11 @@ bool Ready(Player* player)
     Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
     GameObjectTemplate const* portal = sObjectMgr->GetGameObjectTemplate(9000575);
     uint32 scriptId = sObjectMgr->GetScriptId("go_talonclaw_return_portal");
-    CreatureTextGroup const* text = sCreatureTextMgr->GetTextGroup(100005, 1);
+    // GetTextGroup only exposes timed groups. This sequence times its own dialogue.
+    uint8 textGroup = 0;
     return scenario && scenario->GetScenarioId() == 973 && scenario->GetCurrentStep() >= 12 &&
-        portal && scriptId && portal->ScriptId == scriptId && text && text->size() == 1 && text->front().BroadcastTextID == 106397;
+        portal && scriptId && portal->ScriptId == scriptId &&
+        sCreatureTextMgr->HasBroadCastText(100005, 106397, textGroup) && textGroup == 1;
 }
 
 struct State
@@ -1383,6 +1385,7 @@ struct State
         player->BindQuestObject(40385, object);
         portal = object->GetGUID();
         failures = 0;
+        TC_LOG_INFO("scripts", "Talonclaw departure: published Dalaran portal for player %u", player->GetGUIDLow());
     }
 };
 

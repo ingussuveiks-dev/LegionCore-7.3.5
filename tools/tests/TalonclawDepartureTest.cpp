@@ -16,6 +16,7 @@ enum SpellCastResult { SPELL_CAST_OK, SPELL_FAILED };
 int warnings = 0;
 template<class... Arguments> void RecordWarning(char const*, char const*, Arguments...) { ++warnings; }
 #define TC_LOG_WARN(...) RecordWarning(__VA_ARGS__)
+#define TC_LOG_INFO(...) ((void)0)
 struct Position { float x, y, z, orientation; };
 struct Player;
 struct Map;
@@ -75,7 +76,15 @@ struct CreatureTextEntry { uint32 BroadcastTextID = 106397; };
 using CreatureTextGroup = std::vector<CreatureTextEntry>;
 struct TextManager {
     CreatureTextGroup group{{}};
-    CreatureTextGroup const* GetTextGroup(uint32 actor, uint32 id) { assert(actor == 100005 && id == 1); return &group; }
+    bool HasBroadCastText(uint32 actor, uint32 id, uint8_t& textGroup) {
+        assert(actor == 100005);
+        for (auto const& text : group)
+            if (text.BroadcastTextID == id) {
+                textGroup = 1;
+                return true;
+            }
+        return false;
+    }
 } textManager;
 auto* sCreatureTextMgr = &textManager;
 struct Player {
