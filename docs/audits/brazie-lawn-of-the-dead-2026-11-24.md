@@ -1,0 +1,11 @@
+# Lawn of the Dead (28748) — 2026-11-24
+
+Rewarded Someone Setup the Pumpkin Bomb opens the finale with all six plant actions. Actual lawn combat leads into Warden Stillwater (49819), who moves across the far edge, uses Mutagen, drops private fertilizer and places Obelisks. Their native periodic effect and retained owner-only events change the ongoing fight. The native alternate-power display mirrors the living Warden's health. The controller grants the original 49627 objective after the actual scoped Warden dies. The native reward package retains the selectable gear and fixed Singing Sunflower item 66067.
+
+Matching Legion spell effects and the original actors identify the Warden summon and health bar, the Obelisk aura and summon, the fertilizer visual and click, and the Warden's localized broadcast lines. The [firsthand strategy account](https://www.wowhead.com/guide/peacebloom-vs-ghouls-the-strategy-guide-450) describes the patrol, poisoned plants, fertilizer boost and Obelisk barriers. The layout, wave schedule, Mutagen association and cycle timing were reconstructed. The native test establishes actual damage and quest progression. Client rendering, sound and exact timing still need verification.
+
+The isolated native run retested the four prior stages, confirmed the original 35,000-health Warden, motion, fertilizer pickup and visitor rejection, actual Mutagen damage, Obelisks, alternate-power health changes, owner-only objective 1/1 and normal turn-in. The first turn-in probe submitted no choice. The original package 9658 required an eligible choice, so the final test used a real selectable item and confirmed it and item 66067 were both in the owner's bags. Earlier probe evidence is retained.
+
+The full link and retained collision PE check passed. The canonical deployment applied `2026_11_24_05_brazie_lawn_of_the_dead.sql`, reached ready and exited gracefully. There were no new crashes, DBErrors entries or unexplained runtime diagnostics. The deployed executable hash is `C295F47DC936D1F184FCDC6BF30975337AE0005D018C7AC916995FEEAC357418`.
+
+The ignored `build-extractors/bin/Release/fixed/2026-11-24-brazie-warden/` archive contains 28 verified evidence files. Cleanup removed 543,511,192 bytes of temporary builds and outputs. The task retained a rollback executable.

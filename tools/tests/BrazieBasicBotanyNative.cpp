@@ -28,14 +28,15 @@ Quest const* LoadBotanyInputs()
         const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates()).emplace(quest->GetQuestId(), quest);
     } while (row->NextRow());
     auto objective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN(28733,28617,28744,28747)");
+        "FROM quest_objectives WHERE QuestID IN(28733,28617,28744,28747,28748)");
     Require(objective && objective->GetRowCount() == std::size(Quests), "Missing original Brazie victory objectives");
     do
     {
         auto data = objective->Fetch();
         auto* quest = quests[data[1].GetUInt32()];
         uint32 multiWave = WaveCredit(quest->GetQuestId());
-        uint32 credit = multiWave ? multiWave : quest->GetQuestId() == BasicBotany ? IntroduceBotany : FlowerWave;
+        uint32 credit = multiWave ? multiWave : quest->GetQuestId() == BasicBotany ? IntroduceBotany :
+            quest->GetQuestId() == FlowerPower ? FlowerWave : WardenVictory;
         Require(data[4].GetUInt32() == credit && data[5].GetInt32() == (multiWave ? 2 : 1), "Original credit changed");
         quest->LoadQuestObjective(data);
         quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
@@ -56,10 +57,10 @@ Quest const* LoadBotanyInputs()
     sSpellMgr->LoadSpellThreats();
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid=131600");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(49194,49604,49560)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(91646,91649,91687,91704,91710,91748,92157,92159,92339,92434,92440,92441)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(28733,28617,28744,28747)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(28733,28617,28744,28747)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(49194,49604,49560,50067)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(91646,91649,91687,91704,91710,91748,92157,92159,92339,92434,92440,92441,93100)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(28733,28617,28744,28747,28748)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(28733,28617,28744,28747,28748)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
@@ -115,7 +116,7 @@ void Advance(::Map& map, LootPlayer& owner, Creature& board, uint32 diff)
     Tick(owner, diff);
     board.Update(diff);
     for (uint32 entry : {SolarPower, Spitter, Sunflower, Freezya, FreezyaSeeds, Rocknut, Strangler, StranglerSeeds, Pumpkin,
-        Zombie, Ghoul, Aberration, Abomination})
+        Zombie, Ghoul, Aberration, Abomination, HillsbradBasicBotany::Warden, Obelisk, Fertilizer})
         for (Creature* actor : Children(board, entry))
             actor->Update(diff);
     map.MoveAllCreaturesInMoveList();
@@ -409,6 +410,137 @@ void CheckMultiWave(Quest const* quest)
     std::cout << "PASS Brazie two-wave native fight and reward " << questId << '\n';
 }
 
+void CheckWarden(Quest const* quest)
+{
+    ::Map map(0, 300, 0, DIFFICULTY_NONE);
+    BotanyGiver brazie(map);
+    LootPlayer owner(SupplySession(), map, 2874801, brazie.GetNearPosition(2.0f, 0.0f));
+    LootPlayer visitor(SupplySession(), map, 2874802, brazie.GetNearPosition(2.0f, 0.0f));
+    for (auto* player : {&owner, &visitor})
+    {
+        player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_ORC);
+        player->SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
+        player->setFactionForRace(RACE_ORC);
+        player->InitDisplayIds();
+        player->SetLevel(20);
+        player->SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 30000);
+        for (uint16 field : {UNIT_FIELD_MOD_TIME_RATE, UNIT_FIELD_MOD_CASTING_SPEED, UNIT_FIELD_MOD_SPELL_HASTE, UNIT_FIELD_MOD_HASTE, UNIT_FIELD_MOD_HASTE_REGEN})
+            player->SetFloatValue(field, 1.0f);
+    }
+    Require(!owner.CanTakeQuest(quest, false), "Lawn of the Dead admitted the owner before the Pumpkin Bomb reward");
+    owner.SetRewardedQuest(PumpkinBombLesson);
+    WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    accept.QuestGiverGUID = brazie.GetGUID();
+    accept.QuestID = LawnOfTheDead;
+    owner.GetSession()->HandleQuestGiverAcceptQuest(accept);
+    Creature* board = CurrentBoard(owner);
+    Require(board && board->HasSpell(PlantPumpkin) && board->HasSpell(PlantStrangler) && !board->HasAura(WardenHealthBar),
+        "The boss prerequisite or starting actions were wrong");
+    for (unsigned i = 0; i < 40 && owner.GetVehicleBase() != board; ++i)
+        Advance(map, owner, *board, 50);
+    Advance(map, owner, *board, 1000);
+    Require(owner.GetVehicleBase() == board, "Lawn of the Dead did not board the owner");
+
+    GuidUnorderedSet clicked;
+    ObjectGuid wardenGuid, fertilizerGuid;
+    bool moved = false, poisoned = false, fertilizerConsumed = false, obelisk = false, barChanged = false;
+    float originalWardenY = 0;
+    uint64 finalHealth = 35000;
+    auto plant = [&](uint32 spell, int32 cost, uint8 row, uint8 column)
+    {
+        if (board->GetPower(POWER_ENERGY) >= cost)
+        {
+            float x = FirstColumnX + column * PlotSpacing;
+            float y = FirstRowY - row * PlotSpacing;
+            board->CastSpell(x, y, map.GetHeight(x, y, 60.0f), spell, false);
+        }
+    };
+    for (unsigned tick = 0; tick < 290 && owner.GetVehicleBase() == board; ++tick)
+    {
+        for (Creature* orb : Children(*board, SolarPower))
+            if (clicked.insert(orb->GetGUID()).second)
+                orb->HandleSpellClick(&owner);
+        auto wardens = Children(*board, HillsbradBasicBotany::Warden);
+        Require(wardens.size() <= 1, "Lawn of the Dead spawned a second Warden");
+        Creature* warden = wardens.empty() ? nullptr : wardens.front();
+        if (warden && warden->IsAlive())
+        {
+            if (!wardenGuid)
+            {
+                Require(warden->GetMaxHealth() == 35000 && warden->HasQuestObjectScope() &&
+                    !visitor.canSeeOrDetect(warden) && board->HasAura(WardenHealthBar), "Warden appearance was not scoped to his live encounter");
+                wardenGuid = warden->GetGUID();
+                originalWardenY = warden->GetPositionY();
+            }
+            Require(!owner.GetQuestObjectiveData(LawnOfTheDead, WardenVictory), "An alive Warden awarded the finale");
+            finalHealth = warden->GetHealth();
+            moved = moved || std::abs(warden->GetPositionY() - originalWardenY) > 3.0f;
+            barChanged = barChanged || (board->GetPower(POWER_ALTERNATE) > 0 &&
+                board->GetPower(POWER_ALTERNATE) < board->GetMaxPower(POWER_ALTERNATE));
+        }
+        for (uint8 row : {2, 1, 3, 0, 4})
+        {
+            plant(PlantSunflower, 10, row, 0);
+            plant(PlantSpitter, 20, row, 2);
+        }
+        for (uint8 row : {2, 1, 3, 0, 4})
+        {
+            plant(PlantSunflower, 10, row, 1);
+            plant(PlantFreezya, 20, row, 3);
+        }
+        obelisk = obelisk || !Children(*board, Obelisk).empty();
+        if (warden && warden->IsAlive() && obelisk && Children(*board, Pumpkin).empty())
+        {
+            uint8 row = uint8(std::clamp(int(std::lround((FirstRowY - warden->GetPositionY()) / PlotSpacing)), 0, int(Rows - 1)));
+            plant(PlantPumpkin, 40, row, 7);
+        }
+        for (uint8 row : {2, 1, 3, 0, 4})
+        {
+            plant(PlantStrangler, 30, row, 5);
+            plant(PlantSpitter, 20, row, 4);
+        }
+        for (uint32 entry : {Sunflower, Spitter, Freezya, Strangler})
+            for (Creature* actor : Children(*board, entry))
+                poisoned = poisoned || actor->HasAura(WardenMutagen);
+        for (Creature* drop : Children(*board, Fertilizer))
+            if (clicked.insert(drop->GetGUID()).second)
+            {
+                Require(!visitor.canSeeOrDetect(drop), "Fertilizer was visible outside the owner board");
+                drop->HandleSpellClick(&visitor);
+                Require(!drop->IsDespawn(), "A visitor consumed the owner's fertilizer");
+                drop->HandleSpellClick(&owner);
+                fertilizerGuid = drop->GetGUID();
+            }
+        Advance(map, owner, *board, 1000);
+        fertilizerConsumed = fertilizerConsumed || (fertilizerGuid && !map.GetCreature(fertilizerGuid));
+    }
+    std::cout << "CASE Warden moved " << moved << " last health " << finalHealth << " mutagen " << poisoned
+        << " fertilizer " << fertilizerConsumed << " obelisk " << obelisk << " health bar " << barChanged
+        << " credit " << owner.GetQuestObjectiveData(LawnOfTheDead, WardenVictory) << '\n';
+    Require(wardenGuid && moved && poisoned && fertilizerConsumed && obelisk && barChanged,
+        "Lawn of the Dead did not exercise movement, Mutagen, fertilizer, obelisks and the boss health bar");
+    Require(owner.GetQuestStatus(LawnOfTheDead) == QUEST_STATUS_COMPLETE && !owner.GetVehicle() &&
+        owner.GetQuestObjectiveData(LawnOfTheDead, WardenVictory) == 1 && !visitor.GetQuestObjectiveData(LawnOfTheDead, WardenVictory),
+        "Only the original Warden's actual death should finish Lawn of the Dead");
+    map.RemoveAllObjectsInRemoveList();
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestID = LawnOfTheDead;
+    reward.QuestGiverGUID = brazie.GetGUID();
+    auto package = sDB2Manager.GetQuestPackageItems(quest->PackageID);
+    if (package)
+        for (QuestPackageItemEntry const* choice : *package)
+            if (owner.CanSelectQuestPackageItem(choice))
+            {
+                reward.ItemChoiceID = choice->ItemID;
+                break;
+            }
+    Require(reward.ItemChoiceID, "The native Warden reward package did not provide the Hunter's item choice");
+    owner.GetSession()->HandleQuestGiverChooseReward(reward);
+    Require(owner.GetQuestRewardStatus(LawnOfTheDead) && owner.HasItemCount(66067) && owner.HasItemCount(reward.ItemChoiceID),
+        "Brazie did not award the original Singing Sunflower item through native turn-in");
+    std::cout << "PASS Lawn of the Dead actual Warden defeat, owner-only credit, turn-in and Sunflower Seeds\n";
+}
+
 void CheckBotany(Quest const* quest)
 {
     ::Map map(0, 300, 0, DIFFICULTY_NONE);
@@ -570,6 +702,8 @@ int main(int argc, char** argv)
             CheckMultiWave(sQuestDataStore->GetQuestTemplate(GhoulsHateMyGrains));
         if (BrazieStage >= 4)
             CheckMultiWave(sQuestDataStore->GetQuestTemplate(PumpkinBombLesson));
+        if (BrazieStage >= 5)
+            CheckWarden(sQuestDataStore->GetQuestTemplate(LawnOfTheDead));
         CharacterDatabase.Close();
         LoginDatabase.Close();
         HotfixDatabase.Close();

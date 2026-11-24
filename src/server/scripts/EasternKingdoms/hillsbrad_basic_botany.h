@@ -2,6 +2,7 @@
 #define hillsbrad_basic_botany_h__
 
 #include "BrazieBotany.h"
+#include "ChatTextBuilder.h"
 #include "DB2Stores.h"
 #include "GameObject.h"
 #include "GossipDef.h"
@@ -38,10 +39,14 @@ constexpr uint32 Zombie = 49209;
 constexpr uint32 Ghoul = 49232;
 constexpr uint32 Aberration = 49485;
 constexpr uint32 Abomination = 49694;
+constexpr uint32 Warden = 49819;
+constexpr uint32 Obelisk = 49911;
+constexpr uint32 Fertilizer = 50067;
 constexpr uint32 IntroduceBotany = 49189;
 constexpr uint32 FlowerWave = 49542;
 constexpr uint32 GrainsWave = 49553;
 constexpr uint32 PumpkinWave = 49561;
+constexpr uint32 WardenVictory = 49627;
 constexpr uint32 PlantSpitter = 91649;
 constexpr uint32 PlantSunflower = 91646;
 constexpr uint32 PlantFreezya = 92440;
@@ -53,6 +58,13 @@ constexpr uint32 Strangle = 91791;
 constexpr uint32 PlantPumpkin = 92157;
 constexpr uint32 PumpkinExplosion = 92159;
 constexpr uint32 PumpkinFuse = 92825;
+constexpr uint32 SummonWarden = 92767;
+constexpr uint32 WardenHealthBar = 92598;
+constexpr uint32 WardenMutagen = 92964;
+constexpr uint32 SummonObelisk = 93253;
+constexpr uint32 ObeliskVisual = 92871;
+constexpr uint32 CreateFertilizer = 93102;
+constexpr uint32 FertilizerVisual = 93101;
 constexpr uint32 GainSolarPower = 91687;
 constexpr uint32 SunSphere = 91707;
 constexpr uint32 SeedSparkles = 92406;
@@ -135,6 +147,15 @@ constexpr SpawnTime PumpkinFinalWave[] =
     {55000, 0, Abomination}, {55000, 2, Abomination}, {55000, 4, Abomination},
     {56000, 1, Aberration}, {56000, 3, Aberration}, {60000, 2, Ghoul}, {62000, 4, Zombie},
     {66000, 0, Ghoul}, {66000, 1, Zombie}, {66000, 3, Ghoul}
+};
+
+constexpr SpawnTime WardenArrival[] =
+{
+    {17000, 2, Ghoul}, {27000, 0, Zombie}, {35000, 3, Ghoul}, {41000, 1, Zombie}, {47000, 4, Aberration},
+    {53000, 2, Warden}, {60000, 2, Ghoul}, {66000, 0, Zombie}, {71000, 1, Aberration}, {78000, 3, Ghoul},
+    {83000, 4, Zombie}, {88000, 2, Abomination}, {95000, 0, Ghoul}, {102000, 4, Aberration},
+    {110000, 3, Ghoul}, {119000, 1, Abomination}, {128000, 4, Zombie}, {135000, 2, Aberration},
+    {143000, 0, Ghoul}, {155000, 3, Abomination}, {169000, 2, Ghoul}, {181000, 4, Aberration}
 };
 
 struct DefenseWave
@@ -245,13 +266,14 @@ public:
         me->SetPower(POWER_ENERGY, 0);
         if (_quest != BasicBotany)
             me->m_templateSpells[1] = PlantSunflower;
-        if (uint32 credit = WaveCredit(_quest))
+        if (_quest != BasicBotany && _quest != FlowerPower)
         {
             me->m_templateSpells[2] = PlantFreezya;
             me->m_templateSpells[3] = PlantRocknut;
-            _secondWave = summoner->ToPlayer()->GetQuestObjectiveData(_quest, credit) > 0;
         }
-        if (_quest == PumpkinBombLesson)
+        if (uint32 credit = WaveCredit(_quest))
+            _secondWave = summoner->ToPlayer()->GetQuestObjectiveData(_quest, credit) > 0;
+        if (_quest == PumpkinBombLesson || _quest == LawnOfTheDead)
         {
             me->m_templateSpells[4] = PlantStrangler;
             me->m_templateSpells[5] = PlantPumpkin;
@@ -279,6 +301,8 @@ public:
             summon->CastSpell(summon, SunSphere, true);
         else if (summon->GetEntry() == FreezyaSeeds || summon->GetEntry() == StranglerSeeds)
             summon->CastSpell(summon, SeedSparkles, true);
+        else if (summon->GetEntry() == Fertilizer)
+            summon->CastSpell(summon, FertilizerVisual, true);
     }
 
     void SummonedCreatureDespawn(Creature* summon) override
@@ -286,12 +310,21 @@ public:
         _summons.Despawn(summon);
         if (_seeds == summon->GetGUID())
             _seeds.Clear();
+        if (_fertilizer == summon->GetGUID())
+            _fertilizer.Clear();
     }
 
     void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
     {
         if (!_enemies.erase(summon->GetGUID()))
             return;
+        if (summon->GetGUID() == _warden)
+        {
+            _wardenDefeated = true;
+            if (Player* player = Rider())
+                WardenLine(*summon, *player, 49987);
+            return;
+        }
         ++_defeated;
         if (_quest == FlowerPower && _defeated >= 3)
             DropSeeds(FreezyaSeeds, summon->GetPosition());
@@ -333,11 +366,17 @@ public:
                 Finish();
                 return;
             }
-            Notify(*player, _quest == BasicBotany ? 49559 : 49566);
+            Notify(*player, _quest == LawnOfTheDead ? 49984 : _quest == BasicBotany ? 49559 : 49566);
+        }
+        if (_wardenDefeated)
+        {
+            player->KilledMonsterCredit(WardenVictory);
+            Finish();
+            return;
         }
         if (diff >= _sunTimer)
         {
-            _sunTimer = 2000;
+            _sunTimer = _elapsed < _fertilizedUntil ? 1000 : 2000;
             constexpr uint8 sunColumns[] = {2, 5, 3, 6, 1, 4, 7, 0};
             CreateSolarPower(Ground(CenterRow, sunColumns[_sunCursor++ % Columns]));
         }
@@ -350,6 +389,12 @@ public:
             UpdateDefense(*player, diff, _secondWave ? MakeWave(GrainsFinalWave, 3) : MakeWave(GrainsFirstWave, 5), GrainsWave);
         else if (_quest == PumpkinBombLesson)
             UpdateDefense(*player, diff, _secondWave ? MakeWave(PumpkinFinalWave, 3) : MakeWave(PumpkinFirstWave, 5), PumpkinWave);
+        else if (_quest == LawnOfTheDead)
+        {
+            UpdateDefense(*player, diff, MakeWave(WardenArrival, std::size(WardenArrival)), 0);
+            if (!_left)
+                UpdateWarden(*player);
+        }
         else if (_defendedLane)
             UpdateDefense(*player, diff, MakeWave(TutorialWave, 3), IntroduceBotany);
     }
@@ -435,6 +480,16 @@ public:
         return true;
     }
 
+    bool CollectFertilizer(Creature& fertilizer, Player& player)
+    {
+        if (_quest != LawnOfTheDead || &player != Rider() || fertilizer.GetGUID() != _fertilizer || fertilizer.IsDespawn())
+            return false;
+        _fertilizer.Clear();
+        _fertilizedUntil = _elapsed + 15000;
+        _sunTimer = std::min(_sunTimer, 1000u);
+        return true;
+    }
+
     bool IsEnemy(WorldObject const& object) const { return _enemies.count(object.GetGUID()) != 0; }
 
 private:
@@ -442,6 +497,15 @@ private:
     {
         if (BroadcastTextEntry const* text = sBroadcastTextStore.LookupEntry(textId))
             player.GetSession()->SendNotification("%s", DB2Manager::GetBroadcastTextValue(text, player.GetSession()->GetSessionDbLocaleIndex()));
+    }
+
+    static void WardenLine(Creature& warden, Player& player, uint32 textId)
+    {
+        Trinity::BroadcastTextBuilder builder(&warden, CHAT_MSG_MONSTER_YELL, textId, &player);
+        std::unique_ptr<WorldPackets::Packet> packet(builder(player.GetSession()->GetSessionDbLocaleIndex()));
+        player.SendDirectMessage(packet->Write());
+        if (auto text = sBroadcastTextStore.LookupEntry(textId); text && text->SoundEntriesID[0])
+            warden.PlayDirectSound(text->SoundEntriesID[0], &player);
     }
 
     void CreateSolarPower(Position position)
@@ -465,6 +529,13 @@ private:
         return {x, y, z, 0.0f};
     }
 
+    Position EnemyStart(uint8 row) const
+    {
+        Position position = Ground(row, Columns - 1);
+        position.m_positionX += PlotSpacing;
+        return position;
+    }
+
     bool BuildPlots()
     {
         for (uint8 row = 0; row < Rows; ++row)
@@ -482,36 +553,63 @@ private:
         return true;
     }
 
+    Creature* SpawnEnemy(uint32 entry, uint8 row)
+    {
+        bool warden = entry == Warden;
+        bool obelisk = entry == Obelisk;
+        Position start = obelisk ? Ground(row, Columns - 2) : EnemyStart(row);
+        uint32 spell = warden ? SummonWarden : obelisk ? SummonObelisk : 0;
+        TempSummon* enemy = spell ? me->SummonCreature(entry, start, ObjectGuid::Empty, TEMPSUMMON_CORPSE_TIMED_DESPAWN,
+            2000, spell, sSummonPropertiesStore.LookupEntry(3077)) :
+            me->SummonCreature(entry, start, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
+        if (!enemy)
+            return nullptr;
+        // The lawn owns movement, melee and spell selection for these summons.
+        enemy->AIM_Initialize(new NullCreatureAI(enemy));
+        uint32 health = warden ? 35000 : obelisk ? 2420 : entry == Abomination ? 7260 :
+            entry == Aberration ? 3388 : entry == Ghoul ? 968 : 390;
+        enemy->SetMaxHealth(health);
+        enemy->SetHealth(health);
+        enemy->setRegeneratingHealth(false);
+        enemy->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+        enemy->SetWalk(true);
+        enemy->SetSpeed(MOVE_WALK, entry == Abomination ? 0.5f : entry == Zombie ? 0.6f : 0.85f);
+        _enemies.emplace(enemy->GetGUID(), row);
+        if (obelisk)
+        {
+            enemy->CastSpell(enemy, ObeliskVisual, true);
+            enemy->ApplySpellImmune(0, IMMUNITY_ID, VenomSpit, true);
+            enemy->ApplySpellImmune(0, IMMUNITY_ID, FreezyaBlast, true);
+        }
+        else if (!warden)
+            enemy->GetMotionMaster()->MovePoint(1, Ground(row, 0), false);
+        return enemy;
+    }
+
     void UpdateDefense(Player& player, uint32 diff, DefenseWave wave, uint32 credit)
     {
         _elapsed += diff;
         while (_published < wave.Count && _elapsed - _waveStart >= wave.Spawns[_published].Delay)
         {
             SpawnTime const& spawn = wave.Spawns[_published];
-            Position start = Ground(spawn.Row, Columns - 1);
-            start.m_positionX += PlotSpacing;
-            TempSummon* zombie = me->SummonCreature(spawn.Entry, start, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
-            if (!zombie)
+            Creature* enemy = SpawnEnemy(spawn.Entry, spawn.Row);
+            if (!enemy)
                 break;
-            // The lawn owns movement, melee and spell selection. Ordinary creature
-            // AI can evade and reset health when the lawn issues a melee swing.
-            zombie->AIM_Initialize(new NullCreatureAI(zombie));
-            uint32 health = spawn.Entry == Abomination ? 7260 : spawn.Entry == Aberration ? 3388 : spawn.Entry == Ghoul ? 968 : 390;
-            zombie->SetMaxHealth(health);
-            zombie->SetHealth(health);
-            zombie->setRegeneratingHealth(false);
-            zombie->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
-            zombie->SetWalk(true);
-            zombie->SetSpeed(MOVE_WALK, spawn.Entry == Abomination ? 0.5f : spawn.Entry == Zombie ? 0.6f : 0.85f);
-            zombie->GetMotionMaster()->MovePoint(1, Ground(spawn.Row, 0), false);
-            _enemies.emplace(zombie->GetGUID(), spawn.Row);
-            if (_quest == BasicBotany && _published == 1)
+            if (spawn.Entry == Warden)
+            {
+                _warden = enemy->GetGUID();
+                _nextWardenCast = _elapsed + 10000;
+                me->CastSpell(me, WardenHealthBar, true);
+                WardenLine(*enemy, player, 49986);
+                Notify(player, 49985);
+            }
+            else if (_quest == BasicBotany && _published == 1)
                 Notify(player, 49558);
             else if (_published == wave.Warning)
                 Notify(player, 49409);
             ++_published;
         }
-        if (_defeated == wave.Count)
+        if (credit && _defeated == wave.Count)
         {
             player.KilledMonsterCredit(credit);
             if (WaveCredit(_quest) && !_secondWave)
@@ -538,7 +636,8 @@ private:
             for (Plot& plot : row)
                 UpdatePlant(plot);
         for (auto const& [guid, row] : _enemies)
-            if (Creature* zombie = ObjectAccessor::GetCreature(*me, guid); zombie && zombie->IsAlive())
+            if (Creature* zombie = ObjectAccessor::GetCreature(*me, guid); zombie && zombie->IsAlive() &&
+                zombie->GetEntry() != Obelisk && zombie->GetEntry() != Warden)
             {
                 if (zombie->GetPositionX() <= FirstColumnX + 0.75f)
                 {
@@ -547,6 +646,53 @@ private:
                 }
                 UpdateZombie(*zombie, row);
             }
+    }
+
+    void UpdateWarden(Player& player)
+    {
+        Creature* warden = ObjectAccessor::GetCreature(*me, _warden);
+        if (!warden || !warden->IsAlive())
+            return;
+        me->SetPower(POWER_ALTERNATE, me->GetMaxPower(POWER_ALTERNATE) * warden->GetHealthPct() / 100.0f);
+        if (warden->movespline->Finalized())
+        {
+            warden->GetMotionMaster()->MovePoint(1, EnemyStart(_wardenMovesNorth ? 0 : Rows - 1), false);
+            _wardenMovesNorth = !_wardenMovesNorth;
+        }
+        if (_elapsed < _nextWardenCast)
+            return;
+        _nextWardenCast = _elapsed + 14000;
+        if (_wardenUsesMutagen)
+        {
+            WardenLine(*warden, player, 49841);
+            unsigned poisoned = 0;
+            for (uint8 offset = 0; offset < Rows * Columns && poisoned < 2; ++offset)
+            {
+                _wardenPlot = (_wardenPlot + 7) % (Rows * Columns);
+                Plot const& plot = _plots[_wardenPlot / Columns][_wardenPlot % Columns];
+                if (Creature* plant = ObjectAccessor::GetCreature(*me, plot.Plant); plant && plant->IsAlive() &&
+                    plot.PlantEntry != Pumpkin && !plant->HasAura(WardenMutagen) && warden->AddAura(WardenMutagen, plant))
+                    ++poisoned;
+            }
+            if (!_fertilizer)
+                if (TempSummon* fertilizer = me->SummonCreature(Fertilizer, Ground(CenterRow, 2), ObjectGuid::Empty,
+                    TEMPSUMMON_TIMED_DESPAWN, 15000, CreateFertilizer, sSummonPropertiesStore.LookupEntry(3048)))
+                    _fertilizer = fertilizer->GetGUID();
+        }
+        else
+        {
+            for (uint8 row : {_obeliskRow, uint8((_obeliskRow + 2) % Rows)})
+            {
+                bool occupied = std::any_of(_enemies.begin(), _enemies.end(), [&](auto const& enemy)
+                {
+                    return enemy.first.GetEntry() == Obelisk && enemy.second == row;
+                });
+                if (!occupied)
+                    SpawnEnemy(Obelisk, row);
+            }
+            _obeliskRow = (_obeliskRow + 1) % Rows;
+        }
+        _wardenUsesMutagen = !_wardenUsesMutagen;
     }
 
     void UpdatePlant(Plot& plot)
@@ -578,7 +724,7 @@ private:
             UpdateStrangler(plot, *plant);
         else if (plot.PlantEntry == Sunflower && _elapsed >= plot.NextAction)
         {
-            plot.NextAction = _elapsed + 9000;
+            plot.NextAction = _elapsed + (_elapsed < _fertilizedUntil ? 4500 : 9000);
             CreateSolarPower(plant->GetPosition());
         }
     }
@@ -648,6 +794,8 @@ private:
     SummonList _summons;
     ObjectGuid _owner;
     ObjectGuid _seeds;
+    ObjectGuid _warden;
+    ObjectGuid _fertilizer;
     Position _firstWaveLastKill;
     std::array<std::array<Plot, Columns>, Rows> _plots{};
     std::unordered_map<ObjectGuid, uint8> _enemies;
@@ -657,8 +805,12 @@ private:
     uint32 _sunTimer = 0;
     uint32 _elapsed = 0;
     uint32 _waveStart = 0;
+    uint32 _nextWardenCast = 0;
+    uint32 _fertilizedUntil = 0;
     uint32 _attackTimer = 1000;
     uint8 _sunCursor = 0;
+    uint8 _wardenPlot = 0;
+    uint8 _obeliskRow = 0;
     size_t _published = 0;
     size_t _defeated = 0;
     bool _left = false;
@@ -666,6 +818,9 @@ private:
     bool _defendedLane = false;
     bool _seedPlantUnlocked = false;
     bool _secondWave = false;
+    bool _wardenDefeated = false;
+    bool _wardenMovesNorth = true;
+    bool _wardenUsesMutagen = true;
 };
 
 inline npc_brazie_basic_botany_board* GetBoard(Unit* unit)
@@ -749,6 +904,26 @@ class spell_brazie_collect_freezya_seeds : public SpellScript
     void Register() override
     {
         OnEffectHitTarget += SpellEffectFn(spell_brazie_collect_freezya_seeds::Collect, EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
+};
+
+class spell_brazie_collect_fertilizer : public SpellScript
+{
+    PrepareSpellScript(spell_brazie_collect_fertilizer);
+
+    void Collect(SpellEffIndex /*effect*/)
+    {
+        Creature* fertilizer = GetCaster()->ToCreature();
+        Player* player = GetHitPlayer();
+        if (!fertilizer || fertilizer->GetEntry() != Fertilizer || !fertilizer->IsAlive() || !player || !fertilizer->CanTargetQuestObject(player))
+            return;
+        if (auto board = GetBoard(player->GetVehicleBase()); board && board->CollectFertilizer(*fertilizer, *player))
+            fertilizer->DespawnOrUnsummon(1);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_brazie_collect_fertilizer::Collect, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -838,6 +1013,7 @@ inline void AddSC_hillsbrad_basic_botany()
     RegisterSpellScript(spell_brazie_plant_spitter);
     RegisterSpellScript(spell_brazie_collect_solar_power);
     RegisterSpellScript(spell_brazie_collect_freezya_seeds);
+    RegisterSpellScript(spell_brazie_collect_fertilizer);
     RegisterSpellScript(spell_brazie_spitter_venom);
     RegisterSpellScript(spell_brazie_freezya_blast);
     RegisterSpellScript(spell_brazie_pumpkin_explosion);
