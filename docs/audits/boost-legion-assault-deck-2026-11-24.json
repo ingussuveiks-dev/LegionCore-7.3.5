@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-24",
+  "scope": "Level 100 boost airship finale on maps 1554 and 1557",
+  "client_evidence": "The Windwalker reported enemies dropping through the Alliance deck during the Legion attack. Screenshots show progress at 37 and 62 percent, then only General Bret Hughes still visible at 62 percent. The screenshots do not establish how each actor disappeared.",
+  "findings": [
+    "The original server log reported ten successful imp summons and twelve combat assignments, including the infernal and bat. There was no supporting-deck error for these summons. The capture did not record their subsequent heights or selected displays.",
+    "The matching Monk criteria tree 49693 needs 100 weighted points. Imp 102658 contributes 5, infernal 112639 contributes 34, and bat 111776 contributes 17. The displayed 62 percent is consistent with nine imp credits and one bat credit, with the infernal still uncredited.",
+    "The live world database lists infernal displays 62196 and invisible 11686. The template loader randomly selects among nonzero displays. The summoned infernal now uses 62196 before entering the world, scoped to this encounter.",
+    "Ordinary melee chase calculated a map path or shortcut, and attached Unit height normalization left points unchanged. Ground chase between passengers on either boost ship now projects the contact point onto the matching transport model and checks the existing deck support and collision corridor before publishing the transport-local spline. The bat retains its native flight."
+  ],
+  "review": [
+    "The two sparring stages, original wave composition, native player and pet kill processing, defender last-hit credit, weighted criterion and post-combat departure stay on their existing paths.",
+    "The patch records actual attacker and defender deaths with transport-local height for the in-game retest. It does not change defender health or revive killed actors."
+  ],
+  "verification": {
+    "release_link": "The staged executable used the native Release game.lib and scripts.lib inputs. The linker map contains the changed ground path and chase implementation from game and the wave from scripts.",
+    "staged_worldserver_sha256": "CFCB844CB135A8DB7109C48A1F1620B524B27A2DBC5DA65C7F1B74D95C1F6CA6",
+    "client_retest": "Pending in-game confirmation of the moving deck, infernal visibility, defender outcomes, progression through 100 percent and departure. No separate regression or agent-owned startup was run during the active player-led flow.",
+    "diagnostics": "The active crash folder was empty. DBErrors.log remained 587 bytes from the previous day. The original gameplay log also records a later instance-connection timeout. That timeout remains unexplained and its diagnostics were preserved."
+  }
+}

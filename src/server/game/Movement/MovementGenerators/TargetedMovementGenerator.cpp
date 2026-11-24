@@ -23,7 +23,23 @@
 #include "MoveSplineInit.h"
 #include "Player.h"
 #include "Spell.h"
+#include "Transport.h"
 #include "World.h"
+
+namespace
+{
+bool UsesBoostDeckChase(Unit const& mover, Unit const& target)
+{
+    Transport const* ship = mover.GetTransport();
+    if (!ship || ship != target.GetTransport() || mover.GetDirectTransport() != ship ||
+        target.GetDirectTransport() != ship || mover.IsFlying() || mover.IsHovering() ||
+        mover.HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
+        return false;
+
+    return (ship->GetMapId() == 1554 && ship->GetEntry() == 246606) ||
+        (ship->GetMapId() == 1557 && ship->GetEntry() == 246607);
+}
+}
 
 template<class T, typename D>
 TargetedMovementGenerator<T, D>::~TargetedMovementGenerator()
@@ -160,8 +176,10 @@ void TargetedMovementGenerator<T, D>::SetTargetLocation(T& owner, bool updateDes
         return;
     }
 
+    bool const deckChase = this->GetMovementGeneratorType() == CHASE_MOTION_TYPE &&
+        UsesBoostDeckChase(owner, *GetTarget());
     float x, y, z;
-    if (updateDestination || !_path)
+    if (updateDestination || !_path || deckChase)
     {
         if (!_offset)
         {
@@ -202,7 +220,17 @@ void TargetedMovementGenerator<T, D>::SetTargetLocation(T& owner, bool updateDes
     // allow pets to use shortcut if no path found when following their master
     bool forceDest = (owner.GetTypeId() == TYPEID_UNIT && owner.ToCreature()->isPet() && owner.HasUnitState(UNIT_STATE_FOLLOW));
 
-    bool result = _path->CalculatePath(x, y, z, forceDest);
+    bool result;
+    if (deckChase)
+    {
+        // The contact point inherits the target's height, which can be in
+        // the air. Project that point onto this ship before checking the route.
+        // The height search is bounded to the deck below the target.
+        float deckZ = owner.GetHeight(x, y, z + 0.1f, true, 5.0f);
+        result = deckZ > INVALID_HEIGHT && _path->CalculateTransportGroundPath({ x, y, deckZ });
+    }
+    else
+        result = _path->CalculatePath(x, y, z, forceDest);
     if (!result || (_path->GetPathType() & PATHFIND_NOPATH))
     {
         // can't reach target
@@ -222,6 +250,8 @@ void TargetedMovementGenerator<T, D>::SetTargetLocation(T& owner, bool updateDes
 
     Movement::MoveSplineInit init(owner);
     init.MovebyPath(_path->GetPath());
+    if (deckChase)
+        init.SetUncompressed();
     init.SetWalk(EnableWalking());
     // Using the same condition for facing target as the one that is used for SetInFront on movement end
     // - applies to ChaseMovementGenerator mostly

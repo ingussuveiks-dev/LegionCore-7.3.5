@@ -65,6 +65,9 @@ enum Spells : uint32
     SPELL_LEAVE_TUTORIAL = 219912
 };
 
+// CreatureTemplateWDB 112639 also lists 11686, its invisible display.
+constexpr uint32 FelblazeInfernalDisplay = 62196;
+
 enum Criteria : uint32
 {
     CRITERIA_SPAR_COMPLETE = 48772,
@@ -382,7 +385,15 @@ public:
                 return;
             }
 
-            if (std::find(_legionGuids.begin(), _legionGuids.end(), creature->GetGUID()) == _legionGuids.end())
+            bool const legionAttacker = std::find(_legionGuids.begin(), _legionGuids.end(), creature->GetGUID()) != _legionGuids.end();
+            bool const deckDefender = _defenderTimer &&
+                std::find(_defenderGuids.begin(), _defenderGuids.end(), creature->GetGUID()) != _defenderGuids.end();
+            if (legionAttacker || deckDefender)
+                TC_LOG_INFO("scripts", "Boost tutorial deck %s %u died at local Z %.3f (killer entry %u)",
+                    legionAttacker ? "attacker" : "defender", creature->GetEntry(),
+                    creature->m_movementInfo.transport.Pos.GetPositionZ(), killer ? killer->GetEntry() : 0);
+
+            if (!legionAttacker)
                 return;
 
             // Allies can finish Legion attackers. Their kills still count for
@@ -1049,6 +1060,9 @@ public:
             if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, 3.0f, 4.0f, 0.0f, 3.14f),
                 nullptr, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
             {
+                attacker->SetOutfit(FelblazeInfernalDisplay);
+                attacker->SetDisplayId(FelblazeInfernalDisplay);
+                attacker->SetNativeDisplayId(FelblazeInfernalDisplay);
                 _legionGuids.push_back(attacker->GetGUID());
                 StartCombat(attacker, targets[(_legionGuids.size() - 1) % targets.size()]);
             }
