@@ -1,0 +1,9 @@
+# Broken Shore Find Varian march
+
+On the live Alliance replay, Yim reached Find Varian after Arganoth's death. Genn, Jaina and the nearby troops stopped near the sixth point of path 439136. The saved player position was 643.015, 2045.34, 23.3382. The matching waypoint at 639.649, 2046.21, 21.9948 has a zero delay. The path's planned waits are nine seconds at the start and a 22-second scene handoff after the first path ends.
+
+The stage transition previously set the formation passive and started the path without ending the preceding combat. Genn and Jaina could still enter ordinary evade mode, which replaces the motion with a home move and removes unit events, including a pending handoff if it has already been queued. Earlier beach callbacks could also reenter combat if they fired late. The live log shows several attackers dropping their targets around the halt. It does not independently identify the particular callback that stopped Genn that time.
+
+The Alliance map 1460 transition now clears the formation's old cast and combat state before Genn starts the march. The two principal actors retain the stage's waypoint and scene work through combat cleanup. Late beach callbacks check the current stage, and the scene handoff is admitted once while Find Varian is active. The authored paths, delays, map-local player camera spell and Varian's normal reunion criteria remain in use. The later portal assault and the Horde route retain their own handlers.
+
+Release compilation and final-link review are the build checks for this active player-led repair. Separate regressions and an agent-owned startup are intentionally omitted. The next gameplay check is the march through both path sections, once-only scene, and the native transition into Destroy the Portal. The earlier duplicate map admission remains a separate unresolved log entry.

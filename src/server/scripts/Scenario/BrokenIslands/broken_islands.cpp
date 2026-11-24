@@ -1430,6 +1430,7 @@ public:
         }
 
         bool introEvent = false;
+        bool gennReunionSceneStarted = false;
         uint32 currentWP = 0;
         uint32 portalGuardSearch = 0;
         EventMap events;
@@ -1440,6 +1441,13 @@ public:
         void Reset() override
         {
             events.Reset();
+        }
+
+        bool IsFindingVarian() const
+        {
+            InstanceScript* script = me->GetInstanceScript();
+            return me->GetMapId() == 1460 && script && script->GetData(DATA_SCENARIO_TEAM) == ALLIANCE &&
+                script->getScenarionStep() == 3;
         }
 
         void MovementInform(uint32 moveType, uint32 pointId) override
@@ -1541,8 +1549,9 @@ public:
                 switch (currentWP)
                 {
                 case 439136:
-                    if (pointId == 13)
+                    if (pointId == 13 && !gennReunionSceneStarted && IsFindingVarian())
                     {
+                        gennReunionSceneStarted = true;
                         Map::PlayerList const &PlList = me->GetMap()->GetPlayers();
                         for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                             if (Player* player = i->getSource())
@@ -1556,10 +1565,12 @@ public:
 
                         me->AddDelayedEvent(22000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
-                            if (aiLifetimeGuard.expired()) return;
+                            if (aiLifetimeGuard.expired() || !IsFindingVarian() || currentWP != 439136)
+                                return;
                             DoCast(199718);
                             me->GetMotionMaster()->MovePath(439137, false);
                             currentWP = 439137;
+                            TC_LOG_INFO("scripts", "Broken Shore: Genn started the second Find Varian path in instance %u", me->GetInstanceId());
                         });
                     }
                     break;
@@ -1584,6 +1595,10 @@ public:
                 if (who->GetTypeId() != TYPEID_PLAYER || !me->IsWithinDistInMap(who, 20.0f))
                     return;
 
+                InstanceScript* script = me->GetInstanceScript();
+                if (!script || script->getScenarionStep() >= 3)
+                    return;
+
                 introEvent = true;
                 Talk(0);
 
@@ -1594,6 +1609,9 @@ public:
                 me->AddDelayedEvent(8000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
                     if (aiLifetimeGuard.expired()) return;
+                    InstanceScript* script = me->GetInstanceScript();
+                    if (!script || script->getScenarionStep() >= 3)
+                        return;
                     std::list<Creature*> targets;
                     me->GetCreatureListInGrid(targets, 150.0f);
                     targets.remove_if([this](Creature* target) -> bool
@@ -1632,6 +1650,9 @@ public:
                     me->AddDelayedEvent(11000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
                         if (aiLifetimeGuard.expired()) return;
+                        InstanceScript* script = me->GetInstanceScript();
+                        if (!script || script->getScenarionStep() >= 3)
+                            return;
                         DoCast(183988);
                         GetNPCAroundAndDoAction([](Creature*){}, 3);
                     });
@@ -1670,14 +1691,24 @@ public:
 
         void DoAction(int32 const action) override
         {
-            if (me->GetEntry() == 90717 && action == 3)
+            if (me->GetEntry() == 90717 && action == 3 && IsFindingVarian() && !currentWP)
             {
-                GetNPCAroundAndDoAction([](Creature* creature) { creature->SetReactState(REACT_PASSIVE); }, 5);
+                auto endCombat = [](Creature* creature)
+                {
+                    creature->SetReactState(REACT_PASSIVE);
+                    creature->DeleteThreatList();
+                    creature->ClearSaveThreatTarget();
+                    creature->CombatStop(true);
+                    creature->ClearUnitState(UNIT_STATE_EVADE);
+                };
+                endCombat(me);
+                GetNPCAroundAndDoAction(endCombat, 5);
                 
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MovePath(439136, false);
                 currentWP = 439136;
                 me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
+                TC_LOG_INFO("scripts", "Broken Shore: Genn started Find Varian in instance %u", me->GetInstanceId());
             }
 
             if (auto script = me->GetInstanceScript())
@@ -1776,6 +1807,15 @@ public:
 
         void EnterEvadeMode() override
         {
+            if ((me->GetEntry() == 90717 || me->GetEntry() == NPC_JAINA) && IsFindingVarian())
+            {
+                // Clean up combat without replacing the march or deleting its scene timer.
+                _EnterEvadeMode();
+                me->ClearUnitState(UNIT_STATE_EVADE);
+                events.Reset();
+                return;
+            }
+
             CreatureAI::EnterEvadeMode();
 
             if (me->GetEntry() != 90717)
