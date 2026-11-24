@@ -21,6 +21,7 @@
 #include "SkyholdArtifactReturn.h"
 #include "HealingAmount.h"
 #include "AcquisitionScenarioRoute.h"
+#include "BrokenShoreArrival.h"
 #include "QuestRewardDisplay.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
@@ -23110,6 +23111,29 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     bool warriorQuestStatusLoaded = false;
     if (!(m_atLoginFlags & AT_LOGIN_UNLOCK) && mapEntry && IsPositionValid())
     {
+        if (!transLowGUID && m_scenarioResume.map == mapId && m_scenarioResume.instance && m_scenarioResume.boot &&
+            BrokenShoreArrival::Matches(mapId, m_scenarioResume.scenario, GetTeam()))
+        {
+            // Old checkpoints used the ship-local LFG entrance even after a real landing.
+            auto entrance = sLFGMgr->GetLFGDungeon(908u, GetTeam());
+            Position savedEntrance(m_scenarioResume.x, m_scenarioResume.y, m_scenarioResume.z, m_scenarioResume.o);
+            if (entrance && entrance->map == mapId && savedEntrance.GetExactDist(Position(entrance->x, entrance->y, entrance->z)) < 0.05f &&
+                GetExactDist2d(entrance->x, entrance->y) > 10.0f)
+            {
+                Map* terrain = sMapMgr->CreateBaseMap(mapId);
+                float x = GetPositionX(), y = GetPositionY(), z = GetPositionZ();
+                if (terrain && std::fabs(terrain->GetHeight(x, y, z) - z) < 2.0f &&
+                    terrain->getLiquidStatus(x, y, z, MAP_ALL_LIQUIDS) == LIQUID_MAP_NO_WATER)
+                {
+                    Position beach = BrokenShoreArrival::Beach(GetTeam());
+                    m_scenarioResume.x = beach.GetPositionX();
+                    m_scenarioResume.y = beach.GetPositionY();
+                    m_scenarioResume.z = beach.GetPositionZ();
+                    m_scenarioResume.o = beach.GetOrientation();
+                    TC_LOG_INFO("entities.player", "Broken Shore: restored the shore checkpoint from the saved ground position for player %u", GetGUIDLow());
+                }
+            }
+        }
         PrepareScenarioLogin(mapId,instanceId);
         // An unrecorded acquisition may use its active quest's real entrance,
         // never a numeric saved instance or a later saved coordinate.

@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "SpellMgr.h"
 #include "BrokenShoreClassRoute.h"
+#include "BrokenShoreArrival.h"
 #include "WarriorScenarioRoute.h"
 #include "AcquisitionScenarioRoute.h"
 #include "QuestData.h"
@@ -228,7 +229,14 @@ void Player::RecordScenarioEntrance()
         m_scenarioLoginId = m_scenarioLoginInstance = 0;
         return;
     }
-    if (m_scenarioResume.map != GetMapId() || m_scenarioResume.scenario != progress->GetScenarioId())
+    if (BrokenShoreArrival::Matches(GetMapId(), progress->GetScenarioId(), GetTeam()) &&
+        progress->GetCurrentStep() && !GetTransport() && !GetVehicle())
+    {
+        Position beach = BrokenShoreArrival::Beach(GetTeam());
+        m_scenarioResume = {GetMapId(), progress->GetScenarioId(), GetInstanceId(), uint64(GameTime::GetStartTime()),
+            beach.GetPositionX(), beach.GetPositionY(), beach.GetPositionZ(), beach.GetOrientation()};
+    }
+    else if (m_scenarioResume.map != GetMapId() || m_scenarioResume.scenario != progress->GetScenarioId())
     {
         Position entrance = GetPosition();
         // A legacy live run may first be recorded in a later wing or aboard

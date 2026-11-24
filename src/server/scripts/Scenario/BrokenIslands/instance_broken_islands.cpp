@@ -19,6 +19,7 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "broken_islands.h"
+#include "BrokenShoreArrival.h"
 #include "MapManager.h"
 #include "Transport.h"
 #include "InstanceScript.h"
@@ -61,11 +62,19 @@ public:
         std::set<ObjectGuid> boardedPlayers;
         std::set<ObjectGuid> landedPlayers;
 
+        bool HasShoreEntrance(Player const* player) const
+        {
+            return !player->GetTransport() && !player->GetVehicle() &&
+                player->GetQuestStatus(player->GetTeam() == ALLIANCE ? 42740 : 40518) == QUEST_STATUS_INCOMPLETE &&
+                BrokenShoreArrival::AtBeach(player->GetPosition(), player->GetTeam());
+        }
+
         void LandPlayer(Player* player)
         {
             if (!player || !landedPlayers.insert(player->GetGUID()).second)
                 return;
 
+            bool const alreadyAshore = HasShoreEntrance(player);
             bool alliance = player->GetTeam() == ALLIANCE;
             if (GameObject* ship = instance->GetGameObject(GetGuidData(alliance ? GO_ALLIANCE_SHIP : GO_HORDE_SHIP)))
                 ship->SetVisible(true);
@@ -81,14 +90,17 @@ public:
             // Custom disembark beside the faction's first beach allies
             // (90717 / 90708). The old teleport spells lead to another ship,
             // so a missing scene or disappearing ship still stranded players.
-            Position beach = alliance ? Position(486.929f, 2052.26f, 1.40809f, 0.0f) :
-                Position(567.826f, 1886.94f, 0.737247f, 0.0f);
-            instance->LoadGrid(beach.GetPositionX(), beach.GetPositionY());
-            player->NearTeleportTo(beach);
+            Position beach = BrokenShoreArrival::Beach(player->GetTeam());
+            if (!alreadyAshore)
+            {
+                instance->LoadGrid(beach.GetPositionX(), beach.GetPositionY());
+                player->NearTeleportTo(beach);
+            }
             if (getScenarionStep() == 0)
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, alliance ? 44060 : 54140);
-            TC_LOG_INFO("scripts", "Broken Shore disembarked %s at beach %.2f %.2f %.2f",
-                player->GetName(), beach.GetPositionX(), beach.GetPositionY(), beach.GetPositionZ());
+            player->RecordScenarioEntrance();
+            TC_LOG_INFO("scripts", "Broken Shore %s %s at beach %.2f %.2f %.2f",
+                alreadyAshore ? "restored" : "disembarked", player->GetName(), beach.GetPositionX(), beach.GetPositionY(), beach.GetPositionZ());
         }
 
         void Update(uint32 diff) override
@@ -99,6 +111,11 @@ public:
                 if (!player || player->GetMap() != instance || landedPlayers.count(itr->first))
                 {
                     itr = arrivalTimers.erase(itr);
+                    continue;
+                }
+                if (!player->CanContact())
+                {
+                    ++itr;
                     continue;
                 }
                 itr->second += diff;
@@ -127,7 +144,7 @@ public:
 
         void BoardPlayer(Player* player, Transport* transport)
         {
-            if (!player || !transport || getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()))
+            if (!player || !transport || getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()) || HasShoreEntrance(player))
                 return;
 
             // These are ship-local deck coordinates. Set the local offset
@@ -172,9 +189,9 @@ public:
             if (!team)
                 team = player->GetTeam();
 
-            if (!firstEnter)
+            bool const shoreEntrance = HasShoreEntrance(player);
+            if (!firstEnter && !shoreEntrance && getScenarionStep() == 0)
             {
-                firstEnter = true;
                 player->AddDelayedEvent(5000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                 {
                     if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
@@ -197,6 +214,7 @@ public:
                     });
                 });
             }
+            firstEnter = true;
 
             player->KilledMonsterCredit(108920);
             player->KilledMonsterCredit(113118);
@@ -213,6 +231,13 @@ public:
             if (getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()))
             {
                 RestoreScenarioEntrance(player);
+                return;
+            }
+            if (shoreEntrance)
+            {
+                // A reconstructed instance still needs its normal first-stage criterion.
+                // Run it after the player is actually registered on the map.
+                arrivalTimers.emplace(player->GetGUID(), 60000);
                 return;
             }
             arrivalTimers.emplace(player->GetGUID(), 0);
