@@ -50,19 +50,19 @@ void BattlefieldMgr::InitBattlefield()
     else
     {
         m_BattlefieldSet.push_back(pBf);
-        TC_LOG_INFO("misc", "Battlefield : Wintergrasp successfully initiated.");
+        TC_LOG_INFO("misc", "Battlefield: Wintergrasp initialized (%s).", pBf->IsEnabled() ? "enabled" : "disabled");
     }
 
     pBf = new BattlefieldTB;
     if (!pBf->SetupBattlefield())
     {
-        TC_LOG_DEBUG("bg.battlefield", "Battlefield : Tol Barad init failed.");
+        TC_LOG_ERROR("bg.battlefield", "Battlefield: Tol Barad initialization failed.");
         delete pBf;
     }
     else
     {
         m_BattlefieldSet.push_back(pBf);
-        TC_LOG_DEBUG("bg.battlefield", "Battlefield : Tol Barad successfully initiated.");
+        TC_LOG_INFO("misc", "Battlefield: Tol Barad initialized (%s).", pBf->IsEnabled() ? "enabled" : "disabled");
     } 
 }
 

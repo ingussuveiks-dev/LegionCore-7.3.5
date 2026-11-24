@@ -2062,10 +2062,10 @@ Battleground.Random.ResetHour = 6
 #
 #     Wintergrasp.Enable
 #         Description: Enable the Wintergrasp battlefield.
-#         Default:     0 - (Disabled)
-#                      1 - (Enabled, Experimental as of still being in development)
+#         Default:     1 - (Enabled, experimental)
+#                      0 - (Disabled)
 
-Wintergrasp.Enable = 0
+Wintergrasp.Enable = 1
 
 #
 #     Wintergrasp.PlayerMax
@@ -2112,10 +2112,10 @@ Wintergrasp.CrashRestartTimer = 10
 
 #     TolBarad.Enable
 #         Description: Enable the Tol Barad battlefield.
-#         Default:     0 - (Disabled)
-#                      1 - (Enabled, Experimental as in incomplete, bugged and with crashes)
+#         Default:     1 - (Enabled, experimental)
+#                      0 - (Disabled)
 
-TolBarad.Enable = 0
+TolBarad.Enable = 1
 
 #
 #     TolBarad.PlayerMax
