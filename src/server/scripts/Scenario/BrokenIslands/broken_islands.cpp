@@ -1429,6 +1429,7 @@ public:
 
         bool introEvent = false;
         uint32 currentWP = 0;
+        uint32 portalGuardSearch = 0;
         EventMap events;
         std::list<ObjectGuid> targetList;
 
@@ -1775,21 +1776,6 @@ public:
         {
             CreatureAI::EnterEvadeMode();
 
-            me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
-            {
-                if (aiLifetimeGuard.expired()) return;
-                if (me->isInCombat())
-                    return;
-
-                if (me->GetEntry() == NPC_VARIAN)
-                    if (me->GetInstanceScript()->getScenarionStep() == 4)
-                        if (auto target = me->FindNearestCreature(90525, 120.0f, true))
-                        {
-                            me->ClearUnitState(UNIT_STATE_EVADE);
-                            AttackStart(target);
-                        }
-            });
-
             if (me->GetEntry() != 90717)
                 return;
 
@@ -1828,10 +1814,41 @@ public:
             });
         }
 
+        void EngagePortalGuard(uint32 diff)
+        {
+            if (me->GetEntry() != NPC_VARIAN || me->GetMapId() != 1460 || !me->IsAlive() || me->isInCombat())
+                return;
+
+            InstanceScript* script = me->GetInstanceScript();
+            if (!script || script->GetData(DATA_SCENARIO_TEAM) != ALLIANCE || script->getScenarionStep() != 4)
+            {
+                portalGuardSearch = 0;
+                return;
+            }
+
+            if (portalGuardSearch > diff)
+            {
+                portalGuardSearch -= diff;
+                return;
+            }
+
+            // Varian can reach the reunion without a prior fight to evade.
+            portalGuardSearch = 1000;
+            if (Creature* guard = me->FindNearestCreature(90525, 120.0f, true))
+                if (me->IsValidAttackTarget(guard))
+                {
+                    me->ClearUnitState(UNIT_STATE_EVADE);
+                    AttackStart(guard);
+                }
+        }
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
+            {
+                EngagePortalGuard(diff);
                 return;
+            }
 
             events.Update(diff);
 
