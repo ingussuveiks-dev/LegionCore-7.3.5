@@ -2820,12 +2820,6 @@ public:
     {
         npc_q40517_p1AI(Creature* creature) : npc_escortAI(creature) {}
 
-        bool PlayerOn;
-        void Reset() override
-        {
-            PlayerOn = false;
-        }
-
         void OnCharmed(bool /*apply*/) override
         {
         }
@@ -2838,14 +2832,24 @@ public:
 
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
-            if (!apply || who->GetTypeId() != TYPEID_PLAYER)
+            Player* player = who->ToPlayer();
+            if (!player)
                 return;
 
-            who->ToPlayer()->KilledMonsterCredit(100696);
+            if (!apply)
+            {
+                if (player->GetGuidValue(PLAYER_FIELD_FARSIGHT_OBJECT) == me->GetGUID())
+                    player->SetViewpoint(me, false);
+                return;
+            }
 
-            PlayerOn = true;
-            Start(false, true, who->GetGUID());
-            who->ToPlayer()->PlayDistanceSound(16422, who->ToPlayer());
+            // This passenger seat does not control the gryphon. Follow it with the camera only.
+            if (player->GetGuidValue(PLAYER_FIELD_FARSIGHT_OBJECT).IsEmpty())
+                player->SetViewpoint(me, true);
+
+            player->KilledMonsterCredit(100696);
+            Start(false, true, player->GetGUID());
+            player->PlayDistanceSound(16422, player);
         }
 
         void WaypointReached(uint32 i) override
@@ -2856,22 +2860,11 @@ public:
                     if (Player* player = GetPlayerForEscort())
                     {
                         SetEscortPaused(true);
-                        player->ExitVehicle();
+                        if (player->GetVehicleBase() == me)
+                            player->ExitVehicle();
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, player->GetGUID());
                     }
                     break;
-            }
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            npc_escortAI::UpdateAI(diff);
-
-            if (PlayerOn)
-            {
-                if (Player* player = GetPlayerForEscort())
-                    player->SetClientControl(me, 0);
-                PlayerOn = false;
             }
         }
     };
