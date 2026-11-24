@@ -2,12 +2,12 @@
 #include "BrawlBattlegroundSouthshoreVsTarrenMill.h"
 #include "BattlegroundPackets.h"
 
+static constexpr uint8 RankCount = 16;
+static constexpr uint8 MaxScores = 150;
+static constexpr uint8 KillsPerRank = 10;
+static constexpr uint32 Graveyards[MAX_TEAMS] = {4850, 4851};
 
-static uint8 const MaxRank = 16;
-static uint8 const MaxScores = 150;
-static uint8 const ScorePerRand = 10;
-
-uint32 playerBuffs[MaxRank][MAX_TEAMS] =
+static constexpr uint32 RankSpells[RankCount][MAX_TEAMS] =
 {
     { 168412, 168429 }, // 0%
     { 168413, 168430 }, // 1%
@@ -46,86 +46,88 @@ protected:
 
 BrawlBattlegroundSouthshoreVsTarrenMill::BrawlBattlegroundSouthshoreVsTarrenMill()
 {
-    m_playerPointsCounter.clear();
-}
-
-BrawlBattlegroundSouthshoreVsTarrenMill::~BrawlBattlegroundSouthshoreVsTarrenMill()
-{
-
+    BgCreatures.resize(MAX_TEAMS);
 }
 
 void BrawlBattlegroundSouthshoreVsTarrenMill::Reset()
 {
     Battleground::Reset();
-    m_playerPointsCounter.clear();
-    _playerRank.clear();
+    _honorableKills.clear();
+    _battleElapsed = Milliseconds::zero();
 }
 
 bool BrawlBattlegroundSouthshoreVsTarrenMill::SetupBattleground()
 {
+    for (TeamId team : {TEAM_ALLIANCE, TEAM_HORDE})
+    {
+        auto const* graveyard = sWorldSafeLocsStore.LookupEntry(Graveyards[team]);
+        if (!graveyard || graveyard->MapID != GetMapId() || !AddSpiritGuide(team, graveyard->Loc, team))
+            return false;
+    }
     return true;
 }
 
-void BrawlBattlegroundSouthshoreVsTarrenMill::PostUpdateImpl(uint32 /*diff*/)
+void BrawlBattlegroundSouthshoreVsTarrenMill::PostUpdateImpl(uint32 diff)
 {
     if (GetStatus() != STATUS_IN_PROGRESS)
         return;
 
-    if (GetElapsedTime() >= Minutes(30))
-        Battleground::BattlegroundTimedWin(2);
+    _battleElapsed += Milliseconds(diff);
+    if (_battleElapsed >= Minutes(30))
+        BattlegroundTimedWin();
 }
 
 void BrawlBattlegroundSouthshoreVsTarrenMill::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-
     auto playerGuid = player->GetGUID();
-
-    PlayerScores[playerGuid] = new BrawlBattlegroundSouthshoreVsTarrenMillScore(player->GetGUID(), player->GetBGTeamId());
-
+    PlayerScores[playerGuid] = new BrawlBattlegroundSouthshoreVsTarrenMillScore(playerGuid, player->GetBGTeamId());
     player->SendDirectMessage(WorldPackets::Battleground::Init(MaxScores).Write());
-    Battleground::SendBattleGroundPoints(player->GetBGTeamId() != TEAM_ALLIANCE, m_TeamScores[player->GetBGTeamId()], false, player);
-
-    m_playerPointsCounter[playerGuid] = 0;
-    _playerRank[playerGuid] = 0;
+    SendBattleGroundPoints(false, m_TeamScores[TEAM_ALLIANCE], false, player);
+    SendBattleGroundPoints(true, m_TeamScores[TEAM_HORDE], false, player);
 }
 
-void BrawlBattlegroundSouthshoreVsTarrenMill::OnPlayerEnter(Player* player)
+void BrawlBattlegroundSouthshoreVsTarrenMill::RemovePlayer(Player* player, ObjectGuid guid, uint32 /*team*/)
 {
-    Battleground::OnPlayerEnter(player);
+    if (player)
+        ResetRank(player);
+    else
+        _honorableKills.erase(guid);
 }
 
 WorldSafeLocsEntry const* BrawlBattlegroundSouthshoreVsTarrenMill::GetClosestGraveYard(Player* player)
 {
-    return sWorldSafeLocsStore.LookupEntry(player->GetBGTeamId() == TEAM_ALLIANCE ? 4850 : 4851);
+    TeamId team = player->GetBGTeamId();
+    return team < MAX_TEAMS ? sWorldSafeLocsStore.LookupEntry(Graveyards[team]) : nullptr;
+}
+
+void BrawlBattlegroundSouthshoreVsTarrenMill::ResetRank(Player* player)
+{
+    auto kills = _honorableKills.find(player->GetGUID());
+    if (kills == _honorableKills.end())
+        return;
+
+    player->RemoveAura(RankSpells[kills->second / KillsPerRank][player->GetTeamId()]);
+    _honorableKills.erase(kills);
 }
 
 void BrawlBattlegroundSouthshoreVsTarrenMill::HandleKillPlayer(Player* player, Player* killer)
 {
-    if (GetStatus() != STATUS_IN_PROGRESS)
+    if (GetStatus() != STATUS_IN_PROGRESS || !player)
         return;
 
-    Battleground::HandleKillPlayer(player, killer);
+    bool enemyKill = killer && IsPlayerInBattleground(killer->GetGUID()) && player->GetBGTeam() != killer->GetBGTeam();
+    Battleground::HandleKillPlayer(player, enemyKill ? killer : nullptr);
+    ResetRank(player);
 
-    if (player == killer)
+    if (!enemyKill)
         return;
 
-    auto killerGuid = killer->GetGUID();
-
-    ++m_TeamScores[killer->GetBGTeamId()];
-    m_playerPointsCounter[killerGuid] += _playerRank[player->GetGUID()] + 1;
-
-    player->RemoveAura(playerBuffs[_playerRank[player->GetGUID()]][player->GetTeamId()]);
-
-    if (m_playerPointsCounter[killerGuid] >= ScorePerRand)
-    {
-        _playerRank[killerGuid] = std::min(uint8(1+_playerRank[killerGuid]), MaxRank);
-        m_playerPointsCounter[killerGuid] = 0;
-
-        auto killerTeamId = killer->GetTeamId();
-        killer->RemoveAura(playerBuffs[_playerRank[killerGuid] - 1][killerTeamId]);
-        killer->CastSpell(killer, playerBuffs[_playerRank[killerGuid]][killerTeamId]);
-    }
+    TeamId team = killer->GetBGTeamId();
+    ++m_TeamScores[team];
+    SendBattleGroundPoints(team == TEAM_HORDE, m_TeamScores[team]);
+    if (m_TeamScores[team] >= MaxScores)
+        EndBattleground(MS::Battlegrounds::GetTeamByTeamId(team));
 }
 
 bool BrawlBattlegroundSouthshoreVsTarrenMill::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor)
@@ -133,10 +135,18 @@ bool BrawlBattlegroundSouthshoreVsTarrenMill::UpdatePlayerScore(Player* player, 
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;
 
+    if (type == SCORE_HONORABLE_KILLS && GetStatus() == STATUS_IN_PROGRESS && value)
+    {
+        auto& kills = _honorableKills[player->GetGUID()];
+        uint8 oldRank = kills / KillsPerRank;
+        kills = static_cast<uint8>(kills + std::min<uint64>(value, (RankCount - 1) * KillsPerRank - kills));
+        uint8 newRank = kills / KillsPerRank;
+        if (newRank != oldRank)
+        {
+            TeamId faction = player->GetTeamId();
+            player->RemoveAura(RankSpells[oldRank][faction]);
+            player->CastSpell(player, RankSpells[newRank][faction], true);
+        }
+    }
     return true;
-}
-
-void BrawlBattlegroundSouthshoreVsTarrenMill::FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet)
-{
-    
 }

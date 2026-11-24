@@ -1147,7 +1147,7 @@ void BattlegroundMgr::InitializeBrawlData()
     _brawlTemplatesContainer[4] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlArenaAll, 265, 327, "PvP Brawl: Packed House", "��� 15�15", "- ��������� ������� - 15 ������� �� ������� - ��������� �������, ������� ����������� ������", MS::Battlegrounds::BrawlTypes::Arena); // 239
     _brawlTemplatesContainer[5] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundHotmoguTemplate, 264, 323, "PvP Brawl: Temple of Hotmogu", "", "", MS::Battlegrounds::BrawlTypes::Battleground); // 240
     _brawlTemplatesContainer[6] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlAllSix, 267, 348, "Brawl: the magnificent six", "���� ��� 6 �� 6", "� 6 ������� �� ������� � ����� ������ ����", MS::Battlegrounds::BrawlTypes::Battleground); // 240
-    _brawlTemplatesContainer[7] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundArathiBasinWinter, 262, 321,"PvP Brawl: Arathi Blizzard", "������� ����", "- ��������� ������� - ��������� ���������� - ���������� ����������", MS::Battlegrounds::BrawlTypes::Battleground); // 240
+    _brawlTemplatesContainer[7] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundSouthshoreVsTarrenMill, 256, 328, "PvP Brawl: Southshore vs. Tarren Mill", "", "", MS::Battlegrounds::BrawlTypes::Battleground);
     _brawlTemplatesContainer[8] = BrawlData(MS::Battlegrounds::BattlegroundTypeId::BrawlEyeOfStorm, 255, 324, "PvP Brawl: Gravity Lapse", "���������� ����", "- ���������� ��������� ��������- �������� ����� ���������� ������� - ��� ��������� ������ �������� � ������", MS::Battlegrounds::BrawlTypes::Battleground); // 239
    
 
