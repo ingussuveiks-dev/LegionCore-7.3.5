@@ -42,11 +42,13 @@ constexpr uint32 Abomination = 49694;
 constexpr uint32 Warden = 49819;
 constexpr uint32 Obelisk = 49911;
 constexpr uint32 Fertilizer = 50067;
+constexpr uint32 Mower = 49192;
 constexpr uint32 IntroduceBotany = 49189;
 constexpr uint32 FlowerWave = 49542;
 constexpr uint32 GrainsWave = 49553;
 constexpr uint32 PumpkinWave = 49561;
 constexpr uint32 WardenVictory = 49627;
+constexpr uint32 GardenWave = 49626;
 constexpr uint32 PlantSpitter = 91649;
 constexpr uint32 PlantSunflower = 91646;
 constexpr uint32 PlantFreezya = 92440;
@@ -65,6 +67,8 @@ constexpr uint32 SummonObelisk = 93253;
 constexpr uint32 ObeliskVisual = 92871;
 constexpr uint32 CreateFertilizer = 93102;
 constexpr uint32 FertilizerVisual = 93101;
+constexpr uint32 SummonMower = 91680;
+constexpr uint32 MowerStartup = 93969;
 constexpr uint32 GainSolarPower = 91687;
 constexpr uint32 SunSphere = 91707;
 constexpr uint32 SeedSparkles = 92406;
@@ -158,6 +162,21 @@ constexpr SpawnTime WardenArrival[] =
     {143000, 0, Ghoul}, {155000, 3, Abomination}, {169000, 2, Ghoul}, {181000, 4, Aberration}
 };
 
+constexpr SpawnTime GardenFirstWave[] =
+{
+    {17000, 2, Ghoul}, {30000, 1, Zombie}, {38000, 3, Ghoul}, {49000, 0, Ghoul}, {57000, 4, Aberration},
+    {74000, 2, Aberration}, {74000, 3, Ghoul}, {74000, 4, Ghoul}, {78000, 0, Zombie}, {78000, 1, Ghoul},
+    {83000, 0, Ghoul}, {83000, 2, Zombie}, {87000, 1, Aberration}, {87000, 3, Zombie}, {87000, 4, Zombie}
+};
+
+constexpr SpawnTime GardenFinalWave[] =
+{
+    {21000, 1, Ghoul}, {27000, 3, Aberration}, {34000, 0, Zombie},
+    {51000, 0, Abomination}, {51000, 1, Ghoul}, {51000, 2, Aberration}, {51000, 3, Zombie}, {51000, 4, Abomination},
+    {59000, 0, Zombie}, {59000, 1, Aberration}, {59000, 2, Abomination}, {59000, 3, Ghoul}, {59000, 4, Ghoul},
+    {69000, 0, Ghoul}, {69000, 2, Ghoul}, {69000, 4, Zombie}
+};
+
 struct DefenseWave
 {
     SpawnTime const* Spawns;
@@ -177,6 +196,7 @@ inline uint32 WaveCredit(uint32 quest)
     {
         case GhoulsHateMyGrains: return GrainsWave;
         case PumpkinBombLesson: return PumpkinWave;
+        case TendingTheGarden: return GardenWave;
         default: return 0;
     }
 }
@@ -241,6 +261,13 @@ struct Plot
     uint32 NextAction = 0;
 };
 
+struct LaneMower
+{
+    ObjectGuid Actor;
+    float LastX = 0.0f;
+    bool Running = false;
+};
+
 class npc_brazie_basic_botany_board : public ScriptedAI
 {
 public:
@@ -273,7 +300,7 @@ public:
         }
         if (uint32 credit = WaveCredit(_quest))
             _secondWave = summoner->ToPlayer()->GetQuestObjectiveData(_quest, credit) > 0;
-        if (_quest == PumpkinBombLesson || _quest == LawnOfTheDead)
+        if (_quest == PumpkinBombLesson || _quest == LawnOfTheDead || _quest == TendingTheGarden)
         {
             me->m_templateSpells[4] = PlantStrangler;
             me->m_templateSpells[5] = PlantPumpkin;
@@ -389,6 +416,8 @@ public:
             UpdateDefense(*player, diff, _secondWave ? MakeWave(GrainsFinalWave, 3) : MakeWave(GrainsFirstWave, 5), GrainsWave);
         else if (_quest == PumpkinBombLesson)
             UpdateDefense(*player, diff, _secondWave ? MakeWave(PumpkinFinalWave, 3) : MakeWave(PumpkinFirstWave, 5), PumpkinWave);
+        else if (_quest == TendingTheGarden)
+            UpdateDefense(*player, diff, _secondWave ? MakeWave(GardenFinalWave, 3) : MakeWave(GardenFirstWave, 5), GardenWave);
         else if (_quest == LawnOfTheDead)
         {
             UpdateDefense(*player, diff, MakeWave(WardenArrival, std::size(WardenArrival)), 0);
@@ -539,6 +568,7 @@ private:
     bool BuildPlots()
     {
         for (uint8 row = 0; row < Rows; ++row)
+        {
             for (uint8 column = 0; column < Columns; ++column)
             {
                 Position position = Ground(row, column);
@@ -550,7 +580,66 @@ private:
                 spot->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 _plots[row][column].Spot = spot->GetGUID();
             }
+            Position start = Ground(row, 0);
+            start.m_positionX -= 5.0f;
+            TempSummon* mower = me->SummonCreature(Mower, start, ObjectGuid::Empty, TEMPSUMMON_MANUAL_DESPAWN, 0,
+                SummonMower, sSummonPropertiesStore.LookupEntry(3077));
+            if (!mower)
+                return false;
+            mower->AIM_Initialize(new NullCreatureAI(mower));
+            mower->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+            _mowers[row].Actor = mower->GetGUID();
+            _mowers[row].LastX = start.GetPositionX();
+        }
         return true;
+    }
+
+    bool DefendBreach(uint8 row)
+    {
+        LaneMower& lane = _mowers[row];
+        Creature* mower = ObjectAccessor::GetCreature(*me, lane.Actor);
+        if (!mower || !mower->IsAlive())
+            return false;
+        if (lane.Running)
+            return lane.LastX <= FirstColumnX + 3.0f;
+
+        lane.Running = true;
+        mower->CastSpell(mower, MowerStartup, true);
+        mower->SetWalk(false);
+        mower->SetSpeed(MOVE_RUN, 2.0f);
+        mower->GetMotionMaster()->MovePoint(1, EnemyStart(row), false);
+        return true;
+    }
+
+    void SweepLanes()
+    {
+        for (uint8 row = 0; row < Rows; ++row)
+        {
+            LaneMower& lane = _mowers[row];
+            Creature* mower = lane.Running ? ObjectAccessor::GetCreature(*me, lane.Actor) : nullptr;
+            if (!mower)
+                continue;
+            float currentX = mower->GetPositionX();
+            if (currentX <= lane.LastX)
+                continue;
+            std::vector<ObjectGuid> swept;
+            for (auto const& [guid, enemyRow] : _enemies)
+                if (enemyRow == row)
+                    if (Creature* enemy = ObjectAccessor::GetCreature(*me, guid); enemy && enemy->IsAlive() &&
+                        enemy->GetEntry() != Warden && enemy->GetEntry() != Obelisk &&
+                        enemy->GetPositionX() >= lane.LastX - 2.0f && enemy->GetPositionX() <= currentX + 2.0f)
+                        swept.push_back(guid);
+            lane.LastX = currentX;
+            // A real death callback removes the enemy from the lawn ledger.
+            for (ObjectGuid guid : swept)
+                if (Creature* enemy = ObjectAccessor::GetCreature(*me, guid); enemy && enemy->IsAlive())
+                    mower->Kill(enemy);
+            if (currentX >= EnemyStart(row).GetPositionX() - 0.5f)
+            {
+                mower->DespawnOrUnsummon(1);
+                lane.Actor.Clear();
+            }
+        }
     }
 
     Creature* SpawnEnemy(uint32 entry, uint8 row)
@@ -632,6 +721,7 @@ private:
             return;
         }
         _attackTimer = 1000;
+        SweepLanes();
         for (auto& row : _plots)
             for (Plot& plot : row)
                 UpdatePlant(plot);
@@ -641,8 +731,12 @@ private:
             {
                 if (zombie->GetPositionX() <= FirstColumnX + 0.75f)
                 {
-                    Finish();
-                    return;
+                    if (!DefendBreach(row))
+                    {
+                        Finish();
+                        return;
+                    }
+                    continue;
                 }
                 UpdateZombie(*zombie, row);
             }
@@ -798,6 +892,7 @@ private:
     ObjectGuid _fertilizer;
     Position _firstWaveLastKill;
     std::array<std::array<Plot, Columns>, Rows> _plots{};
+    std::array<LaneMower, Rows> _mowers{};
     std::unordered_map<ObjectGuid, uint8> _enemies;
     GuidUnorderedSet _spentSolar;
     uint32 _quest = 0;

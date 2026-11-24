@@ -2,7 +2,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
-      [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,
+      [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
       [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,
@@ -28,12 +28,14 @@ if($BrazieFlowerPower){++$scopedProbes}
 if($BrazieGhouls){++$scopedProbes}
 if($BraziePumpkin){++$scopedProbes}
 if($BrazieWarden){++$scopedProbes}
+if($BrazieGarden){++$scopedProbes}
 if($scopedProbes -and ($Baseline -or !$FixtureConfig -or $scopedProbes -gt 1)){throw 'Use one named probe and its private migrated fixture'}
 if(!$OutputDirectory -and $BrazieBasicBotany){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-basic-botany"}
 if(!$OutputDirectory -and $BrazieFlowerPower){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-flower-power"}
 if(!$OutputDirectory -and $BrazieGhouls){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-ghouls"}
 if(!$OutputDirectory -and $BraziePumpkin){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-pumpkin"}
 if(!$OutputDirectory -and $BrazieWarden){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-warden"}
+if(!$OutputDirectory -and $BrazieGarden){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-garden"}
 if(!$OutputDirectory -and $DarkshoreWildlifeFlight){$OutputDirectory="$repo/build-extractors/runtime-test/quest-darkshore-wildlife-flight"}
 if(!$OutputDirectory -and $DarkmoonStrength){$OutputDirectory="$repo/build-extractors/runtime-test/quest-object-loot-darkmoon-strength"}
 if(!$OutputDirectory -and $Tortusk){$OutputDirectory="$repo/build-extractors/runtime-test/quest-tortusk"}
@@ -715,10 +717,10 @@ if($ScorpidVenom -or $ScorpidVenomBaseline){
  [IO.File]::WriteAllText("$out/NativeScorpidVenom.inc",$query+' " WHERE ID IN(25165,25170)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
-if($BrazieBasicBotany -or $BrazieFlowerPower -or $BrazieGhouls -or $BraziePumpkin -or $BrazieWarden){
+if($BrazieBasicBotany -or $BrazieFlowerPower -or $BrazieGhouls -or $BraziePumpkin -or $BrazieWarden -or $BrazieGarden){
  $probeSource="$PSScriptRoot/BrazieBasicBotanyNative.cpp"
- [IO.File]::WriteAllText("$out/NativeBrazieBasicBotany.inc",$query+' " WHERE ID IN (28733,28617,28744,28747,28748)"')
- $brazieStage = if($BrazieWarden){5}elseif($BraziePumpkin){4}elseif($BrazieGhouls){3}elseif($BrazieFlowerPower){2}else{1}
+ [IO.File]::WriteAllText("$out/NativeBrazieBasicBotany.inc",$query+' " WHERE ID IN (28733,28617,28744,28747,28748,28751)"')
+ $brazieStage = if($BrazieGarden){6}elseif($BrazieWarden){5}elseif($BraziePumpkin){4}elseif($BrazieGhouls){3}elseif($BrazieFlowerPower){2}else{1}
  [IO.File]::WriteAllText("$out/NativeBrazieStage.inc","constexpr unsigned BrazieStage = $brazieStage;")
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
  foreach($file in @('Entities/Object/Object.cpp','Entities/Unit/Unit.cpp','Maps/Map.cpp')){

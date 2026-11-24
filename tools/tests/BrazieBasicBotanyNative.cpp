@@ -28,7 +28,7 @@ Quest const* LoadBotanyInputs()
         const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates()).emplace(quest->GetQuestId(), quest);
     } while (row->NextRow());
     auto objective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN(28733,28617,28744,28747,28748)");
+        "FROM quest_objectives WHERE QuestID IN(28733,28617,28744,28747,28748,28751)");
     Require(objective && objective->GetRowCount() == std::size(Quests), "Missing original Brazie victory objectives");
     do
     {
@@ -43,9 +43,15 @@ Quest const* LoadBotanyInputs()
     } while (objective->NextRow());
     for (size_t i = 1; i < std::size(Quests); ++i)
     {
-        auto predecessor = WorldDatabase.PQuery("SELECT PrevQuestID FROM quest_template_addon WHERE ID=%u", Quests[i]);
+        auto predecessor = WorldDatabase.PQuery("SELECT PrevQuestID,SpecialFlags FROM quest_template_addon WHERE ID=%u", Quests[i]);
         Require(predecessor && predecessor->Fetch()[0].GetUInt32() == Quests[i - 1], "Brazie stages must follow the original order");
         quests[Quests[i]]->prevQuests.push_back(Quests[i - 1]);
+        if (Quests[i] == TendingTheGarden)
+        {
+            Require(quests[Quests[i]]->IsDaily() && predecessor->Fetch()[1].GetUInt32() == QUEST_SPECIAL_FLAGS_REPEATABLE,
+                "The original daily quest or repeatable flag changed");
+            quests[Quests[i]]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_REPEATABLE);
+        }
     }
 
     sObjectMgr->LoadItemTemplates();
@@ -59,8 +65,8 @@ Quest const* LoadBotanyInputs()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid=131600");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(49194,49604,49560,50067)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(91646,91649,91687,91704,91710,91748,92157,92159,92339,92434,92440,92441,93100)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(28733,28617,28744,28747,28748)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(28733,28617,28744,28747,28748)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(28733,28617,28744,28747,28748,28751)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(28733,28617,28744,28747,28748,28751)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
@@ -116,7 +122,7 @@ void Advance(::Map& map, LootPlayer& owner, Creature& board, uint32 diff)
     Tick(owner, diff);
     board.Update(diff);
     for (uint32 entry : {SolarPower, Spitter, Sunflower, Freezya, FreezyaSeeds, Rocknut, Strangler, StranglerSeeds, Pumpkin,
-        Zombie, Ghoul, Aberration, Abomination, HillsbradBasicBotany::Warden, Obelisk, Fertilizer})
+        Zombie, Ghoul, Aberration, Abomination, HillsbradBasicBotany::Warden, Obelisk, Fertilizer, Mower})
         for (Creature* actor : Children(board, entry))
             actor->Update(diff);
     map.MoveAllCreaturesInMoveList();
@@ -252,7 +258,8 @@ void CheckFlower(Quest const* quest)
 void CheckMultiWave(Quest const* quest)
 {
     uint32 questId = quest->GetQuestId(), objective = WaveCredit(questId);
-    bool pumpkinStage = questId == PumpkinBombLesson;
+    bool gardenStage = questId == TendingTheGarden;
+    bool pumpkinStage = questId == PumpkinBombLesson || gardenStage;
     ::Map map(0, 300, 0, DIFFICULTY_NONE);
     BotanyGiver brazie(map);
     LootPlayer owner(SupplySession(), map, questId * 100 + 1, brazie.GetNearPosition(2.0f, 0.0f));
@@ -269,7 +276,7 @@ void CheckMultiWave(Quest const* quest)
             player->SetFloatValue(field, 1.0f);
     }
     Require(!owner.CanTakeQuest(quest, false), "A Brazie stage was available before the previous reward");
-    owner.SetRewardedQuest(pumpkinStage ? GhoulsHateMyGrains : FlowerPower);
+    owner.SetRewardedQuest(gardenStage ? LawnOfTheDead : pumpkinStage ? GhoulsHateMyGrains : FlowerPower);
     WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
     accept.QuestGiverGUID = brazie.GetGUID();
     accept.QuestID = questId;
@@ -282,6 +289,50 @@ void CheckMultiWave(Quest const* quest)
         Advance(map, owner, *board, 50);
     Advance(map, owner, *board, 1000);
     Require(owner.GetVehicleBase() == board && Children(*board, EmptySpot).size() == Rows * Columns, "Grains did not seat the owner");
+
+    if (gardenStage)
+    {
+        auto mowers = Children(*board, Mower);
+        Require(mowers.size() == Rows, "Each daily lane must start with its native mower");
+        for (auto mower : mowers)
+            Require(mower->HasQuestObjectScope() && !visitor.canSeeOrDetect(mower), "A daily mower was not private");
+        ObjectGuid failedBoard = board->GetGUID();
+        size_t availableMowers = Rows;
+        bool moved = false, swept = false;
+        for (unsigned tick = 0; tick < 160 && owner.GetVehicleBase() == board; ++tick)
+        {
+            for (Creature* mower : Children(*board, Mower))
+                moved = moved || mower->GetPositionX() > FirstColumnX;
+            for (Creature* enemy : Children(*board, Ghoul))
+                swept = swept || !enemy->IsAlive();
+            availableMowers = std::min(availableMowers, Children(*board, Mower).size());
+            Advance(map, owner, *board, 1000);
+        }
+        Require(moved && swept && availableMowers < Rows && !owner.GetVehicle() &&
+            owner.GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE && !owner.GetQuestObjectiveData(questId, objective),
+            "A mower must defend one real breach, then a later undefended breach must fail without wave credit");
+        for (unsigned i = 0; i < 10; ++i)
+            if (Creature* previous = map.GetCreature(failedBoard))
+                Advance(map, owner, *previous, 100);
+        Require(!map.GetCreature(failedBoard), "Daily failure left its old board and mower actors");
+
+        WorldPackets::NPC::Hello greeting{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+        greeting.Unit = brazie.GetGUID();
+        owner.GetSession()->HandleGossipHelloOpcode(greeting);
+        auto const& menu = owner.PlayerTalkClass->GetGossipMenu();
+        Require(menu.GetItem(0) && menu.GetItem(0)->Action == Retry, "Failed daily quest could not retry at Brazie");
+        WorldPackets::NPC::GossipSelectOption retry{WorldPacket(CMSG_GOSSIP_SELECT_OPTION)};
+        retry.GossipUnit = brazie.GetGUID();
+        retry.GossipID = menu.GetMenuId();
+        owner.GetSession()->HandleGossipSelectOption(retry);
+        board = CurrentBoard(owner);
+        Require(board && board->GetGUID() != failedBoard, "Daily retry did not create a clean board");
+        for (unsigned i = 0; i < 40 && owner.GetVehicleBase() != board; ++i)
+            Advance(map, owner, *board, 50);
+        Advance(map, owner, *board, 1000);
+        Require(owner.GetVehicleBase() == board && Children(*board, Mower).size() == Rows,
+            "The retry did not restore the five unused mowers");
+    }
 
     GuidUnorderedSet clicked;
     std::array<bool, Rows> rows{};
@@ -406,7 +457,15 @@ void CheckMultiWave(Quest const* quest)
     reward.QuestID = questId;
     reward.QuestGiverGUID = brazie.GetGUID();
     owner.GetSession()->HandleQuestGiverChooseReward(reward);
-    Require(owner.GetQuestRewardStatus(questId), "Brazie did not accept the two waves for reward");
+    if (gardenStage)
+    {
+        Require(owner.IsQuestDailyRewarded(questId) && !owner.CanTakeQuest(quest, false) && !owner.HasItemCount(66067),
+            "The daily reward did not lock the same day or repeated the finale's pet");
+        owner.DailyReset();
+        Require(owner.CanTakeQuest(quest, false), "The native daily reset did not make the quest available again");
+    }
+    else
+        Require(owner.GetQuestRewardStatus(questId), "Brazie did not accept the two waves for reward");
     std::cout << "PASS Brazie two-wave native fight and reward " << questId << '\n';
 }
 
@@ -704,6 +763,8 @@ int main(int argc, char** argv)
             CheckMultiWave(sQuestDataStore->GetQuestTemplate(PumpkinBombLesson));
         if (BrazieStage >= 5)
             CheckWarden(sQuestDataStore->GetQuestTemplate(LawnOfTheDead));
+        if (BrazieStage >= 6)
+            CheckMultiWave(sQuestDataStore->GetQuestTemplate(TendingTheGarden));
         CharacterDatabase.Close();
         LoginDatabase.Close();
         HotfixDatabase.Close();
