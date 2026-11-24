@@ -121,6 +121,13 @@ public:
                 itr->second += diff;
                 Transport* transport = player->GetTransport();
                 bool alliance = player->GetTeam() == ALLIANCE;
+                if (!transport && itr->second < 60000 && !boardedPlayers.count(itr->first))
+                {
+                    // OnGameObjectCreate runs before the ship can accept passengers.
+                    if (GameObject* ship = GetGameObjectByEntry(alliance ? TRANSPORT_ALLIANCE : TRANSPORT_HORDE))
+                        BoardPlayer(player, ship->ToTransport());
+                    transport = player->GetTransport();
+                }
                 bool arrived = transport && transport->GetExactDist2d(alliance ? 440.495f : 521.724f,
                     alliance ? 2024.94f : 1862.63f) < 35.0f;
                 bool shipGone = !transport && boardedPlayers.count(itr->first);
@@ -142,9 +149,24 @@ public:
             boardedPlayers.erase(player->GetGUID());
         }
 
+        void PlaceArrivingPlayer(Player* player, Position const& destination)
+        {
+            if (player->IsInWorld())
+                player->NearTeleportTo(destination);
+            else
+            {
+                // InstanceMap calls OnPlayerEnter before Map creates the player
+                // on the client. Set the position used by that first creation.
+                player->Relocate(destination);
+                player->m_movementInfo.Pos.Relocate(destination);
+                player->SetFallInformation(0, destination.GetPositionZ());
+            }
+        }
+
         void BoardPlayer(Player* player, Transport* transport)
         {
-            if (!player || !transport || getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()) || HasShoreEntrance(player))
+            if (!player || !transport || !transport->IsInWorld() || getScenarionStep() != 0 ||
+                landedPlayers.count(player->GetGUID()) || HasShoreEntrance(player))
                 return;
 
             // These are ship-local deck coordinates. Set the local offset
@@ -163,9 +185,11 @@ public:
                 if (previous != transport)
                     previous->RemovePassenger(player);
             transport->AddPassenger(player);
+            if (player->GetTransport() != transport)
+                return;
             player->m_movementInfo.transport.Pos.Relocate(deck);
             player->m_movementInfo.transport.VehicleSeatIndex = -1;
-            player->NearTeleportTo(x, y, z, orientation);
+            PlaceArrivingPlayer(player, Position(x, y, z, orientation));
             boardedPlayers.insert(player->GetGUID());
             arrivalTimers.emplace(player->GetGUID(), 0);
         }
@@ -181,7 +205,7 @@ public:
 
             if (WorldLocation const* entrance = GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ()))
                 if (entrance->GetMapId() == 1460)
-                    player->NearTeleportTo(*entrance);
+                    PlaceArrivingPlayer(player, *entrance);
         }
 
         void OnPlayerEnter(Player* player) override
@@ -777,12 +801,6 @@ public:
         void OnGameObjectCreate(GameObject* go) override
         {
             InstanceScript::OnGameObjectCreate(go);
-            if (go->GetEntry() == TRANSPORT_ALLIANCE || go->GetEntry() == TRANSPORT_HORDE)
-                if (Transport* transport = go->ToTransport())
-                    for (auto const& reference : instance->GetPlayers())
-                        if (Player* player = reference.getSource())
-                            if ((player->GetTeam() == ALLIANCE) == (go->GetEntry() == TRANSPORT_ALLIANCE))
-                                BoardPlayer(player, transport);
             switch (go->GetEntry())
             {
                 case GO_ALLIANCE_SHIP:

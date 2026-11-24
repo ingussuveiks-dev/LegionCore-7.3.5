@@ -68,10 +68,20 @@ struct MapEntry
 struct InstanceTemplate { uint32 Parent = 0; };
 struct MapDifficultyEntry { uint32 ID = 1; };
 struct Quest { uint32 id; };
-struct WorldLocation
+struct Position
+{
+    float x = 567.826f, y = 1886.94f, z = 0.737247f, orientation = 0.0f;
+    Position() = default;
+    Position(float px, float py, float pz, float po) : x(px), y(py), z(pz), orientation(po) { }
+    float GetPositionX() const { return x; }
+    float GetPositionY() const { return y; }
+    float GetPositionZ() const { return z; }
+    float GetOrientation() const { return orientation; }
+    void Relocate(Position const& other) { *this = other; }
+};
+struct WorldLocation : Position
 {
     uint32 map = 1460;
-    float x = 567.826f, y = 1886.94f, z = 0.737247f;
     uint32 GetMapId() const { return map; }
 };
 struct Corpse { uint32 GetMapId() const { return 1460; } };
@@ -131,6 +141,7 @@ struct Creature
     CreatureTemplate const* GetCreatureTemplate() const { return &info; }
 };
 struct Map;
+struct Transport;
 struct Scenario {
     uint32 GetScenarioId() const { return 0; }
     Map* GetMap() const { return nullptr; }
@@ -145,7 +156,11 @@ struct Player
     int objective = 1;
     uint32 prepared = 0, shown = 0, action = 0, satisfies = 0;
     float x = 567.826f, y = 1886.94f, z = 0.737247f;
-    uint32 nearTeleports = 0;
+    uint32 nearTeleports = 0, preWorldRelocations = 0;
+    bool inWorld = true;
+    float fallStart = 0.0f;
+    struct { Position Pos; struct { Position Pos; int VehicleSeatIndex = 0; } transport; } m_movementInfo;
+    Transport* transport = nullptr;
     Talk talk;
     Talk* PlayerTalkClass = &talk;
     Group* group = nullptr;
@@ -165,14 +180,21 @@ struct Player
     uint32 GetScenarioId() const { return 0; }
     Map* GetMap() const { return nullptr; }
     bool CanResumeScenarioLogin(uint32) const { return false; }
+    bool HasPendingSheilunReturn() const { return false; }
     uint32 getClass() const { return 1; }
     bool IsQuestRewarded(uint32) const { return false; }
     float GetPositionX() const { return x; }
     float GetPositionY() const { return y; }
     float GetPositionZ() const { return z; }
     float GetExactDist2d(float dx, float dy) const { return std::hypot(x - dx, y - dy); }
-    void NearTeleportTo(WorldLocation const& location)
-    { x = location.x; y = location.y; z = location.z; ++nearTeleports; }
+    bool IsInWorld() const { return inWorld; }
+    uint32 GetGUID() const { return 4; }
+    Transport* GetTransport() const { return transport; }
+    void NearTeleportTo(Position const& location)
+    { assert(inWorld); x = location.x; y = location.y; z = location.z; ++nearTeleports; }
+    void Relocate(Position const& location)
+    { assert(!inWorld); x = location.x; y = location.y; z = location.z; ++preWorldRelocations; }
+    void SetFallInformation(uint32 time, float height) { assert(time == 0); fallStart = height; }
     bool IsAlive() const { return alive; }
     void* GetVehicleBase() const { return vehicle ? (void*)this : nullptr; }
     int GetQuestObjectiveData(Quest const*, int8 index) const { assert(index == 1); return objective; }
@@ -296,12 +318,27 @@ struct SmartGossipFixture
     }
 };
 
+struct Transport
+{
+    bool inWorld = true, canAttach = true;
+    bool IsInWorld() const { return inWorld; }
+    void CalculatePassengerPosition(float& x, float& y, float& z, float*) const
+    { x += 500.0f; y += 2000.0f; z += 10.0f; }
+    void AddPassenger(Player* player) { if (canAttach) player->transport = this; }
+    void RemovePassenger(Player* player) { player->transport = nullptr; }
+};
+
 struct EntranceFixture
 {
     uint32 step = 0;
     WorldLocation graveyard;
+    std::set<uint32> landedPlayers, boardedPlayers;
+    std::map<uint32, uint32> arrivalTimers;
     uint32 getScenarionStep() const { return step; }
+    bool HasShoreEntrance(Player*) const { return false; }
     WorldLocation const* GetClosestGraveYard(float, float, float) const { return &graveyard; }
+    #include "PlaceArrivingPlayer.inc"
+    #include "BoardPlayer.inc"
     #include "RestoreScenarioEntrance.inc"
 };
 
@@ -434,4 +471,37 @@ int main()
     entrance.graveyard.x = 900.0f;
     entrance.RestoreScenarioEntrance(&player);
     assert(player.nearTeleports == 2 && player.x == 900.0f);
+    player.inWorld = false;
+    player.x = 2.39286f;
+    player.y = 1.694546f;
+    entrance.RestoreScenarioEntrance(&player);
+    assert(player.nearTeleports == 2 && player.preWorldRelocations == 1 && player.x == 900.0f);
+    Position deck;
+    deck.x = 484.0f;
+    deck.z = 13.0f;
+    entrance.PlaceArrivingPlayer(&player, deck);
+    assert(player.nearTeleports == 2 && player.preWorldRelocations == 2 && player.x == 484.0f);
+    assert(player.m_movementInfo.Pos.x == 484.0f && player.fallStart == 13.0f);
+
+    for (uint32 faction : {ALLIANCE, HORDE})
+    {
+        EntranceFixture boarding;
+        Player arrival;
+        arrival.team = faction;
+        arrival.inWorld = false;
+        Transport ship;
+        ship.inWorld = false;
+        boarding.BoardPlayer(&arrival, &ship);
+        assert(!arrival.transport && boarding.boardedPlayers.empty());
+        ship.inWorld = true;
+        ship.canAttach = false;
+        boarding.BoardPlayer(&arrival, &ship);
+        assert(!arrival.transport && arrival.preWorldRelocations == 0 && boarding.boardedPlayers.empty());
+        ship.canAttach = true;
+        boarding.BoardPlayer(&arrival, &ship);
+        assert(arrival.transport == &ship && arrival.preWorldRelocations == 1 && arrival.nearTeleports == 0);
+        float deckOffset = faction == ALLIANCE ? 2.39286f : -7.351539f;
+        assert(arrival.m_movementInfo.transport.Pos.x == deckOffset && arrival.x == 500.0f + deckOffset);
+        assert(arrival.m_movementInfo.transport.VehicleSeatIndex == -1 && boarding.boardedPlayers.size() == 1);
+    }
 }

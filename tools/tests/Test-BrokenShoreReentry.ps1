@@ -22,6 +22,8 @@ function Export-Function([string]$Path, [string]$Marker, [string]$Name) {
 Export-Function 'src/server/game/Maps/MapManager.cpp' 'bool MapManager::CanPlayerEnter(' 'CanPlayerEnter.inc'
 Export-Function 'src/server/game/Groups/Group.cpp' 'void Group::LoadGroupFromDB(' 'LoadGroup.inc'
 Export-Function 'src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp' 'namespace' 'BrokenShoreReturn.inc'
+Export-Function 'src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp' 'void PlaceArrivingPlayer(' 'PlaceArrivingPlayer.inc'
+Export-Function 'src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp' 'void BoardPlayer(' 'BoardPlayer.inc'
 Export-Function 'src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp' 'void RestoreScenarioEntrance(' 'RestoreScenarioEntrance.inc'
 Export-Function 'src/server/game/Entities/Creature/GossipDef.cpp' 'void GossipMenu::AddMenuItem(int32' 'GossipMenuAdd.inc'
 Export-Function 'src/server/game/AI/SmartScripts/SmartScript.cpp' 'case SMART_EVENT_GOSSIP_SELECT:' 'SmartGossipSelect.inc'
