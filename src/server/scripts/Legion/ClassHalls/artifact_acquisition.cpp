@@ -1044,7 +1044,7 @@ struct State
     {
         return player && player->IsInWorld() && player->IsAlive() && !player->IsBeingTeleported() &&
             player->getClass() == CLASS_HUNTER && player->GetMapId() == 1511 &&
-            ArtifactAcquisition::Active(player, 40385) && player->HasItemCount(128808, 1, true);
+            ArtifactAcquisition::Active(player, 40385) && player->HasItemCount(128808, 1);
     }
 
     void Begin(Player* player)
@@ -1086,6 +1086,16 @@ struct State
         finished = true;
         player->CastSpell(player, 197651, true);
     }
+
+    void CompleteOnExpiry(Player* player)
+    {
+        if (!admitted || finished || !Current(player) || player->GetInstanceId() != instance)
+            return;
+
+        SpellScene const* scene = sSpellMgr->GetSpellScene(1220);
+        if (scene && scene->SceneScriptPackageID == 1583 && scene->PlaybackFlags == 21 && !scene->CustomDuration)
+            player->CompleteActiveSpellScene(1220);
+    }
 };
 }
 
@@ -1116,6 +1126,13 @@ class spell_talonclaw_presentation : public AuraScript
             Remove();
     }
 
+    void BeforeRemove(AuraEffect const* effect, AuraEffectHandleModes)
+    {
+        // Native removal retires the scene before a late client packet can acknowledge it.
+        if (effect->GetMiscValue() == 1220 && GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+            state.CompleteOnExpiry(PlayerOwner());
+    }
+
     void AfterRemove(AuraEffect const*, AuraEffectHandleModes)
     {
         state.Finish(PlayerOwner());
@@ -1125,6 +1142,7 @@ class spell_talonclaw_presentation : public AuraScript
     {
         AfterEffectApply += AuraEffectApplyFn(spell_talonclaw_presentation::AfterApply, EFFECT_0, SPELL_AURA_ACTIVATE_SCENE, AURA_EFFECT_HANDLE_REAL);
         OnEffectUpdate += AuraEffectUpdateFn(spell_talonclaw_presentation::Update, EFFECT_0, SPELL_AURA_ACTIVATE_SCENE);
+        OnEffectRemove += AuraEffectRemoveFn(spell_talonclaw_presentation::BeforeRemove, EFFECT_0, SPELL_AURA_ACTIVATE_SCENE, AURA_EFFECT_HANDLE_REAL);
         AfterEffectRemove += AuraEffectRemoveFn(spell_talonclaw_presentation::AfterRemove, EFFECT_0, SPELL_AURA_ACTIVATE_SCENE, AURA_EFFECT_HANDLE_REAL);
     }
 };

@@ -1,0 +1,9 @@
+# Talonclaw pickup scene expiry
+
+During the user-led Survival acquisition, the loot message showed Talonclaw while The Spear in the Shadow still displayed 0/1 for reclaiming the weapon. Read-only database checks confirmed a newly stored Talonclaw, flight objective 100111 at one, and claim 100112 and return 103798 at zero. The portal template, scene binding, and claim objective amount are already present. The missing claim blocks the existing Dorro departure controller.
+
+The extracted 26972 SpellMisc and SpellDuration records give aura 205589 a 9,000 ms duration. Its active scene is 1220, package 1583, with playback flags 21 and no custom duration. On natural expiry the default aura effect cancels the active instance before the Talonclaw removal hook runs. A later client completion then has no matching active instance, and the existing 20-second fallback cannot run for a naturally expired nine-second aura.
+
+The existing Talonclaw aura script now acknowledges the issued scene on natural expiry before default removal. It checks the admitted Hunter and instance, active quest, carried weapon, and the authored scene definition. Other removal modes retain their existing handling. The original native 197651 pickup spell handles the claim and equipment outcome, including storage for another Hunter specialization. The real pickup, manual portal click, and Dalaran arrival remain separate steps.
+
+The Release scripts and worldserver binaries compiled successfully. The actual final link used the canonical Release libraries, and the map contains the new removal hook from `artifact_acquisition.obj`. The active user-led workflow intentionally omits separate automated regressions and an agent-owned startup. Native scene playback, claim persistence and exit remain client checks for the new build.
