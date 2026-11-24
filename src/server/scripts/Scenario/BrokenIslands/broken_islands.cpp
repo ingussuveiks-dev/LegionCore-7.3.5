@@ -976,7 +976,7 @@ public:
 
             if (InstanceScript *script = me->GetInstanceScript())
             {
-                if (script->getScenarionStep() < 3)
+                if (script->getScenarionStep() < 3 && !HasEscortState(STATE_ESCORT_ESCORTING))
                 {
                     Start(false, true);
                 }
@@ -988,9 +988,10 @@ public:
             summons.Summon(summon);
         }
 
-        void DoAction(int32 const action)
+        void DoAction(int32 const /*action*/) override
         {
-            Reset();
+            if (!HasEscortState(STATE_ESCORT_ESCORTING))
+                Reset();
         }
 
         void EnterCombat(Unit* who) override
@@ -1024,7 +1025,8 @@ public:
             {
                 if (script->getScenarionStep() < 3)
                 {
-                    Start(false, true);
+                    if (!HasEscortState(STATE_ESCORT_ESCORTING))
+                        Start(false, true);
                 }
                 else 
                 {
