@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-24",
+  "scope": "The Wall of Fog, UI stage 6, scenario 973 on map 1511",
+  "client_evidence": "The player reached Apata with Speak with Apata still at 0/1. The earlier dialogue lines were absent from the visible chat and both pets were beside the player.",
+  "cause": "Wuho 100222 root 0 has a native one-shot, friendly out-of-combat LOS event. The existing condition checks scenario order 5 on the actor. A creature invoker can consume the root. Native TALK uses a creature invoker as the speaker, so the later TEXT_OVER cannot match Wuho 100222 and cannot signal Apata 100221 to enable her gossip. The capture does not identify the exact invoker that reached Wuho first.",
+  "repair": "Add same-group source-22 conditions on the invoker for a living Hunter Player with active 40385. Keep the original actor-side stage check, both actors, original menu 19045 to 19046, speech, flags and real gossip-selected criterion 47607/harpoon continuation. The new migration is compatible with the installed executable and makes no character-data change.",
+  "checks": "Live MariaDB read-only inspection confirmed both native actors, the one-shot and TEXT_OVER chain, menu pages, criteria action and the exact migration prerequisite. No separate automated regression or agent-owned startup was run for the active player-led flow. Startup application and actual gossip, both menu pages and the next stage remain to be verified in the client."
+}
