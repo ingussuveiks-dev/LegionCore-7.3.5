@@ -1478,8 +1478,14 @@ void World::LoadConfigSettings(bool reload)
 	m_int_configs[CONFIG_CHALLENGE_MANUAL_AFFIX2] = sConfigMgr->GetIntDefault("Challenge.Manual.Affix2", 0);
 	m_int_configs[CONFIG_CHALLENGE_MANUAL_AFFIX3] = sConfigMgr->GetIntDefault("Challenge.Manual.Affix3", 0);
 
-    m_bool_configs[CONFIG_PVP_LEVEL_ENABLE]  = sConfigMgr->GetBoolDefault("PvP.LevelEnable", true);
-    m_int_configs[CONFIG_PVP_ACTIVE_SEASON] = sConfigMgr->GetIntDefault("PvP.ActiveSeason", 0);
+    m_bool_configs[CONFIG_PVP_LEVEL_ENABLE] = sConfigMgr->GetBoolDefault("PvP.LevelEnable", false);
+    int32 pvpRewardSeason = sConfigMgr->GetIntDefault("PvP.ActiveSeason", 7);
+    if (pvpRewardSeason < 0 || pvpRewardSeason > 7)
+    {
+        TC_LOG_ERROR("server.loading", "PvP.ActiveSeason must be in the range 0 to 7. Using Legion Season 7.");
+        pvpRewardSeason = 7;
+    }
+    m_int_configs[CONFIG_PVP_ACTIVE_SEASON] = pvpRewardSeason;
     m_int_configs[CONFIG_PVP_ACTIVE_STEP] = sConfigMgr->GetIntDefault("PvP.ActiveStep", 0);
 
     m_bool_configs[CONFIG_PARAGON_ENABLE]  = sConfigMgr->GetBoolDefault("ParagonEnable", true);

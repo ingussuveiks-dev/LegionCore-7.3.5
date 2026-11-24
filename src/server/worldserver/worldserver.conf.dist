@@ -2208,9 +2208,23 @@ Arena.QueueAnnouncer.Enable = 0
 #
 #    Arena.ArenaSeason.ID
 #        Description: Current arena season id shown in clients.
-#        Default:     14
+#        Default:     25 (Legion Season 7)
 
-Arena.ArenaSeason.ID = 14
+Arena.ArenaSeason.ID = 25
+
+#
+#    PvP.LevelEnable
+#        Description: Use the legacy seasonal item-level tables with pre-season base levels.
+#        Default:     0 (use the Legion 7.3.5 PvP reward data and rating tiers)
+
+PvP.LevelEnable = 0
+
+#
+#    PvP.ActiveSeason
+#        Description: Season index used by the legacy calculation. Accepted values are 0 to 7.
+#        Default:     7 (Legion Season 7)
+
+PvP.ActiveSeason = 7
 
 #
 #    Arena.ArenaSeason.InProgress
