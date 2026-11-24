@@ -2543,6 +2543,7 @@ struct npc_stromkar_thoradin : SmartAI
 #include "MoveSpline.h"
 #include "priest_formation.h"
 #include "priest_formation_follow.h"
+#include "windwalker_skywall.h"
 
 void AddSC_artifact_acquisition()
 {
@@ -2581,6 +2582,8 @@ void AddSC_artifact_acquisition()
     new npc_stromkar_valkyr();
     new condition_stromkar_return();
     RegisterSpellScript(spell_monk_kite_travel);
+    RegisterCreatureAI(npc_skywall_zaurac);
+    RegisterCreatureAI(npc_skywall_typhinius);
     RegisterCreatureAI(npc_talonclaw_boarding_source);
     RegisterCreatureAI(npc_talonclaw_boarded_ride);
     RegisterSpellScript(spell_talonclaw_boarding_summon);
