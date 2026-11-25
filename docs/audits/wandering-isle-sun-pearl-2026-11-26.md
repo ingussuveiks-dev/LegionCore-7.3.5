@@ -1,0 +1,7 @@
+# Finding an Old Friend (29676) un The Sun Pearl (29677)
+
+Vienīgais novietotais Ancient Clam `209584/102472` ļāva spēlētājam bez kvesta atvērt un patērēt tukšo koplietoto gliemeni. Atmetot kvestu, savāktā pērle `73184` palika somā. Migrācija piesaista gliemenim esošo viena kvesta krājumu pārbaudi un ļauj standarta kvesta atmešanai izņemt veco pērli. Savākts priekšmets joprojām ir vajadzīgs nodošanai. Nākamais kvests `29678` izsniedz savu atsevišķo lietojamo priekšmetu `73791`.
+
+`Test-QuestObjectLootNative.ps1 -SingingPoolsPearlBaseline` atkārtoja abus sākotnējos defektus. `-SingingPools` pārbaudīja Aysa piedāvājumu, `29676` nodošanu pie kalna mājas Old Man Liang `55020/244441`, `29677` pieņemšanu, atteikumu apmeklētājam bez kvesta, īsto pērles laupījumu, atmešanu un sekmīgu atkārtojumu. Liang saņēma pērli un izsniedza izvēlēto `56` paketes atlīdzību. Testā spēlētājus pārvietoja uz faktiskajām vietām. Maršruts, peldēšana un klienta kartes attēlojums paliek atvērti.
+
+Migrācija `2026_11_26_03_wandering_isle_sun_pearl.sql` divreiz piemērota testa datubāzē. Darba servera atjauninātājs to reģistrēja kā `RELEASED` ar SHA-1 `F15E6F78A0549724EC91EAF9F78A3A861C128F99`. Abi starti sasniedza gatavību un korekti apstājās. Pārbaudēs nebija jaunu avāriju, servera brīdinājumu, kļūdu vai DBErrors ierakstu. Ar kontrolsummām saglabāti 72 diagnostikas faili un izņemti 30 pagaidu faili, kopā 1 091 778 543 baiti. [Diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-sun-pearl/)

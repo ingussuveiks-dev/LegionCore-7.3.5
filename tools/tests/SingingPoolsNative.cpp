@@ -21,6 +21,9 @@ constexpr uint32 BalancedRock = 29663;
 constexpr uint32 TushuiMonk = 55019;
 constexpr uint32 MonkSpawns[] = {244325, 244326, 244327, 244436};
 constexpr uint32 NextQuest = 29676;
+constexpr uint32 SunPearl = 29677;
+constexpr uint32 PearlItem = 73184;
+constexpr uint32 LiangSpawn = 244441;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -41,7 +44,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 6, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 7, "Missing the Singing Pools quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -55,8 +58,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29676)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 6, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29676,29677)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 7, "Missing the original Pools prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -84,14 +87,20 @@ void LoadPools()
         "Missing the original six-monk objective");
     quests[BalancedRock]->LoadQuestObjective(rockObjective->Fetch());
     quests[BalancedRock]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    auto pearlObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29677");
+    Require(pearlObjective && pearlObjective->Fetch()[4].GetUInt32() == PearlItem && pearlObjective->Fetch()[5].GetUInt32() == 1,
+        "Missing the original Sun Pearl objective");
+    quests[SunPearl]->LoadQuestObjective(pearlObjective->Fetch());
+    quests[SunPearl]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244436)");
+        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244436,244441)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29676)");
+        "WHERE quest IN (29521,29661,29662,29663,29676,29677)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29676)");
+        "WHERE quest IN (29521,29661,29662,29663,29676,29677)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
@@ -106,10 +115,11 @@ void LoadPools()
     sObjectMgr->LoadGameObjectTemplate();
     auto& table = LootTemplates_Gameobject.*Access(LootTableNameTag{});
     auto const original = table;
-    table += " WHERE Entry=209507";
+    table += " WHERE Entry IN (209507,209584)";
     auto const loaded = (LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();
     table = original;
-    Require(loaded == 1 && LootTemplates_Gameobject.GetLootFor(209507), "Missing the original reed loot row");
+    Require(loaded == 2 && LootTemplates_Gameobject.GetLootFor(209507) && LootTemplates_Gameobject.GetLootFor(209584),
+        "Missing the original reed or pearl loot row");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
     sSpellMgr->LoadSpellProcEvents();
@@ -178,6 +188,16 @@ void RewardQuest(Player& player, Creature& teacher, uint32 quest, uint32 choice 
     request.QuestID = quest;
     request.ItemChoiceID = choice;
     player.GetSession()->HandleQuestGiverChooseReward(request);
+}
+
+uint32 PoolRewardChoice(Player& player, uint32 quest)
+{
+    auto package = sQuestDataStore->GetQuestTemplate(quest)->PackageID;
+    if (auto items = sDB2Manager.GetQuestPackageItems(package))
+        for (auto item : *items)
+            if (player.CanSelectQuestPackageItem(item))
+                return item->ItemID;
+    throw std::runtime_error("The pool quest has no suitable native reward choice");
 }
 
 void PreparePoolHunter(LootPlayer& player)
@@ -427,7 +447,7 @@ void CheckBalancedRock()
 
 void CheckBell()
 {
-    for (uint32 spawn : {ShangTempleSpawn, AysaSpawn, ReedGiverSpawn, 244137u})
+    for (uint32 spawn : {ShangTempleSpawn, AysaSpawn, ReedGiverSpawn, LiangSpawn, 244137u})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : MonkSpawns)
@@ -476,16 +496,7 @@ void CheckBell()
     Require(pupil.GetQuestObjectiveData(DryFur, BellCredit) == 1 && pupil.GetQuestStatus(DryFur) == QUEST_STATUS_COMPLETE,
         "Duplicate use changed the completed objective");
     MoveGilneasPlayer(pupil, aysa.GetPosition());
-    auto quest = sQuestDataStore->GetQuestTemplate(DryFur);
-    uint32 choice = 0;
-    if (auto items = sDB2Manager.GetQuestPackageItems(quest->PackageID))
-        for (auto item : *items)
-            if (pupil.CanSelectQuestPackageItem(item))
-            {
-                choice = item->ItemID;
-                break;
-            }
-    Require(choice, "No suitable native belt reward");
+    uint32 const choice = PoolRewardChoice(pupil, DryFur);
     RewardQuest(pupil, aysa, DryFur, choice);
     Require(pupil.IsQuestRewarded(DryFur) && pupil.GetItemCount(choice) == 1, "Aysa did not issue the selected belt");
     if (pupil.GetQuestStatus(NextQuest) == QUEST_STATUS_NONE)
@@ -581,6 +592,71 @@ void CheckReeds()
     std::cout << "PASS 30 original reed placements, eight actual items, refusal, retry and turn-in" << std::endl;
 #endif
 }
+
+void CheckSunPearl()
+{
+    Map map(860, 666, 0, DIFFICULTY_NONE);
+    Teacher aysa(map);
+    Teacher liang(map, LiangSpawn, 55020);
+    LootPlayer owner(SupplySession(), map, 2967701, aysa.GetPosition());
+    LootPlayer visitor(SupplySession(), map, 2967702, aysa.GetPosition());
+    PreparePoolHunter(owner);
+    PreparePoolHunter(visitor);
+    owner.SetRewardedQuest(DryFur);
+    AcceptQuest(owner, aysa, NextQuest);
+    Require(owner.GetQuestStatus(NextQuest) == QUEST_STATUS_COMPLETE, "Aysa did not admit the trip to Liang");
+    MoveGilneasPlayer(owner, liang.GetPosition());
+    RewardQuest(owner, liang, NextQuest);
+    Require(owner.IsQuestRewarded(NextQuest), "The hilltop Liang did not accept Finding an Old Friend");
+    if (owner.GetQuestStatus(SunPearl) == QUEST_STATUS_NONE)
+        AcceptQuest(owner, liang, SunPearl);
+    Require(owner.GetQuestStatus(SunPearl) == QUEST_STATUS_INCOMPLETE, "The hilltop Liang did not offer The Sun Pearl");
+
+    auto rowset = WorldDatabase.Query("SELECT id,guid,spawntimesecs,position_x,position_y,position_z,orientation,"
+        "rotation0,rotation1,rotation2,rotation3 FROM gameobject WHERE id=209584 AND guid=102472 AND map=860");
+    Require(bool(rowset), "Missing the only placed Ancient Clam");
+    auto row = rowset->Fetch();
+    Placement const placement{row[0].GetUInt32(), row[1].GetUInt32(), row[2].GetUInt32(),
+        {row[3].GetFloat(), row[4].GetFloat(), row[5].GetFloat(), row[6].GetFloat()},
+        G3D::Quat(row[7].GetFloat(), row[8].GetFloat(), row[9].GetFloat(), row[10].GetFloat())};
+    Supply clam(map, placement);
+    MoveGilneasPlayer(visitor, placement.position);
+    OpenSupply(visitor, clam);
+#ifdef SINGING_POOLS_PEARL_BASELINE
+    Require(visitor.GetLootGUID() == clam.GetGUID() && clam.getLootState() == GO_ACTIVATED && clam.loot.isLooted(),
+        "The original clam no longer opens empty loot for a visitor without the quest");
+    ReleaseSupply(visitor, clam);
+    clam.Rearm();
+#else
+    Require(!visitor.GetLootGUID() && clam.getLootState() == GO_READY && !clam.ActivateToQuest(&visitor) && clam.ActivateToQuest(&owner),
+        "A visitor could consume the clam or the active pupil lost the quest marker");
+#endif
+    MoveGilneasPlayer(owner, placement.position);
+    OpenSupply(owner, clam);
+    Require(TakeSupply(owner, clam, PearlItem), "The original clam did not yield a real Sun Pearl");
+    ReleaseSupply(owner, clam);
+    AbandonSupply(owner, SunPearl);
+#ifdef SINGING_POOLS_PEARL_BASELINE
+    Require(owner.GetItemCount(PearlItem) == 1, "The original abandoned quest no longer retains the pearl");
+    std::cout << "EXPECTED_BROKEN a visitor could empty the only shared clam and abandonment retained the pearl" << std::endl;
+#else
+    Require(!owner.GetItemCount(PearlItem), "Abandoning The Sun Pearl kept the item from the previous attempt");
+    MoveGilneasPlayer(owner, liang.GetPosition());
+    AcceptQuest(owner, liang, SunPearl);
+    Require(owner.GetQuestStatus(SunPearl) == QUEST_STATUS_INCOMPLETE, "An abandoned attempt could not be restarted");
+    clam.Rearm();
+    MoveGilneasPlayer(owner, placement.position);
+    OpenSupply(owner, clam);
+    Require(TakeSupply(owner, clam, PearlItem), "A fresh attempt could not collect the pearl");
+    ReleaseSupply(owner, clam);
+    MoveGilneasPlayer(owner, liang.GetPosition());
+    uint32 const choice = PoolRewardChoice(owner, SunPearl);
+    RewardQuest(owner, liang, SunPearl, choice);
+    Require(owner.IsQuestRewarded(SunPearl) && !owner.GetItemCount(PearlItem) && owner.GetItemCount(choice) == 1,
+        "Liang did not consume the real Sun Pearl and grant the selected reward");
+    std::cout << "PASS Aysa to hilltop Liang, original Ancient Clam guard, pearl retry and actual turn-in" << std::endl;
+#endif
+}
 #endif
 }
 
@@ -611,6 +687,9 @@ int main(int argc, char** argv)
 #endif
 #if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE)
         CheckBalancedRock();
+#endif
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE) && !defined(SINGING_POOLS_ROCK_BASELINE)
+        CheckSunPearl();
 #endif
         CharacterDatabase.Close();
         LoginDatabase.Close();
