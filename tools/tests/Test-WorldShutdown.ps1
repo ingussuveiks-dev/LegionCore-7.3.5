@@ -3,7 +3,8 @@ param(
     [switch]$EndOfInput,
     [switch]$ProbeConnections,
     [switch]$CloseInputAfterCommand,
-    [switch]$Utf8Bom
+    [switch]$Utf8Bom,
+    [string]$OutputDirectory = ''
 )
 $ErrorActionPreference = 'Stop'
 $Runtime = (Resolve-Path $Runtime).Path
@@ -93,6 +94,12 @@ try {
     }
     $out = $stdout.GetAwaiter().GetResult()
     $err = $stderr.GetAwaiter().GetResult()
+    if ($OutputDirectory) {
+        $null = New-Item -ItemType Directory -Path $OutputDirectory -Force
+        [IO.File]::WriteAllText((Join-Path $OutputDirectory 'worldserver.stdout'), $out)
+        [IO.File]::WriteAllText((Join-Path $OutputDirectory 'worldserver.stderr'), $err)
+        [IO.File]::WriteAllText((Join-Path $OutputDirectory 'worldserver.exit'), [string]$process.ExitCode)
+    }
     $after = @(Get-ChildItem "$Runtime/Crashes" -Filter '*.dmp' -ErrorAction SilentlyContinue).Count
     if ($process.ExitCode -ne 0 -or $after -ne $before -or !$out.Contains('(worldserver-daemon) ready...') -or
         $out.Contains('There is no such command')) {

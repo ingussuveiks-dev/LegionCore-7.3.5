@@ -273,19 +273,19 @@ Map::~Map()
 
     Map::UnloadAll();
 
-    for (auto worldObject = i_worldObjects.begin(); worldObject != i_worldObjects.end(); ++worldObject)
+    while (!i_worldObjects.empty())
     {
+        auto worldObject = i_worldObjects.begin();
         WorldObject* obj = *worldObject;
         ASSERT(obj->IsWorldObject());
-        //ASSERT(obj->IsCorpse());
-        if (obj->GetMap() != this)
+        i_worldObjects.erase(worldObject);
+        if (obj->FindMap() != this)
             continue;
 
-        if (!obj->IsInWorld())
-            continue;
-
-        obj->RemoveFromWorld();
-        obj->ResetMap();
+        if (obj->IsInWorld())
+            obj->RemoveFromWorld();
+        if (obj->FindMap() == this)
+            obj->ResetMap();
     }
 
     if (!m_scriptSchedule.empty())
@@ -777,10 +777,7 @@ void Map::SwitchGridContainers(GameObject* obj, bool on)
         obj->RemoveFromGrid(); //This step is not really necessary but we want to do ASSERT in remove/add
 
     grid.AddGridObject(obj);
-    if (on)
-        AddWorldObject(obj);
-    else
-        RemoveWorldObject(obj);
+    // GameObjects stay in the grid container even when requested as active.
 }
 
 template<class T>

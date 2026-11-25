@@ -99,10 +99,9 @@ uint32 Object::GetSize()
 
 WorldObject::~WorldObject()
 {
-    // this may happen because there are many !create/delete
-    if (IsWorldObject() && m_currMap)
+    if (m_currMap)
     {
-        if (IsCorpse())
+        if (IsCorpse() && IsWorldObject())
         {
             TC_LOG_FATAL("misc", "Object::~Object Corpse guid=" UI64FMTD ", type=%d, entry=%u deleted but still in map!!", GetGUID().GetCounter(), ToCorpse()->GetType(), GetEntry());
             ASSERT(false);
@@ -2851,6 +2850,9 @@ void WorldObject::SetMap(Map* map)
         ASSERT(false);
     } */
 
+    if (m_currMap)
+        m_currMap->RemoveWorldObject(this);
+
     m_spawnMode = map->GetSpawnMode();
     m_currMap = map;
     m_mapId = map->GetId();
@@ -2863,9 +2865,9 @@ void WorldObject::ResetMap()
 {
     if (!m_currMap)
         return;
-    // ASSERT(!IsInWorld());
-    if (IsWorldObject())
-        m_currMap->RemoveWorldObject(this);
+
+    // Detach the recorded pointer even if the object's grid status changed.
+    m_currMap->RemoveWorldObject(this);
     m_currMap = nullptr;
 }
 
