@@ -63,6 +63,7 @@
 #include "Pet.h"
 #include "PetBattle.h"
 #include "Player.h"
+#include "EmbassyAllyChoice.h"
 #include "QuestData.h"
 #include "ScriptMgr.h"
 #include "ScriptsData.h"
@@ -7255,6 +7256,23 @@ void Spell::EffectQuestComplete(SpellEffIndex effIndex)
         Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
         if (!quest)
             return;
+
+        for (auto const& choice : EmbassyAllyChoice::Choices)
+            for (auto const& ally : choice.Allies)
+            {
+                if (m_spellInfo->Id != ally.Spell)
+                    continue;
+
+                // These native effects set a hidden choice marker without a
+                // quest-log entry. Its completion drives the embassy criterion.
+                if (questId == ally.Marker && player == m_caster && EmbassyAllyChoice::CanSelect(*player, choice, ally))
+                {
+                    player->SetRewardedQuest(questId);
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_QUEST, questId, quest->QuestInfoID);
+                    player->SendQuestGiverStatusMultiple();
+                }
+                return;
+            }
 
         uint16 logSlot = player->FindQuestSlot(questId);
         if (logSlot < MAX_QUEST_LOG_SIZE)

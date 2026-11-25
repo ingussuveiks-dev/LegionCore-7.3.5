@@ -57,6 +57,7 @@
 #include "CombatPackets.h"
 #include "Common.h"
 #include "ConditionMgr.h"
+#include "EmbassyAllyChoice.h"
 #include "QuestTaskPrerequisites.h"
 #include "Config.h"
 #include "ContributionMgr.h"
@@ -39413,9 +39414,17 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     displayPlayerChoice.CloseChoiceFrame = false; //@TODO
     displayPlayerChoice.HideWarboardHeader = playerChoice->HideWarboardHeader;
 
+    auto embassyChoice = EmbassyAllyChoice::Find(choiceId);
     for (std::size_t i = 0; i < playerChoice->Responses.size(); ++i)
     {
         auto const& playerChoiceResponseTemplate = playerChoice->Responses[i];
+
+        if (embassyChoice)
+        {
+            auto ally = embassyChoice->FindAlly(playerChoiceResponseTemplate.ResponseId);
+            if (!ally || !EmbassyAllyChoice::CanSelect(*this, *embassyChoice, *ally))
+                continue;
+        }
 
         if ((choiceId == 236 || choiceId == 245 || choiceId == 240 || choiceId == 242) && !sConditionMgr->IsObjectMeetToConditions(this,
             sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
@@ -39497,6 +39506,12 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
 
             displayPlayerChoice.Responses.push_back(playerChoiceResponse);
         }
+    }
+
+    if (embassyChoice && displayPlayerChoice.Responses.empty())
+    {
+        GetSession()->SendNotification("No ally is available to pursue. Check the recruitment requirements on the embassy banners.");
+        return;
     }
 
     // A retry or completed collection may have no remaining eligible route.

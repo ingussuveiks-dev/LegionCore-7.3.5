@@ -23,6 +23,7 @@
 #include "ContributionMgr.h"
 #include "Conversation.h"
 #include "ConditionMgr.h"
+#include "EmbassyAllyChoice.h"
 #include "Corpse.h"
 #include "InstancePackets.h"
 #include "LFGMgr.h"
@@ -688,6 +689,14 @@ void WorldSession::HandleChoiceResponse(WorldPackets::Misc::ChoiceResponse& pack
     auto playerChoiceResponse = playerChoice->GetResponse(packet.ResponseID);
     if (!playerChoiceResponse)
         return;
+
+    if (auto choice = EmbassyAllyChoice::Find(packet.ChoiceID))
+    {
+        auto ally = choice->FindAlly(packet.ResponseID);
+        if (!ally || !playerChoiceResponse->Reward || playerChoiceResponse->Reward->SpellID != ally->Spell ||
+            !EmbassyAllyChoice::CanSelect(*_player, *choice, *ally))
+            return;
+    }
 
     // Recheck at execution: a stale selection window must not restart a
     // completed artifact route or cast its hidden chosen-quest reward spell.

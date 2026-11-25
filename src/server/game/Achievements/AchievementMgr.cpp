@@ -29,6 +29,7 @@
 #include "DatabaseEnvFwd.h"
 #include "DBCEnums.h"
 #include "DisableMgr.h"
+#include "EmbassyAllyChoice.h"
 #include "Formulas.h"
 #include "GameEventMgr.h"
 #include "Garrison.h"
@@ -3327,6 +3328,9 @@ bool AchievementMgr<T>::RequirementsSatisfied(CriteriaTree const* tree, Achievem
             break;
         case CRITERIA_TYPE_COMPLETE_QUEST:
         {
+            if (!EmbassyAllyChoice::CanCreditCriteria(*referencePlayer, tree->ID))
+                return false;
+
             // if miscValues != 0, it contains the questID.
             if (miscValue1)
             {
