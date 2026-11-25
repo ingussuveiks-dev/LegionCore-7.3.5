@@ -13,6 +13,7 @@
 namespace Faronaar
 {
 constexpr uint32 Rescue = 37656, Saving = 37450, Revelations = 37449;
+constexpr uint32 Companion = 90474;
 Position const BoundDragon = {-736.529f, 7336.21f, 26.2122f, 5.56755f};
 Position const Traitor = {-521.031f, 7494.2f, 75.0567f, 0.645079f};
 struct Chain { uint64 spawn; Position beam; };
@@ -65,7 +66,7 @@ Creature* Owned(Player* player, uint32 entry)
 {
     for (ObjectGuid const& guid : *player->GetSummonList(entry))
         if (Creature* creature = ObjectAccessor::GetCreature(*player, guid))
-            if (creature->IsAlive() && creature->ToTempSummon() &&
+            if (creature->IsAlive() && !creature->IsPreDelete() && !creature->IsDelete() && creature->ToTempSummon() &&
                 creature->ToTempSummon()->GetSummonerGUID() == player->GetGUID())
                 return creature;
     return nullptr;
@@ -76,6 +77,16 @@ void ClearOwned(Player* player, uint32 entry)
     for (ObjectGuid const& guid : copies)
         if (Creature* creature = ObjectAccessor::GetCreature(*player, guid))
             creature->DespawnOrUnsummon();
+}
+
+void ClearCompanion(Player* player)
+{
+    GuidList copies = *player->GetSummonList(Companion);
+    for (ObjectGuid const& guid : copies)
+        if (Creature* creature = ObjectAccessor::GetCreature(*player, guid))
+            if (TempSummon* summon = creature->ToTempSummon())
+                if (summon->GetSummonerGUID() == player->GetGUID())
+                    summon->UnSummon();
 }
 
 void Load(Player* player, State& state)
@@ -188,7 +199,7 @@ bool NeedsCompanion(Player* player)
 
 void RecoverCompanion(Player* player, State& state, uint32 elapsed)
 {
-    Creature* follower = Owned(player, 90474);
+    Creature* follower = Owned(player, Companion);
     // A failed cave path keeps FOLLOW_MOTION_TYPE and the live summon GUID.
     // Wait for a sustained separation; do not disturb combat, a vehicle/flight,
     // an ordinary nearby follower or any other player's/pet's actors.
@@ -199,7 +210,9 @@ void RecoverCompanion(Player* player, State& state, uint32 elapsed)
     state.companionLost = lost ? state.companionLost + elapsed : 0;
     if (state.companionLost >= 6000)
     {
-        follower->DespawnOrUnsummon();
+        // The scheduled lifetime already set the creature's despawn flag.
+        // UnSummon removes that summon now, before attempting a replacement.
+        ClearCompanion(player);
         follower = nullptr;
         state.companionLost = 0;
     }
@@ -207,7 +220,7 @@ void RecoverCompanion(Player* player, State& state, uint32 elapsed)
     {
         // Preserve the real spell, destination, entry, properties and quest menu.
         player->CastSpell(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 178860, true);
-        follower = Owned(player, 90474);
+        follower = Owned(player, Companion);
         if (follower)
         {
             follower->AddPlayerInPersonnalVisibilityList(player->GetGUID());
@@ -363,7 +376,7 @@ public:
             ClearDragon(player, it->second);
             states.erase(it);
         }
-        ClearOwned(player, 90474);
+        ClearCompanion(player);
         ClearOwned(player, 90982);
     }
     void OnMapChanged(Player* player) override
@@ -395,7 +408,7 @@ public:
         else
         {
             state.companionLost = 0;
-            ClearOwned(player, 90474);
+            ClearCompanion(player);
         }
 
         if (Active(player, Revelations) && Done(player, Revelations, 90621))
