@@ -56,7 +56,7 @@ bool ArenaAshamanesFall::SetupBattleground()
     if (!AddObject(BG_VSH_OBJECT_DOOR_1, BG_VSH_OBJECT_TYPE_DOOR_1, BgVshDoorPositions[0][0], BgVshDoorPositions[0][1], BgVshDoorPositions[0][2], BgVshDoorPositions[0][3], BgVshDoorPositions[0][4], BgVshDoorPositions[0][5], BgVshDoorPositions[0][6], BgVshDoorPositions[0][7], RESPAWN_IMMEDIATELY) ||
         !AddObject(BG_VSH_OBJECT_DOOR_2, BG_VSH_OBJECT_TYPE_DOOR_2, BgVshDoorPositions[1][0], BgVshDoorPositions[1][1], BgVshDoorPositions[1][2], BgVshDoorPositions[1][3], BgVshDoorPositions[1][4], BgVshDoorPositions[1][5], BgVshDoorPositions[1][6], BgVshDoorPositions[1][7], RESPAWN_IMMEDIATELY) ||
         !AddObject(BG_VSH_OBJECT_BUFF_3, BG_VSH_OBJECT_TYPE_BUFF_1, 3579.075f, 5575.938f, 326.8913f, 2.460913f, 0.0f, 0.0f, 0.9426413f, 0.3338076f, BATTLEGROUND_COUNTDOWN_MAX) ||
-        !AddObject(BG_VSH_OBJECT_BUFF_4, BG_VSH_OBJECT_TYPE_BUFF_2, 3579.075f, 5575.938f, 326.8913f, 2.460913f, 0.0f, 0.0f, 0.9426413f, 0.3338076f, BATTLEGROUND_COUNTDOWN_MAX))
+        !AddObject(BG_VSH_OBJECT_BUFF_4, BG_VSH_OBJECT_TYPE_BUFF_2, 3503.282f, 5502.151f, 325.7072f, 3.316144f, 0.0f, 0.0f, -0.9961939f, 0.08716504f, BATTLEGROUND_COUNTDOWN_MAX))
         return false;
 
     return true;

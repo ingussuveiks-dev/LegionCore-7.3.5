@@ -86,6 +86,25 @@ int main()
         queue.GenerateRandomMap(Type::ArenaAll) != Type::ArenaBlackrookHold)
         return 1;
 
+    std::map<uint16, uint16> arenaMaps = {
+        {Type::ArenaBladesEdge, uint16{1672}}, {Type::ArenaDalaranSewers, uint16{617}},
+        {Type::ArenaNagrandArena, uint16{1505}}, {Type::ArenaRuinsOfLordaeron, uint16{572}},
+        {Type::ArenaTheTigersPeak, uint16{1134}}, {Type::ArenaTolvir, uint16{980}},
+        {Type::ArenaAshamanesFall, uint16{1552}}, {Type::ArenaBlackrookHold, uint16{1504}}
+    };
+    std::set<uint16> expectedArenas;
+    for (auto const& [type, map] : arenaMaps)
+    {
+        rows[type] = {{map, 0}, 0, BG::PvpInstanceType::Arena};
+        manager.weights[BG::IternalPvpTypes::Arena][type] = 1;
+        expectedArenas.insert(type);
+    }
+    std::set<uint16> arenaPicks;
+    for (roll = 0; roll < arenaMaps.size(); ++roll)
+        arenaPicks.insert(queue.GenerateRandomMap(Type::ArenaAll));
+    if (arenaPicks != expectedArenas)
+        return 6;
+
     queue.m_SelectionPools[TEAM_ALLIANCE].Count = 10;
     queue.m_SelectionPools[TEAM_HORDE].Count = 10;
     std::set<uint16> picks;
