@@ -42,6 +42,9 @@ constexpr uint32 Aysa = 29410;
 constexpr uint32 LorvoSpawn = 243772;
 constexpr uint32 MissingDriver = 29419;
 constexpr uint32 ImportantItems = 29424;
+constexpr uint32 Scamp = 54130;
+constexpr uint32 StolenSupplies = 72071;
+constexpr uint32 SupplyScamps[] = {243766, 243788, 243790, 244114, 244115, 243764};
 struct Lesson
 {
     uint8 playerClass;
@@ -109,7 +112,8 @@ void LoadLessonInputs()
     Require(oldAreaStarts && !oldAreaStarts->Fetch()[0].GetUInt32(), "Expected the migrated area to have no automatic introduction");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
-        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685,243731,243732,243772)");
+        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685,243731,243732,243772,"
+        "243766,243788,243790,244114,244115,243764)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
         "WHERE quest IN (29406,29408,29409,29410,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30038");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
@@ -135,6 +139,12 @@ void LoadLessonInputs()
     auto loaded = (LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();
     lootTable = name;
     Require(loaded && LootTemplates_Gameobject.GetLootFor(40856), "The original weapon rack loot is unavailable");
+    auto& creatureLootTable = LootTemplates_Creature.*Access(LootTableNameTag{});
+    auto const creatureLootName = creatureLootTable;
+    creatureLootTable += " WHERE Entry=54130";
+    auto const creatureLootLoaded = (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
+    creatureLootTable = creatureLootName;
+    Require(creatureLootLoaded && LootTemplates_Creature.GetLootFor(Scamp), "The scamps' original quest loot is unavailable");
     sQuestDataStore->LoadGameObjectForQuests();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
@@ -694,6 +704,47 @@ void CheckDiscipleChallenge(LootPlayer& player)
     std::cout << "PASS Aysa turn-in at placed Merchant Lorvo and acceptance of both follow-up quests" << std::endl;
 }
 
+void CheckImportantItems(LootPlayer& player)
+{
+    auto& map = *player.GetMap();
+    auto const quest = sQuestDataStore->GetQuestTemplate(ImportantItems);
+    uint32 collected = 0;
+    for (auto spawn : SupplyScamps)
+    {
+        LessonCreature scamp(map, spawn, Scamp);
+        SupplyMove(player, scamp.GetPosition());
+        Require(player.IsValidAttackTarget(&scamp), "An original scamp was unavailable");
+        player.DealDamage(&scamp, uint32(scamp.GetMaxHealth()) * 2);
+        Tick(player, 100);
+        Require(!scamp.IsAlive() && player.GetItemCount(StolenSupplies) == collected, "Scamp death gave an item before it was looted");
+        player.GetSession()->LootCorps(scamp.GetGUID());
+        // Ordinary corpses keep quest items in the shared container, with a per-player quest list.
+        auto& loot = scamp.loot;
+        WorldPackets::Loot::LootResponse view;
+        loot.BuildLootResponse(view, &player, OWNER_PERMISSION);
+        auto supply = std::find_if(view.Items.begin(), view.Items.end(), [](auto const& slot) {
+            return slot.Loot.ItemID == StolenSupplies;
+        });
+        Require(supply != view.Items.end(), "The scamp's native corpse loot did not show the quest supplies");
+        WorldPackets::Loot::AutoStoreLootItem request{WorldPacket(CMSG_LOOT_ITEM)};
+        request.Loot.push_back({loot.GetGUID(), supply->LootListID});
+        player.GetSession()->HandleAutostoreLootItemOpcode(request);
+        player.GetSession()->HandleAutostoreLootItemOpcode(request);
+        Require(player.GetItemCount(StolenSupplies) == ++collected, "The corpse loot did not grant exactly one supply");
+        Require(player.CanRewardQuest(quest, false) == (collected == std::size(SupplyScamps)),
+            "Lorvo's reward check did not require all six actual supplies");
+        WorldPackets::Loot::LootRelease release{WorldPacket(CMSG_LOOT_RELEASE)};
+        release.Unit = scamp.GetGUID();
+        player.GetSession()->HandleLootRelease(release);
+    }
+    LessonCreature lorvo(map, LorvoSpawn, 54943);
+    SupplyMove(player, lorvo.GetPosition());
+    Reward(player, lorvo, ImportantItems);
+    Require(player.IsQuestRewarded(ImportantItems) && !player.GetItemCount(StolenSupplies) &&
+        player.GetQuestStatus(MissingDriver) == QUEST_STATUS_INCOMPLETE, "Turning in the supplies affected the parallel driver quest");
+    std::cout << "PASS six placed scamps, normal corpse-loot packets and Lorvo turn-in for Items of Utmost Importance" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
@@ -734,6 +785,7 @@ void CheckFirstLesson()
             CheckStifledPride(student, giver);
             CheckBurningScroll(student);
             CheckDiscipleChallenge(student);
+            CheckImportantItems(student);
         }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
@@ -780,7 +832,8 @@ int main(int argc, char** argv)
             Require(schema && schema->Fetch()[0].GetString() == "fixture_char", "The lesson check requires isolated characters");
             LoadLessonInputs();
             for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u,
-                243608u, 243645u, TempleGiverSpawn, JaominSpawn, DiscipleGiverSpawn, LorvoSpawn})
+                243608u, 243645u, TempleGiverSpawn, JaominSpawn, DiscipleGiverSpawn, LorvoSpawn,
+                243766u, 243788u, 243790u, 244114u, 244115u, 243764u})
                 if (auto data = sObjectMgr->GetCreatureData(spawn))
                     sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();
