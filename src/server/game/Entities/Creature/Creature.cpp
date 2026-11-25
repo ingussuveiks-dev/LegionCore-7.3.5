@@ -3554,8 +3554,9 @@ void Creature::GetRespawnPosition(float &x, float &y, float &z, float* ori, floa
         }
     }
 
-    // Ashran battle actors are instance-owned runtime spawns, without DB rows.
-    if (GetMapId() == 1191 && !isSummon())
+    // Ashran battle actors and Southshore brawl town guards are runtime spawns without DB rows.
+    bool const southshoreTownGuard = GetMapId() == 1280 && (GetEntry() == 84557 || GetEntry() == 84593);
+    if (!isSummon() && (GetMapId() == 1191 || southshoreTownGuard))
     {
         Position const& home = GetHomePosition();
         x = home.GetPositionX();

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <iostream>
 #include <unordered_map>
@@ -9,6 +10,13 @@ using uint64 = std::uint64_t;
 enum TeamId { TEAM_ALLIANCE, TEAM_HORDE, MAX_TEAMS };
 namespace MS::Battlegrounds { TeamId GetTeamByTeamId(TeamId team) { return team; } }
 enum { STATUS_IN_PROGRESS, STATUS_WAIT_LEAVE, SCORE_HONORABLE_KILLS };
+
+struct Position { float x, y, z, o; };
+struct Creature
+{
+    uint32 guid;
+    uint32 GetGUID() const { return guid; }
+};
 
 struct Player
 {
@@ -40,8 +48,11 @@ struct Battleground
 struct BrawlBattlegroundSouthshoreVsTarrenMill : Battleground
 {
     std::unordered_map<uint32, uint8> _honorableKills;
+    std::array<uint32, 6> BgCreatures{100, 101, 200, 201, 202, 203};
     void ResetRank(Player* player);
+    void AwardTeamPoint(TeamId team);
     void HandleKillPlayer(Player* player, Player* killer);
+    void HandleKillUnit(Creature* unit, Player* killer);
     bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor) override;
 };
 
@@ -77,5 +88,29 @@ int main()
         match.HandleKillPlayer(&horde, &alliance);
     if (match.victor != TEAM_ALLIANCE || match.sent != 151 || match.m_TeamScores[TEAM_ALLIANCE] != 150)
         return 6;
+
+    BrawlBattlegroundSouthshoreVsTarrenMill defense;
+    Creature guide{100}, allyGuard{200}, hordeGuard{203}, foreignCreature{300};
+    defense.HandleKillUnit(&guide, &horde);
+    defense.HandleKillUnit(&allyGuard, &alliance);
+    defense.HandleKillUnit(&hordeGuard, &horde);
+    defense.HandleKillUnit(&hordeGuard, nullptr);
+    defense.HandleKillUnit(nullptr, &alliance);
+    defense.HandleKillUnit(&allyGuard, &outsider);
+    defense.HandleKillUnit(&foreignCreature, &horde);
+    if (defense.sent)
+        return 7;
+    defense.HandleKillUnit(&hordeGuard, &alliance);
+    defense.HandleKillUnit(&allyGuard, &horde);
+    if (defense.sent != 2 || defense.m_TeamScores[TEAM_ALLIANCE] != 1 ||
+        defense.m_TeamScores[TEAM_HORDE] != 1 || !defense._honorableKills.empty())
+        return 8;
+    defense.m_TeamScores[TEAM_ALLIANCE] = 149;
+    defense.HandleKillUnit(&hordeGuard, &alliance);
+    defense.HandleKillUnit(&allyGuard, &horde);
+    if (defense.victor != TEAM_ALLIANCE || defense.sent != 3 || defense.m_TeamScores[TEAM_HORDE] != 1)
+        return 9;
+
+    std::cout << "Southshore town guard score, match ownership, faction and 150-point finish passed.\n";
     std::cout << "Southshore score, rank bounds, death cleanup and 150-point finish passed.\n";
 }

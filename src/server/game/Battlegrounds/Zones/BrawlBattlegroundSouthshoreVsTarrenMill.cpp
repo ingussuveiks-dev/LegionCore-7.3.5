@@ -1,11 +1,37 @@
 
 #include "BrawlBattlegroundSouthshoreVsTarrenMill.h"
 #include "BattlegroundPackets.h"
+#include "Creature.h"
+#include "WaypointManager.h"
 
 static constexpr uint8 RankCount = 16;
 static constexpr uint8 MaxScores = 150;
 static constexpr uint8 KillsPerRank = 10;
 static constexpr uint32 Graveyards[MAX_TEAMS] = {4850, 4851};
+
+namespace
+{
+    constexpr uint32 GuardRespawnSeconds = 30;
+    constexpr uint32 GuardCorpseSeconds = 5;
+    constexpr uint32 OrchardPatrolPath = 845930;
+
+    struct TownGuard
+    {
+        uint32 Entry;
+        TeamId Team;
+        Position Spawn;
+        uint32 Path;
+    };
+
+    // Reconstructed on the Legion map from the well, town fork and orchard in retail footage.
+    TownGuard const TownGuards[] =
+    {
+        {84557, TEAM_ALLIANCE, {1815.50f, 1087.00f, 12.2660f, 5.9f}, 0}, // Near the well and stairs
+        {84557, TEAM_ALLIANCE, {1831.00f, 1063.00f, 13.4681f, 2.2f}, 0}, // Across the road
+        {84593, TEAM_HORDE, {2585.00f, 712.00f, 55.1379f, 0.0f}, 0}, // Inside the orchard fence
+        {84593, TEAM_HORDE, {2605.25f, 699.00f, 55.4913f, 2.7f}, OrchardPatrolPath}, // Farm-side path
+    };
+}
 
 static constexpr uint32 RankSpells[RankCount][MAX_TEAMS] =
 {
@@ -46,7 +72,7 @@ protected:
 
 BrawlBattlegroundSouthshoreVsTarrenMill::BrawlBattlegroundSouthshoreVsTarrenMill()
 {
-    BgCreatures.resize(MAX_TEAMS);
+    BgCreatures.resize(MAX_TEAMS + std::size(TownGuards));
 }
 
 void BrawlBattlegroundSouthshoreVsTarrenMill::Reset()
@@ -58,11 +84,34 @@ void BrawlBattlegroundSouthshoreVsTarrenMill::Reset()
 
 bool BrawlBattlegroundSouthshoreVsTarrenMill::SetupBattleground()
 {
+    auto const* orchardPath = sWaypointMgr->GetPath(OrchardPatrolPath);
+    if (!orchardPath || orchardPath->empty())
+    {
+        TC_LOG_ERROR("bg.battleground", "Southshore brawl: missing orchard patrol path %u", OrchardPatrolPath);
+        return false;
+    }
+
     for (TeamId team : {TEAM_ALLIANCE, TEAM_HORDE})
     {
         auto const* graveyard = sWorldSafeLocsStore.LookupEntry(Graveyards[team]);
         if (!graveyard || graveyard->MapID != GetMapId() || !AddSpiritGuide(team, graveyard->Loc, team))
             return false;
+    }
+
+    for (uint32 index = 0; index < std::size(TownGuards); ++index)
+    {
+        TownGuard const& spawn = TownGuards[index];
+        Creature* guard = AddCreature(spawn.Entry, MAX_TEAMS + index, MS::Battlegrounds::GetTeamByTeamId(spawn.Team), spawn.Spawn, GuardRespawnSeconds);
+        if (!guard)
+            return false;
+
+        guard->SetCorpseDelay(GuardCorpseSeconds);
+        if (spawn.Path)
+        {
+            guard->LoadPath(spawn.Path);
+            guard->SetDefaultMovementType(WAYPOINT_MOTION_TYPE);
+            guard->GetMotionMaster()->InitDefault();
+        }
     }
     return true;
 }
@@ -123,7 +172,30 @@ void BrawlBattlegroundSouthshoreVsTarrenMill::HandleKillPlayer(Player* player, P
     if (!enemyKill)
         return;
 
+    AwardTeamPoint(killer->GetBGTeamId());
+}
+
+void BrawlBattlegroundSouthshoreVsTarrenMill::HandleKillUnit(Creature* unit, Player* killer)
+{
+    if (GetStatus() != STATUS_IN_PROGRESS || !unit || !killer || !IsPlayerInBattleground(killer->GetGUID()))
+        return;
+
     TeamId team = killer->GetBGTeamId();
+    for (uint32 index = 0; index < std::size(TownGuards); ++index)
+    {
+        if (BgCreatures[MAX_TEAMS + index] == unit->GetGUID() && TownGuards[index].Team != team)
+        {
+            AwardTeamPoint(team);
+            return;
+        }
+    }
+}
+
+void BrawlBattlegroundSouthshoreVsTarrenMill::AwardTeamPoint(TeamId team)
+{
+    if (team >= MAX_TEAMS)
+        return;
+
     ++m_TeamScores[team];
     SendBattleGroundPoints(team == TEAM_HORDE, m_TeamScores[team]);
     if (m_TeamScores[team] >= MaxScores)

@@ -8,7 +8,11 @@ $source = Get-Content "$root/src/server/game/Battlegrounds/Zones/BrawlBattlegrou
 $score = ([regex]::Match($source, '(?s)static constexpr uint8 RankCount.*?\n};')).Value
 $handlers = ([regex]::Match($source, '(?s)void BrawlBattlegroundSouthshoreVsTarrenMill::ResetRank\(.*$')).Value
 if (!$score -or !$handlers) { throw 'Southshore score handlers unavailable' }
-[IO.File]::WriteAllText("$output/southshore-score.inc", "$score`n$handlers")
+$kill = Get-Content "$root/src/server/game/Entities/Unit/Unit.cpp" -Raw
+if ($kill -notmatch '(?s)void Unit::Kill\(.*?m_IsInKillingProcess.*?GetCharmerOrOwnerPlayerOrPlayerItself\(\).*?bg->HandleKillUnit\(victim->ToCreature\(\), player\)') {
+    throw 'Native once-per-death and owner-resolved battleground dispatch missing'
+}
+[IO.File]::WriteAllText("$output/southshore-score.inc", (@($score, $handlers) -join [Environment]::NewLine))
 
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

@@ -8,6 +8,7 @@ class BrawlBattlegroundSouthshoreVsTarrenMill : public Battleground
     std::unordered_map<ObjectGuid, uint8> _honorableKills;
     Milliseconds _battleElapsed = Milliseconds::zero();
     void ResetRank(Player* player);
+    void AwardTeamPoint(TeamId team);
 public:
     BrawlBattlegroundSouthshoreVsTarrenMill();
 
@@ -18,6 +19,7 @@ public:
     void RemovePlayer(Player* player, ObjectGuid guid, uint32 team) override;
     WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
     void HandleKillPlayer(Player* player, Player* killer) override;
+    void HandleKillUnit(Creature* unit, Player* killer) override;
     bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
 };
 
