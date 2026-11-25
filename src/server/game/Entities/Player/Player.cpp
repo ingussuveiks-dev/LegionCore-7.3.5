@@ -18780,10 +18780,12 @@ void Player::PrepareAreaQuest(uint32 area)
         if (!quest)
             continue;
 
-        if (!CanTakeQuest(quest, false))
+        if (!CanTakeQuest(quest, false) || !CanAddQuest(quest, false))
             continue;
 
         AddQuest(quest, this);
+        if (!IsActiveQuest(quest_id))
+            continue;
 
         if (CanCompleteQuest(quest_id))
             CompleteQuest(quest_id);
