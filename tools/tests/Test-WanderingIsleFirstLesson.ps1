@@ -5,6 +5,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $migration = Get-Content -LiteralPath "$repo/sql/updates/world/2026_11_25_14_wandering_isle_first_lesson.sql" -Raw
+$completion = Get-Content -LiteralPath "$repo/sql/updates/world/2026_11_25_15_wandering_isle_weapon_lesson_completion.sql" -Raw
 $check = @'
 SELECT 'quiet-area',COUNT(*) FROM area_queststart WHERE id=5834 AND quest BETWEEN 30039 AND 30045;
 SELECT 'old-prerequisites',COUNT(*) FROM quest_template_addon
@@ -22,6 +23,8 @@ SELECT 'kept-history',COUNT(*) FROM quest_template AS q JOIN creature_questender
 SELECT 'visibility-rules',COUNT(*) FROM spell_area WHERE spell=56267 AND area=5834 AND quest_end=29409
  AND quest_start_status=74 AND quest_end_status=8 AND autocast=1
  AND (quest_start=30027 OR quest_start BETWEEN 30033 AND 30045);
+SELECT 'lesson-completion-flags',COUNT(*) FROM quest_template_addon
+ WHERE (ID=30027 OR ID BETWEEN 30033 AND 30038) AND (SpecialFlags & 17)=16;
 '@
 
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $OutputDirectory -Test {
@@ -47,11 +50,19 @@ UPDATE quest_template_addon SET PrevQuestID=CASE WHEN ID=30027 THEN 30039 ELSE I
 INSERT INTO area_queststart VALUES (5834,30039),(5834,30040),(5834,30041),(5834,30042),(5834,30043),(5834,30044),(5834,30045)
  ON DUPLICATE KEY UPDATE quest=VALUES(quest);
 DELETE FROM spell_area WHERE spell=56267 AND area=5834 AND (quest_start=30027 OR quest_start BETWEEN 30033 AND 30038);
+UPDATE quest_template_addon SET SpecialFlags=17 WHERE ID=30027 OR ID BETWEEN 30033 AND 30038;
+UPDATE quest_template_addon SET SpecialFlags=49 WHERE ID IN (30027,30039);
 SELECT 'baseline',COUNT(*) FROM area_queststart WHERE id=5834 AND quest BETWEEN 30039 AND 30045;
 $migration
+$completion
+SELECT 'completion-changes',ROW_COUNT();
 $check
 $migration
+$completion
+SELECT 'completion-changes',ROW_COUNT();
 $check
+SELECT 'preserved-lesson-flag',SpecialFlags FROM quest_template_addon WHERE ID=30027;
+SELECT 'preserved-legacy-flags',SpecialFlags FROM quest_template_addon WHERE ID=30039;
 SELECT 'other-area',COUNT(*) FROM area_queststart WHERE id=5835 AND quest=30039;
 UPDATE quest_template_addon SET NextQuestID=30027 WHERE ID=30039;
 UPDATE quest_template_addon SET PrevQuestID=12345 WHERE ID=30027;
@@ -74,10 +85,10 @@ SELECT 'custom-visibility',quest_end_status FROM spell_area WHERE spell=56267 AN
         if ($LASTEXITCODE) { throw 'Wandering Isle data query failed' }
     } finally { $env:MYSQL_PWD = $previous }
     $expected = 'quiet-area 0','old-prerequisites 0','incoming-prerequisites 0',
-        'lesson-offers 7','class-and-next-lesson 7','kept-history 7','visibility-rules 14'
+        'lesson-offers 7','class-and-next-lesson 7','kept-history 7','visibility-rules 14','lesson-completion-flags 7'
     if (!$VerifyLiveData) {
-        $expected = @('baseline 7') + $expected + $expected +
-            @('other-area 1','custom-path 1','custom-prerequisite 12345','custom-visibility 1')
+        $expected = @('baseline 7','completion-changes 7') + $expected + @('completion-changes 0') + $expected +
+            @('preserved-lesson-flag 48','preserved-legacy-flags 49','other-area 1','custom-path 1','custom-prerequisite 12345','custom-visibility 1')
     }
     if ((($rows -replace '\t',' ') -join '|') -cne ($expected -join '|')) {
         $rows
