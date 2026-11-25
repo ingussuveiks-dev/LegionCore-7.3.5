@@ -55,7 +55,7 @@ struct BuildingStore{BuildingEntry row;BuildingEntry const* AssertEntry(uint32)c
 uint32 getQuestIdReqForShipment(uint32,uint32){return 0;} // class-order containers have no Draenor building gate
 struct Garrison {
  Player* _owner=nullptr;std::set<uint32> talents;
- struct Site{uint32 GarrSiteID=0;} site;
+ struct Site{uint32 GarrSiteID=0;} siteData;
  std::map<uint32,Site*> _siteLevel;
  struct Packet{bool Active=false;uint32 GarrBuildingID=0;};
  struct Plot{struct{Packet* PacketInfo=nullptr;}BuildingInfo;};
@@ -89,7 +89,7 @@ int main(){
  Creature dyala;dyala.entry=106216;dyala.secondary=272;
  Creature melinda;melinda.entry=108018;melinda.secondary=512;
  assert(!p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala)); // no site
- g._siteLevel[GARRISON_TYPE_CLASS_ORDER]=&g.site;
+ g._siteLevel[GARRISON_TYPE_CLASS_ORDER]=&g.siteData;
  assert(!p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala)); // quest absent
  p.quests[41797]=QUEST_STATUS_INCOMPLETE;
  assert(shipment.selectShipment(&p)==321);

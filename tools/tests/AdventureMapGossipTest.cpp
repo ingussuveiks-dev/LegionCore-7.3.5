@@ -20,7 +20,13 @@ bool Admit(GossipOptionNpc optionNpc,uint32 first,uint32 second=0){
 #include "Admission.inc"
  return true;}return false;}
 namespace WorldPackets{namespace NPC{struct ShowAdventureMap{int Guid=0;int Write(){return Guid;}};}namespace Quest{struct AdventureJournalStartQuest{uint32 QuestID;};struct AdventureJournalOpenQuest{uint32 AdventureJournalID;};}}
-struct Quest{uint32 Id;uint32 GetQuestId()const{return Id;}};
+struct Quest
+{
+ uint32 Id;
+ bool AutoAccept=false;
+ uint32 GetQuestId()const{return Id;}
+ bool IsAutoAccept()const{return AutoAccept;}
+};
 struct QuestStore{std::map<int,Quest> rows;Quest const* GetQuestTemplate(uint32 id){auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}} quests;
 auto sQuestDataStore=&quests;
 struct AdventureMapPOIEntry{uint32 ID,Type,QuestID,PlayerConditionID;};
@@ -57,8 +63,8 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* q,uint32 guid,bool auto
 #include "JournalOpen.inc"
 #include "Adventure.inc"
 int main(int argc,char**argv){
- assert(argc==2);std::ifstream f(argv[1]);int entry;uint32 flags,flags2;int count=0;
- while(f>>entry>>flags>>flags2){assert(Admit(GossipOptionNpc::AdventureMap,flags));++count;}
+ assert(argc==2);std::ifstream f(argv[1]);int creatureTemplate;uint32 flags,flags2;int count=0;
+ while(f>>creatureTemplate>>flags>>flags2){assert(Admit(GossipOptionNpc::AdventureMap,flags));++count;}
  assert(count>0);assert(!Admit(GossipOptionNpc::AdventureMap,0));
  assert(!Admit(GossipOptionNpc::AdventureMap,uint32(UNIT_NPC_FLAG_VENDOR)));
  assert(Admit(GossipOptionNpc::Vendor,uint32(UNIT_NPC_FLAG_VENDOR))&&!Admit(GossipOptionNpc::Vendor,1));
@@ -102,5 +108,20 @@ int main(int argc,char**argv){
   assert(q.starts==1&&q.status[entry->QuestID]==1&&!q.credits&&q.m_adventure_questID==39718&&!q.popup&&q.talk.closes==1);
   s.HandleAdventureJournalStartQuest(request);assert(q.starts==1);
  }
+ AdventureJournalEntry autoOffer{1000,0,3,40000,1};
+ sAdventureJournalStore.push_back(&autoOffer);
+ quests.rows[autoOffer.QuestID]={autoOffer.QuestID,true};
+ Player automatic;
+ WorldSession openAutomatic{&automatic};
+ WorldPackets::Quest::AdventureJournalOpenQuest preview{autoOffer.ID};
+ automatic.add=false;
+ openAutomatic.HandleAdventureJournalOpenQuest(preview);
+ assert(!automatic.starts&&!automatic.details&&!automatic.popup);
+ automatic.add=true;
+ automatic.complete=true;
+ openAutomatic.HandleAdventureJournalOpenQuest(preview);
+ assert(automatic.starts==1&&automatic.status[autoOffer.QuestID]==1&&automatic.details==autoOffer.QuestID&&!automatic.popup);
+ openAutomatic.HandleAdventureJournalOpenQuest(preview);
+ assert(automatic.starts==1);
  std::cout<<"PASS: "<<count<<" real board templates, scouting selection/credit, journal category vs action, eligibility, repeat acceptance and completion\n";
 }

@@ -65,7 +65,10 @@ if($VerifyReleaseBinary){
  $binary=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes("$ReleaseDirectory/worldserver.exe"))
  if(!$binary.Contains('AdventureMap: opening scouting map for player %u at creature %u')){throw 'Canonical Release lacks adventure-map interaction repair'}
  $python=Get-Command python -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1
- if(!$python){$python='C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'}
+ if(!$python -or $python -match '[\\/]Microsoft[\\/]WindowsApps[\\/]python(?:3)?\.exe$'){
+  $python='C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
+ }
+ if(!(Test-Path -LiteralPath $python -PathType Leaf)){throw 'The Release gossip verifier requires an installed Python interpreter'}
  & $python "$PSScriptRoot/verify_gossip_service_release.py" $ReleaseDirectory
  if($LASTEXITCODE){throw 'Actual Release gossip service lookup is stale'}
 }
