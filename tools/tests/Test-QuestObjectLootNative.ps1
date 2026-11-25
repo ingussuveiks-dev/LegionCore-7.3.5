@@ -3,7 +3,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
       [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
-      [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,
+      [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,[switch]$WanderingFirstLesson,
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,
       [switch]$HuoOfferings,[switch]$HuoOfferingsBaseline,
@@ -29,6 +29,7 @@ if($BrazieGhouls){++$scopedProbes}
 if($BraziePumpkin){++$scopedProbes}
 if($BrazieWarden){++$scopedProbes}
 if($BrazieGarden){++$scopedProbes}
+if($WanderingFirstLesson){++$scopedProbes}
 if($scopedProbes -and ($Baseline -or !$FixtureConfig -or $scopedProbes -gt 1)){throw 'Use one named probe and its private migrated fixture'}
 if(!$OutputDirectory -and $BrazieBasicBotany){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-basic-botany"}
 if(!$OutputDirectory -and $BrazieFlowerPower){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-flower-power"}
@@ -560,6 +561,11 @@ if($LiFeiDuel){
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
  $scripts=$libs|Where-Object {$_ -match 'scripts[\\/]Release[\\/]scripts.lib$'}|Select-Object -First 1
  if(!$scripts -or (Get-Item "$repo/src/server/scripts/Pandaria/zone_the_wandering_isle.cpp").LastWriteTimeUtc -gt (Get-Item $scripts).LastWriteTimeUtc){throw 'Actual scripts library predates the Li Fei change'}
+}
+if($WanderingFirstLesson){
+ $probeSource = "$PSScriptRoot/WanderingFirstLessonNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeWanderingLesson.inc",$query+' " WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406)"')
+ [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($ShangXiEscort){
  $probeSource = "$PSScriptRoot/ShangXiEscortNative.cpp"

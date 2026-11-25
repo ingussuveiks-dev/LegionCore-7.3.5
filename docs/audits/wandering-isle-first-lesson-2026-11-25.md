@@ -7,3 +7,11 @@ Migrācija noņem tikai zonas 5834 vecos piedāvājumus un zināmās savstarpēj
 MariaDB pagaidu tabulās pārbaudītas visas septiņas pārejas, divkārša migrācija, blakus zona un pielāgots priekšnoteikums un auras ieraksts. Darba datubāzes nolasījums sakrita ar pārbaudītajiem datiem. Updater reģistrēja SQL kā `RELEASED` ar SHA-1 `4137E906B120C22BEB290EEFE5A4E46A59ABB84E`. Kanoniskais worldserver sasniedza gatavību un korekti izslēdzās bez jaunām avārijām, servera brīdinājumiem, kļūdām vai DBErrors ierakstiem.
 
 Spēles klientā vēl jāpārbauda jaunā tēla ierašanās, Shang Xi piedāvājums, ieroča aprīkošanas attēlojums un pāreja uz `29406`, kā arī iepriekš uzsākta ievada nodošana. Pierādījumi ir zem `build-extractors/bin/Release/fixed/2026-11-25-level-quest-coverage/`.
+
+## Servera kvesta apstrādātāja pārbaude
+
+`Test-QuestObjectLootNative.ps1 -WanderingFirstLesson` izpildīja kanoniskās saistes bibliotēku kodu uz mapes 860 ar novietoto Shang Xi. Pārbaudīti septiņi 1. līmeņa tēli, katram tikai savas klases piedāvājums, pieņemšanas pakete, atmešana un atkārtota pieņemšana. Citas rases spēlētājs mācības izvēlnē neredzēja. Pirms ieroča mērķa izpildes nākamais kvests bija liegts. Iepriekš pieņemts `30039` tika nodots ar parasto atlīdzības paketi, kas sāka mūka mācību `30027`.
+
+Agrīnais testa process atlīdzības brīdī avarēja, jo testa skripts nebija atvēris izolēto tēlu datubāzes savienojumu. Sakārtota arī priekšmetu ielādes secība. Savienojums tagad pārbaudīts pret `fixture_char` pirms testa. Atkārtotā izpilde ar jaunu izolēto MariaDB izturēja un abi procesi korekti beidzās. Nebija jaunu avāriju, servera brīdinājumu vai DBErrors ierakstu. Ar kontrolsummām saglabāti 48 agrīnās un labotās pārbaudes diagnostikas faili un izņemti 18 pagaidu faili, 1 079 834 995 baiti. [Pārbaudes arhīvs](../../build-extractors/bin/Release/fixed/2026-11-25-wandering-first-lesson-native/)
+
+Spēles klientā vēl jāapstiprina ierašanās, attēlojums un faktiskā ieroču paņemšana un aprīkošana līdz `29406` piedāvājumam.
