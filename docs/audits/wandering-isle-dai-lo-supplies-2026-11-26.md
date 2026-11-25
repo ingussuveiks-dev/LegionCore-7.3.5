@@ -1,0 +1,7 @@
+# Still Good! (29770) un Stronger Than Wood (29771)
+
+Abos uzdevumos spēlētājs bez kvesta varēja atvērt tukšu koplietotu krājumu objektu. Savāktie priekšmeti palika somā pēc kvesta atmešanas. Astoņām oriģinālajām veidnēm piesaistīta esošā viena kvesta krājumu pārbaude. Standarta atmešana izņem arī veca mēģinājuma liekos rāceņus, burkānus, ķirbjus un dēļus. Katras veidnes laupījuma priekšmets un daudzums iziet caur esošo laupījuma tabulu.
+
+`Test-QuestObjectLootNative.ps1 -SingingPoolsFarmBaseline` atkārtoja abas problēmas abiem kvestiem. `-SingingPools` pārbaudīja `Rascals` pieņemšanu pie Ji, desmit faktisko Virmen sakāvi ar spēlētāja un peta pēdējiem sitieniem un nodošanu. Tad pārbaudīja visus 38 dārzeņu un 14 dēļu novietojumus, atteikumu apmeklētājam, savākšanu, atmešanu ar liekiem priekšmetiem un atkārtojumu. Delora saņēma trīs katra dārzeņa vienības un izsniedza `58` paketes atlīdzību. Min saņēma 12 dēļus. Maršruts un laupījuma logs klientā paliek pārbaudāmi.
+
+Migrācija `2026_11_26_07_wandering_isle_dai_lo_supplies.sql` testa datubāzē piemērota divreiz. Darba serveris to reģistrēja kā `RELEASED` ar SHA-1 `5536FB99F52EAA8F5A29FD07AAD45F08E9530C9E`. Pārbaudes palaidē sākotnējais mēģinājums izmantoja nepareizu izvades mapi. Nākamās izolētā un darba servera palaišanas sasniedza gatavību un korekti apstājās. Gala pārbaudēs nebija jaunu avāriju, brīdinājumu, kļūdu vai DBErrors ierakstu. Saglabāti 70 diagnostikas faili un izņemti 20 pagaidu faili. [Diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-dai-lo-supplies/)

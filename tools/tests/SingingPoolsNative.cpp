@@ -47,6 +47,13 @@ constexpr uint32 CartTenderSpawn = 244485;
 constexpr uint32 JiSpawn = 244755;
 constexpr uint32 FarmCartSpawn = 244624;
 constexpr uint32 WreckCartSpawn = 245583;
+constexpr uint32 Rascals = 29769;
+constexpr uint32 Virmen = 55483;
+constexpr uint32 VirmenSpawns[] = {244586,244589,244590,244591,244592,244595,244596,244617,244633,244654};
+constexpr uint32 StillGood = 29770;
+constexpr uint32 StrongWood = 29771;
+constexpr uint32 MinSpawn = 244611;
+constexpr uint32 DeloraSpawn = 244620;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -67,7 +74,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 11, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 14, "Missing the Singing Pools and farm quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -81,8 +88,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 11, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29769,29770,29771)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 14, "Missing the original Pools and farm prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -142,14 +149,26 @@ void LoadPools()
     Require(cartObjective && cartObjective->Fetch()[4].GetUInt32() == CartTender && cartObjective->Fetch()[5].GetUInt32() == 1 &&
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
+    auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID IN (29769,29770,29771) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 5, "Missing the five original farm objectives");
+    do
+    {
+        auto fields = farmObjectives->Fetch();
+        quests[fields[1].GetUInt32()]->LoadQuestObjective(fields);
+    } while (farmObjectives->NextRow());
+    quests[Rascals]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    quests[StillGood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
+    quests[StrongWood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,244485,244519,244520,244624,244755,245583)");
+        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244617,244620,244624,244633,244654,244755,245583)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29769,29770,29771)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29769,29770,29771)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
@@ -170,17 +189,17 @@ void LoadPools()
     sObjectMgr->LoadGameObjectTemplate();
     auto& table = LootTemplates_Gameobject.*Access(LootTableNameTag{});
     auto const original = table;
-    table += " WHERE Entry IN (209507,209584)";
+    table += " WHERE Entry IN (209507,209584,209639,209640,209641,209642,209643,209644,209645,209646)";
     auto const loaded = (LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();
     table = original;
-    Require(loaded == 2 && LootTemplates_Gameobject.GetLootFor(209507) && LootTemplates_Gameobject.GetLootFor(209584),
-        "Missing the original reed or pearl loot row");
+    Require(loaded == 10 && LootTemplates_Gameobject.GetLootFor(209507) && LootTemplates_Gameobject.GetLootFor(209584),
+        "Missing the original reed, pearl or farm loot rows");
     auto& creatureLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalCreatureLoot = creatureLoot;
-    creatureLoot += " WHERE Entry=60411";
+    creatureLoot += " WHERE Entry IN (55483,60411)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     creatureLoot = originalCreatureLoot;
-    Require(LootTemplates_Creature.GetLootFor(WaterPincer), "Missing the original Water Pincer loot");
+    Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
     sScriptSystemMgr->LoadScriptWaypoints();
@@ -546,7 +565,10 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn})
+        if (auto data = sObjectMgr->GetCreatureData(spawn))
+            sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+    for (uint32 spawn : VirmenSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
@@ -945,6 +967,134 @@ void CheckLivelihoodCart(Map& map, LootPlayer& pupil, Teacher& aysa)
 #endif
 }
 
+void CheckFarmSupply(Map& map, LootPlayer& pupil, LootPlayer& visitor, Teacher& giver, uint32 questId,
+    uint32 firstEntry, uint32 lastEntry, size_t placementCount)
+{
+    struct Stock
+    {
+        Placement Place;
+        uint32 Item;
+    };
+    auto rows = WorldDatabase.PQuery("SELECT g.id,g.guid,g.spawntimesecs,g.position_x,g.position_y,g.position_z,g.orientation,"
+        "g.rotation0,g.rotation1,g.rotation2,g.rotation3,l.Item FROM gameobject g JOIN gameobject_loot_template l ON l.Entry=g.id "
+        "WHERE g.map=860 AND g.id BETWEEN %u AND %u ORDER BY l.Chance DESC,g.guid", firstEntry, lastEntry);
+    Require(rows && rows->GetRowCount() == placementCount, "The original farm stock placements did not match");
+    std::vector<Stock> stock;
+    do
+    {
+        auto row = rows->Fetch();
+        stock.push_back({{row[0].GetUInt32(), row[1].GetUInt32(), row[2].GetUInt32(),
+            {row[3].GetFloat(), row[4].GetFloat(), row[5].GetFloat(), row[6].GetFloat()},
+            G3D::Quat(row[7].GetFloat(), row[8].GetFloat(), row[9].GetFloat(), row[10].GetFloat())}, row[11].GetUInt32()});
+    } while (rows->NextRow());
+
+    MoveGilneasPlayer(pupil, giver.GetPosition());
+    AcceptQuest(pupil, giver, questId);
+    Require(pupil.GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE, "The placed farm supplier did not offer the gathering quest");
+    auto const* quest = sQuestDataStore->GetQuestTemplate(questId);
+    auto const collect = [&](Supply& chest, uint32 item)
+    {
+        bool received = false;
+        for (unsigned attempt = 0; attempt < 3 && !received; ++attempt)
+        {
+            OpenSupply(pupil, chest);
+            received = TakeSupply(pupil, chest, item);
+            ReleaseSupply(pupil, chest);
+            if (!received)
+                chest.Rearm();
+        }
+        Require(received, "Original farm stock did not yield its quest item after a retry");
+    };
+    auto const& first = stock.front();
+    {
+        Supply chest(map, first.Place);
+        MoveGilneasPlayer(visitor, first.Place.position);
+        OpenSupply(visitor, chest);
+#ifdef SINGING_POOLS_FARM_BASELINE
+        Require(visitor.GetLootGUID() == chest.GetGUID() && chest.getLootState() == GO_ACTIVATED && chest.loot.isLooted(),
+            "Old shared farm stock no longer opened an empty chest without its quest");
+        ReleaseSupply(visitor, chest);
+        chest.Rearm();
+#else
+        Require(!visitor.GetLootGUID() && chest.getLootState() == GO_READY, "A visitor consumed original farm stock");
+#endif
+        MoveGilneasPlayer(pupil, first.Place.position);
+        collect(chest, first.Item);
+    }
+#ifndef SINGING_POOLS_FARM_BASELINE
+    for (QuestObjective const& objective : quest->GetObjectives())
+        GiveSupply(pupil, uint32(objective.ObjectID), uint32(objective.Amount + 1));
+#endif
+    AbandonSupply(pupil, questId);
+#ifdef SINGING_POOLS_FARM_BASELINE
+    Require(pupil.GetItemCount(first.Item) != 0, "The old abandoned farm quest no longer retains its stock");
+    std::cout << "EXPECTED_BROKEN quest " << questId << " allowed empty shared loot and retained abandoned stock" << std::endl;
+#else
+    for (QuestObjective const& objective : quest->GetObjectives())
+        Require(!pupil.GetItemCount(objective.ObjectID), "The abandoned farm quest retained a gathered item");
+    MoveGilneasPlayer(pupil, giver.GetPosition());
+    AcceptQuest(pupil, giver, questId);
+    for (Stock const& source : stock)
+    {
+        Supply chest(map, source.Place);
+        Require(chest.ActivateToQuest(&pupil) && !chest.ActivateToQuest(&visitor), "A placed farm marker has wrong eligibility");
+    }
+    for (QuestObjective const& objective : quest->GetObjectives())
+    {
+        for (Stock const& source : stock)
+        {
+            if (source.Item != uint32(objective.ObjectID) || pupil.GetItemCount(source.Item) >= uint32(objective.Amount))
+                continue;
+            Supply chest(map, source.Place);
+            MoveGilneasPlayer(pupil, source.Place.position);
+            collect(chest, source.Item);
+        }
+        Require(pupil.GetItemCount(objective.ObjectID) == uint32(objective.Amount), "Original farm deposits did not reach the exact target amount");
+    }
+    MoveGilneasPlayer(pupil, giver.GetPosition());
+    uint32 const choice = quest->PackageID ? PoolRewardChoice(pupil, questId) : 0;
+    RewardQuest(pupil, giver, questId, choice);
+    Require(pupil.IsQuestRewarded(questId) && (!choice || pupil.GetItemCount(choice) == 1), "The real farm giver did not reward the collected stock");
+    for (QuestObjective const& objective : quest->GetObjectives())
+        Require(!pupil.GetItemCount(objective.ObjectID), "Farm reward did not consume its required items");
+    std::cout << "PASS " << placementCount << " original farm placements, retry and reward for quest " << questId << std::endl;
+#endif
+}
+
+void CheckDaiLoFarm(Map& map, LootPlayer& pupil)
+{
+    Teacher ji(map, JiSpawn, 55477);
+    Teacher delora(map, DeloraSpawn, 55479);
+    Teacher min(map, MinSpawn, 55478);
+    LootPlayer visitor(SupplySession(), map, 2977002, delora.GetPosition());
+    PreparePoolHunter(visitor);
+    PoolPet pet(pupil, map);
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    AcceptQuest(pupil, ji, Rascals);
+    Require(pupil.GetQuestStatus(Rascals) == QUEST_STATUS_INCOMPLETE, "Ji did not open the actual Rascals quest");
+    for (size_t index = 0; index < std::size(VirmenSpawns); ++index)
+    {
+        Teacher virmen(map, VirmenSpawns[index], Virmen);
+        MoveGilneasPlayer(pupil, virmen.GetPosition());
+        Unit& killer = index % 2 ? static_cast<Unit&>(pet) : static_cast<Unit&>(pupil);
+        if (&killer == &pet)
+        {
+            map.CreatureRelocation(&pet, virmen.GetPositionX(), virmen.GetPositionY(), virmen.GetPositionZ(), virmen.GetOrientation());
+            map.MoveAllCreaturesInMoveList();
+        }
+        Require(killer.IsValidAttackTarget(&virmen), "An original Virmen was not a native attack target");
+        killer.DealDamage(&virmen, uint32(virmen.GetMaxHealth()) * 2);
+        Tick(pupil, 100);
+        Require(!virmen.IsAlive() && pupil.GetQuestObjectiveData(Rascals, Virmen) == int32(index + 1), "A Virmen defeat lost or duplicated quest credit");
+    }
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    RewardQuest(pupil, ji, Rascals);
+    Require(pupil.IsQuestRewarded(Rascals), "Ji did not accept the ten actual Virmen defeats");
+    std::cout << "PASS ten original Virmen defeats with player and pet credit and Ji's turn-in" << std::endl;
+    CheckFarmSupply(map, pupil, visitor, delora, StillGood, 209639, 209645, 38);
+    CheckFarmSupply(map, pupil, visitor, min, StrongWood, 209646, 209646, 14);
+}
+
 Creature* FindWaterSpout(Teacher& shu)
 {
     std::list<Creature*> spouts;
@@ -1026,6 +1176,9 @@ void CheckNewFriend(Map& map, LootPlayer& pupil)
     Require(pupil.IsQuestRewarded(NewFriend) && pupil.GetItemCount(choice) == 1, "Aysa did not accept the five genuine bursts and issue the selected reward");
     std::cout << "PASS actual Shu follow-up acceptance, water spout reset cleanup, a missed burst, five contacts and the shore Aysa turn-in" << std::endl;
     CheckLivelihoodCart(map, pupil, aysa);
+#ifndef SINGING_POOLS_CART_BASELINE
+    CheckDaiLoFarm(map, pupil);
+#endif
 #endif
 }
 
