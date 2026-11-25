@@ -5,8 +5,12 @@
 #include "GossipDef.h"
 #include "GameObjectPackets.h"
 #include "ItemPackets.h"
+#include "MiscPackets.h"
 #include "SpellPackets.h"
+#include "AreaTriggerData.h"
 #include "CreatureTextMgr.h"
+#include "ScriptedEscortAI.h"
+#include "ScriptSystem.h"
 #include "SmartAI.h"
 #include "SpellMgr.h"
 
@@ -42,6 +46,12 @@ constexpr uint32 Aysa = 29410;
 constexpr uint32 LorvoSpawn = 243772;
 constexpr uint32 MissingDriver = 29419;
 constexpr uint32 ImportantItems = 29424;
+constexpr uint32 DriverApproach = 6958;
+constexpr uint32 DriverSpawn = 243816;
+constexpr uint32 Driver = 54855;
+constexpr uint32 PrivateDriver = 56503;
+constexpr uint32 AysaNext = 29414;
+constexpr uint32 AysaNextSpawn = 243862;
 constexpr uint32 Scamp = 54130;
 constexpr uint32 StolenSupplies = 72071;
 constexpr uint32 SupplyScamps[] = {243766, 243788, 243790, 244114, 244115, 243764};
@@ -64,7 +74,7 @@ void LoadLessonInputs()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingLesson.inc"
     );
-    Require(templates && templates->GetRowCount() == 21, "Missing a lesson, old introduction or academy quest");
+    Require(templates && templates->GetRowCount() == 22, "Missing a lesson, old introduction or academy quest");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -78,8 +88,8 @@ void LoadLessonInputs()
         "SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,RewardMailTemplateID,RewardMailDelay,"
         "RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMinRepValue,RequiredMaxRepFaction,RequiredMaxRepValue,"
         "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29419,29424,29524)");
-    Require(addons && addons->GetRowCount() == 21, "Missing the actual lesson prerequisites and class masks");
+        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29419,29424,29524)");
+    Require(addons && addons->GetRowCount() == 22, "Missing the actual lesson prerequisites and class masks");
     do
     {
         auto row = addons->Fetch();
@@ -95,7 +105,7 @@ void LoadLessonInputs()
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query(
         "SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives "
-        "WHERE QuestID IN (29406,29408,29409,29410,29419,29424,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
+        "WHERE QuestID IN (29406,29408,29409,29410,29414,29419,29424,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
     Require(bool(objectives), "Missing the original equipment or training objectives");
     do
     {
@@ -113,15 +123,17 @@ void LoadLessonInputs()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
         "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685,243731,243732,243772,"
-        "243766,243788,243790,244114,244115,243764)");
+        "243766,243788,243790,244114,244115,243764,243816,243862)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29406,29408,29409,29410,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30038");
+        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30038");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29406,29408,29409,29410,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30045");
+        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30045");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts "
         "WHERE source_type=0 AND entryorguid IN (53566,54586,54587,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
-        "WHERE CreatureID IN (53566,54586,54587,54611,65470,65471)");
+        "WHERE CreatureID IN (53566,54586,54587,54611,56503,65470,65471)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts WHERE entry=6958");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry=56503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell IN (56267,114610) AND area=5834");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN (53566,59591)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE "
@@ -153,6 +165,8 @@ void LoadLessonInputs()
     sSmartScriptMgr->LoadSmartAIFromDB();
     sConditionMgr->LoadConditions();
     sCreatureTextMgr->LoadCreatureTexts();
+    sAreaTriggerDataStore->LoadAreaTriggerScripts();
+    sScriptSystemMgr->LoadScriptWaypoints();
 }
 
 struct LessonCreature : Creature
@@ -745,6 +759,102 @@ void CheckImportantItems(LootPlayer& player)
     std::cout << "PASS six placed scamps, normal corpse-loot packets and Lorvo turn-in for Items of Utmost Importance" << std::endl;
 }
 
+void CrossDriverApproach(LootPlayer& player, bool entering = true)
+{
+    WorldPackets::Misc::AreaTrigger request{WorldPacket(CMSG_AREA_TRIGGER)};
+    request.AreaTriggerID = DriverApproach;
+    request.Entered = entering;
+    request.FromClient = true;
+    player.GetSession()->HandleAreaTrigger(request);
+    Tick(player, 100);
+}
+
+TempSummon* FindPrivateDriver(LootPlayer& player)
+{
+    for (ObjectGuid const& guid : *player.GetSummonList(PrivateDriver))
+        if (Creature* driver = player.GetMap()->GetCreature(guid))
+            if (driver->HasQuestObjectScope() && !driver->IsQuestObjectExpired())
+                return driver->ToTempSummon();
+    return nullptr;
+}
+
+void CheckMissingDriver(LootPlayer& player)
+{
+    Map& map = *player.GetMap();
+    AreaTriggerEntry const* trigger = sAreaTriggerStore.LookupEntry(DriverApproach);
+    Require(trigger && trigger->ContinentID == 860 && sScriptSystemMgr->GetPointMoveList(PrivateDriver).size() == 6,
+        "The original approach trigger or local Min route was not available");
+    Position const approach(trigger->Pos.X, trigger->Pos.Y, trigger->Pos.Z);
+    SupplyMove(player, approach);
+    CrossDriverApproach(player);
+    Require(!FindPrivateDriver(player) && !player.GetQuestObjectiveData(MissingDriver, Driver),
+        "Entering the area while the original Min was missing granted progress");
+
+    LessonCreature captured(map, DriverSpawn, Driver);
+    LootPlayer visitor(SupplySession(), map, 41200, approach);
+    SetStudent(visitor, RACE_PANDAREN_NEUTRAL, CLASS_HUNTER);
+    CrossDriverApproach(visitor);
+    Require(visitor.GetSummonList(PrivateDriver)->empty(), "A player without the quest summoned Min");
+
+    SupplyMove(player, approach.GetPositionWithOffset({35.0f, 0.0f, 0.0f, 0.0f}));
+    CrossDriverApproach(player);
+    SupplyMove(player, approach);
+    CrossDriverApproach(player, false);
+    Require(!FindPrivateDriver(player) && !player.GetQuestObjectiveData(MissingDriver, Driver),
+        "An out-of-range packet or leaving the trigger counted as finding Min");
+    CrossDriverApproach(player);
+    auto driver = FindPrivateDriver(player);
+    Require(driver && driver->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 106205 &&
+        driver->GetSummonerGUID() == player.GetGUID() && driver->IsInPersonnalVisibilityList(player.GetGUID()) &&
+        !driver->IsInPersonnalVisibilityList(visitor.GetGUID()) && captured.IsAlive() &&
+        captured.ShouldHideFor(player.GetGUID()) && !captured.ShouldHideFor(visitor.GetGUID()) &&
+        player.GetQuestObjectiveData(MissingDriver, Driver) == 1 && player.GetQuestStatus(MissingDriver) == QUEST_STATUS_COMPLETE,
+        "The original Min's native force-cast did not publish his private outro and complete the objective");
+    CrossDriverApproach(player);
+    Require(FindPrivateDriver(player) == driver && player.GetSummonList(PrivateDriver)->size() == 1 &&
+        player.GetQuestObjectiveData(MissingDriver, Driver) == 1, "Repeating the approach created duplicate Min actors or progress");
+
+    ObjectGuid const abandoned = driver->GetGUID();
+    AbandonSupply(player, MissingDriver);
+    map.RemoveAllObjectsInRemoveList();
+    captured.AI()->UpdateAI(1000);
+    Require(!map.GetCreature(abandoned) && !captured.ShouldHideFor(player.GetGUID()),
+        "Abandoning the quest did not clean up the private Min and restore the original");
+    LessonCreature lorvo(map, LorvoSpawn, 54943);
+    SupplyMove(player, lorvo.GetPosition());
+    Accept(player, lorvo, MissingDriver);
+    SupplyMove(player, approach);
+    CrossDriverApproach(player);
+    driver = FindPrivateDriver(player);
+    Require(driver && driver->GetGUID() != abandoned && player.GetQuestObjectiveData(MissingDriver, Driver) == 1,
+        "The next accepted attempt could not find Min again");
+    ObjectGuid const retry = driver->GetGUID();
+    for (uint32 elapsed = 0; elapsed < 8000 && map.GetCreature(retry); elapsed += 100)
+    {
+        driver->Update(100);
+        map.RemoveAllObjectsInRemoveList();
+    }
+    driver = map.GetCreature(retry) ? map.GetCreature(retry)->ToTempSummon() : nullptr;
+    auto escort = driver ? dynamic_cast<npc_escortAI*>(driver->AI()) : nullptr;
+    Require(escort && escort->HasEscortState(STATE_ESCORT_ESCORTING) && driver->GetDistance2d(&captured) > 1.0f,
+        "Min did not start walking the local route after his native appearance");
+
+    SupplyMove(player, lorvo.GetPosition());
+    Reward(player, lorvo, MissingDriver);
+    map.RemoveAllObjectsInRemoveList();
+    captured.AI()->UpdateAI(1000);
+    Require(player.IsQuestRewarded(MissingDriver) && !map.GetCreature(retry) && captured.IsAlive() &&
+        !captured.ShouldHideFor(player.GetGUID()) &&
+        player.IsQuestRewarded(ImportantItems), "Lorvo did not clean up the private driver and preserve the supplies turn-in");
+    LessonCreature aysa(map, AysaNextSpawn, 54567);
+    SupplyMove(player, aysa.GetPosition());
+    player.PrepareQuestMenu(aysa.GetGUID());
+    Require(player.PlayerTalkClass->GetQuestMenu().HasItem(AysaNext), "The next quest was missing from the placed Aysa's menu");
+    Accept(player, aysa, AysaNext);
+    Require(player.GetQuestStatus(AysaNext) == QUEST_STATUS_INCOMPLETE, "Aysa would not accept the next quest in the chain");
+    std::cout << "PASS native Min approach, scoped retry/cleanup, escort start, Lorvo turn-in and Aysa's next offer" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
@@ -786,6 +896,7 @@ void CheckFirstLesson()
             CheckBurningScroll(student);
             CheckDiscipleChallenge(student);
             CheckImportantItems(student);
+            CheckMissingDriver(student);
         }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
@@ -833,7 +944,7 @@ int main(int argc, char** argv)
             LoadLessonInputs();
             for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u,
                 243608u, 243645u, TempleGiverSpawn, JaominSpawn, DiscipleGiverSpawn, LorvoSpawn,
-                243766u, 243788u, 243790u, 244114u, 244115u, 243764u})
+                243766u, 243788u, 243790u, 244114u, 244115u, 243764u, DriverSpawn, AysaNextSpawn})
                 if (auto data = sObjectMgr->GetCreatureData(spawn))
                     sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();

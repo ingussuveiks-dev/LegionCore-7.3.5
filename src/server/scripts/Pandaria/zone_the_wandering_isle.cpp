@@ -22,7 +22,7 @@ enum panda_npc
     NPC_ANNOUNCER_6                                = 55694,
     NPC_ANNOUNCER_7                                = 55672,
     NPC_ANNOUNCER_8                                = 60889,
-    NPC_AMBERLEAF_SCAMP                            = 54130, //Amberleaf Scamp
+    NPC_MIN_DIMWIND                                = 54855, //Min Dimwind
     NPC_MIN_DIMWIND_OUTRO                          = 56503, //Min Dimwind
     NPC_MASTER_LI_FAI                              = 54856, 
     NPC_EAST_CHILDREN_CAI                          = 60250,
@@ -548,197 +548,180 @@ public:
                 uiDamage = 0;
         }
 
-        void JustDied(Unit* killer)
-        {
-            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
-            if (!player || !me->ToTempSummon())
-                return;
-
-            if (Creature* owner = me->GetMap()->GetCreature(me->ToTempSummon()->GetSummonerGUID()))
-                owner->AI()->SetGUID(player->GetGUID(), 0);
-        }
     };
+};
+
+enum MissingDriverData
+{
+    AREATRIGGER_MIN_DIMWIND = 6958,
+    SPAWN_MIN_DIMWIND = 243816,
+    SPELL_FORCE_SUMMON_MIN_DIMWIND = 106206,
+    SPELL_SUMMON_MIN_DIMWIND = 106205,
+    DATA_MIN_DIMWIND_OUTRO = 1
 };
 
 class mob_min_dimwind : public CreatureScript
 {
 public:
     mob_min_dimwind() : CreatureScript("mob_min_dimwind") { }
-    
-    CreatureAI* GetAI(Creature* creature) const
+
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new mob_min_dimwindAI(creature);
     }
-    
+
     struct mob_min_dimwindAI : public ScriptedAI
     {
-        EventMap events;
-        GuidSet guidMob;
-        ObjectGuid plrGUID;
-        GuidSet m_player_for_event;
-        bool mt;
+        mob_min_dimwindAI(Creature* creature) : ScriptedAI(creature) { }
 
-        mob_min_dimwindAI(Creature* creature) : ScriptedAI(creature)
-        {
-            mt = false;
-        }
-
-        void Reset()
-        {
-            me->setActive(true);
-            me->HandleEmoteCommand(EMOTE_STATE_READY2H);
-        }
-
-        void MoveInLineOfSight(Unit* who)
-        {
-            if (who->GetTypeId() != TYPEID_PLAYER || who->ToPlayer()->GetQuestStatus(QUEST_MISSING_DRIVER) != QUEST_STATUS_INCOMPLETE)
-                return;
-            
-            GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());
-            if (itr != m_player_for_event.end())
-                return;
-
-            m_player_for_event.insert(who->GetGUID());
-            if (!mt)
-            {
-                mt = true;
-                InitMobs(who);
-            }
-        }
-
-        void DamageTaken(Unit* pDoneBy, uint32 &uiDamage, DamageEffectType dmgType)
-        {
-            if(me->GetHealthPct() < 25 && pDoneBy && pDoneBy->ToCreature() && pDoneBy->ToCreature()->GetEntry() == NPC_AMBERLEAF_SCAMP)
-                uiDamage = 0;
-        }
-        
-        void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0)
-        {
-            plrGUID = guid;
-        }
-
-        void SummonedCreatureDespawn(Creature* summon)
-        {
-            guidMob.erase(summon->GetGUID());
-            if (guidMob.empty())
-            {
-                mt = false;
-                me->HandleEmoteCommand(EMOTE_STATE_STAND);
-                if (Player* target = sObjectAccessor->FindPlayer(plrGUID))
-                {
-                    target->KilledMonsterCredit(54855, ObjectGuid::Empty);
-                    // by spell 106205
-                    if(TempSummon* mind = target->SummonCreature(NPC_MIN_DIMWIND_OUTRO, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1000))
-                    {
-                        mind->AI()->SetGUID(plrGUID, 0);
-                        mind->setFaction(35);
-                    }
-                }
-                me->DespawnOrUnsummon(1000);
-            }
-        }
-        
-        void InitMobs(Unit* who)
+        void Reset() override
         {
             me->HandleEmoteCommand(EMOTE_STATE_READY2H);
-            for(GuidSet::iterator itr = guidMob.begin(); itr != guidMob.end(); ++itr)
-                if (Creature* c = me->GetMap()->GetCreature(*itr))
-                    c->DespawnOrUnsummon(1000);
-            guidMob.clear();
+        }
 
-            for(int i = 0; i < 4; i++)
+        void SetGUID(ObjectGuid const& guid, int32 id) override
+        {
+            if (id != DATA_MIN_DIMWIND_OUTRO)
+                return;
+
+            Creature* outro = me->GetMap()->GetCreature(guid);
+            TempSummon* summon = outro ? outro->ToTempSummon() : nullptr;
+            if (!summon || summon->GetEntry() != NPC_MIN_DIMWIND_OUTRO || !summon->HasQuestObjectScope())
+                return;
+
+            if (Player* owner = ObjectAccessor::GetPlayer(*me, summon->GetSummonerGUID()))
             {
-                if(TempSummon* temp = me->SummonCreature(NPC_AMBERLEAF_SCAMP, me->GetPositionX()-3+rand()%6, me->GetPositionY() + 4 + rand()%4, me->GetPositionZ()+2, 3.3f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1000))
-                {
-                    guidMob.insert(temp->GetGUID());
-                    
-                    if (i == 0)
-                        sCreatureTextMgr->SendChat(temp->ToCreature(), TEXT_GENERIC_0, who->GetGUID());
-
-                    temp->SetFacingToObject(me);
-                    temp->HandleEmoteCommand(EMOTE_STATE_READY2H);
-                    temp->Attack(me, true);
-                    //temp->getThreatManager().addThreat(me, 250.0f);
-                }
+                if (_outros.insert_or_assign(owner->GetGUID(), guid).second)
+                    me->AddToHideList(owner->GetGUID());
+                owner->UpdateVisibilityOf(me);
             }
         }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (_outros.empty())
+                return;
+            if (_recheck > diff)
+            {
+                _recheck -= diff;
+                return;
+            }
+
+            _recheck = 1000;
+            for (auto it = _outros.begin(); it != _outros.end();)
+            {
+                Creature* outro = me->GetMap()->GetCreature(it->second);
+                if (outro && outro->IsAlive() && !outro->IsQuestObjectExpired())
+                {
+                    ++it;
+                    continue;
+                }
+
+                me->RemoveFromHideList(it->first);
+                if (Player* owner = ObjectAccessor::GetPlayer(*me, it->first))
+                    owner->UpdateVisibilityOf(me);
+                it = _outros.erase(it);
+            }
+        }
+
+        std::unordered_map<ObjectGuid, ObjectGuid> _outros;
+        uint32 _recheck = 1000;
     };
+};
+
+class at_min_dimwind_captured : public AreaTriggerScript
+{
+public:
+    at_min_dimwind_captured() : AreaTriggerScript("at_min_dimwind_captured") { }
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool entered) override
+    {
+        if (!entered || trigger->ID != AREATRIGGER_MIN_DIMWIND ||
+            !player->IsAlive() || !player->IsInAreaTriggerRadius(trigger) ||
+            player->GetQuestStatus(QUEST_MISSING_DRIVER) != QUEST_STATUS_INCOMPLETE)
+            return false;
+
+        Creature* min = player->FindNearestCreature(NPC_MIN_DIMWIND, 20.0f);
+        if (min && min->GetDBTableGUIDLow() == SPAWN_MIN_DIMWIND && player->IsWithinLOSInMap(min))
+            min->CastSpell(player, SPELL_FORCE_SUMMON_MIN_DIMWIND, true);
+
+        return false;
+    }
 };
 
 class npc_min_dimwind_outro : public CreatureScript
 {
 public:
-    npc_min_dimwind_outro() : CreatureScript("npc_min_dimwind_outro") {}
+    npc_min_dimwind_outro() : CreatureScript("npc_min_dimwind_outro") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
-        return new npc_min_dimwind_outroAI (creature);
+        return new npc_min_dimwind_outroAI(creature);
     }
 
     struct npc_min_dimwind_outroAI : public npc_escortAI
     {
-        npc_min_dimwind_outroAI(Creature* creature) : npc_escortAI(creature) {}
+        npc_min_dimwind_outroAI(Creature* creature) : npc_escortAI(creature) { }
 
-        EventMap events;
-        ObjectGuid playerGUID;
-
-        enum eEvents
+        enum Events
         {
-            EVENT_1    = 1,
-            EVENT_2    = 2,
+            EVENT_FOUND_MIN = 1,
+            EVENT_START_ESCORT
         };
 
-        void Reset()
+        void IsSummonedBy(Unit* summoner) override
         {
-            playerGUID.Clear();
-        }
-
-        void SetGUID(ObjectGuid const& guid, int32 id)
-        {
-            playerGUID = guid;
-            events.RescheduleEvent(EVENT_1, 1000);
-        }
-
-        void WaypointReached(uint32 pointId)
-        {            
-            switch(pointId)
+            Player* player = summoner->ToPlayer();
+            Creature* min = me->GetMap()->GetCreature(me->GetTargetGUID());
+            if (!player || !player->IsAlive() || !player->IsInAreaTriggerRadius(AREATRIGGER_MIN_DIMWIND) ||
+                player->GetQuestStatus(QUEST_MISSING_DRIVER) != QUEST_STATUS_INCOMPLETE ||
+                me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != SPELL_SUMMON_MIN_DIMWIND ||
+                !me->IsInPersonnalVisibilityList(player->GetGUID()) || !min || !min->IsAlive() ||
+                min->GetEntry() != NPC_MIN_DIMWIND || min->GetDBTableGUIDLow() != SPAWN_MIN_DIMWIND ||
+                !min->InSamePhase(player) || !min->IsWithinDistInMap(player, 20.0f) || !player->IsWithinLOSInMap(min))
             {
-                case 3:
-                case 4:
-                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, playerGUID);
+                me->DespawnOrUnsummon(1);
+                return;
+            }
+
+            player->BindQuestObject(QUEST_MISSING_DRIVER, me);
+            me->SetReactState(REACT_PASSIVE);
+            _player = player->GetGUID();
+            _events.ScheduleEvent(EVENT_FOUND_MIN, 1000);
+            min->AI()->SetGUID(me->GetGUID(), DATA_MIN_DIMWIND_OUTRO);
+            player->KilledMonsterCredit(NPC_MIN_DIMWIND, min->GetGUID());
+        }
+
+        void WaypointReached(uint32 pointId) override
+        {
+            if (pointId == 3)
+                sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, _player);
+            else if (pointId == 6)
+                sCreatureTextMgr->SendChat(me, TEXT_GENERIC_3, _player);
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            npc_escortAI::UpdateAI(diff);
+            _events.Update(diff);
+
+            switch (_events.ExecuteEvent())
+            {
+                case EVENT_FOUND_MIN:
+                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, _player);
+                    _events.ScheduleEvent(EVENT_START_ESCORT, 1000);
                     break;
-                case 12:
-                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_3, playerGUID);
-                    me->DespawnOrUnsummon(30000);
+                case EVENT_START_ESCORT:
+                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1, _player);
+                    Start(false, true, _player);
                     break;
                 default:
                     break;
             }
         }
 
-        void UpdateAI(uint32 diff)
-        {
-            npc_escortAI::UpdateAI(diff);
-            events.Update(diff);
-
-            if (uint32 eventId = events.ExecuteEvent())
-            {
-                switch (eventId)
-                {
-                    // emotes only when in vehicle.
-                    case EVENT_1:
-                        sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, playerGUID);
-                        events.RescheduleEvent(EVENT_2, 1000);
-                        break;
-                    case EVENT_2:
-                        sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1, playerGUID);
-                        Start(true, true);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+        EventMap _events;
+        ObjectGuid _player;
     };
 };
 
@@ -5641,6 +5624,7 @@ void AddSC_WanderingIsland()
     new npc_panda_announcer();
     new mob_attacker_dimwind();
     new mob_min_dimwind();
+    new at_min_dimwind_captured();
     new npc_min_dimwind_outro();
     new mob_aysa_lake_escort();
     new mob_aysa();
