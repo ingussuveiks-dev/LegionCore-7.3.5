@@ -1,0 +1,7 @@
+# Scarwing Harrier range in Darkfall Ridge
+
+The user's screenshot showed a Scarwing Harrier next to Maiko. The selected actor's GPS showed Z 635.464 and floor Z 587.975. The matching cell contains the Scarwing Harrier spawn 12843745 near those coordinates with home Z 633.464. The local TrinityCore 7.x archive identifies entry 119604 as Scarwing Harrier with display 65204 and kill credit 119606. The local world database has the same display and kill credit, with seven spawns of entry 119604 on map 1669 in Darkfall Ridge and no spawn-specific addons. Quest 46297 requires credit 119606 for twelve demons.
+
+All seven spawns inherit aura 159474 from the template addon. This feign-death aura publishes the dead pose and applies died state and passive reaction, preventing normal movement and pursuit. The spell range calculation measures three-dimensional distance to the server-side actor, including its altitude. The screenshot and data support a mismatch between the client pose and the living flyer's server position.
+
+The migration removes the exact aura token from the one template. It retains flight, spawn positions, phasing, other addon fields and normal kill-credit handling. A read-only MariaDB query matched one addon and showed that its aura list would become empty. No automated or startup tests ran during live gameplay. After the world updater loads the migration, check the model altitude and a normal player or pet pull in the client.
