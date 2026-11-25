@@ -463,9 +463,8 @@ void PlayerMenu::SendQuestGiverQuestList(uint32 BroadcastTextID, ObjectGuid npcG
         return;
 
     auto boxBroadcastText = sBroadcastTextStore.LookupEntry(BroadcastTextID);
-    if (boxBroadcastText)
-        if (!sConditionMgr->IsPlayerMeetingCondition(player, boxBroadcastText->ConditionID))
-            return;
+    if (boxBroadcastText && !sConditionMgr->IsPlayerMeetingCondition(player, boxBroadcastText->ConditionID))
+        boxBroadcastText = nullptr;
 
     std::string Title;
     if (boxBroadcastText)

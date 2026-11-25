@@ -18497,8 +18497,10 @@ void Player::SendPreparedGossip(WorldObject* source)
 
     if (source->GetTypeId() == TYPEID_UNIT || source->GetTypeId() == TYPEID_GAMEOBJECT)
     {
-        // only use quest menu with one quest, otherwise use gossip menu
-        if (PlayerTalkClass->GetGossipMenu().Empty() && PlayerTalkClass->GetQuestMenu().GetMenuItemCount() == 1)
+        QuestMenu const& quests = PlayerTalkClass->GetQuestMenu();
+        // NPCs with only quests use the quest dialog, including its multi-quest list.
+        if (PlayerTalkClass->GetGossipMenu().Empty() && !quests.Empty() &&
+            (source->GetTypeId() == TYPEID_UNIT || quests.GetMenuItemCount() == 1))
         {
             SendPreparedQuest(source);
             return;
