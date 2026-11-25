@@ -1727,6 +1727,27 @@ struct go_wandering_isle_training_bell : GameObjectAI
     }
 };
 
+struct go_wandering_isle_break_gong : GameObjectAI
+{
+    explicit go_wandering_isle_break_gong(GameObject* object) : GameObjectAI(object) { }
+
+    bool GossipHello(Player* player, bool isUse) override
+    {
+        if (!isUse && player->CanContact() && !player->IsSpectator())
+            go->Use(player);
+        return true;
+    }
+
+    bool GossipUse(Player* player) override
+    {
+        return !player->IsAlive() || !player->CanContact() || player->IsSpectator() ||
+            player->GetQuestStatus(29772) != QUEST_STATUS_INCOMPLETE ||
+            go->GetMapId() != 860 || go->GetDBTableGUIDLow() != 102443 ||
+            !go->InSamePhase(player) || !go->IsWithinDistInMap(player, go->GetInteractionDistance()) ||
+            !player->IsWithinLOSInMap(go);
+    }
+};
+
 namespace
 {
 constexpr uint32 FrogPoolCurse = 102938;
@@ -5975,6 +5996,7 @@ void AddSC_WanderingIsland()
     RegisterCreatureAI(npc_wandering_isle_scroll_master);
     RegisterGameObjectAI(go_wandering_isle_edict);
     RegisterGameObjectAI(go_wandering_isle_training_bell);
+    RegisterGameObjectAI(go_wandering_isle_break_gong);
     RegisterSpellScript(spell_wandering_isle_burn_scroll);
     new boss_jaomin_ro();
     new npc_panda_announcer();

@@ -55,6 +55,12 @@ constexpr uint32 StillGood = 29770;
 constexpr uint32 StrongWood = 29771;
 constexpr uint32 MinSpawn = 244611;
 constexpr uint32 DeloraSpawn = 244620;
+constexpr uint32 RaucousRousing = 29772;
+constexpr uint32 NotInTheFace = 29774;
+constexpr uint32 GongCredit = 55546;
+constexpr uint32 GongEntry = 209626;
+constexpr uint32 GongSpawn = 102443;
+constexpr uint32 GongSpell = 104012;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -75,7 +81,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 15, "Missing the Singing Pools and farm quests");
+    Require(rows && rows->GetRowCount() == 17, "Missing the Singing Pools and farm quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -89,8 +95,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 15, "Missing the original Pools and farm prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 17, "Missing the original Pools and farm prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -151,8 +157,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 6, "Missing the six original farm objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 9, "Missing the nine original farm objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -162,17 +168,19 @@ void LoadPools()
     quests[MissingMallet]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[StillGood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[StrongWood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
+    quests[RaucousRousing]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    quests[NotInTheFace]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
         "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244617,244620,244624,244633,244654,244755,245583)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
-        "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
+        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry=104012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
         "WHERE spell_id IN (103069,103070,103077,103116,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
@@ -182,7 +190,7 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint "
         "WHERE entry IN (57207,57742,59499)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
-        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,108590,115904,116695,116696,117054,117057)");
+        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,104012,108590,115904,116695,116696,117054,117057)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -243,23 +251,23 @@ struct ReflectionRock : GameObject
     }
 };
 
-struct Bell : GameObject
+struct PlacedQuestObject : GameObject
 {
-    explicit Bell(Map& map)
+    explicit PlacedQuestObject(Map& map, uint32 spawn = BellSpawn, uint32 entry = BellEntry)
     {
-        auto row = WorldDatabase.Query("SELECT position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3,phaseMask "
-            "FROM gameobject WHERE guid=102318 AND id=209608 AND map=860");
-        Require(bool(row), "Missing the placed Training Bell");
+        auto row = WorldDatabase.PQuery("SELECT position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3,phaseMask "
+            "FROM gameobject WHERE guid=%u AND id=%u AND map=860", spawn, entry);
+        Require(bool(row), "Missing the placed quest object");
         auto data = row->Fetch();
         Position point(data[0].GetFloat(), data[1].GetFloat(), data[2].GetFloat(), data[3].GetFloat());
         G3D::Quat rotation{data[4].GetFloat(), data[5].GetFloat(), data[6].GetFloat(), data[7].GetFloat()};
-        m_DBTableGuid = BellSpawn;
+        m_DBTableGuid = spawn;
         map.LoadGrid(point.GetPositionX(), point.GetPositionY());
-        Require(Create(BellSpawn, BellEntry, &map, data[8].GetUInt32(), point, rotation, 255, GO_STATE_READY) &&
-            map.AddToMap(static_cast<GameObject*>(this)) && GetGOInfo()->spellCaster.spell == BellSpell, "Could not load the native Bell");
+        Require(Create(spawn, entry, &map, data[8].GetUInt32(), point, rotation, 255, GO_STATE_READY) &&
+            map.AddToMap(static_cast<GameObject*>(this)), "Could not load the native quest object");
     }
 
-    ~Bell()
+    ~PlacedQuestObject()
     {
         if (IsInWorld())
             GetMap()->RemoveFromMap(static_cast<GameObject*>(this), false);
@@ -325,7 +333,7 @@ void PreparePoolHunter(LootPlayer& player)
         player.SetFloatValue(field, 1.0f);
 }
 
-void Ring(LootPlayer& player, Bell& bell, bool report)
+void Ring(LootPlayer& player, GameObject& bell, bool report)
 {
     if (report)
     {
@@ -576,7 +584,8 @@ void CheckBell()
     Map map(860, 663, 0, DIFFICULTY_NONE);
     Teacher aysa(map);
     Teacher shang(map, ShangTempleSpawn, 54786);
-    Bell bell(map);
+    PlacedQuestObject bell(map);
+    Require(bell.GetGoType() == GAMEOBJECT_TYPE_SPELLCASTER && bell.GetGOInfo()->spellCaster.spell == BellSpell, "The original Bell spell changed");
     LootPlayer pupil(SupplySession(), map, 2966101, shang.GetPosition());
     PreparePoolHunter(pupil);
     pupil.SetRewardedQuest(29423);
@@ -1064,6 +1073,53 @@ void CheckFarmSupply(Map& map, LootPlayer& pupil, LootPlayer& visitor, Teacher& 
     std::cout << "PASS " << placementCount << " original farm placements, retry and reward for quest " << questId << std::endl;
 }
 
+void CheckGong(Map& map, LootPlayer& pupil, Teacher& ji)
+{
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    if (pupil.GetQuestStatus(RaucousRousing) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, ji, RaucousRousing);
+    Require(pupil.GetQuestStatus(RaucousRousing) == QUEST_STATUS_INCOMPLETE, "Returning the mallet did not open Ji's gong quest");
+
+    {
+        PlacedQuestObject gong(map, GongSpawn, GongEntry);
+        Require(gong.GetGoType() == GAMEOBJECT_TYPE_GOOBER && gong.GetGOInfo()->goober.spell == GongSpell &&
+            gong.GetGOInfo()->goober.questID == RaucousRousing, "The original gong data changed");
+        Position const distant{gong.GetPositionX() + 25.0f, gong.GetPositionY(), gong.GetPositionZ()};
+        MoveGilneasPlayer(pupil, distant);
+        Ring(pupil, gong, true);
+        Require(!pupil.GetQuestObjectiveData(RaucousRousing, GongCredit), "The report-use packet rang the gong from a distance");
+        MoveGilneasPlayer(pupil, gong.GetPosition());
+        Ring(pupil, gong, true);
+#ifdef SINGING_POOLS_GONG_BASELINE
+        Require(!pupil.GetQuestObjectiveData(RaucousRousing, GongCredit), "The original gong report-use path already awarded credit");
+        Ring(pupil, gong, false);
+        Require(gong.getLootState() == GO_ACTIVATED && !pupil.GetQuestObjectiveData(RaucousRousing, GongCredit),
+            "The original gong did not reproduce activation without the native credit");
+        std::cout << "EXPECTED_BROKEN ordinary use animated the Gong without credit, and report-use did not ring it" << std::endl;
+#else
+        Require(pupil.GetQuestObjectiveData(RaucousRousing, GongCredit) == 1, "Report-use did not ring the original Break Gong");
+        Ring(pupil, gong, false);
+        Require(pupil.GetQuestObjectiveData(RaucousRousing, GongCredit) == 1, "Paired use changed the gong credit");
+#endif
+    }
+#ifndef SINGING_POOLS_GONG_BASELINE
+    AbandonSupply(pupil, RaucousRousing);
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    AcceptQuest(pupil, ji, RaucousRousing);
+    PlacedQuestObject gong(map, GongSpawn, GongEntry);
+    MoveGilneasPlayer(pupil, gong.GetPosition());
+    Ring(pupil, gong, false);
+    Require(pupil.GetQuestObjectiveData(RaucousRousing, GongCredit) == 1, "Ordinary use did not ring the gong on retry");
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    RewardQuest(pupil, ji, RaucousRousing);
+    Require(pupil.IsQuestRewarded(RaucousRousing), "Ji did not accept the actual gong action");
+    if (pupil.GetQuestStatus(NotInTheFace) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, ji, NotInTheFace);
+    Require(pupil.GetQuestStatus(NotInTheFace) == QUEST_STATUS_INCOMPLETE, "Ji did not admit the next quest after the gong");
+    std::cout << "PASS both Break Gong packets, retry, native Ji reward and the next quest" << std::endl;
+#endif
+}
+
 void CheckDaiLoFarm(Map& map, LootPlayer& pupil)
 {
     Teacher ji(map, JiSpawn, 55477);
@@ -1104,6 +1160,7 @@ void CheckDaiLoFarm(Map& map, LootPlayer& pupil)
     CheckFarmSupply(map, pupil, visitor, ji, MissingMallet, 214406, 214406, 1, true);
 #else
     CheckFarmSupply(map, pupil, visitor, ji, MissingMallet, 214406, 214406, 1, false);
+    CheckGong(map, pupil, ji);
 #endif
 #endif
 }

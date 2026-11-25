@@ -948,6 +948,10 @@ void Spell::SelectImplicitNearbyTargets(SpellEffIndex effIndex, SpellImplicitTar
             break;
     }
 
+    // Break Gong Credit has a self range, but its fourth effect still needs the nearby gong.
+    if (range <= 0.0f && m_spellInfo->Id == 104012 && effIndex == EFFECT_3 && m_caster->GetMapId() == 860)
+        range = INTERACTION_DISTANCE;
+
     ConditionList* condList = m_spellInfo->Effects[effIndex]->ImplicitTargetConditions;
 
     // handle emergency case - try to use other provided targets if no conditions provided
