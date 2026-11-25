@@ -59,6 +59,11 @@ constexpr uint32 AysaMeditationBar = 116421;
 constexpr uint32 AysaWave = 59637;
 constexpr uint32 AysaMeditationTurnIn = 243875;
 constexpr uint32 JiOfTheHuojin = 29522;
+constexpr uint32 WayOfTheHuojin = 29417;
+constexpr uint32 KindlingTheFire = 29418;
+constexpr uint32 JiSpawn = 243824;
+constexpr uint32 FeFengAttacker = 54131;
+constexpr uint32 FeFengSpawns[] = {243820, 243827, 243835, 243836, 243837, 243844, 243845};
 constexpr uint32 Scamp = 54130;
 constexpr uint32 StolenSupplies = 72071;
 constexpr uint32 SupplyScamps[] = {243766, 243788, 243790, 244114, 244115, 243764};
@@ -81,7 +86,7 @@ void LoadLessonInputs()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingLesson.inc"
     );
-    Require(templates && templates->GetRowCount() == 23, "Missing a lesson, old introduction or academy quest");
+    Require(templates && templates->GetRowCount() == 25, "Missing a lesson, old introduction or academy quest");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -95,8 +100,8 @@ void LoadLessonInputs()
         "SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,RewardMailTemplateID,RewardMailDelay,"
         "RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMinRepValue,RequiredMaxRepFaction,RequiredMaxRepValue,"
         "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29419,29424,29522,29524)");
-    Require(addons && addons->GetRowCount() == 23, "Missing the actual lesson prerequisites and class masks");
+        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29417,29418,29419,29424,29522,29524)");
+    Require(addons && addons->GetRowCount() == 25, "Missing the actual lesson prerequisites and class masks");
     do
     {
         auto row = addons->Fetch();
@@ -112,7 +117,7 @@ void LoadLessonInputs()
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query(
         "SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives "
-        "WHERE QuestID IN (29406,29408,29409,29410,29414,29419,29424,29522,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
+        "WHERE QuestID IN (29406,29408,29409,29410,29414,29417,29418,29419,29424,29522,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
     Require(bool(objectives), "Missing the original equipment or training objectives");
     do
     {
@@ -130,11 +135,12 @@ void LoadLessonInputs()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
         "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685,243731,243732,243772,"
-        "243766,243788,243790,244114,244115,243764,243816,243862,243869,243875)");
+        "243766,243788,243790,244114,244115,243764,243816,243862,243869,243875,"
+        "243824,243820,243827,243835,243836,243837,243844,243845)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29522,29524,30027) OR quest BETWEEN 30033 AND 30038");
+        "WHERE quest IN (29406,29408,29409,29410,29414,29417,29418,29419,29424,29522,29524,30027) OR quest BETWEEN 30033 AND 30038");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29522,29524,30027) OR quest BETWEEN 30033 AND 30045");
+        "WHERE quest IN (29406,29408,29409,29410,29414,29417,29418,29419,29424,29522,29524,30027) OR quest BETWEEN 30033 AND 30045");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts "
         "WHERE source_type=0 AND entryorguid IN (53566,54586,54587,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
@@ -160,10 +166,11 @@ void LoadLessonInputs()
     Require(loaded && LootTemplates_Gameobject.GetLootFor(40856), "The original weapon rack loot is unavailable");
     auto& creatureLootTable = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const creatureLootName = creatureLootTable;
-    creatureLootTable += " WHERE Entry=54130";
+    creatureLootTable += " WHERE Entry IN (54130,54131)";
     auto const creatureLootLoaded = (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     creatureLootTable = creatureLootName;
-    Require(creatureLootLoaded && LootTemplates_Creature.GetLootFor(Scamp), "The scamps' original quest loot is unavailable");
+    Require(creatureLootLoaded && LootTemplates_Creature.GetLootFor(Scamp) && LootTemplates_Creature.GetLootFor(FeFengAttacker),
+        "The scamps' or attackers' original loot is unavailable");
     sQuestDataStore->LoadGameObjectForQuests();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
@@ -950,6 +957,60 @@ void CheckAysaMeditation(LootPlayer& player)
     std::cout << "PASS native individual bars, late entry, leaving the cave, defeat/retry, Aysa turn-in and Ji offer" << std::endl;
 }
 
+void CheckWayOfTheHuojin(LootPlayer& player)
+{
+    Map& map = *player.GetMap();
+    LessonCreature ji(map, JiSpawn, 54568);
+    SupplyMove(player, ji.GetPosition());
+    Reward(player, ji, JiOfTheHuojin);
+    Require(player.IsQuestRewarded(JiOfTheHuojin), "Ji at Wu-Song Village did not accept the introduction");
+    if (player.GetQuestStatus(WayOfTheHuojin) == QUEST_STATUS_NONE)
+        Accept(player, ji, WayOfTheHuojin);
+    Require(player.GetQuestStatus(WayOfTheHuojin) == QUEST_STATUS_INCOMPLETE &&
+        !player.CanTakeQuest(sQuestDataStore->GetQuestTemplate(KindlingTheFire), false),
+        "Ji did not correctly gate The Way of the Huojin and its successor");
+
+    StudentPet pet(player, map);
+    uint32 kills = 0;
+    auto defeat = [&](LessonCreature& attacker) {
+        SupplyMove(player, attacker.GetPosition());
+        Unit& killer = kills % 2 ? static_cast<Unit&>(pet) : static_cast<Unit&>(player);
+        if (&killer == &pet)
+            map.CreatureRelocation(&pet, attacker.GetPositionX(), attacker.GetPositionY(), attacker.GetPositionZ(), attacker.GetOrientation());
+        if (!killer.IsValidAttackTarget(&attacker))
+            std::cout << "CASE Fe-Feng spawn=" << attacker.GetDBTableGUIDLow() << " kills=" << kills
+                << " alive=" << attacker.IsAlive() << " flags=" << attacker.GetUInt32Value(UNIT_FIELD_FLAGS)
+                << " killer-alive=" << killer.IsAlive() << " same-phase=" << killer.InSamePhase(&attacker)
+                << " distance=" << killer.GetDistance(&attacker) << std::endl;
+        Require(killer.IsValidAttackTarget(&attacker), "An original Fe-Feng attacker was unavailable");
+        killer.DealDamage(&attacker, uint32(attacker.GetMaxHealth()) * 2);
+        Tick(player, 100);
+        Require(!attacker.IsAlive() && player.GetQuestObjectiveData(WayOfTheHuojin, FeFengAttacker) == ++kills &&
+            player.CanRewardQuest(sQuestDataStore->GetQuestTemplate(WayOfTheHuojin), false) == (kills == std::size(FeFengSpawns) + 1),
+            "The Way of the Huojin did not count exactly eight real player and pet kills");
+    };
+    for (auto spawn : FeFengSpawns)
+    {
+        LessonCreature attacker(map, spawn, FeFengAttacker);
+        defeat(attacker);
+        if (spawn == FeFengSpawns[std::size(FeFengSpawns) - 1])
+        {
+            attacker.RemoveCorpse(false);
+            attacker.SetRespawnTime(0);
+            attacker.Update(10000);
+            defeat(attacker);
+        }
+    }
+
+    SupplyMove(player, ji.GetPosition());
+    ClaimPackage(player, ji, WayOfTheHuojin);
+    if (player.GetQuestStatus(KindlingTheFire) == QUEST_STATUS_NONE)
+        Accept(player, ji, KindlingTheFire);
+    Require(player.GetQuestStatus(KindlingTheFire) == QUEST_STATUS_INCOMPLETE,
+        "Ji did not offer Kindling the Fire after the attacker's real defeat and reward");
+    std::cout << "PASS native Ji introduction, player and pet kills on seven placed attackers and one respawn, and Kindling the Fire offer" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
@@ -993,6 +1054,7 @@ void CheckFirstLesson()
             CheckImportantItems(student);
             CheckMissingDriver(student);
             CheckAysaMeditation(student);
+            CheckWayOfTheHuojin(student);
         }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
@@ -1041,7 +1103,7 @@ int main(int argc, char** argv)
             for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u,
                 243608u, 243645u, TempleGiverSpawn, JaominSpawn, DiscipleGiverSpawn, LorvoSpawn,
                 243766u, 243788u, 243790u, 244114u, 244115u, 243764u, DriverSpawn, AysaNextSpawn, AysaMeditationSpawn,
-                AysaMeditationTurnIn})
+                AysaMeditationTurnIn, JiSpawn, 243820u, 243827u, 243835u, 243836u, 243837u, 243844u, 243845u})
                 if (auto data = sObjectMgr->GetCreatureData(spawn))
                     sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();

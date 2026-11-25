@@ -564,7 +564,7 @@ if($LiFeiDuel){
 }
 if($WanderingFirstLesson){
  $probeSource = "$PSScriptRoot/WanderingFirstLessonNative.cpp"
- [IO.File]::WriteAllText("$out/NativeWanderingLesson.inc",$query+' " WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29419,29424,29522,29524)"')
+ [IO.File]::WriteAllText("$out/NativeWanderingLesson.inc",$query+' " WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29417,29418,29419,29424,29522,29524)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($ShangXiEscort){
