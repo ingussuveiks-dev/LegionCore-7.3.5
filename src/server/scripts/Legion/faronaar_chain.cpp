@@ -7,8 +7,11 @@
 #include "DatabaseEnv.h"
 #include "SmartAI.h"
 #include "SpellScript.h"
+#include "Vehicle.h"
+#include <cmath>
 #include <map>
 #include <mutex>
+#include <optional>
 
 namespace Faronaar
 {
@@ -16,6 +19,7 @@ constexpr uint32 Rescue = 37656, Saving = 37450, Revelations = 37449;
 constexpr uint32 Companion = 90474;
 Position const BoundDragon = {-736.529f, 7336.21f, 26.2122f, 5.56755f};
 Position const Traitor = {-521.031f, 7494.2f, 75.0567f, 0.645079f};
+Position const RideEnd = {-105.58f, 6968.57f, 15.01f, 1.28f}; // Route 90982, point 7.
 struct Chain { uint64 spawn; Position beam; };
 Chain const Chains[] = {
     {109169, {-725.292f, 7310.92f, 20.2072f, 2.00997f}},
@@ -45,6 +49,7 @@ struct State
     bool loaded = false, released = false;
     std::map<uint32, std::map<uint64, uint32>> uses;
     ObjectGuid dragon, beams[3];
+    std::optional<Position> rideRecovery;
 };
 std::map<ObjectGuid, State> states;
 std::mutex mutex;
@@ -243,8 +248,26 @@ bool RideEligible(Player* player)
         !Done(player, Revelations, 112175);
 }
 
+std::optional<Position> RideGround(Player* player, Position const& point)
+{
+    float z = player->GetHeight(point.GetPositionX(), point.GetPositionY(), point.GetPositionZ() + 2.0f, true, 8.0f);
+    if (!std::isfinite(z) || std::abs(z - point.GetPositionZ()) > 6.0f)
+        return std::nullopt;
+    return Position{point.GetPositionX(), point.GetPositionY(), z, point.GetOrientation()};
+}
+
 void UpdateRide(Player* player, State& state, uint32 elapsed)
 {
+    if (state.rideRecovery && !player->GetVehicle())
+    {
+        if (player->HasPendingTeleport() || !player->IsAlive())
+            state.rideRecovery.reset();
+        else if (!player->IsFalling())
+            if (auto ground = RideGround(player, player->GetPosition()))
+                if (std::abs(player->GetPositionZ() - ground->GetPositionZ()) < 1.0f)
+                    state.rideRecovery.reset();
+    }
+
     state.rideRetry = state.rideRetry > elapsed ? state.rideRetry - elapsed : 0;
     if (!RideEligible(player))
     {
@@ -270,7 +293,6 @@ void UpdateRide(Player* player, State& state, uint32 elapsed)
         {
             ride->SetCanFly(true);
             ride->SetDisableGravity(true);
-            ride->DespawnOrUnsummon(300000);
         }
     }
     else if (ride->IsAlive() && player->canSeeOrDetect(ride) &&
@@ -289,14 +311,71 @@ struct npc_faronaar_stellagosa_ride : SmartAI
         Player* player = who ? who->ToPlayer() : nullptr;
         if (!player)
             return;
-        if (!Faronaar::RideOwner(player, me) || (apply && !Faronaar::RideEligible(player)))
+        if (!Faronaar::RideOwner(player, me) || seat != 1 || (apply && !Faronaar::RideEligible(player)))
         {
             if (apply)
                 player->ExitVehicle();
             return;
         }
+        if (apply)
+        {
+            std::lock_guard<std::mutex> lock(Faronaar::mutex);
+            Faronaar::states[player->GetGUID()].rideRecovery = Faronaar::RideGround(player, Faronaar::Traitor);
+        }
         SmartAI::PassengerBoarded(who, seat, apply);
     }
+
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (type == POINT_MOTION_TYPE && id == 7 && HasEscortState(SMART_ESCORT_ESCORTING))
+            finishRide = true;
+        SmartAI::MovementInform(type, id);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        // A delayed Creature despawn sets its despawn flag immediately, which
+        // blocks the SmartAI final-waypoint and passenger-removal despawns.
+        if (diff >= lifetime)
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+        lifetime -= diff;
+
+        if (!finishRide)
+            return;
+        finishRide = false;
+
+        Vehicle* vehicle = me->GetVehicleKit();
+        Unit* passenger = vehicle ? vehicle->GetPassenger(1) : nullptr;
+        Player* player = passenger ? passenger->ToPlayer() : nullptr;
+        if (!Faronaar::RideOwner(player, me) || me->GetExactDist(&Faronaar::RideEnd) > 2.0f)
+            return;
+        exitGround = Faronaar::RideGround(player, Faronaar::RideEnd);
+        if (!exitGround)
+        {
+            TC_LOG_WARN("scripts", "Faronaar Stellagosa could not resolve a walkable exit at route 90982 point 7");
+            return;
+        }
+        {
+            std::lock_guard<std::mutex> lock(Faronaar::mutex);
+            Faronaar::states[player->GetGUID()].rideRecovery = exitGround;
+        }
+        player->ExitVehicle();
+    }
+
+    void CalcExitVehiclePos(Position& pos) override
+    {
+        if (exitGround)
+            pos = *exitGround;
+    }
+
+private:
+    uint32 lifetime = 300000;
+    bool finishRide = false;
+    std::optional<Position> exitGround;
 };
 
 class spell_faronaar_stellagosa_ride : public SpellScript
@@ -364,6 +443,26 @@ class player_faronaar_chain : public PlayerScript
 {
 public:
     player_faronaar_chain() : PlayerScript("player_faronaar_chain") {}
+    void OnBeforeLogout(Player* player) override
+    {
+        using namespace Faronaar;
+        if (!player->IsAlive() || player->GetMapId() != 1220 || player->HasPendingTeleport())
+            return;
+        std::lock_guard<std::mutex> lock(mutex);
+        auto it = states.find(player->GetGUID());
+        if (it == states.end() || !it->second.rideRecovery)
+            return;
+        if (Unit* vehicle = player->GetVehicleBase())
+            if (!RideOwner(player, vehicle->ToCreature()))
+                return;
+
+        // Map removal may already have detached the passenger. Persist the
+        // grounded checkpoint before the ordinary logout save.
+        Position const& ground = *it->second.rideRecovery;
+        player->GetTeleportDest().WorldRelocate(1220, ground.GetPositionX(), ground.GetPositionY(),
+            ground.GetPositionZ(), ground.GetOrientation());
+        player->SetSemaphoreTeleportFar(true);
+    }
     void OnLogout(Player* player) override
     {
         using namespace Faronaar;
