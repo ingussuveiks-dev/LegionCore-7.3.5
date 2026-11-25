@@ -4,7 +4,11 @@
 
 #include "GossipDef.h"
 #include "ItemPackets.h"
+#include "CreatureTextMgr.h"
+#include "SmartAI.h"
 #include "SpellMgr.h"
+
+void AddSC_WanderingIsland();
 
 namespace
 {
@@ -13,6 +17,14 @@ constexpr uint32 GiverSpawn = 243564;
 constexpr uint32 RackSpawn = 102286;
 constexpr uint32 RackEntry = 210005;
 constexpr uint32 SandyFist = 29406;
+constexpr uint32 TrainingTarget = 53714;
+constexpr uint32 TargetSpawns[] = {243565, 243566, 243567, 243568, 243569};
+constexpr uint32 StifledPride = 29524;
+constexpr uint32 TraineeCredit = 54586;
+constexpr std::pair<uint32, uint32> Trainees[] = {
+    {243610, 54586}, {243660, 54587}, {243608, 65470}, {243645, 65471}
+};
+constexpr uint32 BurningScroll = 29408;
 constexpr uint32 AcademyQuest = 29409;
 constexpr uint32 AcademyAura = 56267;
 struct Lesson
@@ -34,7 +46,7 @@ void LoadLessonInputs()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingLesson.inc"
     );
-    Require(templates && templates->GetRowCount() == 16, "Missing a lesson, old introduction or academy quest");
+    Require(templates && templates->GetRowCount() == 18, "Missing a lesson, old introduction or academy quest");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -47,8 +59,8 @@ void LoadLessonInputs()
     auto addons = WorldDatabase.Query(
         "SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,RewardMailTemplateID,RewardMailDelay,"
         "RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMinRepValue,RequiredMaxRepFaction,RequiredMaxRepValue,"
-        "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29409)");
-    Require(addons && addons->GetRowCount() == 16, "Missing the actual lesson prerequisites and class masks");
+        "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29524)");
+    Require(addons && addons->GetRowCount() == 18, "Missing the actual lesson prerequisites and class masks");
     do
     {
         auto row = addons->Fetch();
@@ -64,7 +76,7 @@ void LoadLessonInputs()
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query(
         "SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives "
-        "WHERE QuestID IN (29406,29409,30027) OR QuestID BETWEEN 30033 AND 30038");
+        "WHERE QuestID IN (29406,29408,29409,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
     Require(bool(objectives), "Missing the original equipment or training objectives");
     do
     {
@@ -77,9 +89,16 @@ void LoadLessonInputs()
     auto oldAreaStarts = WorldDatabase.Query("SELECT COUNT(*) FROM area_queststart WHERE id=5834");
     Require(oldAreaStarts && !oldAreaStarts->Fetch()[0].GetUInt32(), "Expected the migrated area to have no automatic introduction");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid=243564");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(29406,30027,30033,30034,30035,30036,30037,30038)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(29406,30027,30033,30034,30035,30036,30037,30038,30039,30040,30041,30042,30043,30044,30045)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
+        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
+        "WHERE quest IN (29406,29408,29524,30027) OR quest BETWEEN 30033 AND 30038");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
+        "WHERE quest IN (29406,29408,29524,30027) OR quest BETWEEN 30033 AND 30045");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts "
+        "WHERE source_type=0 AND entryorguid IN (54586,54587,65470,65471)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
+        "WHERE CreatureID IN (54586,54587,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=56267 AND area=5834");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadCreatures();
@@ -97,20 +116,21 @@ void LoadLessonInputs()
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
     sSpellMgr->LoadSpellAreas();
+    sSmartScriptMgr->LoadSmartAIFromDB();
+    sCreatureTextMgr->LoadCreatureTexts();
 }
 
-struct LessonGiver : Creature
+struct LessonCreature : Creature
 {
-    explicit LessonGiver(Map& map) : Creature(false)
+    LessonCreature(Map& map, uint32 spawn, uint32 entry) : Creature(false)
     {
-        auto data = sObjectMgr->GetCreatureData(GiverSpawn);
-        Require(data && data->id == 53566, "Missing Shang Xi's original training-grounds spawn");
-        sObjectMgr->RemoveCreatureFromGrid(GiverSpawn, data);
+        auto data = sObjectMgr->GetCreatureData(spawn);
+        Require(data && data->id == entry && data->mapid == 860, "Missing an original training-grounds spawn");
         map.LoadGrid(data->posX, data->posY);
-        Require(LoadCreatureFromDB(GiverSpawn, &map, true) && IsInWorld(), "Could not publish Shang Xi");
+        Require(LoadCreatureFromDB(spawn, &map, true) && IsInWorld(), "Could not publish an original training-grounds NPC");
     }
 
-    ~LessonGiver()
+    ~LessonCreature()
     {
         if (IsInWorld())
             GetMap()->RemoveFromMap(static_cast<Creature*>(this), false);
@@ -122,6 +142,7 @@ void SetStudent(LootPlayer& player, uint8 race, uint8 playerClass)
     player.SetByteValue(UNIT_FIELD_BYTES_0, 0, race);
     player.SetByteValue(UNIT_FIELD_BYTES_0, 1, playerClass);
     player.setFactionForRace(race);
+    player.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     player.InitDisplayIds();
     player.GetReputationMgr().LoadFromDB({});
     player.SetLevel(1);
@@ -136,11 +157,12 @@ void Accept(LootPlayer& player, Creature& giver, uint32 quest)
     player.GetSession()->HandleQuestGiverAcceptQuest(request);
 }
 
-void Reward(LootPlayer& player, Creature& giver, uint32 quest)
+void Reward(LootPlayer& player, Creature& giver, uint32 quest, uint32 choice = 0)
 {
     WorldPackets::Quest::QuestGiverChooseReward request{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
     request.QuestGiverGUID = giver.GetGUID();
     request.QuestID = quest;
+    request.ItemChoiceID = choice;
     player.GetSession()->HandleQuestGiverChooseReward(request);
 }
 
@@ -234,10 +256,191 @@ void CheckEquipment(LootPlayer& player, Creature& giver, Lesson const& lesson)
     std::cout << "PASS native rack, equipment, turn-in, Sandy Fist and academy aura for quest " << lesson.quest << std::endl;
 }
 
+struct StudentPet : LootPet
+{
+    StudentPet(LootPlayer& owner, Map& map) : LootPet(owner, map)
+    {
+        m_ControlledByPlayer = true;
+        setFaction(owner.getFaction());
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        SetLevel(owner.getLevel());
+    }
+};
+
+void ClaimPackage(LootPlayer& player, Creature& giver, uint32 questId)
+{
+    auto quest = sQuestDataStore->GetQuestTemplate(questId);
+    auto items = sDB2Manager.GetQuestPackageItems(quest->PackageID);
+    Require(items, "The original reward package is unavailable");
+    auto item = std::find_if(items->begin(), items->end(), [&](auto reward) {
+        return player.CanSelectQuestPackageItem(reward);
+    });
+    Require(item != items->end(), "No native reward package item is eligible for the student");
+    auto choice = (*item)->ItemID;
+    auto quantity = (*item)->ItemQuantity;
+    auto before = player.GetItemCount(choice);
+    Reward(player, giver, questId, choice);
+    Require(player.IsQuestRewarded(questId) && player.GetItemCount(choice) == before + quantity,
+        "Shang Xi did not record the original reward and grant the selected item");
+}
+
+void CheckSandyFist(LootPlayer& player, Creature& giver)
+{
+    auto& map = *player.GetMap();
+    StudentPet pet(player, map);
+    auto next = sQuestDataStore->GetQuestTemplate(StifledPride);
+    Require(!player.CanTakeQuest(next, false), "Stifled Pride became available before Sandy Fist");
+    Reward(player, giver, SandyFist);
+    Require(!player.IsQuestRewarded(SandyFist), "Incomplete Sandy Fist could be turned in");
+    uint32 credited = 0;
+    for (auto spawn : TargetSpawns)
+    {
+        LessonCreature target(map, spawn, TrainingTarget);
+        SupplyMove(player, target.GetPosition());
+        map.CreatureRelocation(&pet, target.GetPositionX(), target.GetPositionY(), target.GetPositionZ(), target.GetOrientation());
+        Unit& killer = credited % 2 ? static_cast<Unit&>(pet) : static_cast<Unit&>(player);
+        if (!killer.IsValidAttackTarget(&target))
+            std::cout << "CASE training target " << spawn << " faction=" << target.getFaction()
+                << " attacker faction=" << killer.getFaction() << " visible=" << killer.canSeeOrDetect(&target)
+                << " reaction=" << killer.GetReactionTo(&target) << std::endl;
+        Require(killer.IsValidAttackTarget(&target), "An original training target could not be attacked");
+        killer.DealDamage(&target, uint32(target.GetMaxHealth()) * 2);
+        Tick(player, 100);
+        Require(!target.IsAlive() && player.GetQuestObjectiveData(SandyFist, TrainingTarget) == ++credited,
+            "A real training-target death failed to advance exactly once for the student");
+    }
+    Require(player.GetQuestStatus(SandyFist) == QUEST_STATUS_COMPLETE, "Five training targets did not complete Sandy Fist");
+    SupplyMove(player, giver.GetPosition());
+    ClaimPackage(player, giver, SandyFist);
+    player.PrepareQuestMenu(giver.GetGUID());
+    Require(player.PlayerTalkClass->GetQuestMenu().HasItem(StifledPride), "Shang Xi did not offer Stifled Pride");
+    Accept(player, giver, StifledPride);
+    Require(player.GetQuestStatus(StifledPride) == QUEST_STATUS_INCOMPLETE, "Stifled Pride acceptance failed");
+    std::cout << "PASS five placed training targets, player/pet deaths, Sandy Fist package and Stifled Pride acceptance" << std::endl;
+}
+
+struct StudentParty : Group
+{
+    StudentParty(LootPlayer& student, LootPlayer& nearby, LootPlayer& remote) : members{&student, &nearby, &remote}
+    {
+        this->*Access(GroupGuidTag{}) = ObjectGuid::Create<HighGuid::Party>(StifledPride, 0);
+        for (auto member : members)
+        {
+            MemberSlot slot;
+            slot.Guid = member->GetGUID();
+            slot.Class = member->getClass();
+            const_cast<MemberSlotList&>(GetMemberSlots()).push_back(slot);
+            member->SetGroup(this, 0);
+        }
+    }
+
+    ~StudentParty()
+    {
+        for (auto member : members)
+            member->SetGroup(nullptr);
+    }
+
+    LootPlayer* members[3];
+};
+
+int32 SparringCredit(Player& player)
+{
+    return player.GetQuestObjectiveData(StifledPride, TraineeCredit);
+}
+
+void FinishSpar(LootPlayer& player, Unit& finisher, Creature& trainee)
+{
+    SupplyMove(player, trainee.GetPosition());
+    Require(trainee.IsAIEnabled && player.IsValidAttackTarget(&trainee), "The original trainee is not ready for sparring");
+    trainee.AI()->AttackStart(&player);
+    finisher.DealDamage(&trainee, uint32(trainee.GetMaxHealth()) * 2);
+    trainee.AI()->UpdateAI(100);
+    Tick(player, 100);
+    Require(trainee.IsAlive() && trainee.getFaction() == 35 && !trainee.isInCombat(), "An original trainee did not surrender safely");
+}
+
+void CheckStifledPride(LootPlayer& player, Creature& giver)
+{
+    auto& map = *player.GetMap();
+    LootPlayer nearby(SupplySession(), map, 29521, giver.GetPosition());
+    LootPlayer remote(SupplySession(), map, 29522, giver.GetPosition());
+    LootPlayer outsider(SupplySession(), map, 29523, giver.GetPosition());
+    for (auto other : {&nearby, &remote, &outsider})
+    {
+        SetStudent(*other, RACE_PANDAREN_NEUTRAL, CLASS_MONK);
+        other->SetRewardedQuest(SandyFist);
+        Accept(*other, giver, StifledPride);
+        Require(other->GetQuestStatus(StifledPride) == QUEST_STATUS_INCOMPLETE, "The sparring witnesses could not accept the quest");
+    }
+    StudentParty party(player, nearby, remote);
+    StudentPet pet(player, map);
+    int32 finished = 0;
+    for (auto const& [spawn, entry] : Trainees)
+    {
+        LessonCreature trainee(map, spawn, entry);
+        Position pos = trainee.GetPosition();
+        SupplyMove(player, pos);
+        SupplyMove(nearby, pos);
+        SupplyMove(outsider, pos);
+        Position remotePosition = pos;
+        remotePosition.m_positionX += 200.0f;
+        SupplyMove(remote, remotePosition);
+        Require(nearby.IsAtGroupRewardDistance(&trainee) && !remote.IsAtGroupRewardDistance(&trainee),
+            "Group reward distances did not bracket the trainee");
+        map.CreatureRelocation(&pet, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation());
+        TempSummon* guardian = nullptr;
+        Unit* finisher = &player;
+        if (finished == 1)
+            finisher = &pet;
+        if (finished == 2)
+        {
+            guardian = map.SummonCreature(299, pos, sSummonPropertiesStore.LookupEntry(61), 30000, &player);
+            Require(dynamic_cast<Guardian*>(guardian) && guardian->GetCharmerOrOwnerPlayerOrPlayerItself() == &player,
+                "Could not publish a native guardian owned by the student");
+            finisher = guardian;
+        }
+        player.DealDamage(&trainee, 1);
+        Require(SparringCredit(player) == finished, "Damage above the surrender threshold granted early credit");
+        FinishSpar(player, *finisher, trainee);
+        ++finished;
+        Require(SparringCredit(player) == finished && SparringCredit(nearby) == finished &&
+            !SparringCredit(remote) && !SparringCredit(outsider), "A surrender failed to credit only the eligible group members");
+        finisher->DealDamage(&trainee, uint32(trainee.GetMaxHealth()) * 2);
+        Require(trainee.IsAlive() && SparringCredit(player) == finished && SparringCredit(nearby) == finished,
+            "A repeated hit on a surrendered trainee awarded progress again");
+        if (guardian)
+        {
+            guardian->UnSummon();
+            map.RemoveAllObjectsInRemoveList();
+        }
+    }
+    auto const& [spawn, entry] = Trainees[0];
+    LessonCreature trainee(map, spawn, entry);
+    SupplyMove(nearby, trainee.GetPosition());
+    FinishSpar(player, player, trainee);
+    Require(SparringCredit(player) == 5 && SparringCredit(nearby) == 5 &&
+        player.GetQuestStatus(StifledPride) == QUEST_STATUS_INCOMPLETE, "Five surrenders did not remain one short");
+    trainee.AI()->UpdateAI(14800);
+    Require(trainee.getFaction() == 35, "The authored recovery ended too early");
+    trainee.AI()->UpdateAI(101);
+    Require(trainee.getFaction() == 7, "The trainee did not become available again after the original recovery");
+    AbandonSupply(nearby, StifledPride);
+    FinishSpar(player, player, trainee);
+    Require(SparringCredit(player) == 6 && player.GetQuestStatus(StifledPride) == QUEST_STATUS_COMPLETE &&
+        nearby.GetQuestStatus(StifledPride) == QUEST_STATUS_NONE && !SparringCredit(remote) && !SparringCredit(outsider),
+        "The sixth surrender must complete only the continuing student");
+    SupplyMove(player, giver.GetPosition());
+    ClaimPackage(player, giver, StifledPride);
+    if (player.GetQuestStatus(BurningScroll) == QUEST_STATUS_NONE)
+        Accept(player, giver, BurningScroll);
+    Require(player.GetQuestStatus(BurningScroll) == QUEST_STATUS_INCOMPLETE, "Stifled Pride did not admit Burning Scroll");
+    std::cout << "PASS all four trainee variants, player/pet/guardian finishes, group distance, repeat protection and Burning Scroll acceptance" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
-    LessonGiver giver(map);
+    LessonCreature giver(map, GiverSpawn, 53566);
     uint64 guid = 30000;
     for (Lesson const& route : Lessons)
     {
@@ -268,6 +471,11 @@ void CheckFirstLesson()
             Require(student.GetPrimarySpecialization() == 269 && student.HasSpell(124146) && student.CanDualWield(),
                 "The new monk's native Windwalker specialization did not teach Dual Wield");
         CheckEquipment(student, giver, route);
+        if (route.playerClass == CLASS_HUNTER)
+        {
+            CheckSandyFist(student, giver);
+            CheckStifledPride(student, giver);
+        }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
     SetStudent(visitor, RACE_DRAENEI, CLASS_SHAMAN);
@@ -293,6 +501,9 @@ int main(int argc, char** argv)
     try
     {
         InitializeNative(argc, argv);
+        sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
+        AddSC_WanderingIsland();
+        sScriptMgr->SwapScriptContext(true);
         opcodeTable.Initialize();
         dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{860, {}}});
         MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{860, {}}});
@@ -309,6 +520,9 @@ int main(int argc, char** argv)
             auto schema = CharacterDatabase.Query("SELECT DATABASE()");
             Require(schema && schema->Fetch()[0].GetString() == "fixture_char", "The lesson check requires isolated characters");
             LoadLessonInputs();
+            for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u, 243608u, 243645u})
+                if (auto data = sObjectMgr->GetCreatureData(spawn))
+                    sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();
             HashMapHolder<Player>::SetSize(32);
             HashMapHolder<GameObject>::SetSize(32);

@@ -4,6 +4,7 @@
 #include "MapManager.h"
 #include "QuestObjectScope.h"
 #include "ScriptMgr.h"
+#include "SmartAI.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "SpellScript.h"
@@ -186,83 +187,45 @@ class npc_panda_announcer : public CreatureScript
     };
 };
 
-class mob_tushui_trainee : public CreatureScript
+struct npc_wandering_isle_trainee : SmartAI
 {
-    public:
-        mob_tushui_trainee() : CreatureScript("mob_tushui_trainee") { }
+    explicit npc_wandering_isle_trainee(Creature* creature) : SmartAI(creature) { }
 
-        CreatureAI* GetAI(Creature* creature) const
+    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override
+    {
+        if (me->GetMapId() != 860)
         {
-            return new mob_tushui_trainee_AI(creature);
+            SmartAI::DamageTaken(attacker, damage, type);
+            return;
         }
 
-        struct mob_tushui_trainee_AI : public ScriptedAI
+        // The existing out-of-combat SmartAI event reopens sparring.
+        if (me->getFaction() == 35)
         {
-            mob_tushui_trainee_AI(Creature* creature) : ScriptedAI(creature) {}
+            damage = 0;
+            return;
+        }
 
-            enum data
-            {
-                EVENT_1     = 1,
-                EVENT_2     = 2,
-                SPELL       = 109080,
-            };
+        auto const floor = me->CountPctFromMaxHealth(5);
+        bool const reachedFloor = attacker && damage && uint64(damage) + floor >= me->GetHealth(attacker);
+        SmartAI::DamageTaken(attacker, damage, type);
+        if (!reachedFloor || damage || me->GetHealth() > floor)
+            return;
 
-            EventMap events;
+        // Preserve faction, speech and native group credit. Give the linked
+        // credit action the actual finisher instead of a previous AI invoker.
+        auto player = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+        Unit* invoker = me;
+        if (player && player->IsAlive() && player->IsInWorld() && player->IsAtGroupRewardDistance(me))
+            invoker = player;
+        GetScript()->ProcessEventsFor(SMART_EVENT_DATA_SET, invoker, 29524, 1);
+        if (me->getFaction() != 35)
+            return;
 
-            void Reset()
-            {
-                events.Reset();
-                me->SetReactState(REACT_DEFENSIVE);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-                events.RescheduleEvent(EVENT_2, 5000);
-            }
-
-            void EnterCombat(Unit* unit)
-            {
-                events.RescheduleEvent(EVENT_1, 5000);
-                events.CancelEvent(EVENT_2);
-            }
-
-            void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType)
-            {
-                if (attacker && me->HealthBelowPctDamaged(5, damage))
-                {
-                    if(attacker->GetTypeId() == TYPEID_PLAYER)
-                        attacker->ToPlayer()->KilledMonsterCredit(54586, ObjectGuid::Empty);
-                    //me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
-                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, attacker->GetGUID());
-                    me->CombatStop();
-                    me->SetFullHealth();
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-                    me->DespawnOrUnsummon(4000);
-                    damage = 0;
-                }
-            }
-
-            void UpdateAI(uint32 diff)
-            {
-                UpdateVictim();
-
-                events.Update(diff);
-
-                if (uint32 eventId = events.ExecuteEvent())
-                {
-                    switch(eventId)
-                    {
-                        case EVENT_1:
-                            if (me->getVictim())
-                                me->CastSpell(me->getVictim(), SPELL, true);
-                            events.RescheduleEvent(EVENT_1, 5000);
-                            break;
-                        case EVENT_2:
-                            me->HandleEmoteCommand(EMOTE_ONESHOT_MONKOFFENSE_ATTACKUNARMEDOFF);
-                            events.RescheduleEvent(EVENT_2, 5000);
-                            break;
-                    }
-                }
-                DoMeleeAttackIfReady();
-            }
-        };
+        me->CombatStop(true);
+        me->DeleteThreatList();
+        GetScript()->OnReset();
+    }
 };
 
 // Should be done by summon npc 59591
@@ -5576,7 +5539,7 @@ public:
 };
 void AddSC_WanderingIsland()
 {
-    //new mob_tushui_trainee();
+    RegisterCreatureAI(npc_wandering_isle_trainee);
     //new mob_master_shang_xi();
     new boss_jaomin_ro();
     new npc_panda_announcer();
