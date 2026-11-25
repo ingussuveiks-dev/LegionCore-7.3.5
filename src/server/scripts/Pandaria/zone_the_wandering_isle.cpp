@@ -4,6 +4,7 @@
 #include "Group.h"
 #include "Item.h"
 #include "MapManager.h"
+#include "MoveSpline.h"
 #include "QuestObjectScope.h"
 #include "ScriptMgr.h"
 #include "SmartAI.h"
@@ -1998,6 +1999,32 @@ public:
     };
 };
 
+namespace
+{
+constexpr uint32 ReflectionMap = 860;
+constexpr uint32 ReflectionCrossingSpell = 108590;
+Position const ReflectionShore{1078.42f, 2845.07f, 95.16f};
+
+class spell_wandering_isle_reflection_crossing : public SpellScript
+{
+    PrepareSpellScript(spell_wandering_isle_reflection_crossing);
+
+    void CreditLanding(SpellEffIndex effect)
+    {
+        Player* player = GetHitPlayer();
+        if (!player || player != GetCaster() || !player->IsAlive() || player->GetMapId() != ReflectionMap ||
+            player->GetExactDistSq(ReflectionShore) > 1.0f || !player->movespline->Finalized() ||
+            !player->movespline->Initialized() || player->movespline->ComputeProgress() < 1.0f)
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_wandering_isle_reflection_crossing::CreditLanding, EFFECT_0, SPELL_EFFECT_KILL_CREDIT);
+    }
+};
+}
+
 // Rock Jump - 103069 / 103070 / 103077
 class spell_rock_jump: public SpellScriptLoader
 {
@@ -2010,22 +2037,32 @@ class spell_rock_jump: public SpellScriptLoader
 
             void HandleScriptEffect(SpellEffIndex effIndex)
             {
-                if (Unit* caster = GetCaster())
-                {
-                    if (caster->GetPositionZ() < 90.0f)
-                        caster->GetMotionMaster()->MoveJump(1045.36f, 2848.47f, 91.38f, 10.0f, 10.0f);
-                    else if (caster->GetPositionZ() < 92.0f)
-                        caster->GetMotionMaster()->MoveJump(1054.42f, 2842.65f, 92.96f, 10.0f, 10.0f);
-                    else if (caster->GetPositionZ() < 94.0f)
-                        caster->GetMotionMaster()->MoveJump(1063.66f, 2843.49f, 95.50f, 10.0f, 10.0f);
-                    else
-                    {
-                        caster->GetMotionMaster()->MoveJump(1078.42f, 2845.07f, 95.16f, 10.0f, 10.0f);
+                PreventHitDefaultEffect(effIndex);
+                Player* player = GetCaster()->ToPlayer();
+                if (!player || !player->IsAlive() || player->GetMapId() != ReflectionMap || player->isInFlight() || player->GetVehicle())
+                    return;
 
-                        if (caster->ToPlayer())
-                            caster->ToPlayer()->KilledMonsterCredit(57476);
+                struct RockJump
+                {
+                    uint32 Spell;
+                    Position Rock;
+                    Position Destination;
+                    bool EndsCrossing;
+                };
+                static RockJump const jumps[] = {
+                    {103069, {1040.96f, 2851.64f, 89.3562f}, {1045.36f, 2848.47f, 91.38f}, false},
+                    {103070, {1045.17f, 2848.44f, 91.405f}, {1054.42f, 2842.65f, 92.96f}, false},
+                    {103077, {1054.33f, 2842.66f, 92.9738f}, {1063.66f, 2843.49f, 95.50f}, false},
+                    {103069, {1063.48f, 2843.45f, 95.5192f}, ReflectionShore, true}
+                };
+                for (RockJump const& jump : jumps)
+                    if (GetSpellInfo()->Id == jump.Spell && player->GetExactDistSq(jump.Rock) <= 9.0f)
+                    {
+                        JumpArrivalCastArgs const arrival{ReflectionCrossingSpell, player->GetGUID()};
+                        player->GetMotionMaster()->MoveJump(jump.Destination, 10.0f, 10.0f,
+                            jump.EndsCrossing ? arrival.SpellId : EVENT_JUMP, false, jump.EndsCrossing ? &arrival : nullptr);
+                        return;
                     }
-                }
             }
 
             void Register()
@@ -5880,6 +5917,7 @@ void AddSC_WanderingIsland()
     new mob_tushui_monk();
     new mob_jojo_ironbrow_1();
     new spell_rock_jump();
+    RegisterSpellScript(spell_wandering_isle_reflection_crossing);
     new mob_shu_water_spirit();
     new spell_summon_spirit_of_watter();
     new mob_aysa_cloudsinger_watter_outro();

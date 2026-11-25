@@ -7,6 +7,8 @@
 #include "GameObjectPackets.h"
 #include "GilneasQuestNative.h"
 #include "MiscPackets.h"
+#include "MoveSpline.h"
+#include "ScriptsData.h"
 #include "Vehicle.h"
 
 void AddSC_WanderingIsland();
@@ -30,6 +32,7 @@ constexpr uint32 WaterPincer = 60411;
 constexpr uint32 PincerSpawns[] = {244421, 244422, 244443, 244444, 244449, 244450};
 constexpr uint32 Shu = 29678;
 constexpr uint32 LiangPearl = 73791;
+constexpr uint32 ReflectionCredit = 57476;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -124,12 +127,14 @@ void LoadPools()
         "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
+        "WHERE spell_id IN (103069,103070,103077,108590)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
         "WHERE npc_entry=54993");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
-        "WHERE entry IN (46598,102938,102939,102940,102941,102942)");
+        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,108590)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -161,7 +166,33 @@ void LoadPools()
     AddSC_WanderingIsland();
     AddSC_go_scripts();
     sScriptMgr->SwapScriptContext(true);
+    sScriptDataStore->LoadSpellScriptNames();
+    sScriptDataStore->ValidateSpellScripts();
 }
+
+struct ReflectionRock : GameObject
+{
+    ReflectionRock(Map& map, uint32 spawn, uint32 trap)
+    {
+        auto row = WorldDatabase.PQuery("SELECT id,position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3,phaseMask "
+            "FROM gameobject WHERE guid=%u AND map=860", spawn);
+        Require(bool(row), "Missing an original Reflection rock");
+        auto data = row->Fetch();
+        Position point(data[1].GetFloat(), data[2].GetFloat(), data[3].GetFloat(), data[4].GetFloat());
+        G3D::Quat rotation{data[5].GetFloat(), data[6].GetFloat(), data[7].GetFloat(), data[8].GetFloat()};
+        m_DBTableGuid = spawn;
+        Require(Create(spawn, data[0].GetUInt32(), &map, data[9].GetUInt32(), point, rotation, 255, GO_STATE_READY) &&
+            map.AddToMap(static_cast<GameObject*>(this)) && GetGoType() == GAMEOBJECT_TYPE_TRAP && GetGOInfo()->trap.spell == trap,
+            "Could not load the original Reflection trap");
+    }
+
+    ~ReflectionRock()
+    {
+        if (IsInWorld())
+            GetMap()->RemoveFromMap(static_cast<GameObject*>(this), false);
+        ResetMap();
+    }
+};
 
 struct Bell : GameObject
 {
@@ -753,6 +784,56 @@ void CheckShuAdmission()
     std::cout << "PASS six native Water Pincer defeats, owner and pet credit, Liang's turn-in, both prerequisites and Shu item retry" << std::endl;
 #endif
 }
+
+void CheckReflectionCrossing()
+{
+    Map map(860, 668, 0, DIFFICULTY_NONE);
+    Teacher liang(map, LiangSpawn, 55020);
+    LootPlayer pupil(SupplySession(), map, 2967831, liang.GetPosition());
+    PreparePoolHunter(pupil);
+    pupil.GetMotionMaster()->Initialize();
+    pupil.SetRewardedQuest(NextQuest);
+    pupil.SetRewardedQuest(Sting);
+    pupil.SetRewardedQuest(SunPearl);
+    AcceptQuest(pupil, liang, Shu);
+    Require(pupil.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE, "Liang did not admit the Reflection crossing");
+
+    {
+        ReflectionRock last(map, 102478, 103071);
+        MoveGilneasPlayer(pupil, last.GetPosition());
+        last.Use(&pupil);
+        Require(!pupil.movespline->Finalized(), "The genuine final rock did not start a movement spline");
+#ifdef SINGING_POOLS_REFLECTION_BASELINE
+        Require(pupil.GetQuestObjectiveData(Shu, ReflectionCredit) == 1, "The old route no longer credited the pupil on launch");
+        Tick(pupil, 4000);
+        std::cout << "EXPECTED_BROKEN crossing credit was awarded at takeoff while the movement spline was still active" << std::endl;
+#else
+        Require(!pupil.GetQuestObjectiveData(Shu, ReflectionCredit), "Crossing credit was awarded before landing");
+        pupil.StopMoving();
+        Tick(pupil, 100);
+        Require(!pupil.GetQuestObjectiveData(Shu, ReflectionCredit), "Interrupted movement granted Reflection crossing credit");
+#endif
+    }
+#ifndef SINGING_POOLS_REFLECTION_BASELINE
+    ReflectionRock first(map, 102474, 103071);
+    ReflectionRock second(map, 102476, 103072);
+    ReflectionRock third(map, 102477, 103078);
+    ReflectionRock last(map, 102478, 103071);
+    MoveGilneasPlayer(pupil, first.GetPosition());
+    for (ReflectionRock* rock : {&first, &second, &third, &last})
+    {
+        Require(pupil.IsWithinDistInMap(rock, 1.0f), "The previous jump did not land next to the next placed rock");
+        rock->Use(&pupil);
+        Require(!pupil.movespline->Finalized() && !pupil.GetQuestObjectiveData(Shu, ReflectionCredit),
+            "The next Rock Jump did not start or awarded credit early");
+        Tick(pupil, 4000);
+        Require(pupil.movespline->Finalized() && pupil.GetQuestObjectiveData(Shu, ReflectionCredit) == (rock == &last ? 1 : 0),
+            "A Rock Jump failed to land or changed the crossing objective at the wrong point");
+    }
+    Require(pupil.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE, "Crossing alone finished Shu without the pearl action");
+    std::cout << "PASS all four original rock jumps, canceled motion and credit on the actual shore landing" << std::endl;
+#endif
+}
 #endif
 }
 
@@ -789,6 +870,9 @@ int main(int argc, char** argv)
 #endif
 #if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE) && !defined(SINGING_POOLS_ROCK_BASELINE) && !defined(SINGING_POOLS_PEARL_BASELINE)
         CheckShuAdmission();
+#endif
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE) && !defined(SINGING_POOLS_ROCK_BASELINE) && !defined(SINGING_POOLS_PEARL_BASELINE) && !defined(SINGING_POOLS_SHU_ADMISSION_BASELINE)
+        CheckReflectionCrossing();
 #endif
         CharacterDatabase.Close();
         LoginDatabase.Close();
