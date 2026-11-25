@@ -8,6 +8,8 @@
 #include "GilneasQuestNative.h"
 #include "MiscPackets.h"
 #include "MoveSpline.h"
+#include "ScriptedEscortAI.h"
+#include "ScriptSystem.h"
 #include "ScriptsData.h"
 #include "SpellPackets.h"
 #include "Vehicle.h"
@@ -39,6 +41,12 @@ constexpr uint32 NewFriend = 29679;
 constexpr uint32 SpoutCredit = 55212;
 constexpr uint32 ShoreAysaSpawn = 244519;
 constexpr uint32 ShuSpawn = 244520;
+constexpr uint32 Livelihood = 29680;
+constexpr uint32 CartTender = 57710;
+constexpr uint32 CartTenderSpawn = 244485;
+constexpr uint32 JiSpawn = 244755;
+constexpr uint32 FarmCartSpawn = 244624;
+constexpr uint32 WreckCartSpawn = 245583;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -59,7 +67,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 10, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 11, "Missing the Singing Pools quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -73,8 +81,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 10, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 11, "Missing the original Pools prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -129,24 +137,31 @@ void LoadPools()
         "Missing the five Water Spout interactions");
     quests[NewFriend]->LoadQuestObjective(friendObjective->Fetch());
     quests[NewFriend]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    auto cartObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29680");
+    Require(cartObjective && cartObjective->Fetch()[4].GetUInt32() == CartTender && cartObjective->Fetch()[5].GetUInt32() == 1 &&
+        (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
+    quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,244519,244520)");
+        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,244485,244519,244520,244624,244755,245583)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
-        "WHERE spell_id IN (103069,103070,103077,103116,108590)");
+        "WHERE spell_id IN (103069,103070,103077,103116,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
-        "WHERE npc_entry=54993");
+        "WHERE npc_entry IN (54993,57710,57741,59497)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint "
+        "WHERE entry IN (57207,57742,59499)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
-        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,108590,116695,116696,117054,117057)");
+        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,108590,115904,116695,116696,117054,117057)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -168,6 +183,7 @@ void LoadPools()
     Require(LootTemplates_Creature.GetLootFor(WaterPincer), "Missing the original Water Pincer loot");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
+    sScriptSystemMgr->LoadScriptWaypoints();
     sSpellMgr->LoadSpellProcEvents();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
@@ -530,7 +546,7 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {ShoreAysaSpawn, ShuSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
@@ -815,6 +831,120 @@ void UseReflectionPearl(LootPlayer& pupil)
     Tick(pupil, 4000);
 }
 
+Creature* FindOwnedCartActor(LootPlayer& player, uint32 entry)
+{
+    std::list<Creature*> actors;
+    player.GetCreatureListWithEntryInGrid(actors, entry, 20.0f);
+    Creature* result = nullptr;
+    for (Creature* actor : actors)
+        if (TempSummon* summon = actor->ToTempSummon(); summon && summon->GetSummonerGUID() == player.GetGUID())
+        {
+            Require(!result, "The cart interaction spawned more than one actor of an owned type");
+            result = actor;
+        }
+    return result;
+}
+
+void CheckLivelihoodCart(Map& map, LootPlayer& pupil, Teacher& aysa)
+{
+    if (pupil.GetQuestStatus(Livelihood) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, aysa, Livelihood);
+    Require(pupil.GetQuestStatus(Livelihood) == QUEST_STATUS_COMPLETE && !pupil.GetQuestObjectiveData(Livelihood, CartTender),
+        "Travel should be optional when Aysa sends the pupil to Ji");
+    Teacher tender(map, CartTenderSpawn, CartTender);
+    Teacher ji(map, JiSpawn, 55477);
+    MoveGilneasPlayer(pupil, tender.GetPosition());
+    WorldPackets::Spells::SpellClick use{WorldPacket(CMSG_SPELL_CLICK)};
+    use.SpellClickUnitGuid = tender.GetGUID();
+    pupil.GetSession()->HandleSpellClick(use);
+#ifndef SINGING_POOLS_CART_BASELINE
+    pupil.GetSession()->HandleSpellClick(use);
+#endif
+    Creature* cart = FindOwnedCartActor(pupil, 57208);
+    Creature* yak = FindOwnedCartActor(pupil, 57207);
+    Require(cart && yak && cart->GetVehicleKit(), "The original cart tender did not make the native cart and yak");
+    Tick(pupil, 2000);
+    Require(cart->GetVehicleKit()->GetPassenger(0) == &pupil, "The real carriage did not board the clicker");
+    auto* escort = dynamic_cast<npc_escortAI*>(yak->AI());
+    Require(escort && sScriptSystemMgr->GetPointMoveList(57207).size() == 17, "The cart yak did not load its original route");
+    escort->UpdateAI(2600);
+    Require(escort->HasEscortState(STATE_ESCORT_ESCORTING), "The mounted rider did not admit the original yak route");
+    auto const cartGuid = cart->GetGUID();
+    auto const yakGuid = yak->GetGUID();
+    pupil.ExitVehicle();
+    cart->Unit::Update(1100);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(cartGuid), "The carriage did not leave after an early exit");
+    if (Creature* activeYak = map.GetCreature(yakGuid))
+        activeYak->AI()->UpdateAI(300);
+    map.RemoveAllObjectsInRemoveList();
+#ifdef SINGING_POOLS_CART_BASELINE
+    Creature* orphan = map.GetCreature(yakGuid);
+    Require(orphan && !orphan->IsDespawn(), "The original early exit no longer leaves the yak");
+    orphan->DespawnOrUnsummon();
+    map.RemoveAllObjectsInRemoveList();
+    std::cout << "EXPECTED_BROKEN an early exit removed the native carriage but left its owned yak" << std::endl;
+#else
+    Require(!map.GetCreature(yakGuid), "The original yak remained after the owner abandoned the ride");
+    MoveGilneasPlayer(pupil, tender.GetPosition());
+    pupil.GetSession()->HandleSpellClick(use);
+    Creature* rejectedCart = FindOwnedCartActor(pupil, 57208);
+    Creature* rejectedYak = FindOwnedCartActor(pupil, 57207);
+    Require(rejectedCart && rejectedYak && !pupil.GetVehicleBase(), "The retry did not have a pending boarding event");
+    auto const rejectedCartGuid = rejectedCart->GetGUID();
+    auto const rejectedYakGuid = rejectedYak->GetGUID();
+    rejectedCart->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE);
+    Tick(pupil, 100);
+    Require(!pupil.GetVehicleBase(), "The canceled ride still boarded the player");
+    rejectedYak->AI()->UpdateAI(2600);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(rejectedCartGuid) && !map.GetCreature(rejectedYakGuid), "A failed native join left the cart or its yak behind");
+    std::cout << "PASS duplicate click suppression, failed native boarding cleanup and an independent retry" << std::endl;
+#endif
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    RewardQuest(pupil, ji, Livelihood);
+    Require(pupil.IsQuestRewarded(Livelihood), "Ji rejected the optional route after leaving the carriage");
+    std::cout << "PASS original cart tender boarding, early exit and actual Ji turn-in with optional travel" << std::endl;
+#ifndef SINGING_POOLS_CART_BASELINE
+    struct OtherCart
+    {
+        uint32 Spawn;
+        uint32 Tender;
+        uint32 Yak;
+        size_t Waypoints;
+    };
+    for (OtherCart const& route : {OtherCart{FarmCartSpawn, 59497, 59499, 14}, OtherCart{WreckCartSpawn, 57741, 57742, 24}})
+    {
+        Teacher other(map, route.Spawn, route.Tender);
+        MoveGilneasPlayer(pupil, other.GetPosition());
+        use.SpellClickUnitGuid = other.GetGUID();
+        pupil.GetSession()->HandleSpellClick(use);
+        Creature* sharedCart = FindOwnedCartActor(pupil, 57208);
+        Creature* sharedYak = FindOwnedCartActor(pupil, route.Yak);
+        if (!sharedCart || !sharedYak)
+            std::cout << "Cart " << route.Tender << " area=" << pupil.GetAreaId() << " pending=" << pupil.waitOnSeat
+                << " vehicle=" << bool(pupil.GetVehicleBase()) << " flags=" << other.GetUInt32Value(UNIT_FIELD_NPC_FLAGS)
+                << " cart=" << bool(sharedCart) << " yak=" << bool(sharedYak) << std::endl;
+        Require(sharedCart && sharedYak && sharedCart->GetVehicleKit(), "A shared original cart route lost its actors");
+        Tick(pupil, 2000);
+        Require(sharedCart->GetVehicleKit()->GetPassenger(0) == &pupil, "A shared original cart route did not seat the rider");
+        auto* sharedEscort = dynamic_cast<npc_escortAI*>(sharedYak->AI());
+        Require(sharedEscort && sScriptSystemMgr->GetPointMoveList(route.Yak).size() == route.Waypoints, "A shared cart lost its native route");
+        sharedEscort->UpdateAI(2600);
+        Require(sharedEscort->HasEscortState(STATE_ESCORT_ESCORTING), "A shared cart failed to start with its real rider");
+        auto const sharedCartGuid = sharedCart->GetGUID();
+        auto const sharedYakGuid = sharedYak->GetGUID();
+        pupil.ExitVehicle();
+        sharedCart->Unit::Update(1100);
+        if (Creature* activeYak = map.GetCreature(sharedYakGuid))
+            activeYak->AI()->UpdateAI(300);
+        map.RemoveAllObjectsInRemoveList();
+        Require(!map.GetCreature(sharedCartGuid) && !map.GetCreature(sharedYakGuid), "Leaving a shared route left its actors");
+    }
+    std::cout << "PASS native boarding, route start and ownership cleanup for the other two cart tenders" << std::endl;
+#endif
+}
+
 Creature* FindWaterSpout(Teacher& shu)
 {
     std::list<Creature*> spouts;
@@ -895,6 +1025,7 @@ void CheckNewFriend(Map& map, LootPlayer& pupil)
     RewardQuest(pupil, aysa, NewFriend, choice);
     Require(pupil.IsQuestRewarded(NewFriend) && pupil.GetItemCount(choice) == 1, "Aysa did not accept the five genuine bursts and issue the selected reward");
     std::cout << "PASS actual Shu follow-up acceptance, water spout reset cleanup, a missed burst, five contacts and the shore Aysa turn-in" << std::endl;
+    CheckLivelihoodCart(map, pupil, aysa);
 #endif
 }
 

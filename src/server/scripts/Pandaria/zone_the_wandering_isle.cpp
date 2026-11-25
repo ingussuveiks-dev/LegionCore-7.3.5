@@ -2383,8 +2383,14 @@ class spell_grab_carriage: public SpellScriptLoader
             {
                 Unit* caster = GetCaster();
 
-                if (!caster)
+                if (!caster || caster->GetVehicleBase())
                     return;
+
+                std::list<Creature*> existingCarts;
+                GetCreatureListWithEntryInGrid(existingCarts, caster, 57208, 20.0f);
+                for (Creature* existing : existingCarts)
+                    if (TempSummon* summon = existing->ToTempSummon(); summon && !summon->IsDespawn() && summon->GetSummonerGUID() == caster->GetGUID())
+                        return;
 
                 Creature* carriage = NULL;
                 Creature* yak      = NULL;
@@ -2413,7 +2419,13 @@ class spell_grab_carriage: public SpellScriptLoader
                 }
 
                 if (!carriage || !yak)
+                {
+                    if (carriage)
+                        carriage->DespawnOrUnsummon();
+                    if (yak)
+                        yak->DespawnOrUnsummon();
                     return;
+                }
 
                 yak->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
                 carriage->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
@@ -2462,6 +2474,7 @@ public:
         {}
 
         uint32 IntroTimer;
+        ObjectGuid _carriageGuid;
 
         void Reset()
         {
@@ -2475,6 +2488,7 @@ public:
 
         void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0)
         {
+            _carriageGuid = guid;
             SetFollowerGUID(guid);
         }
 
@@ -2485,11 +2499,34 @@ public:
 
         void UpdateAI(uint32 diff)
         {
+            Creature* carriage = nullptr;
+            if (_carriageGuid)
+            {
+                carriage = me->GetMap()->GetCreature(_carriageGuid);
+                if (!carriage || carriage->IsDespawn())
+                {
+                    me->DespawnOrUnsummon();
+                    return;
+                }
+            }
+
             if (IntroTimer)
             {
                 if (IntroTimer <= diff)
                 {
-                    Start(false, true);
+                    if (carriage)
+                    {
+                        Unit* passenger = carriage->GetVehicleKit() ? carriage->GetVehicleKit()->GetPassenger(0) : nullptr;
+                        TempSummon* yak = me->ToTempSummon();
+                        if (!passenger || !yak || passenger->GetGUID() != yak->GetSummonerGUID())
+                        {
+                            carriage->DespawnOrUnsummon();
+                            me->DespawnOrUnsummon();
+                            return;
+                        }
+                    }
+                    if (!HasEscortState(STATE_ESCORT_ESCORTING))
+                        Start(false, true);
                     IntroTimer = 0;
                 }
                 else
