@@ -14,11 +14,15 @@ namespace
 {
 constexpr uint32 Introduction = 29521;
 constexpr uint32 DryFur = 29661;
+constexpr uint32 Reeds = 29662;
+constexpr uint32 ReedItem = 73178;
+constexpr uint32 ReedGiverSpawn = 244247;
 constexpr uint32 NextQuest = 29676;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
 constexpr uint32 AysaSpawn = 244270;
+constexpr uint32 ShangTempleSpawn = 243552;
 constexpr uint32 BellSpell = 102843;
 
 LONG WINAPI PoolCrashTrace(EXCEPTION_POINTERS* exception)
@@ -34,7 +38,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 3, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 5, "Missing the Singing Pools quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -48,8 +52,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29521,29661,29676)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 3, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29676)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 5, "Missing the original Pools prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -65,13 +69,19 @@ void LoadPools()
         "The original Training Bell objective is missing");
     quests[DryFur]->LoadQuestObjective(objective->Fetch());
     quests[DryFur]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    auto reedsObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29662");
+    Require(reedsObjective && reedsObjective->Fetch()[4].GetUInt32() == ReedItem && reedsObjective->Fetch()[5].GetUInt32() == 8,
+        "Missing the original reed objective");
+    quests[Reeds]->LoadQuestObjective(reedsObjective->Fetch());
+    quests[Reeds]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN (244137,244270)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN (243552,244137,244247,244270)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29676)");
+        "WHERE quest IN (29521,29661,29662,29676)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29676)");
+        "WHERE quest IN (29521,29661,29662,29676)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
@@ -84,6 +94,12 @@ void LoadPools()
     sObjectMgr->LoadPlayerInfo();
     sObjectMgr->LoadPageTexts();
     sObjectMgr->LoadGameObjectTemplate();
+    auto& table = LootTemplates_Gameobject.*Access(LootTableNameTag{});
+    auto const original = table;
+    table += " WHERE Entry=209507";
+    auto const loaded = (LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();
+    table = original;
+    Require(loaded == 1 && LootTemplates_Gameobject.GetLootFor(209507), "Missing the original reed loot row");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
     sSpellMgr->LoadSpellProcEvents();
@@ -92,6 +108,7 @@ void LoadPools()
     sAreaTriggerDataStore->LoadAreaTriggerScripts();
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
     AddSC_WanderingIsland();
+    AddSC_go_scripts();
     sScriptMgr->SwapScriptContext(true);
 }
 
@@ -151,6 +168,19 @@ void RewardQuest(Player& player, Creature& teacher, uint32 quest, uint32 choice 
     request.QuestID = quest;
     request.ItemChoiceID = choice;
     player.GetSession()->HandleQuestGiverChooseReward(request);
+}
+
+void PreparePoolHunter(LootPlayer& player)
+{
+    player.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
+    player.SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
+    player.setFactionForRace(RACE_PANDAREN_NEUTRAL);
+    player.InitDisplayIds();
+    player.GetReputationMgr().LoadFromDB({});
+    player.SetLevel(10);
+    player.SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 10000);
+    for (uint16 field : {UNIT_FIELD_MOD_TIME_RATE, UNIT_FIELD_MOD_CASTING_SPEED, UNIT_FIELD_MOD_SPELL_HASTE, UNIT_FIELD_MOD_HASTE})
+        player.SetFloatValue(field, 1.0f);
 }
 
 void Ring(LootPlayer& player, Bell& bell, bool report)
@@ -281,24 +311,19 @@ void CheckPoolWater(LootPlayer& player, uint32 triggerId, uint32 spell)
 
 void CheckBell()
 {
-    for (uint32 spawn : {AysaSpawn, 244137u})
+    for (uint32 spawn : {ShangTempleSpawn, AysaSpawn, ReedGiverSpawn, 244137u})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
     Teacher aysa(map);
+    Teacher shang(map, ShangTempleSpawn, 54786);
     Bell bell(map);
-    LootPlayer pupil(SupplySession(), map, 2966101, aysa.GetPosition());
-    pupil.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
-    pupil.SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
-    pupil.setFactionForRace(RACE_PANDAREN_NEUTRAL);
-    pupil.InitDisplayIds();
-    pupil.GetReputationMgr().LoadFromDB({});
-    pupil.SetLevel(10);
-    pupil.SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 10000);
-    for (uint16 field : {UNIT_FIELD_MOD_TIME_RATE, UNIT_FIELD_MOD_CASTING_SPEED, UNIT_FIELD_MOD_SPELL_HASTE, UNIT_FIELD_MOD_HASTE})
-        pupil.SetFloatValue(field, 1.0f);
+    LootPlayer pupil(SupplySession(), map, 2966101, shang.GetPosition());
+    PreparePoolHunter(pupil);
     pupil.SetRewardedQuest(29423);
-    pupil.AddQuestAndCheckCompletion(sQuestDataStore->GetQuestTemplate(Introduction), nullptr);
+    AcceptQuest(pupil, shang, Introduction);
+    Require(pupil.GetQuestStatus(Introduction) == QUEST_STATUS_COMPLETE, "Shang Xi did not admit the trip to the Singing Pools");
+    MoveGilneasPlayer(pupil, aysa.GetPosition());
     RewardQuest(pupil, aysa, Introduction);
     Require(pupil.IsQuestRewarded(Introduction), "Aysa did not accept the Singing Pools introduction");
     if (pupil.GetQuestStatus(DryFur) == QUEST_STATUS_NONE)
@@ -358,6 +383,86 @@ void CheckBell()
 #endif
 #endif
 }
+
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE)
+void CheckReeds()
+{
+    Map map(860, 664, 0, DIFFICULTY_NONE);
+    Teacher gee(map, ReedGiverSpawn, 55021);
+    LootPlayer owner(SupplySession(), map, 2966201, gee.GetPosition());
+    LootPlayer visitor(SupplySession(), map, 2966202, gee.GetPosition());
+    PreparePoolHunter(owner);
+    PreparePoolHunter(visitor);
+    owner.SetRewardedQuest(29423);
+    AcceptQuest(owner, gee, Reeds);
+    Require(owner.GetQuestStatus(Reeds) == QUEST_STATUS_INCOMPLETE, "The placed Jojo did not admit Stronger Than Reeds");
+
+    auto original = WorldDatabase.Query("SELECT id,guid,spawntimesecs,position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3 "
+        "FROM gameobject WHERE id=209507 AND map=860 AND zoneId=5736 ORDER BY guid");
+    Require(original && original->GetRowCount() == 30, "Missing original Hard Tearwood Reed placements");
+    std::vector<Placement> reeds;
+    do
+    {
+        auto row = original->Fetch();
+        reeds.push_back({row[0].GetUInt32(), row[1].GetUInt32(), row[2].GetUInt32(),
+            {row[3].GetFloat(), row[4].GetFloat(), row[5].GetFloat(), row[6].GetFloat()},
+            G3D::Quat(row[7].GetFloat(), row[8].GetFloat(), row[9].GetFloat(), row[10].GetFloat())});
+    } while (original->NextRow());
+
+    {
+        auto const& placement = reeds.front();
+        Supply first(map, placement);
+        MoveGilneasPlayer(visitor, placement.position);
+        OpenSupply(visitor, first);
+#ifdef SINGING_POOLS_REEDS_BASELINE
+        Require(visitor.GetLootGUID() == first.GetGUID() && first.getLootState() == GO_ACTIVATED && first.loot.isLooted(),
+            "The original reeds no longer open empty shared loot without the quest");
+        ReleaseSupply(visitor, first);
+        first.Rearm();
+#else
+        Require(!visitor.GetLootGUID() && first.getLootState() == GO_READY, "A visitor without the quest consumed the reed");
+#endif
+        MoveGilneasPlayer(owner, placement.position);
+        OpenSupply(owner, first);
+        Require(TakeSupply(owner, first, ReedItem), "The original reed did not yield its item");
+        ReleaseSupply(owner, first);
+    }
+#ifndef SINGING_POOLS_REEDS_BASELINE
+    GiveSupply(owner, ReedItem, 2); // An older attempt can still have extras in its bags.
+#endif
+    AbandonSupply(owner, Reeds);
+#ifdef SINGING_POOLS_REEDS_BASELINE
+    Require(owner.GetItemCount(ReedItem) == 1, "The old abandoned attempt did not retain the reed as expected");
+    std::cout << "EXPECTED_BROKEN unopened quest admitted empty reed loot, and abandonment retained the item" << std::endl;
+#else
+    Require(!owner.GetItemCount(ReedItem), "Abandonment kept a collected reed");
+    MoveGilneasPlayer(owner, gee.GetPosition());
+    AcceptQuest(owner, gee, Reeds);
+    Require(owner.GetQuestStatus(Reeds) == QUEST_STATUS_INCOMPLETE, "Could not retake the reed quest");
+    for (auto const& placement : reeds)
+    {
+        Supply stock(map, placement);
+        Require(stock.ActivateToQuest(&owner) && !stock.ActivateToQuest(&visitor), "A placed Reed has the wrong quest marker");
+    }
+    for (size_t index = 1; index <= 8; ++index)
+    {
+        auto const& placement = reeds[index];
+        Supply stock(map, placement);
+        MoveGilneasPlayer(owner, placement.position);
+        OpenSupply(owner, stock);
+        Require(TakeSupply(owner, stock, ReedItem), "A real reed did not yield its item");
+        ReleaseSupply(owner, stock);
+        Require(owner.GetItemCount(ReedItem) == index &&
+            owner.CanRewardQuest(sQuestDataStore->GetQuestTemplate(Reeds), false) == (index == 8),
+            "A reed gave duplicate or missing loot or changed the eight-item reward gate");
+    }
+    MoveGilneasPlayer(owner, gee.GetPosition());
+    RewardQuest(owner, gee, Reeds);
+    Require(owner.IsQuestRewarded(Reeds) && !owner.GetItemCount(ReedItem), "The placed reed giver did not consume eight reeds");
+    std::cout << "PASS 30 original reed placements, eight actual items, refusal, retry and turn-in" << std::endl;
+#endif
+}
+#endif
 }
 
 int main(int argc, char** argv)
@@ -382,6 +487,9 @@ int main(int argc, char** argv)
         GameTime::UpdateGameTimers();
         LoadPools();
         CheckBell();
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE)
+        CheckReeds();
+#endif
         CharacterDatabase.Close();
         LoginDatabase.Close();
         HotfixDatabase.Close();

@@ -1,0 +1,7 @@
+# Stronger Than Reeds (29662)
+
+Hard Tearwood Reed `209507` objektu tabulā bija pareizais kvests un vienīgais priekšmets `73178`. Vecajā versijā apmeklētājs bez kvesta tomēr varēja atvērt tukšu koplietotu laupījuma logu un patērēt objektu. Atmetot kvestu, savāktā niedre palika somā. Objektam piesaistīts esošais viena kvesta krājumu skripts. Atmetot vai nododot kvestu, standarta kvesta priekšmetu novākšana izņem arī veca mēģinājuma liekās niedres.
+
+`Test-QuestObjectLootNative.ps1 -SingingPoolsReedsBaseline` atkārtoja abas sākotnējās problēmas. `-SingingPools` pārbaudīja faktisko piedāvājumu pie Jojo `55021/244247`, visus 30 niedru novietojumus, atteikumu bez kvesta, atmešanu ar vecu atlikumu, atkārtotu pieņemšanu, astoņus reālus laupījumus un nodošanu. Pārbaudē atkārtoti izgāja arī Shang Xi piedāvājums doties uz baseiniem, zvans, lāsti un līdzsvara stabs. Faktiskā peldēšana starp niedrēm un laupījuma logs klientā paliek atvērti.
+
+Migrācija `2026_11_26_02_wandering_isle_tearwood_reeds.sql` izolētajā datubāzē veiksmīgi piemērota divreiz un darba datubāzē reģistrēta kā `RELEASED` ar SHA-1 `96A1B1D6854177AB7C51B5A234C11A0288053409`. Esošais Release būvējums satur vienīgā kvesta krājumu AI. Pārbaudes un darba serveris sasniedza gatavību un korekti apstājās. Pārbaudēs nebija jaunu avāriju, brīdinājumu vai DBErrors ierakstu. Ar kontrolsummām saglabāti 69 diagnostikas faili un izņemti 30 pagaidu faili, kopā 1 089 115 647 baiti. [Diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-tearwood-reeds/)
