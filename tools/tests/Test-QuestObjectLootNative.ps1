@@ -7,7 +7,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,
       [switch]$HuoOfferings,[switch]$HuoOfferingsBaseline,[switch]$SingingPools,[switch]$SingingPoolsBaseline,[switch]$SingingPoolsWaterBaseline,
-      [switch]$SingingPoolsReedsBaseline,
+      [switch]$SingingPoolsReedsBaseline,[switch]$SingingPoolsRockBaseline,
       [switch]$ForestEttin,[switch]$ForestEttinBaseline,
       [switch]$KezanHotRod,[switch]$KezanHotRodBaseline,
       [switch]$TakingPrecautions,[switch]$Collector,[switch]$Scenes,[switch]$Kyle,[switch]$Seasoning,[switch]$SeasoningBaseline,
@@ -31,7 +31,8 @@ if($BraziePumpkin){++$scopedProbes}
 if($BrazieWarden){++$scopedProbes}
 if($BrazieGarden){++$scopedProbes}
 if($WanderingFirstLesson){++$scopedProbes}
-if($SingingPools -or $SingingPoolsBaseline -or $SingingPoolsWaterBaseline -or $SingingPoolsReedsBaseline){++$scopedProbes}
+$singingPoolsProbe=$SingingPools -or $SingingPoolsBaseline -or $SingingPoolsWaterBaseline -or $SingingPoolsReedsBaseline -or $SingingPoolsRockBaseline
+if($singingPoolsProbe){++$scopedProbes}
 if($scopedProbes -and ($Baseline -or !$FixtureConfig -or $scopedProbes -gt 1)){throw 'Use one named probe and its private migrated fixture'}
 if(!$OutputDirectory -and $BrazieBasicBotany){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-basic-botany"}
 if(!$OutputDirectory -and $BrazieFlowerPower){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-flower-power"}
@@ -59,7 +60,7 @@ if(!$OutputDirectory -and ($NoTanks -or $NoTanksBaseline)){$OutputDirectory="$re
 if(!$OutputDirectory -and ($KezanHotRod -or $KezanHotRodBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-kezan-hot-rod"}
 if(!$OutputDirectory -and ($ForestEttin -or $ForestEttinBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-forest-ettin"}
 if(!$OutputDirectory -and ($HuoOfferings -or $HuoOfferingsBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-huo-offerings"}
-if(!$OutputDirectory -and ($SingingPools -or $SingingPoolsBaseline -or $SingingPoolsWaterBaseline -or $SingingPoolsReedsBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-singing-pools"}
+if(!$OutputDirectory -and $singingPoolsProbe){$OutputDirectory="$repo/build-extractors/runtime-test/quest-singing-pools"}
 if(!$OutputDirectory -and ($ChallengerFires -or $ChallengerFiresBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-challenger-fires"}
 if(!$OutputDirectory -and ($IlgalarWard -or $IlgalarWardBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-ilgalar-ward"}
 if(!$OutputDirectory -and ($BlackrockPrisoners -or $BlackrockPrisonersBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-blackrock-prisoners"}
@@ -661,9 +662,9 @@ if($HuoOfferings -or $HuoOfferingsBaseline){
  [IO.File]::WriteAllText("$out/NativeHuoOfferings.inc",$query+' " WHERE ID IN(29421,29422,29423,29521)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
-if($SingingPools -or $SingingPoolsBaseline -or $SingingPoolsWaterBaseline -or $SingingPoolsReedsBaseline){
+if($singingPoolsProbe){
  $probeSource="$PSScriptRoot/SingingPoolsNative.cpp"
- [IO.File]::WriteAllText("$out/NativeSingingPools.inc",$query+' " WHERE ID IN (29423,29521,29661,29662,29676)"')
+ [IO.File]::WriteAllText("$out/NativeSingingPools.inc",$query+' " WHERE ID IN (29423,29521,29661,29662,29663,29676)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($ChallengerFires -or $ChallengerFiresBaseline){
@@ -1130,6 +1131,7 @@ if($HuoOfferingsBaseline){$compilerArgs+='/DHUO_OFFERINGS_BASELINE'}
 if($SingingPoolsBaseline){$compilerArgs+='/DSINGING_POOLS_BASELINE'}
 if($SingingPoolsWaterBaseline){$compilerArgs+='/DSINGING_POOLS_WATER_BASELINE'}
 if($SingingPoolsReedsBaseline){$compilerArgs+='/DSINGING_POOLS_REEDS_BASELINE'}
+if($SingingPoolsRockBaseline){$compilerArgs+='/DSINGING_POOLS_ROCK_BASELINE'}
 if($ChallengerFiresBaseline){$compilerArgs+='/DCHALLENGER_FIRES_BASELINE'}
 if($IlgalarWardBaseline){$compilerArgs+='/DILGALAR_WARD_BASELINE'}
 if($BlackrockPrisonersBaseline){$compilerArgs+='/DBLACKROCK_PRISONERS_BASELINE'}
@@ -1183,5 +1185,5 @@ $expectedAmaniDiagnostic = $AmaniCatacombsBaseline -and
 if($exit -or ((Get-Item "$run/stderr.log").Length -and !$expectedAmaniDiagnostic)){Get-Content "$run/stderr.log" -Tail 12;throw "Native quest-object loot exit=$exit or stderr"}
 if($expectedAmaniDiagnostic){Get-Content "$run/stderr.log"}
 if((Test-Path "$run/DBErrors.log") -and (Get-Item "$run/DBErrors.log").Length){throw 'Native loot emitted DBErrors; inspect preserved evidence'}
-@{baseline=[bool]($Baseline -or $SingingPoolsBaseline -or $SingingPoolsWaterBaseline -or $SingingPoolsReedsBaseline -or $SeasoningBaseline -or $AquantionBaseline -or $AnowynBaseline -or $AlliedCityBaseline -or $DuskwitherBaseline -or $RedSnapperBaseline -or $SwiftDisciplineBaseline -or $ExtinguishingHopeBaseline -or $MulgoreCagesBaseline -or $AshenvaleFelWoodBaseline -or $ElwynnQuestsBaseline -or $SupplyChestsBaseline -or $ForestHeartBaseline -or $StillpinePrimerBaseline -or $MonkeyBusinessBaseline -or $MonkeyBusinessFlightBaseline -or $HogtiedRazormaneBaseline -or $TongaGuideBaseline -or $AirfieldFirefightingBaseline -or $FelfireSeedlingsBaseline -or $BattleboarTroughsBaseline -or $BalboaBasaltBaseline -or $VileFinLeashBaseline -or $AbsorbentBaseline -or $SfgMinefieldBaseline -or $DozercismBaseline -or $StagnantOasisBaseline -or $AmaniCatacombsBaseline -or $RavagerCageBaseline -or $AkidaCagesBaseline -or $PrincessStillpineBaseline -or $BloodcupBraidBaseline -or $SamophlangeManualBaseline -or $GutsAndGoreBaseline -or $ThelgenSeismographBaseline -or $LovelyCharmGiftsBaseline -or $DarkmoonCraftingBaseline -or $DarkmoonFairTargetsBaseline -or $DarkmoonBannerBaseline -or $IronforgeBaitBaseline -or $IronforgeRationsBaseline -or $LiberationDayBaseline -or $IncendiciteOreBaseline -or $KneeDeepBaseline -or $PerfumedGuardAnalysisBaseline -or $SwiftclawRideBaseline -or $KorothBannerBaseline -or $WoodsEndCofferBaseline -or $FromTheShadowsBaseline -or $VolcanothBaseline -or $ScorpidVenomBaseline -or $PricelessTreasuresBaseline -or $WestfallStewBaseline -or $NoTanksBaseline -or $PaintItBlackBaseline -or $DownWithCrushcogBaseline -or $StaggeringEffortBaseline -or $RedridgeSeaforiumBaseline -or $BlackrockPrisonersBaseline -or $IlgalarWardBaseline -or $ChallengerFiresBaseline -or $HuoOfferingsBaseline -or $ForestEttinBaseline -or $KezanHotRodBaseline);game=(Get-FileHash $game).Hash;scripts=(Get-FileHash $scriptsLibrary).Hash;executable=(Get-FileHash "$out/probe.exe").Hash;source=(Get-FileHash $probeSource).Hash;run=$run;exit=$exit}|ConvertTo-Json|Set-Content "$out/native-inputs.json"
+@{baseline=[bool]($Baseline -or $SingingPoolsBaseline -or $SingingPoolsWaterBaseline -or $SingingPoolsReedsBaseline -or $SingingPoolsRockBaseline -or $SeasoningBaseline -or $AquantionBaseline -or $AnowynBaseline -or $AlliedCityBaseline -or $DuskwitherBaseline -or $RedSnapperBaseline -or $SwiftDisciplineBaseline -or $ExtinguishingHopeBaseline -or $MulgoreCagesBaseline -or $AshenvaleFelWoodBaseline -or $ElwynnQuestsBaseline -or $SupplyChestsBaseline -or $ForestHeartBaseline -or $StillpinePrimerBaseline -or $MonkeyBusinessBaseline -or $MonkeyBusinessFlightBaseline -or $HogtiedRazormaneBaseline -or $TongaGuideBaseline -or $AirfieldFirefightingBaseline -or $FelfireSeedlingsBaseline -or $BattleboarTroughsBaseline -or $BalboaBasaltBaseline -or $VileFinLeashBaseline -or $AbsorbentBaseline -or $SfgMinefieldBaseline -or $DozercismBaseline -or $StagnantOasisBaseline -or $AmaniCatacombsBaseline -or $RavagerCageBaseline -or $AkidaCagesBaseline -or $PrincessStillpineBaseline -or $BloodcupBraidBaseline -or $SamophlangeManualBaseline -or $GutsAndGoreBaseline -or $ThelgenSeismographBaseline -or $LovelyCharmGiftsBaseline -or $DarkmoonCraftingBaseline -or $DarkmoonFairTargetsBaseline -or $DarkmoonBannerBaseline -or $IronforgeBaitBaseline -or $IronforgeRationsBaseline -or $LiberationDayBaseline -or $IncendiciteOreBaseline -or $KneeDeepBaseline -or $PerfumedGuardAnalysisBaseline -or $SwiftclawRideBaseline -or $KorothBannerBaseline -or $WoodsEndCofferBaseline -or $FromTheShadowsBaseline -or $VolcanothBaseline -or $ScorpidVenomBaseline -or $PricelessTreasuresBaseline -or $WestfallStewBaseline -or $NoTanksBaseline -or $PaintItBlackBaseline -or $DownWithCrushcogBaseline -or $StaggeringEffortBaseline -or $RedridgeSeaforiumBaseline -or $BlackrockPrisonersBaseline -or $IlgalarWardBaseline -or $ChallengerFiresBaseline -or $HuoOfferingsBaseline -or $ForestEttinBaseline -or $KezanHotRodBaseline);game=(Get-FileHash $game).Hash;scripts=(Get-FileHash $scriptsLibrary).Hash;executable=(Get-FileHash "$out/probe.exe").Hash;source=(Get-FileHash $probeSource).Hash;run=$run;exit=$exit}|ConvertTo-Json|Set-Content "$out/native-inputs.json"
 'PASS native execution/exit/stdout/stderr/DBErrors; wrapper must also inspect crash and appended server diagnostics'

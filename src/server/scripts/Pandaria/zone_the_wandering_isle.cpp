@@ -1848,51 +1848,76 @@ public:
             me->setFaction(2357);
         }
 
-        enum data
+        enum Events
         {
-            NPC_VEH         =   54993,
+            EVENT_BOARD_POLE = 1
         };
 
-        ObjectGuid vehGUID;
-        EventMap events;
-
-        void Reset()
+        void Reset() override
         {
-            events.RescheduleEvent(1, 1000);
-            vehGUID.Clear();
-        }
-
-        void JustDied(Unit* /*killer*/)
-        {
-            me->ExitVehicle();
-            me->DespawnOrUnsummon(1000);
-            if (Creature *v = me->GetMap()->GetCreature(vehGUID))
-                v->DespawnOrUnsummon(100);
-        }
-
-        void UpdateAI(uint32 diff)
-        {
-            //UpdateVictim();
-
-            events.Update(diff);
-
-            while (events.ExecuteEvent())
+            _events.Reset();
+            _boardAttempts = 0;
+            if (Unit* base = me->GetVehicleBase())
             {
-                if (me->GetVehicle())
-                    return;
+                if (base->GetGUID() != _poleGuid)
+                    RemovePole();
+                return;
+            }
 
-                me->StopMoving();
+            _events.ScheduleEvent(EVENT_BOARD_POLE, 1000);
+        }
 
-                if (Creature * c = me->GetMap()->SummonCreature(NPC_VEH, *me, NULL, 0, NULL, ObjectGuid::Empty, 0, 1749))
+        void JustDied(Unit* /*killer*/) override
+        {
+            _events.Reset();
+            me->ExitVehicle();
+            RemovePole();
+            me->DespawnOrUnsummon(1000);
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            _events.Update(diff);
+            if (_events.ExecuteEvent())
+            {
+                if (Unit* base = me->GetVehicleBase())
                 {
-                    c->SetDisplayId(39004);
-                    me->EnterVehicle(c);
-                    vehGUID = c->GetGUID();
-                }else
-                    events.RescheduleEvent(1, 1000);
+                    if (base->GetGUID() != _poleGuid)
+                        RemovePole();
+                }
+                else
+                {
+                    // The previous cast can finish without seating the monk.
+                    RemovePole();
+                    if (_boardAttempts < 3)
+                    {
+                        ++_boardAttempts;
+                        me->StopMoving();
+                        if (Creature* pole = me->GetMap()->SummonCreature(54993, *me, nullptr, 0, nullptr, ObjectGuid::Empty, 0, 1749))
+                        {
+                            pole->SetDisplayId(39004);
+                            _poleGuid = pole->GetGUID();
+                            me->EnterVehicle(pole);
+                        }
+                        _events.ScheduleEvent(EVENT_BOARD_POLE, 1000);
+                    }
+                }
             }
             DoMeleeAttackIfReady();
         }
+
+    private:
+        void RemovePole()
+        {
+            if (!_poleGuid.IsEmpty())
+                if (Creature* pole = me->GetMap()->GetCreature(_poleGuid))
+                    pole->DespawnOrUnsummon();
+            _poleGuid.Clear();
+        }
+
+        ObjectGuid _poleGuid;
+        EventMap _events;
+        uint8 _boardAttempts = 0;
     };
 };
 

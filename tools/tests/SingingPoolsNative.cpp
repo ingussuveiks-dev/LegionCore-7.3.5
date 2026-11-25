@@ -17,6 +17,9 @@ constexpr uint32 DryFur = 29661;
 constexpr uint32 Reeds = 29662;
 constexpr uint32 ReedItem = 73178;
 constexpr uint32 ReedGiverSpawn = 244247;
+constexpr uint32 BalancedRock = 29663;
+constexpr uint32 TushuiMonk = 55019;
+constexpr uint32 MonkSpawns[] = {244325, 244326, 244327, 244436};
 constexpr uint32 NextQuest = 29676;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
@@ -38,7 +41,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 5, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 6, "Missing the Singing Pools quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -52,8 +55,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29676)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 5, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29676)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 6, "Missing the original Pools prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -75,13 +78,20 @@ void LoadPools()
         "Missing the original reed objective");
     quests[Reeds]->LoadQuestObjective(reedsObjective->Fetch());
     quests[Reeds]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
+    auto rockObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29663");
+    Require(rockObjective && rockObjective->Fetch()[4].GetUInt32() == TushuiMonk && rockObjective->Fetch()[5].GetUInt32() == 6,
+        "Missing the original six-monk objective");
+    quests[BalancedRock]->LoadQuestObjective(rockObjective->Fetch());
+    quests[BalancedRock]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN (243552,244137,244247,244270)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
+        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244436)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29676)");
+        "WHERE quest IN (29521,29661,29662,29663,29676)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29676)");
+        "WHERE quest IN (29521,29661,29662,29663,29676)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
@@ -177,6 +187,7 @@ void PreparePoolHunter(LootPlayer& player)
     player.setFactionForRace(RACE_PANDAREN_NEUTRAL);
     player.InitDisplayIds();
     player.GetReputationMgr().LoadFromDB({});
+    player.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     player.SetLevel(10);
     player.SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 10000);
     for (uint16 field : {UNIT_FIELD_MOD_TIME_RATE, UNIT_FIELD_MOD_CASTING_SPEED, UNIT_FIELD_MOD_SPELL_HASTE, UNIT_FIELD_MOD_HASTE})
@@ -309,9 +320,117 @@ void CheckPoolWater(LootPlayer& player, uint32 triggerId, uint32 spell)
 }
 #endif
 
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE)
+struct PoolPet : LootPet
+{
+    PoolPet(LootPlayer& owner, Map& map) : LootPet(owner, map)
+    {
+        m_ControlledByPlayer = true;
+        setFaction(owner.getFaction());
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    }
+};
+
+void CheckBalancedRock()
+{
+    Map map(860, 665, 0, DIFFICULTY_NONE);
+    Teacher aysa(map);
+    LootPlayer owner(SupplySession(), map, 2966301, aysa.GetPosition());
+    PreparePoolHunter(owner);
+    owner.SetRewardedQuest(Introduction);
+    AcceptQuest(owner, aysa, BalancedRock);
+    Require(owner.GetQuestStatus(BalancedRock) == QUEST_STATUS_INCOMPLETE, "Aysa did not admit the six-monk lesson");
+    PoolPet pet(owner, map);
+
+#ifdef SINGING_POOLS_ROCK_BASELINE
+    constexpr unsigned battles = 1;
+#else
+    constexpr unsigned battles = 6;
+#endif
+    auto quest = sQuestDataStore->GetQuestTemplate(BalancedRock);
+    for (unsigned index = 0; index < battles; ++index)
+    {
+        uint32 const spawn = MonkSpawns[index % std::size(MonkSpawns)];
+        if (index >= std::size(MonkSpawns))
+            map.RemoveCreatureRespawnTime(spawn);
+        Teacher monk(map, spawn, TushuiMonk);
+        monk.AI()->UpdateAI(1100);
+#ifndef SINGING_POOLS_ROCK_BASELINE
+        if (!index)
+        {
+            std::list<Creature*> poles;
+            monk.GetCreatureListWithEntryInGrid(poles, 54993, 5.0f);
+            auto failed = std::find_if(poles.begin(), poles.end(), [](Creature* pole) { return pole->ToTempSummon(); });
+            Require(failed != poles.end() && !monk.GetVehicleBase(), "No pending native pole join to interrupt");
+            ObjectGuid const failedGuid = (*failed)->GetGUID();
+            (*failed)->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE);
+            monk.Unit::Update(50);
+            Require(!monk.GetVehicleBase(), "Interrupting the ride aura did not cancel the native join");
+            monk.AI()->UpdateAI(1100);
+            map.RemoveAllObjectsInRemoveList();
+            Require(!map.GetCreature(failedGuid), "An interrupted join left its unused pole");
+            std::cout << "PASS canceled native join, unused-pole cleanup and retry" << std::endl;
+        }
+#endif
+        for (uint32 elapsed = 0; elapsed < 2500 && !monk.GetVehicleBase(); elapsed += 50)
+            monk.Unit::Update(50);
+        Creature* pole = monk.GetVehicleBase() ? monk.GetVehicleBase()->ToCreature() : nullptr;
+        Require(pole && pole->GetEntry() == 54993 && pole->ToTempSummon(), "The genuine Tushui Monk did not take its native pole seat");
+        auto const poleGuid = pole->GetGUID();
+
+        monk.AI()->Reset();
+        monk.AI()->UpdateAI(1100);
+        Require(monk.GetVehicleBase() == pole, "Reset changed the Tushui Monk's occupied pole");
+        MoveGilneasPlayer(owner, monk.GetPosition());
+        Unit& killer = index % 2 ? static_cast<Unit&>(pet) : static_cast<Unit&>(owner);
+        if (&killer == &pet)
+        {
+            map.CreatureRelocation(&pet, monk.GetPositionX(), monk.GetPositionY(), monk.GetPositionZ(), monk.GetOrientation());
+            map.MoveAllCreaturesInMoveList();
+        }
+        if (!killer.IsValidAttackTarget(&monk))
+            std::cout << "Monk attack admission: visible=" << killer.canSeeOrDetect(&monk, false)
+                << " flags=" << monk.GetUInt32Value(UNIT_FIELD_FLAGS) << " attackerFlags=" << killer.GetUInt32Value(UNIT_FIELD_FLAGS)
+                << " factions=" << killer.getFaction() << '/' << monk.getFaction() << " reactions="
+                << killer.GetReactionTo(&monk) << '/' << monk.GetReactionTo(&killer)
+                << " alive=" << monk.IsAlive() << " unattackable=" << monk.HasUnitState(UNIT_STATE_UNATTACKABLE) << std::endl;
+        Require(killer.IsValidAttackTarget(&monk), "A seated monk was not a native attack target");
+        killer.DealDamage(&monk, uint32(monk.GetMaxHealth()) * 2);
+        Tick(owner, 100);
+        if (Creature* pending = map.GetCreature(poleGuid))
+            pending->Update(1500);
+        map.RemoveAllObjectsInRemoveList();
+        bool const leftBehind = map.GetCreature(poleGuid);
+        if (Creature* retained = map.GetCreature(poleGuid))
+        {
+            retained->DespawnOrUnsummon();
+            map.RemoveAllObjectsInRemoveList();
+        }
+        Require(!monk.IsAlive() && owner.GetQuestObjectiveData(BalancedRock, TushuiMonk) == int32(index + 1),
+            "The placed monk did not award one actual defeat to the player or pet owner");
+#ifdef SINGING_POOLS_ROCK_BASELINE
+        Require(leftBehind, "The old reset unexpectedly retained ownership of the temporary pole");
+        std::cout << "EXPECTED_BROKEN Monk reset left its temporary pole after the actual defeat" << std::endl;
+#else
+        Require(!leftBehind && owner.CanRewardQuest(quest, false) == (index + 1 == battles),
+            "Defeat left a temporary pole or changed the six-monk reward gate");
+#endif
+    }
+#ifndef SINGING_POOLS_ROCK_BASELINE
+    MoveGilneasPlayer(owner, aysa.GetPosition());
+    RewardQuest(owner, aysa, BalancedRock);
+    Require(owner.IsQuestRewarded(BalancedRock), "Aysa did not accept the six native defeats");
+    std::cout << "PASS four placed Tushui Monks, six real defeats, owner and pet credit, reset cleanup and Aysa's turn-in" << std::endl;
+#endif
+}
+#endif
+
 void CheckBell()
 {
     for (uint32 spawn : {ShangTempleSpawn, AysaSpawn, ReedGiverSpawn, 244137u})
+        if (auto data = sObjectMgr->GetCreatureData(spawn))
+            sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+    for (uint32 spawn : MonkSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
@@ -489,6 +608,9 @@ int main(int argc, char** argv)
         CheckBell();
 #if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE)
         CheckReeds();
+#endif
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE)
+        CheckBalancedRock();
 #endif
         CharacterDatabase.Close();
         LoginDatabase.Close();
