@@ -6,7 +6,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,[switch]$WanderingFirstLesson,
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,
-      [switch]$HuoOfferings,[switch]$HuoOfferingsBaseline,
+      [switch]$HuoOfferings,[switch]$HuoOfferingsBaseline,[switch]$SingingPools,[switch]$SingingPoolsBaseline,
       [switch]$ForestEttin,[switch]$ForestEttinBaseline,
       [switch]$KezanHotRod,[switch]$KezanHotRodBaseline,
       [switch]$TakingPrecautions,[switch]$Collector,[switch]$Scenes,[switch]$Kyle,[switch]$Seasoning,[switch]$SeasoningBaseline,
@@ -30,6 +30,7 @@ if($BraziePumpkin){++$scopedProbes}
 if($BrazieWarden){++$scopedProbes}
 if($BrazieGarden){++$scopedProbes}
 if($WanderingFirstLesson){++$scopedProbes}
+if($SingingPools -or $SingingPoolsBaseline){++$scopedProbes}
 if($scopedProbes -and ($Baseline -or !$FixtureConfig -or $scopedProbes -gt 1)){throw 'Use one named probe and its private migrated fixture'}
 if(!$OutputDirectory -and $BrazieBasicBotany){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-basic-botany"}
 if(!$OutputDirectory -and $BrazieFlowerPower){$OutputDirectory="$repo/build-extractors/runtime-test/quest-brazie-flower-power"}
@@ -57,6 +58,7 @@ if(!$OutputDirectory -and ($NoTanks -or $NoTanksBaseline)){$OutputDirectory="$re
 if(!$OutputDirectory -and ($KezanHotRod -or $KezanHotRodBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-kezan-hot-rod"}
 if(!$OutputDirectory -and ($ForestEttin -or $ForestEttinBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-forest-ettin"}
 if(!$OutputDirectory -and ($HuoOfferings -or $HuoOfferingsBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-huo-offerings"}
+if(!$OutputDirectory -and ($SingingPools -or $SingingPoolsBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-singing-pools"}
 if(!$OutputDirectory -and ($ChallengerFires -or $ChallengerFiresBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-challenger-fires"}
 if(!$OutputDirectory -and ($IlgalarWard -or $IlgalarWardBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-ilgalar-ward"}
 if(!$OutputDirectory -and ($BlackrockPrisoners -or $BlackrockPrisonersBaseline)){$OutputDirectory="$repo/build-extractors/runtime-test/quest-blackrock-prisoners"}
@@ -658,6 +660,11 @@ if($HuoOfferings -or $HuoOfferingsBaseline){
  [IO.File]::WriteAllText("$out/NativeHuoOfferings.inc",$query+' " WHERE ID IN(29421,29422,29423,29521)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
+if($SingingPools -or $SingingPoolsBaseline){
+ $probeSource="$PSScriptRoot/SingingPoolsNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeSingingPools.inc",$query+' " WHERE ID IN (29521,29661,29676)"')
+ [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
+}
 if($ChallengerFires -or $ChallengerFiresBaseline){
  $probeSource="$PSScriptRoot/ChallengerFiresNative.cpp"
  [IO.File]::WriteAllText("$out/NativeChallengerFires.inc",$query+' " WHERE ID IN(29420,29422,29664)"')
@@ -1119,6 +1126,7 @@ if($SwiftclawRideBaseline){$compilerArgs+='/DSWIFTCLAW_RIDE_BASELINE'}
 if($KezanHotRodBaseline){$compilerArgs+='/DKEZAN_HOT_ROD_BASELINE'}
 if($ForestEttinBaseline){$compilerArgs+='/DFOREST_ETTIN_BASELINE'}
 if($HuoOfferingsBaseline){$compilerArgs+='/DHUO_OFFERINGS_BASELINE'}
+if($SingingPoolsBaseline){$compilerArgs+='/DSINGING_POOLS_BASELINE'}
 if($ChallengerFiresBaseline){$compilerArgs+='/DCHALLENGER_FIRES_BASELINE'}
 if($IlgalarWardBaseline){$compilerArgs+='/DILGALAR_WARD_BASELINE'}
 if($BlackrockPrisonersBaseline){$compilerArgs+='/DBLACKROCK_PRISONERS_BASELINE'}

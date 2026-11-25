@@ -1704,6 +1704,28 @@ public:
     };
 };
 
+struct go_wandering_isle_training_bell : GameObjectAI
+{
+    explicit go_wandering_isle_training_bell(GameObject* object) : GameObjectAI(object) { }
+
+    bool GossipHello(Player* player, bool isUse) override
+    {
+        if (!isUse && player->CanContact() && !player->IsSpectator())
+            go->Use(player);
+        return true;
+    }
+
+    bool GossipUse(Player* player) override
+    {
+        // Allow the spellcaster object to cast its native spell after admission.
+        return !player->IsAlive() || !player->CanContact() || player->IsSpectator() ||
+            player->GetQuestStatus(29661) != QUEST_STATUS_INCOMPLETE ||
+            go->GetMapId() != 860 || go->GetDBTableGUIDLow() != 102318 ||
+            !go->InSamePhase(player) || !go->IsWithinDistInMap(player, go->GetInteractionDistance()) ||
+            !player->IsWithinLOSInMap(go) || player->IsInWater();
+    }
+};
+
 class checkArea : public BasicEvent
 {
     Player* player;
@@ -5812,6 +5834,7 @@ void AddSC_WanderingIsland()
     RegisterCreatureAI(npc_wandering_isle_trainee);
     RegisterCreatureAI(npc_wandering_isle_scroll_master);
     RegisterGameObjectAI(go_wandering_isle_edict);
+    RegisterGameObjectAI(go_wandering_isle_training_bell);
     RegisterSpellScript(spell_wandering_isle_burn_scroll);
     new boss_jaomin_ro();
     new npc_panda_announcer();
