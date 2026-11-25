@@ -188,6 +188,15 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
 
         if (_player->CanAddQuest(quest, true))
         {
+            PlayerMenu& menu = *_player->PlayerTalkClass;
+            Creature* questGiver = object->ToCreature();
+            auto isListedOffer = [&]
+            {
+                return questGiver && menu.GetGossipMenu().Empty() &&
+                    menu.GetGossipMenu().GetMenuId() == _player->GetDefaultGossipMenuForSource(questGiver) &&
+                    menu.GetQuestMenu().GetMenuItemCount() > 1 && menu.GetQuestMenu().HasItem(packet.QuestID);
+            };
+            bool const fromQuestList = isListedOffer();
             _player->AddQuestAndCheckCompletion(quest, object);
 
             if (quest->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
@@ -214,7 +223,28 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
                 }
             }
 
-            _player->PlayerTalkClass->SendCloseGossip();
+            bool refreshedQuestList = false;
+            if (fromQuestList && isListedOffer() && !quest->SourceSpellID &&
+                !quest->HasFlag(QUEST_FLAGS_LAUNCH_GOSSIP_ACCEPT) && _player->CanInteractWithQuestGiver(questGiver))
+            {
+                _player->PrepareQuestMenu(questGiver->GetGUID());
+                QuestMenu const& remaining = menu.GetQuestMenu();
+                for (uint8 i = 0; i < remaining.GetMenuItemCount(); ++i)
+                {
+                    uint32 questId = remaining.GetItem(i).QuestId;
+                    if (_player->GetQuestStatus(questId) == QUEST_STATUS_NONE && questGiver->hasQuest(questId))
+                    {
+                        // Replace the accepted detail panel with the updated
+                        // list, even when only one available quest remains.
+                        menu.SendQuestGiverQuestList(0, questGiver->GetGUID());
+                        refreshedQuestList = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!refreshedQuestList)
+                menu.SendCloseGossip();
 
             if (quest->HasFlag(QUEST_FLAGS_LAUNCH_GOSSIP_ACCEPT))
             {
