@@ -655,7 +655,7 @@ if($ForestEttin -or $ForestEttinBaseline){
 }
 if($HuoOfferings -or $HuoOfferingsBaseline){
  $probeSource="$PSScriptRoot/HuoOfferingsNative.cpp"
- [IO.File]::WriteAllText("$out/NativeHuoOfferings.inc",$query+' " WHERE ID IN(29421,29422)"')
+ [IO.File]::WriteAllText("$out/NativeHuoOfferings.inc",$query+' " WHERE ID IN(29421,29422,29423,29521)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($ChallengerFires -or $ChallengerFiresBaseline){

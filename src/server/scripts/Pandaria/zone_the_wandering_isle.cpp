@@ -28,7 +28,7 @@ enum panda_npc
     NPC_EAST_CHILDREN_CAI                          = 60250,
     NPC_EAST_CHILDREN_DEN                          = 60249,
     NPC_AYSA_WATTER_OUTRO_EVENT                    = 54975,
-    NPC_XO_TREVELER                                = 54958,
+    NPC_HUO_COMPANION                              = 54958,
 };
 
 enum panda_quests
@@ -1421,38 +1421,178 @@ public:
     AuraScript* GetAuraScript() const override { return new OfferingAura(); }
 };
 
-class AreaTrigger_at_temple_entrance : public AreaTriggerScript
+namespace
 {
-    public:
-        AreaTrigger_at_temple_entrance() : AreaTriggerScript("AreaTrigger_at_temple_entrance")
-        {}
+constexpr uint32 HuoAcceptSpell = 128700;
+constexpr uint32 HuoCompanionSpell = 102632;
+constexpr uint32 HuoArrivalSpell = 105090;
+constexpr uint32 HuoArrivalCredit = 61128;
+constexpr uint32 HuoTempleEntrance = 7835;
+constexpr uint32 HuoTempleShangXi = 54786;
+constexpr uint32 HuoTempleShangXiSpawn = 243552;
 
-        bool OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool enter)
+bool HasHuoEscortQuest(Player const* owner)
+{
+    return owner && owner->IsAlive() && owner->GetMapId() == 860 &&
+        owner->GetQuestStatus(QUEST_PASSION_OF_SHEN) == QUEST_STATUS_INCOMPLETE;
+}
+
+bool IsHuoEscort(TempSummon const* huo, Player const* owner)
+{
+    if (!HasHuoEscortQuest(owner) || !huo || !huo->IsAlive() || !huo->HasQuestObjectScope() ||
+        huo->IsQuestObjectExpired() || huo->GetEntry() != NPC_HUO_COMPANION ||
+        huo->GetSummonerGUID() != owner->GetGUID() || !huo->IsInPersonnalVisibilityList(owner->GetGUID()))
+        return false;
+
+    uint32 spell = huo->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
+    return spell == HuoAcceptSpell || spell == HuoCompanionSpell;
+}
+
+bool HasActiveHuoCompanion(Player* owner)
+{
+    for (ObjectGuid const& guid : *owner->GetSummonList(NPC_HUO_COMPANION))
+        if (Creature* companion = owner->GetMap()->GetCreature(guid))
+            if (IsHuoEscort(companion->ToTempSummon(), owner))
+                return true;
+
+    return false;
+}
+
+Creature* FindHuoTempleReceiver(TempSummon& huo, Player* owner)
+{
+    if (!IsHuoEscort(&huo, owner) || !owner->IsInAreaTriggerRadius(HuoTempleEntrance) ||
+        !huo.IsWithinDistInMap(owner, 20.0f) || !owner->IsWithinLOSInMap(&huo) || !huo.InSamePhase(owner))
+        return nullptr;
+
+    Creature* receiver = huo.FindNearestCreature(HuoTempleShangXi, 15.0f);
+    if (!receiver || receiver->GetDBTableGUIDLow() != HuoTempleShangXiSpawn ||
+        !receiver->InSamePhase(owner) || !huo.IsWithinLOSInMap(receiver))
+        return nullptr;
+
+    return receiver;
+}
+}
+
+struct npc_wandering_isle_huo_escort : ScriptedAI
+{
+    explicit npc_wandering_isle_huo_escort(Creature* creature) : ScriptedAI(creature) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        Player* owner = summoner->ToPlayer();
+        uint32 spell = me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
+        if (!HasHuoEscortQuest(owner) || (spell != HuoAcceptSpell && spell != HuoCompanionSpell) ||
+            !me->IsInPersonnalVisibilityList(owner->GetGUID()) || HasActiveHuoCompanion(owner))
         {
-            if (player->GetQuestStatus(QUEST_PASSION_OF_SHEN) == QUEST_STATUS_INCOMPLETE)
-            {
-                player->KilledMonsterCredit(61128, ObjectGuid::Empty);
-
-                std::list<Creature*> huoList;
-                GetCreatureListWithEntryInGrid(huoList, player, 54958, 20.0f);
-
-                for (std::list<Creature*>::const_iterator itr = huoList.begin(); itr != huoList.end(); ++itr)
-                {
-                    Creature* huo = *itr;
-                    if (huo->ToTempSummon())
-                    {
-                        if (huo->ToTempSummon()->GetOwnerGUID() == player->GetGUID())
-                        {
-                            huo->GetMotionMaster()->Clear();
-                            huo->GetMotionMaster()->MovePoint(1, 950.0f, 3601.0f, 203.0f);
-                            huo->DespawnOrUnsummon(5000);
-                        }
-                    }
-                }
-            }
-
-            return true;
+            me->DespawnOrUnsummon(1);
+            return;
         }
+
+        owner->BindQuestObject(QUEST_PASSION_OF_SHEN, me);
+        me->SetReactState(REACT_PASSIVE);
+        SetFollowTarget(owner, PET_FOLLOW_DIST);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_arrived)
+            return;
+        if (_poll > diff)
+        {
+            _poll -= diff;
+            return;
+        }
+        _poll = 1000;
+
+        TempSummon* huo = me->ToTempSummon();
+        Unit* summoner = huo ? huo->GetSummoner() : nullptr;
+        Player* owner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!IsHuoEscort(huo, owner))
+        {
+            me->DespawnOrUnsummon();
+            return;
+        }
+
+        Creature* receiver = FindHuoTempleReceiver(*huo, owner);
+        if (!receiver)
+        {
+            SetFollowTarget(owner, PET_FOLLOW_DIST);
+            return;
+        }
+
+        if (!me->IsWithinDistInMap(receiver, INTERACTION_DISTANCE))
+        {
+            SetFollowTarget(receiver, 1.0f);
+            return;
+        }
+
+        owner->CastSpell(owner, HuoArrivalSpell, true, nullptr, nullptr, me->GetGUID());
+        if (owner->GetQuestStatus(QUEST_PASSION_OF_SHEN) == QUEST_STATUS_COMPLETE)
+        {
+            _arrived = true;
+            owner->RemoveAura(HuoAcceptSpell, owner->GetGUID());
+            owner->RemoveAura(HuoCompanionSpell, owner->GetGUID());
+            me->GetMotionMaster()->MoveIdle();
+            me->DespawnOrUnsummon(2000);
+        }
+    }
+
+private:
+    void SetFollowTarget(Unit* target, float distance)
+    {
+        if (_following == target->GetGUID())
+            return;
+        _following = target->GetGUID();
+        me->GetMotionMaster()->MoveFollow(target, distance, float(PET_FOLLOW_ANGLE));
+    }
+
+    ObjectGuid _following;
+    uint32 _poll = 0;
+    bool _arrived = false;
+};
+
+class player_wandering_isle_huo_escort : public PlayerScript
+{
+public:
+    player_wandering_isle_huo_escort() : PlayerScript("player_wandering_isle_huo_escort") { }
+
+    void OnLogin(Player* player) override
+    {
+        if (HasHuoEscortQuest(player) && !HasActiveHuoCompanion(player))
+            player->CastSpell(player, HuoAcceptSpell, true);
+    }
+};
+
+class spell_wandering_isle_huo_arrival : public SpellScriptLoader
+{
+public:
+    spell_wandering_isle_huo_arrival() : SpellScriptLoader("spell_wandering_isle_huo_arrival") { }
+
+    class Arrival : public SpellScript
+    {
+        PrepareSpellScript(Arrival);
+
+        void Credit(SpellEffIndex effect)
+        {
+            PreventHitDefaultEffect(effect);
+            Unit* source = GetOriginalCaster();
+            TempSummon* huo = source ? source->ToTempSummon() : nullptr;
+            Player* owner = GetHitUnit() ? GetHitUnit()->ToPlayer() : nullptr;
+            if (!huo || owner != GetCaster())
+                return;
+
+            Creature* receiver = FindHuoTempleReceiver(*huo, owner);
+            if (receiver && huo->IsWithinDistInMap(receiver, INTERACTION_DISTANCE))
+                owner->KilledMonsterCredit(HuoArrivalCredit);
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(Arrival::Credit, EFFECT_1, SPELL_EFFECT_KILL_CREDIT);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override { return new Arrival(); }
 };
 
 /*
@@ -5686,7 +5826,9 @@ void AddSC_WanderingIsland()
     new boss_li_fei();
     new boss_li_fei_fight();
     new spell_wandering_isle_huo_offerings();
-    new AreaTrigger_at_temple_entrance();
+    RegisterCreatureAI(npc_wandering_isle_huo_escort);
+    new player_wandering_isle_huo_escort();
+    new spell_wandering_isle_huo_arrival();
     // east
     new at_going_to_east();
     new npc_childrens_going_to_east();

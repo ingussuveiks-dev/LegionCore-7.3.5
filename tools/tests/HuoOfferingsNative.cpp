@@ -3,6 +3,9 @@
 #undef main
 
 #include "GilneasQuestNative.h"
+#include "AreaTriggerData.h"
+#include "MiscPackets.h"
+#include "MovementGenerator.h"
 #include "ScriptsData.h"
 
 void AddSC_WanderingIsland();
@@ -16,13 +19,20 @@ constexpr uint32 FanFlames = 102522;
 constexpr uint32 HuoCredit = 54787;
 constexpr uint32 TeacherSpawn = 244088;
 constexpr uint32 HuoSpawn = 244099;
+constexpr uint32 EscortQuest = 29423;
+constexpr uint32 EscortCredit = 61128;
+constexpr uint32 TempleTrigger = 7835;
+constexpr uint32 Companion = 54958;
+constexpr uint32 HuoEscortGiverSpawn = 244100;
+constexpr uint32 ShangTempleSpawn = 243552;
+constexpr uint32 SingingPools = 29521;
 
 Quest const* LoadFireQuest(bool baseline)
 {
     auto rows = WorldDatabase.Query(
 #include "NativeHuoOfferings.inc"
     );
-    Require(rows && rows->GetRowCount() == 2, "Missing Huo and its actual prerequisite");
+    Require(rows && rows->GetRowCount() == 4, "Missing Huo, its actual prerequisite or successor");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -45,6 +55,20 @@ Quest const* LoadFireQuest(bool baseline)
     quest->LoadQuestTemplateAddon(addon->Fetch());
     quest->prevQuests.push_back(Trial);
     quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    auto escort = quests[EscortQuest];
+    auto escortObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29423");
+    Require(escortObjective && escortObjective->Fetch()[4].GetUInt32() == EscortCredit, "The actual temple objective changed");
+    escort->LoadQuestObjective(escortObjective->Fetch());
+    auto escortAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
+        "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMinRepValue,"
+        "RequiredMaxRepFaction,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID=29423");
+    Require(escortAddon && escortAddon->Fetch()[3].GetUInt32() == 128700 && escortAddon->Fetch()[4].GetUInt32() == FireQuest,
+        "The actual companion spell or offering prerequisite changed");
+    escort->LoadQuestTemplateAddon(escortAddon->Fetch());
+    escort->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    escort->prevQuests.push_back(FireQuest);
+    quests[SingingPools]->prevQuests.push_back(EscortQuest);
 
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -58,15 +82,16 @@ Quest const* LoadFireQuest(bool baseline)
         "The client Huo sequence is not the 12 second offering aura");
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN(244088,244099)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest=29422");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest=29422");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN(244088,244099,244100,243552)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(29422,29423,29521)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(29422,29423,29521)");
     if (!baseline)
     {
-        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id=102522");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(102522,105090)");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
             "WHERE SourceTypeOrReferenceId=13 AND SourceEntry IN(102522,109090,109105)");
-        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=102522");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell IN(102522,102632,128700)");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts WHERE entry=7835");
     }
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     if (!baseline)
@@ -74,6 +99,7 @@ Quest const* LoadFireQuest(bool baseline)
         sScriptDataStore->LoadSpellScriptNames();
         sConditionMgr->LoadConditions();
         sSpellMgr->LoadSpellAreas();
+        sAreaTriggerDataStore->LoadAreaTriggerScripts();
         sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
         AddSC_WanderingIsland();
         sScriptMgr->SwapScriptContext(true);
@@ -101,9 +127,99 @@ struct OfferingActor : Creature
     }
 };
 
+TempSummon* FindCompanion(Player& owner)
+{
+    for (ObjectGuid const& guid : *owner.GetSummonList(Companion))
+        if (Creature* companion = owner.GetMap()->GetCreature(guid))
+            if (companion->HasQuestObjectScope() && !companion->IsQuestObjectExpired())
+                return companion->ToTempSummon();
+    return nullptr;
+}
+
+void CheckEscort(LootPlayer& owner, Map& map)
+{
+    OfferingActor giver(map, HuoEscortGiverSpawn), receiver(map, ShangTempleSpawn);
+    auto accept = [&] {
+        MoveGilneasPlayer(owner, giver.GetPosition());
+        WorldPackets::Quest::QuestGiverAcceptQuest packet{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+        packet.QuestID = EscortQuest;
+        packet.QuestGiverGUID = giver.GetGUID();
+        owner.GetSession()->HandleQuestGiverAcceptQuest(packet);
+        Tick(owner, 100);
+    };
+
+    accept();
+    auto companion = FindCompanion(owner);
+    Require(companion && companion->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 128700 &&
+        companion->GetSummonerGUID() == owner.GetGUID() && companion->IsInPersonnalVisibilityList(owner.GetGUID()) &&
+        companion->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE,
+        "The native acceptance did not summon the personal Huo and start following its owner");
+    ObjectGuid const abandoned = companion->GetGUID();
+    AbandonSupply(owner, EscortQuest);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(abandoned) && !owner.HasAura(128700), "An abandoned attempt kept its original companion or aura");
+
+    accept();
+    companion = FindCompanion(owner);
+    Require(companion && companion->GetGUID() != abandoned, "The next acceptance could not summon another Huo");
+    ObjectGuid const beforeReconnect = companion->GetGUID();
+    companion->UnSummon();
+    map.RemoveAllObjectsInRemoveList();
+    sScriptMgr->OnPlayerLogin(&owner);
+    Tick(owner, 100);
+    companion = FindCompanion(owner);
+    Require(companion && companion->GetGUID() != beforeReconnect && !owner.GetQuestObjectiveData(EscortQuest, EscortCredit),
+        "Login recovery did not restore the active quest's companion without granting credit");
+    MoveGilneasPlayer(owner, receiver.GetPosition());
+    WorldPackets::Misc::AreaTrigger trigger{WorldPacket(CMSG_AREA_TRIGGER)};
+    trigger.AreaTriggerID = TempleTrigger;
+    trigger.Entered = true;
+    trigger.FromClient = true;
+    owner.GetSession()->HandleAreaTrigger(trigger);
+    owner.CastSpell(&owner, 105090, true);
+    Tick(owner, 100);
+    Require(!owner.GetQuestObjectiveData(EscortQuest, EscortCredit), "The room entry counted before the player actually brought Huo");
+
+    ObjectGuid const escortGuide = companion->GetGUID();
+    map.CreatureRelocation(companion, receiver.GetPositionX(), receiver.GetPositionY(), receiver.GetPositionZ(), receiver.GetOrientation());
+    map.MoveAllCreaturesInMoveList();
+    companion->AI()->UpdateAI(1000);
+    Tick(owner, 100);
+    Require(owner.GetQuestObjectiveData(EscortQuest, EscortCredit) == 1 && owner.GetQuestStatus(EscortQuest) == QUEST_STATUS_COMPLETE,
+        "Huo's native arrival spell did not give one credit after reaching the placed Shang Xi");
+
+    auto quest = sQuestDataStore->GetQuestTemplate(EscortQuest);
+    auto package = sDB2Manager.GetQuestPackageItems(quest->PackageID);
+    Require(package, "Missing the Temple's native reward package");
+    auto choice = std::find_if(package->begin(), package->end(), [&](auto entry) { return owner.CanSelectQuestPackageItem(entry); });
+    auto fallback = sDB2Manager.GetQuestPackageItemsFallback(quest->PackageID);
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestID = EscortQuest;
+    reward.QuestGiverGUID = receiver.GetGUID();
+    if (choice != package->end())
+        reward.ItemChoiceID = (*choice)->ItemID;
+    else if (fallback && !fallback->empty())
+        reward.ItemChoiceID = fallback->front()->ItemID;
+    owner.GetSession()->HandleQuestGiverChooseReward(reward);
+    if (Creature* pending = map.GetCreature(escortGuide))
+        pending->Update(2001);
+    map.RemoveAllObjectsInRemoveList();
+    Require(owner.IsQuestRewarded(EscortQuest) && !owner.HasAura(128700) && !map.GetCreature(escortGuide),
+        "Shang Xi rejected Huo's arrival or left its escort actor and aura active");
+    if (owner.GetQuestStatus(SingingPools) == QUEST_STATUS_NONE)
+    {
+        WorldPackets::Quest::QuestGiverAcceptQuest next{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+        next.QuestID = SingingPools;
+        next.QuestGiverGUID = receiver.GetGUID();
+        owner.GetSession()->HandleQuestGiverAcceptQuest(next);
+    }
+    Require(owner.GetQuestStatus(SingingPools) != QUEST_STATUS_NONE, "Shang Xi did not open the Singing Pools");
+    std::cout << "PASS genuine acceptance and personal follower, no early room credit, actual Shang Xi arrival and Temple reward\n";
+}
+
 void CheckOfferings(Quest const* quest, bool baseline)
 {
-    for (uint32 spawn : {TeacherSpawn, HuoSpawn})
+    for (uint32 spawn : {TeacherSpawn, HuoSpawn, HuoEscortGiverSpawn, ShangTempleSpawn})
         sObjectMgr->RemoveCreatureFromGrid(spawn, sObjectMgr->GetCreatureData(spawn));
     Map map(860, 642, 0, DIFFICULTY_NONE);
     OfferingActor master(map, TeacherSpawn), huo(map, HuoSpawn);
@@ -173,6 +289,7 @@ void CheckOfferings(Quest const* quest, bool baseline)
     owner.GetSession()->HandleQuestGiverChooseReward(reward);
     Require(owner.GetQuestRewardStatus(FireQuest) && !owner.GetItemCount(Offerings), "The genuine Huo turn-in did not clean up the offerings");
     std::cout << "PASS genuine Huo, twelve second offering, cancellation, movement, retry and native turn-in\n";
+    CheckEscort(owner, map);
 }
 }
 
