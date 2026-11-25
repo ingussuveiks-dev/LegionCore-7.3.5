@@ -10,7 +10,7 @@ $native=$native.Replace('QuestObjectiveType type /*= QUEST_OBJECTIVE_MONSTER*/',
 $definition=''
 if($Baseline){$definition='/DSCYTHE_EXIT_BASELINE';$source=(& git -C $repo show '38f88905:src/server/scripts/Legion/azsuna_scythe.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned Scythe source missing'};[IO.File]::WriteAllText("$output/ScytheBaseline.inc",$source)}
 if($AddressSanitizer){$definition+=' /fsanitize=address /Zi'}
-foreach ($header in @('ScriptMgr.h','ScriptedCreature.h','Player.h','ObjectAccessor.h','Map.h','TemporarySummon.h','GameObject.h')) {
+foreach ($header in @('ScriptMgr.h','ScriptedCreature.h','Player.h','ObjectAccessor.h','Map.h','TemporarySummon.h','GameObject.h','DB2Stores.h')) {
     [IO.File]::WriteAllText("$output/$header", '#pragma once')
 }
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"

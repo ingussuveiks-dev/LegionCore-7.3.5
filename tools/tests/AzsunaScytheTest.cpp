@@ -8,11 +8,13 @@
 using uint32 = uint32_t;
 using int32 = int32_t;
 struct ObjectGuid {
+    static ObjectGuid const Empty;
     unsigned value=0;
     void Clear() { value=0; }
     bool operator<(ObjectGuid b) const { return value<b.value; }
     bool operator==(ObjectGuid b) const { return value==b.value; }
 };
+ObjectGuid const ObjectGuid::Empty{};
 using GuidList=std::vector<ObjectGuid>;
 enum { QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, QUEST_OBJECTIVE_GAMEOBJECT=2, MAX_QUEST_LOG_SIZE=25,
     TEMPSUMMON_TIMED_DESPAWN=1, REACT_PASSIVE=0, REACT_AGGRESSIVE=1, UNIT_FIELD_FLAGS=0,
@@ -21,6 +23,19 @@ struct Position { float x,y,z,o; };
 struct Player;
 struct CreatureAI;
 struct TempSummon;
+struct SummonPropertiesEntry { unsigned id; };
+struct SummonPropertiesStore {
+    SummonPropertiesEntry const* LookupEntry(unsigned id)
+    {
+        static SummonPropertiesEntry const allari{3634}, soul{2912};
+        if (id == allari.id) return &allari;
+        return id == soul.id ? &soul : nullptr;
+    }
+} sSummonPropertiesStore;
+struct Map {
+    TempSummon* SummonCreature(unsigned entry, Position const& pos, SummonPropertiesEntry const* properties,
+        unsigned lifetime, Player* owner, ObjectGuid target, unsigned spell, int vehicle, ObjectGuid viewer);
+};
 struct Unit {
     ObjectGuid guid; Position pos{-154.62f,6906.46f,13.2f,0}; bool alive=true; unsigned map=1220;
     virtual ~Unit()=default;
@@ -69,6 +84,7 @@ struct Player:Unit {
     std::set<unsigned> auras; std::vector<unsigned> credits; Menu menu; Menu* PlayerTalkClass=&menu;
     Player* ToPlayer() override { return this; }
     unsigned GetMapId() { return map; }
+    Map* GetMap() { return &world; }
     int GetQuestStatus(unsigned) { return status; }
     unsigned GetQuestObjectiveData(unsigned,unsigned obj) { return objectives[obj]; }
     GuidList* GetSummonList(unsigned entry) { return &summons[entry]; }
@@ -95,9 +111,20 @@ struct Player:Unit {
     }
     TempSummon* SummonCreature(unsigned entry,Position pos,int,unsigned,int,ObjectGuid viewer) {
         if(spawnFailure) return nullptr;
-        ObjectGuid id{++serial}; auto& c=creatures[id]; c.entry=entry;c.pos=pos;c.map=map;c.guid=id;c.owner=guid;c.viewer=viewer;summons[entry].push_back(id);return &c;
+        ObjectGuid id{++serial}; auto& c=creatures[id]; c.entry=entry;c.pos=pos;c.map=map;c.guid=id;c.owner=guid;c.viewer=viewer;return &c;
     }
+    Map world;
 };
+TempSummon* Map::SummonCreature(unsigned entry, Position const& pos, SummonPropertiesEntry const* properties,
+    unsigned lifetime, Player* owner, ObjectGuid, unsigned spell, int, ObjectGuid viewer)
+{
+    assert(properties && properties->id == (entry == 90401 ? 3634u : 2912u));
+    assert(spell == (entry == 90401 ? 178711u : 0u) && viewer == owner->GetGUID());
+    TempSummon* actor = owner->SummonCreature(entry, pos, TEMPSUMMON_TIMED_DESPAWN, lifetime, 0, viewer);
+    if (actor)
+        owner->summons[entry].push_back(actor->GetGUID());
+    return actor;
+}
 struct CreatureAI {
     virtual ~CreatureAI()=default;
     virtual void IsSummonedBy(Unit*) {} virtual void UpdateAI(unsigned) {} virtual void SetGUID(ObjectGuid const&,int32) {}
@@ -168,6 +195,13 @@ int main()
     p.status=QUEST_STATUS_INCOMPLETE;recovery.OnUpdate(&p,1000);
     Creature* allari=OwnedSummon(&p,Allari);assert(allari && allari->viewer==p.guid && p.credits.empty());
     npc_azsuna_allari_q37660::AI ai(allari);ai.IsSummonedBy(&p);
+#ifndef SCYTHE_EXIT_BASELINE
+    recovery.OnUpdate(&p,1000);
+    assert(p.summons[Allari].size()==1);
+    TempSummon* duplicate = SummonPersonalActor(&p, Allari, Meeting, 300000);
+    npc_azsuna_allari_q37660::AI lateAccept(duplicate);lateAccept.IsSummonedBy(&p);
+    assert(duplicate->removed && OwnedSummon(&p,Allari)==allari);
+#endif
     assert(!guide.OnGossipSelect(&p,allari,0,0)); // actual arrival first
     ai.UpdateAI(1000);assert(Done(&p,Allari));
     assert(!guide.OnGossipSelect(&stranger,allari,0,0));

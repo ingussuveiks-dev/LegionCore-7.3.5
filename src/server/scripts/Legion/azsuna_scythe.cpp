@@ -4,6 +4,8 @@
 #include "ObjectAccessor.h"
 #include "TemporarySummon.h"
 #include "GameObject.h"
+#include "DB2Stores.h"
+#include "Map.h"
 #include <map>
 #include <mutex>
 
@@ -11,6 +13,9 @@ namespace AzsunaScythe
 {
 constexpr uint32 QuestId = 37660;
 constexpr uint32 Allari = 90401;
+constexpr uint32 SummonAllariSpell = 178711;
+constexpr uint32 AllariSummonProperties = 3634;
+constexpr uint32 SoulSummonProperties = 2912;
 constexpr uint32 SoulScreen = 179183;
 // Existing Allari waypoint 3 and the existing exit-gem location.
 Position const Meeting = {-154.62f, 6906.46f, 13.2f, 0.0f};
@@ -36,6 +41,17 @@ Creature* OwnedSummon(Player* player, uint32 entry)
                 creature->ToTempSummon()->GetSummonerGUID() == player->GetGUID())
                 return creature;
     return nullptr;
+}
+
+TempSummon* SummonPersonalActor(Player* player, uint32 entry, Position const& position, uint32 lifetime)
+{
+    uint32 propertiesId = entry == Allari ? AllariSummonProperties : SoulSummonProperties;
+    SummonPropertiesEntry const* properties = sSummonPropertiesStore.LookupEntry(propertiesId);
+    if (!properties)
+        return nullptr;
+
+    return player->GetMap()->SummonCreature(entry, position, properties, lifetime, player,
+        ObjectGuid::Empty, entry == Allari ? SummonAllariSpell : 0, 0, player->GetGUID());
 }
 
 void Cleanup(Player* player)
@@ -94,12 +110,13 @@ public:
         void IsSummonedBy(Unit* who) override
         {
             using namespace AzsunaScythe;
-            if (!who || !Active(who->ToPlayer()))
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (!Active(player) || Done(player, 89276) || OwnedSummon(player, Allari) != me)
             {
                 me->DespawnOrUnsummon();
                 return;
             }
-            owner = who->GetGUID();
+            owner = player->GetGUID();
             me->AddPlayerInPersonnalVisibilityList(owner);
             me->SetReactState(REACT_PASSIVE);
             me->GetMotionMaster()->MovePoint(1, Meeting);
@@ -114,8 +131,7 @@ public:
                 !player->IsWithinDistInMap(object, 5.0f) || !me->IsWithinDistInMap(object, 40.0f))
                 return;
             uint32 entry = gem == 239338 ? 90402 : 89276;
-            Creature* demon = player->SummonCreature(entry, object->GetPosition(),
-                TEMPSUMMON_TIMED_DESPAWN, 20000, 0, owner);
+            Creature* demon = SummonPersonalActor(player, entry, object->GetPosition(), 20000);
             if (!demon)
                 return;
             soul = demon->GetGUID();
@@ -195,8 +211,7 @@ public:
         {
             if (OwnedSummon(player, 89673))
                 return true;
-            Creature* demon = player->SummonCreature(89673, InnerSoul,
-                TEMPSUMMON_TIMED_DESPAWN, 300000, 0, player->GetGUID());
+            Creature* demon = SummonPersonalActor(player, 89673, InnerSoul, 300000);
             if (!demon)
                 return true;
             demon->setFaction(14);
@@ -256,7 +271,7 @@ public:
             return;
         }
         if (!Done(player, 89276) && !OwnedSummon(player, Allari))
-            player->SummonCreature(Allari, Meeting, TEMPSUMMON_TIMED_DESPAWN, 300000, 0, player->GetGUID());
+            SummonPersonalActor(player, Allari, Meeting, 300000);
         if (player->HasAura(SoulScreen) && !Done(player, 89673) && !OwnedSummon(player, 89673))
             player->RemoveAurasDueToSpell(SoulScreen); // Re-enter after a failed attempt.
         if (Done(player, 89673) && !Done(player, 89398))
