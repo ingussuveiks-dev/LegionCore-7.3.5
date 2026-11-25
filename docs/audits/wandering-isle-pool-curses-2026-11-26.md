@@ -9,3 +9,5 @@ Sākotnējās zondes meklēja nepareizu ūdens plaknes paraugu. Divi staba mēģ
 Pārbaudes un darba serveris sasniedza gatavību un korekti apstājās. Gala zondē un abās palaišanās nebija jaunu avāriju, servera brīdinājumu vai DBErrors ierakstu. Gala saitē izmantotas paredzētās `scripts.lib` un `game.lib`. Saistītajā PE pārbaudīts izsaukums uz trigera robežām, šķidruma datiem un auras noņemšanu. Kanoniskā EXE SHA-256 ir `8EE0129AEFAFED1463C7632633BA556195B6E78787260C0A3A7030230CD142EB`.
 
 Saglabāti 177 diagnostikas faili ar kontrolsummām un iepriekšējā EXE un MAP atjaunošanas kopija. Izņemti 112 pagaidu faili, kopā 4 263 147 310 baiti. [Diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-pool-curses/)
+
+Koplietotā testa MariaDB pabeidza korektu izslēgšanu. Vienīgie 16 datubāzes brīdinājumi bija pārtrauktie savienojumi abu iepriekš aprakstīto zondes avāriju brīdī. Vēlākās zondes un servera pārbaudes atvienojās korekti. Abi sākotnējie datubāzes žurnāli saglabāti ar kontrolsummām. [MariaDB diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-pool-curses/fixture-shutdown/)
