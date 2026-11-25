@@ -999,25 +999,24 @@ void BattlegroundMgr::InitWargame(Player* player, ObjectGuid opposingPartyMember
         return;
 
     auto opposingPartyLeader = sObjectAccessor->FindPlayer(opposingPartyMember);
-    if (!opposingPartyLeader)
+    if (!opposingPartyLeader || opposingPartyLeader->InBattleground())
         return;
 
     auto opposingGroup = opposingPartyLeader->GetGroup();
-    if (!opposingGroup || !opposingGroup->IsLeader(opposingPartyLeader->GetGUID()))
+    if (!opposingGroup || opposingGroup == group || !opposingGroup->IsLeader(opposingPartyLeader->GetGUID()))
         return;
 
     if (!opposingPartyLeader->HasWargameRequest())
         return;
 
-    auto request = opposingPartyLeader->GetWargameRequest();
-    if (request->QueueID != queueID || request->OpposingPartyMemberGUID != player->GetGUID())
+    auto pendingRequest = opposingPartyLeader->GetWargameRequest();
+    if (pendingRequest->QueueID != queueID || pendingRequest->OpposingPartyMemberGUID != player->GetGUID())
         return;
 
-    if (accept)
-    {
-        ///@TODO: Send notification to opposing party ?
+    std::unique_ptr<WargameRequest> request(pendingRequest);
+    opposingPartyLeader->SetWargameRequest(nullptr);
+    if (!accept || request->CreationDate + 60 < GameTime::GetGameTime())
         return;
-    }
 
     uint16 bgTypeId = queueID - MS::Battlegrounds::QueueOffsets::Wargame;
     uint8 arenaType = 0;
@@ -1039,7 +1038,7 @@ void BattlegroundMgr::InitWargame(Player* player, ObjectGuid opposingPartyMember
                 arenaType = MS::Battlegrounds::JoinType::Arena5v5;
                 break;
             default:
-                break;
+                return;
         }
     }
 
@@ -1055,6 +1054,18 @@ void BattlegroundMgr::InitWargame(Player* player, ObjectGuid opposingPartyMember
         return;
 
     auto bGQueueTypeID = MS::Battlegrounds::GetBgQueueTypeIdByBgTypeID(bgTypeId, arenaType);
+    if (bGQueueTypeID == MS::Battlegrounds::BattlegroundQueueTypeId::None)
+        return;
+
+    for (Group const* party : {group, opposingGroup})
+        for (auto const& slot : party->GetMemberSlots())
+        {
+            auto member = ObjectAccessor::FindPlayer(slot.Guid);
+            if (!member || member->InBattleground() || !member->HasFreeBattlegroundQueueId() ||
+                member->GetBattlegroundQueueIndex(bGQueueTypeID) < PLAYER_MAX_BATTLEGROUND_QUEUES)
+                return;
+        }
+
     auto& bGQueue = _battlegroundQueues[bGQueueTypeID];
 
     uint16 map = bgTypeId;

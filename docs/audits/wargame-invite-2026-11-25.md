@@ -1,0 +1,5 @@
+# Wargame invitation handling
+
+The Legion packet reads the response bit into `Accept` and forwards it to the battleground manager. The manager previously returned on acceptance and took the creation path on refusal. A matching response now consumes the original invitation once. Expired and declined requests stop before match creation. A challenge requires distinct groups, valid arena team sizes and available queue slots for the online roster. The existing battleground/arena factory and tournament rules are used for accepted requests.
+
+`Test-WargameInvite.ps1` executes the production handler against controlled group, queue and match endpoints. The pinned counterfactual reaches the accepted-match assertion and fails. The repaired test checks accepted creation and two party invites, replay, refusal, mismatched queue, timeout, and a member already in the same queue. The regression produced no new server log bytes or crash reports. Actual invitation UI, client transfer and a complete Wargame between two groups remain unverified.
