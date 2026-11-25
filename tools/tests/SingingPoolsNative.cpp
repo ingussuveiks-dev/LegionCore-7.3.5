@@ -35,6 +35,10 @@ constexpr uint32 Shu = 29678;
 constexpr uint32 LiangPearl = 73791;
 constexpr uint32 ReflectionCredit = 57476;
 constexpr uint32 CoaxCredit = 55205;
+constexpr uint32 NewFriend = 29679;
+constexpr uint32 SpoutCredit = 55212;
+constexpr uint32 ShoreAysaSpawn = 244519;
+constexpr uint32 ShuSpawn = 244520;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -55,7 +59,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 9, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 10, "Missing the Singing Pools quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -69,8 +73,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 9, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 10, "Missing the original Pools prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -119,14 +123,20 @@ void LoadPools()
         quests[Shu]->LoadQuestObjective(shuObjectives->Fetch());
     while (shuObjectives->NextRow());
     quests[Shu]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    auto friendObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29679");
+    Require(friendObjective && friendObjective->Fetch()[4].GetUInt32() == SpoutCredit && friendObjective->Fetch()[5].GetUInt32() == 5,
+        "Missing the five Water Spout interactions");
+    quests[NewFriend]->LoadQuestObjective(friendObjective->Fetch());
+    quests[NewFriend]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450)");
+        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,244519,244520)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
@@ -136,7 +146,7 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
         "WHERE npc_entry=54993");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
-        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,108590)");
+        "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,108590,116695,116696,117054,117057)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -520,6 +530,9 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+    for (uint32 spawn : {ShoreAysaSpawn, ShuSpawn})
+        if (auto data = sObjectMgr->GetCreatureData(spawn))
+            sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
     Teacher aysa(map);
     Teacher shang(map, ShangTempleSpawn, 54786);
@@ -802,6 +815,89 @@ void UseReflectionPearl(LootPlayer& pupil)
     Tick(pupil, 4000);
 }
 
+Creature* FindWaterSpout(Teacher& shu)
+{
+    std::list<Creature*> spouts;
+    shu.GetCreatureListWithEntryInGrid(spouts, 60488, 20.0f);
+    if (spouts.empty())
+        return nullptr;
+    Require(spouts.size() == 1 && spouts.front()->ToTempSummon() && spouts.front()->ToTempSummon()->GetSummonerGUID() == shu.GetGUID(),
+        "Shu did not publish exactly one owned water spout");
+    return spouts.front();
+}
+
+Creature* WaitForWaterSpout(Teacher& shu)
+{
+    shu.AI()->UpdateAI(6000);
+    for (uint32 elapsed = 0; elapsed < 4000; elapsed += 20)
+        shu.Unit::Update(20);
+    shu.GetMap()->MoveAllCreaturesInMoveList();
+    Require(shu.movespline->Finalized() && shu.movespline->Initialized() && shu.movespline->ComputeProgress() == 1.0f,
+        "Shu did not finish the native rock jump");
+    shu.AI()->UpdateAI(2000);
+    return FindWaterSpout(shu);
+}
+
+void CheckNewFriend(Map& map, LootPlayer& pupil)
+{
+    Require(pupil.GetPopupQuestId() == NewFriend, "Remote completion did not publish A New Friend");
+    WorldPackets::Quest::QuestGiverAcceptQuest follow{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    follow.QuestGiverGUID = pupil.GetGUID();
+    follow.QuestID = NewFriend;
+    pupil.GetSession()->HandleQuestGiverAcceptQuest(follow);
+    Require(pupil.GetQuestStatus(NewFriend) == QUEST_STATUS_INCOMPLETE, "The native follow-up offer was not accepted");
+    Teacher shu(map, ShuSpawn, 65493);
+    Teacher aysa(map, ShoreAysaSpawn, 54975);
+
+#ifdef SINGING_POOLS_SPOUT_BASELINE
+    Require(!WaitForWaterSpout(shu) && shu.SelectNearestPlayerNotGM(50.0f) == &pupil,
+        "The old jump unexpectedly produced a spout or there was no eligible nearby pupil");
+    std::cout << "EXPECTED_BROKEN the original movement ID left the spout sequence idle after Shu landed" << std::endl;
+    // Isolate the secondary cleanup fault by delivering the expected callback.
+    shu.AI()->MovementInform(EFFECT_MOTION_TYPE, 1);
+    shu.AI()->UpdateAI(2000);
+    Creature* pending = FindWaterSpout(shu);
+    Require(pending, "The original spout failed to spawn even with its expected movement callback");
+    auto const canceledGuid = pending->GetGUID();
+    shu.AI()->Reset();
+    map.RemoveAllObjectsInRemoveList();
+    Creature* leaked = map.GetCreature(canceledGuid);
+    Require(leaked && !leaked->IsDespawn(), "The original Shu reset no longer leaves a spout behind");
+    leaked->DespawnOrUnsummon();
+    map.RemoveAllObjectsInRemoveList();
+    std::cout << "EXPECTED_BROKEN resetting Shu left a manual-despawn spout in the pool" << std::endl;
+#else
+    Creature* pending = WaitForWaterSpout(shu);
+    Require(pending, "Shu's native landing did not start the water spout cycle");
+    auto const canceledGuid = pending->GetGUID();
+    shu.AI()->Reset();
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(canceledGuid), "Resetting Shu left its old water spout");
+    for (int32 count = 0; count <= 5; ++count)
+    {
+        Creature* spout = WaitForWaterSpout(shu);
+        Require(spout, "A new water spout cycle did not start after the last one ended");
+        auto const spoutGuid = spout->GetGUID();
+        MoveGilneasPlayer(pupil, count ? spout->GetPosition() : aysa.GetPosition());
+        shu.AI()->UpdateAI(500);
+        Require(pupil.GetQuestObjectiveData(NewFriend, SpoutCredit) == std::max(0, count - 1),
+            "The warning phase awarded spout credit");
+        shu.AI()->UpdateAI(7100);
+        Tick(pupil, 3500);
+        Require(pupil.GetQuestObjectiveData(NewFriend, SpoutCredit) == count,
+            "The genuine burst awarded missing, remote or duplicate water spout credit");
+        shu.AI()->UpdateAI(3100);
+        map.RemoveAllObjectsInRemoveList();
+        Require(!map.GetCreature(spoutGuid), "A completed water spout stayed in the pool");
+    }
+    MoveGilneasPlayer(pupil, aysa.GetPosition());
+    uint32 const choice = PoolRewardChoice(pupil, NewFriend);
+    RewardQuest(pupil, aysa, NewFriend, choice);
+    Require(pupil.IsQuestRewarded(NewFriend) && pupil.GetItemCount(choice) == 1, "Aysa did not accept the five genuine bursts and issue the selected reward");
+    std::cout << "PASS actual Shu follow-up acceptance, water spout reset cleanup, a missed burst, five contacts and the shore Aysa turn-in" << std::endl;
+#endif
+}
+
 void CheckReflectionCrossing()
 {
     Map map(860, 668, 0, DIFFICULTY_NONE);
@@ -876,6 +972,7 @@ void CheckReflectionCrossing()
     pupil.GetSession()->HandleQuestGiverChooseReward(turnIn);
     Require(pupil.IsQuestRewarded(Shu), "The native remote turn-in did not reward Shu's quest");
     std::cout << "PASS no remote pearl credit, one real item use at Reflection and native remote turn-in" << std::endl;
+    CheckNewFriend(map, pupil);
 #endif
 }
 #endif

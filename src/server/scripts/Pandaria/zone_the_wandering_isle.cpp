@@ -2132,7 +2132,6 @@ public:
 
         enum eShuSpells
         {
-            SPELL_WATER_SPOUT_SUMMON    = 116810,
             SPELL_WATER_SPOUT_WARNING   = 116695,
             SPELL_WATER_SPOUT_EJECT     = 116696,
             SPELL_WATER_SPOUT_VISUAL    = 117057,
@@ -2147,13 +2146,23 @@ public:
             EVENT_WATER_SPOUT_DESPAWN   = 5,
         };
 
-        void Reset()
+        void Reset() override
         {
             _events.Reset();
-            actualPlace = 0;
-            waterSpoutGUID.Clear();
+            auto const* nearest = std::min_element(std::begin(rocksPos), std::end(rocksPos), [this](Position const& left, Position const& right)
+            {
+                return me->GetExactDistSq(left) < me->GetExactDistSq(right);
+            });
+            actualPlace = uint8(nearest - std::begin(rocksPos));
+            RemoveWaterSpout();
 
             _events.RescheduleEvent(EVENT_CHANGE_PLACE, 5000);
+        }
+
+        void JustDied(Unit* /*killer*/) override
+        {
+            _events.Reset();
+            RemoveWaterSpout();
         }
 
         void MovementInform(uint32 typeId, uint32 pointId) override
@@ -2164,6 +2173,12 @@ public:
             if (pointId == 1)
             {
                 me->RemoveAurasDueToSpell(SPELL_WATER_SPOUT_WARNING);
+                if (!me->movespline->Finalized() || !me->movespline->Initialized() || me->movespline->ComputeProgress() < 1.0f)
+                {
+                    _events.RescheduleEvent(EVENT_CHANGE_PLACE, 2000);
+                    return;
+                }
+
                 if (Player* player = me->SelectNearestPlayerNotGM(50.0f))
                 {
                     me->SetOrientation(me->GetAngle(player));
@@ -2180,7 +2195,14 @@ public:
             return me->GetMap()->GetCreature(waterSpoutGUID);
         }
 
-        void UpdateAI(uint32 diff)
+        void RemoveWaterSpout()
+        {
+            if (Creature* waterSpout = getWaterSpout())
+                waterSpout->DespawnOrUnsummon();
+            waterSpoutGUID.Clear();
+        }
+
+        void UpdateAI(uint32 diff) override
         {
             _events.Update(diff);
 
@@ -2192,7 +2214,7 @@ public:
 
                     do { newPlace = urand(0, 3); } while (newPlace == actualPlace);
 
-                    me->GetMotionMaster()->MoveJump(rocksPos[newPlace].GetPositionX(), rocksPos[newPlace].GetPositionY(), rocksPos[newPlace].GetPositionZ(), 10.0f, 10.0f, 1);
+                    me->GetMotionMaster()->MoveJump(rocksPos[newPlace], 10.0f, 10.0f, 1);
                     me->AddAura(SPELL_WATER_SPOUT_WARNING, me); // Just visual
                     actualPlace = newPlace;
                     break;
@@ -2201,11 +2223,15 @@ public:
                 {
                     float x = 0.0f, y = 0.0f;
                     GetPositionWithDistInOrientation(me, 5.0f, me->GetOrientation() + frand(float(- M_PI), float(M_PI)), x, y);
-                    waterSpoutGUID.Clear();
+                    RemoveWaterSpout();
+                    Creature* waterSpout = me->SummonCreature(60488, x, y, 92.189629f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 12000);
+                    if (!waterSpout)
+                    {
+                        _events.RescheduleEvent(EVENT_CHANGE_PLACE, 2000);
+                        break;
+                    }
 
-                    if (Creature* waterSpout = me->SummonCreature(60488, x, y, 92.189629f))
-                        waterSpoutGUID = waterSpout->GetGUID();
-
+                    waterSpoutGUID = waterSpout->GetGUID();
                     _events.RescheduleEvent(EVENT_WATER_SPOUT_VISUAL, 500);
                     _events.RescheduleEvent(EVENT_WATER_SPOUT_EJECT, 7500);
                     break;
@@ -2233,11 +2259,7 @@ public:
                 }
                 case EVENT_WATER_SPOUT_DESPAWN:
                 {
-                    if (Creature* waterSpout = getWaterSpout())
-                        waterSpout->DespawnOrUnsummon();
-
-                    waterSpoutGUID.Clear();
-
+                    RemoveWaterSpout();
                     _events.RescheduleEvent(EVENT_CHANGE_PLACE, 2000);
                     break;
                 }
