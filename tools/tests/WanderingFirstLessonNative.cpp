@@ -52,6 +52,13 @@ constexpr uint32 Driver = 54855;
 constexpr uint32 PrivateDriver = 56503;
 constexpr uint32 AysaNext = 29414;
 constexpr uint32 AysaNextSpawn = 243862;
+constexpr uint32 AysaMeditation = 59642;
+constexpr uint32 AysaMeditationSpawn = 243869;
+constexpr uint32 AysaMeditationCredit = 54856;
+constexpr uint32 AysaMeditationBar = 116421;
+constexpr uint32 AysaWave = 59637;
+constexpr uint32 AysaMeditationTurnIn = 243875;
+constexpr uint32 JiOfTheHuojin = 29522;
 constexpr uint32 Scamp = 54130;
 constexpr uint32 StolenSupplies = 72071;
 constexpr uint32 SupplyScamps[] = {243766, 243788, 243790, 244114, 244115, 243764};
@@ -74,7 +81,7 @@ void LoadLessonInputs()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingLesson.inc"
     );
-    Require(templates && templates->GetRowCount() == 22, "Missing a lesson, old introduction or academy quest");
+    Require(templates && templates->GetRowCount() == 23, "Missing a lesson, old introduction or academy quest");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -88,8 +95,8 @@ void LoadLessonInputs()
         "SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,RewardMailTemplateID,RewardMailDelay,"
         "RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMinRepValue,RequiredMaxRepFaction,RequiredMaxRepValue,"
         "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29419,29424,29524)");
-    Require(addons && addons->GetRowCount() == 22, "Missing the actual lesson prerequisites and class masks");
+        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29414,29419,29424,29522,29524)");
+    Require(addons && addons->GetRowCount() == 23, "Missing the actual lesson prerequisites and class masks");
     do
     {
         auto row = addons->Fetch();
@@ -105,7 +112,7 @@ void LoadLessonInputs()
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query(
         "SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives "
-        "WHERE QuestID IN (29406,29408,29409,29410,29414,29419,29424,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
+        "WHERE QuestID IN (29406,29408,29409,29410,29414,29419,29424,29522,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
     Require(bool(objectives), "Missing the original equipment or training objectives");
     do
     {
@@ -123,15 +130,15 @@ void LoadLessonInputs()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
         "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685,243731,243732,243772,"
-        "243766,243788,243790,244114,244115,243764,243816,243862)");
+        "243766,243788,243790,244114,244115,243764,243816,243862,243869,243875)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30038");
+        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29522,29524,30027) OR quest BETWEEN 30033 AND 30038");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30045");
+        "WHERE quest IN (29406,29408,29409,29410,29414,29419,29424,29522,29524,30027) OR quest BETWEEN 30033 AND 30045");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts "
         "WHERE source_type=0 AND entryorguid IN (53566,54586,54587,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
-        "WHERE CreatureID IN (53566,54586,54587,54611,56503,65470,65471)");
+        "WHERE CreatureID IN (53566,54586,54587,54611,54856,56503,59642,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts WHERE entry=6958");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry=56503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell IN (56267,114610) AND area=5834");
@@ -855,6 +862,94 @@ void CheckMissingDriver(LootPlayer& player)
     std::cout << "PASS native Min approach, scoped retry/cleanup, escort start, Lorvo turn-in and Aysa's next offer" << std::endl;
 }
 
+void CheckAysaMeditation(LootPlayer& player)
+{
+    Map& map = *player.GetMap();
+    LessonCreature aysa(map, AysaMeditationSpawn, AysaMeditation);
+    SupplyMove(player, aysa.GetPosition());
+    Position const outside = aysa.GetPositionWithOffset({40.0f, 0.0f, 0.0f, 0.0f});
+    LootPlayer late(SupplySession(), map, 41201, outside);
+    SetStudent(late, RACE_PANDAREN_NEUTRAL, CLASS_HUNTER);
+    late.AddQuestAndCheckCompletion(sQuestDataStore->GetQuestTemplate(AysaNext), nullptr);
+    LootPlayer visitor(SupplySession(), map, 41202, aysa.GetPosition());
+    SetStudent(visitor, RACE_PANDAREN_NEUTRAL, CLASS_HUNTER);
+    StudentParty party(player, late, visitor);
+
+    auto ownedActors = [&](uint32 entry) {
+        std::list<Creature*> actors;
+        aysa.GetCreatureListWithEntryInGrid(actors, entry, 45.0f);
+        actors.remove_if([&](Creature* actor) {
+            auto summon = actor->ToTempSummon();
+            return !summon || summon->GetSummonerGUID() != aysa.GetGUID();
+        });
+        return actors;
+    };
+    auto advance = [&](uint32 duration) {
+        for (uint32 elapsed = 0; elapsed < duration; elapsed += 100)
+        {
+            aysa.AI()->UpdateAI(100);
+            player.Unit::Update(100);
+            late.Unit::Update(100);
+            map.RemoveAllObjectsInRemoveList();
+        }
+    };
+
+    try
+    {
+        advance(87000);
+        Require(!player.GetQuestObjectiveData(AysaNext, AysaMeditationCredit),
+            "The first player was credited before finishing the meditation defense");
+        SupplyMove(late, aysa.GetPosition());
+        advance(4100);
+        auto const firstCredit = player.GetQuestObjectiveData(AysaNext, AysaMeditationCredit);
+        auto const lateCredit = late.GetQuestObjectiveData(AysaNext, AysaMeditationCredit);
+        std::cout << "CASE meditation first=" << firstCredit << " late=" << lateCredit << std::endl;
+        Require(firstCredit == 1 && lateCredit == 0 && late.GetQuestStatus(AysaNext) == QUEST_STATUS_INCOMPLETE,
+            "The cave granted the full defense to a late arrival after only four seconds");
+        Require(!player.HasAura(AysaMeditationBar) && late.HasAura(AysaMeditationBar) &&
+            late.GetMaxPower(POWER_ALTERNATE) == 90 && late.GetPower(POWER_ALTERNATE) <= 4 &&
+            !visitor.HasAura(AysaMeditationBar),
+            "The native power bar did not keep the late arrival's own progress");
+
+        SupplyMove(late, outside);
+        advance(1000);
+        Require(!late.HasAura(AysaMeditationBar) && ownedActors(AysaWave).empty() &&
+            ownedActors(AysaMeditationCredit).empty(), "Leaving the cave left progress or encounter actors running");
+        SupplyMove(late, aysa.GetPosition());
+        advance(9200);
+        auto wave = ownedActors(AysaWave);
+        Require(!wave.empty() && late.GetPower(POWER_ALTERNATE) < 10 && late.HasAura(AysaMeditationBar),
+            "Reentry did not restart the defense and spawn a real wave");
+        wave.front()->DealDamage(&aysa, uint32(aysa.GetMaxHealth()) * 2);
+        map.RemoveAllObjectsInRemoveList();
+        Require(aysa.IsAlive() && ownedActors(AysaWave).empty() && !late.HasAura(AysaMeditationBar) &&
+            !late.GetQuestObjectiveData(AysaNext, AysaMeditationCredit), "A defeat did not reset the temporary waves and player's progress");
+        advance(111100);
+        Require(late.GetQuestStatus(AysaNext) == QUEST_STATUS_COMPLETE && !late.HasAura(AysaMeditationBar) &&
+            ownedActors(AysaWave).empty(), "A retry did not allow the second player to finish the full defense");
+
+        LessonCreature turnIn(map, AysaMeditationTurnIn, 54608);
+        SupplyMove(player, turnIn.GetPosition());
+        ClaimPackage(player, turnIn, AysaNext);
+        if (player.GetQuestStatus(JiOfTheHuojin) == QUEST_STATUS_NONE)
+            Accept(player, turnIn, JiOfTheHuojin);
+        Require(player.GetQuestStatus(JiOfTheHuojin) != QUEST_STATUS_NONE, "Aysa did not open Ji of the Huojin");
+    }
+    catch (...)
+    {
+        for (uint32 entry : {AysaWave, AysaMeditationCredit})
+            for (Creature* actor : ownedActors(entry))
+            {
+                actor->CombatStop(true);
+                actor->DespawnOrUnsummon();
+            }
+        map.RemoveAllObjectsInRemoveList();
+        throw;
+    }
+
+    std::cout << "PASS native individual bars, late entry, leaving the cave, defeat/retry, Aysa turn-in and Ji offer" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
@@ -897,6 +992,7 @@ void CheckFirstLesson()
             CheckDiscipleChallenge(student);
             CheckImportantItems(student);
             CheckMissingDriver(student);
+            CheckAysaMeditation(student);
         }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
@@ -944,7 +1040,8 @@ int main(int argc, char** argv)
             LoadLessonInputs();
             for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u,
                 243608u, 243645u, TempleGiverSpawn, JaominSpawn, DiscipleGiverSpawn, LorvoSpawn,
-                243766u, 243788u, 243790u, 244114u, 244115u, 243764u, DriverSpawn, AysaNextSpawn})
+                243766u, 243788u, 243790u, 244114u, 244115u, 243764u, DriverSpawn, AysaNextSpawn, AysaMeditationSpawn,
+                AysaMeditationTurnIn})
                 if (auto data = sObjectMgr->GetCreatureData(spawn))
                     sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();

@@ -801,215 +801,268 @@ public:
     
 };
 
+namespace
+{
+constexpr uint32 QuestWayOfTheTushui = 29414;
+constexpr uint32 MeditationCave = 7645;
+constexpr uint32 MeditationBar = 116421;
+constexpr uint32 MeditationPowerBar = 149;
+constexpr uint32 AmberleafTroublemaker = 59637;
+}
+
 class mob_aysa : public CreatureScript
 {
 public:
     mob_aysa() : CreatureScript("mob_aysa") { }
-   
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new mob_aysaAI(creature);
-    }
-    
+
     struct mob_aysaAI : public ScriptedAI
     {
-        EventMap events;
-        std::list<Player*> playersInvolved;
-        ObjectGuid lifeiGUID;
-        bool inCombat;
-        uint32 timer;
-        
-        mob_aysaAI(Creature* creature) : ScriptedAI(creature)
+        mob_aysaAI(Creature* creature) : ScriptedAI(creature), _summons(creature) { }
+
+        void Reset() override
         {
-            events.RescheduleEvent(1, 600); //Begin script
-            inCombat = false;
-            timer = 0;
-            lifeiGUID.Clear();
-            me->SetReactState(REACT_DEFENSIVE);
+            FinishMeditation(600);
             me->setFaction(2263);
         }
 
-        enum eEvents
+        void DamageTaken(Unit*, uint32& damage, DamageEffectType) override
         {
-            EVENT_START         = 1,
-            EVENT_SPAWN_MOBS    = 2,
-            EVENT_PROGRESS      = 3,
-            EVENT_END           = 4,
+            if (!me->HealthBelowPctDamaged(5, damage))
+                return;
+
+            damage = 0;
+            me->SetFullHealth();
+            FinishMeditation(20000);
+        }
+
+        void JustSummoned(Creature* summon) override
+        {
+            _summons.Summon(summon);
+        }
+
+        void SummonedCreatureDespawn(Creature* summon) override
+        {
+            _summons.Despawn(summon);
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            _events.Update(diff);
+            switch (_events.ExecuteEvent())
+            {
+                case EVENT_CHECK_CAVE:
+                    CheckCave();
+                    break;
+                case EVENT_SPAWN_MOBS:
+                    SpawnWave();
+                    _events.ScheduleEvent(EVENT_SPAWN_MOBS, 20000);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    private:
+        enum Events
+        {
+            EVENT_CHECK_CAVE = 1,
+            EVENT_SPAWN_MOBS
         };
 
-        enum eText
+        struct Participant
         {
-            TEXT_TUSHI_0          = 0,
-            TEXT_TUSHI_1          = 1,
-            TEXT_TUSHI_2          = 2,
-            TEXT_TUSHI_3          = 3,
-            TEXT_TUSHI_4          = 4,
-            TEXT_TUSHI_5          = 5,
-            TEXT_TUSHI_6          = 6,
+            std::shared_ptr<QuestCancellationReceipt const> Attempt;
+            uint32 Seconds = 0;
         };
-        
-        void DamageTaken(Unit* pDoneBy, uint32 &uiDamage, DamageEffectType dmgType)
+
+        bool CanMeditateWith(Player const* player) const
         {
-            if(me->HealthBelowPctDamaged(5, uiDamage))
+            return player->IsAlive() && me->InSamePhase(player) && me->IsWithinLOSInMap(player) &&
+                player->IsInAreaTriggerRadius(MeditationCave) &&
+                player->GetQuestStatus(QuestWayOfTheTushui) == QUEST_STATUS_INCOMPLETE;
+        }
+
+        void FinishMeditation(uint32 nextCheck)
+        {
+            for (auto const& entry : _participants)
+                if (Player* player = ObjectAccessor::GetPlayer(*me, entry.first))
+                    player->RemoveAura(MeditationBar, player->GetGUID());
+
+            _participants.clear();
+            _summons.DespawnAll();
+            _master.Clear();
+            _elapsed = 0;
+            _events.Reset();
+            _events.ScheduleEvent(EVENT_CHECK_CAVE, nextCheck);
+            me->CombatStop(true);
+            me->SetReactState(REACT_DEFENSIVE);
+        }
+
+        void CheckCave()
+        {
+            std::list<Player*> nearby;
+            GetPlayerListInGrid(nearby, me, 40.0f);
+            nearby.remove_if([this](Player const* player) { return !CanMeditateWith(player); });
+
+            for (auto it = _participants.begin(); it != _participants.end();)
             {
-                if (Creature* lifei = me->GetMap()->GetCreature(lifeiGUID))
+                auto player = ObjectAccessor::GetPlayer(*me, it->first);
+                if (player && std::find(nearby.begin(), nearby.end(), player) != nearby.end() &&
+                    !it->second.Attempt->load(std::memory_order_acquire))
                 {
-                    lifei->DespawnOrUnsummon(0);
-                    lifeiGUID.Clear();
-                    timer = 0;
+                    ++it;
+                    continue;
                 }
-                
-                uiDamage = 0;
-                me->SetFullHealth();
-                me->SetReactState(REACT_DEFENSIVE);
-                
-                std::list<Creature*> unitlist;
-                GetCreatureListWithEntryInGrid(unitlist, me, 59637, 50.0f);
-                for (std::list<Creature*>::const_iterator itr = unitlist.begin(); itr != unitlist.end(); ++itr)
-                    me->Kill(*itr);
-                    
-                events.RescheduleEvent(EVENT_START, 20000);
-                events.CancelEvent(EVENT_SPAWN_MOBS);
-                events.CancelEvent(EVENT_PROGRESS);
-                events.CancelEvent(EVENT_END);
-            }
-        }
-        
-        void updatePlayerList()
-        {
-            playersInvolved.clear();
-            
-            std::list<Player*> PlayerList;
-            GetPlayerListInGrid(PlayerList, me, 20.0f);
 
-            for (std::list<Player*>::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
-            {
-                Player* player = *itr;
-                if(player->GetQuestStatus(29414) == QUEST_STATUS_INCOMPLETE)
-                    playersInvolved.push_back(player);
+                if (player)
+                    player->RemoveAura(MeditationBar, player->GetGUID());
+                it = _participants.erase(it);
             }
-        }
-        
-        uint32 getLang(uint32 timer) const
-        {
-            switch(timer)
+
+            if (nearby.empty())
             {
-                case 30: return TEXT_TUSHI_2;
-                case 42: return TEXT_TUSHI_0;
-                case 54: return TEXT_TUSHI_1;
-                case 66: return TEXT_TUSHI_3;
-                case 78: return TEXT_TUSHI_5;
-                case 85: return TEXT_TUSHI_6;
-                default: return 0;
+                if (_elapsed)
+                    FinishMeditation(600);
+                else
+                    _events.ScheduleEvent(EVENT_CHECK_CAVE, 600);
+                return;
             }
-            return 0;
-        }
-        void UpdateAI(uint32 diff)
-        {
-            events.Update(diff);
-            if (uint32 eventId = events.ExecuteEvent())
+
+            bool const firstCheck = !_elapsed;
+            if (firstCheck)
             {
-                switch(eventId)
+                sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
+                me->SetReactState(REACT_PASSIVE);
+                _events.ScheduleEvent(EVENT_SPAWN_MOBS, 5000);
+            }
+            else
+                AdvanceMaster();
+
+            bool completed = false;
+            for (Player* player : nearby)
+                completed |= AdvanceParticipant(*player);
+
+            ++_elapsed;
+            if (_participants.empty())
+            {
+                if (completed)
+                    sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1);
+                FinishMeditation(600);
+                return;
+            }
+
+            _events.ScheduleEvent(EVENT_CHECK_CAVE, 1000);
+        }
+
+        bool AdvanceParticipant(Player& player)
+        {
+            auto const playerGuid = player.GetGUID();
+            bool const hadAura = player.HasAura(MeditationBar, playerGuid);
+            if (!hadAura)
+                player.CastSpell(&player, MeditationBar, true);
+            if (!player.HasAura(MeditationBar, playerGuid))
+                return false;
+
+            auto attempt = player.GetQuestCancellationReceipt(QuestWayOfTheTushui);
+            auto result = _participants.try_emplace(playerGuid, Participant{attempt});
+            auto& participant = result.first->second;
+            if (result.second || !hadAura)
+            {
+                participant.Seconds = 0;
+                player.SetPower(POWER_ALTERNATE, 0);
+                return false;
+            }
+
+            UnitPowerBarEntry const* bar = sUnitPowerBarStore.LookupEntry(MeditationPowerBar);
+            if (!bar || bar->MaxPower <= 0 || player.GetMaxPower(POWER_ALTERNATE) != bar->MaxPower)
+                return false;
+
+            player.SetPower(POWER_ALTERNATE, ++participant.Seconds);
+            if (participant.Seconds < uint32(bar->MaxPower))
+                return false;
+
+            // The defense has its own timer for every participant, including party members.
+            player.KilledMonsterCredit(NPC_MASTER_LI_FAI);
+            player.RemoveAura(MeditationBar, playerGuid);
+            _participants.erase(result.first);
+            return true;
+        }
+
+        void SpawnWave()
+        {
+            for (size_t count = 0; count < _participants.size() * 3; ++count)
+                if (TempSummon* attacker = me->SummonCreature(AmberleafTroublemaker, 1144.55f, 3435.65f, 104.97f, 3.3f,
+                    TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000))
                 {
-                    case EVENT_START: //Begin script if playersInvolved is not empty
-                    {
-                        updatePlayerList();
-                        if(playersInvolved.empty())
-                            events.RescheduleEvent(1, 600);
-                        else
-                        {
-                            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
-                            me->SetReactState(REACT_PASSIVE);
-                            timer = 0;
-                            events.RescheduleEvent(EVENT_SPAWN_MOBS, 5000); //spawn mobs
-                            events.RescheduleEvent(EVENT_PROGRESS, 1000); //update time
-                            events.RescheduleEvent(EVENT_END, 90000); //end quest
-                        }
-                        break;
-                    }
-                    case EVENT_SPAWN_MOBS: //Spawn 3 mobs
-                    {
-                        updatePlayerList();
-                        for(int i = 0; i < std::max((int)playersInvolved.size()*3,3); i++)
-                        {
-                            if(TempSummon* temp = me->SummonCreature(59637, 1144.55f, 3435.65f, 104.97f, 3.3f,TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000))
-                            {
-                                if (temp->AI())
-                                    temp->AI()->AttackStart(me);
-
-                                temp->AddThreat(me, 250.0f);
-                                temp->GetMotionMaster()->Clear();
-                                temp->GetMotionMaster()->MoveChase(me);
-                            }
-                        }
-                        events.RescheduleEvent(EVENT_SPAWN_MOBS, 20000); //spawn mobs
-                        break;
-                    }
-                    case EVENT_PROGRESS: //update energy
-                    {
-                        timer++;
-                        if(timer == 25 && !lifeiGUID)
-                        {
-                            if (Creature *lifei = me->SummonCreature(NPC_MASTER_LI_FAI, 1130.162231f, 3435.905518f, 105.496597f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN))
-                            {
-                                sCreatureTextMgr->SendChat(lifei, TEXT_TUSHI_4);
-                                lifeiGUID = lifei->GetGUID();
-                            }
-                        }
-                        
-                        if (uint32 lang = getLang(timer))
-                        {
-                            if (Creature* lifei = me->GetMap()->GetCreature(lifeiGUID))
-                            {
-                                sCreatureTextMgr->SendChat(lifei, lang);
-                                if(timer == 85)
-                                {
-                                    lifei->DespawnOrUnsummon(0);
-                                    lifeiGUID.Clear();
-                                }
-                            }
-                        }
-                        
-                        updatePlayerList();
-                        for (std::list<Player*>::const_iterator itr = playersInvolved.begin(); itr != playersInvolved.end(); ++itr)
-                        {
-                            Player* player = *itr;
-                            if(!player->HasAura(116421))
-                                player->CastSpell(player, 116421);
-
-                            player->ModifyPower(POWER_ALTERNATE, timer/25);
-                            player->SetMaxPower(POWER_ALTERNATE, 90);
-                        }
-
-                        events.RescheduleEvent(EVENT_PROGRESS, 1000);
-                        break;
-                    }
-                    case EVENT_END: //script end
-                    {
-                        if (Creature* lifei = me->GetMap()->GetCreature(lifeiGUID))
-                        {
-                            lifei->DespawnOrUnsummon(0);
-                            lifeiGUID.Clear();
-                            timer = 0;
-                        }
-                        events.RescheduleEvent(EVENT_START, 10000);
-                        events.CancelEvent(EVENT_SPAWN_MOBS);
-                        events.CancelEvent(EVENT_PROGRESS);
-                        sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1);
-                        updatePlayerList();
-                        me->SetReactState(REACT_DEFENSIVE);
-                        for (std::list<Player*>::const_iterator itr = playersInvolved.begin(); itr != playersInvolved.end(); ++itr)
-                        {
-                            Player* player = *itr;
-                            player->KilledMonsterCredit(NPC_MASTER_LI_FAI, ObjectGuid::Empty);
-                            player->RemoveAura(116421);
-                        }
-                        break;
-                    }
+                    attacker->AI()->AttackStart(me);
+                    attacker->AddThreat(me, 250.0f);
+                    attacker->GetMotionMaster()->Clear();
+                    attacker->GetMotionMaster()->MoveChase(me);
                 }
+        }
+
+        void AdvanceMaster()
+        {
+            if (_elapsed == 25)
+            {
+                if (Creature* master = me->SummonCreature(NPC_MASTER_LI_FAI, 1130.162231f, 3435.905518f,
+                    105.496597f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 65000))
+                {
+                    sCreatureTextMgr->SendChat(master, uint8(4));
+                    _master = master->GetGUID();
+                }
+                return;
+            }
+
+            Creature* master = me->GetMap()->GetCreature(_master);
+            if (!master)
+                return;
+
+            switch (_elapsed)
+            {
+                case 30: sCreatureTextMgr->SendChat(master, uint8(2)); break;
+                case 42: sCreatureTextMgr->SendChat(master, uint8(0)); break;
+                case 54: sCreatureTextMgr->SendChat(master, uint8(1)); break;
+                case 66: sCreatureTextMgr->SendChat(master, uint8(3)); break;
+                case 78: sCreatureTextMgr->SendChat(master, uint8(5)); break;
+                case 85:
+                    sCreatureTextMgr->SendChat(master, uint8(6));
+                    master->DespawnOrUnsummon();
+                    _master.Clear();
+                    break;
+                default:
+                    break;
             }
         }
+
+        EventMap _events;
+        SummonList _summons;
+        std::unordered_map<ObjectGuid, Participant> _participants;
+        ObjectGuid _master;
+        uint32 _elapsed = 0;
     };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new mob_aysaAI(creature);
+    }
+};
+
+class player_wandering_isle_meditation : public PlayerScript
+{
+public:
+    player_wandering_isle_meditation() : PlayerScript("player_wandering_isle_meditation") { }
+
+    void OnBeforeLogout(Player* player) override
+    {
+        player->RemoveAura(MeditationBar, player->GetGUID());
+    }
+
+    void OnMapChanged(Player* player) override
+    {
+        if (!player->IsInAreaTriggerRadius(MeditationCave))
+            player->RemoveAura(MeditationBar, player->GetGUID());
+    }
 };
 
 class boss_living_air : public CreatureScript
@@ -5628,6 +5681,7 @@ void AddSC_WanderingIsland()
     new npc_min_dimwind_outro();
     new mob_aysa_lake_escort();
     new mob_aysa();
+    new player_wandering_isle_meditation();
     new boss_living_air();
     new boss_li_fei();
     new boss_li_fei_fight();
