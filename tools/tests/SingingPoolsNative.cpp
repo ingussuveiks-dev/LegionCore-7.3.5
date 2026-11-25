@@ -3,6 +3,7 @@
 #undef main
 
 #include "AreaTriggerData.h"
+#include "ConditionMgr.h"
 #include "GameObjectPackets.h"
 #include "GilneasQuestNative.h"
 #include "MiscPackets.h"
@@ -24,6 +25,11 @@ constexpr uint32 NextQuest = 29676;
 constexpr uint32 SunPearl = 29677;
 constexpr uint32 PearlItem = 73184;
 constexpr uint32 LiangSpawn = 244441;
+constexpr uint32 Sting = 29666;
+constexpr uint32 WaterPincer = 60411;
+constexpr uint32 PincerSpawns[] = {244421, 244422, 244443, 244444, 244449, 244450};
+constexpr uint32 Shu = 29678;
+constexpr uint32 LiangPearl = 73791;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -44,7 +50,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 7, "Missing the Singing Pools quests");
+    Require(rows && rows->GetRowCount() == 9, "Missing the Singing Pools quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -58,8 +64,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29676,29677)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 7, "Missing the original Pools prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 9, "Missing the original Pools prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -67,6 +73,8 @@ void LoadPools()
         quest->LoadQuestTemplateAddon(row);
         if (quest->PrevQuestID)
             quest->prevQuests.push_back(quest->PrevQuestID);
+        if (quest->NextQuestID && quests[std::abs(quest->NextQuestID)])
+            quests[std::abs(quest->NextQuestID)]->prevQuests.push_back(quest->NextQuestID < 0 ? -int32(quest->Id) : int32(quest->Id));
     } while (rowsAddon->NextRow());
 
     auto objective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
@@ -93,14 +101,29 @@ void LoadPools()
         "Missing the original Sun Pearl objective");
     quests[SunPearl]->LoadQuestObjective(pearlObjective->Fetch());
     quests[SunPearl]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
+    auto stingObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29666");
+    Require(stingObjective && stingObjective->Fetch()[4].GetUInt32() == WaterPincer && stingObjective->Fetch()[5].GetUInt32() == 6,
+        "Missing the original Water Pincer objective");
+    quests[Sting]->LoadQuestObjective(stingObjective->Fetch());
+    quests[Sting]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    auto shuObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID=29678 ORDER BY StorageIndex");
+    Require(shuObjectives && shuObjectives->GetRowCount() == 2, "Missing the two Shu objectives");
+    do
+        quests[Shu]->LoadQuestObjective(shuObjectives->Fetch());
+    while (shuObjectives->NextRow());
+    quests[Shu]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244436,244441)");
+        "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29676,29677)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29676,29677)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
+        "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
@@ -120,11 +143,19 @@ void LoadPools()
     table = original;
     Require(loaded == 2 && LootTemplates_Gameobject.GetLootFor(209507) && LootTemplates_Gameobject.GetLootFor(209584),
         "Missing the original reed or pearl loot row");
+    auto& creatureLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
+    auto const originalCreatureLoot = creatureLoot;
+    creatureLoot += " WHERE Entry=60411";
+    (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
+    creatureLoot = originalCreatureLoot;
+    Require(LootTemplates_Creature.GetLootFor(WaterPincer), "Missing the original Water Pincer loot");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
     sSpellMgr->LoadSpellProcEvents();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
+    if (WorldDatabase.Query("SELECT 1 FROM conditions LIMIT 1"))
+        sConditionMgr->LoadConditions();
     sAreaTriggerDataStore->LoadAreaTriggerScripts();
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
     AddSC_WanderingIsland();
@@ -453,6 +484,9 @@ void CheckBell()
     for (uint32 spawn : MonkSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+    for (uint32 spawn : PincerSpawns)
+        if (auto data = sObjectMgr->GetCreatureData(spawn))
+            sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
     Teacher aysa(map);
     Teacher shang(map, ShangTempleSpawn, 54786);
@@ -657,6 +691,68 @@ void CheckSunPearl()
     std::cout << "PASS Aysa to hilltop Liang, original Ancient Clam guard, pearl retry and actual turn-in" << std::endl;
 #endif
 }
+
+void CheckShuAdmission()
+{
+    Map map(860, 667, 0, DIFFICULTY_NONE);
+    Teacher liang(map, LiangSpawn, 55020);
+    LootPlayer owner(SupplySession(), map, 2967801, liang.GetPosition());
+    LootPlayer pearlOnly(SupplySession(), map, 2967802, liang.GetPosition());
+    PreparePoolHunter(owner);
+    PreparePoolHunter(pearlOnly);
+    PoolPet pet(owner, map);
+    owner.SetRewardedQuest(NextQuest);
+    pearlOnly.SetRewardedQuest(NextQuest);
+
+    AcceptQuest(owner, liang, Shu);
+    Require(owner.GetQuestStatus(Shu) == QUEST_STATUS_NONE && !owner.GetItemCount(LiangPearl),
+        "Liang issued the supplied pearl before either prerequisite");
+    AcceptQuest(owner, liang, Sting);
+    Require(owner.GetQuestStatus(Sting) == QUEST_STATUS_INCOMPLETE, "Liang did not offer The Sting of Learning");
+    for (size_t index = 0; index < std::size(PincerSpawns); ++index)
+    {
+        Teacher pincer(map, PincerSpawns[index], WaterPincer);
+        MoveGilneasPlayer(owner, pincer.GetPosition());
+        Unit& killer = index % 2 ? static_cast<Unit&>(pet) : static_cast<Unit&>(owner);
+        if (&killer == &pet)
+        {
+            map.CreatureRelocation(&pet, pincer.GetPositionX(), pincer.GetPositionY(), pincer.GetPositionZ(), pincer.GetOrientation());
+            map.MoveAllCreaturesInMoveList();
+        }
+        Require(killer.IsValidAttackTarget(&pincer), "An original Water Pincer was not a native attack target");
+        killer.DealDamage(&pincer, uint32(pincer.GetMaxHealth()) * 2);
+        Tick(owner, 100);
+        Require(!pincer.IsAlive() && owner.GetQuestObjectiveData(Sting, WaterPincer) == int32(index + 1),
+            "Water Pincer defeat did not grant exactly one credit to the owner or pet owner");
+    }
+    MoveGilneasPlayer(owner, liang.GetPosition());
+    RewardQuest(owner, liang, Sting);
+    Require(owner.IsQuestRewarded(Sting), "Liang did not accept six Water Pincer defeats");
+
+    pearlOnly.SetRewardedQuest(SunPearl);
+    AcceptQuest(owner, liang, Shu);
+    AcceptQuest(pearlOnly, liang, Shu);
+#ifdef SINGING_POOLS_SHU_ADMISSION_BASELINE
+    Require(owner.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE && pearlOnly.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE
+        && owner.GetItemCount(LiangPearl) == 1 && pearlOnly.GetItemCount(LiangPearl) == 1,
+        "The original either-quest prerequisite no longer issues Liang's pearl");
+    std::cout << "EXPECTED_BROKEN Liang offered Shu and its item after only one of the two prerequisite tasks" << std::endl;
+#else
+    Require(owner.GetQuestStatus(Shu) == QUEST_STATUS_NONE && pearlOnly.GetQuestStatus(Shu) == QUEST_STATUS_NONE
+        && !owner.GetItemCount(LiangPearl) && !pearlOnly.GetItemCount(LiangPearl),
+        "Liang offered Shu after only one of the two prerequisite tasks");
+    owner.SetRewardedQuest(SunPearl);
+    AcceptQuest(owner, liang, Shu);
+    Require(owner.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE && owner.GetItemCount(LiangPearl) == 1,
+        "Liang did not give exactly one pearl after both prerequisites");
+    AbandonSupply(owner, Shu);
+    Require(!owner.GetItemCount(LiangPearl), "Abandoning Shu kept the provided item");
+    AcceptQuest(owner, liang, Shu);
+    Require(owner.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE && owner.GetItemCount(LiangPearl) == 1,
+        "Liang did not provide exactly one pearl again on retry");
+    std::cout << "PASS six native Water Pincer defeats, owner and pet credit, Liang's turn-in, both prerequisites and Shu item retry" << std::endl;
+#endif
+}
 #endif
 }
 
@@ -690,6 +786,9 @@ int main(int argc, char** argv)
 #endif
 #if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE) && !defined(SINGING_POOLS_ROCK_BASELINE)
         CheckSunPearl();
+#endif
+#if !defined(SINGING_POOLS_BASELINE) && !defined(SINGING_POOLS_WATER_BASELINE) && !defined(SINGING_POOLS_REEDS_BASELINE) && !defined(SINGING_POOLS_ROCK_BASELINE) && !defined(SINGING_POOLS_PEARL_BASELINE)
+        CheckShuAdmission();
 #endif
         CharacterDatabase.Close();
         LoginDatabase.Close();
