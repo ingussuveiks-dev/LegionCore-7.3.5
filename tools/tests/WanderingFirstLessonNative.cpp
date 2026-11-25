@@ -35,6 +35,13 @@ constexpr uint32 Edict = 210986;
 constexpr uint32 EdictSpawn = 102466;
 constexpr uint32 AcademyQuest = 29409;
 constexpr uint32 AcademyAura = 56267;
+constexpr uint32 DiscipleGiverSpawn = 243732;
+constexpr uint32 JaominSpawn = 243731;
+constexpr uint32 Jaomin = 54611;
+constexpr uint32 Aysa = 29410;
+constexpr uint32 LorvoSpawn = 243772;
+constexpr uint32 MissingDriver = 29419;
+constexpr uint32 ImportantItems = 29424;
 struct Lesson
 {
     uint8 playerClass;
@@ -54,7 +61,7 @@ void LoadLessonInputs()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingLesson.inc"
     );
-    Require(templates && templates->GetRowCount() == 18, "Missing a lesson, old introduction or academy quest");
+    Require(templates && templates->GetRowCount() == 21, "Missing a lesson, old introduction or academy quest");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -67,8 +74,9 @@ void LoadLessonInputs()
     auto addons = WorldDatabase.Query(
         "SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,RewardMailTemplateID,RewardMailDelay,"
         "RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMinRepValue,RequiredMaxRepFaction,RequiredMaxRepValue,"
-        "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29524)");
-    Require(addons && addons->GetRowCount() == 18, "Missing the actual lesson prerequisites and class masks");
+        "ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
+        "WHERE ID BETWEEN 30033 AND 30045 OR ID IN (30027,29406,29408,29409,29410,29419,29424,29524)");
+    Require(addons && addons->GetRowCount() == 21, "Missing the actual lesson prerequisites and class masks");
     do
     {
         auto row = addons->Fetch();
@@ -84,29 +92,32 @@ void LoadLessonInputs()
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query(
         "SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives "
-        "WHERE QuestID IN (29406,29408,29409,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
+        "WHERE QuestID IN (29406,29408,29409,29410,29419,29424,29524,30027) OR QuestID BETWEEN 30033 AND 30038");
     Require(bool(objectives), "Missing the original equipment or training objectives");
     do
     {
         auto row = objectives->Fetch();
         auto quest = quests[row[1].GetUInt32()];
         quest->LoadQuestObjective(row);
-        quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+        if (row[2].GetUInt8() == QUEST_OBJECTIVE_ITEM)
+            quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
+        else
+            quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     } while (objectives->NextRow());
 
     auto oldAreaStarts = WorldDatabase.Query("SELECT COUNT(*) FROM area_queststart WHERE id=5834");
     Require(oldAreaStarts && !oldAreaStarts->Fetch()[0].GetUInt32(), "Expected the migrated area to have no automatic introduction");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
-        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685)");
+        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685,243731,243732,243772)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29406,29408,29409,29524,30027) OR quest BETWEEN 30033 AND 30038");
+        "WHERE quest IN (29406,29408,29409,29410,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30038");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29406,29408,29409,29524,30027) OR quest BETWEEN 30033 AND 30045");
+        "WHERE quest IN (29406,29408,29409,29410,29419,29424,29524,30027) OR quest BETWEEN 30033 AND 30045");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts "
         "WHERE source_type=0 AND entryorguid IN (53566,54586,54587,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
-        "WHERE CreatureID IN (53566,54586,54587,65470,65471)");
+        "WHERE CreatureID IN (53566,54586,54587,54611,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell IN (56267,114610) AND area=5834");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN (53566,59591)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE "
@@ -588,6 +599,101 @@ void CheckBurningScroll(LootPlayer& player)
     std::cout << "PASS native temple flame, full bags/retry, abandonment, scoped edict burn and Disciple's Challenge acceptance" << std::endl;
 }
 
+void CheckDiscipleChallenge(LootPlayer& player)
+{
+    auto& map = *player.GetMap();
+    LessonCreature giver(map, DiscipleGiverSpawn, 53566);
+    LessonCreature boss(map, JaominSpawn, Jaomin);
+    LootPlayer nearby(SupplySession(), map, 29491, giver.GetPosition());
+    LootPlayer remote(SupplySession(), map, 29492, giver.GetPosition());
+    LootPlayer outsider(SupplySession(), map, 29493, giver.GetPosition());
+    LootPlayer visitor(SupplySession(), map, 29494, boss.GetPosition());
+    SetStudent(visitor, RACE_PANDAREN_NEUTRAL, CLASS_MONK);
+    for (auto other : {&nearby, &remote, &outsider})
+    {
+        SetStudent(*other, RACE_PANDAREN_NEUTRAL, CLASS_MONK);
+        other->SetRewardedQuest(BurningScroll);
+        Accept(*other, giver, AcademyQuest);
+        Require(other->GetQuestStatus(AcademyQuest) == QUEST_STATUS_INCOMPLETE, "A witness could not accept the Disciple's Challenge");
+    }
+    StudentParty group(player, nearby, remote);
+    for (auto other : {&player, &nearby, &outsider})
+        SupplyMove(*other, boss.GetPosition());
+    Position remotePosition = boss.GetPosition();
+    remotePosition.m_positionX += 200.0f;
+    SupplyMove(remote, remotePosition);
+    Require(!remote.IsAtGroupRewardDistance(&boss), "The distant witness is within the native reward radius");
+    StudentPet pet(player, map);
+    auto const fullHealth = boss.GetHealth();
+    visitor.DealDamage(&boss, uint32(fullHealth) * 2);
+    Require(boss.GetHealth() == fullHealth && boss.GetDisplayId() == 39755 && !boss.AI()->CanAIAttack(&visitor),
+        "A player without the challenge could start or advance the duel");
+    boss.AI()->AttackStart(&player);
+    player.DealDamage(&boss, uint32(fullHealth * 3 / 4));
+    Require(boss.IsAlive() && boss.GetDisplayId() == 39796 && !player.GetQuestObjectiveData(AcademyQuest, Jaomin),
+        "The ordinary damage did not enter the falcon phase without granting victory");
+    pet.DealDamage(&boss, uint32(boss.GetMaxHealth()) * 2);
+    Tick(player, 100);
+    std::cout << "CASE Jaomin pet finish: owner=" << player.GetQuestObjectiveData(AcademyQuest, Jaomin)
+        << " party=" << nearby.GetQuestObjectiveData(AcademyQuest, Jaomin)
+        << " outsider=" << outsider.GetQuestObjectiveData(AcademyQuest, Jaomin)
+        << " remote=" << remote.GetQuestObjectiveData(AcademyQuest, Jaomin) << std::endl;
+    Require(!boss.isInCombat(), "Jaomin kept fighting after surrender");
+    outsider.DealDamage(&boss, uint32(boss.GetMaxHealth()) * 2);
+    Require(outsider.GetQuestStatus(AcademyQuest) == QUEST_STATUS_INCOMPLETE &&
+        boss.HasAura(108959), "A hit during surrender altered the cooldown or handed out extra credit");
+    boss.AI()->UpdateAI(8999);
+    Require(!outsider.IsValidAttackTarget(&boss), "Jaomin reopened the duel before the original recovery time");
+    boss.AI()->UpdateAI(2);
+    std::cout << "CASE Jaomin after recovery out of combat: attackable="
+        << outsider.IsValidAttackTarget(&boss) << std::endl;
+    Require(boss.IsAlive() && player.GetQuestStatus(AcademyQuest) == QUEST_STATUS_COMPLETE &&
+        nearby.GetQuestStatus(AcademyQuest) == QUEST_STATUS_COMPLETE && outsider.GetQuestStatus(AcademyQuest) == QUEST_STATUS_INCOMPLETE &&
+        remote.GetQuestStatus(AcademyQuest) == QUEST_STATUS_INCOMPLETE, "Jaomin did not reward only the actual combatant and nearby group");
+    Require(outsider.IsValidAttackTarget(&boss), "Jaomin did not recover without a victim");
+    for (uint32 elapsed = 0; elapsed < 1000; elapsed += 100)
+        boss.Update(100);
+    Require(!boss.IsInEvadeMode(), "Jaomin did not finish returning home");
+    boss.AI()->AttackStart(&outsider);
+    outsider.DealDamage(&boss, uint32(boss.GetMaxHealth()) * 2);
+    Require(outsider.GetQuestStatus(AcademyQuest) == QUEST_STATUS_COMPLETE && boss.IsAlive() &&
+        player.GetQuestObjectiveData(AcademyQuest, Jaomin) == 1, "A fresh challenger could not win with one hit after recovery");
+    boss.AI()->UpdateAI(9001);
+    for (uint32 elapsed = 0; elapsed < 1000; elapsed += 100)
+        boss.Update(100);
+    SupplyMove(remote, boss.GetPosition());
+    TempSummon* guardian = map.SummonCreature(299, boss.GetPosition(), sSummonPropertiesStore.LookupEntry(61), 30000, &remote);
+    Require(dynamic_cast<Guardian*>(guardian) && guardian->GetCharmerOrOwnerPlayerOrPlayerItself() == &remote,
+        "The next challenger could not publish an owned guardian");
+    boss.AI()->AttackStart(&remote);
+    Require(boss.AI()->CanAIAttack(guardian), "The recovered challenger did not admit the guardian's owner");
+    guardian->DealDamage(&boss, uint32(boss.GetMaxHealth()) * 2);
+    Require(remote.GetQuestStatus(AcademyQuest) == QUEST_STATUS_COMPLETE && boss.IsAlive(),
+        "An owned guardian could not win the next challenge");
+    guardian->UnSummon();
+    map.RemoveAllObjectsInRemoveList();
+    SupplyMove(player, giver.GetPosition());
+    ClaimPackage(player, giver, AcademyQuest);
+    if (player.GetQuestStatus(Aysa) == QUEST_STATUS_NONE)
+        Accept(player, giver, Aysa);
+    Require(player.GetQuestStatus(Aysa) == QUEST_STATUS_COMPLETE || player.GetQuestStatus(Aysa) == QUEST_STATUS_INCOMPLETE,
+        "The Disciple's Challenge did not admit Aysa of the Tushui");
+    std::cout << "PASS native Jaomin player/pet/guardian finishes, eligible nearby party, recovery and Aysa acceptance" << std::endl;
+
+    LessonCreature lorvo(map, LorvoSpawn, 54943);
+    SupplyMove(player, lorvo.GetPosition());
+    Reward(player, lorvo, Aysa);
+    Require(player.IsQuestRewarded(Aysa), "Aysa of the Tushui could not be turned in to Merchant Lorvo");
+    player.PrepareQuestMenu(lorvo.GetGUID());
+    Require(player.PlayerTalkClass->GetQuestMenu().HasItem(MissingDriver) &&
+        player.PlayerTalkClass->GetQuestMenu().HasItem(ImportantItems), "Lorvo did not offer both follow-up quests");
+    Accept(player, lorvo, MissingDriver);
+    Accept(player, lorvo, ImportantItems);
+    Require(player.GetQuestStatus(MissingDriver) == QUEST_STATUS_INCOMPLETE &&
+        player.GetQuestStatus(ImportantItems) == QUEST_STATUS_INCOMPLETE, "Lorvo's two follow-up quests could not be accepted together");
+    std::cout << "PASS Aysa turn-in at placed Merchant Lorvo and acceptance of both follow-up quests" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
@@ -627,6 +733,7 @@ void CheckFirstLesson()
             CheckSandyFist(student, giver);
             CheckStifledPride(student, giver);
             CheckBurningScroll(student);
+            CheckDiscipleChallenge(student);
         }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
@@ -672,7 +779,8 @@ int main(int argc, char** argv)
             auto schema = CharacterDatabase.Query("SELECT DATABASE()");
             Require(schema && schema->Fetch()[0].GetString() == "fixture_char", "The lesson check requires isolated characters");
             LoadLessonInputs();
-            for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u, 243608u, 243645u, TempleGiverSpawn})
+            for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u,
+                243608u, 243645u, TempleGiverSpawn, JaominSpawn, DiscipleGiverSpawn, LorvoSpawn})
                 if (auto data = sObjectMgr->GetCreatureData(spawn))
                     sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();

@@ -1,6 +1,7 @@
 #include "ScriptedEscortAI.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Group.h"
 #include "Item.h"
 #include "MapManager.h"
 #include "QuestObjectScope.h"
@@ -394,17 +395,17 @@ public:
         };
 
         EventMap events;
-        bool isInFalcon;
-        bool fightEnd;
+        bool isInFalcon = false;
+        bool fightEnd = false;
 
-        void EnterCombat(Unit* unit)
+        void EnterCombat(Unit* /*unit*/) override
         {
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
             events.RescheduleEvent(EVENT_JAOMIN_JUMP, 1000);
             events.RescheduleEvent(EVENT_HIT_CIRCLE, 2000);
         }
 
-        void Reset()
+        void Reset() override
         {
             events.Reset();
             me->SetReactState(REACT_DEFENSIVE);
@@ -414,45 +415,86 @@ public:
             fightEnd = false;
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType)
+        Player* GetChallenger(Unit const* attacker) const
         {
-            if (me->HealthBelowPctDamaged(30, damage) && !isInFalcon)
+            Player* player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (!player || !player->IsAlive() || !player->IsInWorld() ||
+                player->GetQuestStatus(QUEST_THE_DISCIPLE_CHALLENGE) != QUEST_STATUS_INCOMPLETE ||
+                !player->InSamePhase(me) || !player->IsAtGroupRewardDistance(me))
+                return nullptr;
+            return player;
+        }
+
+        bool CanAIAttack(Unit const* attacker) const override
+        {
+            return !fightEnd && GetChallenger(attacker);
+        }
+
+        void CreditVictory(Player& finisher) const
+        {
+            if (Group* group = finisher.GetGroup())
             {
-                isInFalcon = true;
-                me->SetDisplayId(39796); //faucon
-                events.RescheduleEvent(EVENT_FALCON, 1000);
-                events.CancelEvent(EVENT_JAOMIN_JUMP);
-                events.CancelEvent(EVENT_HIT_CIRCLE);
+                for (GroupReference* member = group->GetFirstMember(); member; member = member->next())
+                    if (Player* student = member->getSource(); student && student->IsInWorld() &&
+                        student->GetQuestStatus(QUEST_THE_DISCIPLE_CHALLENGE) == QUEST_STATUS_INCOMPLETE &&
+                        student->InSamePhase(me) && student->IsAtGroupRewardDistance(me) &&
+                        (student->IsAlive() || !student->GetCorpse()))
+                        student->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
+            }
+            else
+                finisher.KilledMonsterCredit(me->GetEntry(), me->GetGUID());
+        }
+
+        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
+        {
+            Player* player = GetChallenger(attacker);
+            if (fightEnd || !player)
+            {
+                damage = 0;
+                return;
             }
 
-            if (me->HealthBelowPctDamaged(5, damage) && !fightEnd)
+            if (damage && (me->HealthBelowPctDamaged(5, damage) || damage >= me->GetHealth()))
             {
-                sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1);
-
-                std::list<Player*> playerList;
-                GetPlayerListInGrid(playerList, me, 10.0f);
-                for (std::list<Player*>::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
-                    (*itr)->KilledMonsterCredit(me->GetEntry(), ObjectGuid::Empty);
-
                 fightEnd = true;
-                me->StopAttack();
-                me->SetFullHealth();
+                damage = 0;
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                attacker->AttackStop();
+                me->CombatStop(true);
+                me->DeleteThreatList();
+                me->SetFullHealth();
                 me->SetDisplayId(39755);
+                sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
                 events.Reset();
                 events.RescheduleEvent(EVENT_RESET, 9000);
                 DoCast(me, 108959, true);
-                damage = 0;
+                CreditVictory(*player);
+                return;
             }
 
-            if (damage >= me->GetHealth())
-                damage = 0;
+            if (damage && !isInFalcon && me->HealthBelowPctDamaged(30, damage))
+            {
+                isInFalcon = true;
+                me->SetDisplayId(39796);
+                events.RescheduleEvent(EVENT_FALCON, 1000);
+                events.CancelEvent(EVENT_JAOMIN_JUMP);
+                events.CancelEvent(EVENT_HIT_CIRCLE);
+            }
         }
         
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) override
         {
+            if (fightEnd)
+            {
+                events.Update(diff);
+                if (events.ExecuteEvent() == EVENT_RESET)
+                {
+                    me->NearTeleportTo(me->GetHomePosition());
+                    EnterEvadeMode();
+                }
+                return;
+            }
+
             if (!UpdateVictim())
                 return;
 
@@ -480,10 +522,6 @@ public:
                         DoCast(108935);
                         events.RescheduleEvent(EVENT_FALCON, 6000);
                         break;
-                    case EVENT_RESET:
-                        me->NearTeleportTo(me->GetHomePosition());
-                        EnterEvadeMode();
-                    	break;
                 }
             }
             DoMeleeAttackIfReady();
