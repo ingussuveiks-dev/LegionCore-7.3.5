@@ -2,8 +2,11 @@
 #include "QuestSupplyChestsNative.cpp"
 #undef main
 
+#include "AreaTriggerData.h"
 #include "GameObjectPackets.h"
 #include "GilneasQuestNative.h"
+#include "MiscPackets.h"
+#include "Vehicle.h"
 
 void AddSC_WanderingIsland();
 
@@ -17,6 +20,14 @@ constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
 constexpr uint32 AysaSpawn = 244270;
 constexpr uint32 BellSpell = 102843;
+
+LONG WINAPI PoolCrashTrace(EXCEPTION_POINTERS* exception)
+{
+    auto const executable = reinterpret_cast<uintptr_t>(GetModuleHandleW(nullptr));
+    auto const address = reinterpret_cast<uintptr_t>(exception->ExceptionRecord->ExceptionAddress);
+    std::cerr << "Native check exception RVA 0x" << std::hex << address - executable << std::dec << std::endl;
+    return CrashTrace(exception);
+}
 
 void LoadPools()
 {
@@ -56,11 +67,17 @@ void LoadPools()
     quests[DryFur]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid=244270");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN (244137,244270)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
         "WHERE quest IN (29521,29661,29676)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
         "WHERE quest IN (29521,29661,29676)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
+        "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
+        "WHERE npc_entry=54993");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
+        "WHERE entry IN (46598,102938,102939,102940,102941,102942)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -68,8 +85,11 @@ void LoadPools()
     sObjectMgr->LoadPageTexts();
     sObjectMgr->LoadGameObjectTemplate();
     sObjectMgr->LoadCreatures();
+    sObjectMgr->LoadNPCSpellClickSpells();
+    sSpellMgr->LoadSpellProcEvents();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
+    sAreaTriggerDataStore->LoadAreaTriggerScripts();
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
     AddSC_WanderingIsland();
     sScriptMgr->SwapScriptContext(true);
@@ -101,13 +121,12 @@ struct Bell : GameObject
 
 struct Teacher : Creature
 {
-    explicit Teacher(Map& map) : Creature(false)
+    explicit Teacher(Map& map, uint32 spawn = AysaSpawn, uint32 entry = 54975) : Creature(false)
     {
-        auto data = sObjectMgr->GetCreatureData(AysaSpawn);
-        Require(data && data->id == 54975, "The original Singing Pools Aysa is missing");
-        sObjectMgr->RemoveCreatureFromGrid(AysaSpawn, data);
+        auto data = sObjectMgr->GetCreatureData(spawn);
+        Require(data && data->id == entry, "An original Singing Pools placement is missing");
         map.LoadGrid(data->posX, data->posY);
-        Require(LoadCreatureFromDB(AysaSpawn, &map, true), "Could not load Aysa at the Pools");
+        Require(LoadCreatureFromDB(spawn, &map, true), "Could not load the Singing Pools actor");
     }
 
     ~Teacher()
@@ -155,8 +174,116 @@ void Ring(LootPlayer& player, Bell& bell, bool report)
     Tick(player, 3000);
 }
 
+#ifndef SINGING_POOLS_BASELINE
+void CheckPoolWater(LootPlayer& player, uint32 triggerId, uint32 spell)
+{
+    Map& map = *player.GetMap();
+    auto trigger = sAreaTriggerStore.LookupEntry(triggerId);
+    Require(trigger && trigger->ContinentID == 860, "Missing an original pool trigger");
+    Position water;
+    Position above;
+    bool found = false;
+    for (int xOffset = -36; xOffset <= 36 && !found; xOffset += 6)
+    {
+        for (int yOffset = -36; yOffset <= 36 && !found; yOffset += 6)
+        {
+            float const x = trigger->Pos.X + xOffset;
+            float const y = trigger->Pos.Y + yOffset;
+            map.LoadGrid(x, y);
+            float const surface = map.GetWaterLevel(x, y);
+            if (surface <= trigger->Pos.Z - trigger->BoxHeight / 2)
+                continue;
+            water.Relocate(x, y, std::min(surface - 0.25f, trigger->Pos.Z));
+            above.Relocate(x, y, surface + 0.25f);
+            if (!(map.getLiquidStatus(x, y, water.GetPositionZ(), MAP_ALL_LIQUIDS) &
+                (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER)))
+                continue;
+            MoveGilneasPlayer(player, water);
+            found = player.IsInAreaTriggerRadius(trigger);
+            if (found && spell == 102938)
+            {
+                MoveGilneasPlayer(player, above);
+                found = player.IsInAreaTriggerRadius(trigger);
+            }
+        }
+    }
+    if (!found)
+        std::cout << "CASE could not sample pool " << triggerId << std::endl;
+    Require(found, "Could not locate actual pool liquid inside the native trigger");
+    auto relocate = [&player, &map](Position const& position) {
+        MoveGilneasPlayer(player, position);
+        player.UpdateUnderwaterState(&map, position.GetPositionX(), position.GetPositionY(), position.GetPositionZ());
+    };
+    relocate(above);
+    Require(!player.Unit::IsInWater(), "The fixture must first enter above the wet surface");
+    WorldPackets::Misc::AreaTrigger entering{WorldPacket(CMSG_AREA_TRIGGER)};
+    entering.AreaTriggerID = triggerId;
+    entering.Entered = true;
+    entering.FromClient = true;
+    player.GetSession()->HandleAreaTrigger(entering);
+    Tick(player, 1500);
+    Require(!player.HasAura(spell), "Dry entry applied the pool curse");
+
+    relocate(water);
+    Require(player.Unit::IsInWater() && player.IsInAreaTriggerRadius(trigger), "The fall left the original trigger or missed its water");
+    sScriptMgr->OnUpdate(&player, 100);
+    Tick(player, 1500);
+    auto const transformed = player.HasAura(spell);
+    std::cout << "CASE pool " << triggerId << ": wet=" << player.Unit::IsInWater() << " transformed=" << transformed << std::endl;
+#ifdef SINGING_POOLS_WATER_BASELINE
+    Require(!transformed, "The old one-shot pool script unexpectedly detected the fall");
+    std::cout << "EXPECTED_BROKEN falling inside the same trigger never reapplied the curse" << std::endl;
+#else
+    Require(transformed, "Actual water contact inside the pool did not transform the pupil");
+    relocate(above);
+    sScriptMgr->OnUpdate(&player, 100);
+    Require(!player.HasAura(spell), "A pool curse remained after leaving the liquid");
+    std::cout << "PASS pool " << triggerId << " transforms on liquid entry and restores the pupil when dry" << std::endl;
+    if (triggerId == 6986)
+    {
+        Teacher pole(map, 244137, 54993);
+        Require(pole.GetVehicleKit(), "An original balance pole has no vehicle");
+        auto tryBoard = [&player, &pole] {
+            pole.HandleSpellClick(&player);
+            for (uint32 elapsed = 0; elapsed < 1000; elapsed += 50)
+            {
+                Tick(player, 50);
+                pole.Unit::Update(50);
+            }
+        };
+        relocate(water);
+        sScriptMgr->OnUpdate(&player, 100);
+        Require(player.HasAura(spell), "The pupil was not cursed before the boarding attempt");
+        MoveGilneasPlayer(player, pole.GetPosition());
+        std::cout << "CASE trying the placed pole while cursed" << std::endl;
+        tryBoard();
+        Require(!player.GetVehicle(), "A frog remained seated on the original pole");
+        relocate(above);
+        sScriptMgr->OnUpdate(&player, 100);
+        MoveGilneasPlayer(player, pole.GetPosition());
+        std::cout << "CASE trying the placed pole when dry" << std::endl;
+        tryBoard();
+        bool const boarded = player.GetVehicleBase() == &pole;
+        if (player.GetVehicle())
+            player.ExitVehicle();
+        Require(boarded && !player.GetVehicle(), "The dry pupil could not board and leave the native balance pole");
+        relocate(water);
+        sScriptMgr->OnUpdate(&player, 100);
+        Require(player.HasAura(spell), "Water after leaving the pole did not restore the curse");
+        relocate(above);
+        sScriptMgr->OnUpdate(&player, 100);
+        Require(!player.HasAura(spell), "The repeated fall did not recover on dry land");
+        std::cout << "PASS frog boarding rejection, native dry seat, dismount and actual-water retry" << std::endl;
+    }
+#endif
+}
+#endif
+
 void CheckBell()
 {
+    for (uint32 spawn : {AysaSpawn, 244137u})
+        if (auto data = sObjectMgr->GetCreatureData(spawn))
+            sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     Map map(860, 663, 0, DIFFICULTY_NONE);
     Teacher aysa(map);
     Bell bell(map);
@@ -221,6 +348,14 @@ void CheckBell()
         AcceptQuest(pupil, aysa, NextQuest);
     Require(pupil.GetQuestStatus(NextQuest) != QUEST_STATUS_NONE, "Aysa did not admit Finding an Old Friend");
     std::cout << "PASS native Aysa arrival, Training Bell and next quest" << std::endl;
+    CheckPoolWater(pupil, 6986, 102938);
+#ifndef SINGING_POOLS_WATER_BASELINE
+    CheckPoolWater(pupil, 6987, 102938);
+    CheckPoolWater(pupil, 6988, 102939);
+    CheckPoolWater(pupil, 7012, 102940);
+    CheckPoolWater(pupil, 6991, 102941);
+    CheckPoolWater(pupil, 6990, 102942);
+#endif
 #endif
 }
 }
@@ -228,7 +363,7 @@ void CheckBell()
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
-    SetUnhandledExceptionFilter(CrashTrace);
+    SetUnhandledExceptionFilter(PoolCrashTrace);
     try
     {
         InitializeNative(argc, argv);

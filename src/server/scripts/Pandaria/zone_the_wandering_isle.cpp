@@ -1726,112 +1726,106 @@ struct go_wandering_isle_training_bell : GameObjectAI
     }
 };
 
-class checkArea : public BasicEvent
+namespace
 {
-    Player* player;
-    uint32 spellId;
-public:
-    explicit checkArea(Player * me, uint32 sp) : player(me), spellId(sp) {}
+constexpr uint32 FrogPoolCurse = 102938;
 
-    virtual bool Execute(uint64 , uint32)
+struct SingingPool
+{
+    uint32 Curse;
+    uint32 Trigger;
+    uint32 SecondTrigger = 0;
+};
+
+constexpr SingingPool SingingPools[] =
+{
+    {FrogPoolCurse, 6986, 6987},
+    {102939, 6988},
+    {102940, 7012},
+    {102941, 6991},
+    {102942, 6990}
+};
+
+bool IsSingingPoolsLiquidContact(Player const& player)
+{
+    auto const status = player.GetMap()->getLiquidStatus(player.GetPositionX(), player.GetPositionY(),
+        player.GetPositionZ(), MAP_ALL_LIQUIDS);
+    return (status & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER)) != 0;
+}
+
+void SetSingingPoolCurse(Player& player, uint32 active)
+{
+    for (SingingPool const& pool : SingingPools)
+        if (pool.Curse != active && player.HasAura(pool.Curse, player.GetGUID()))
+            player.RemoveAura(pool.Curse, player.GetGUID());
+
+    if (active && !player.HasAura(active, player.GetGUID()))
+        player.AddAura(active, &player);
+}
+
+void RefreshSingingPoolCurse(Player& player)
+{
+    if (player.IsAlive() && !player.IsOnVehicle())
+        for (SingingPool const& pool : SingingPools)
+            if (player.IsInAreaTriggerRadius(pool.Trigger) ||
+                (pool.SecondTrigger && player.IsInAreaTriggerRadius(pool.SecondTrigger)))
+            {
+                SetSingingPoolCurse(player, IsSingingPoolsLiquidContact(player) ? pool.Curse : 0);
+                return;
+            }
+
+    SetSingingPoolCurse(player, 0);
+}
+}
+
+class AreaTrigger_at_bassin_curse : public AreaTriggerScript
+{
+public:
+    AreaTrigger_at_bassin_curse() : AreaTriggerScript("AreaTrigger_at_bassin_curse") { }
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const*, bool) override
     {
-        LiquidData liquidStatus;
-        ZLiquidStatus status = player->GetMap()->getLiquidStatus(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), MAP_ALL_LIQUIDS, &liquidStatus);
-        if (!player->IsOnVehicle() && status == LIQUID_MAP_IN_WATER)
-            player->AddAura(spellId, player);
+        RefreshSingingPoolCurse(*player);
         return true;
     }
 };
 
-class AreaTrigger_at_bassin_curse : public AreaTriggerScript
+class player_wandering_isle_pool_curses : public PlayerScript
 {
-    public:
-        AreaTrigger_at_bassin_curse() : AreaTriggerScript("AreaTrigger_at_bassin_curse")
-        {}
+public:
+    player_wandering_isle_pool_curses() : PlayerScript("player_wandering_isle_pool_curses") { }
 
-        enum eTriggers
-        {
-            AREA_CRANE              = 6991,
-            AREA_SKUNK              = 6988,
-            AREA_FROG2              = 6986,
-            AREA_FROG               = 6987,
-            AREA_FROG_EXIT          = 6986,
-            AREA_TURTLE             = 7012,
-            AREA_CROCODILE          = 6990
-        };
+    void OnUpdate(Player* player, uint32) override
+    {
+        if (player->GetMapId() == 860)
+            RefreshSingingPoolCurse(*player);
+    }
 
-        enum eSpells
-        {
-            SPELL_FROG              = 102938,
-            SPELL_SKUNK             = 102939,
-            SPELL_TURTLE            = 102940,
-            SPELL_CRANE             = 102941,
-            SPELL_CROCODILE         = 102942,
-        };
+    void OnMapChanged(Player* player) override
+    {
+        if (player->GetMapId() != 860)
+            SetSingingPoolCurse(*player, 0);
+    }
 
-        void AddOrRemoveSpell(Player* player, uint32 spellId, bool enter)
-        {
-            RemoveAllSpellsExcept(player, spellId);
-
-            if (!player->HasAura(spellId))
-            {
-                player->m_Events.AddEvent(new checkArea(player, spellId), player->m_Events.CalculateTime(1000));
-            }
-            else if (!enter)
-                player->RemoveAurasDueToSpell(spellId);
-        }
-
-        void RemoveAllSpellsExcept(Player* player, uint32 spellId)
-        {
-            uint32 spellTable[5] = {SPELL_FROG, SPELL_SKUNK, SPELL_TURTLE, SPELL_CRANE, SPELL_CROCODILE};
-
-            for (uint8 i = 0; i < 5; ++i)
-                if (spellId != spellTable[i])
-                    player->RemoveAurasDueToSpell(spellTable[i]);
-        }
-
-        bool OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool enter)
-        {
-            //if (player->IsOnVehicle())
-            //    return true;
-
-            switch(trigger->ID)
-            {
-                case AREA_CRANE:     AddOrRemoveSpell(player, SPELL_CRANE, enter);     break;
-                case AREA_SKUNK:     AddOrRemoveSpell(player, SPELL_SKUNK, enter);     break;
-                case AREA_FROG: case AREA_FROG_EXIT: AddOrRemoveSpell(player, SPELL_FROG, enter);      break;
-                //case AREA_FROG_EXIT: RemoveAllSpellsExcept(player, 0);          break;
-                case AREA_TURTLE:    AddOrRemoveSpell(player, SPELL_TURTLE, enter);    break;
-                case AREA_CROCODILE: AddOrRemoveSpell(player, SPELL_CROCODILE, enter); break;
-            }
-
-            return true;
-        }
+    void OnBeforeLogout(Player* player) override
+    {
+        if (player->GetMapId() == 860)
+            SetSingingPoolCurse(*player, 0);
+    }
 };
 
-// Npc's : 54993 - 55083 - 57431
+// 54993, 55083, 57431 and 57626
 class vehicle_balance_pole : public VehicleScript
 {
-    public:
-        vehicle_balance_pole() : VehicleScript("vehicle_balance_pole") {}
+public:
+    vehicle_balance_pole() : VehicleScript("vehicle_balance_pole") { }
 
-        void OnAddPassenger(Vehicle* veh, Unit* passenger, int8 /*seatId*/)
-        {
-            if (passenger->HasAura(102938))
-                passenger->ExitVehicle();
-        }
-
-        void OnRemovePassenger(Vehicle* veh, Unit* passenger)
-        {
-            Player* p = passenger->ToPlayer();
-            if (!p || !p->GetLastAreaTrigger())
-                return;
-
-            sScriptMgr->OnAreaTrigger(p, p->GetLastAreaTrigger(), true);
-            //passenger->AddAura(102938, passenger);
-        }
+    void OnAddPassenger(Vehicle*, Unit* passenger, int8) override
+    {
+        if (passenger->HasAura(FrogPoolCurse))
+            passenger->ExitVehicle();
+    }
 };
-
 /*
 blizz create random pole... one model set invisible. this enable all visible.
 UPDATE `creature_template` SET `modelid2` = '0' WHERE `entry` in (54993, 55083, 57431);
@@ -5856,6 +5850,7 @@ void AddSC_WanderingIsland()
     new at_going_to_east();
     new npc_childrens_going_to_east();
     new AreaTrigger_at_bassin_curse();
+    new player_wandering_isle_pool_curses();
     new vehicle_balance_pole();
     new mob_tushui_monk();
     new mob_jojo_ironbrow_1();
