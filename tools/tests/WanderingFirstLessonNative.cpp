@@ -3,7 +3,9 @@
 #undef main
 
 #include "GossipDef.h"
+#include "GameObjectPackets.h"
 #include "ItemPackets.h"
+#include "SpellPackets.h"
 #include "CreatureTextMgr.h"
 #include "SmartAI.h"
 #include "SpellMgr.h"
@@ -25,6 +27,12 @@ constexpr std::pair<uint32, uint32> Trainees[] = {
     {243610, 54586}, {243660, 54587}, {243608, 65470}, {243645, 65471}
 };
 constexpr uint32 BurningScroll = 29408;
+constexpr uint32 TempleGiverSpawn = 243685;
+constexpr uint32 MastersFlame = 80212;
+constexpr uint32 FlameCredit = 59591;
+constexpr uint32 BurnCredit = 59570;
+constexpr uint32 Edict = 210986;
+constexpr uint32 EdictSpawn = 102466;
 constexpr uint32 AcademyQuest = 29409;
 constexpr uint32 AcademyAura = 56267;
 struct Lesson
@@ -90,16 +98,20 @@ void LoadLessonInputs()
     Require(oldAreaStarts && !oldAreaStarts->Fetch()[0].GetUInt32(), "Expected the migrated area to have no automatic introduction");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE guid IN "
-        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645)");
+        "(243564,243565,243566,243567,243568,243569,243610,243660,243608,243645,243685)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29406,29408,29524,30027) OR quest BETWEEN 30033 AND 30038");
+        "WHERE quest IN (29406,29408,29409,29524,30027) OR quest BETWEEN 30033 AND 30038");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29406,29408,29524,30027) OR quest BETWEEN 30033 AND 30045");
+        "WHERE quest IN (29406,29408,29409,29524,30027) OR quest BETWEEN 30033 AND 30045");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts "
-        "WHERE source_type=0 AND entryorguid IN (54586,54587,65470,65471)");
+        "WHERE source_type=0 AND entryorguid IN (53566,54586,54587,65470,65471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
-        "WHERE CreatureID IN (54586,54587,65470,65471)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=56267 AND area=5834");
+        "WHERE CreatureID IN (53566,54586,54587,65470,65471)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell IN (56267,114610) AND area=5834");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN (53566,59591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE "
+        "(SourceTypeOrReferenceId=13 AND SourceEntry IN (114580,114746,115930)) OR "
+        "(SourceTypeOrReferenceId=18 AND SourceGroup IN (53566,59591)) OR (SourceTypeOrReferenceId=22 AND SourceEntry=53566)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadItemTemplates();
@@ -116,7 +128,9 @@ void LoadLessonInputs()
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
     sSpellMgr->LoadSpellAreas();
+    sObjectMgr->LoadNPCSpellClickSpells();
     sSmartScriptMgr->LoadSmartAIFromDB();
+    sConditionMgr->LoadConditions();
     sCreatureTextMgr->LoadCreatureTexts();
 }
 
@@ -437,6 +451,143 @@ void CheckStifledPride(LootPlayer& player, Creature& giver)
     std::cout << "PASS all four trainee variants, player/pet/guardian finishes, group distance, repeat protection and Burning Scroll acceptance" << std::endl;
 }
 
+void SnatchFlame(LootPlayer& player, Creature& teacher)
+{
+    // Socketless students do not receive the area's normal movement update.
+    player.m_zoneId = teacher.GetZoneId();
+    player.m_areaId = teacher.GetAreaId();
+    WorldPackets::Spells::SpellClick click{WorldPacket(CMSG_SPELL_CLICK)};
+    click.SpellClickUnitGuid = teacher.GetGUID();
+    player.GetSession()->HandleSpellClick(click);
+    Tick(player, 3000);
+}
+
+struct LessonEdict : GameObject
+{
+    explicit LessonEdict(Map& map)
+    {
+        auto row = WorldDatabase.Query("SELECT position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3 "
+            "FROM gameobject WHERE guid=102466 AND id=210986 AND map=860 AND areaId=5834");
+        Require(bool(row), "The original Edict of Temperance placement is missing");
+        auto fields = row->Fetch();
+        Position position{fields[0].GetFloat(), fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat()};
+        G3D::Quat rotation{fields[4].GetFloat(), fields[5].GetFloat(), fields[6].GetFloat(), fields[7].GetFloat()};
+        map.LoadGrid(position.GetPositionX(), position.GetPositionY());
+        m_DBTableGuid = EdictSpawn;
+        Require(Create(EdictSpawn, Edict, &map, 1, position, rotation, 255, GO_STATE_READY) &&
+            map.AddToMap(static_cast<GameObject*>(this)), "Could not publish the original edict");
+        Update(10000);
+    }
+
+    ~LessonEdict()
+    {
+        if (IsInWorld())
+            GetMap()->RemoveFromMap(static_cast<GameObject*>(this), false);
+        ResetMap();
+    }
+};
+
+void UseEdict(LootPlayer& player, LessonEdict& edict, bool report = false)
+{
+    player.SetMovedUnit(&player);
+    if (report)
+    {
+        WorldPackets::GameObject::GameObjReportUse request{WorldPacket(CMSG_GAME_OBJ_REPORT_USE)};
+        request.Guid = edict.GetGUID();
+        player.GetSession()->HandleGameobjectReportUse(request);
+    }
+    else
+    {
+        WorldPackets::GameObject::GameObjectUse request{WorldPacket(CMSG_GAME_OBJ_USE)};
+        request.Guid = edict.GetGUID();
+        player.GetSession()->HandleGameObjectUse(request);
+    }
+    Tick(player, 200);
+}
+
+bool HoldsFlame(LootPlayer& player)
+{
+    return player.GetItemCount(MastersFlame) == 1 && player.HasAura(114610) &&
+        player.GetQuestObjectiveData(BurningScroll, FlameCredit) == 1;
+}
+
+void CheckBurningScroll(LootPlayer& player)
+{
+    auto& map = *player.GetMap();
+    LessonCreature teacher(map, TempleGiverSpawn, 53566);
+    LessonEdict edict(map);
+    auto snatch = sSpellMgr->GetSpellInfo(114746);
+    Require(snatch && snatch->GetEffect(EFFECT_2)->TargetA.GetTarget() == TARGET_UNIT_CASTER,
+        "The temporary snatch aura must stay on the student");
+    SupplyMove(player, teacher.GetPosition());
+    SnatchFlame(player, teacher);
+    std::cout << "CASE actual temple spellclick: flame inventory=" << player.GetItemCount(MastersFlame)
+        << " aura=" << player.HasAura(114610) << " objective=" << player.GetQuestObjectiveData(BurningScroll, FlameCredit)
+        << std::endl;
+    Require(HoldsFlame(player) && !teacher.HasAura(114746), "The Master's Flame must be credited without locking the shared teacher");
+    SnatchFlame(player, teacher);
+    Require(HoldsFlame(player), "Repeated clicks did not preserve exactly one flame");
+    UseEdict(player, edict);
+    Require(HoldsFlame(player) && !player.GetQuestObjectiveData(BurningScroll, BurnCredit), "A remote scroll interaction consumed the flame");
+
+    LootPlayer nearby(SupplySession(), map, 29481, teacher.GetPosition());
+    LootPlayer noFlame(SupplySession(), map, 29482, teacher.GetPosition());
+    LootPlayer outsider(SupplySession(), map, 29483, teacher.GetPosition());
+    for (auto other : {&nearby, &noFlame, &outsider})
+    {
+        SetStudent(*other, RACE_PANDAREN_NEUTRAL, CLASS_MONK);
+        other->SetRewardedQuest(StifledPride);
+        Accept(*other, teacher, BurningScroll);
+        Require(other->GetQuestStatus(BurningScroll) == QUEST_STATUS_INCOMPLETE, "A scroll witness could not accept the lesson");
+    }
+    for (uint8 slot = INVENTORY_SLOT_ITEM_START; slot < INVENTORY_SLOT_ITEM_END; ++slot)
+    {
+        ItemPosCountVec destination;
+        destination.emplace_back((INVENTORY_SLOT_BAG_0 << 8) | slot, 1);
+        Require(noFlame.StoreNewItem(destination, 2589, false), "Could not fill the control student's bag");
+    }
+    SnatchFlame(noFlame, teacher);
+    Require(!noFlame.GetItemCount(MastersFlame) && !noFlame.GetQuestObjectiveData(BurningScroll, FlameCredit),
+        "A full backpack still granted a flame or credit");
+    noFlame.DestroyItem(INVENTORY_SLOT_BAG_0, INVENTORY_SLOT_ITEM_START, false);
+    ItemPosCountVec retryDestination;
+    Require(noFlame.CanStoreNewItem(NULL_BAG, NULL_SLOT, retryDestination, MastersFlame, 1) == EQUIP_ERR_OK,
+        "Freeing the control student's slot did not create room for the flame");
+    SnatchFlame(noFlame, teacher);
+    Require(HoldsFlame(noFlame), "The flame could not be collected once a bag slot was open");
+    AbandonSupply(noFlame, BurningScroll);
+    Require(!noFlame.GetItemCount(MastersFlame) && !noFlame.HasAura(114610), "Abandoning the lesson left a flame or aura");
+    Accept(noFlame, teacher, BurningScroll);
+    Require(noFlame.GetQuestStatus(BurningScroll) == QUEST_STATUS_INCOMPLETE, "The lesson could not be accepted again");
+    for (auto other : {&nearby, &outsider})
+    {
+        SnatchFlame(*other, teacher);
+        Require(HoldsFlame(*other), "A second student did not receive their own flame");
+    }
+    StudentParty group(player, nearby, noFlame);
+    for (auto other : {&player, &nearby, &noFlame, &outsider})
+        SupplyMove(*other, edict.GetPosition());
+    UseEdict(noFlame, edict, true);
+    Require(!noFlame.GetQuestObjectiveData(BurningScroll, BurnCredit) && HoldsFlame(player), "A student without a flame could activate the edict");
+    UseEdict(player, edict);
+    for (auto other : {&player, &nearby})
+        Require(!other->GetItemCount(MastersFlame) && !other->HasAura(114610) &&
+            other->GetQuestObjectiveData(BurningScroll, BurnCredit) == 1 && other->GetQuestStatus(BurningScroll) == QUEST_STATUS_COMPLETE,
+            "An eligible student did not consume the flame and finish the edict");
+    Require(HoldsFlame(outsider) && !outsider.GetQuestObjectiveData(BurningScroll, BurnCredit) &&
+        !noFlame.GetQuestObjectiveData(BurningScroll, BurnCredit), "The burn affected an unrelated or flame-less player");
+    UseEdict(outsider, edict, true);
+    Require(outsider.GetQuestStatus(BurningScroll) == QUEST_STATUS_COMPLETE && !outsider.GetItemCount(MastersFlame),
+        "A second player could not use the shared edict independently");
+    SupplyMove(player, teacher.GetPosition());
+    Reward(player, teacher, BurningScroll);
+    if (player.GetQuestStatus(AcademyQuest) == QUEST_STATUS_NONE)
+        Accept(player, teacher, AcademyQuest);
+    Require(player.IsQuestRewarded(BurningScroll) && player.GetQuestStatus(AcademyQuest) == QUEST_STATUS_INCOMPLETE,
+        "Burning Scroll did not admit the Disciple's Challenge");
+    std::cout << "PASS native temple flame, full bags/retry, abandonment, scoped edict burn and Disciple's Challenge acceptance" << std::endl;
+}
+
 void CheckFirstLesson()
 {
     Map map(860, 300, 0, DIFFICULTY_NONE);
@@ -475,6 +626,7 @@ void CheckFirstLesson()
         {
             CheckSandyFist(student, giver);
             CheckStifledPride(student, giver);
+            CheckBurningScroll(student);
         }
     }
     LootPlayer visitor(SupplySession(), map, ++guid, giver.GetPosition());
@@ -520,7 +672,7 @@ int main(int argc, char** argv)
             auto schema = CharacterDatabase.Query("SELECT DATABASE()");
             Require(schema && schema->Fetch()[0].GetString() == "fixture_char", "The lesson check requires isolated characters");
             LoadLessonInputs();
-            for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u, 243608u, 243645u})
+            for (auto spawn : {GiverSpawn, 243565u, 243566u, 243567u, 243568u, 243569u, 243610u, 243660u, 243608u, 243645u, TempleGiverSpawn})
                 if (auto data = sObjectMgr->GetCreatureData(spawn))
                     sObjectMgr->RemoveCreatureFromGrid(spawn, data);
             sObjectMgr->LoadPlayerInfo();

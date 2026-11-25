@@ -1,5 +1,6 @@
 #include "ScriptedEscortAI.h"
 #include "CreatureTextMgr.h"
+#include "GameObjectAI.h"
 #include "Item.h"
 #include "MapManager.h"
 #include "QuestObjectScope.h"
@@ -228,90 +229,145 @@ struct npc_wandering_isle_trainee : SmartAI
     }
 };
 
-// Should be done by summon npc 59591
-class mob_master_shang_xi : public CreatureScript
+namespace BurningScrollLesson
 {
-    public:
-        mob_master_shang_xi() : CreatureScript("mob_master_shang_xi") { }
+constexpr uint32 QuestId = 29408;
+constexpr uint32 TrainingGrounds = 5834;
+constexpr uint32 SnatchFlame = 114746;
+constexpr uint32 CreateFlame = 114611;
+constexpr uint32 FlameAura = 114610;
+constexpr uint32 FlameItem = 80212;
+constexpr uint32 FlameCredit = 59591;
+constexpr uint32 BurnScroll = 114580;
+constexpr uint32 BurnCredit = 59570;
+constexpr uint32 EdictEntry = 210986;
+constexpr uint32 EdictSpawn = 102466;
 
-        bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest)
+bool IsStudent(Player const* player)
+{
+    return player && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 860 &&
+        player->GetQuestStatus(QuestId) == QUEST_STATUS_INCOMPLETE && !player->GetQuestObjectiveData(QuestId, BurnCredit);
+}
+
+bool CanBurn(Player const* player)
+{
+    return IsStudent(player) && player->GetQuestObjectiveData(QuestId, FlameCredit) &&
+        player->HasItemCount(FlameItem, 1, false);
+}
+}
+
+struct npc_wandering_isle_scroll_master : SmartAI
+{
+    explicit npc_wandering_isle_scroll_master(Creature* creature) : SmartAI(creature) { }
+
+    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    {
+        SmartAI::SpellHit(caster, spell);
+        using namespace BurningScrollLesson;
+        if (spell->Id != SnatchFlame || me->GetAreaId() != TrainingGrounds)
+            return;
+
+        auto player = caster ? caster->ToPlayer() : nullptr;
+        if (!IsStudent(player) || !me->IsWithinDistInMap(player, INTERACTION_DISTANCE) || !me->IsWithinLOSInMap(player))
+            return;
+
+        bool const hasFlame = player->HasItemCount(FlameItem, 1, false);
+        if (!hasFlame)
+            player->CastSpell(player, CreateFlame, true);
+        if (!player->HasItemCount(FlameItem, 1, false))
+            return;
+
+        if (!player->HasAura(FlameAura) || !player->GetQuestObjectiveData(QuestId, FlameCredit))
+            player->CastSpell(player, FlameAura, true);
+        if (!hasFlame && player->GetQuestObjectiveData(QuestId, FlameCredit))
+            GetScript()->ProcessEventsFor(SMART_EVENT_DATA_SET, player, QuestId, 1);
+    }
+};
+
+struct go_wandering_isle_edict : GameObjectAI
+{
+    explicit go_wandering_isle_edict(GameObject* object) : GameObjectAI(object) { }
+
+    bool GossipUse(Player* player) override { return Burn(player); }
+    bool GossipHello(Player* player, bool /*isUse*/) override { return Burn(player); }
+
+private:
+    bool Burn(Player* player)
+    {
+        using namespace BurningScrollLesson;
+        if (go->GetMapId() != 860 || go->GetDBTableGUIDLow() != EdictSpawn)
+            return false;
+
+        if (CanBurn(player) && go->isSpawned() && !player->IsSpectator() &&
+            go->IsWithinDistInMap(player, go->GetInteractionDistance()) && go->IsWithinLOSInMap(player))
+            go->CastSpell(player, BurnScroll);
+
+        // The native burn spell supplies the effects. Keep the shared scroll
+        // usable while each student consumes a carried flame independently.
+        return true;
+    }
+};
+
+class spell_wandering_isle_burn_scroll : public SpellScript
+{
+    PrepareSpellScript(spell_wandering_isle_burn_scroll);
+
+    void FilterStudents(std::list<WorldObject*>& targets)
+    {
+        using namespace BurningScrollLesson;
+        Unit* original = GetOriginalCaster();
+        Player* clicker = original ? original->ToPlayer() : nullptr;
+        auto edict = CanBurn(clicker) ? clicker->FindNearestGameObject(EdictEntry, INTERACTION_DISTANCE + 3.0f) : nullptr;
+        if (!edict || edict->GetDBTableGUIDLow() != EdictSpawn || !edict->IsWithinDistInMap(clicker, edict->GetInteractionDistance()) ||
+            !edict->IsWithinLOSInMap(clicker))
         {
-            if (quest->GetQuestId() == 29408) // La lecon du parchemin brulant
-            {
-                creature->AddAura(114610, creature);
-                creature->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
-                creature->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-            }
-
-            return true;
+            targets.clear();
+            return;
         }
 
-        CreatureAI* GetAI(Creature* creature) const
+        targets.remove_if([clicker](WorldObject* target) {
+            auto student = target->ToPlayer();
+            return !CanBurn(student) || (student != clicker && !clicker->IsInSameGroupWith(student));
+        });
+    }
+
+    void SuppressGroupCredit(SpellEffIndex effect)
+    {
+        PreventHitDefaultEffect(effect);
+    }
+
+    void BeforeFlameConsumed(SpellEffIndex effect)
+    {
+        using namespace BurningScrollLesson;
+        auto student = GetHitPlayer();
+        if (CanBurn(student))
+            _flamesBefore = student->GetItemCount(FlameItem, false);
+        else
+            PreventHitDefaultEffect(effect);
+    }
+
+    void CreditBurn()
+    {
+        using namespace BurningScrollLesson;
+        auto student = GetHitPlayer();
+        if (_flamesBefore && student && student->GetItemCount(FlameItem, false) + 1 == _flamesBefore)
         {
-            return new mob_master_shang_xi_AI(creature);
+            student->RemoveAurasDueToSpell(FlameAura);
+            student->KilledMonsterCredit(BurnCredit);
         }
+        _flamesBefore = 0;
+    }
 
-        struct mob_master_shang_xi_AI : public ScriptedAI
-        {
-            mob_master_shang_xi_AI(Creature* creature) : ScriptedAI(creature)
-            {
-                checkPlayersTime = 2000;
-            }
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wandering_isle_burn_scroll::FilterStudents, EFFECT_ALL,
+            TARGET_UNIT_DEST_AREA_ENTRY);
+        OnEffectHitTarget += SpellEffectFn(spell_wandering_isle_burn_scroll::SuppressGroupCredit, EFFECT_0, SPELL_EFFECT_KILL_CREDIT2);
+        OnEffectHitTarget += SpellEffectFn(spell_wandering_isle_burn_scroll::BeforeFlameConsumed, EFFECT_2, SPELL_EFFECT_DESTROY_ITEM);
+        AfterHit += SpellHitFn(spell_wandering_isle_burn_scroll::CreditBurn);
+    }
 
-            uint32 checkPlayersTime;
-
-            void SpellHit(Unit* caster, const SpellInfo* pSpell)
-            {
-                if (pSpell->Id == 114746) // Attraper la flamme
-                {
-                    if (caster->GetTypeId() == TYPEID_PLAYER)
-                    {
-                        if (caster->ToPlayer()->GetQuestStatus(29408) == QUEST_STATUS_INCOMPLETE)
-                        {
-                            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
-                            me->CastSpell(caster, 114611, true);
-                            me->RemoveAurasDueToSpell(114610);
-                            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
-                            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                        }
-                    }
-                }
-            }
-
-            void UpdateAI(uint32 diff)
-            {
-                if (checkPlayersTime <= diff)
-                {
-                    std::list<Player*> playerList;
-                    GetPlayerListInGrid(playerList, me, 5.0f);
-
-                    bool playerWithQuestNear = false;
-
-                    for (std::list<Player*>::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
-                    {
-                        if ((*itr)->GetQuestStatus(29408) == QUEST_STATUS_INCOMPLETE && !(*itr)->HasItemCount(80212))
-                                playerWithQuestNear = true;
-                    }
-
-                    if (playerWithQuestNear && !me->HasAura(114610))
-                    {
-                        me->AddAura(114610, me);
-                        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
-                        me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                    }
-                    else if (!playerWithQuestNear && me->HasAura(114610))
-                    {
-                        me->RemoveAurasDueToSpell(114610);
-                        me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
-                        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                    }
-
-                    checkPlayersTime = 2000;
-                }
-                else
-                    checkPlayersTime -= diff;
-            }
-        };
+    uint32 _flamesBefore = 0;
 };
 
 // cast 88811 for check something
@@ -5540,7 +5596,9 @@ public:
 void AddSC_WanderingIsland()
 {
     RegisterCreatureAI(npc_wandering_isle_trainee);
-    //new mob_master_shang_xi();
+    RegisterCreatureAI(npc_wandering_isle_scroll_master);
+    RegisterGameObjectAI(go_wandering_isle_edict);
+    RegisterSpellScript(spell_wandering_isle_burn_scroll);
     new boss_jaomin_ro();
     new npc_panda_announcer();
     new mob_attacker_dimwind();

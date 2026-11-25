@@ -1,0 +1,13 @@
+# The Lesson of the Burning Scroll (29408)
+
+Sākotnējā 26972 servera pārbaudē klikšķis pie tempļa Shang Xi `53566/243685` atstāja pirmo mērķi `0/1` un neizveidoja liesmu. Esošā SmartAI izveides darbība gaidīja sarunas sākumu un jau aktīvu liesmas auru. Pārbaudītā atjaunotā secība sākas ar īstu `114746` trāpījumu skolotājam. `114611` izveido priekšmetu `80212`, un `114610` pievieno personīgo auru un pirmā mērķa ieskaiti tikai pēc sekmīgas priekšmeta ievietošanas somā. Paliek sākotnējais skolotāja dialogs. Izņemta senā `114746` mērķa pārrakstīšana, kas uzlika divu sekunžu aizlieguma auru uz kopīgā NPC. 26972 datos šo auru saņem konkrētais spēlētājs.
+
+Edict of Temperance `210986/102466` izmanto esošo `114580` burvestību un tās 10 jardu mērķu loku. Klikšķim vajadzīgs sasniedzams īstais rullis, aktīvs kvests, pirmā mērķa ieskaite un līdzi paņemta liesma. Burvestība sadedzina attiecīgā dalībnieka priekšmetu un tikai tad dod viņam otro ieskaiti. Tajā pašā lokā ieskaiti var saņemt grupas biedrs ar šiem pašiem priekšnoteikumiem. Rullis paliek pieejams nākamajai lietošanai, un ārpusgrupas spēlētājs savu liesmu saglabā. Pēc kvesta atmešanas tiek noņemts mācības priekšmets un aura.
+
+`Test-QuestObjectLootNative.ps1 -WanderingFirstLesson` pārbaudīja īsto NPC klikšķi, divus klikšķus pēc kārtas, pilnu somu un atkārtojumu pēc vietas atbrīvošanas, atmešanu un atkārtotu pieņemšanu, attālināta klikšķa noraidīšanu, abus ruļļa mijiedarbības pakešu ceļus, grupu ar un bez liesmas, neatkarīgu nākamo spēlētāju un nodošanu līdz `29409` pieņemšanai. Saglabātās septiņu ieroču mācību, Sandy Fist un Stifled Pride pārbaudes izturēja. Testa dalībniekiem bija jāielādē pašreizējais apgabals un īstais `29409` devēja ieraksts, lai atveidotu parasto klienta kustības un kvesta pieņemšanas ceļu.
+
+Darba MariaDB reģistrēja migrāciju kā `RELEASED` ar SHA-1 `C3B1F37A3C69461964C23280D02647FC8515A74A`. Gala Release `worldserver.exe` SHA-256 ir `BFF2328946A5BCFA81A89C608714E94ADBBED4C0080646A0D0E87CE83D01C36C`. Izpildfailā un saišu kartē pārbaudīts Shang Xi klikšķa rezultāts, ruļļa burvestības izsaukums un ieskaite pēc priekšmeta patērēšanas. Abi servera starti un izolētā MariaDB korekti beidzās. Pēc labojuma nebija jaunu avāriju, servera brīdinājumu vai DBErrors ierakstu. [Diagnostika un dzēšanas saraksts](../../build-extractors/bin/Release/fixed/2026-11-25-wandering-isle-burning-scroll/)
+
+Ar pārbaudītām kontrolsummām saglabāti 146 diagnostikas faili. Izņemti 82 pagaidu faili, kopā 3 182 293 749 baiti. Iepriekšējais Release EXE un MAP ir saglabāti atjaunošanai.
+
+7.3.5 klientā jāapstiprina liesmas un ruļļa vizuālie efekti un mijiedarbības kursors.

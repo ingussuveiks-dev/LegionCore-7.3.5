@@ -4628,12 +4628,6 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->Effects[EFFECT_2]->TriggerSpell = 0;
     });
 
-    ApplySpellFix({114746}, [](SpellInfo* spellInfo)
-    {
-        spellInfo->Effects[EFFECT_2]->TargetA = TARGET_UNIT_TARGET_ALLY;
-        spellInfo->Effects[EFFECT_2]->TargetB = 0;
-    });
-
     //Puddle Void Zone
     ApplySpellFix({119941}, [](SpellInfo* spellInfo)
     {
