@@ -7,10 +7,10 @@ stores without client modifications. The user accepted replacing the large
 splash and two secondary cards with the standard grid. Product IDs, prices,
 ordering and offers are unchanged.
 
-The loose client overlay discussed below is disabled. Its `overrideArchive=1`
-setting caused character-selection model loading failures and WOW51900322
-disconnects, including with the StoreUI folder absent. Restore
-`overrideArchive=0` with WoW closed; see `client-patches/README.md`.
+The earlier loose client overlay enabled `overrideArchive=1` and caused
+character-selection model loading failures and WOW51900322 disconnects.
+The client patch notes document how to restore the stock UI.
+[Client patch notes](../client-patches/README.md#retired-storeui-override)
 
 The first optional uint32 in ProductDisplayInfo is the texture FileDataID.
 The old name CreatureDisplayInfoID was misleading: sending a creature ID
@@ -47,16 +47,5 @@ single-item tooltips and verify that mount/pet models still render. These
 item cards show the actual purchased item/token icon, not a 3D preview of
 the equipment a token may grant.
 
-The stock 7.3.5 `StoreProductCard_ShowIcon` function reanchors every regular
-texture to the top center. That separates the texture from the circular border
-on the three-product Featured layout and also ignores the `SplashPrimary`
-icon's declared top-left position. This cannot be corrected by a BattlePay
-packet field. Install `client-patches/Install-StoreFeaturedIconFix.ps1` to
-overlay the affected 7.3.5 UI function for both client architectures. The
-patched regular product icons are anchored directly to their `IconBorder`
-centres and increased from 64x64 to 68x68 inside the stock 80x81 border.
-
-The complete loose `Blizzard_StoreUI` package, including its TOC, must be
-present. A standalone `Blizzard_StoreUISecure.lua` replacement is ignored by
-the character-selection GlueXML loader, which otherwise selects the complete
-built-in package from CASC.
+The stock 7.3.5 `StoreProductCard_ShowIcon` anchors the regular texture at the
+top center. The standard grid keeps that anchor aligned with the border.
