@@ -176,6 +176,35 @@ class Audit:
                           layout=0xDD995180).values(), lambda r: r[1])
         self.relations = group((r for r in e.rows("relations") if number(r, "quest") in self.scope),
                                lambda r: number(r, "quest"))
+        self.adventure_offers = defaultdict(list)
+        level_conditions = e.native_rows(
+            "PlayerCondition", lambda t, i: [t.value(i, j) for j in (4, 5)],
+            "hotfix_player_condition", lambda r: integers(r, "MinLevel", "MaxLevel"),
+            index=2, layout=0x5B3DA113)
+        journal = e.native_rows(
+            "AdventureJournal", lambda t, i: [t.value(i, j) for j in (8, 15, 20)],
+            "hotfix_adventure_journal", lambda r: integers(r, "QuestID", "ButtonActionType", "PlayerConditionID"),
+            layout=0xB2FFA8DD)
+        scouting_map = e.native_rows(
+            "AdventureMapPOI", lambda t, i: [t.value(i, j) for j in (6, 4, 5)],
+            "hotfix_adventure_map", lambda r: integers(r, "QuestID", "Type", "PlayerConditionID"),
+            layout=0x0C288A82)
+        for kind, catalog, quest_action in (("journal", journal, 3), ("scouting_map", scouting_map, 1)):
+            for entry, (quest, action, condition) in catalog.items():
+                if action != quest_action or quest not in self.scope:
+                    continue
+                levels = level_conditions.get(condition) if condition else [0, 0]
+                self.adventure_offers[quest].append({
+                    "type": kind, "id": entry, "condition": condition, "condition_levels": levels})
+        self.creation_receipts = group(e.rows("character_creation_quests"), lambda r: number(r, "questid"))
+        self.paragon_offers = defaultdict(list)
+        paragons = e.native_rows(
+            "ParagonReputation", lambda t, i: [t.value(i, j) for j in (1, 2, 0)],
+            "hotfix_paragon_reputation", lambda r: integers(r, "QuestID", "FactionID", "LevelThreshold"),
+            layout=0xD7712F98)
+        for entry, (quest, faction, threshold) in paragons.items():
+            if quest in self.scope:
+                self.paragon_offers[quest].append([entry, faction, threshold])
         self.creatures = {number(r, "entry"): r for r in e.rows("creatures")}
         self.objects = {number(r, "entry"): r for r in e.rows("objects")}
         self.native_objects = e.native_rows("GameObjects", lambda t, i: [t.value(i, 10), t.value(i, 6)],
@@ -506,8 +535,17 @@ class Audit:
         result["legacy_start"] = self.start_scripts.get(number(row, "StartScript"), [])
         result["legacy_end"] = self.end_scripts.get(number(row, "CompleteScript"), [])
         result["legacy_event_credit"] = self.db_quest_credit.get(quest, [])
+        result["adventure_offers"] = self.adventure_offers.get(quest, [])
+        result["character_creation_receipts"] = self.creation_receipts.get(quest, [])
+        result["paragon_offers"] = self.paragon_offers.get(quest, [])
         starter_items = [entry for entry, _ in self.item_starters.get(quest, [])]
+        # Client conditions carry additional eligibility predicates. A level
+        # match only identifies a possible offer in the audit's level range.
+        adventure_level_candidate = any(offer["condition_levels"] is None or
+                                        offer["condition_levels"][0] <= 20
+                                        for offer in result["adventure_offers"])
         result["offer_reference"] = bool(any(kind.endswith("_start") for kind, _ in relations) or starter_items or
+                adventure_level_candidate or
                 any(r[1] == 150 for r in result["quest_spells"]) or
                 any(number(s, "action_type") == 7 for s in result["smart_quest"]))
         if not result["offer_reference"]:
@@ -607,6 +645,7 @@ def main():
     all_records = [audit.quest(q) for q in sorted(audit.scope)]
     records = []
     without_offer = []
+    excluded_scope = Counter()
     for record in all_records:
         quest = record["id"]
         if quest in audit.primary_scope:
@@ -616,8 +655,37 @@ def main():
             record["scope"] = "zero_minimum_with_offer_reference"
             records.append(record)
         else:
-            without_offer.append({key: record[key] for key in ("id", "title", "level", "disabled")})
+            if record["disabled"]:
+                category = "disabled"
+            elif record["flags"] & 0x400:
+                category = "hidden_tracking_flag"
+            elif record["title"] in ("", "NULL"):
+                category = "untitled"
+            elif re.search(r"\b(test|debug|dnd|tracking|obsolete|unused|nyi|placeholder|deprecated)\b",
+                           record["title"], re.IGNORECASE):
+                category = "internal_title_candidate"
+            else:
+                category = "named_candidate"
+            excluded_scope[category] += 1
+            without_offer.append({
+                **{key: record[key] for key in ("id", "title", "level", "disabled", "flags",
+                                               "adventure_offers", "character_creation_receipts", "paragon_offers")},
+                "category": category,
+            })
     cpp, names = cpp_evidence(audit.scope, audit.cpp_names, evidence.binary)
+    missing_offer_ids = {record["id"] for record in without_offer}
+    dependencies = defaultdict(list)
+    for record in records:
+        if record["disabled"]:
+            continue
+        for field in ("PrevQuestID", "NextQuestID"):
+            linked = number(record["addon"], field)
+            if abs(linked) in missing_offer_ids:
+                dependencies[abs(linked)].append([record["id"], field, linked])
+        for condition in record["quest_conditions"]:
+            kind, linked = integers(condition, "ConditionTypeOrReference", "ConditionValue1")
+            if kind in (8, 9, 14, 28, 41) and linked in missing_offer_ids:
+                dependencies[linked].append([record["id"], "condition", kind])
     results = Counter()
     findings_with_placed_offer = Counter()
     types = Counter()
@@ -652,6 +720,8 @@ def main():
                "database_quests": len(audit.quests), "scoped": len(records),
                "enabled": len(records) - evidence_sets["disabled"], "coverage": evidence_sets,
                "zero_minimum_without_offer_reference": len(without_offer),
+               "zero_minimum_without_offer_categories": excluded_scope,
+               "zero_minimum_without_offer_with_scoped_dependency": len(dependencies),
                "zero_minimum_without_offer_with_cpp_quest_id_candidate": sum(bool(cpp.get(r["id"])) for r in without_offer),
                "enabled_objective_types": types, "enabled_quest_candidate_counts": results,
                "enabled_candidate_counts_with_placed_offer": findings_with_placed_offer,
@@ -662,6 +732,7 @@ def main():
                "limits": "Static evidence. A name, source reference, placement, phase or DB2 effect is not a gameplay pass."}
     for record in without_offer:
         record["cpp_quest_id_candidates"] = cpp.get(record["id"], [])
+        record["scoped_dependencies"] = dependencies.get(record["id"], [])
     for name, data in (("summary", summary), ("cpp-bindings", names), ("zero-minimum-without-offer", without_offer)):
         (args.output / (name + ".json")).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps({k: v for k, v in summary.items() if k != "input_sha256"}, indent=2, ensure_ascii=False))

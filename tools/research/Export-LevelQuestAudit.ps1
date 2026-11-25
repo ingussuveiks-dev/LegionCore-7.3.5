@@ -58,6 +58,7 @@ function Export-Database($setting, $tables) {
 
 $world = [ordered]@{
     database_version = 'SELECT VERSION() AS version'
+    character_creation_quests = 'SELECT race,class,questid FROM playercreateinfo_quest ORDER BY questid,race,class'
     quests = 'SELECT ID,LogTitle,LogDescription,QuestLevel,MinLevel,QuestMaxScalingLevel,QuestType,Expansion,QuestSortID,QuestInfoID,SuggestedGroupNum,AllowableRaces,Flags,FlagsEx,StartItem,StartScript,CompleteScript,RewardNextQuest,RewardSpell,TimeAllowed,RewardItem1,RewardItem2,RewardItem3,RewardItem4,ItemDrop1,ItemDrop2,ItemDrop3,ItemDrop4,ItemDropQuantity1,ItemDropQuantity2,ItemDropQuantity3,ItemDropQuantity4 FROM quest_template ORDER BY ID'
     addons = 'SELECT * FROM quest_template_addon ORDER BY ID'
     objectives = 'SELECT * FROM quest_objectives ORDER BY QuestID,ID'
@@ -108,6 +109,10 @@ $world = [ordered]@{
     updates = 'SELECT name,hash,state,timestamp FROM updates ORDER BY timestamp,name'
 }
 $hotfix = [ordered]@{
+    hotfix_adventure_journal = 'SELECT ID,QuestID,ButtonActionType,PlayerConditionID FROM adventure_journal ORDER BY ID'
+    hotfix_adventure_map = 'SELECT ID,QuestID,Type,PlayerConditionID FROM adventure_map_p_o_i ORDER BY ID'
+    hotfix_player_condition = 'SELECT ID,MinLevel,MaxLevel FROM player_condition ORDER BY ID'
+    hotfix_paragon_reputation = 'SELECT ID,QuestID,FactionID,LevelThreshold FROM paragon_reputation ORDER BY ID'
     hotfix_item = 'SELECT ID,ClassID,SubclassID,VerifiedBuild FROM item ORDER BY ID'
     hotfix_item_sparse = 'SELECT ID,Display,StartQuestID,RequiredLevel,VerifiedBuild FROM item_sparse ORDER BY ID'
     hotfix_item_effect = 'SELECT ID,ItemID,SpellID,TriggerType,Charges,VerifiedBuild FROM item_effect ORDER BY ID'
