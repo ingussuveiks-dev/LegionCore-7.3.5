@@ -9403,7 +9403,11 @@ void Spell::EffectBonusLoot(SpellEffIndex effIndex)
     }
 
     loot->personal = true;
-    if (!loot->FillLoot(lootId, LootTemplates_Spell, player, true) && m_CastItem) // If loot not in spell, get loot from item
+    // Item-backed equipment tokens can have their complete table in the item store.
+    if (loot->_isTokenLoot && !loot->_isLegendaryLoot && m_CastItem && !LootTemplates_Spell.HaveLootFor(lootId) &&
+        LootTemplates_Item.HaveLootFor(m_CastItem->GetEntry()))
+        loot->FillLoot(m_CastItem->GetEntry(), LootTemplates_Item, player, true);
+    else if (!loot->FillLoot(lootId, LootTemplates_Spell, player, true) && m_CastItem)
         loot->FillLoot(m_CastItem->GetEntry(), LootTemplates_Item, player, true);
 
     loot->AutoStoreItems();
