@@ -9,6 +9,7 @@
 #include "MiscPackets.h"
 #include "MoveSpline.h"
 #include "ScriptsData.h"
+#include "SpellPackets.h"
 #include "Vehicle.h"
 
 void AddSC_WanderingIsland();
@@ -33,6 +34,7 @@ constexpr uint32 PincerSpawns[] = {244421, 244422, 244443, 244444, 244449, 24445
 constexpr uint32 Shu = 29678;
 constexpr uint32 LiangPearl = 73791;
 constexpr uint32 ReflectionCredit = 57476;
+constexpr uint32 CoaxCredit = 55205;
 constexpr uint32 BellCredit = 55077;
 constexpr uint32 BellEntry = 209608;
 constexpr uint32 BellSpawn = 102318;
@@ -128,7 +130,7 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29678");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
-        "WHERE spell_id IN (103069,103070,103077,108590)");
+        "WHERE spell_id IN (103069,103070,103077,103116,108590)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
@@ -785,6 +787,21 @@ void CheckShuAdmission()
 #endif
 }
 
+void UseReflectionPearl(LootPlayer& pupil)
+{
+    Item* pearl = pupil.GetItemByEntry(LiangPearl);
+    Require(pearl, "Liang's quest-supplied pearl is missing");
+    WorldPackets::Spells::ItemUse use{WorldPacket(CMSG_USE_ITEM)};
+    use.itemGUID = pearl->GetGUID();
+    use.bagIndex = pearl->GetBagSlot();
+    use.slot = pearl->GetSlot();
+    use.Cast.SpellID = 103116;
+    use.Cast.Target.Flags = TARGET_FLAG_UNIT;
+    use.Cast.Target.Unit = pupil.GetGUID();
+    pupil.GetSession()->HandleUseItemOpcode(use);
+    Tick(pupil, 4000);
+}
+
 void CheckReflectionCrossing()
 {
     Map map(860, 668, 0, DIFFICULTY_NONE);
@@ -797,6 +814,18 @@ void CheckReflectionCrossing()
     pupil.SetRewardedQuest(SunPearl);
     AcceptQuest(pupil, liang, Shu);
     Require(pupil.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE, "Liang did not admit the Reflection crossing");
+#ifndef SINGING_POOLS_REFLECTION_BASELINE
+    UseReflectionPearl(pupil);
+#ifdef SINGING_POOLS_COAX_BASELINE
+    Require(pupil.GetQuestObjectiveData(Shu, CoaxCredit) == 1 && !pupil.GetQuestObjectiveData(Shu, ReflectionCredit),
+        "The original pearl no longer awarded the second objective in front of Liang");
+    std::cout << "EXPECTED_BROKEN the provided pearl called Shu from Liang's house before the crossing" << std::endl;
+    return;
+#else
+    Require(!pupil.GetQuestObjectiveData(Shu, CoaxCredit) && pupil.GetItemCount(LiangPearl) == 1,
+        "Using the pearl before crossing awarded credit or consumed it");
+#endif
+#endif
 
     {
         ReflectionRock last(map, 102478, 103071);
@@ -832,6 +861,21 @@ void CheckReflectionCrossing()
     }
     Require(pupil.GetQuestStatus(Shu) == QUEST_STATUS_INCOMPLETE, "Crossing alone finished Shu without the pearl action");
     std::cout << "PASS all four original rock jumps, canceled motion and credit on the actual shore landing" << std::endl;
+    MoveGilneasPlayer(pupil, liang.GetPosition());
+    UseReflectionPearl(pupil);
+    Require(!pupil.GetQuestObjectiveData(Shu, CoaxCredit) && pupil.GetItemCount(LiangPearl) == 1,
+        "The pearl was usable from outside the Pool of Reflection after crossing");
+    MoveGilneasPlayer(pupil, Position{1112.0f, 2865.0f, 92.2f});
+    Require(pupil.GetAreaId() == 5862, "The native pool point was outside the Pool of Reflection");
+    UseReflectionPearl(pupil);
+    Require(pupil.GetQuestObjectiveData(Shu, CoaxCredit) == 1 && pupil.GetQuestStatus(Shu) == QUEST_STATUS_COMPLETE,
+        "The genuine pearl use did not finish Shu at the pool");
+    WorldPackets::Quest::QuestGiverChooseReward turnIn{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    turnIn.QuestGiverGUID = pupil.GetGUID();
+    turnIn.QuestID = Shu;
+    pupil.GetSession()->HandleQuestGiverChooseReward(turnIn);
+    Require(pupil.IsQuestRewarded(Shu), "The native remote turn-in did not reward Shu's quest");
+    std::cout << "PASS no remote pearl credit, one real item use at Reflection and native remote turn-in" << std::endl;
 #endif
 }
 #endif

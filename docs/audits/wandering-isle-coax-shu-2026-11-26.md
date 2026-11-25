@@ -1,0 +1,7 @@
+# Shu, the Spirit of Water (29678) un pērles izmantošana
+
+Spēlētājs varēja ieskaitīt Shu pierunāšanu ar īsto pērli `73791` vēl pie Liang. Burvestība `103116` tagad pārbauda, ka spēlētājam ir aktīvs uzdevums, ir ieskaitīta pārlēkšana `57476` un tēls atrodas Legion 26972 apgabalā `5862` Pool of Reflection. Ieskaiti `55205` piešķir standarta burvestības nulles efekts.
+
+`Test-QuestObjectLootNative.ps1 -SingingPoolsCoaxBaseline` atkārtoja priekšlaicīgo ieskaiti ar parasto priekšmeta izmantošanas paketi. `-SingingPools` pārbaudīja atteikumu pirms pārlēkšanas un ārpus baseina pēc pārlēkšanas, pērles saglabāšanu pēc abiem atteikumiem, īsto izmantošanu Pool of Reflection un attālo nodošanu. Testā spēlētāju no krasta pārvietoja uz faktisko baseinu. Klientā paliek jāpārbauda spēlētāja ieiešana ūdenī un attēlojums.
+
+Izolētais un darba Release `worldserver.exe` ar SHA-256 `7AFA8C0E11E5C08BDD974E9E4350BA7545329918CFDF1C9EBC20404267D3632A` sasniedza gatavību un korekti apstājās. Migrācija `2026_11_26_06_wandering_isle_coax_shu.sql` darba datubāzē reģistrēta kā `RELEASED` ar SHA-1 `12444A29AC533247DEE7F6A21DC5C16204877F92`. Gala pārbaudēs nebija jaunu avāriju, servera brīdinājumu, kļūdu vai DBErrors ierakstu. Saglabāti 72 diagnostikas faili ar kontrolsummām un izņemti 28 pagaidu un divi novecojuši atkopšanas faili. Saglabāta iepriekšējā Release kopija. Atkopšanā jāņem vērā jaunā `103116` skripta saite. [Diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-coax-shu/)

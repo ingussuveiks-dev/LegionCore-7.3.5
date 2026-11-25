@@ -2002,7 +2002,10 @@ public:
 namespace
 {
 constexpr uint32 ReflectionMap = 860;
+constexpr uint32 ReflectionArea = 5862;
 constexpr uint32 ReflectionCrossingSpell = 108590;
+constexpr uint32 ShuQuest = 29678;
+constexpr uint32 ReflectionCrossingCredit = 57476;
 Position const ReflectionShore{1078.42f, 2845.07f, 95.16f};
 
 class spell_wandering_isle_reflection_crossing : public SpellScript
@@ -2021,6 +2024,28 @@ class spell_wandering_isle_reflection_crossing : public SpellScript
     void Register() override
     {
         OnEffectHitTarget += SpellEffectFn(spell_wandering_isle_reflection_crossing::CreditLanding, EFFECT_0, SPELL_EFFECT_KILL_CREDIT);
+    }
+};
+
+class spell_wandering_isle_coax_shu : public SpellScript
+{
+    PrepareSpellScript(spell_wandering_isle_coax_shu);
+
+    SpellCastResult CheckPearl()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        Item* pearl = GetCastItem();
+        if (!player || !player->IsAlive() || !pearl || pearl->GetEntry() != 73791 ||
+            player->GetQuestStatus(ShuQuest) != QUEST_STATUS_INCOMPLETE || !player->GetQuestObjectiveData(ShuQuest, ReflectionCrossingCredit) ||
+            player->GetMapId() != ReflectionMap || player->GetAreaId() != ReflectionArea)
+            return SPELL_FAILED_NOT_HERE;
+
+        return SPELL_CAST_OK;
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_wandering_isle_coax_shu::CheckPearl);
     }
 };
 }
@@ -5918,6 +5943,7 @@ void AddSC_WanderingIsland()
     new mob_jojo_ironbrow_1();
     new spell_rock_jump();
     RegisterSpellScript(spell_wandering_isle_reflection_crossing);
+    RegisterSpellScript(spell_wandering_isle_coax_shu);
     new mob_shu_water_spirit();
     new spell_summon_spirit_of_watter();
     new mob_aysa_cloudsinger_watter_outro();
