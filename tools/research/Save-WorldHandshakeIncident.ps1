@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory=$true)][string]$ClientLog,
     [string]$OutputDirectory,
     [switch]$Watch,
-    [ValidateRange(1,86400)][int]$WatchSeconds=3600
+    [ValidateRange(1,86400)][int]$WatchSeconds=3600,
+    [ValidateRange(1,65535)][int]$SilentInstancePort,
+    [scriptblock]$OnIncident
 )
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -25,11 +27,14 @@ function Save-Incident {
     # Output is deliberately private runtime data, never part of the commit.
     $destination=Join-Path $OutputDirectory ([DateTime]::Now.ToString('yyyyMMdd-HHmmss-fff'))
     New-Item -ItemType Directory -Force $destination | Out-Null
+    if($OnIncident){ & $OnIncident $destination }
     $network=@(Get-Content -LiteralPath $ServerLog -Tail 2500 | Where-Object {
         $_ -match '\[network\]' -and $_ -match 'handshake|initialization timed out|instance connection|instance serial|CONNECT_TO_FAILED|LogDisconnect'
     })
     $network | Set-Content -LiteralPath "$destination/server-network.log" -Encoding UTF8
     if(Test-Path -LiteralPath $ClientLog){Copy-Item -LiteralPath $ClientLog -Destination "$destination/Client.log"}
+    $connectionLog=Join-Path (Split-Path -Parent ([IO.Path]::GetFullPath($ClientLog))) 'Connection.log'
+    if(Test-Path -LiteralPath $connectionLog){Copy-Item -LiteralPath $connectionLog -Destination "$destination/Connection.log"}
     $snapshot=Read-ConnectionSnapshot
     $snapshot | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath "$destination/tcp-current.json" -Encoding UTF8
     # The deadline abort closes the failed socket before a later query can
@@ -46,6 +51,11 @@ $identity=if(Test-Path -LiteralPath $ServerLog){(Get-Item -LiteralPath $ServerLo
 $deadline=[DateTime]::UtcNow.AddSeconds($WatchSeconds)
 $nextSnapshot=[DateTime]::MinValue
 $pending=''
+$trigger=if($SilentInstancePort){
+    "\[network\] World handshake deadline expired: .* -> local ${SilentInstancePort}, .*initializer 0, continued auth 0, buffered 0; TCP info 1 error 0 .* sent 48 received 0 unacked 0 retransmitted 0\b"
+}else{
+    '\bWARN\s+\[network\].*WorldSocket initialization timed out'
+}
 while([DateTime]::UtcNow -lt $deadline){
     if([DateTime]::UtcNow -ge $nextSnapshot){
         $history.Enqueue((Read-ConnectionSnapshot))
@@ -64,7 +74,7 @@ while([DateTime]::UtcNow -lt $deadline){
         }finally{$stream.Dispose()}
         $lines=$pending -split "`n"
         $pending=$lines[-1]
-        if($lines.Count -gt 1 -and ($lines[0..($lines.Count-2)] -match '\bWARN\s+\[network\].*WorldSocket initialization timed out')){
+        if($lines.Count -gt 1 -and ($lines[0..($lines.Count-2)] -match $trigger)){
             Save-Incident
             return
         }
