@@ -439,7 +439,10 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, u
             }
             break;
         case GAMEOBJECT_TYPE_PHASEABLE_MO:
-            setActive(true);    //for MAX_VISIBILITY_DISTANCE
+            // The Orgrimmar funeral pyre is a static, local-visibility model.
+            // Updating its cell without a nearby player keeps the staged battle running.
+            if (MaxVisible || name_id != 258064 || m_DBTableGuid != 131298 || map->GetId() != 1)
+                setActive(true);
             SetWorldObject(true);
             break;
         case GAMEOBJECT_TYPE_CAPTURE_POINT:
