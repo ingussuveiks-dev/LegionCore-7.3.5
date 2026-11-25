@@ -854,8 +854,18 @@ void WorldSession::HandleAdventureJournalOpenQuest(WorldPackets::Quest::Adventur
     if (_player->hasQuest(entry->QuestID) || !_player->CanTakeQuest(quest, true))
         return;
 
-    // Authorize only this self-offered quest in HandleQuestGiverAcceptQuest.
-    _player->SetPopupQuestId(quest->GetQuestId());
+    // The journal can offer quests with the native auto-accept flag, just
+    // like a quest giver. The details packet alone never adds the quest.
+    if (quest->IsAutoAccept())
+    {
+        if (!_player->CanAddQuest(quest, true))
+            return;
+        _player->AddQuestAndCheckCompletion(quest, _player);
+        _player->SetPopupQuestId(0);
+    }
+    else
+        _player->SetPopupQuestId(quest->GetQuestId());
+
     PlayerMenu menu(this);
     menu.SendQuestGiverQuestDetails(quest, _player->GetGUID(), true, false);
 }
