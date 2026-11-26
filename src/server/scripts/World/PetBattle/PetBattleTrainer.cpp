@@ -15,7 +15,9 @@
 
 enum
 {
-    PetBattleTrainerFightActionID = GOSSIP_ACTION_INFO_DEF + 0xABCD
+    PetBattleTrainerFightActionID = GOSSIP_ACTION_INFO_DEF + 0xABCD,
+    EnvironeerBert = 124617,
+    BertsBots = 47895,
 };
 
 class npc_PetBattleTrainer : public CreatureScript
@@ -82,11 +84,21 @@ public:
         {
             player->CLOSE_GOSSIP_MENU();
 
+            bool const isBert = creature->GetEntry() == EnvironeerBert;
+            if (isBert && player->GetQuestStatus(BertsBots) != QUEST_STATUS_INCOMPLETE)
+                return true;
+
             static float distance = 10.0f;
 
             float l_X = creature->m_positionX + (std::cos(creature->GetOrientation()) * distance);
             float l_Y = creature->m_positionY + (std::sin(creature->GetOrientation()) * distance);
-            float l_Z = player->GetMap()->GetHeight(l_X, l_Y, MAX_HEIGHT);
+            auto getBattleFloor = [&](float x, float y)
+            {
+                if (isBert)
+                    return player->GetMap()->GetHeight(player->GetPhases(), x, y, creature->GetPositionZ() + 2.0f, true, 5.0f, nullptr, player);
+                return player->GetMap()->GetHeight(x, y, MAX_HEIGHT);
+            };
+            float l_Z = getBattleFloor(l_X, l_Y);
 
             Position playerPosition = Position(l_X, l_Y, l_Z);
             playerPosition.SetOrientation(atan2(creature->m_positionY - l_Y, creature->m_positionX - l_X));
@@ -95,7 +107,13 @@ public:
             Position trainerPosition = creature->GetPosition();
 
             Position battleCenterPosition = Position((playerPosition.m_positionX + trainerPosition.m_positionX) / 2, (playerPosition.m_positionY + trainerPosition.m_positionY) / 2, 0.0f, trainerPosition.GetOrientation() + M_PI);
-            battleCenterPosition.m_positionZ = player->GetMap()->GetHeight(battleCenterPosition.m_positionX, battleCenterPosition.m_positionY, MAX_HEIGHT);
+            battleCenterPosition.m_positionZ = getBattleFloor(battleCenterPosition.m_positionX, battleCenterPosition.m_positionY);
+            if (isBert && (std::abs(l_Z - creature->GetPositionZ()) > 2.0f ||
+                std::abs(battleCenterPosition.GetPositionZ() - creature->GetPositionZ()) > 2.0f))
+            {
+                player->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_NOT_HERE_UNEVEN_GROUND);
+                return true;
+            }
 
             PetBattleRequest* battleRequest = sPetBattleSystem->CreateRequest(player->GetGUID());
             battleRequest->OpponentGuid = creature->GetGUID();
@@ -121,8 +139,18 @@ public:
                 wildBattlePets[i] = nullptr;
             }
 
+            auto petSlots = player->GetBattlePetCombatTeam();
+            uint8 highestLevel = 1;
+            if (isBert)
+                for (size_t slot = 0; slot < std::min<size_t>(MAX_PETBATTLE_SLOTS, player->GetUnlockedPetBattleSlot()); ++slot)
+                    if (petSlots[slot])
+                        highestLevel = std::max<uint8>(highestLevel, petSlots[slot]->Level);
+
+            auto team = sBattlePetDataStore->GetPetBattleTrainerTeam(creature->GetEntry());
+            if (isBert)
+                std::sort(team.begin(), team.end(), [](auto const& left, auto const& right) { return left.Specie > right.Specie; });
             uint32 wildsPetCount = 0;
-            for (BattlePetNpcTeamMember& v : sBattlePetDataStore->GetPetBattleTrainerTeam(creature->GetEntry()))
+            for (BattlePetNpcTeamMember const& v : team)
             {
                 if (wildsPetCount >= MAX_PETBATTLE_SLOTS)
                     break;
@@ -160,10 +188,17 @@ public:
                 uint8 randQuality = sBattlePetDataStore->GetRandomQuailty();
                 battlePetInstance->Quality = v.minquality > randQuality ? v.minquality : randQuality;
                 battlePetInstance->Breed = sBattlePetDataStore->GetRandomBreedID(v.BreedIDs);
-                battlePetInstance->Level = std::max(urand(v.minlevel, v.maxlevel), static_cast<uint32>(1));
-
-                for (size_t i = 0; i < MAX_PETBATTLE_ABILITIES; ++i)
-                    battlePetInstance->Abilities[i] = v.Ability[i];
+                if (isBert)
+                {
+                    battlePetInstance->Level = highestLevel;
+                    battlePetInstance->UpdateAbilities();
+                }
+                else
+                {
+                    battlePetInstance->Level = std::max(urand(v.minlevel, v.maxlevel), static_cast<uint32>(1));
+                    for (size_t i = 0; i < MAX_PETBATTLE_ABILITIES; ++i)
+                        battlePetInstance->Abilities[i] = v.Ability[i];
+                }
 
                 wildBattlePets[wildsPetCount] = battlePetInstance;
                 wildBattlePets[wildsPetCount]->OriginalCreature.Clear();
@@ -171,7 +206,6 @@ public:
             }
 
             size_t playerPetCount = 0;
-            std::shared_ptr<BattlePet>* petSlots = player->GetBattlePetCombatTeam();
             for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)
             {
                 if (!petSlots[i])
@@ -207,6 +241,8 @@ public:
 
             petBattle->BattleType = battleRequest->RequestType;
             petBattle->PveBattleType = PVE_PETBATTLE_TRAINER;
+            if (isBert)
+                petBattle->TrainerQuestAttempt = player->GetQuestCancellationReceipt(BertsBots);
 
             player->_petBattleId = petBattle->ID;
 

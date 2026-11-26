@@ -11,6 +11,7 @@
 #include "Common.h"
 
 class Field;
+class QuestCancellationReceipt;
 
 #define MAX_PETBATTLE_SLOTS 3
 #define MAX_PETBATTLE_TEAM 2
@@ -584,6 +585,7 @@ public:
     ObjectGuid ID;                                                          ///< Battle global unique ID
     PetBattleType BattleType;                                               ///< Battle type (PETBATTLE_TYPE_PVE / PETBATTLE_TYPE_PVP_DUEL / PETBATTLE_TYPE_PVP_MATCHMAKING)
     PvePetBattleType PveBattleType;                                         ///< PVE battle type (PVE_PETBATTLE_WILD / PVE_PETBATTLE_TRAINER)
+    std::shared_ptr<QuestCancellationReceipt const> TrainerQuestAttempt;
     uint32 Turn;                                                            ///< Battle current turn id
     PetBattleResult CombatResult;                                           ///< Combat result (PETBATTLE_RESULT_WON, PETBATTLE_RESULT_LOOSE, PETBATTLE_RESULT_ABANDON)
     PetBattleRequest PvPMatchMakingRequest;                                 ///< PVP request

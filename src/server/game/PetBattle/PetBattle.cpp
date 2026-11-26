@@ -20,6 +20,7 @@
 #include "GameTables.h"
 #include "BattlePetPackets.h"
 #include "InstanceScript.h"
+#include "QuestObjectScope.h"
 
 #define PETBATTLE_UPDATE_INTERVAL 300
 
@@ -1484,7 +1485,8 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                 player->KilledMonsterCredit(65356);
             }
 
-            if (BattleType == PETBATTLE_TYPE_PVE && PveBattleType == PVE_PETBATTLE_TRAINER && currentTeamID == winnerTeamID)
+            if (!aborted && BattleType == PETBATTLE_TYPE_PVE && PveBattleType == PVE_PETBATTLE_TRAINER && currentTeamID == winnerTeamID &&
+                (!TrainerQuestAttempt || !TrainerQuestAttempt->load(std::memory_order_acquire)))
                 if (auto trainer = ObjectAccessor::GetObjectInOrOutOfWorld(Teams[PETBATTLE_PVE_TEAM_ID]->OwnerGuid, static_cast<Creature*>(nullptr)))
                 {
                     player->QuestObjectiveSatisfy(trainer->GetEntry(), 1, QUEST_OBJECTIVE_PET_TRAINER_DEFEAT, trainer->GetGUID());
