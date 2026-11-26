@@ -72,6 +72,15 @@ constexpr uint32 ElderSpawn = 244884;
 constexpr uint32 VillageJojoSpawn = 244886;
 constexpr uint32 BrushHozen = 55601;
 constexpr uint32 PaintBrush = 74615;
+constexpr uint32 DirectSolution = 29779;
+constexpr uint32 DoNoEvil = 29780;
+constexpr uint32 StrongBone = 29782;
+constexpr uint32 BalancedPerspective = 29784;
+constexpr uint32 FeFeng = 55632;
+constexpr uint32 Firethief = 55633;
+constexpr uint32 RukRuk = 55634;
+constexpr uint32 RukRukSpawn = 244986;
+constexpr uint32 RidgeAysaSpawn = 244904;
 constexpr uint32 DaiLoShu = 55556;
 constexpr uint32 DaiLoShuSpawn = 244646;
 constexpr uint32 Wugou = 55539;
@@ -103,7 +112,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 23, "Missing the Singing Pools, farm and village quests");
+    Require(rows && rows->GetRowCount() == 27, "Missing the Singing Pools, farm and village quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -117,8 +126,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29781,29783)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 23, "Missing the original Pools, farm and village prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 27, "Missing the original Pools, farm and village prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -179,8 +188,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29781,29783) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 14, "Missing the original farm and village objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29779,29780,29781,29783) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 16, "Missing the original farm and village objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -192,26 +201,29 @@ void LoadPools()
     quests[StrongWood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[RaucousRousing]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[NotInTheFace]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
-    quests[RewrittenWisdoms]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    for (uint32 quest : {RewrittenWisdoms, DirectSolution, DoNoEvil})
+        quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     for (uint32 quest : {ToolsOfEnemy, Warning, StrongStone})
         quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
-        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,245583)"
-        " OR (map=860 AND id=55601)");
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,244904,244986,245583)"
+        " OR (map=860 AND id IN(55601,55632,55633))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29781,29783)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29781,29783)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gameobject_queststarter AS SELECT * FROM legion_world.gameobject_queststarter WHERE quest=29782");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=105306");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
-        "WHERE spell_id IN (103069,103070,103077,103116,108590,115904)");
+        "WHERE spell_id IN (103069,103070,103077,103116,105306,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
@@ -235,7 +247,7 @@ void LoadPools()
         "Missing the original reed, pearl or farm loot rows");
     auto& creatureLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalCreatureLoot = creatureLoot;
-    creatureLoot += " WHERE Entry IN (55483,55601,60411)";
+    creatureLoot += " WHERE Entry IN (55483,55601,55632,55633,55634,60411)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     creatureLoot = originalCreatureLoot;
     Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
@@ -247,8 +259,12 @@ void LoadPools()
     sObjectMgr->LoadNPCSpellClickSpells();
     sScriptSystemMgr->LoadScriptWaypoints();
     sSpellMgr->LoadSpellProcEvents();
+    sSpellMgr->LoadSpellPrcoCheck();
+    sSpellMgr->LoadSpellBonusess();
+    sSpellMgr->LoadSpellAreas();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
+    sQuestDataStore->LoadGameobjectQuestRelations();
     if (WorldDatabase.Query("SELECT 1 FROM conditions LIMIT 1"))
         sConditionMgr->LoadConditions();
     sAreaTriggerDataStore->LoadAreaTriggerScripts();
@@ -608,13 +624,13 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn, RukRukSpawn, RidgeAysaSpawn})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : VirmenSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    if (auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE id=55601"))
+    if (auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE id IN(55601,55632,55633)"))
         do
         {
             uint32 spawn = spawns->Fetch()[0].GetUInt32();
@@ -1296,6 +1312,145 @@ void CheckVillageSupplies(Map& map, LootPlayer& pupil, Teacher& ji)
 #endif
 }
 
+void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
+{
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    if (pupil.GetQuestStatus(DirectSolution) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, ji, DirectSolution);
+    AcceptQuest(pupil, ji, DoNoEvil);
+    Require(pupil.GetQuestStatus(DirectSolution) == QUEST_STATUS_INCOMPLETE && pupil.GetQuestStatus(DoNoEvil) == QUEST_STATUS_INCOMPLETE,
+        "Ji did not admit both original Fe-Feng missions");
+
+    Teacher rukruk(map, RukRukSpawn, RukRuk);
+    PoolPet pet(pupil, map);
+    auto defeat = [&](Teacher& opponent, bool byPet)
+    {
+        MoveGilneasPlayer(pupil, opponent.GetPosition());
+        if (byPet)
+        {
+            map.CreatureRelocation(&pet, opponent.GetPositionX(), opponent.GetPositionY(), opponent.GetPositionZ(), opponent.GetOrientation());
+            map.MoveAllCreaturesInMoveList();
+        }
+        Unit& killer = byPet ? static_cast<Unit&>(pet) : static_cast<Unit&>(pupil);
+        if (!killer.IsValidAttackTarget(&opponent))
+            std::cerr << "Fe-Feng entry=" << opponent.GetEntry() << " spawn=" << opponent.GetDBTableGUIDLow() << " pet=" << byPet
+                << " hp=" << opponent.GetHealth() << " samePhase=" << opponent.InSamePhase(&killer) << " seen=" << killer.canSeeOrDetect(&opponent)
+                << " faction=" << opponent.getFaction() << " reaction=" << int(killer.GetReactionTo(&opponent)) << std::endl;
+        Require(killer.IsValidAttackTarget(&opponent), "A placed Fe-Feng opponent is not attackable");
+        killer.DealDamage(&opponent, uint32(opponent.GetMaxHealth()) * 2);
+        Tick(pupil, 100);
+        Require(!opponent.IsAlive(), "A native Fe-Feng one-hit defeat did not finish");
+    };
+
+    MoveGilneasPlayer(pupil, rukruk.GetPosition());
+    pupil.UpdateAreaDependentAuras(pupil.GetAreaId());
+    Tick(pupil, 200);
+    auto const& buddies = *pupil.GetSummonList(65558);
+    Require(pupil.GetAreaId() == 5831 && pupil.GetQuestStatus(DoNoEvil) == QUEST_STATUS_INCOMPLETE &&
+        pupil.GetQuestStatus(BalancedPerspective) == QUEST_STATUS_NONE, "The real Fe-Feng entrance was not tested before the Aysa handoff");
+#ifdef SINGING_POOLS_FE_FENG_BASELINE
+    Require(buddies.empty() && !pupil.HasAura(105306), "The original quest mask did not reproduce the missing Ji companion");
+    std::cout << "EXPECTED_BROKEN Fe-Feng did not summon Ji until the player already had the quest he offers" << std::endl;
+#else
+    Require(buddies.size() == 1 && pupil.HasAura(105306), "Real Fe-Feng entry did not summon the active quest's Ji companion");
+    Require(pupil.GetAuraEffect(105306, EFFECT_3), "Ji's ordinary damage aura is missing");
+    ObjectGuid const firstBuddyId = buddies.front();
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    pupil.UpdateAreaDependentAuras(pupil.GetAreaId());
+    Tick(pupil, 200);
+    if (Creature* retiring = map.GetCreature(firstBuddyId))
+        retiring->Unit::Update(600);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!pupil.HasAura(105306) && !map.GetCreature(firstBuddyId), "Leaving Fe-Feng did not remove its private Ji companion");
+    MoveGilneasPlayer(pupil, rukruk.GetPosition());
+    pupil.UpdateAreaDependentAuras(pupil.GetAreaId());
+    Tick(pupil, 200);
+    Require(buddies.size() == 1 && buddies.front() != firstBuddyId, "Re-entering an eligible Fe-Feng area did not publish a new companion");
+    ObjectGuid const buddyId = buddies.front();
+    auto rows = WorldDatabase.Query("SELECT guid FROM creature WHERE map=860 AND id=55633 AND areaId=5831 ORDER BY guid");
+    Require(rows && rows->GetRowCount() == 13, "The native Fe-Feng Firethief placements are missing");
+    std::vector<uint32> spawns;
+    do { spawns.push_back(rows->Fetch()[0].GetUInt32()); } while (rows->NextRow());
+    Require(sObjectMgr->GetCreatureTemplate(Firethief)->KillCredit[0] == FeFeng, "Firethieves lost their authored Ruffian objective alias");
+    for (uint32 count = 0; count < 20; ++count)
+    {
+        uint32 const spawn = spawns[count % spawns.size()];
+        if (count >= spawns.size())
+            map.RemoveCreatureRespawnTime(spawn);
+        Teacher hozen(map, spawn, Firethief);
+        defeat(hozen, count % 2 != 0);
+        Require(pupil.GetQuestObjectiveData(DirectSolution, FeFeng) == int32(count + 1), "A player or pet Fe-Feng defeat lost or duplicated native alias credit");
+    }
+    Require(pupil.GetQuestStatus(DirectSolution) == QUEST_STATUS_COMPLETE && !pupil.GetQuestObjectiveData(DoNoEvil, RukRuk),
+        "Ordinary Hozen kills awarded the unique chief objective");
+    defeat(rukruk, true);
+    Require(pupil.GetQuestStatus(DoNoEvil) == QUEST_STATUS_COMPLETE && pupil.GetQuestObjectiveData(DoNoEvil, RukRuk) == 1,
+        "The original chief's pet defeat did not complete the serious combat objective");
+
+    Creature* buddy = ObjectAccessor::GetCreature(pupil, buddyId);
+    Require(buddy && buddy->ToTempSummon() && buddy->ToTempSummon()->GetSummonerGUID() == pupil.GetGUID(), "The Fe-Feng companion did not survive the encounter");
+    MoveGilneasPlayer(pupil, buddy->GetPosition());
+    RewardQuest(pupil, *buddy, DirectSolution);
+    uint32 const choice = PoolRewardChoice(pupil, DoNoEvil);
+    RewardQuest(pupil, *buddy, DoNoEvil, choice);
+    Require(pupil.IsQuestRewarded(DirectSolution) && pupil.IsQuestRewarded(DoNoEvil) && pupil.GetItemCount(choice) == 1,
+        "The actual Ji companion did not reward both original combat quests");
+
+    if (pupil.GetQuestStatus(BalancedPerspective) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, *buddy, BalancedPerspective);
+    Require(pupil.GetQuestStatus(BalancedPerspective) == QUEST_STATUS_COMPLETE, "Earned combat progression did not open the original Aysa handoff");
+    pupil.UpdateAreaDependentAuras(pupil.GetAreaId());
+    if (Creature* retiring = map.GetCreature(buddyId))
+        retiring->Unit::Update(600);
+    map.RemoveAllObjectsInRemoveList();
+    AbandonSupply(pupil, BalancedPerspective);
+    MoveGilneasPlayer(pupil, rukruk.GetPosition());
+    pupil.UpdateAreaDependentAuras(pupil.GetAreaId());
+    Tick(pupil, 200);
+    Require(buddies.size() == 1 && pupil.HasAura(105306), "Abandoning the Ji handoff did not recover the private offer");
+    Creature* retry = ObjectAccessor::GetCreature(pupil, buddies.front());
+    Require(retry, "The expected retry companion did not enter the map");
+    ObjectGuid const retryId = retry->GetGUID();
+    MoveGilneasPlayer(pupil, retry->GetPosition());
+    AcceptQuest(pupil, *retry, BalancedPerspective);
+    Require(pupil.GetQuestStatus(BalancedPerspective) == QUEST_STATUS_COMPLETE, "The real Ji did not restore the handoff after abandonment");
+    Teacher aysa(map, RidgeAysaSpawn, 55595);
+    MoveGilneasPlayer(pupil, aysa.GetPosition());
+    pupil.UpdateAreaDependentAuras(pupil.GetAreaId());
+    Tick(pupil, 200);
+    if (Creature* retiring = map.GetCreature(retryId))
+        retiring->Unit::Update(600);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!pupil.HasAura(105306) && buddies.empty(), "The Ji companion persisted after leaving for Aysa");
+    RewardQuest(pupil, aysa, BalancedPerspective);
+    Require(pupil.IsQuestRewarded(BalancedPerspective), "The original Aysa placement did not accept Balanced Perspective");
+    std::cout << "PASS Fe-Feng native companion and 20 player/pet kills, Ruk-Ruk, Ji's rewards and Aysa's turn-in" << std::endl;
+#endif
+}
+
+void CheckJadeTigerPillar(Map& map, LootPlayer& pupil)
+{
+    PlacedQuestObject pillar(map, 102665, 209673);
+    Require(pillar.GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER, "The native Jade Tiger Pillar no longer offers quests");
+    MoveGilneasPlayer(pupil, pillar.GetPosition());
+    Ring(pupil, pillar, false);
+    WorldPackets::Quest::QuestGiverAcceptQuest request{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    request.QuestGiverGUID = pillar.GetGUID();
+    request.QuestID = StrongBone;
+    pupil.GetSession()->HandleQuestGiverAcceptQuest(request);
+    Require(pupil.GetQuestStatus(StrongBone) == QUEST_STATUS_COMPLETE && pupil.GetItemCount(76174) == 1, "The original pillar did not yield its quest and one supplied pillar");
+    AbandonSupply(pupil, StrongBone);
+    Require(pupil.GetQuestStatus(StrongBone) == QUEST_STATUS_NONE && !pupil.GetItemCount(76174), "The abandoned Jade Tiger Pillar remained in the bag");
+    pupil.GetSession()->HandleQuestGiverAcceptQuest(request);
+    Require(pupil.GetQuestStatus(StrongBone) == QUEST_STATUS_COMPLETE && pupil.GetItemCount(76174) == 1, "The original pillar could not be taken again");
+    Teacher jojo(map, VillageJojoSpawn, 55585);
+    MoveGilneasPlayer(pupil, jojo.GetPosition());
+    uint32 const choice = PoolRewardChoice(pupil, StrongBone);
+    RewardQuest(pupil, jojo, StrongBone, choice);
+    Require(pupil.IsQuestRewarded(StrongBone) && pupil.GetItemCount(choice) == 1 && !pupil.GetItemCount(76174), "Jojo did not accept and consume the actual Jade Tiger Pillar");
+    std::cout << "PASS original Jade Tiger Pillar offer, retry, supplied item and Jojo's reward" << std::endl;
+}
+
 void CheckMorningBreezeScrolls(Map& map, LootPlayer& pupil)
 {
     Tick(pupil, 2000);
@@ -1406,6 +1561,10 @@ void CheckMorningBreezeScrolls(Map& map, LootPlayer& pupil)
     Require(pupil.IsQuestRewarded(RewrittenWisdoms) && pupil.GetItemCount(choice) == 1, "Ji did not reward the five original scroll burns");
     std::cout << "PASS actual Temple wind vehicle, Ji handoff, 14 markers, four scroll templates, five burns both packet forms, retry and reward" << std::endl;
     CheckVillageSupplies(map, pupil, ji);
+#ifndef SINGING_POOLS_BREEZE_SUPPLIES_BASELINE
+    CheckJadeTigerPillar(map, pupil);
+    CheckFeFengVillage(map, pupil, ji);
+#endif
 #endif
 }
 

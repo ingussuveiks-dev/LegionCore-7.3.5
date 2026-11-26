@@ -3371,9 +3371,16 @@ class spell_summon_ji_yung: public SpellScriptLoader
                 target->RemoveAllMinionsByFilter(65558);
             }
 
+            void KeepDamageModifier(AuraEffect const* /*effect*/, ProcEventInfo& /*event*/)
+            {
+                // This effect modifies damage taken and has no triggered spell.
+                PreventDefaultAction();
+            }
+
             void Register()
             {
                 OnEffectRemove += AuraEffectRemoveFn(spell_summon_ji_yung_AuraScript::OnRemove, EFFECT_3, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                OnEffectProc += AuraEffectProcFn(spell_summon_ji_yung_AuraScript::KeepDamageModifier, EFFECT_3, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
             }
         };
 
