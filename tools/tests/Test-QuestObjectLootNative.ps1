@@ -10,7 +10,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$SingingPoolsReedsBaseline,[switch]$SingingPoolsRockBaseline,[switch]$SingingPoolsPearlBaseline,[switch]$SingingPoolsShuAdmissionBaseline,[switch]$SingingPoolsReflectionBaseline,[switch]$SingingPoolsCoaxBaseline,[switch]$SingingPoolsSpoutBaseline,[switch]$SingingPoolsCartBaseline,[switch]$SingingPoolsFarmBaseline,[switch]$SingingPoolsMalletBaseline,[switch]$SingingPoolsGongBaseline,[switch]$SingingPoolsWugouBaseline,[switch]$SingingPoolsScrollBaseline,[switch]$SingingPoolsBreezeSuppliesBaseline,[switch]$SingingPoolsFeFengBaseline,[switch]$SingingPoolsRuffianBaseline,[switch]$SingingPoolsWindEscortBaseline,[switch]$SingingPoolsZhaoBaseline,
       [switch]$ForestEttin,[switch]$ForestEttinBaseline,
       [switch]$KezanHotRod,[switch]$KezanHotRodBaseline,
-      [switch]$TakingPrecautions,[switch]$Collector,[switch]$Scenes,[switch]$Kyle,[switch]$Seasoning,[switch]$SeasoningBaseline,
+      [switch]$TakingPrecautions,[switch]$CandyBuckets,[switch]$Collector,[switch]$Scenes,[switch]$Kyle,[switch]$Seasoning,[switch]$SeasoningBaseline,
       [switch]$Aquantion,[switch]$AquantionBaseline,[switch]$Anowyn,[switch]$AnowynBaseline,
       [switch]$AlliedCity,[switch]$AlliedCityBaseline,[switch]$Duskwither,[switch]$DuskwitherBaseline,
       [switch]$RedSnapper,[switch]$RedSnapperBaseline,[switch]$SwiftDiscipline,[switch]$SwiftDisciplineBaseline,
@@ -39,6 +39,7 @@ if($DeeprunRat){++$scopedProbes}
 if($HighestQuestPOI -or $VisionQuestPOI -or $LegacyQuestPOI -or $OslowQuestPOI){++$scopedProbes}
 if($EtchedNote){++$scopedProbes}
 if($ForemanOslow){++$scopedProbes}
+if($CandyBuckets){++$scopedProbes}
 if($DarkshoreWildlifeFlight){++$scopedProbes}
 if($WanderingIsleSouth){++$scopedProbes}
 if($BrazieBasicBotany){++$scopedProbes}
@@ -451,6 +452,10 @@ $probeSource = "$PSScriptRoot/QuestObjectLootNative.cpp"
 if($TakingPrecautions){
  $probeSource = "$PSScriptRoot/HallowsEndTakingPrecautionsNative.cpp"
  [IO.File]::WriteAllText("$out/NativeTakingPrecautionsQuest.inc",$query+' " WHERE ID IN(29402,29426)"')
+}
+if($CandyBuckets){
+ $probeSource = "$PSScriptRoot/HallowsEndCandyBucketsNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeHallowsEndCandyBuckets.inc",$query+' " WHERE ID IN(12286,39657,43055)"')
 }
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"
