@@ -8511,10 +8511,12 @@ void Player::SendActionButtons(uint32 state)
                 if (tree->Criteria && tree->Criteria->Entry->Type == CRITERIA_TYPE_CAST_SPELL)
                 {
                     uint32 spell = tree->Criteria->Entry->Asset;
-                    // Frozen Fingers tracks a hidden acknowledgement. Show
-                    // Frozen Orb, which generates a charge on its first hit.
+                    // These Frost lessons track hidden casts. Put the corresponding
+                    // player abilities on the bar when their lessons are reached.
                     if (spell == 215880)
-                        spell = 84714;
+                        spell = 84714; // Frozen Orb
+                    else if (spell == 229824)
+                        spell = 44614; // Flurry with Brain Freeze
                     if (HasActiveSpell(spell) && std::find(lessonSpells.begin(), lessonSpells.end(), spell) == lessonSpells.end())
                         lessonSpells.push_back(spell);
                 }
