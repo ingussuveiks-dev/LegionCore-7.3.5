@@ -1,6 +1,9 @@
 /*
 */
 
+#include "GameEventMgr.h"
+#include "QuestObjectScope.h"
+
 //122138
 struct npc_moonkin_hatchling : ScriptedAI
 {
@@ -62,328 +65,272 @@ struct npc_moonkin_hatchling_lunar_strike : ScriptedAI
     }
 };
 
+namespace
+{
+constexpr uint32 MoonkinFestivalEvent = 299;
+constexpr uint32 MoonkinMonitoringQuest = 47430;
+
+struct MoonkinObservationAI : ScriptedAI
+{
+    MoonkinObservationAI(Creature* creature, float range, uint32 delay)
+        : ScriptedAI(creature), observationRange(range), startDelay(delay) {}
+
+    void Reset() override
+    {
+        observers.clear();
+        observations.Reset();
+    }
+
+    void MoveInLineOfSight(Unit* who) override
+    {
+        if (observers.empty() && sGameEventMgr->IsActiveEvent(MoonkinFestivalEvent) && CanObserve(who->ToPlayer()))
+            StartObservation();
+    }
+
+protected:
+    bool CanObserve(Player* player) const
+    {
+        return player && me->IsAlive() && player->IsAlive() && me->IsWithinDistInMap(player, observationRange) &&
+            me->IsWithinLOSInMap(player) && player->GetQuestStatus(MoonkinMonitoringQuest) == QUEST_STATUS_INCOMPLETE &&
+            !player->GetQuestObjectiveData(MoonkinMonitoringQuest, me->GetEntry());
+    }
+
+    uint32 AdvanceObservation(uint32 diff)
+    {
+        if (observers.empty())
+            return 0;
+        if (!sGameEventMgr->IsActiveEvent(MoonkinFestivalEvent))
+        {
+            MoonkinObservationAI::Reset();
+            return 0;
+        }
+
+        observers.erase(std::remove_if(observers.begin(), observers.end(), [this](Observer const& observer)
+        {
+            return observer.Receipt->load(std::memory_order_acquire) || !CanObserve(ObjectAccessor::GetPlayer(*me, observer.Guid));
+        }), observers.end());
+        if (observers.empty())
+        {
+            observations.Reset();
+            StartObservation();
+            return 0;
+        }
+        observations.Update(diff);
+        return observations.ExecuteEvent();
+    }
+
+    void TalkToObservers(uint8 line)
+    {
+        for (auto const& observer : observers)
+            Talk(line, observer.Guid);
+    }
+
+    void FinishObservation()
+    {
+        auto finished = std::move(observers);
+        MoonkinObservationAI::Reset();
+        for (auto const& observer : finished)
+            if (Player* player = ObjectAccessor::GetPlayer(*me, observer.Guid))
+                player->KilledMonsterCredit(me->GetEntry());
+        StartObservation();
+    }
+
+    EventMap observations;
+
+private:
+    void StartObservation()
+    {
+        std::list<Player*> nearby;
+        GetPlayerListInGrid(nearby, me, observationRange);
+        for (Player* player : nearby)
+            if (CanObserve(player))
+                if (auto receipt = player->GetQuestCancellationReceipt(MoonkinMonitoringQuest))
+                    observers.push_back({player->GetGUID(), std::move(receipt)});
+
+        if (!observers.empty())
+            observations.ScheduleEvent(EVENT_1, startDelay);
+    }
+
+    struct Observer
+    {
+        ObjectGuid Guid;
+        std::shared_ptr<QuestCancellationReceipt const> Receipt;
+    };
+
+    std::vector<Observer> observers;
+    float const observationRange;
+    uint32 const startDelay;
+};
+}
+
 //122134
 struct npc_makkaw : ScriptedAI
 {
     explicit npc_makkaw(Creature* creature) : ScriptedAI(creature) {}
 
-    bool useEvent;
-
-    void Reset() override
+    void sQuestAccept(Player* player, Quest const* quest) override
     {
-        useEvent = false;
-    }
-
-    void DoAction(int32 const action) override
-    {
-        if (action == ACTION_1)
-            useEvent = false;
-    }
-
-    void sQuestAccept(Player* /*player*/, Quest const* /*quest*/) override
-    {
-        if (!useEvent)
-        {
-            useEvent = true;
-
+        if (quest->GetQuestId() == MoonkinMonitoringQuest)
             if (auto astralaire = me->FindNearestCreature(122241, 50.0f, true))
-                astralaire->GetAI()->DoAction(ACTION_1);
-        }
+                astralaire->AI()->MoveInLineOfSight_Safe(player);
     }
 };
 
 //122241
-struct npc_astralaire : ScriptedAI
+struct npc_astralaire : MoonkinObservationAI
 {
-    explicit npc_astralaire(Creature* creature) : ScriptedAI(creature) {}
-
-    EventMap events;
-    std::list<Player*> playerList;
-    std::list<Creature*> creatureList;
+    explicit npc_astralaire(Creature* creature) : MoonkinObservationAI(creature, 20.0f, 3000) {}
 
     void Reset() override
     {
+        MoonkinObservationAI::Reset();
         me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_DANCE);
-
-        playerList.clear();
-        creatureList.clear();
-        events.Reset();
-    }
-
-    void DoAction(int32 const action) override
-    {
-        if (action == ACTION_1)
-            events.RescheduleEvent(EVENT_1, 3000);
     }
 
     void UpdateAI(uint32 diff) override
     {
-        events.Update(diff);
-
-        if (uint32 eventId = events.ExecuteEvent())
+        switch (AdvanceObservation(diff))
         {
-            switch (eventId)
-            {
             case EVENT_1:
                 Talk(0);
-                events.RescheduleEvent(EVENT_2, 4000);
+                observations.ScheduleEvent(EVENT_2, 4000);
                 break;
             case EVENT_2:
                 Talk(1);
-                events.RescheduleEvent(EVENT_3, 6000);
+                observations.ScheduleEvent(EVENT_3, 6000);
                 break;
             case EVENT_3:
                 Talk(2);
-                events.RescheduleEvent(EVENT_4, 7000);
+                observations.ScheduleEvent(EVENT_4, 7000);
                 break;
             case EVENT_4:
                 Talk(3);
-                events.RescheduleEvent(EVENT_5, 7000);
+                observations.ScheduleEvent(EVENT_5, 7000);
                 break;
             case EVENT_5:
                 Talk(4);
-                events.RescheduleEvent(EVENT_6, 1000);
+                observations.ScheduleEvent(EVENT_6, 1000);
                 break;
             case EVENT_6:
-                me->GetCreatureListWithEntryInGrid(creatureList, 122138, 50.0f);
-                if (!creatureList.empty())
-                    for (auto& cre : creatureList)
-                        cre->AI()->Talk(0);
-
-                events.RescheduleEvent(EVENT_7, 4000);
-                break;
-            case EVENT_7:
-                playerList.clear();
-                GetPlayerListInGrid(playerList, me, 20.0f);
-                if (!playerList.empty())
-                    for (auto& player : playerList)
-                        if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE)
-                            player->KilledMonsterCredit(me->GetEntry());
-
-                if (auto makkaw = me->FindNearestCreature(122134, 50.0f, true))
-                    makkaw->AI()->DoAction(ACTION_1);
+            {
+                std::list<Creature*> hatchlings;
+                me->GetCreatureListWithEntryInGrid(hatchlings, 122138, 50.0f);
+                for (Creature* creature : hatchlings)
+                    if (creature->IsAlive() && creature->AI())
+                        creature->AI()->Talk(0);
+                observations.ScheduleEvent(EVENT_7, 4000);
                 break;
             }
+            case EVENT_7:
+                FinishObservation();
+                break;
         }
     }
 };
 
 //122390
-struct npc_dramock: ScriptedAI
+struct npc_dramock : MoonkinObservationAI
 {
-    explicit npc_dramock(Creature* creature) : ScriptedAI(creature) {}
-
-    EventMap events;
-    std::list<ObjectGuid> playerGUIDs;
-    bool useEvent = false;
-    uint64 observationGeneration = 0;
+    explicit npc_dramock(Creature* creature) : MoonkinObservationAI(creature, 15.0f, 500) {}
 
     void Reset() override
     {
+        MoonkinObservationAI::Reset();
         DoCast(243958);
-
-        events.Reset();
-        ++observationGeneration;
-        playerGUIDs.clear();
-        useEvent = false;
-    }
-
-    void MoveInLineOfSight(Unit* who) override
-    {
-        if (!who->IsPlayer())
-            return;
-
-        if (me->GetDistance(who) > 15.0f)
-            return;
-
-        if (who->ToPlayer()->GetQuestStatus(47430) != QUEST_STATUS_INCOMPLETE)
-            return;
-
-        uint32 credit = who->ToPlayer()->GetQuestObjectiveData(47430, me->GetEntry());
-
-        if (credit != 1)
-        {
-            if (!useEvent)
-            {
-                useEvent = true;
-                credit = 0;
-
-                me->AddDelayedEvent(500, [this, generation = ++observationGeneration, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
-                {
-                    if (aiLifetimeGuard.expired()) return;
-                    if (generation != observationGeneration || !useEvent)
-                        return;
-                    playerGUIDs.clear();
-                    std::list<Player*> playerList;
-
-                    GetPlayerListInGrid(playerList, me, 15.0f);
-                    if (!playerList.empty())
-                        for (auto& player : playerList)
-                            if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE)
-                                playerGUIDs.push_back(player->GetGUID());
-
-                    for (auto& guid : playerGUIDs)
-                        Talk(0, guid);
-
-                    events.RescheduleEvent(EVENT_1, 4000);
-                });
-            }
-        }
     }
 
     void UpdateAI(uint32 diff) override
     {
-        events.Update(diff);
-
-        if (uint32 eventId = events.ExecuteEvent())
+        switch (AdvanceObservation(diff))
         {
-            switch (eventId)
-            {
             case EVENT_1:
-                for (auto& guid : playerGUIDs)
-                    Talk(1, guid);
-
-                events.RescheduleEvent(EVENT_2, 6000);
+                TalkToObservers(0);
+                observations.ScheduleEvent(EVENT_2, 4000);
                 break;
             case EVENT_2:
-                for (auto& guid : playerGUIDs)
-                    Talk(2, guid);
-
-                events.RescheduleEvent(EVENT_3, 7000);
+                TalkToObservers(1);
+                observations.ScheduleEvent(EVENT_3, 6000);
                 break;
             case EVENT_3:
-                for (auto& guid : playerGUIDs)
-                    Talk(3, guid);
-
-                events.RescheduleEvent(EVENT_4, 7000);
+                TalkToObservers(2);
+                observations.ScheduleEvent(EVENT_4, 7000);
                 break;
             case EVENT_4:
-                Talk(4);
-                events.RescheduleEvent(EVENT_5, 5000);
+                TalkToObservers(3);
+                observations.ScheduleEvent(EVENT_5, 7000);
                 break;
             case EVENT_5:
-                useEvent = false;
-
-                {
-                    std::list<ObjectGuid> eligiblePlayers;
-                    eligiblePlayers.swap(playerGUIDs);
-                    for (ObjectGuid const& guid : eligiblePlayers)
-                        if (Player* player = ObjectAccessor::GetPlayer(*me, guid))
-                            if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE && player->GetQuestObjectiveData(47430, me->GetEntry()) != 1)
-                                player->KilledMonsterCredit(me->GetEntry());
-                }
+                Talk(4);
+                observations.ScheduleEvent(EVENT_6, 5000);
                 break;
-            }
+            case EVENT_6:
+                FinishObservation();
+                break;
         }
     }
-private:
-    // Unit-owned queues may outlive this AI object.
-    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122256
-struct npc_pewkew : ScriptedAI
+struct npc_pewkew : MoonkinObservationAI
 {
-    explicit npc_pewkew(Creature* creature) : ScriptedAI(creature)
+    explicit npc_pewkew(Creature* creature) : MoonkinObservationAI(creature, 15.0f, 500)
     {
         me->AddUnitState(UNIT_STATE_ROOT);
     }
 
-    EventMap events;
-    std::list<Player*> playerList;
-    bool useEvent;
-
     void Reset() override
     {
-        events.Reset();
-        playerList.clear();
-        useEvent = false;
-
-        events.RescheduleEvent(EVENT_6, 1000);
-    }
-
-    void MoveInLineOfSight(Unit* who) override
-    {
-        if (!who->IsPlayer())
-            return;
-
-        if (me->GetDistance(who) > 15.0f)
-            return;
-
-        if (who->ToPlayer()->GetQuestStatus(47430) != QUEST_STATUS_INCOMPLETE)
-            return;
-
-        uint32 credit = who->ToPlayer()->GetQuestObjectiveData(47430, me->GetEntry());
-
-        if (credit != 1)
-        {
-            if (!useEvent)
-            {
-                useEvent = true;
-                credit = 0;
-
-                me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
-                {
-                    if (aiLifetimeGuard.expired()) return;
-                    Talk(0);
-                    events.RescheduleEvent(EVENT_1, 4000);
-                });
-            }
-        }
+        MoonkinObservationAI::Reset();
+        lunarStrikeTimer = 1000;
     }
 
     void UpdateAI(uint32 diff) override
     {
-        events.Update(diff);
-
-        if (uint32 eventId = events.ExecuteEvent())
+        switch (AdvanceObservation(diff))
         {
-            switch (eventId)
-            {
             case EVENT_1:
-                Talk(1);
-                events.RescheduleEvent(EVENT_2, 6000);
+                Talk(0);
+                observations.ScheduleEvent(EVENT_2, 4000);
                 break;
             case EVENT_2:
-                Talk(2);
-                events.RescheduleEvent(EVENT_3, 7000);
+                Talk(1);
+                observations.ScheduleEvent(EVENT_3, 6000);
                 break;
             case EVENT_3:
-                Talk(3);
-                events.RescheduleEvent(EVENT_4, 7000);
+                Talk(2);
+                observations.ScheduleEvent(EVENT_4, 7000);
                 break;
             case EVENT_4:
-                Talk(4);
-                events.RescheduleEvent(EVENT_5, 5000);
+                Talk(3);
+                observations.ScheduleEvent(EVENT_5, 7000);
                 break;
             case EVENT_5:
-                useEvent = false;
-
-                playerList.clear();
-                GetPlayerListInGrid(playerList, me, 20.0f);
-                if (!playerList.empty())
-                    for (auto& player : playerList)
-                        player->KilledMonsterCredit(me->GetEntry());
+                Talk(4);
+                observations.ScheduleEvent(EVENT_6, 5000);
                 break;
             case EVENT_6:
-                if (!me->isInCombat())
-                {
-                    if (auto target = me->FindNearestCreature(122252, 30.0f, true))
-                        AttackStart(target);
-                }
-                else
-                {
-                    if (auto victim = me->getVictim())
-                        DoCast(victim, 243829, false);
-                }
-                events.RescheduleEvent(EVENT_6, 1700);
+                FinishObservation();
                 break;
-            }
         }
+
+        if (lunarStrikeTimer > diff)
+        {
+            lunarStrikeTimer -= diff;
+            return;
+        }
+        lunarStrikeTimer = 1700;
+
+        if (!me->isInCombat())
+        {
+            if (auto target = me->FindNearestCreature(122252, 30.0f, true))
+                AttackStart(target);
+        }
+        else if (auto victim = me->getVictim())
+            DoCast(victim, 243829, false);
     }
+
 private:
-    // Unit-owned queues may outlive this AI object.
-    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
+    uint32 lunarStrikeTimer = 1000;
 };
 
 //122139

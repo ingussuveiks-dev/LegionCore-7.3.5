@@ -1,5 +1,5 @@
 param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='',[switch]$PassingWisdomBaseline,[switch]$PassingWisdomOrphanBaseline,[switch]$WanderingIsleBalloon,[switch]$WanderingIsleBalloonBaseline,[switch]$WanderingIsleMandori,[switch]$WanderingIsleMandoriBaseline,[switch]$WanderingIsleSouth,[switch]$WanderingIsleSouthBaseline,[switch]$WanderingIsleMedicalBaseline,[switch]$WanderingIsleRescue,[switch]$WanderingIsleRescueBaseline,[switch]$WanderingIsleThorn,[switch]$WanderingIsleThornBaseline,[switch]$WanderingIsleHealing,[switch]$WanderingIsleHealingBaseline,[switch]$WanderingIsleDeparture,[switch]$WanderingIsleDepartureBaseline,
-      [switch]$MoonkinQuestPOI,[switch]$CameraQuestPOI,
+      [switch]$MoonkinQuestPOI,[switch]$MoonkinMonitoring,[switch]$CameraQuestPOI,
       [switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallRise,[switch]$WestfallVision,[switch]$WestfallVisionObserve,[switch]$WestfallVisionScene,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
@@ -41,6 +41,7 @@ if($HighestQuestPOI -or $VisionQuestPOI -or $LegacyQuestPOI -or $OslowQuestPOI -
 if($EtchedNote){++$scopedProbes}
 if($ForemanOslow){++$scopedProbes}
 if($CandyBuckets){++$scopedProbes}
+if($MoonkinMonitoring){++$scopedProbes}
 if($DarkshoreWildlifeFlight){++$scopedProbes}
 if($WanderingIsleSouth){++$scopedProbes}
 if($BrazieBasicBotany){++$scopedProbes}
@@ -457,6 +458,10 @@ if($TakingPrecautions){
 if($CandyBuckets){
  $probeSource = "$PSScriptRoot/HallowsEndCandyBucketsNative.cpp"
  [IO.File]::WriteAllText("$out/NativeHallowsEndCandyBuckets.inc",$query+' " WHERE ID IN(12286,39657,43055)"')
+}
+if($MoonkinMonitoring){
+ $probeSource = "$PSScriptRoot/MoonkinMonitoringNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeMoonkinMonitoring.inc",$query+' " WHERE ID=47430"')
 }
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"

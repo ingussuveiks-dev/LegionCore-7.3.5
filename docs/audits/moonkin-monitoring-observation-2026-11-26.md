@@ -1,0 +1,9 @@
+# Moonkin Monitoring novērošana un atkārtojums
+
+Astralaire sāka runāt pēc kvestu pieņemšanas pie Makkaw. Ja spēlētājs neieradās, nākamā pieeja ainu vairs nesāka. Pewkew un Dramock dalībniekus agrāk izvēlējās citos secības posmos, tādēļ agrākā mēģinājuma noilgums varēja dot ieskaiti pēc atkārtotas pieņemšanas.
+
+Katrs no trim sākotnējiem aktieriem tagad sāk novērošanu tuvumā esošiem dzīviem spēlētājiem ar vajadzīgo kvestu, redzamības līniju un trūkstošo ieskaiti. Aktieris glabā konkrētās pieņemšanas apliecinājumu. Aiziešana, atmešana un pasākuma slēgšana atceļ dalību. Nākamā aina sākas gaidošajiem skatītājiem, kuri vēl nav saņēmuši ieskaiti. Saglabāti sākotnējie dialogu intervāli, Astralaire dejas, Dramock poza un Pewkew apkārtējā cīņa.
+
+Pretpiemērā ar iepriekšējo `scripts.lib` Astralaire neatkārtoja ainu pēc nokavētas pieejas. Gala zonde pārbaudīja parasto pieņemšanu, faktisko trīs aktieru ieskaiti, noraidījumu blakus spēlētājam bez kvesta, atmešanu un atkārtotu pieņemšanu, pasākuma izslēgšanu, vēlu ierašanos un Makkaw atlīdzības paketi. Agrīnajām zondēm bija jāielādē priekšmetu dati un jāieslēdz vietējā quest loader nogalināšanas mērķu karogi. Labotās zondes un abas servera palaišanas neizraisīja jaunas avārijas, DBErrors vai servera brīdinājumus. Darba EXE SHA-256 ir `AF0CA95838BDC4F24D1FF1EC7E818FE60A5A946AC19BAEB43BCA656D9B4EEDE6`. [Native zonde](../../tools/tests/MoonkinMonitoringNative.cpp)
+
+Sezonas vizuālā norise, balsis un atlīdzības attēlojums 7.3.5 klientā paliek pārbaudāmi. Ar kontrolsummām arhivēti 137 diagnostikas faili. Izņemti 68 pagaidu faili jeb 2 767 895 990 baiti. Iepriekšējais EXE un MAP saglabāts atkopšanai. [Trīs novērošanas un nodošana](https://www.wowhead.com/quest=47430/moonkin-monitoring) · [Pārbaudes arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-moonkin-monitoring-observation/manifest.json)
