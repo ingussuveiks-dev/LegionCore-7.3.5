@@ -5,8 +5,10 @@
 #include "Item.h"
 #include "MapManager.h"
 #include "MoveSpline.h"
+#include "QuestData.h"
 #include "QuestObjectScope.h"
 #include "ScriptMgr.h"
+#include "ScriptSystem.h"
 #include "SmartAI.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
@@ -2389,13 +2391,6 @@ class spell_grab_carriage: public SpellScriptLoader
     public:
         spell_grab_carriage() : SpellScriptLoader("spell_grab_carriage") { }
 
-        enum misc
-        {
-            _credit = 57710,    //Q: 29680
-            _credit2 = 59497,   //Q: 59497
-            _credit3 = 57741,   //Q: 29800
-        };
-
         class spell_grab_carriage_SpellScript : public SpellScript
         {
             PrepareSpellScript(spell_grab_carriage_SpellScript);
@@ -2420,23 +2415,17 @@ class spell_grab_carriage: public SpellScriptLoader
                 {
                     carriage = caster->SummonCreature(57208, 979.06f, 2863.87f, 87.88f, 4.7822f, TEMPSUMMON_MANUAL_DESPAWN, 0, caster->GetGUID());
                     yak      = caster->SummonCreature(57207, 979.37f, 2860.29f, 88.22f, 4.4759f, TEMPSUMMON_MANUAL_DESPAWN, 0, caster->GetGUID());
-                    if (Player* p = caster->ToPlayer())
-                        p->TalkedToCreature(_credit, ObjectGuid::Empty);
                 }
                 else if (caster->GetAreaId() == 5881) // Ferme Dai-Lo
                 {
                     carriage = caster->SummonCreature(57208, 588.70f, 3165.63f, 88.86f, 4.4156f, TEMPSUMMON_MANUAL_DESPAWN, 0, caster->GetGUID());
                     yak      = caster->SummonCreature(59499, 587.61f, 3161.91f, 89.31f, 4.3633f, TEMPSUMMON_MANUAL_DESPAWN, 0, caster->GetGUID());
-                    if (Player* p = caster->ToPlayer())
-                        p->TalkedToCreature(_credit2, ObjectGuid::Empty);
                 }
                 else if (caster->GetAreaId() == 5833) // Epave du Chercheciel
                 {
                     carriage = caster->SummonCreature(57208, 264.37f, 3867.60f, 73.56f, 0.9948f, TEMPSUMMON_MANUAL_DESPAWN, 0, caster->GetGUID());
                     // spell 108932
                     yak      = caster->SummonCreature(57742, 268.38f, 3872.36f, 74.50f, 0.8245f, TEMPSUMMON_MANUAL_DESPAWN, 0, caster->GetGUID());
-                    if (Player* p = caster->ToPlayer())
-                        p->TalkedToCreature(_credit3, ObjectGuid::Empty);
                 }
 
                 if (!carriage || !yak)
@@ -2491,14 +2480,18 @@ public:
 
     struct npc_nourished_yakAI : public npc_escortAI
     {        
-        npc_nourished_yakAI(Creature* creature) : npc_escortAI(creature)
-        {}
+        explicit npc_nourished_yakAI(Creature* creature) : npc_escortAI(creature)
+        {
+            SetDespawnAtEnd(false);
+        }
 
         uint32 IntroTimer;
         ObjectGuid _carriageGuid;
 
-        void Reset()
+        void Reset() override
         {
+            _finishTimer = 0;
+            _rideAttempt.reset();
             if (me->isSummon())
             {
                 IntroTimer = 2500;
@@ -2507,18 +2500,20 @@ public:
                 IntroTimer = 0;
         }
 
-        void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0)
+        void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0) override
         {
             _carriageGuid = guid;
             SetFollowerGUID(guid);
         }
 
-        void WaypointReached(uint32 waypointId)
+        void LastWaypointReached() override
         {
-
+            _finishTimer = 30000;
         }
 
-        void UpdateAI(uint32 diff)
+        void WaypointReached(uint32 /*point*/) override { }
+
+        void UpdateAI(uint32 diff) override
         {
             Creature* carriage = nullptr;
             if (_carriageGuid)
@@ -2531,20 +2526,50 @@ public:
                 }
             }
 
+            if (_finishTimer)
+            {
+                // The yak can reach the last point while the carriage is still on the previous stretch.
+                auto const& route = sScriptSystemMgr->GetPointMoveList(me->GetEntry());
+                if (carriage && !route.empty() && carriage->movespline->Finalized())
+                {
+                    auto const& last = route.back();
+                    if (carriage->GetExactDist(Position(last.fX, last.fY, last.fZ)) <= 3.0f)
+                    {
+                        if (Player* rider = GetRider(*carriage))
+                            RecordArrival(*rider);
+                        carriage->DespawnOrUnsummon();
+                        me->DespawnOrUnsummon();
+                        return;
+                    }
+                }
+
+                if (diff >= _finishTimer)
+                {
+                    TC_LOG_WARN("scripts", "Wandering Isle cart %u failed to reach its final waypoint", me->GetEntry());
+                    if (carriage)
+                        carriage->DespawnOrUnsummon();
+                    me->DespawnOrUnsummon();
+                    return;
+                }
+                _finishTimer -= diff;
+                return;
+            }
+
             if (IntroTimer)
             {
                 if (IntroTimer <= diff)
                 {
                     if (carriage)
                     {
-                        Unit* passenger = carriage->GetVehicleKit() ? carriage->GetVehicleKit()->GetPassenger(0) : nullptr;
-                        TempSummon* yak = me->ToTempSummon();
-                        if (!passenger || !yak || passenger->GetGUID() != yak->GetSummonerGUID())
+                        Player* rider = GetRider(*carriage);
+                        if (!rider)
                         {
                             carriage->DespawnOrUnsummon();
                             me->DespawnOrUnsummon();
                             return;
                         }
+                        if (Ride const ride = GetRide(); ride.Quest)
+                            _rideAttempt = rider->GetQuestCancellationReceipt(ride.Quest);
                     }
                     if (!HasEscortState(STATE_ESCORT_ESCORTING))
                         Start(false, true);
@@ -2556,6 +2581,56 @@ public:
 
             npc_escortAI::UpdateAI(diff);
         }
+
+    private:
+        Player* GetRider(Creature& carriage) const
+        {
+            auto const* seats = carriage.GetVehicleKit();
+            Unit* passenger = seats ? seats->GetPassenger(0) : nullptr;
+            TempSummon* yak = me->ToTempSummon();
+            return passenger && yak && passenger->GetGUID() == yak->GetSummonerGUID() ? passenger->ToPlayer() : nullptr;
+        }
+
+        struct Ride
+        {
+            uint32 Quest;
+            int32 Tender;
+        };
+
+        Ride GetRide() const
+        {
+            switch (me->GetEntry())
+            {
+                case 57207: return {29680, 57710};
+                case 59499: return {QUEST_SPIRIT_AND_BODY, 59497};
+                case 57742: return {29800, 57741};
+                default: return {};
+            }
+        }
+
+        void RecordArrival(Player& rider) const
+        {
+            Ride const ride = GetRide();
+            if (!_rideAttempt || _rideAttempt->load(std::memory_order_acquire) || rider.GetQuestCancellationReceipt(ride.Quest) != _rideAttempt)
+                return;
+
+            Quest const* quest = sQuestDataStore->GetQuestTemplate(ride.Quest);
+            if (!quest)
+                return;
+
+            // These travel objectives stay optional even after a real ride has been recorded.
+            for (QuestObjective const& objective : quest->GetObjectives())
+                if (objective.Type == QUEST_OBJECTIVE_TALKTO && objective.ObjectID == ride.Tender && (objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL) &&
+                    objective.Amount == 1 && !rider.GetQuestObjectiveData(quest, objective.StorageIndex))
+                {
+                    rider.SetQuestObjectiveData(quest, &objective, 1);
+                    rider.SendQuestUpdateAddCredit(quest, ObjectGuid::Empty, objective, 1);
+                    break;
+                }
+        }
+
+        uint32 _finishTimer = 0;
+        std::shared_ptr<QuestCancellationReceipt const> _rideAttempt;
     };
     
     CreatureAI* GetAI(Creature* creature) const

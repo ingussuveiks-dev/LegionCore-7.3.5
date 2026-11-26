@@ -1,0 +1,11 @@
+# The Spirit and Body of Shen-zin Su 29775
+
+Braucienu uz templi vada jaks `59499`, kura sākotnējā maršrutā ir 14 punkti. Pirms labojuma jaka pēdējais punkts izņēma arī ratus, lai gan tie vēl kustējās. Servera zondē pasažiera pēdējā sasniegtā Y koordināta bija `3558.63`, bet kartes galapunkts ir `3597.72`. Brauciena ieskaite tika mēģināta klikšķa brīdī, kad optional mērķa kvests jau bija `COMPLETE` un `TalkedToCreature` to vairs neapstrādāja.
+
+Rati pabeidz savu kustības līkni līdz īstajam pēdējam maršruta punktam. Tad skripts pārbauda nulles sēdvietā esošo braucēju un to pašu pieņemšanas mēģinājumu, kas bija brauciena sākumā. Tas vienreiz atzīmē attiecīgo izvēles mērķi un novāc abus aktierus. Ja rati apstājas pirms mērķa, paliek 30 sekunžu robeža ar servera brīdinājumu un tīrīšanu. Izkāpšana, neveiksmīga iekāpšana un atmešana ieskaiti nepiešķir. Kvestu var pieņemt jau pabeigtu un nodot, ierodoties kājām.
+
+Ar faktiskajām servera kustības līknēm pārbaudīti visi sākotnējie 17, 14 un 24 punktu maršruti. Izgāja neveiksmīga iekāpšana, agrīna izkāpšana, atkārtota iekāpšana un abu aktieru tīrīšana. Pie tempļa sasniegta Y `3597.42`, izvēles mērķis `59497` saņēma vienu ieskaiti, Shang Xi `54786/243552` piešķīra izvēlēto `57` pakas atlīdzību un noņēma abus pavadoņus un Shu auru. Pārbaudīta `29776` pieņemšana. 24 punktu ceļam pārbaudīts pilns brauciens un izkāpšana, spēlētājam vēl nebija tā vēlākā `29800` kvesta.
+
+Gala saite izmantoja pārbūvētu `scripts/Release/scripts.lib` un esošo `game/Release/game.lib`. Izolētais un darba Release sasniedza gatavību un apstājās ar kodu `0`. Abiem EXE SHA-256 ir `B68B8C5F3B25F86FB0616BCF1F4F0B19D499A344D2AE26AD3CEE1753C8B83763`. Izpildfailā pārbaudīta maršruta gala pārbaude, mēģinājuma nolasīšana un mērķa ieskaite. Serverī nebija jaunu avāriju, DBErrors, brīdinājumu vai izņēmumu.
+
+Ar kontrolsummām arhivēts 101 fails. Dzēsti 32 pagaidu faili un divi vecākās atkopšanas kopijas faili, kopā 1 635 114 711 baiti. Iepriekšējais Release saglabāts `.codex/wandering-wugou-20261126/temple-rollback/`. Brauciena kamera, pavadoņu attēlojums un reāls atkārtots savienojums brauciena laikā klientā paliek atvērts. [Arhīvs un dzēšanas saraksts](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-cart-arrival/)

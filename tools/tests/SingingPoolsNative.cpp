@@ -60,6 +60,8 @@ constexpr uint32 MinSpawn = 244611;
 constexpr uint32 DeloraSpawn = 244620;
 constexpr uint32 RaucousRousing = 29772;
 constexpr uint32 NotInTheFace = 29774;
+constexpr uint32 SpiritAndBody = 29775;
+constexpr uint32 MorningBreeze = 29776;
 constexpr uint32 DaiLoShu = 55556;
 constexpr uint32 DaiLoShuSpawn = 244646;
 constexpr uint32 Wugou = 55539;
@@ -91,7 +93,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 17, "Missing the Singing Pools and farm quests");
+    Require(rows && rows->GetRowCount() == 19, "Missing the Singing Pools, farm and return quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -105,8 +107,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 17, "Missing the original Pools and farm prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 19, "Missing the original Pools, farm and return prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -167,8 +169,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 9, "Missing the nine original farm objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 10, "Missing the original farm and return objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -189,9 +191,9 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
@@ -894,6 +896,29 @@ Creature* FindOwnedCartActor(LootPlayer& player, uint32 entry)
     return result;
 }
 
+void FinishOwnedCartRoute(Map& map, LootPlayer& pupil, Creature& startCart, Creature& startYak)
+{
+    ObjectGuid const cartGuid = startCart.GetGUID();
+    ObjectGuid const yakGuid = startYak.GetGUID();
+    Creature* cart = &startCart;
+    Creature* yak = &startYak;
+    for (uint32 elapsed = 0; elapsed < 360000 && (cart || yak); elapsed += 50)
+    {
+        if (yak)
+        {
+            yak->Unit::Update(50);
+            yak->AI()->UpdateAI(50);
+        }
+        if (cart)
+            cart->Unit::Update(50);
+        map.MoveAllCreaturesInMoveList();
+        map.RemoveAllObjectsInRemoveList();
+        cart = map.GetCreature(cartGuid);
+        yak = map.GetCreature(yakGuid);
+    }
+    Require(!pupil.GetVehicleBase() && !cart && !yak, "The owned cart did not dismount and remove both actors at the route end");
+}
+
 void CheckLivelihoodCart(Map& map, LootPlayer& pupil, Teacher& aysa)
 {
     if (pupil.GetQuestStatus(Livelihood) == QUEST_STATUS_NONE)
@@ -949,11 +974,21 @@ void CheckLivelihoodCart(Map& map, LootPlayer& pupil, Teacher& aysa)
     map.RemoveAllObjectsInRemoveList();
     Require(!map.GetCreature(rejectedCartGuid) && !map.GetCreature(rejectedYakGuid), "A failed native join left the cart or its yak behind");
     std::cout << "PASS duplicate click suppression, failed native boarding cleanup and an independent retry" << std::endl;
+    Require(!pupil.GetQuestObjectiveData(Livelihood, CartTender), "Incomplete rides marked the optional Singing Pools journey");
+    pupil.GetSession()->HandleSpellClick(use);
+    Creature* retryCart = FindOwnedCartActor(pupil, 57208);
+    Creature* retryYak = FindOwnedCartActor(pupil, 57207);
+    Require(retryCart && retryYak, "The original tender did not start a subsequent full ride");
+    Tick(pupil, 2000);
+    FinishOwnedCartRoute(map, pupil, *retryCart, *retryYak);
+    auto const& last = sScriptSystemMgr->GetPointMoveList(57207).back();
+    Require(pupil.GetExactDist(Position(last.fX, last.fY, last.fZ)) < 8.0f && pupil.GetQuestObjectiveData(Livelihood, CartTender) == 1,
+        "The Singing Pools carriage did not reach the original endpoint or record the actual ride");
 #endif
     MoveGilneasPlayer(pupil, ji.GetPosition());
     RewardQuest(pupil, ji, Livelihood);
     Require(pupil.IsQuestRewarded(Livelihood), "Ji rejected the optional route after leaving the carriage");
-    std::cout << "PASS original cart tender boarding, early exit and actual Ji turn-in with optional travel" << std::endl;
+    std::cout << "PASS original cart tender boarding, early exit, optional full ride and actual Ji turn-in" << std::endl;
 #ifndef SINGING_POOLS_CART_BASELINE
     struct OtherCart
     {
@@ -989,6 +1024,18 @@ void CheckLivelihoodCart(Map& map, LootPlayer& pupil, Teacher& aysa)
             activeYak->AI()->UpdateAI(300);
         map.RemoveAllObjectsInRemoveList();
         Require(!map.GetCreature(sharedCartGuid) && !map.GetCreature(sharedYakGuid), "Leaving a shared route left its actors");
+        if (route.Tender == 57741)
+        {
+            MoveGilneasPlayer(pupil, other.GetPosition());
+            pupil.GetSession()->HandleSpellClick(use);
+            sharedCart = FindOwnedCartActor(pupil, 57208);
+            sharedYak = FindOwnedCartActor(pupil, route.Yak);
+            Require(sharedCart && sharedYak, "The wreck tender did not admit a retry after early dismount");
+            Tick(pupil, 2000);
+            FinishOwnedCartRoute(map, pupil, *sharedCart, *sharedYak);
+            auto const& last = sScriptSystemMgr->GetPointMoveList(route.Yak).back();
+            Require(pupil.GetExactDist(Position(last.fX, last.fY, last.fZ)) < 8.0f, "The wreck tender did not reach the last original point");
+        }
     }
     std::cout << "PASS native boarding, route start and ownership cleanup for the other two cart tenders" << std::endl;
 #endif
@@ -1161,6 +1208,40 @@ void AdvanceWugouScene(Teacher& shu, uint32 duration)
     }
 }
 
+void CheckTempleCart(Map& map, LootPlayer& pupil, Teacher& ji)
+{
+    if (pupil.GetQuestStatus(SpiritAndBody) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, ji, SpiritAndBody);
+    Require(pupil.GetQuestStatus(SpiritAndBody) == QUEST_STATUS_COMPLETE && !pupil.GetQuestObjectiveData(SpiritAndBody, 59497),
+        "The original cart option became a prerequisite for walking to Shang Xi");
+    Teacher tender(map, FarmCartSpawn, 59497);
+    MoveGilneasPlayer(pupil, tender.GetPosition());
+    WorldPackets::Spells::SpellClick use{WorldPacket(CMSG_SPELL_CLICK)};
+    use.SpellClickUnitGuid = tender.GetGUID();
+    pupil.GetSession()->HandleSpellClick(use);
+    Creature* cart = FindOwnedCartActor(pupil, 57208);
+    Creature* yak = FindOwnedCartActor(pupil, 59499);
+    Require(cart && yak && cart->GetVehicleKit(), "The Temple route did not create an owned cart and yak");
+    Tick(pupil, 2000);
+    Require(cart->GetVehicleKit()->GetPassenger(0) == &pupil, "The Temple route did not take its scheduled rider");
+    FinishOwnedCartRoute(map, pupil, *cart, *yak);
+    auto const& last = sScriptSystemMgr->GetPointMoveList(59499).back();
+    std::cout << "CASE Temple cart arrived at Y=" << pupil.GetPositionY() << " optional=" << pupil.GetQuestObjectiveData(SpiritAndBody, 59497) << std::endl;
+    Require(pupil.GetExactDist(Position(last.fX, last.fY, last.fZ)) < 8.0f && pupil.GetQuestObjectiveData(SpiritAndBody, 59497) == 1,
+        "The Temple cart did not reach its original endpoint or record the optional objective");
+    Teacher shang(map, ShangTempleSpawn, 54786);
+    MoveGilneasPlayer(pupil, shang.GetPosition());
+    uint32 const choice = PoolRewardChoice(pupil, SpiritAndBody);
+    RewardQuest(pupil, shang, SpiritAndBody, choice);
+    map.RemoveAllObjectsInRemoveList();
+    Require(pupil.IsQuestRewarded(SpiritAndBody) && pupil.GetItemCount(choice) == 1 && !pupil.HasAura(104017) &&
+        pupil.GetSummonList(55558)->empty() && pupil.GetSummonList(60916)->empty(), "Shang Xi's reward did not clear both companions");
+    if (pupil.GetQuestStatus(MorningBreeze) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, shang, MorningBreeze);
+    Require(pupil.GetQuestStatus(MorningBreeze) != QUEST_STATUS_NONE, "Shang Xi did not open Morning Breeze Village");
+    std::cout << "PASS full Temple cart, optional credit, native Shang Xi reward, both companions removed and Morning Breeze admission" << std::endl;
+}
+
 void CheckWugou(Map& map, LootPlayer& pupil, LootPlayer& visitor, Teacher& ji)
 {
     Teacher shu(map, DaiLoShuSpawn, DaiLoShu);
@@ -1223,6 +1304,7 @@ void CheckWugou(Map& map, LootPlayer& pupil, LootPlayer& visitor, Teacher& ji)
     RewardQuest(pupil, ji, NotInTheFace);
     Require(pupil.IsQuestRewarded(NotInTheFace), "Ji did not reward the original Shu and Wugou objectives");
     std::cout << "PASS exact Shu option, original Shu movement and Wugou hit, missing actor, abandonment, concurrent request, owned spirits and Ji reward" << std::endl;
+    CheckTempleCart(map, pupil, ji);
 #endif
 }
 
