@@ -1,0 +1,5 @@
+# A Vision of the Past kartes atzīme
+
+Abas `26320` fokusa rindas atsaucās uz punktu `(-13, -381)`, taču rindu kartes lauki norādīja uz Westfall. Darba Deadmines fokuss `301550/106562` atrodas pie `(-15.855, -382.979)` mapē `36`. Atbilstošais 26972 klienta katalogs kartes lapu `756` sasaista ar Deadmines `1581`. Abām fokusa rindām atjaunota `36/756` karte, pirmais stāvs un vīzijas mērķa indekss `0`. [Migrācija](../../sql/updates/world/2026_11_26_26_westfall_vision_dungeon_marker.sql)
+
+`-VisionQuestPOI` sākotnējā zondē atveidoja nepareizo karti. Pēc migrācijas parastais kartes ielādētājs atgrieza abas Deadmines fokusa rindas ar sākotnējām koordinātām un Marshal nodošanas rindu Westfall. Darba datubāze sakrita ar pārbaudīto datu izlasi. Darba serveris sasniedza gatavību, korekti apstājās un neierakstīja jaunus DBErrors, avārijas vai brīdinājumus. Marķiera attēlojums klientā paliek jāpārbauda. [Pārbaudes arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-level-quest-map-markers/manifest.json)

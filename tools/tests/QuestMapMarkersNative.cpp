@@ -27,6 +27,26 @@ void CheckMapMarkers()
     std::cout << "CASE all three live quest 50319 marker points loaded at the inclusive upper bound\n";
 #endif
 
+#ifdef CHECK_VISION_QUEST_POI
+    auto map = sWorldMapAreaStore.LookupEntry(756);
+    Require(map && map->MapID == 36 && map->AreaID == 1581, "The matching client map catalog must identify the Deadmines page");
+    auto markers = sQuestDataStore->GetQuestPOIVector(26320);
+    Require(markers && markers->size() == 4, "The native Vision map blobs must be present");
+    uint32 dungeon = 0;
+    uint32 returnToMarshal = 0;
+    for (auto const& marker : *markers)
+    {
+        if (marker.points.size() != 1)
+            continue;
+        auto const& point = marker.points.front();
+        if (point.X == -13 && point.Y == -381 && marker.MapID == 36 && marker.WorldMapAreaID == 756 && marker.Floor == 1 && marker.ObjectiveIndex == 0)
+            ++dungeon;
+        if (point.X == -10509 && point.Y == 1045 && marker.MapID == 0 && marker.WorldMapAreaID == 39 && marker.ObjectiveIndex == -1)
+            ++returnToMarshal;
+    }
+    Require(dungeon == 2 && returnToMarshal == 1, "The focus belongs on Deadmines floor one and the return marker belongs in Westfall");
+    std::cout << "CASE both Vision focus blobs lead to the Deadmines, and the Marshal marker stays in Westfall\n";
+#endif
 
 }
 }
