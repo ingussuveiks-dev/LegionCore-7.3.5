@@ -1,0 +1,5 @@
+# Veco 1.–20. līmeņa testa būvējumu tīrīšana
+
+No 12 iepriekšējo kvestu labojumu darbvietām izņemti 22 aizstāti pasaules servera izpildfaili un linker kartes. To kopējais failu izmērs bija 2 595 894 577 baiti, un C: brīvā vieta tīrīšanas laikā palielinājās par 1 745 899 520 baitiem. Pārbaudīti 1 084 iepriekš arhivētie faili un visu dzēšanas mērķu kontrolsummas. Katras darbvietas procesi pārbaudīti tieši pirms dzēšanas. [Dzēšanas saraksts](../../build-extractors/bin/Release/fixed/2026-11-26-old-level-testservers/cleanup-deleted.ndjson)
+
+Pēc tīrīšanas visas 15 pārbaudītās darba servera bināro failu, konfigurāciju un žurnālu kontrolsummas sakrita. Aktīvajā avāriju mapē failu nebija. Saglabāti jaunākie atkopšanas būvējumi un atsevišķām klienta pārbaudēm paturētās Kezan, Forest Ettin un teleportēšanās kopijas. Tīrīšanas saraksta SHA-256 ir `4DFCD87D3AEF5EB04384C0A0AB7D246179BBF4B5846910506B60E31DCDBDDDBA`. [Tīrīšanas rezultāts](../../build-extractors/bin/Release/fixed/2026-11-26-old-level-testservers/cleanup-result.json)
