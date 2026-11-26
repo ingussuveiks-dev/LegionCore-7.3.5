@@ -3471,25 +3471,26 @@ public:
     };
 };
 
+namespace
+{
+constexpr uint32 WindTempleMap = 860;
+constexpr uint32 AysaWindEscort = 55744;
+constexpr uint32 AysaWindSummon = 104571;
+constexpr int32 FirstWindWaypoint = 2;
+constexpr int32 SecondWindWaypoint = 7;
+}
+
 class AreaTrigger_at_wind_temple_entrance : public AreaTriggerScript
 {
     public:
         AreaTrigger_at_wind_temple_entrance() : AreaTriggerScript("AreaTrigger_at_wind_temple_entrance")
         {}
 
-        enum spell
+        bool OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool enter) override
         {
-            SUMMON_SPELL    = 104571,
-        };
-
-        bool OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool enter)
-        {
-            if (player->GetQuestStatus(QUST_DAFENG_SPIRIT_OF_AIR) == QUEST_STATUS_INCOMPLETE && !player->HasAura(SUMMON_SPELL))
-            {
-                player->CastSpell(player, SUMMON_SPELL, true);
-                //if (Creature* aysa = player->SummonCreature(55744, 665.60f, 4220.66f, 201.93f, 1.93f, TEMPSUMMON_MANUAL_DESPAWN, 0, player->GetGUID()))
-                //    aysa->AI()->SetGUID(player->GetGUID());
-            }
+            if (enter && player->IsAlive() && player->GetMapId() == WindTempleMap && player->IsInAreaTriggerRadius(trigger) &&
+                player->GetQuestStatus(QUST_DAFENG_SPIRIT_OF_AIR) == QUEST_STATUS_INCOMPLETE && !player->HasAura(AysaWindSummon))
+                player->CastSpell(player, AysaWindSummon, true);
 
             return true;
         }
@@ -3520,20 +3521,30 @@ class mob_aysa_wind_temple_escort : public CreatureScript
             me->SetReactState(REACT_PASSIVE);
         }
 
-        void SetGUID(ObjectGuid const& guid, int32)
+        void IsSummonedBy(Unit* summoner) override
         {
-            playerGuid = guid;
-        }
+            Player* owner = summoner->ToPlayer();
+            if (!owner || me->GetMapId() != WindTempleMap || owner->GetQuestStatus(QUST_DAFENG_SPIRIT_OF_AIR) != QUEST_STATUS_INCOMPLETE)
+                return;
 
-        void IsSummonedBy(Unit* summoner)
-        {
+            _attempt = owner->GetQuestCancellationReceipt(QUST_DAFENG_SPIRIT_OF_AIR);
+            if (!_attempt)
+                return;
             me->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
             playerGuid = summoner->GetGUID();
             events.RescheduleEvent(EVENT_1, 1000);
         }
 
-        void DoAction(int32 const /*param*/)
+        void DoAction(int32 waypoint) override
         {
+            if (_waitingAt != waypoint || !_attempt || _attempt->load(std::memory_order_acquire))
+                return;
+
+            Player* owner = ObjectAccessor::GetPlayer(*me, playerGuid);
+            if (!owner || !owner->IsAlive() || !me->InSamePhase(owner))
+                return;
+
+            _waitingAt = 0;
             SetEscortPaused(false);
         }
 
@@ -3541,19 +3552,18 @@ class mob_aysa_wind_temple_escort : public CreatureScript
         {
             switch (waypointId)
             {
-                case 2:
+                case FirstWindWaypoint:
                     sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1, playerGuid);
+                    _waitingAt = FirstWindWaypoint;
                     SetEscortPaused(true);
                     me->SetFacingTo(2.38f);
                     break;
-                case 7:
+                case SecondWindWaypoint:
                     sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, playerGuid);
+                    _waitingAt = SecondWindWaypoint;
                     SetEscortPaused(true);
-                    // cast 104612 on owner
                     break;
                 case 11:
-                    //if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
-                    //    player->KilledMonsterCredit(55666);
                     me->DespawnOrUnsummon(5000);
                     break;
                 default:
@@ -3563,6 +3573,17 @@ class mob_aysa_wind_temple_escort : public CreatureScript
 
         void UpdateAI(uint32 diff)
         {
+            if (_attempt && _attempt->load(std::memory_order_acquire))
+            {
+                if (Player* owner = ObjectAccessor::GetPlayer(*me, playerGuid))
+                {
+                    auto const& escorts = *owner->GetSummonList(AysaWindEscort);
+                    if (escorts.size() == 1 && escorts.front() == me->GetGUID())
+                        owner->RemoveAurasDueToSpell(AysaWindSummon);
+                }
+                me->DespawnOrUnsummon();
+                return;
+            }
             npc_escortAI::UpdateAI(diff);
             events.Update(diff);
 
@@ -3580,6 +3601,10 @@ class mob_aysa_wind_temple_escort : public CreatureScript
                 }
             }
         }
+
+    private:
+        int32 _waitingAt = 0;
+        std::shared_ptr<QuestCancellationReceipt const> _attempt;
     };
     
     CreatureAI* GetAI(Creature* creature) const
@@ -3634,8 +3659,22 @@ public:
                 }else
                 {
                     me->CastSpell(me, SPELL_OFFTIME, true);
-                    if (Creature* aysa = me->FindNearestCreature(55744, 200.0f, true))
-                        aysa->AI()->DoAction(1);
+                    int32 waypoint = 0;
+                    if (me->GetMapId() == WindTempleMap)
+                    {
+                        if (me->GetDBTableGUIDLow() == 245023)
+                            waypoint = FirstWindWaypoint;
+                        else if (me->GetDBTableGUIDLow() == 245026)
+                            waypoint = SecondWindWaypoint;
+                    }
+                    if (waypoint)
+                    {
+                        std::list<Creature*> escorts;
+                        me->GetAliveCreatureListWithEntryInGrid(escorts, AysaWindEscort, 60.0f);
+                        for (Creature* escort : escorts)
+                            if (escort->ToTempSummon() && !escort->IsDespawn())
+                                escort->AI()->DoAction(waypoint);
+                    }
                 }
 
                 if (GameObject* g = me->GetMap()->GetGameObject(goWinder))

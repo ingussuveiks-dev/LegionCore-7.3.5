@@ -216,7 +216,7 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
         "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,244904,244986,245027,245583)"
-        " OR (map=860 AND id IN(55601,55632,55633))");
+        " OR (map=860 AND id IN(55601,55632,55633,55665))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
@@ -229,7 +229,9 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=105306");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55592,55632,55633,55744)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
-        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))");
+        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))"
+        " OR (SourceTypeOrReferenceId=23 AND SourceGroup=5736 AND SourceEntry=4)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry=4");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
         "WHERE spell_id IN (103069,103070,103077,103116,105306,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
@@ -275,6 +277,7 @@ void LoadPools()
     sQuestDataStore->LoadCreatureInvolvedRelations();
     sQuestDataStore->LoadGameobjectQuestRelations();
     sSmartScriptMgr->LoadSmartAIFromDB();
+    sObjectMgr->LoadPhaseDefinitions();
     if (WorldDatabase.Query("SELECT 1 FROM conditions LIMIT 1"))
         sConditionMgr->LoadConditions();
     sAreaTriggerDataStore->LoadAreaTriggerScripts();
@@ -640,7 +643,7 @@ void CheckBell()
     for (uint32 spawn : VirmenSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    if (auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE id IN(55601,55632,55633)"))
+    if (auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE id IN(55601,55632,55633,55665)"))
         do
         {
             uint32 spawn = spawns->Fetch()[0].GetUInt32();
@@ -1322,21 +1325,100 @@ void CheckVillageSupplies(Map& map, LootPlayer& pupil, Teacher& ji)
 #endif
 }
 
+ObjectGuid EnterDafengTemple(LootPlayer& player)
+{
+    AreaTriggerEntry const* entrance = sAreaTriggerStore.LookupEntry(AirTempleEntrance);
+    Require(entrance && entrance->ContinentID == 860, "The native Wind Temple entrance is missing");
+    MoveGilneasPlayer(player, {entrance->Pos.X, entrance->Pos.Y, entrance->Pos.Z});
+    WorldPackets::Misc::AreaTrigger entering{WorldPacket(CMSG_AREA_TRIGGER)};
+    entering.AreaTriggerID = AirTempleEntrance;
+    entering.Entered = true;
+    player.GetSession()->HandleAreaTrigger(entering);
+    Tick(player, 1000);
+    auto const& summons = *player.GetSummonList(55744);
+    Require(player.HasAura(104571) && summons.size() == 1, "The real entrance did not summon Aysa for her accepted quest");
+    return summons.front();
+}
+
+void CheckDafengEscort(Map& map, LootPlayer& pupil, LootPlayer& second, Teacher& giver)
+{
+    Creature* firstAysa = ObjectAccessor::GetCreature(pupil, EnterDafengTemple(pupil));
+    Creature* secondAysa = ObjectAccessor::GetCreature(second, EnterDafengTemple(second));
+    Require(firstAysa && secondAysa && firstAysa != secondAysa, "The two players did not receive separate escorts");
+    auto* firstEscort = dynamic_cast<npc_escortAI*>(firstAysa->AI());
+    auto* secondEscort = dynamic_cast<npc_escortAI*>(secondAysa->AI());
+    Require(firstEscort && secondEscort, "Aysa lost her native escort implementation");
+    auto tick = [&]()
+    {
+        for (Creature* actor : {firstAysa, secondAysa})
+        {
+            actor->Unit::Update(25);
+            actor->AI()->UpdateAI(25);
+        }
+        map.MoveAllCreaturesInMoveList();
+    };
+    for (uint32 time = 0; time < 30000 && !(firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && secondEscort->HasEscortState(STATE_ESCORT_PAUSED)); time += 25)
+        tick();
+    Require(firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && secondEscort->HasEscortState(STATE_ESCORT_PAUSED),
+        "Both owned Aysa escorts did not reach the first original wind gate");
+    PlacedQuestObject firstWindObject(map, 102720, 209685);
+    PlacedQuestObject secondWindObject(map, 102721, 209685);
+    Teacher firstWind(map, 245023, 55665);
+    Teacher secondWind(map, 245026, 55665);
+    bool const startedActive = firstWind.HasAura(104333);
+    firstWind.AI()->UpdateAI(8000);
+    if (!firstWind.HasAura(104333))
+        firstWind.AI()->UpdateAI(8000);
+    std::list<Creature*> nearby;
+    firstWind.GetCreatureListWithEntryInGrid(nearby, 55744, 200.0f);
+    std::cout << "CASE first wind active before=" << startedActive << " after=" << firstWind.HasAura(104333)
+        << " nearby escorts=" << nearby.size() << " paused=" << firstEscort->HasEscortState(STATE_ESCORT_PAUSED)
+        << ',' << secondEscort->HasEscortState(STATE_ESCORT_PAUSED) << std::endl;
+#ifdef SINGING_POOLS_WIND_ESCORT_BASELINE
+    Require(firstWind.HasAura(104333) && (firstEscort->HasEscortState(STATE_ESCORT_PAUSED) || secondEscort->HasEscortState(STATE_ESCORT_PAUSED)),
+        "Neither the shared wind cue nor its missing escort release reproduced");
+    std::cout << "EXPECTED_BROKEN at least one private Aysa escort remained paused after the shared wind cue" << std::endl;
+#else
+    Require(!firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && !secondEscort->HasEscortState(STATE_ESCORT_PAUSED), "The first native wind cue left a private escort paused");
+    for (uint32 time = 0; time < 30000 && !(firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && secondEscort->HasEscortState(STATE_ESCORT_PAUSED)); time += 25)
+        tick();
+    Require(firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && secondEscort->HasEscortState(STATE_ESCORT_PAUSED), "Both escorts did not reach the second original wind gate");
+    firstWind.AI()->UpdateAI(8000);
+    firstWind.AI()->UpdateAI(8000);
+    Require(firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && secondEscort->HasEscortState(STATE_ESCORT_PAUSED), "The first wind cue released an escort at the second gate");
+    secondWind.AI()->UpdateAI(8000);
+    Require(!firstEscort->HasEscortState(STATE_ESCORT_PAUSED) && !secondEscort->HasEscortState(STATE_ESCORT_PAUSED), "The second wind did not release both eligible escorts");
+    Position const end{544.198f, 4315.19f, 212.232f};
+    for (uint32 time = 0; time < 30000 && (firstAysa->GetExactDist(end) > 3.0f || secondAysa->GetExactDist(end) > 3.0f); time += 25)
+        tick();
+    Require(firstAysa->GetExactDist(end) <= 3.0f && secondAysa->GetExactDist(end) <= 3.0f, "Both escorts did not reach the original final waypoint");
+    Require(!pupil.GetQuestObjectiveData(DafengQuest, DafengCredit) && !second.GetQuestObjectiveData(DafengQuest, DafengCredit),
+        "Escort completion substituted for locating Dafeng");
+    ObjectGuid const original = secondAysa->GetGUID();
+    AbandonSupply(second, DafengQuest);
+    secondAysa->AI()->UpdateAI(25);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(original) && !second.HasAura(104571), "Abandoning the quest kept its Aysa companion or entrance aura");
+    MoveGilneasPlayer(second, giver.GetPosition());
+    AcceptQuest(second, giver, DafengQuest);
+    Require(EnterDafengTemple(second) != original, "A new accepted attempt did not receive its own escort");
+    std::cout << "PASS both private Aysa escorts wait for the matching wind cues and reach the last actual waypoint" << std::endl;
+#endif
+}
+
 void CheckDafeng(Map& map, LootPlayer& pupil, Teacher& aysa)
 {
     MoveGilneasPlayer(pupil, aysa.GetPosition());
     if (pupil.GetQuestStatus(DafengQuest) == QUEST_STATUS_NONE)
         AcceptQuest(pupil, aysa, DafengQuest);
     Require(pupil.GetQuestStatus(DafengQuest) == QUEST_STATUS_INCOMPLETE, "Aysa did not offer the original Chamber of Whispers journey");
-    AreaTriggerEntry const* entrance = sAreaTriggerStore.LookupEntry(AirTempleEntrance);
-    Require(entrance && entrance->ContinentID == 860, "The native Wind Temple entrance is missing");
-    MoveGilneasPlayer(pupil, {entrance->Pos.X, entrance->Pos.Y, entrance->Pos.Z});
-    WorldPackets::Misc::AreaTrigger entering{WorldPacket(CMSG_AREA_TRIGGER)};
-    entering.AreaTriggerID = AirTempleEntrance;
-    entering.Entered = true;
-    pupil.GetSession()->HandleAreaTrigger(entering);
-    Tick(pupil, 1000);
-    Require(pupil.HasAura(104571) && pupil.GetSummonList(55744)->size() == 1, "The real entrance did not summon Aysa for her accepted quest");
+#ifndef SINGING_POOLS_WIND_ESCORT_BASELINE
+    WorldPackets::Misc::AreaTrigger remoteExit{WorldPacket(CMSG_AREA_TRIGGER)};
+    remoteExit.AreaTriggerID = AirTempleEntrance;
+    pupil.GetSession()->HandleAreaTrigger(remoteExit);
+    Tick(pupil, 250);
+    Require(!pupil.HasAura(104571) && pupil.GetSummonList(55744)->empty(), "A remote exit packet summoned Aysa");
+#endif
 
     Teacher dafeng(map, DafengSpawn, Dafeng);
     LootPlayer second(SupplySession(), map, 2978502, aysa.GetPosition());
@@ -1346,6 +1428,7 @@ void CheckDafeng(Map& map, LootPlayer& pupil, Teacher& aysa)
     second.SetRewardedQuest(BalancedPerspective);
     AcceptQuest(second, aysa, DafengQuest);
     Require(second.GetQuestStatus(DafengQuest) == QUEST_STATUS_INCOMPLETE, "Aysa's same route did not admit a second player");
+    CheckDafengEscort(map, pupil, second, aysa);
     MoveGilneasPlayer(second, dafeng.GetPosition());
     dafeng.AI()->UpdateAI(4100);
     Require(!pupil.GetQuestObjectiveData(DafengQuest, DafengCredit), "An eligible player at the remote entrance received Dafeng credit");
