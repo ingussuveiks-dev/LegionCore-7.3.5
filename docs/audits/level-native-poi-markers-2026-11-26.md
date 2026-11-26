@@ -6,4 +6,6 @@ Sākotnējā zonde atveidoja visas 34 trūkstošās grupas. Labotais `-LegacyQue
 
 Pēc darba migrācijas šajā izlasē palika `24460`, kas ir atslēgts, un pagaidu `REUSE ME` ieraksts `24661`. Atbilstoša punkta kopuma klienta datos vēl trūkst `3092`, `26520`, `31035`, `32470`, `32471`, `41016`, `47251`, `47252`, `47430` un `47895`. Kartes attēlojums un pilna visu kvestu izspēle klientā paliek atvērta.
 
+Pēc šīs atlases `3092` atzīme atjaunota no īstā Lanka Farshot darba novietojuma Camp Narache. Serverī pārbaudīta arī kvesta pieņemšana un nodošana. Izlasē paliek deviņi citi ieraksti bez pārbaudītām koordinātām līdzās abiem vēsturiskajiem ierakstiem. [Etched Note audits](etched-note-marker-2026-11-26.md)
+
 Ar kontrolsummām arhivēti 197 pārbaudes un datu faili. Saglabātas arī 64 statiskās atlases ievades kontrolsummas. Izņemti 142 pagaidu faili un vecāks atkopšanas būvējums, kopā 3 832 013 995 baiti. Saglabāta viena iepriekšējā EXE/MAP versija. [Arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-level-quest-map-markers/manifest.json) · [Jaunākā statiskā atlase](../../build-extractors/bin/Release/fixed/2026-11-26-level-quest-map-markers/final-survey/summary.json)

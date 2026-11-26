@@ -390,3 +390,5 @@ Izlabota augstākā kvesta ID punktu ielāde, kas izlaida visas trīs `50319` at
 No 26972 klienta datiem atjaunoti 56 precīzi punkti 13 kvestiem. Atrastie desmit ieraksti bez droši atbilstošām koordinātām dokumentēti atsevišķi. Atkārtoti izgāja 36 artefaktu ceļu kartes datu pārbaude. [Kartes punktu audits](level-native-poi-markers-2026-11-26.md)
 
 Jaunākajā darba datu atlasē ir 5 459 ieraksti, tostarp 4 865 ieslēgti un 594 atslēgti. Visi 174 sasaistītie skriptu nosaukumi atrasti darba EXE `14298250F380C8F055F811DAEC9F56649A5F947DC925329252CFFB5468068FBB`. Statiskā atlase un aprakstītās servera zondes apliecina konkrētos datu un uzvedības ceļus. Visu 4 865 kvestu pilna izspēle WoW klientā joprojām ir atvērta. [Jaunākā darba atlase](../../build-extractors/bin/Release/fixed/2026-11-26-level-quest-map-markers/final-survey/summary.json)
+
+`Etched Note` pārbaudīta pieņemšana pēc iepriekšējās atlīdzības, atmešana, jauna pieņemšana un nodošana pie Lanka Farshot. No viņa faktiskā Camp Narache novietojuma atjaunota trūkstošā kartes atzīme. [Etched Note audits](etched-note-marker-2026-11-26.md)
