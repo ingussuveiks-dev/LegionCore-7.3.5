@@ -3975,6 +3975,10 @@ void Spell::preparePetCast(SpellCastTargets const* targets, Unit* target, Unit* 
         pet->ToCreature()->AddCreatureSpellCooldown(m_spellInfo->Id);
 
         target = m_targets.GetUnitTarget();
+        // CheckPetCast resolves the commanded target. Use the same visual
+        // selection as a normal cast before emitting start, go or channel data.
+        if (!m_SpellVisual)
+            m_SpellVisual = m_spellInfo->GetSpellXSpellVisualId(m_caster, target ? target : m_caster);
 
         //10% chance to play special pet attack talk, else growl
         //actually this only seems to happen on special spells, fire shield for imp, torment for voidwalker, but it's stupid to check every spell
