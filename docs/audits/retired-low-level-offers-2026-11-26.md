@@ -1,0 +1,7 @@
+# Divi novecojuši kvestu piedāvājumi
+
+`Armed and Ready` `325` pieder 4.0.3a izņemtajai Morbent Fel ķēdei. Grimand Elmore `1416` vēl bija piedāvājuma saite, lai gan tās saņēmējs Sven Yorgen `311` Legion pasaulē nav novietots. `Warrior Training` `8329` pie Magistrix Erona `15278` veda pie nenovietotā Delios Silverblade `43010`. Delios mācību kvesti tika izņemti versijā 7.0.3. Darba aktīvajā kvesta žurnālā un atlīdzību tabulā abiem ID nebija ierakstu. [Armed and Ready vēsture](https://warcraft.wiki.gg/wiki/Armed_and_Ready_%28Classic%29) · [Delios Silverblade vēsture](https://warcraft.wiki.gg/wiki/Delios_Silverblade)
+
+Izņemtas abas novecojušās piedāvājuma saites. Izolētajā datubāzē pirms migrācijas bija `2/2/2/5` piedāvājumi, saņēmēji, veidnes un pārējie pārbaudītie piedāvājumi. Divās migrācijas izpildēs un darba nolasījumā iegūts `0/2/2/5`. [Migrācija](../../sql/updates/world/2026_11_26_37_retired_low_level_quest_offers.sql) · [Lasāmais tests](../../tools/tests/Test-RetiredLowLevelQuestOffers.ps1)
+
+Izolētais un darba serveris ar EXE SHA-256 `79AFE6388DE916BDFF2B46D2579B69936265152A07B9E79E585A5C0D5DF4C411` korekti palaidās un apstājās. Darba updater migrācijas SHA-1 ir `EC6E5E5E5AE656D64F898D5F358586D61F45EAAA`. Palaišanas reizēs nav jaunu avāriju, DBErrors vai servera brīdinājumu. Klienta kvesta piedāvājuma attēlojums paliek atsevišķa pārbaude. [Arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-retired-low-level-offers/manifest.json)
