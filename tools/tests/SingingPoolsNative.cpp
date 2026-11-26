@@ -14,6 +14,7 @@
 #include "ScriptedEscortAI.h"
 #include "ScriptSystem.h"
 #include "ScriptsData.h"
+#include "SmartScriptMgr.h"
 #include "SpellPackets.h"
 #include "Vehicle.h"
 
@@ -76,6 +77,11 @@ constexpr uint32 DirectSolution = 29779;
 constexpr uint32 DoNoEvil = 29780;
 constexpr uint32 StrongBone = 29782;
 constexpr uint32 BalancedPerspective = 29784;
+constexpr uint32 DafengQuest = 29785;
+constexpr uint32 Dafeng = 55592;
+constexpr uint32 DafengSpawn = 245027;
+constexpr uint32 DafengCredit = 55666;
+constexpr uint32 AirTempleEntrance = 7041;
 constexpr uint32 FeFeng = 55632;
 constexpr uint32 Firethief = 55633;
 constexpr uint32 RukRuk = 55634;
@@ -112,7 +118,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 27, "Missing the Singing Pools, farm and village quests");
+    Require(rows && rows->GetRowCount() == 28, "Missing the Singing Pools, farm and village quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -126,8 +132,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 27, "Missing the original Pools, farm and village prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 28, "Missing the original Pools, farm and village prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -188,8 +194,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29779,29780,29781,29783) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 16, "Missing the original farm and village objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29779,29780,29781,29783,29785) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 17, "Missing the original farm and village objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -201,7 +207,7 @@ void LoadPools()
     quests[StrongWood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[RaucousRousing]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[NotInTheFace]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
-    for (uint32 quest : {RewrittenWisdoms, DirectSolution, DoNoEvil})
+    for (uint32 quest : {RewrittenWisdoms, DirectSolution, DoNoEvil, DafengQuest})
         quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     for (uint32 quest : {ToolsOfEnemy, Warning, StrongStone})
         quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
@@ -209,28 +215,29 @@ void LoadPools()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
-        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,244904,244986,245583)"
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,244904,244986,245027,245583)"
         " OR (map=860 AND id IN(55601,55632,55633))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts WHERE entryorguid=55592 AND source_type=0");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gameobject_queststarter AS SELECT * FROM legion_world.gameobject_queststarter WHERE quest=29782");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=105306");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55632,55633)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55592,55632,55633,55744)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
         "WHERE spell_id IN (103069,103070,103077,103116,105306,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
-        "WHERE entry IN (6986,6987,6988,6990,6991,7012)");
+        "WHERE entry IN (6986,6987,6988,6990,6991,7012,7041)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
         "WHERE npc_entry IN (54993,57710,57741,59497)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint "
-        "WHERE entry IN (55685,57207,57742,59499)");
+        "WHERE entry IN (55685,55744,57207,57742,59499)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
         "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,104012,108590,115904,116695,116696,117054,117057)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
@@ -267,6 +274,7 @@ void LoadPools()
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
     sQuestDataStore->LoadGameobjectQuestRelations();
+    sSmartScriptMgr->LoadSmartAIFromDB();
     if (WorldDatabase.Query("SELECT 1 FROM conditions LIMIT 1"))
         sConditionMgr->LoadConditions();
     sAreaTriggerDataStore->LoadAreaTriggerScripts();
@@ -626,7 +634,7 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn, RukRukSpawn, RidgeAysaSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn, RukRukSpawn, RidgeAysaSpawn, DafengSpawn})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : VirmenSpawns)
@@ -1314,6 +1322,45 @@ void CheckVillageSupplies(Map& map, LootPlayer& pupil, Teacher& ji)
 #endif
 }
 
+void CheckDafeng(Map& map, LootPlayer& pupil, Teacher& aysa)
+{
+    MoveGilneasPlayer(pupil, aysa.GetPosition());
+    if (pupil.GetQuestStatus(DafengQuest) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, aysa, DafengQuest);
+    Require(pupil.GetQuestStatus(DafengQuest) == QUEST_STATUS_INCOMPLETE, "Aysa did not offer the original Chamber of Whispers journey");
+    AreaTriggerEntry const* entrance = sAreaTriggerStore.LookupEntry(AirTempleEntrance);
+    Require(entrance && entrance->ContinentID == 860, "The native Wind Temple entrance is missing");
+    MoveGilneasPlayer(pupil, {entrance->Pos.X, entrance->Pos.Y, entrance->Pos.Z});
+    WorldPackets::Misc::AreaTrigger entering{WorldPacket(CMSG_AREA_TRIGGER)};
+    entering.AreaTriggerID = AirTempleEntrance;
+    entering.Entered = true;
+    pupil.GetSession()->HandleAreaTrigger(entering);
+    Tick(pupil, 1000);
+    Require(pupil.HasAura(104571) && pupil.GetSummonList(55744)->size() == 1, "The real entrance did not summon Aysa for her accepted quest");
+
+    Teacher dafeng(map, DafengSpawn, Dafeng);
+    LootPlayer second(SupplySession(), map, 2978502, aysa.GetPosition());
+    LootPlayer passerby(SupplySession(), map, 2978503, dafeng.GetPosition());
+    PreparePoolHunter(second);
+    PreparePoolHunter(passerby);
+    second.SetRewardedQuest(BalancedPerspective);
+    AcceptQuest(second, aysa, DafengQuest);
+    Require(second.GetQuestStatus(DafengQuest) == QUEST_STATUS_INCOMPLETE, "Aysa's same route did not admit a second player");
+    MoveGilneasPlayer(second, dafeng.GetPosition());
+    dafeng.AI()->UpdateAI(4100);
+    Require(!pupil.GetQuestObjectiveData(DafengQuest, DafengCredit), "An eligible player at the remote entrance received Dafeng credit");
+    MoveGilneasPlayer(pupil, dafeng.GetPosition());
+    dafeng.AI()->UpdateAI(4100);
+    Require(pupil.GetQuestObjectiveData(DafengQuest, DafengCredit) == 1 && second.GetQuestObjectiveData(DafengQuest, DafengCredit) == 1 &&
+        !passerby.GetQuestObjectiveData(DafengQuest, DafengCredit), "The original Dafeng event failed to individually credit eligible nearby arrivals");
+    dafeng.AI()->UpdateAI(4100);
+    Require(pupil.GetQuestObjectiveData(DafengQuest, DafengCredit) == 1, "The next native Dafeng event duplicated the arrival credit");
+    RewardQuest(pupil, dafeng, DafengQuest);
+    RewardQuest(second, dafeng, DafengQuest);
+    Require(pupil.IsQuestRewarded(DafengQuest) && second.IsQuestRewarded(DafengQuest), "Dafeng rejected his genuine arrival credit at turn-in");
+    std::cout << "PASS original entrance and Aysa summon, remote and unaccepted players refused, two genuine arrivals and native Dafeng rewards" << std::endl;
+}
+
 void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
 {
     MoveGilneasPlayer(pupil, ji.GetPosition());
@@ -1448,6 +1495,7 @@ void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
     RewardQuest(pupil, aysa, BalancedPerspective);
     Require(pupil.IsQuestRewarded(BalancedPerspective), "The original Aysa placement did not accept Balanced Perspective");
     std::cout << "PASS all 28 Ruffian placements, Ji companion, 20 player/pet Ruffian and Firethief defeats, Ruk-Ruk and Aysa's turn-in" << std::endl;
+    CheckDafeng(map, pupil, aysa);
 #endif
 }
 

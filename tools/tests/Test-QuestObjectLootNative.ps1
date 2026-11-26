@@ -664,7 +664,7 @@ if($HuoOfferings -or $HuoOfferingsBaseline){
 }
 if($singingPoolsProbe){
  $probeSource="$PSScriptRoot/SingingPoolsNative.cpp"
- [IO.File]::WriteAllText("$out/NativeSingingPools.inc",$query+' " WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)"')
+ [IO.File]::WriteAllText("$out/NativeSingingPools.inc",$query+' " WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($ChallengerFires -or $ChallengerFiresBaseline){
