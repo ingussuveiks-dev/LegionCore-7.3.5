@@ -4495,17 +4495,21 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                     return nullptr;
     }
 
-    Player* shangXiEscortOwner = nullptr;
-    if (entry == 56159 && spellId == 105333)
+    Player* shangXiOwner = nullptr;
+    uint32 shangXiQuest = 0;
+    bool const plantingStave = entry == 56686 && spellId == 106623;
+    if ((entry == 56159 && spellId == 105333) || plantingStave)
     {
-        shangXiEscortOwner = summoner ? summoner->ToPlayer() : nullptr;
-        if (!shangXiEscortOwner || GetId() != 860 || !properties || properties->ID != 3276 ||
-            !shangXiEscortOwner->IsAlive() || shangXiEscortOwner->GetQuestStatus(29787) != QUEST_STATUS_INCOMPLETE)
+        shangXiOwner = summoner ? summoner->ToPlayer() : nullptr;
+        shangXiQuest = plantingStave ? 29790 : 29787;
+        if (!shangXiOwner || GetId() != 860 || !properties || properties->ID != (plantingStave ? 3283 : 3276) ||
+            !shangXiOwner->IsAlive() || shangXiOwner->GetQuestStatus(shangXiQuest) != QUEST_STATUS_INCOMPLETE ||
+            (plantingStave && shangXiOwner->GetAreaId() != 5832))
             return nullptr;
 
-        for (ObjectGuid const& guid : *shangXiEscortOwner->GetSummonList(entry))
-            if (Creature const* escort = GetCreature(guid))
-                if (escort->IsAlive() && escort->HasQuestObjectScope() && !escort->IsQuestObjectExpired())
+        for (ObjectGuid const& guid : *shangXiOwner->GetSummonList(entry))
+            if (Creature const* actor = GetCreature(guid))
+                if (actor->IsAlive() && actor->HasQuestObjectScope() && !actor->IsQuestObjectExpired())
                     return nullptr;
     }
 
@@ -4795,8 +4799,8 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     if (stewOwner)
         stewOwner->BindQuestObject(WestfallStew::Quest, summon);
 
-    if (shangXiEscortOwner)
-        shangXiEscortOwner->BindQuestObject(29787, summon);
+    if (shangXiOwner)
+        shangXiOwner->BindQuestObject(shangXiQuest, summon);
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);

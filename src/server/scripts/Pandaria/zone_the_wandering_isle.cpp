@@ -4154,6 +4154,8 @@ class mob_master_shang_xi_thousand_staff : public CreatureScript
 
         EventMap _events;
         ObjectGuid playerGuid;
+        ObjectGuid plantedStaff;
+        uint8 plantAttempts = 0;
         enum events
         {
             EVENT_DESPAWN   = 1,
@@ -4168,24 +4170,40 @@ class mob_master_shang_xi_thousand_staff : public CreatureScript
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetWalk(true);
-            playerGuid.Clear();
         }
 
-        void IsSummonedBy(Unit* summoner)
+        void IsSummonedBy(Unit* summoner) override
         {
-            me->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
+            Player* player = summoner->ToPlayer();
+            if (!player || !me->HasQuestObjectScope() || me->IsQuestObjectExpired() ||
+                player->GetQuestStatus(QUEST_PASSING_WISDOM) != QUEST_STATUS_INCOMPLETE)
+            {
+                me->DespawnOrUnsummon(1);
+                return;
+            }
             playerGuid = summoner->GetGUID();
             
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
             _events.RescheduleEvent(EVENT_1, 12000);
         }
 
-         void MovementInform(uint32 moveType, uint32 waypointId)
+        void JustSummoned(Creature* summon) override
         {
+            if (summon->GetEntry() == 57874 && summon->GetQuestObjectScope().lock() == me->GetQuestObjectScope().lock())
+                plantedStaff = summon->GetGUID();
+        }
+
+        void MovementInform(uint32 moveType, uint32 waypointId) override
+        {
+            if (moveType != POINT_MOTION_TYPE || !me->movespline->Finalized() || me->movespline->ComputeProgress() != 1.0f)
+                return;
             switch (waypointId)
             {
                 case 2:
                     _events.RescheduleEvent(EVENT_3, 12000);
+                    break;
+                case 3:
+                    _events.RescheduleEvent(EVENT_4, 15000);
                     break;
                 default:
                     break;
@@ -4196,6 +4214,12 @@ class mob_master_shang_xi_thousand_staff : public CreatureScript
 
         void UpdateAI(uint32 diff)
         {
+            Player* owner = ObjectAccessor::GetPlayer(*me, playerGuid);
+            if (!owner || me->IsQuestObjectExpired() || owner->GetQuestStatus(QUEST_PASSING_WISDOM) != QUEST_STATUS_INCOMPLETE)
+            {
+                me->DespawnOrUnsummon(1);
+                return;
+            }
             _events.Update(diff);
 
             while (uint32 eventId = _events.ExecuteEvent())
@@ -4214,34 +4238,51 @@ class mob_master_shang_xi_thousand_staff : public CreatureScript
                     case EVENT_3:
                         me->GetMotionMaster()->MovePoint(3, 874.205f, 4464.75f, 241.3819f);
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_3);
-                        _events.RescheduleEvent(EVENT_4, 15000);
                         break;
                     case EVENT_4:
-                         me->RemoveAurasDueToSpell(126160);
-                         me->CastSpell(me, 128850, true);       //summon stuff
-                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_4);
-                         _events.RescheduleEvent(EVENT_5, 15000);
+                        if (++plantAttempts == 1)
+                            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_4);
+                        me->RemoveAurasDueToSpell(126160);
+                        me->CastSpell(me, 128850, true);
+                        _events.RescheduleEvent(EVENT_5, 15000);
                         break;
                     case EVENT_5:
+                        if (!GetPlantedStaff())
+                        {
+                            if (plantAttempts < 3)
+                                _events.RescheduleEvent(EVENT_4, 1000);
+                            else
+                            {
+                                TC_LOG_WARN("scripts", "Passing Wisdom: Master Shang Xi %u could not plant his staff", me->GetGUIDLow());
+                                owner->RemoveAurasDueToSpell(106623);
+                                me->DespawnOrUnsummon(1);
+                            }
+                            break;
+                        }
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_5);
                         me->SetByteValue(UNIT_FIELD_BYTES_1, 0, UNIT_STAND_STATE_KNEEL);
                         me->CastSpell(me, 128851, true);
                         me->CastSpell(me, 109336, true);
-                        me->CastSpell(me, 106625, true);
                         _events.RescheduleEvent(EVENT_DESPAWN, 10000);
                         break;
                     case EVENT_DESPAWN:
                     {
-                        me->DespawnOrUnsummon();
-                        if (Player* owner = ObjectAccessor::GetPlayer(*me, playerGuid))
-                        {
-                            owner->CastSpell(owner, 106625, true);
-                            //owner->KilledMonsterCredit(56688);
-                        }
+                        if (GetPlantedStaff() && owner->IsAlive() && me->IsWithinDistInMap(owner, 45.0f) && me->IsWithinLOSInMap(owner))
+                            me->CastSpell(owner, 106625, true);
+                        else
+                            owner->RemoveAurasDueToSpell(106623);
+                        me->DespawnOrUnsummon(1);
                         break;
                     }
                 }
             }
+        }
+
+    private:
+        Creature* GetPlantedStaff() const
+        {
+            Creature* staff = me->GetMap()->GetCreature(plantedStaff);
+            return staff && staff->IsAlive() && !staff->IsQuestObjectExpired() ? staff : nullptr;
         }
     };
     
