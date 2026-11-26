@@ -10,6 +10,7 @@
 #include "CreatureTextMgr.h"
 #include "CellImpl.h"
 #include "GridNotifiers.h"
+#include "MapManager.h"
 #include "MiscPackets.h"
 #include "MoveSpline.h"
 #include "MovementPackets.h"
@@ -25,6 +26,13 @@
 
 void AddSC_go_scripts();
 void AddSC_WanderingIsland();
+
+#if defined(WANDERING_ISLE_DEPARTURE) && !defined(WANDERING_ISLE_DEPARTURE_BASELINE)
+struct FarewellMapsTag { using Type = std::vector<Map*> MapManager::*; friend Type Access(FarewellMapsTag); };
+template struct FixtureAccess<FarewellMapsTag, &MapManager::i_maps>;
+struct FarewellSessionsTag { using Type = SessionMap World::*; friend Type Access(FarewellSessionsTag); };
+template struct FixtureAccess<FarewellSessionsTag, &World::m_sessions>;
+#endif
 
 namespace
 {
@@ -134,7 +142,11 @@ void LoadSouth()
 #ifdef WANDERING_ISLE_DEPARTURE
         ",245548,245583,245631"
 #endif
-        ") OR id IN (55946,55999,56007,56360))");
+        ") OR id IN (55946,55999,56007,56360))"
+#if defined(WANDERING_ISLE_DEPARTURE) && !defined(WANDERING_ISLE_DEPARTURE_BASELINE)
+        " OR (map=0 AND id=60566 AND guid=338298) OR (map=1 AND id=60570 AND guid=189104)"
+#endif
+    );
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_target_position AS SELECT * FROM legion_world.spell_target_position WHERE id IN (117497,117597)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry IN (60729,57742)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry IN (1,2,3)");
@@ -175,6 +187,9 @@ void LoadSouth()
 #endif
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
+#if defined(WANDERING_ISLE_DEPARTURE) && !defined(WANDERING_ISLE_DEPARTURE_BASELINE)
+    sObjectMgr->LoadInstanceTemplate();
+#endif
     sObjectMgr->LoadItemTemplateAddon();
     sObjectMgr->LoadPlayerInfo();
     sObjectMgr->LoadPageTexts();
@@ -221,7 +236,7 @@ Creature& FindSouthActor(Map& map, uint32 spawn)
     auto data = sObjectMgr->GetCreatureData(spawn);
     Require(data, "An original forest actor has no world placement");
     map.LoadGrid(data->posX, data->posY);
-    auto actor = map.GetCreature(ObjectGuid::Create<HighGuid::Creature>(860, data->id, spawn));
+    auto actor = map.GetCreature(ObjectGuid::Create<HighGuid::Creature>(map.GetId(), data->id, spawn));
     Require(actor && actor->GetDBTableGUIDLow() == spawn && actor->IsAlive(), "Could not load the original forest actor");
     return *actor;
 }
@@ -713,6 +728,54 @@ void CheckHealing(LootPlayer& pupil, LootPlayer& visitor)
 #endif
 
 #ifdef WANDERING_ISLE_DEPARTURE
+#if defined(WANDERING_ISLE_DEPARTURE) && !defined(WANDERING_ISLE_DEPARTURE_BASELINE)
+void FinishCapitalArrival(LootPlayer& player, uint32 mapId, uint32 receiver)
+{
+    auto& sessions = sWorld->*Access(FarewellSessionsTag{});
+    WorldSession* session = player.GetSession();
+    uint32 account = session->GetAccountId();
+    Require(sessions.try_emplace(account, WorldSessionPtr(session, [](WorldSession*) {})).second,
+        "The isolated map transfer already had that fixture account");
+    try
+    {
+        player.Update(100);
+        Map* destination = sMapMgr->FindBaseMap(mapId);
+        Require(destination && player.GetTeleportMap() == destination && session->GetMap() == destination, "Movie completion did not issue the real capital transfer");
+        WorldPackets::Movement::WorldPortResponse arrival{WorldPacket(CMSG_WORLD_PORT_RESPONSE)};
+        session->HandleWorldPortResponse(arrival);
+        Require(player.GetMap() == destination && player.IsInWorld() && !player.HasPendingTeleport(), "Native capital transfer acknowledgement did not enter the map");
+        auto& actor = FindSouthActor(*destination, receiver);
+        RewardSouth(player, actor, NewFate);
+    }
+    catch (...)
+    {
+        sessions.erase(account);
+        throw;
+    }
+    sessions.erase(account);
+}
+
+struct FarewellMapFixture
+{
+    Map eastern{0, 300, 0, DIFFICULTY_NONE};
+    Map kalimdor{1, 300, 0, DIFFICULTY_NONE};
+    std::vector<Map*>& maps = sMapMgr->*Access(FarewellMapsTag{});
+
+    FarewellMapFixture()
+    {
+        Require(!maps.at(0) && !maps.at(1), "The isolated capital maps must be unowned");
+        maps[0] = &eastern;
+        maps[1] = &kalimdor;
+    }
+
+    ~FarewellMapFixture()
+    {
+        maps[0] = nullptr;
+        maps[1] = nullptr;
+    }
+};
+#endif
+
 void CheckDeparture(LootPlayer& pupil, LootPlayer& visitor)
 {
     auto& map = *pupil.GetMap();
@@ -819,12 +882,20 @@ void CheckDeparture(LootPlayer& pupil, LootPlayer& visitor)
     finish(pupil, 1, RACE_PANDAREN_ALLIANCE, 0, 9, 668);
     finish(visitor, 0, RACE_PANDAREN_HORDE, 1, 363, 669);
     std::cout << "PASS both native faction selections, stale complete recovery, one objective, matching capital, home and languages\n";
+#if defined(WANDERING_ISLE_DEPARTURE) && !defined(WANDERING_ISLE_DEPARTURE_BASELINE)
+    FinishCapitalArrival(pupil, 0, 338298);
+    FinishCapitalArrival(visitor, 1, 189104);
+    std::cout << "PASS native capital transfer acknowledgements and original capital quest turn-ins\n";
+#endif
 #endif
 }
 #endif
 
 void CheckSouth()
 {
+#if defined(WANDERING_ISLE_DEPARTURE) && !defined(WANDERING_ISLE_DEPARTURE_BASELINE)
+    FarewellMapFixture capitals;
+#endif
     Map map(860, 305, 0, DIFFICULTY_NONE);
     auto& korga = FindSouthActor(map, 245264);
     auto& wei = FindSouthActor(map, 245266);
@@ -887,8 +958,8 @@ int main(int argc, char** argv)
     {
         InitializeNative(argc, argv);
         opcodeTable.Initialize();
-        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{860, {}}, {975, {}}});
-        MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{860, {}}, {975, {}}});
+        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{0, {}}, {1, {}}, {860, {}}, {975, {}}});
+        MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{0, {}}, {1, {}}, {860, {}}, {975, {}}});
         LoadGameObjectModelList(argv[2]);
         LoginDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("LoginDatabaseInfo", ""), 1, 1);
         CharacterDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("CharacterDatabaseInfo", ""), 1, 1);
