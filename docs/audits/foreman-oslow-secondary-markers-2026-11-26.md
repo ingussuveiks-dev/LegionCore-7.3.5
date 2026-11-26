@@ -1,0 +1,9 @@
+# Saving Foreman Oslow 26520 papildu kartes punkti
+
+TrinityCore Legion izdrukās `22522`, `22908` un `24330` ir vieni un tie paši pieci punkti. Trīs trūkstošās koordinātas sakrīt pēc Redridge kartes lapas `36`, stāva `0`, mērķa un `SpawnTrackingID`. Atjaunots punkts `430276` pie `(-9113, -2064)`, `430277` pie `(-9112, -2353)` un `431539` pie `(-8833, -1937)`. Esošās Oslow glābšanas un Solomon nodošanas koordinātas sakrita ar izdrukām. [TrinityCore Legion dati](https://github.com/TrinityCore/TrinityCore/blob/7f2b7dc9c2/sql/old/7/world/01_2018_02_19/2017_07_02_00_world.sql) · [Migrācija](../../sql/updates/world/2026_11_26_38_foreman_oslow_secondary_markers.sql)
+
+Kvestam bija arī divas vecas `21154` definīcijas ar tiem pašiem `Idx1`, bet citu kartes karogu un bez `SpawnTrackingID`. Servera ielādētājs punktus piesaista pēc kvesta ID un `Idx1`, tāpēc agrākā definīcija dublēja glābšanas punktu. Atjaunojot otro punktu bez definīciju labojuma, arī vecais nodošanas marķieris izmantotu glābšanas koordinātu. Migrācija izņem šīs divas precīzi identificētās rindas.
+
+`Test-QuestObjectLootNative.ps1 -OslowQuestPOI` pirms migrācijas reproducēja septiņas definīcijas, četras tukšas grupas un dublētu glābšanas punktu. Pēc migrācijas ielādējās tieši piecas grupas ar pārbaudītām koordinātām, mērķiem un `SpawnTrackingID`. Divas izolētās migrācijas izpildes deva vienādus datus, un darba tabulu nolasījums sakrita. [Servera zonde](../../tools/tests/QuestMapMarkersNative.cpp)
+
+Izolētais un darba serveris sasniedza gatavību un korekti apstājās ar EXE SHA-256 `79AFE6388DE916BDFF2B46D2579B69936265152A07B9E79E585A5C0D5DF4C411`. Darba updater ierakstīja SHA-1 `EFAA4DF4B67A5812F92EB773706FCCDBA024E41F`. Gala pārbaudēs nebija jaunu avāriju, DBErrors vai servera brīdinājumu. Kartes attēlojums spēles klientā vēl jāpārbauda. [Pārbaudes arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-low-level-closeout/manifest.json)

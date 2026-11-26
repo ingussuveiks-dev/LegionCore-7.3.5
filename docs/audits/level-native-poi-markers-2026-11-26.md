@@ -17,3 +17,5 @@ Ar kontrolsummām arhivēti 197 pārbaudes un datu faili. Saglabātas arī 64 st
 `47430` trīs novērošanas punktu un Makkaw nodošanas koordinātas atjaunotas no faktiskajiem Moonglade novietojumiem. Native datu ielāde un darba servera palaišana pārbaudīta. [Moonkin Monitoring kartes audits](moonkin-monitoring-markers-2026-11-26.md)
 
 `32470` un `32471` pilsētu kartēs tagad ir katras frakcijas saņēmējs, lāde un viens faktiskais jostas tirgotājs. Servera zonde pārbaudīja visus sešus punktus un atbilstošo mērķu ID. [Light Camera Action audits](light-camera-action-markers-2026-11-26.md)
+
+`26520` papildu `2/3/4` koordinātas atrastas trīs Legion izdrukās. Pēc atjaunošanas serveris ielādē piecas grupas un vairs nepiesaista punktus divām aizstātām definīcijām. [Oslow papildu kartes audits](foreman-oslow-secondary-markers-2026-11-26.md)

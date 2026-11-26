@@ -106,21 +106,48 @@ void CheckMapMarkers()
     auto redridge = sWorldMapAreaStore.LookupEntry(36);
     Require(redridge && redridge->MapID == 0 && redridge->AreaID == 44, "The matching client catalog must identify the Redridge page");
     auto oslow = sQuestDataStore->GetQuestPOIVector(26520);
-    Require(oslow, "The two primary Foreman Oslow marker groups must load");
-    bool rescue = false;
-    bool turnIn = false;
-    for (auto const& marker : *oslow)
+    Require(oslow, "The Foreman Oslow marker groups must load");
+    if (sConfigMgr->GetBoolDefault("NativeOslowMarkers.ExpectMissing", false))
     {
-        if (marker.MapID != 0 || marker.WorldMapAreaID != 36 || marker.Floor != 0 || marker.points.size() != 1)
-            continue;
-        auto const& point = marker.points.front();
-        if (marker.ObjectiveIndex == 0 && marker.QuestObjectiveID == 252598 && point.X == -9274 && point.Y == -2288)
-            rescue = true;
-        if (marker.ObjectiveIndex == -1 && point.X == -9219 && point.Y == -2222)
-            turnIn = true;
+        Require(oslow->size() == 7 && std::count_if(oslow->begin(), oslow->end(), [](QuestPOI const& marker)
+        {
+            return marker.points.empty();
+        }) == 4, "The original state must reproduce the missing coordinate groups and obsolete aliases");
+        std::cout << "EXPECTED_BROKEN four empty Redridge blobs and a duplicated rescue point\n";
     }
-    Require(rescue && turnIn, "Redridge markers must lead to Foreman Oslow and Magistrate Solomon");
-    std::cout << "CASE the actual Foreman and Magistrate marker points loaded on the Redridge page\n";
+    else
+    {
+        struct Marker
+        {
+            int32 Blob;
+            int32 Objective;
+            int32 QuestObjective;
+            int32 Actor;
+            int32 Tracking;
+            QuestPOIPoint Point;
+        };
+        Marker const expected[] = {
+            {0, -1, 0, 0, 11915, {-9219, -2222}},
+            {0, 0, 252598, 341, 431377, {-9274, -2288}},
+            {1, 0, 252598, 341, 430276, {-9113, -2064}},
+            {2, 0, 252598, 341, 430277, {-9112, -2353}},
+            {0, 32, 0, 0, 431539, {-8833, -1937}},
+        };
+        Require(oslow->size() == std::size(expected), "Only the five Legion groups may be published");
+        for (auto const& target : expected)
+        {
+            auto matches = std::count_if(oslow->begin(), oslow->end(), [&target](QuestPOI const& marker)
+            {
+                return marker.MapID == 0 && marker.WorldMapAreaID == 36 && marker.Floor == 0 && marker.Flags == 0 &&
+                    marker.BlobIndex == target.Blob && marker.ObjectiveIndex == target.Objective &&
+                    marker.QuestObjectiveID == target.QuestObjective && marker.QuestObjectID == target.Actor &&
+                    marker.SpawnTrackingID == target.Tracking && marker.points.size() == 1 &&
+                    marker.points.front().X == target.Point.X && marker.points.front().Y == target.Point.Y;
+            });
+            Require(matches == 1, "Each original Redridge coordinate must retain its tracking ID and objective");
+        }
+        std::cout << "CASE all five Legion Redridge marker groups loaded with their original tracking IDs\n";
+    }
 #endif
 
 #ifdef CHECK_MOONKIN_QUEST_POI
