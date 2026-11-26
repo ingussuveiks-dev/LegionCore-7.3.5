@@ -82,6 +82,14 @@ constexpr uint32 Dafeng = 55592;
 constexpr uint32 DafengSpawn = 245027;
 constexpr uint32 DafengCredit = 55666;
 constexpr uint32 AirTempleEntrance = 7041;
+constexpr uint32 BattleForSkies = 29786;
+constexpr uint32 WorthyOfPassing = 29787;
+constexpr uint32 ZhaoRen = 55786;
+constexpr uint32 ZhaoRenSpawn = 245042;
+constexpr uint32 CavernAysaSpawn = 245040;
+constexpr uint32 ElderYunSpawn = 245051;
+constexpr uint32 RocketLauncher = 64507;
+constexpr uint32 LauncherSpawns[] = {245044,245045,245046,245048,245049,245050};
 constexpr uint32 FeFeng = 55632;
 constexpr uint32 Firethief = 55633;
 constexpr uint32 RukRuk = 55634;
@@ -118,7 +126,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 28, "Missing the Singing Pools, farm and village quests");
+    Require(rows && rows->GetRowCount() == 31, "Missing the Singing Pools, farm and village quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -132,8 +140,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 28, "Missing the original Pools, farm and village prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29665,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785,29786,29787)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 31, "Missing the original Pools, farm and village prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -194,8 +202,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29779,29780,29781,29783,29785) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 17, "Missing the original farm and village objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29779,29780,29781,29783,29785,29786,29787) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 19, "Missing the original farm and village objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -207,7 +215,7 @@ void LoadPools()
     quests[StrongWood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[RaucousRousing]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[NotInTheFace]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
-    for (uint32 quest : {RewrittenWisdoms, DirectSolution, DoNoEvil, DafengQuest})
+    for (uint32 quest : {RewrittenWisdoms, DirectSolution, DoNoEvil, DafengQuest, BattleForSkies, WorthyOfPassing})
         quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     for (uint32 quest : {ToolsOfEnemy, Warning, StrongStone})
         quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
@@ -215,29 +223,29 @@ void LoadPools()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
-        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,244904,244986,245027,245583)"
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,244904,244986,245027,245040,245042,245043,245044,245045,245046,245048,245049,245050,245051,245583)"
         " OR (map=860 AND id IN(55601,55632,55633,55665))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785,29786,29787)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785,29786,29787)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts WHERE entryorguid=55592 AND source_type=0");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gameobject_queststarter AS SELECT * FROM legion_world.gameobject_queststarter WHERE quest=29782");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=105306");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55592,55632,55633,55744)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
-        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))"
-        " OR (SourceTypeOrReferenceId=23 AND SourceGroup=5736 AND SourceEntry=4)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry=4");
+        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,104855,118027,125969))"
+        " OR (SourceTypeOrReferenceId=23 AND SourceGroup=5736 AND SourceEntry BETWEEN 4 AND 6)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry BETWEEN 4 AND 6");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
         "WHERE spell_id IN (103069,103070,103077,103116,105306,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
         "WHERE entry IN (6986,6987,6988,6990,6991,7012,7041)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
-        "WHERE npc_entry IN (54993,57710,57741,59497)");
+        "WHERE npc_entry IN (54993,57710,57741,59497,64507)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint "
         "WHERE entry IN (55685,55744,57207,57742,59499)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
@@ -257,7 +265,7 @@ void LoadPools()
         "Missing the original reed, pearl or farm loot rows");
     auto& creatureLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalCreatureLoot = creatureLoot;
-    creatureLoot += " WHERE Entry IN (55483,55601,55632,55633,55634,60411)";
+    creatureLoot += " WHERE Entry IN (55483,55601,55632,55633,55634,55786,60411)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     creatureLoot = originalCreatureLoot;
     Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
@@ -528,6 +536,8 @@ struct PoolPet : LootPet
     {
         m_ControlledByPlayer = true;
         setFaction(owner.getFaction());
+        SetPhaseMask(owner.GetPhaseMask(), false);
+        SetPhaseId(owner.GetPhases(), false);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     }
 };
@@ -637,10 +647,13 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn, RukRukSpawn, RidgeAysaSpawn, DafengSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn, RukRukSpawn, RidgeAysaSpawn, DafengSpawn, CavernAysaSpawn, ZhaoRenSpawn, ElderYunSpawn, 245043u})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : VirmenSpawns)
+        if (auto data = sObjectMgr->GetCreatureData(spawn))
+            sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+    for (uint32 spawn : LauncherSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     if (auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE id IN(55601,55632,55633,55665)"))
@@ -1406,6 +1419,119 @@ void CheckDafengEscort(Map& map, LootPlayer& pupil, LootPlayer& second, Teacher&
 #endif
 }
 
+void CheckZhaoRen(Map& map)
+{
+    Teacher aysa(map, CavernAysaSpawn, 55595);
+    LootPlayer pupil(SupplySession(), map, 2978601, aysa.GetPosition());
+    PreparePoolHunter(pupil);
+    pupil.SetRewardedQuest(DafengQuest);
+    MoveGilneasPlayer(pupil, aysa.GetPosition());
+    if (pupil.GetQuestStatus(BattleForSkies) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, aysa, BattleForSkies);
+    Require(pupil.GetQuestStatus(BattleForSkies) == QUEST_STATUS_INCOMPLETE, "The cavern Aysa did not offer the original flying serpent encounter");
+    Teacher zhao(map, ZhaoRenSpawn, ZhaoRen);
+    std::vector<std::unique_ptr<Teacher>> launchers;
+    for (uint32 spawn : LauncherSpawns)
+        launchers.push_back(std::make_unique<Teacher>(map, spawn, RocketLauncher));
+    MoveGilneasPlayer(pupil, launchers[1]->GetPosition());
+    Require(zhao.InSamePhase(&pupil) && launchers[1]->InSamePhase(&pupil) && pupil.IsValidAttackTarget(&zhao), "The real airborne encounter was not visible to its quest owner");
+    pupil.DealDamage(&zhao, uint32(zhao.GetMaxHealth()) * 2);
+    Tick(pupil, 100);
+#ifdef SINGING_POOLS_ZHAO_BASELINE
+    Require(!zhao.IsAlive() && pupil.GetQuestObjectiveData(BattleForSkies, ZhaoRen) == 1, "The native airborne one-hit kill and skipped fireworks did not reproduce");
+    std::cout << "EXPECTED_BROKEN airborne Zhao-Ren gave full quest credit without any native rocket hits" << std::endl;
+#else
+    Require(zhao.IsAlive() && !pupil.GetQuestObjectiveData(BattleForSkies, ZhaoRen), "The flying boss could still be defeated before the landed phase");
+    uint64 const startingHealth = zhao.GetHealth();
+    WorldPackets::Spells::SpellClick click{WorldPacket(CMSG_SPELL_CLICK)};
+    click.SpellClickUnitGuid = launchers.back()->GetGUID();
+    pupil.GetSession()->HandleSpellClick(click);
+    Tick(pupil, 200);
+    Require(zhao.GetHealth() == startingHealth && launchers.back()->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK),
+        "A remote firework packet used a real launcher");
+    Teacher ally(map, 245043, 64506);
+    float const initialZ = zhao.GetPositionZ();
+    bool hadFall = false;
+    uint32 acceptedLaunches = 0;
+    for (uint32 elapsed = 0; elapsed < 120000 && !zhao.HasAura(125992); elapsed += 50)
+    {
+        if (elapsed % 250 == 0 && zhao.AI()->GetData(104855))
+        {
+            auto nearest = std::min_element(launchers.begin(), launchers.end(), [&](auto const& left, auto const& right)
+            {
+                return zhao.GetExactDist2d(left.get()) < zhao.GetExactDist2d(right.get());
+            });
+            if ((*nearest)->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK) && zhao.GetExactDist2d(nearest->get()) < 8.0f)
+            {
+                MoveGilneasPlayer(pupil, (*nearest)->GetPosition());
+                click.SpellClickUnitGuid = (*nearest)->GetGUID();
+                pupil.GetSession()->HandleSpellClick(click);
+                if (!(*nearest)->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK))
+                    ++acceptedLaunches;
+            }
+        }
+        Tick(pupil, 50);
+        zhao.Unit::Update(50);
+        zhao.AI()->UpdateAI(50);
+        for (auto const& launcher : launchers)
+        {
+            launcher->Unit::Update(50);
+            launcher->AI()->UpdateAI(50);
+        }
+        hadFall |= zhao.movespline->isFalling();
+        map.MoveAllCreaturesInMoveList();
+    }
+    std::cout << "CASE Zhao-Ren launched=" << acceptedLaunches << " fell=" << hadFall << " stunned=" << zhao.HasAura(125992)
+        << " outOf=" << startingHealth << " remaining=" << zhao.GetHealth() << " initialZ=" << initialZ << " actualZ=" << zhao.GetPositionZ() << std::endl;
+    Require(acceptedLaunches >= 5 && hadFall && zhao.HasAura(125992) && zhao.IsAlive() && zhao.GetPositionZ() < initialZ - 5.0f,
+        "Five real firework contacts never produced the native landed and stunned state");
+    Require(zhao.GetHealth() < startingHealth && zhao.GetHealth() > startingHealth / 2, "The native firework damage was lost or duplicated");
+    Require(!pupil.GetQuestObjectiveData(BattleForSkies, ZhaoRen), "The landed phase awarded quest credit before the boss died");
+
+    LootPlayer nearby(SupplySession(), map, 2978602, aysa.GetPosition());
+    LootPlayer bystander(SupplySession(), map, 2978603, zhao.GetPosition());
+    PreparePoolHunter(nearby);
+    PreparePoolHunter(bystander);
+    nearby.SetRewardedQuest(DafengQuest);
+    MoveGilneasPlayer(nearby, aysa.GetPosition());
+    AcceptQuest(nearby, aysa, BattleForSkies);
+    MoveGilneasPlayer(nearby, zhao.GetPosition());
+    Require(nearby.GetQuestStatus(BattleForSkies) == QUEST_STATUS_INCOMPLETE, "A second eligible player could not join Zhao-Ren");
+    uint64 const landedHealth = zhao.GetHealth();
+    bystander.DealDamage(&zhao, uint32(zhao.GetMaxHealth()) * 2);
+    Require(zhao.GetHealth() == landedHealth, "A player without the quest damaged the landed serpent");
+
+    PoolPet pet(pupil, map);
+    MoveGilneasPlayer(pupil, zhao.GetPosition());
+    map.CreatureRelocation(&pet, zhao.GetPositionX(), zhao.GetPositionY(), zhao.GetPositionZ(), zhao.GetOrientation());
+    map.MoveAllCreaturesInMoveList();
+    Require(pet.IsValidAttackTarget(&zhao), "The native pet could not attack the landed Zhao-Ren");
+    pet.DealDamage(&zhao, uint32(zhao.GetMaxHealth()) * 2);
+    Tick(pupil, 150);
+    Require(!zhao.IsAlive() && pupil.GetQuestObjectiveData(BattleForSkies, ZhaoRen) == 1 && pupil.GetQuestStatus(BattleForSkies) == QUEST_STATUS_COMPLETE,
+        "The landed pet final blow did not give its owner one native credit");
+    Require(nearby.GetQuestObjectiveData(BattleForSkies, ZhaoRen) == 1 && !bystander.GetQuestObjectiveData(BattleForSkies, ZhaoRen),
+        "The original nearby quest credit was lost or given to a player without an attempt");
+    Teacher elder(map, ElderYunSpawn, 55586);
+    MoveGilneasPlayer(pupil, elder.GetPosition());
+    uint32 const choice = PoolRewardChoice(pupil, BattleForSkies);
+    uint32 const priorChoiceCount = pupil.GetItemCount(choice);
+    auto quest = sQuestDataStore->GetQuestTemplate(BattleForSkies);
+    Require(quest->PackageID == 18641 && choice == 74586, "The original cloak is missing from the native reward package");
+    Require(pupil.InSamePhase(&elder) && pupil.CanInteractWithQuestGiver(&elder), "Elder Yun was not accessible after the legitimate pet final blow");
+    Require(pupil.CanRewardQuest(quest, choice, false), "The fresh pupil cannot store the original Zhao-Ren reward");
+    RewardQuest(pupil, elder, BattleForSkies, choice);
+    Require(pupil.IsQuestRewarded(BattleForSkies) && pupil.GetItemCount(choice) == priorChoiceCount + 1,
+        "Elder Yun did not award exactly one original cloak");
+    RewardQuest(pupil, elder, BattleForSkies, choice);
+    Require(pupil.GetItemCount(choice) == priorChoiceCount + 1, "A repeated reward request granted a second cloak");
+    if (pupil.GetQuestStatus(WorthyOfPassing) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, elder, WorthyOfPassing);
+    Require(pupil.GetQuestStatus(WorthyOfPassing) == QUEST_STATUS_INCOMPLETE, "Elder Yun did not offer the next quest after Zhao-Ren");
+    std::cout << "PASS actual fireworks, airborne damage guard, native fall, one pet defeat, Elder Yun reward and next quest" << std::endl;
+#endif
+}
+
 void CheckDafeng(Map& map, LootPlayer& pupil, Teacher& aysa)
 {
     MoveGilneasPlayer(pupil, aysa.GetPosition());
@@ -1442,6 +1568,7 @@ void CheckDafeng(Map& map, LootPlayer& pupil, Teacher& aysa)
     RewardQuest(second, dafeng, DafengQuest);
     Require(pupil.IsQuestRewarded(DafengQuest) && second.IsQuestRewarded(DafengQuest), "Dafeng rejected his genuine arrival credit at turn-in");
     std::cout << "PASS original entrance and Aysa summon, remote and unaccepted players refused, two genuine arrivals and native Dafeng rewards" << std::endl;
+    CheckZhaoRen(map);
 }
 
 void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
