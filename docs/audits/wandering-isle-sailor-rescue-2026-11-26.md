@@ -1,0 +1,11 @@
+# None Left Behind, 29794
+
+Sākotnējā servera pārbaudē spēlētājs varēja paņemt ievainotu jūrnieku no 25 jardu attāluma. Pēc kvesta atmešanas palika aktīva nešanas aura 105520 un tās transportlīdzeklis. Pārbaude ar citu spēlētāju bez kvesta jūrnieku neaizvāca.
+
+Parastais klikšķis uz 55999 tagad pārbauda aktīvu kvestu, sasniedzamību un redzamību. Oriģinālais 105520 ievieto īsto pasažieri 56236 īpašnieka transportlīdzekļa nulles sēdvietā. Šis pasažieris pirms parādīšanās tiek piesaistīts konkrētajam kvesta mēģinājumam. Sākotnējais jūrnieks tiek aizvākts tikai pēc apstiprinātas iekāpšanas. Neveiksmīgam klikšķim ir ierobežots atkārtošanas aiztures laiks. Kvesta atmešana aizvāc pasažieri un noņem nešanas auru.
+
+Nometnes aktieris 56476 reaģē uz parasto spēlētāja tuvošanos ar savu pasažieri. Oriģinālā 117987 trāpījums tiek reģistrēts pirms auras noņemšanas pabeigšanas. Nākamajā aktiera atjaunošanas ciklā ieskaite tiek piešķirta vienreiz pēc trāpījuma, auras un transportlīdzekļa pazušanas, kamēr tas pats mēģinājums vēl ir aktīvs un spēlētājs ir pie nometnes. Atmešana starp trāpījumu un apstiprinājumu neatstāj ieskaiti jaunam mēģinājumam.
+
+Servera testi apstiprināja 22 sākotnējos novietojumus, nederīgu klikšķu noraidīšanu, īstu sēdvietu un pasažieri, atmešanu gan nešanas, gan nodošanas laikā, trīs secīgas ieskaites un atlīdzību pie sākotnējā Ji. Atkārtoti pārbaudīts arī Shang Xi ceļš, tempļa ceremonija, balons un abi privātie meža vārti. Klientā vēl jāapstiprina nešanas attēlojums un mijiedarbība.
+
+Pagaidu un darba `worldserver` sasniedza gatavību un izslēdzās ar statusu 0. Pārbaudītajam darba EXE ir SHA-256 `25242C0770430776671E3BACDEC3F6FAB027A92C699A1870C3C5C39C83F0C48D`. Salīdzinātas gala saistes bibliotēkas, PE izsaukumi un faktiskās datubāzes rindas. Viena lasāmā SQL pārbaude apstājās pie kļūdaina kolonnas nosaukuma un atkārtotā pārbaude izgāja. Nebija jaunu avāriju, DBErrors vai neizskaidrotu servera ierakstu. Ar kontrolsummām saglabāti 274 diagnostikas faili. Izņemti 143 pagaidu faili un vecais EXE/MAP pāris, kopā 5 276 592 046 baiti. Saglabāts tūlīt iepriekšējais pārbaudītais EXE/MAP pāris. [Diagnostika un izņemtie faili](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-sailor-rescue/)

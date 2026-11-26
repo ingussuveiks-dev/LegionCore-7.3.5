@@ -3,8 +3,16 @@
 #undef main
 
 #include "GilneasQuestNative.h"
+#include "ConditionMgr.h"
+#include "CreatureTextMgr.h"
+#include "CellImpl.h"
+#include "GridNotifiers.h"
+#include "ObjectVisitors.hpp"
+#include "SpellPackets.h"
+#include "Vehicle.h"
 
 void AddSC_go_scripts();
+void AddSC_WanderingIsland();
 
 namespace
 {
@@ -14,6 +22,7 @@ constexpr uint32 Wreck = 30589;
 constexpr uint32 Handle = 30590;
 constexpr uint32 Preying = 30591;
 constexpr uint32 EvilFromSeas = 29793;
+constexpr uint32 NoneLeftBehind = 29794;
 constexpr uint32 UrgentNews = 29796;
 constexpr uint32 MedicalSupplies = 29797;
 constexpr uint32 Tiger = 55946;
@@ -21,6 +30,9 @@ constexpr uint32 DarkenedHorror = 56007;
 constexpr uint32 Bamboo = 80806;
 constexpr uint32 Explosives = 74955;
 constexpr uint32 MedicalCrateItem = 74958;
+constexpr uint32 InjuredSource = 55999;
+constexpr uint32 CarriedSailor = 56236;
+constexpr uint32 CarryAura = 105520;
 
 struct SouthPet : LootPet
 {
@@ -39,7 +51,7 @@ void LoadSouth()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingIsleSouth.inc"
     );
-    Require(templates && templates->GetRowCount() == 8, "The southern Wandering Isle quest templates are missing");
+    Require(templates && templates->GetRowCount() == 9, "The southern Wandering Isle quest templates are missing");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -51,8 +63,8 @@ void LoadSouth()
     } while (templates->NextRow());
     auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN (29792,29793,29795,29796,29797,30589,30590,30591)");
-    Require(addons && addons->GetRowCount() == 8, "The original southern prerequisites are missing");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN (29792,29793,29794,29795,29796,29797,30589,30590,30591)");
+    Require(addons && addons->GetRowCount() == 9, "The original southern prerequisites are missing");
     do
     {
         auto fields = addons->Fetch();
@@ -62,8 +74,8 @@ void LoadSouth()
             quest->prevQuests.push_back(quest->PrevQuestID);
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29793,29795,29797,30590,30591)");
-    Require(objectives && objectives->GetRowCount() == 5, "The original forest, bamboo or wreck objectives are missing");
+        "FROM quest_objectives WHERE QuestID IN (29793,29794,29795,29797,30590,30591)");
+    Require(objectives && objectives->GetRowCount() == 6, "The original forest, bamboo or wreck objectives are missing");
     do
     {
         auto row = objectives->Fetch();
@@ -73,16 +85,27 @@ void LoadSouth()
     } while (objectives->NextRow());
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245135,245264,245266,245384,245389) OR id IN (55946,56007))");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (29793,29795,29796,29797,30589,30590,30591)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (29793,29795,29796,29797,30589,30590,30591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245135,245137,245264,245266,245384,245389) OR id IN (55946,55999,56007))");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (29793,29794,29795,29796,29797,30589,30590,30591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (29793,29794,29795,29796,29797,30589,30590,30591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry=55999");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceTypeOrReferenceId=18 AND SourceGroup=55999");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry=55999");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE vehicle_template_accessory AS SELECT * FROM legion_world.vehicle_template_accessory WHERE EntryOrAura=-105520");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=56267 AND quest_start=29794");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
     sObjectMgr->LoadPlayerInfo();
     sObjectMgr->LoadPageTexts();
     sObjectMgr->LoadGameObjectTemplate();
+    sObjectMgr->LoadCreatureTemplateAddons();
     sObjectMgr->LoadCreatures();
+    sObjectMgr->LoadNPCSpellClickSpells();
+    sObjectMgr->LoadVehicleTemplateAccessories();
+    sConditionMgr->LoadConditions();
+    sSpellMgr->LoadSpellAreas();
+    sCreatureTextMgr->LoadCreatureTexts();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
 
@@ -230,6 +253,128 @@ void CheckSouthCombat(LootPlayer& pupil, Creature& giver, uint32 quest, uint32 e
     std::cout << "PASS " << needed << " actual player or pet defeats and original reward for " << quest << '\n';
 }
 
+void CheckRescue(LootPlayer& owner, LootPlayer& visitor, Creature& ji)
+{
+    Map& map = *owner.GetMap();
+    auto rows = WorldDatabase.Query("SELECT guid FROM creature WHERE map=860 AND id=55999 ORDER BY guid");
+    Require(rows && rows->GetRowCount() == 22, "The original injured sailor placements changed");
+    std::vector<uint32> spawns;
+    do
+        spawns.push_back(rows->Fetch()[0].GetUInt32());
+    while (rows->NextRow());
+    auto click = [](LootPlayer& player, Creature& sailor)
+    {
+        WorldPackets::Spells::SpellClick packet{WorldPacket(CMSG_SPELL_CLICK)};
+        packet.SpellClickUnitGuid = sailor.GetGUID();
+        player.GetSession()->HandleSpellClick(packet);
+        Tick(player, 100);
+    };
+    auto carry = [&](Creature& source) -> Creature*
+    {
+        MoveGilneasPlayer(owner, source.GetPosition());
+        click(owner, source);
+        std::list<Creature*> nearby;
+        owner.GetCreatureListWithEntryInGrid(nearby, CarriedSailor, 10.0f);
+        for (Creature* sailor : nearby)
+            if (auto summon = sailor->ToTempSummon(); summon && summon->GetSummonerGUID() == owner.GetGUID())
+                sailor->Unit::Update(100);
+        auto kit = owner.GetVehicleKit();
+        auto passenger = kit ? kit->GetPassenger(0) : nullptr;
+        Require(kit && kit->GetRecAura() == CarryAura && owner.HasAura(CarryAura) && passenger && passenger->GetEntry() == CarriedSailor,
+            "A legitimate click did not produce the native sailor passenger in seat zero");
+        source.AI()->UpdateAI(150);
+        return passenger->ToCreature();
+    };
+
+    AcceptSouth(owner, ji, NoneLeftBehind);
+    auto& first = FindSouthActor(map, spawns[0]);
+    MoveGilneasPlayer(visitor, first.GetPosition());
+    ObjectGuid const firstGuid = first.GetGUID();
+    click(visitor, first);
+    first.AI()->UpdateAI(2500);
+    first.Unit::Update(5100);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!visitor.HasAura(CarryAura), "The native quest condition admitted an ineligible visitor");
+#ifdef WANDERING_ISLE_RESCUE_BASELINE
+    auto dismissed = map.GetCreature(firstGuid);
+    std::cout << "CASE ineligible click left source alive=" << bool(dismissed && dismissed->IsAlive()) << '\n';
+    auto& second = FindSouthActor(map, spawns[1]);
+    Position remote = second.GetPosition();
+    remote.m_positionX += 25.0f;
+    MoveGilneasPlayer(owner, remote);
+    click(owner, second);
+    Require(owner.HasAura(CarryAura) && owner.GetVehicleKit(), "A remote click did not reproduce a carry vehicle in the original implementation");
+    AbandonSupply(owner, NoneLeftBehind);
+    Tick(owner, 500);
+    Require(owner.HasAura(CarryAura) && owner.GetVehicleKit(), "The abandoned native carry no longer left its vehicle aura on the player");
+    owner.RemoveAurasDueToSpell(CarryAura);
+    map.RemoveAllObjectsInRemoveList();
+    std::cout << "EXPECTED_BROKEN a remote click began a carry and abandoning kept the carry vehicle\n";
+#else
+    auto preserved = map.GetCreature(firstGuid);
+    Require(preserved && preserved->IsAlive(), "An ineligible click consumed an unrescued world actor");
+    auto& second = FindSouthActor(map, spawns[1]);
+    Position remote = second.GetPosition();
+    remote.m_positionX += 25.0f;
+    MoveGilneasPlayer(owner, remote);
+    click(owner, second);
+    Require(!owner.HasAura(CarryAura), "A distant click picked up a native sailor");
+    auto passenger = carry(second);
+    ObjectGuid const abandonedPassenger = passenger->GetGUID();
+    Require(passenger->HasQuestObjectScope() && !passenger->CanTargetQuestObject(&visitor), "The carried sailor lacked its owner's accepted scope");
+    AbandonSupply(owner, NoneLeftBehind);
+    map.RemoveAllObjectsInRemoveList();
+    Tick(owner, 500);
+    std::cout << "CASE abandoned carry aura=" << owner.HasAura(CarryAura) << " kit=" << bool(owner.GetVehicleKit())
+        << " old actor=" << bool(map.GetCreature(abandonedPassenger)) << '\n';
+    Require(!map.GetCreature(abandonedPassenger) && !owner.HasAura(CarryAura) && !owner.GetVehicleKit(),
+        "Abandoning kept the old sailor or carry vehicle active");
+    AcceptSouth(owner, ji, NoneLeftBehind);
+
+    auto& controller = FindSouthActor(map, 245137);
+    Require(controller.GetEntry() == 56476, "The original camp rescue controller did not load");
+    auto arriveAtCamp = [&](Creature& sailor)
+    {
+        MoveGilneasPlayer(owner, controller.GetPosition());
+        owner.GetVehicleKit()->RelocatePassengers();
+        map.MoveAllCreaturesInMoveList();
+        Require(sailor.IsWithinDistInMap(&controller, 10.0f), "The native carried passenger did not reach the camp radius");
+        Trinity::AIRelocationNotifier relocation(owner);
+        Trinity::VisitNearbyObject(&owner, owner.GetVisibilityRange(), relocation);
+        Trinity::VisitNearbyObject(&owner, owner.GetVisibilityRange(), relocation);
+    };
+    auto pendingSailor = carry(FindSouthActor(map, spawns[2]));
+    arriveAtCamp(*pendingSailor);
+    AbandonSupply(owner, NoneLeftBehind);
+    controller.Unit::Update(250);
+    Tick(owner, 250);
+    controller.AI()->UpdateAI(250);
+    map.RemoveAllObjectsInRemoveList();
+    AcceptSouth(owner, ji, NoneLeftBehind);
+    Require(!owner.GetQuestObjectiveData(NoneLeftBehind, InjuredSource) && !owner.GetVehicleKit(),
+        "An abandoned camp handoff affected the next accepted rescue attempt");
+
+    for (uint32 index = 0; index < 3; ++index)
+    {
+        auto& source = FindSouthActor(map, spawns[index + 3]);
+        auto sailor = carry(source);
+        Require(owner.GetQuestObjectiveData(NoneLeftBehind, InjuredSource) == int32(index), "Pickup gave delivery credit early");
+        arriveAtCamp(*sailor);
+        controller.Unit::Update(250);
+        Tick(owner, 250);
+        controller.AI()->UpdateAI(250);
+        std::cout << "CASE camp handoff=" << index + 1 << " credit=" << owner.GetQuestObjectiveData(NoneLeftBehind, InjuredSource)
+            << " aura=" << owner.HasAura(CarryAura) << " visibility=" << owner.GetVisibilityRange()
+            << " controller sees=" << controller.canSeeOrDetect(&owner, false, true) << '\n';
+        Require(owner.GetQuestObjectiveData(NoneLeftBehind, InjuredSource) == int32(index + 1) && !owner.HasAura(CarryAura),
+            "A genuine sailor handoff did not credit exactly once and end the carry");
+        map.RemoveAllObjectsInRemoveList();
+    }
+    RewardSouth(owner, ji, NoneLeftBehind);
+    std::cout << "PASS refused foreign and distant casts, abandoned carry cleanup, three actual sailor handoffs and Ji's reward\n";
+#endif
+}
+
 void CheckSouth()
 {
     Map map(860, 305, 0, DIFFICULTY_NONE);
@@ -243,6 +388,7 @@ void CheckSouth()
         player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
         player->SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
         player->setFactionForRace(RACE_PANDAREN_NEUTRAL);
+        player->InitDisplayIds();
         player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
         player->SetLevel(11);
         player->SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 20000);
@@ -268,6 +414,9 @@ void CheckSouth()
     CheckSouthSupplies(pupil, visitor, ji, MedicalSupplies, MedicalCrateItem, 8, 31, false, true);
 #else
     CheckSouthSupplies(pupil, visitor, ji, MedicalSupplies, MedicalCrateItem, 8, 31, false);
+#endif
+#ifdef WANDERING_ISLE_RESCUE
+    CheckRescue(pupil, visitor, ji);
 #endif
 #endif
 }
@@ -296,6 +445,7 @@ int main(int argc, char** argv)
         LoadSouth();
         sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
         AddSC_go_scripts();
+        AddSC_WanderingIsland();
         sScriptMgr->SwapScriptContext(true);
         CheckSouth();
         CharacterDatabase.Close();

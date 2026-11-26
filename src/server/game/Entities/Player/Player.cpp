@@ -20956,34 +20956,39 @@ bool Player::AdoptQuestCancellationReceipt(uint32 questId, std::shared_ptr<Quest
 
 void Player::CancelQuestObjects(uint32 questId)
 {
-    QuestStatusData* status = getQuestStatus(questId);
-    if (!status || !status->ScriptObjects)
-        return;
-    auto scope = std::move(status->ScriptObjects);
-    auto objects = scope->Cancel(); // before despawn callbacks can summon anything
-    // Only access the current map's objects from its update thread. Children
-    // left on another map observe the expired scope before their next AI tick.
-    if (!IsInWorld())
-        return;
-    for (ObjectGuid const& guid : objects)
+    if (QuestStatusData* status = getQuestStatus(questId); status && status->ScriptObjects)
     {
-        if (guid.IsCreature() || guid.IsVehicle())
+        auto scope = std::move(status->ScriptObjects);
+        auto objects = scope->Cancel(); // before despawn callbacks can summon anything
+        // Only access the current map's objects from its update thread. Children
+        // left on another map observe the expired scope before their next AI tick.
+        if (IsInWorld())
         {
-            if (Creature* creature = GetMap()->GetCreature(guid))
+            for (ObjectGuid const& guid : objects)
             {
-                creature->SetVisible(false);
-                creature->DespawnOrUnsummon();
+                if (guid.IsCreature() || guid.IsVehicle())
+                {
+                    if (Creature* creature = GetMap()->GetCreature(guid))
+                    {
+                        creature->SetVisible(false);
+                        creature->DespawnOrUnsummon();
+                    }
+                }
+                else if (guid.IsGameObject())
+                {
+                    if (GameObject* object = GetMap()->GetGameObject(guid))
+                        object->Delete();
+                }
+                else if (guid.IsConversation())
+                    if (Conversation* conversation = ObjectAccessor::GetConversation(*this, guid))
+                        conversation->Remove();
             }
         }
-        else if (guid.IsGameObject())
-        {
-            if (GameObject* object = GetMap()->GetGameObject(guid))
-                object->Delete();
-        }
-        else if (guid.IsConversation())
-            if (Conversation* conversation = ObjectAccessor::GetConversation(*this, guid))
-                conversation->Remove();
     }
+
+    // Mark the passenger for removal before the vehicle's dismount callback can defer it.
+    if (questId == 29794)
+        RemoveAurasDueToSpell(105520);
 }
 
 void Player::ResetNewBloodQuest()

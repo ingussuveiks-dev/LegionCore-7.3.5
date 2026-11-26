@@ -24418,6 +24418,15 @@ bool Unit::HandleSpellClick(Unit* clicker, int8 seatId)
             !clicker->IsWithinLOSInMap(this)))
         return false;
 
+    if (Creature const* sailor = ToCreature(); sailor && GetMapId() == 860 && GetEntry() == 55999 && sailor->GetDBTableGUIDLow())
+    {
+        Player* player = clicker->ToPlayer();
+        if (!player || !player->IsAlive() || !sailor->IsAlive() || player->GetQuestStatus(29794) != QUEST_STATUS_INCOMPLETE ||
+            player->GetVehicle() || player->GetVehicleKit() || !IsWithinDistInMap(player, INTERACTION_DISTANCE) || !player->IsWithinLOSInMap(this) ||
+            !sailor->AI() || !sailor->AI()->GetData(105520))
+            return false;
+    }
+
     bool res = false;
     uint32 spellClickEntry = GetVehicleKit() ? GetVehicleKit()->GetCreatureEntry() : GetEntry();
     SpellClickInfoMapBounds clickPair = sObjectMgr->GetSpellClickInfoMapBounds(spellClickEntry);

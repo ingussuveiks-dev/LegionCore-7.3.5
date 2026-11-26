@@ -364,3 +364,5 @@ Pēc meža vārtu laidiena atkārtotā datu atlasē ir 5 459 ieraksti, 4 865 ies
 Atjaunota kvesta bambusa piekļuve un bambusa un sprāgstvielu tīrīšana pēc atmešanas. Pārbaudīti desmit paņemti bambusi, sešas sprāgstvielas, Makael pāreja un deviņas Pei-Wu tīģeru uzvaras ar spēlētāja un peta ieskaiti. [Dienvidu meža krājumi](wandering-isle-south-supplies-2026-11-26.md)
 
 Pie avārijas vietas pārbaudītas astoņas `Evil from the Seas` uzvaras, `Urgent News` nodošana no Aysa pie Ji, un `Medical Supplies` ieguve un nodošana. Medicīnas saiņu izņemšana pēc atmešanas ir darba datubāzē. [Avārijas vietas medicīnas krājumi](wandering-isle-crash-site-medical-2026-11-26.md)
+
+`None Left Behind` pārbaudīta īsta jūrnieka paņemšana, atmešana nešanas un nodošanas brīdī, trīs atsevišķas nodošanas ieskaites un atlīdzība pie Ji. Darba servera pārbaude apstiprināja jauno laidienu bez jaunām avārijām vai DBErrors. [Ievainoto jūrnieku glābšana](wandering-isle-sailor-rescue-2026-11-26.md)

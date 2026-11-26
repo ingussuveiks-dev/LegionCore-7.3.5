@@ -5152,7 +5152,18 @@ class npc_ji_yuan : public CreatureScript
     }
 };
 
-//56476 Injured Sailor Rescue Controller
+static Creature* GetCarriedSailor(Player& player)
+{
+    Vehicle* vehicle = player.GetVehicleKit();
+    if (!vehicle || vehicle->GetRecAura() != 105520)
+        return nullptr;
+    Unit* passenger = vehicle->GetPassenger(0);
+    TempSummon* sailor = passenger ? passenger->ToTempSummon() : nullptr;
+    return sailor && sailor->GetEntry() == 56236 && sailor->GetSummonerGUID() == player.GetGUID() && sailor->IsAlive() &&
+        sailor->HasQuestObjectScope() && !sailor->IsQuestObjectExpired() ? sailor : nullptr;
+}
+
+// 56476 Injured Sailor Rescue Controller
 class npc_injured_sailor_rescue_controller : public CreatureScript
 {
 public:
@@ -5175,32 +5186,76 @@ public:
 
         npc_injured_sailor_rescue_controllerAI(Creature* creature) : ScriptedAI(creature)
         {
+            SetCanSeeEvenInPassiveMode(true);
         }
 
-        void Reset()
+        void MoveInLineOfSight(Unit* who) override
         {
+            Player* player = who->ToPlayer();
+            if (!player || !player->IsAlive() || player->GetQuestStatus(QUEST_NONE_LEFT_BEHINED) != QUEST_STATUS_INCOMPLETE ||
+                !me->IsWithinDistInMap(player, 10.0f))
+                return;
+            Creature* carried = GetCarriedSailor(*player);
+            if (!carried || carried->GetEntry() != NPC_SAILOR || !me->IsWithinDistInMap(carried, 10.0f))
+                return;
+
+            auto attempt = player->GetQuestCancellationReceipt(QUEST_NONE_LEFT_BEHINED);
+            if (!attempt || attempt->load() || !pendingDeliveries.emplace(player->GetGUID(), Delivery{carried->GetGUID(), attempt, 2500}).second)
+                return;
+            if (me->CastSpell(player, SPELL_CANCEL_INJURED_SAILOR, true) != SPELL_CAST_OK)
+                pendingDeliveries.erase(player->GetGUID());
         }
 
-        void MoveInLineOfSight(Unit* who)
+        void SpellHitTarget(Unit* target, SpellInfo const* spell) override
         {
-           if (!me->IsWithinDistInMap(who, 10.0f))
-               return;
-
-           Vehicle* veh = who->GetVehicle();
-           if (who->GetEntry() != NPC_SAILOR || !veh)
-               return;
-
-           Player* player = veh->GetBase()->ToPlayer();
-           if (!player || player->GetQuestStatus(QUEST_NONE_LEFT_BEHINED) != QUEST_STATUS_INCOMPLETE)
-               return;
-
-            player->KilledMonsterCredit(NPC_QUEST_CREDIT);
-
-            player->CastSpell(player, SPELL_CANCEL_INJURED_SAILOR, true);
-            sCreatureTextMgr->SendChat(who->ToCreature(), TEXT_GENERIC_0, player->GetGUID());
-            who->ToCreature()->DespawnOrUnsummon(5000);
-            return;
+            Player* player = target->ToPlayer();
+            if (!player || spell->Id != SPELL_CANCEL_INJURED_SAILOR)
+                return;
+            auto pending = pendingDeliveries.find(player->GetGUID());
+            if (pending != pendingDeliveries.end())
+                pending->second.Hit = true;
         }
+
+        void UpdateAI(uint32 diff) override
+        {
+            for (auto pending = pendingDeliveries.begin(); pending != pendingDeliveries.end();)
+            {
+                Delivery& delivery = pending->second;
+                if (delivery.Remaining <= diff || delivery.Attempt->load())
+                {
+                    pending = pendingDeliveries.erase(pending);
+                    continue;
+                }
+
+                Player* player = ObjectAccessor::GetPlayer(*me, pending->first);
+                if (delivery.Hit && player && player->IsAlive() && me->IsWithinDistInMap(player, 10.0f) &&
+                    player->GetQuestStatus(QUEST_NONE_LEFT_BEHINED) == QUEST_STATUS_INCOMPLETE && !player->HasAura(105520) && !player->GetVehicleKit())
+                {
+                    ObjectGuid const sailorGuid = delivery.Sailor;
+                    pending = pendingDeliveries.erase(pending);
+                    player->KilledMonsterCredit(NPC_QUEST_CREDIT);
+                    if (Creature* sailor = me->GetMap()->GetCreature(sailorGuid))
+                    {
+                        sCreatureTextMgr->SendChat(sailor, TEXT_GENERIC_0, player->GetGUID());
+                        sailor->DespawnOrUnsummon(5000);
+                    }
+                    continue;
+                }
+
+                delivery.Remaining -= diff;
+                ++pending;
+            }
+        }
+
+    private:
+        struct Delivery
+        {
+            ObjectGuid Sailor;
+            std::shared_ptr<QuestCancellationReceipt const> Attempt;
+            uint32 Remaining;
+            bool Hit = false;
+        };
+        std::unordered_map<ObjectGuid, Delivery> pendingDeliveries;
     };
 
 };
@@ -5219,37 +5274,43 @@ public:
     {
         npc_hurted_soldierAI(Creature* creature) : ScriptedAI(creature) {}
 
-        uint32 checkSavedTimer;
-        bool HasBeenSaved;
+        ObjectGuid pickupPlayer;
+        uint32 confirmationTime = 0;
 
-        void Reset()
+        void Reset() override
         {
-            checkSavedTimer = 2500;
-            HasBeenSaved = false;
+            pickupPlayer.Clear();
+            confirmationTime = 0;
         }
 
-        void OnSpellClick(Unit* Clicker)
+        uint32 GetData(uint32 type) const override
         {
-            HasBeenSaved = true;
+            return type == 105520 && pickupPlayer.IsEmpty();
         }
 
-        void UpdateAI(uint32 diff)
+        void OnSpellClick(Unit* clicker) override
         {
-            if (checkSavedTimer)
+            if (Player* player = clicker->ToPlayer(); player && pickupPlayer.IsEmpty() &&
+                player->GetQuestStatus(QUEST_NONE_LEFT_BEHINED) == QUEST_STATUS_INCOMPLETE)
             {
-                if (checkSavedTimer <= diff)
-                {
-                    if (HasBeenSaved && !me->GetVehicle())
-                    {
-                        me->DespawnOrUnsummon(5000);
-                        checkSavedTimer = 0;
-                    }
-                    else
-                        checkSavedTimer = 2500;
-                }
-                else
-                    checkSavedTimer -= diff;
+                pickupPlayer = player->GetGUID();
+                confirmationTime = 2500;
             }
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (!confirmationTime)
+                return;
+            if (Player* player = ObjectAccessor::GetPlayer(*me, pickupPlayer); player && GetCarriedSailor(*player))
+            {
+                confirmationTime = 0;
+                me->DespawnOrUnsummon(5000);
+            }
+            else if (confirmationTime <= diff)
+                Reset();
+            else
+                confirmationTime -= diff;
         }
     };
 };

@@ -4553,6 +4553,15 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                 return nullptr;
     }
 
+    Player* injuredSailorCarrier = nullptr;
+    if (entry == 56236 && GetId() == 860 && summoner && summoner->IsPlayer() && summoner->GetVehicleKit() &&
+        summoner->GetVehicleKit()->GetRecAura() == 105520)
+    {
+        injuredSailorCarrier = summoner->ToPlayer();
+        if (!injuredSailorCarrier->IsAlive() || injuredSailorCarrier->GetQuestStatus(29794) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+    }
+
     Player* minerOwner = nullptr;
     if (entry == 35813 && spellId == 68059 && GetId() == 648)
     {
@@ -4847,6 +4856,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (forestEscortOwner)
         forestEscortOwner->BindQuestObject(29792, summon);
+
+    if (injuredSailorCarrier)
+        injuredSailorCarrier->BindQuestObject(29794, summon);
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);
