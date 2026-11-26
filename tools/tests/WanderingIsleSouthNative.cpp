@@ -13,9 +13,14 @@ constexpr uint32 Stocking = 29795;
 constexpr uint32 Wreck = 30589;
 constexpr uint32 Handle = 30590;
 constexpr uint32 Preying = 30591;
+constexpr uint32 EvilFromSeas = 29793;
+constexpr uint32 UrgentNews = 29796;
+constexpr uint32 MedicalSupplies = 29797;
 constexpr uint32 Tiger = 55946;
+constexpr uint32 DarkenedHorror = 56007;
 constexpr uint32 Bamboo = 80806;
 constexpr uint32 Explosives = 74955;
+constexpr uint32 MedicalCrateItem = 74958;
 
 struct SouthPet : LootPet
 {
@@ -34,7 +39,7 @@ void LoadSouth()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingIsleSouth.inc"
     );
-    Require(templates && templates->GetRowCount() == 6, "The southern Wandering Isle quest templates are missing");
+    Require(templates && templates->GetRowCount() == 8, "The southern Wandering Isle quest templates are missing");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -46,8 +51,8 @@ void LoadSouth()
     } while (templates->NextRow());
     auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN (29792,29793,29795,30589,30590,30591)");
-    Require(addons && addons->GetRowCount() == 6, "The original southern prerequisites are missing");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN (29792,29793,29795,29796,29797,30589,30590,30591)");
+    Require(addons && addons->GetRowCount() == 8, "The original southern prerequisites are missing");
     do
     {
         auto fields = addons->Fetch();
@@ -57,8 +62,8 @@ void LoadSouth()
             quest->prevQuests.push_back(quest->PrevQuestID);
     } while (addons->NextRow());
     auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29793,29795,30590,30591)");
-    Require(objectives && objectives->GetRowCount() == 4, "The original forest, bamboo or wreck objectives are missing");
+        "FROM quest_objectives WHERE QuestID IN (29793,29795,29797,30590,30591)");
+    Require(objectives && objectives->GetRowCount() == 5, "The original forest, bamboo or wreck objectives are missing");
     do
     {
         auto row = objectives->Fetch();
@@ -68,9 +73,9 @@ void LoadSouth()
     } while (objectives->NextRow());
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245264,245266,245384) OR id=55946)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (29793,29795,30589,30590,30591)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (29793,29795,30589,30590,30591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245135,245264,245266,245384,245389) OR id IN (55946,56007))");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (29793,29795,29796,29797,30589,30590,30591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (29793,29795,29796,29797,30589,30590,30591)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -83,16 +88,16 @@ void LoadSouth()
 
     auto& gameobjectLoot = LootTemplates_Gameobject.*Access(LootTableNameTag{});
     auto const originalGameobjectLoot = gameobjectLoot;
-    gameobjectLoot += " WHERE Entry IN (209792,211394,211397,211398,211399,211400,211401)";
+    gameobjectLoot += " WHERE Entry IN (40474,209792,211394,211397,211398,211399,211400,211401)";
     auto const count = (LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();
     gameobjectLoot = originalGameobjectLoot;
-    Require(count == 24, "The seven objective rows and original bonus loot did not load together");
+    Require(count == 26, "The eight objective rows and original bonus loot did not load together");
     auto& tigerLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalTigerLoot = tigerLoot;
-    tigerLoot += " WHERE Entry=55946";
+    tigerLoot += " WHERE Entry IN (55946,56007)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     tigerLoot = originalTigerLoot;
-    Require(LootTemplates_Creature.GetLootFor(Tiger), "The Pei-Wu Tiger template's loot is missing");
+    Require(LootTemplates_Creature.GetLootFor(Tiger) && LootTemplates_Creature.GetLootFor(DarkenedHorror), "Missing the original tiger or horror loot");
 }
 
 Creature& FindSouthActor(Map& map, uint32 spawn)
@@ -121,6 +126,13 @@ void RewardSouth(LootPlayer& player, Creature& actor, uint32 quest)
     WorldPackets::Quest::QuestGiverChooseReward request{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
     request.QuestGiverGUID = actor.GetGUID();
     request.QuestID = quest;
+    if (auto package = sDB2Manager.GetQuestPackageItems(sQuestDataStore->GetQuestTemplate(quest)->PackageID))
+        for (auto item : *package)
+            if (player.CanSelectQuestPackageItem(item))
+            {
+                request.ItemChoiceID = item->ItemID;
+                break;
+            }
     player.GetSession()->HandleQuestGiverChooseReward(request);
     Require(player.IsQuestRewarded(quest), "The actual actor did not reward the forest quest");
 }
@@ -128,7 +140,7 @@ void RewardSouth(LootPlayer& player, Creature& actor, uint32 quest)
 std::vector<Placement> SouthSupplies(uint32 item, uint32 count)
 {
     auto rows = WorldDatabase.PQuery("SELECT g.id,g.guid,g.spawntimesecs,g.position_x,g.position_y,g.position_z,g.orientation,"
-        "g.rotation0,g.rotation1,g.rotation2,g.rotation3 FROM gameobject g JOIN gameobject_loot_template l ON l.Entry=g.id "
+        "g.rotation0,g.rotation1,g.rotation2,g.rotation3 FROM gameobject g JOIN gameobject_template t ON t.entry=g.id JOIN gameobject_loot_template l ON l.Entry=t.Data1 "
         "WHERE g.map=860 AND l.Item=%u AND l.QuestRequired=1 ORDER BY g.id,g.guid", item);
     Require(rows && rows->GetRowCount() == count, "The original bamboo or bundle placements changed");
     std::vector<Placement> placements;
@@ -142,7 +154,8 @@ std::vector<Placement> SouthSupplies(uint32 item, uint32 count)
     return placements;
 }
 
-void CheckSouthSupplies(LootPlayer& player, LootPlayer& visitor, Creature& giver, uint32 quest, uint32 item, uint32 needed, uint32 count, bool exclusiveFirst)
+void CheckSouthSupplies(LootPlayer& player, LootPlayer& visitor, Creature& giver, uint32 quest, uint32 item, uint32 needed, uint32 count, bool exclusiveFirst,
+    bool expectAbandonRetention = false)
 {
     auto locations = SouthSupplies(item, count);
     Map& map = *player.GetMap();
@@ -176,6 +189,12 @@ void CheckSouthSupplies(LootPlayer& player, LootPlayer& visitor, Creature& giver
         std::cout << "EXPECTED_BROKEN the exclusively quest-only bamboo source opened without its quest\n";
     std::cout << "EXPECTED_BROKEN abandoning the original quest retained its required item " << item << '\n';
 #else
+    if (expectAbandonRetention)
+    {
+        Require(player.GetItemCount(item) == 1, "The previous medical quest did not reproduce item retention");
+        std::cout << "EXPECTED_BROKEN abandoning Medical Supplies kept its required bundle\n";
+        return;
+    }
     Require(!player.GetItemCount(item), "Abandoning a supply quest retained its exclusive item");
     AcceptSouth(player, giver, quest);
     for (uint32 index = 0; index < needed; ++index)
@@ -185,6 +204,30 @@ void CheckSouthSupplies(LootPlayer& player, LootPlayer& visitor, Creature& giver
     Require(!player.GetItemCount(item), "The native reward did not consume its supplies");
     std::cout << "PASS " << needed << " real supplies from " << count << " placements, abandon, retry and reward for " << quest << '\n';
 #endif
+}
+
+void CheckSouthCombat(LootPlayer& pupil, Creature& giver, uint32 quest, uint32 entry, uint32 needed, uint32 placements)
+{
+    Map& map = *pupil.GetMap();
+    auto spawns = WorldDatabase.PQuery("SELECT guid FROM creature WHERE map=860 AND id=%u ORDER BY ((phaseMask & 1)=0),guid", entry);
+    Require(spawns && spawns->GetRowCount() == placements, "The original combat placements changed");
+    AcceptSouth(pupil, giver, quest);
+    SouthPet pet(pupil, map);
+    for (uint32 index = 0; index < needed; ++index)
+    {
+        auto& opponent = FindSouthActor(map, spawns->Fetch()[0].GetUInt32());
+        MoveGilneasPlayer(pupil, opponent.GetPosition());
+        map.CreatureRelocation(&pet, opponent.GetPositionX(), opponent.GetPositionY(), opponent.GetPositionZ(), opponent.GetOrientation());
+        map.MoveAllCreaturesInMoveList();
+        Unit& attacker = index % 2 == 0 ? static_cast<Unit&>(pupil) : static_cast<Unit&>(pet);
+        Require(attacker.IsValidAttackTarget(&opponent), "A placed opponent could not be attacked");
+        attacker.DealDamage(&opponent, uint32(opponent.GetMaxHealth()) * 2);
+        Tick(pupil, 150);
+        Require(!opponent.IsAlive() && pupil.GetQuestObjectiveData(quest, entry) == int32(index + 1), "A real player or pet defeat did not progress the quest");
+        spawns->NextRow();
+    }
+    RewardSouth(pupil, giver, quest);
+    std::cout << "PASS " << needed << " actual player or pet defeats and original reward for " << quest << '\n';
 }
 
 void CheckSouth()
@@ -213,26 +256,19 @@ void CheckSouth()
     RewardSouth(pupil, makael, Wreck);
     CheckSouthSupplies(pupil, visitor, makael, Handle, Explosives, 6, 35, false);
 #ifndef WANDERING_ISLE_SOUTH_BASELINE
-    AcceptSouth(pupil, wei, Preying);
-    auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE map=860 AND id=55946 ORDER BY guid");
-    Require(spawns && spawns->GetRowCount() == 98, "The original tiger placements changed");
-    SouthPet pet(pupil, map);
-    for (uint32 index = 0; index < 9; ++index)
-    {
-        auto& tiger = FindSouthActor(map, spawns->Fetch()[0].GetUInt32());
-        MoveGilneasPlayer(pupil, tiger.GetPosition());
-        map.CreatureRelocation(&pet, tiger.GetPositionX(), tiger.GetPositionY(), tiger.GetPositionZ(), tiger.GetOrientation());
-        map.MoveAllCreaturesInMoveList();
-        Unit& attacker = index % 2 == 0 ? static_cast<Unit&>(pupil) : static_cast<Unit&>(pet);
-        Require(attacker.IsValidAttackTarget(&tiger), "A real Pei-Wu Tiger could not be attacked");
-        attacker.DealDamage(&tiger, uint32(tiger.GetMaxHealth()) * 2);
-        Tick(pupil, 150);
-        std::cout << "CASE Pei-Wu Tiger " << index + 1 << " defeated=" << !tiger.IsAlive() << " credit=" << pupil.GetQuestObjectiveData(Preying, Tiger) << '\n';
-        Require(!tiger.IsAlive() && pupil.GetQuestObjectiveData(Preying, Tiger) == int32(index + 1), "A real player or pet defeat did not progress the quest");
-        spawns->NextRow();
-    }
-    RewardSouth(pupil, wei, Preying);
+    CheckSouthCombat(pupil, wei, Preying, Tiger, 9, 98);
     std::cout << "PASS Makael handoff and nine distinct player or pet tiger defeats with Wei's reward\n";
+    auto& aysa = FindSouthActor(map, 245389);
+    auto& ji = FindSouthActor(map, 245135);
+    CheckSouthCombat(pupil, aysa, EvilFromSeas, DarkenedHorror, 8, 40);
+    AcceptSouth(pupil, aysa, UrgentNews);
+    RewardSouth(pupil, ji, UrgentNews);
+    std::cout << "PASS actual Urgent News handoff from Aysa to Ji at the crash site\n";
+#ifdef WANDERING_ISLE_MEDICAL_BASELINE
+    CheckSouthSupplies(pupil, visitor, ji, MedicalSupplies, MedicalCrateItem, 8, 31, false, true);
+#else
+    CheckSouthSupplies(pupil, visitor, ji, MedicalSupplies, MedicalCrateItem, 8, 31, false);
+#endif
 #endif
 }
 }
