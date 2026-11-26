@@ -21,3 +21,7 @@ The staff AI now opens the owned chest directly on a player spell-click. Previou
 The Release scripts library and final worldserver link completed. The link used the original Release scripts.lib and game.lib and the map contains the staff OnSpellClick from Sheylun.obj. Prepared executable SHA-256 `D6F596E2BC5616C48EA045C8EB46948740062CA8792524DFD0AF109990842F94`. Client pickup, actual item receipt and scenario credit await the next in-game attempt. No separate automated test or agent-owned startup was run during the active client flow.
 
 After the player stopped the server, the canonical Release executable and map were replaced with the outputs of d02f6987d and their hashes were verified. The previous pair was retained for rollback. Removed 270401469 bytes of verified duplicate stage output. The pre-retest snapshot at 11:41 Riga time recorded an empty DBErrors.log and crash directory. The two support errors remain in the original server log for comparison with the next client run.
+
+## Confirmed in game
+
+On the deployed d02f6987d build the player completed the scenario and collected Sheilun. At 11:47:38 Riga time the server recorded the staff click on entry 102479 opening the native chest with one item slot. The interval from the first-login baseline through this pickup contained no new server warnings or errors, DBErrors.log entries or crash reports. This closes the reported pickup failure for this run.
