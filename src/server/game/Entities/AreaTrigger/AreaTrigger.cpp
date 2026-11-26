@@ -29,6 +29,14 @@
 #include "VMapFactory.h"
 #include "SharasdalWaveRide.h"
 
+namespace
+{
+Transport* GetFrozenOrbTransport(AreaTrigger const& trigger)
+{
+    return trigger.GetSpellId() == 84714 && trigger.GetRealEntry() == 8661 ? trigger.GetTransport() : nullptr;
+}
+}
+
 AreaTriggerScaleData::AreaTriggerScaleData()
 {
     timeToTargetScale = 0;
@@ -1236,8 +1244,9 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
         }
         case AT_ACTION_TYPE_RE_PATCH: // 16
         {
-            _spline.VerticesPoints[0] = G3D::Vector3(GetPositionX(), GetPositionY(), GetPositionZ());
-            _spline.VerticesPoints[1] = G3D::Vector3(GetPositionX(), GetPositionY(), GetPositionZ());
+            Position const& start = GetFrozenOrbTransport(*this) ? m_movementInfo.transport.Pos : GetPosition();
+            _spline.VerticesPoints[0] = G3D::Vector3(start.GetPositionX(), start.GetPositionY(), start.GetPositionZ());
+            _spline.VerticesPoints[1] = _spline.VerticesPoints[0];
             _reachedDestination = true;
             InitSplines();
 			if(atInfo.spellId != 84714) // Fix for mage frozen orb appearing to long
@@ -1751,7 +1760,13 @@ void AreaTrigger::UpdateSplinePosition(uint32 diff)
     }
 
     Movement::Location loc = movespline->ComputePosition();
-    if (atInfo.circleTemplate.HasTarget)
+    if (Transport* transport = GetFrozenOrbTransport(*this))
+    {
+        m_movementInfo.transport.Pos.Relocate(loc.x, loc.y, loc.z, loc.orientation);
+        transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+        GetMap()->AreaTriggerRelocation(this, loc.x, loc.y, loc.z, loc.orientation);
+    }
+    else if (atInfo.circleTemplate.HasTarget)
     {
         if (_caster->GetGUID() == targetGuid || !targetGuid)
             Relocate(loc.x + _caster->GetPositionX(), loc.y + _caster->GetPositionY(), loc.z + _caster->GetPositionZ(), loc.orientation);
@@ -2556,6 +2571,10 @@ void AreaTrigger::CalculateSplinePosition(Position const& pos, Position const& p
                     _spline.VerticesPoints.emplace_back(nextPos.GetPositionX(), nextPos.GetPositionY(), nextPos.GetPositionZ());
                     _spline.VerticesPoints.emplace_back(nextPos.GetPositionX(), nextPos.GetPositionY(), nextPos.GetPositionZ());
                 }
+                // The orb is a ship passenger. Its path and on-hit slowdown use the same frame as its passenger offset.
+                if (Transport* transport = GetFrozenOrbTransport(*this))
+                    for (auto& point : _spline.VerticesPoints)
+                        transport->CalculatePassengerOffset(point.x, point.y, point.z);
             }
             break;
         }
