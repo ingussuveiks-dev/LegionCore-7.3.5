@@ -1411,7 +1411,7 @@ void QuestDataStoreMgr::LoadQuestPOI()
             int32 X = fields[2].GetInt32();
             int32 Y = fields[3].GetInt32();
 
-            if (questIdMax <= QuestID)
+            if (QuestID > questIdMax)
                 continue;
 
             if (int32(POIs[QuestID].size()) <= Idx1 + 1)

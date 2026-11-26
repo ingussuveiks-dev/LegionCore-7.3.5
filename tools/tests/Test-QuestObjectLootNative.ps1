@@ -2,7 +2,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallRise,[switch]$WestfallVision,[switch]$WestfallVisionObserve,[switch]$WestfallVisionScene,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
-      [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DeeprunRat,[switch]$DeeprunRatObserve,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
+      [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DeeprunRat,[switch]$DeeprunRatObserve,[switch]$HighestQuestPOI,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
       [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,[switch]$WanderingFirstLesson,
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,
@@ -36,6 +36,7 @@ if($DeeprunRatObserve -and !$DeeprunRat){throw 'DeeprunRatObserve requires Deepr
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $scopedProbes = @(@($TakingPrecautions,$Collector,$Scenes,$Kyle,$Seasoning,$SeasoningBaseline,$Aquantion,$AquantionBaseline,$Anowyn,$AnowynBaseline,$AlliedCity,$AlliedCityBaseline,$Duskwither,$DuskwitherBaseline,$RedSnapper,$RedSnapperBaseline,$SwiftDiscipline,$SwiftDisciplineBaseline,$ExtinguishingHope,$ExtinguishingHopeBaseline,$MulgoreCages,$MulgoreCagesBaseline,$AshenvaleFelWood,$AshenvaleFelWoodBaseline,$ElwynnQuests,$ElwynnQuestsBaseline,$SupplyChests,$SupplyChestsBaseline,$ForestHeart,$ForestHeartBaseline,$DarkmoonStrength,$Tortusk,$ClusterCluck,$PoolPony,$MinerTroubles,$DreadHead,$CaravanDelivery,$WebbedResearcher,$LiFeiDuel,$ShangXiEscort,$YurivPendant,$FelfireCanister,$LifebringerSapling,$LordamereCannon,$TitansTerminal,$StillpinePrimer,$StillpinePrimerBaseline,$MonkeyBusiness,$MonkeyBusinessBaseline,$MonkeyBusinessFlightBaseline,$HogtiedRazormane,$HogtiedRazormaneBaseline,$TongaGuide,$TongaGuideBaseline,$AirfieldFirefighting,$AirfieldFirefightingBaseline,$FelfireSeedlings,$FelfireSeedlingsBaseline,$BattleboarTroughs,$BattleboarTroughsBaseline,$BalboaBasalt,$BalboaBasaltBaseline,$VileFinLeash,$VileFinLeashBaseline,$Absorbent,$AbsorbentBaseline,$SfgMinefield,$SfgMinefieldBaseline,$Dozercism,$DozercismBaseline,$StagnantOasis,$StagnantOasisBaseline,$AmaniCatacombs,$AmaniCatacombsBaseline,$RavagerCage,$RavagerCageBaseline,$AkidaCages,$AkidaCagesBaseline,$PrincessStillpine,$PrincessStillpineBaseline,$BloodcupBraid,$BloodcupBraidBaseline,$SamophlangeManual,$SamophlangeManualBaseline,$GutsAndGore,$GutsAndGoreBaseline,$ThelgenSeismograph,$ThelgenSeismographBaseline,$LovelyCharmGifts,$LovelyCharmGiftsBaseline,$DarkmoonCrafting,$DarkmoonCraftingBaseline,$DarkmoonFairTargets,$DarkmoonFairTargetsBaseline,$DarkmoonBanner,$DarkmoonBannerBaseline,$IronforgeBait,$IronforgeBaitBaseline,$IronforgeRations,$IronforgeRationsBaseline,$LiberationDay,$LiberationDayBaseline,$IncendiciteOre,$IncendiciteOreBaseline,$KneeDeep,$KneeDeepBaseline,$PerfumedGuardAnalysis,$PerfumedGuardAnalysisBaseline,$SwiftclawRide,$SwiftclawRideBaseline,$KorothBanner,$KorothBannerBaseline,$WoodsEndCoffer,$WoodsEndCofferBaseline,$FromTheShadows,$FromTheShadowsBaseline,$Volcanoth,$VolcanothBaseline,$OldFriends,$ScorpidVenom,$ScorpidVenomBaseline,$PricelessTreasures,$PricelessTreasuresBaseline,$WestfallRise,$WestfallVision,$WestfallStew,$WestfallStewBaseline,$NoTanks,$NoTanksBaseline,$PaintItBlack,$PaintItBlackBaseline,$DownWithCrushcog,$DownWithCrushcogBaseline,$StaggeringEffort,$StaggeringEffortBaseline,$RedridgeSeaforium,$RedridgeSeaforiumBaseline,$BlackrockPrisoners,$BlackrockPrisonersBaseline,$IlgalarWard,$IlgalarWardBaseline,$ChallengerFires,$ChallengerFiresBaseline,$HuoOfferings,$HuoOfferingsBaseline,$ForestEttin,$ForestEttinBaseline,$KezanHotRod,$KezanHotRodBaseline) | Where-Object { $_ }).Count
 if($DeeprunRat){++$scopedProbes}
+if($HighestQuestPOI){++$scopedProbes}
 if($DarkshoreWildlifeFlight){++$scopedProbes}
 if($WanderingIsleSouth){++$scopedProbes}
 if($BrazieBasicBotany){++$scopedProbes}
@@ -744,6 +745,7 @@ if($DeeprunRat){
  [IO.File]::WriteAllText("$out/NativeDeeprunRat.inc",$query+' " WHERE ID IN (6661,26322)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
+if($HighestQuestPOI){$probeSource="$PSScriptRoot/QuestMapMarkersNative.cpp"}
 if($WestfallVision){
  $probeSource="$PSScriptRoot/WestfallVisionNative.cpp"
  [IO.File]::WriteAllText("$out/NativeWestfallVision.inc",$query+' " WHERE ID IN (26319,26320,26322)"')
@@ -1212,6 +1214,7 @@ if($NoTanksBaseline){$compilerArgs+='/DNO_TANKS_BASELINE'}
 if($WestfallVisionObserve){$compilerArgs+='/DWESTFALL_VISION_OBSERVE'}
 if($WestfallVisionScene){$compilerArgs+='/DWESTFALL_VISION_SCENE'}
 if($DeeprunRatObserve){$compilerArgs+='/DDEEPRUN_RAT_OBSERVE'}
+if($HighestQuestPOI){$compilerArgs+='/DCHECK_HIGHEST_QUEST_POI'}
 if($WestfallStewBaseline){$compilerArgs+='/DWESTFALL_STEW_BASELINE'}
 if($PricelessTreasuresBaseline){$compilerArgs+='/DPRICELESS_TREASURES_BASELINE'}
 if($ScorpidVenomBaseline){$compilerArgs+='/DSCORPID_VENOM_BASELINE'}
