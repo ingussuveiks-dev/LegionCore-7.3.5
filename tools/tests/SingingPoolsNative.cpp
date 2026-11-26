@@ -62,6 +62,9 @@ constexpr uint32 RaucousRousing = 29772;
 constexpr uint32 NotInTheFace = 29774;
 constexpr uint32 SpiritAndBody = 29775;
 constexpr uint32 MorningBreeze = 29776;
+constexpr uint32 RewrittenWisdoms = 29778;
+constexpr uint32 BreezeJiSpawn = 244900;
+constexpr uint32 DefacedScrollCredit = 55600;
 constexpr uint32 DaiLoShu = 55556;
 constexpr uint32 DaiLoShuSpawn = 244646;
 constexpr uint32 Wugou = 55539;
@@ -93,7 +96,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 19, "Missing the Singing Pools, farm and return quests");
+    Require(rows && rows->GetRowCount() == 20, "Missing the Singing Pools, farm and village quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -107,8 +110,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 19, "Missing the original Pools, farm and return prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29778)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 20, "Missing the original Pools, farm and village prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -169,8 +172,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 10, "Missing the original farm and return objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29778) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 11, "Missing the original farm and village objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -182,20 +185,21 @@ void LoadPools()
     quests[StrongWood]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[RaucousRousing]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[NotInTheFace]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    quests[RewrittenWisdoms]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
-        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,245583)");
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244900,245583)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29778)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29778)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
-        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,118027))");
+        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
         "WHERE spell_id IN (103069,103070,103077,103116,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
@@ -203,7 +207,7 @@ void LoadPools()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells "
         "WHERE npc_entry IN (54993,57710,57741,59497)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint "
-        "WHERE entry IN (57207,57742,59499)");
+        "WHERE entry IN (55685,57207,57742,59499)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_proc_event AS SELECT * FROM legion_world.spell_proc_event "
         "WHERE entry IN (46598,102938,102939,102940,102941,102942,103069,103070,103071,103072,103077,103078,104012,108590,115904,116695,116696,117054,117057)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
@@ -226,6 +230,7 @@ void LoadPools()
     creatureLoot = originalCreatureLoot;
     Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
     sObjectMgr->LoadCreatures();
+    sQuestDataStore->LoadGameObjectForQuests();
     sObjectMgr->LoadNPCText();
     sGossipDataStore->LoadGossipMenu();
     sGossipDataStore->LoadGossipMenuItems();
@@ -593,7 +598,7 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : VirmenSpawns)
@@ -1208,6 +1213,118 @@ void AdvanceWugouScene(Teacher& shu, uint32 duration)
     }
 }
 
+void CheckMorningBreezeScrolls(Map& map, LootPlayer& pupil)
+{
+    Tick(pupil, 2000);
+    Creature* wind = pupil.GetVehicleBase() ? pupil.GetVehicleBase()->ToCreature() : nullptr;
+    Require(wind && wind->GetEntry() == 55685 && sScriptSystemMgr->GetPointMoveList(55685).size() == 16,
+        "Morning Breeze acceptance did not board the original wind vehicle");
+    ObjectGuid const windGuid = wind->GetGUID();
+    for (uint32 elapsed = 0; wind && elapsed < 90000; elapsed += 25)
+    {
+        wind->Unit::Update(25);
+        wind->AI()->UpdateAI(25);
+        map.MoveAllCreaturesInMoveList();
+        map.RemoveAllObjectsInRemoveList();
+        wind = map.GetCreature(windGuid);
+    }
+    Require(!wind && !pupil.GetVehicleBase(), "The original wind vehicle did not finish its Temple route and dismount");
+    Teacher ji(map, BreezeJiSpawn, 55583);
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    RewardQuest(pupil, ji, MorningBreeze);
+    Require(pupil.IsQuestRewarded(MorningBreeze), "Ji did not accept the Temple handoff at his actual village placement");
+    if (pupil.GetQuestStatus(RewrittenWisdoms) == QUEST_STATUS_NONE)
+        AcceptQuest(pupil, ji, RewrittenWisdoms);
+    Require(pupil.GetQuestStatus(RewrittenWisdoms) == QUEST_STATUS_INCOMPLETE, "Ji did not admit the scroll quest");
+
+#ifdef SINGING_POOLS_SCROLL_BASELINE
+    PlacedQuestObject scroll(map, 102760, 209656);
+    MoveGilneasPlayer(pupil, scroll.GetPosition());
+    Ring(pupil, scroll, true);
+    Require(!pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit), "The missing report-use screen did not reproduce");
+    Ring(pupil, scroll, false);
+    std::list<Creature*> triggers;
+    scroll.GetCreatureListWithEntryInGrid(triggers, WORLD_TRIGGER, 3.0f);
+    for (Creature* trigger : triggers)
+        trigger->Unit::Update(25);
+    Tick(pupil, 200);
+    Require(scroll.getLootState() == GO_ACTIVATED, "Native ordinary use did not activate the defaced scroll");
+    std::cout << "EXPECTED_BROKEN report-use left the scroll unused; ordinary use triggers=" << triggers.size()
+        << " credit=" << pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit) << std::endl;
+    auto const objectCast = scroll.CastSpell(&pupil, 104127);
+    Tick(pupil, 150);
+    std::cout << "CASE Scroll cast result=" << uint32(objectCast) << " credit=" << pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit) << std::endl;
+    if (!triggers.empty())
+    {
+        TriggerCastFlags flags = TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_DONT_REPORT_CAST_ERROR);
+        auto result = triggers.front()->CastSpell(&pupil, 104127, flags, nullptr, nullptr, pupil.GetGUID());
+        std::cout << "CASE Scroll trigger check result=" << uint32(result) << std::endl;
+    }
+    auto const playerCast = pupil.CastSpell(&pupil, 104127, true);
+    Tick(pupil, 150);
+    std::cout << "CASE Self cast result=" << uint32(playerCast) << " credit=" << pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit) << std::endl;
+#else
+    LootPlayer passerby(SupplySession(), map, 2977802, ji.GetPosition());
+    PreparePoolHunter(passerby);
+    auto rows = WorldDatabase.Query("SELECT guid,id FROM gameobject WHERE map=860 AND id IN (209656,209660,209661,209663) ORDER BY id,guid");
+    Require(rows && rows->GetRowCount() == 14, "Missing the original defaced scroll placements");
+    std::vector<std::pair<uint32, uint32>> placements;
+    while (rows)
+    {
+        auto fields = rows->Fetch();
+        auto const entry = fields[1].GetUInt32();
+        auto const spawn = fields[0].GetUInt32();
+        PlacedQuestObject scroll(map, spawn, entry);
+        Require(scroll.ActivateToQuest(&pupil) && !scroll.ActivateToQuest(&passerby), "The scroll showed the wrong quest marker");
+        if (placements.empty() || placements.back().second != entry)
+            placements.emplace_back(spawn, entry);
+        if (!rows->NextRow())
+            break;
+    }
+    placements.emplace_back(102775, 209660);
+    for (size_t index = 0; index < placements.size(); ++index)
+    {
+        auto [spawn, entry] = placements[index];
+        PlacedQuestObject scroll(map, spawn, entry);
+        if (!index)
+        {
+            MoveGilneasPlayer(passerby, scroll.GetPosition());
+            Ring(passerby, scroll, true);
+            Ring(passerby, scroll, false);
+            Require(scroll.getLootState() != GO_ACTIVATED, "A player without the quest burned a defaced scroll");
+            Position const distant{scroll.GetPositionX() + 25.0f, scroll.GetPositionY(), scroll.GetPositionZ()};
+            MoveGilneasPlayer(pupil, distant);
+            Ring(pupil, scroll, false);
+            Ring(pupil, scroll, true);
+            Require(scroll.getLootState() != GO_ACTIVATED, "A distant packet burned the scroll");
+        }
+        MoveGilneasPlayer(pupil, scroll.GetPosition());
+        Ring(pupil, scroll, index % 2 == 0);
+        Require(scroll.getLootState() == GO_ACTIVATED && pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit) == int32(index + 1),
+            "A placed defaced scroll failed to award its native credit");
+        Ring(pupil, scroll, index % 2 != 0);
+        Require(pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit) == int32(index + 1), "A second packet duplicated a burn");
+    }
+    Require(pupil.GetQuestStatus(RewrittenWisdoms) == QUEST_STATUS_COMPLETE, "Five scroll burns did not complete the quest");
+    AbandonSupply(pupil, RewrittenWisdoms);
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    AcceptQuest(pupil, ji, RewrittenWisdoms);
+    Require(pupil.GetQuestStatus(RewrittenWisdoms) == QUEST_STATUS_INCOMPLETE && !pupil.GetQuestObjectiveData(RewrittenWisdoms, DefacedScrollCredit),
+        "The next scroll attempt kept the earlier burns");
+    for (auto [spawn, entry] : placements)
+    {
+        PlacedQuestObject scroll(map, spawn, entry);
+        MoveGilneasPlayer(pupil, scroll.GetPosition());
+        Ring(pupil, scroll, false);
+    }
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    uint32 const choice = PoolRewardChoice(pupil, RewrittenWisdoms);
+    RewardQuest(pupil, ji, RewrittenWisdoms, choice);
+    Require(pupil.IsQuestRewarded(RewrittenWisdoms) && pupil.GetItemCount(choice) == 1, "Ji did not reward the five original scroll burns");
+    std::cout << "PASS actual Temple wind vehicle, Ji handoff, 14 markers, four scroll templates, five burns both packet forms, retry and reward" << std::endl;
+#endif
+}
+
 void CheckTempleCart(Map& map, LootPlayer& pupil, Teacher& ji)
 {
     if (pupil.GetQuestStatus(SpiritAndBody) == QUEST_STATUS_NONE)
@@ -1240,6 +1357,7 @@ void CheckTempleCart(Map& map, LootPlayer& pupil, Teacher& ji)
         AcceptQuest(pupil, shang, MorningBreeze);
     Require(pupil.GetQuestStatus(MorningBreeze) != QUEST_STATUS_NONE, "Shang Xi did not open Morning Breeze Village");
     std::cout << "PASS full Temple cart, optional credit, native Shang Xi reward, both companions removed and Morning Breeze admission" << std::endl;
+    CheckMorningBreezeScrolls(map, pupil);
 }
 
 void CheckWugou(Map& map, LootPlayer& pupil, LootPlayer& visitor, Teacher& ji)

@@ -2823,6 +2823,11 @@ SpellCastResult GameObject::CastSpell(Unit* target, uint32 spellId)
     bool self = false;
 
     GameObjectTemplate const* goInfo = GetGOInfo();
+    // The village scroll's credit spell targets the player using the actual goober.
+    if (spellId == 104127 && GetMapId() == 860 && goInfo->type == GAMEOBJECT_TYPE_GOOBER && goInfo->goober.questID == 29778 &&
+        goInfo->goober.spell == spellId && GetDBTableGUIDLow() &&
+        (GetEntry() == 209656 || GetEntry() == 209660 || GetEntry() == 209661 || GetEntry() == 209663))
+        self = true;
     if (goInfo->type != GAMEOBJECT_TYPE_TRAP && target && target->HasAuraType(SPELL_AURA_MOD_STEALTH))
         self = true;
 
