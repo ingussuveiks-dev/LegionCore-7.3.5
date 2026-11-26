@@ -690,6 +690,19 @@ class spell_mage_comet_storm : public SpellScript
     }
 };
 
+// Both Frost lessons require a primary hit on the trainee's own ship dummy.
+static bool IsFrostLessonHit(Unit* caster, Unit* target, uint32 criteriaTree)
+{
+    if (!caster || !caster->IsPlayer() || !target || target->GetEntry() != 107104 ||
+        (caster->GetMapId() != 1554 && caster->GetMapId() != 1557) ||
+        !caster->GetTransport() || caster->GetTransport() != target->GetTransport())
+        return false;
+
+    Scenario* scenario = sScenarioMgr->GetScenario(caster->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 1132 &&
+        scenario->GetScenarioCriteriaByStep(scenario->GetCurrentStep()) == criteriaTree;
+}
+
 // Flurry - 44614
 class spell_mage_flurry : public SpellScriptLoader
 {
@@ -795,10 +808,21 @@ public:
             PreventHitDefaultEffect(effIndex);
         }
 
+        void HandleEmpoweredHit(SpellEffIndex /*effIndex*/)
+        {
+            if (brainFreeze && !GetSpell()->IsTriggered() && GetHitUnit() == GetOriginalTarget() &&
+                IsFrostLessonHit(GetCaster(), GetHitUnit(), 55460))
+            {
+                // Credit the empowered player cast once, independently of its three missiles.
+                GetCaster()->CastSpell(GetCaster(), 229824, true);
+            }
+        }
+
         void Register() override
         {
             BeforeCast += SpellCastFn(spell_mage_flurry_SpellScript::HandleBeforeCast);
             OnEffectLaunchTarget += SpellEffectFn(spell_mage_flurry_SpellScript::HandleLaunchTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectHitTarget += SpellEffectFn(spell_mage_flurry_SpellScript::HandleEmpoweredHit, EFFECT_0, SPELL_EFFECT_DUMMY);
             OnEffectHitTarget += SpellEffectFn(spell_mage_flurry_SpellScript::PreventDefaultMissile, EFFECT_1, SPELL_EFFECT_TRIGGER_MISSILE);
         }
     };
@@ -1850,15 +1874,11 @@ class spell_mage_ice_lance_main : public SpellScript
             caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true);
             // The lesson counts the native receipt for one empowered lance.
             // A secondary Splitting Ice target cannot count the same charge.
-            if (spentFingers && !GetSpell()->IsTriggered() && caster->IsPlayer() && target == GetOriginalTarget() &&
-                target->GetEntry() == 107104 && (caster->GetMapId() == 1554 || caster->GetMapId() == 1557) &&
-                caster->GetTransport() && caster->GetTransport() == target->GetTransport())
-                if (Scenario* scenario = sScenarioMgr->GetScenario(caster->GetInstanceId()))
-                    if (scenario->GetScenarioId() == 1132 && scenario->GetScenarioCriteriaByStep(scenario->GetCurrentStep()) == 48836)
-                    {
-                        spentFingers = false;
-                        caster->CastSpell(caster, 215880, true);
-                    }
+            if (spentFingers && !GetSpell()->IsTriggered() && target == GetOriginalTarget() && IsFrostLessonHit(caster, target, 48836))
+            {
+                spentFingers = false;
+                caster->CastSpell(caster, 215880, true);
+            }
         }
     }
 
