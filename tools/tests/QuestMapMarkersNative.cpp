@@ -57,8 +57,8 @@ void CheckMapMarkers()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN "
         "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,26520,50319)");
 #else
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN (26320,26520,50319)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN (26320,26520,50319)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN (26320,26520,32470,32471,47430,50319)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN (26320,26520,32470,32471,47430,50319)");
 #endif
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sQuestDataStore->LoadQuestPOI();
@@ -121,6 +121,97 @@ void CheckMapMarkers()
     }
     Require(rescue && turnIn, "Redridge markers must lead to Foreman Oslow and Magistrate Solomon");
     std::cout << "CASE the actual Foreman and Magistrate marker points loaded on the Redridge page\n";
+#endif
+
+#ifdef CHECK_MOONKIN_QUEST_POI
+    auto moonglade = sWorldMapAreaStore.LookupEntry(241);
+    Require(moonglade && moonglade->MapID == 1 && moonglade->AreaID == 493,
+        "The matching client catalog must identify the Moonglade map page");
+    auto markers = sQuestDataStore->GetQuestPOIVector(47430);
+    if (sConfigMgr->GetBoolDefault("NativeMoonkinMarkers.ExpectMissing", false))
+    {
+        Require(!markers || markers->empty(), "The old Moonkin Monitoring data must reproduce missing map points");
+        std::cout << "EXPECTED_BROKEN no loadable points for the four Moonkin Monitoring actors\n";
+    }
+    else
+    {
+        struct Marker
+        {
+            int32 Objective;
+            int32 QuestObjective;
+            int32 Actor;
+            int32 X;
+            int32 Y;
+        };
+        Marker const expected[] = {
+            {-1, 0, 0, 7535, -2428},
+            {0, 290339, 122241, 7513, -2429},
+            {1, 290344, 122256, 7467, -2360},
+            {2, 290345, 122390, 7415, -2414},
+        };
+        Require(markers, "The Moonkin Monitoring markers must load");
+        Require(std::count_if(markers->begin(), markers->end(), [](QuestPOI const& marker) { return !marker.points.empty(); }) ==
+            std::size(expected), "All four Moonkin Monitoring points must load");
+        for (auto const& target : expected)
+        {
+            auto count = std::count_if(markers->begin(), markers->end(), [&target](QuestPOI const& marker)
+            {
+                if (marker.MapID != 1 || marker.WorldMapAreaID != 241 || marker.Floor != 0 || marker.points.size() != 1)
+                    return false;
+                auto const& point = marker.points.front();
+                return marker.ObjectiveIndex == target.Objective && marker.QuestObjectiveID == target.QuestObjective &&
+                    marker.QuestObjectID == target.Actor && point.X == target.X && point.Y == target.Y;
+            });
+            Require(count == 1, "Each Moonglade objective and turn-in marker must match its original actor");
+        }
+        std::cout << "CASE all three Moonkin Monitoring objective markers and the return marker loaded on the Moonglade page\n";
+    }
+#endif
+
+#ifdef CHECK_CAMERA_QUEST_POI
+    struct Route
+    {
+        uint32 Quest;
+        int32 Map;
+        int32 Page;
+        int32 Area;
+        int32 BoxObjective;
+        int32 BeltObjective;
+        QuestPOIPoint Giver;
+        QuestPOIPoint Box;
+        QuestPOIPoint Belt;
+    };
+    Route const routes[] = {
+        {32470, 0, 301, 1519, 269882, 269884, {-8259, 657}, {-8773, 540}, {-8946, 799}},
+        {32471, 1, 321, 1637, 669882, 669884, {1665, -4108}, {2245, -4614}, {1791, -4566}},
+    };
+    bool expectMissing = sConfigMgr->GetBoolDefault("NativeCameraMarkers.ExpectMissing", false);
+    for (auto const& route : routes)
+    {
+        auto mapPage = sWorldMapAreaStore.LookupEntry(route.Page);
+        Require(mapPage && mapPage->MapID == route.Map && mapPage->AreaID == route.Area, "The matching faction capital map page is required");
+        auto markers = sQuestDataStore->GetQuestPOIVector(route.Quest);
+        if (expectMissing)
+        {
+            Require(!markers || std::none_of(markers->begin(), markers->end(), [](QuestPOI const& marker) { return !marker.points.empty(); }),
+                "The old capital data must reproduce missing map points");
+            continue;
+        }
+        Require(markers, "The faction route must have its own map markers");
+        auto hasMarker = [&](int32 index, int32 objective, int32 object, QuestPOIPoint const& position)
+        {
+            return std::count_if(markers->begin(), markers->end(), [&](QuestPOI const& marker)
+            {
+                return marker.MapID == route.Map && marker.WorldMapAreaID == route.Page && marker.Floor == 0 &&
+                    marker.ObjectiveIndex == index && marker.QuestObjectiveID == objective && marker.QuestObjectID == object &&
+                    marker.points.size() == 1 && marker.points.front().X == position.X && marker.points.front().Y == position.Y;
+            }) == 1;
+        };
+        Require(hasMarker(-1, 0, 0, route.Giver) && hasMarker(0, route.BoxObjective, 155856, route.Box) &&
+            hasMarker(2, route.BeltObjective, 3593, route.Belt), "Giver, loot and vendor markers must match this faction's real sources");
+    }
+    std::cout << (expectMissing ? "EXPECTED_BROKEN both camera quests are missing map points\n"
+        : "CASE both camera routes have their own real giver, loot and vendor markers\n");
 #endif
 }
 }

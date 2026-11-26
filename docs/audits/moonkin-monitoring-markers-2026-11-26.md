@@ -1,0 +1,7 @@
+# Moonkin Monitoring atzīmes Moonglade kartē
+
+Kvestam `47430` bija esošas Moonglade atzīmju definīcijas bez koordinātām. Karte `1`, Moonglade zona `493` un 26972 kartes lapa `241` sakrīt. Migrācija izmanto atbilstošā 299. pasākuma pasaules novietojumus. Trīs mērķi atrodas pie Astralaire `122241`, Pewkew `122256` un Dramock `122390`, bet nodošana pie Makkaw `122134`. Atsevišķā izsekošanas definīcija saglabāta. Atjaunotās koordinātas iegūtas no servera aktieru novietojumiem. [Migrācija](../../sql/updates/world/2026_11_26_32_moonkin_monitoring_markers.sql)
+
+Sākotnējā servera zonde neatrada nevienu ielādētu punktu. Pēc divām migrācijas izpildēm visas četras koordinātas bija identiskas. Labotā native zonde pārbaudīja ielādēto kartes lapu, stāvu, mērķu ID un koordinātas. Pirmajā pārbaudē zonde skaitīja arī esošo izsekošanas definīciju bez punktiem. Gala pārbaude skaita četrus ģeogrāfiskos punktus. Darba serveris ielādēja migrāciju un korekti apstājās bez jaunām avārijām, DBErrors vai brīdinājumiem. Darba datubāzes nolasījums sakrita ar izolēto pārbaudi. Migrācija ir `RELEASED` ar SHA-1 `BD78483DE1E1AB75F5D86815571C040A4330367D`. [Servera zonde](../../tools/tests/QuestMapMarkersNative.cpp)
+
+WoW klientā vēl jāpārbauda atzīmju attēlojums un sezonas ainas. [Sanākšanas un mērķu secība](https://www.wowhead.com/quest=47430/moonkin-monitoring) · [Pārbaudes arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-moonkin-camera-markers/manifest.json)
