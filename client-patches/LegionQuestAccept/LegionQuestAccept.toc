@@ -1,0 +1,6 @@
+## Interface: 70300
+## Title: Legion Quest Accept
+## Notes: Closes a stale NPC quest offer after its acceptance is confirmed.
+## Version: 1.0
+
+LegionQuestAccept.lua
