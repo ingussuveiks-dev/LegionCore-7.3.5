@@ -22,6 +22,7 @@
 #include "GameObjectAI.h"
 #include "GameTime.h"
 #include "Language.h"
+#include "LegionAnniversary.h"
 #include "Log.h"
 #include "MapManager.h"
 #include "ObjectMgr.h"
@@ -55,6 +56,11 @@ bool GameEventMgr::CheckOneGameEvent(uint16 entry) const
     case GAMEEVENT_NORMAL:
     {
         time_t currenttime = GameTime::GetGameTime();
+        if (entry == LegionAnniversary::Event && mGameEvent[entry].holiday_id == HolidayIds(LegionAnniversary::Event))
+        {
+            auto season = LegionAnniversary::GetSeason(currenttime);
+            return currenttime >= season.Start && currenttime < season.End;
+        }
         // Get the event information
         return mGameEvent[entry].start < currenttime
             && currenttime < mGameEvent[entry].end
@@ -88,6 +94,13 @@ bool GameEventMgr::CheckOneGameEvent(uint16 entry) const
 uint32 GameEventMgr::NextCheck(uint16 entry) const
 {
     time_t currenttime = GameTime::GetGameTime();
+    if (entry == LegionAnniversary::Event && mGameEvent[entry].holiday_id == HolidayIds(LegionAnniversary::Event) &&
+        mGameEvent[entry].state == GAMEEVENT_NORMAL)
+    {
+        auto season = LegionAnniversary::GetSeason(currenttime);
+        time_t boundary = currenttime < season.Start ? season.Start : currenttime < season.End ? season.End : season.NextStart;
+        return uint32(boundary - currenttime);
+    }
 
     // for NEXTPHASE state world events, return the delay to start the next event, so the followup event will be checked correctly
     if ((mGameEvent[entry].state == GAMEEVENT_WORLD_NEXTPHASE || mGameEvent[entry].state == GAMEEVENT_WORLD_FINISHED) && mGameEvent[entry].nextstart >= currenttime)

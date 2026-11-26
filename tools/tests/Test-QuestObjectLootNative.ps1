@@ -1,5 +1,5 @@
 param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='',[switch]$PassingWisdomBaseline,[switch]$PassingWisdomOrphanBaseline,[switch]$WanderingIsleBalloon,[switch]$WanderingIsleBalloonBaseline,[switch]$WanderingIsleMandori,[switch]$WanderingIsleMandoriBaseline,[switch]$WanderingIsleSouth,[switch]$WanderingIsleSouthBaseline,[switch]$WanderingIsleMedicalBaseline,[switch]$WanderingIsleRescue,[switch]$WanderingIsleRescueBaseline,[switch]$WanderingIsleThorn,[switch]$WanderingIsleThornBaseline,[switch]$WanderingIsleHealing,[switch]$WanderingIsleHealingBaseline,[switch]$WanderingIsleDeparture,[switch]$WanderingIsleDepartureBaseline,
-      [switch]$MoonkinQuestPOI,[switch]$MoonkinMonitoring,[switch]$CameraQuestPOI,[switch]$BertsBots,
+      [switch]$MoonkinQuestPOI,[switch]$MoonkinMonitoring,[switch]$CameraQuestPOI,[switch]$BertsBots,[switch]$LegionAnniversary,
       [switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallRise,[switch]$WestfallVision,[switch]$WestfallVisionObserve,[switch]$WestfallVisionScene,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
@@ -43,6 +43,7 @@ if($ForemanOslow){++$scopedProbes}
 if($CandyBuckets){++$scopedProbes}
 if($MoonkinMonitoring){++$scopedProbes}
 if($BertsBots){++$scopedProbes}
+if($LegionAnniversary){++$scopedProbes}
 if($DarkshoreWildlifeFlight){++$scopedProbes}
 if($WanderingIsleSouth){++$scopedProbes}
 if($BrazieBasicBotany){++$scopedProbes}
@@ -467,6 +468,10 @@ if($MoonkinMonitoring){
 if($BertsBots){
  $probeSource = "$PSScriptRoot/BertsBotsNative.cpp"
  [IO.File]::WriteAllText("$out/NativeBertsBots.inc",$query+' " WHERE ID=47895"')
+}
+if($LegionAnniversary){
+ $probeSource = "$PSScriptRoot/LegionAnniversaryNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeLegionAnniversary.inc",$query+' " WHERE ID IN(43471,43472,47251,47252)"')
 }
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"

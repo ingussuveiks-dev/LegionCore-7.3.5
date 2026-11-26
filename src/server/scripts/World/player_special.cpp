@@ -3,6 +3,8 @@
 #include <mutex>
 #include <ScriptMgr.h>
 #include "GameEventMgr.h"
+#include "GameTime.h"
+#include "LegionAnniversary.h"
 #include "Player.h"
 #include "QuestData.h"
 #include "Bag.h"
@@ -957,6 +959,60 @@ public:
     }
 };
 
+class player_legion_anniversary : public PlayerScript
+{
+public:
+    player_legion_anniversary() : PlayerScript("player_legion_anniversary") {}
+
+    void OnLogin(Player* player) override
+    {
+        if (!sGameEventMgr->IsActiveEvent(LegionAnniversary::Event))
+            return;
+
+        uint32 team = player->GetNativeTeam();
+        if (team != ALLIANCE && team != HORDE)
+            return;
+
+        auto const now = GameTime::GetGameTime();
+        auto const season = LegionAnniversary::GetSeason(now);
+        if (now < season.Start || now >= season.End)
+            return;
+
+        auto const guid = player->GetGUIDLow();
+        auto hasReceipt = [guid, year = season.Year]()
+        {
+            return CharacterDatabase.PQuery("SELECT 1 FROM character_custom_event_reapeter WHERE guid = " UI64FMTD
+                " AND event = %u AND repeat_id = %u", guid, LegionAnniversary::Event, year);
+        };
+        if (hasReceipt())
+            return;
+
+        Item* gift = Item::CreateItem(LegionAnniversary::Gift, 1, player);
+        if (!gift)
+        {
+            TC_LOG_ERROR("scripts", "Legion Anniversary: anniversary gift item %u is unavailable", LegionAnniversary::Gift);
+            return;
+        }
+
+        auto transaction = CharacterDatabase.BeginTransaction();
+        transaction->PAppend("INSERT INTO character_custom_event_reapeter (guid, event, repeat_id) VALUES (" UI64FMTD ", %u, %u)",
+            guid, LegionAnniversary::Event, season.Year);
+        gift->SaveToDB(transaction);
+        uint32 historian = team == ALLIANCE ? LegionAnniversary::HistorianLlore : LegionAnniversary::HistorianJupa;
+        MailDraft("WoW's 13th Anniversary", "Celebrate the anniversary with a gift from the Timewalkers.")
+            .AddItem(gift).SendMailTo(transaction, MailReceiver(guid), MailSender(MAIL_CREATURE, historian));
+        // Item and mail writes use asynchronous DB connections. Wait during
+        // login so a failed commit never publishes mail to the client.
+        if (CharacterDatabase.AsyncCommitTransaction(transaction).m_future.get())
+            player->AddNewMailDeliverTime(now);
+    }
+};
+
+void AddSC_legion_anniversary()
+{
+    new player_legion_anniversary();
+}
+
 class player_clear_timed_titles : public PlayerScript
 {
 public:
@@ -1035,6 +1091,7 @@ void AddSC_player_special_scripts()
     new player_kick_afk_moderators();
     new player_heirloom_achieve_check();
     new player_chineese_event();
+    AddSC_legion_anniversary();
     new player_clear_timed_titles();
     new player_invisible_status_mod_map_handler();
 };
