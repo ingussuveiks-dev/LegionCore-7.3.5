@@ -340,7 +340,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPackets::PetPackets::PetSpellAuto
     }
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(packet.SpellID);
-    if (!pet->HasSpell(packet.SpellID) || spellInfo->IsAutocastable())
+    if (!spellInfo || !pet->HasSpell(packet.SpellID) || !spellInfo->IsAutocastable())
         return;
 
     CharmInfo* charmInfo = pet->GetCharmInfo();

@@ -1,0 +1,9 @@
+# Water Elemental manual Freeze
+
+The observed pet bar held Water Jet (135029) in slot 4 with autocast enabled, Freeze (33395) in slot 5 as a manual ability, and Waterbolt (31707) in slot 6 with autocast enabled. A read-only check of the saved pet matched the bar. The server logged repeated Water Jet damage ticks. The two logged toggle changes in that interval selected Waterbolt. These observations do not establish that a manually placed Freeze missed its target.
+
+The build's SpellCategories and SpellCooldowns data give Water Jet and Freeze category 35 and 25000 ms category recovery. Waterbolt does not use that category. Freeze and Water Jet have distinct SpellXSpellVisual records (8893 and 56453). Freeze applies a root and its bound aura script grants a Fingers of Frost charge when the root is applied.
+
+The dedicated pet autocast handler incorrectly returned for eligible spells before calling ToggleAutocast and SetSpellAutocast. Corrected its eligibility check while retaining pet ownership and learned-spell checks. No character settings were written. In the client, disable Water Jet autocast, wait for the shared cooldown, then place Freeze on the deck under the target. Actual reticle, root, visual and charge await client confirmation.
+
+During user-led traversal the Release game library was rebuilt from PetHandler.cpp and the final link took that library from its original output path. The canonical EXE and map were promoted offline and checked against the staged hashes. EXE SHA-256 9200414A322695557EBC06BD9520A19275D842E8DE8DC153AD8F74394F30756B. Map SHA-256 63D1AF5B72D142BF8B9A26643098A6D656C18BE4789F55A29ECFF63B38C18964. The preceding pair remains under .codex/elemental-freeze-20261126/rollback for the retest. Removed the identical staged pair (270403690 bytes). No separate test server or regression was run. The canonical crash directory and DBErrors.log were empty before retest.
