@@ -37,6 +37,7 @@
 #include "BrazieBotany.h"
 #include "ScorpidVenom.h"
 #include "WestfallStew.h"
+#include "WestfallVision.h"
 #include "GameEventMgr.h"
 #include "HallowsEndCrate.h"
 #include "InstancePackets.h"
@@ -4349,8 +4350,30 @@ bool CrushcogAssault::CanPlaceMarker(Player const* player, Position const& desti
         destination.IsInDist(arena->posX, arena->posY, arena->posZ, 45.0f);
 }
 
+bool WestfallVision::CanStart(Player* player)
+{
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->GetMapId() != Map ||
+        player->GetVehicle() || player->isInFlight() || player->HasAura(Ride) ||
+        player->FindQuestSlot(Quest) >= MAX_QUEST_LOG_SIZE || player->GetQuestStatus(Quest) != QUEST_STATUS_INCOMPLETE ||
+        !player->HasItemCount(Incense, 1, false))
+        return false;
+
+    for (ObjectGuid const& guid : *player->GetSummonList(Camera))
+        if (Creature* camera = player->GetMap()->GetCreature(guid); camera && !camera->IsDespawn() && !camera->IsQuestObjectExpired())
+            return false;
+    return true;
+}
+
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, ObjectGuid targetGuid /*= 0*/, uint32 spellId /*= 0*/, int32 vehId /*= 0*/, ObjectGuid viewerGuid /*= 0*/, GuidUnorderedSet* viewersList /*= NULL*/)
 {
+    Player* visionRider = nullptr;
+    if (entry == WestfallVision::Camera && spellId == WestfallVision::Summon)
+    {
+        visionRider = summoner ? summoner->ToPlayer() : nullptr;
+        if (!properties || properties->ID != WestfallVision::Properties || !WestfallVision::CanStart(visionRider))
+            return nullptr;
+    }
+
     Player* orbitalOwner = nullptr;
     if (entry == CrushcogAssault::OrbitalMarker && spellId == CrushcogAssault::OrbitalTarget)
     {
@@ -4868,6 +4891,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         orbitalOwner->BindQuestObject(CrushcogAssault::Quest, summon);
     if (stewOwner)
         stewOwner->BindQuestObject(WestfallStew::Quest, summon);
+
+    if (visionRider)
+        visionRider->BindQuestObject(WestfallVision::Quest, summon);
 
     if (shangXiOwner)
         shangXiOwner->BindQuestObject(shangXiQuest, summon);

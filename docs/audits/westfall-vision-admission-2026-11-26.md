@@ -1,5 +1,7 @@
 # A Vision of the Past, 26320
 
+Darba laidienā vīzijas ieskaite tagad seko faktiskajai iekāpšanai, cīņai un Vanessas finālam. Zemāk saglabāts sākotnējās uzvedības pieraksts. [Vīzijas ainas labojums](westfall-vision-encounter-2026-11-26.md)
+
 Thoralius `42651/107503` piešķir Incense Burner `58147`. Vecā SmartAI rinda paredzēja kvesta pabeigšanu pieņemšanas brīdī, lai gan devējs nelieto SmartAI. Servera pārbaudē pati pieņemšana jau saglabāja nepabeigtu statusu. Izņemta tikai šī neaktīvā rinda. Pēc izņemšanas pieņemšana joprojām sniedz priekšmetu, saglabā nepabeigtu statusu un noraida burvestību ārpus Deadmines.
 
 Parastajā Deadmines instancē faktiskais fokuss `301550/106562` ļauj burvestībai `79586` izsaukt oriģinālo aktieri `42693`. Pašreizējā aktiera SmartAI rinda uzreiz pabeidz kvestu ar novecojušo `AreaExploredOrEventHappens` izsaukumu, un zondē tika ierakstīta attiecīgā kļūda. Kvestam ir arī oriģinālais `79620` pabeigšanas efekts, bet pieejamajos aktiera datos nav secības, kas to izsauc pēc pilnas vīzijas. Šis izpildes posms paliek atvērts. Saglabāta spēlē pašlaik pieejamā pabeigšana un tās diagnostika. [Neatrisinātā gadījuma zonde](../../.codex/wandering-exit-city-20261126/unresolved-26320/)

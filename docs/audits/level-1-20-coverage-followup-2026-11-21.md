@@ -382,3 +382,5 @@ Westfall `26320` izņemta neaktīvā pieņemšanas ieskaite. Serverī atkārtoti
 Westfall `26322` Vanessa fināls tagad izmanto parasto kvesta pabeigšanu. Serverī pārbaudīta sākotnējā aina, divu tiesīgu aculiecinieku ieskaite, atlīdzība pie Anduin un `Return to Sentinel Hill` pieņemšana. Darba servera palaišanā jaunu avāriju vai DBErrors nebija. Ainas attēlojums klientā paliek atvērts. [Rise of the Brotherhood](westfall-brotherhood-2026-11-26.md)
 
 Deeprun Tram žurkai noņemtas 26 ar veco Westfall ainu saistītas rindas, kas aizstāja tās parasto skriptu. Serverī pārbaudīti pieci īsti ķērieni, atteikums noķert to pašu žurku divreiz, nodošana pie Monty un jauna pieņemšana pēc atmešanas. Darba serveris ielādēja labojumu bez jaunām avārijām vai DBErrors. [Deeprun Rat Roundup](deeprun-rat-roundup-2026-11-26.md)
+
+`A Vision of the Past` serverī tagad sākas ar faktisku iekāpšanu un pabeidzas pēc lidojuma, Edwin nāves un Vanessas fināla. Pārbaudīti divi privāti braucieni, pārtraukšana un nodošana pie Marshal ar pieejamu nākamo kvestu. Kamera un attēlojums WoW klientā paliek jāpārbauda. [Deadmines vīzijas audits](westfall-vision-encounter-2026-11-26.md)

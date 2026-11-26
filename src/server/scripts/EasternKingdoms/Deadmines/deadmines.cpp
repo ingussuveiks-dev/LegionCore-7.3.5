@@ -3,6 +3,7 @@
 #include "InstanceScript.h"
 #include "deadmines.h"
 #include "Spell.h"
+#include "westfall_vision_scene.h"
 
 #define GOSSIP_SENDER_DEADMINES_PORT 36
 
@@ -84,4 +85,5 @@ void AddSC_deadmines()
 {
     new go_defias_cannon();
     new deadmines_teleport();
+    RegisterWestfallVision();
 }

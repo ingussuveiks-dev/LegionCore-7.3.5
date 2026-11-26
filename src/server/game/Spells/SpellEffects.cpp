@@ -89,6 +89,7 @@
 #include "Util.h"
 #include "Vehicle.h"
 #include "WaypointMovementGenerator.h"
+#include "WestfallVision.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include <G3D/Quat.h>
@@ -7286,6 +7287,22 @@ void Spell::EffectQuestComplete(SpellEffIndex effIndex)
         Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
         if (!quest)
             return;
+
+        if (m_spellInfo->Id == WestfallVision::Credit && questId == WestfallVision::Quest)
+        {
+            Creature* camera = player->GetVehicleCreatureBase();
+            if (player == m_caster && player->IsAlive() && player->GetMapId() == WestfallVision::Map && camera &&
+                camera->GetEntry() == WestfallVision::Camera && camera->HasQuestObjectScope() && !camera->IsQuestObjectExpired() &&
+                camera->GetVehicleKit()->GetPassenger(0) == player &&
+                camera->AI() && camera->AI()->GetData(WestfallVision::Quest) && player->FindQuestSlot(questId) < MAX_QUEST_LOG_SIZE &&
+                player->GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE)
+            {
+                player->CompleteQuest(questId);
+                if (player->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
+                    player->SendQuestComplete(quest);
+            }
+            return;
+        }
 
         for (auto const& choice : EmbassyAllyChoice::Choices)
             for (auto const& ally : choice.Allies)
