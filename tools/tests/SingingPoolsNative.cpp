@@ -220,6 +220,7 @@ void LoadPools()
         "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gameobject_queststarter AS SELECT * FROM legion_world.gameobject_queststarter WHERE quest=29782");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=105306");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55632,55633)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
@@ -251,6 +252,7 @@ void LoadPools()
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     creatureLoot = originalCreatureLoot;
     Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
+    sObjectMgr->LoadCreatureTemplateAddons();
     sObjectMgr->LoadCreatures();
     sQuestDataStore->LoadGameObjectForQuests();
     sObjectMgr->LoadNPCText();
@@ -1367,6 +1369,28 @@ void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
     Tick(pupil, 200);
     Require(buddies.size() == 1 && buddies.front() != firstBuddyId, "Re-entering an eligible Fe-Feng area did not publish a new companion");
     ObjectGuid const buddyId = buddies.front();
+    auto ruffianRows = WorldDatabase.Query("SELECT guid,areaId FROM creature WHERE map=860 AND id=55632 ORDER BY guid");
+    Require(ruffianRows && ruffianRows->GetRowCount() == 28, "The original Ruffian placements are missing");
+    std::vector<uint32> ruffians;
+    do
+    {
+        auto const fields = ruffianRows->Fetch();
+        uint32 const spawn = fields[0].GetUInt32();
+        Teacher ruffian(map, spawn, FeFeng);
+        MoveGilneasPlayer(pupil, ruffian.GetPosition());
+#ifdef SINGING_POOLS_RUFFIAN_BASELINE
+        Require(ruffian.HasAura(119073) && !pupil.IsValidAttackTarget(&ruffian), "The original Ruffian was not loaded in its erroneous feigned death state");
+#else
+        Require(!ruffian.HasAura(119073) && pupil.IsValidAttackTarget(&ruffian), "A nearby Ruffian is still stuck in a dead or immune state");
+#endif
+        if (fields[1].GetUInt32() == 5831)
+            ruffians.push_back(spawn);
+    } while (ruffianRows->NextRow());
+    Require(ruffians.size() == 26, "The original Fe-Feng Village Ruffian count changed");
+#ifdef SINGING_POOLS_RUFFIAN_BASELINE
+    std::cout << "EXPECTED_BROKEN all 28 original Ruffians carried Permanent Feign Death and refused combat" << std::endl;
+    return;
+#endif
     auto rows = WorldDatabase.Query("SELECT guid FROM creature WHERE map=860 AND id=55633 AND areaId=5831 ORDER BY guid");
     Require(rows && rows->GetRowCount() == 13, "The native Fe-Feng Firethief placements are missing");
     std::vector<uint32> spawns;
@@ -1374,11 +1398,10 @@ void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
     Require(sObjectMgr->GetCreatureTemplate(Firethief)->KillCredit[0] == FeFeng, "Firethieves lost their authored Ruffian objective alias");
     for (uint32 count = 0; count < 20; ++count)
     {
-        uint32 const spawn = spawns[count % spawns.size()];
-        if (count >= spawns.size())
-            map.RemoveCreatureRespawnTime(spawn);
-        Teacher hozen(map, spawn, Firethief);
-        defeat(hozen, count % 2 != 0);
+        bool const firethief = count % 2 != 0;
+        uint32 const spawn = firethief ? spawns[count / 2] : ruffians[count / 2];
+        Teacher hozen(map, spawn, firethief ? Firethief : FeFeng);
+        defeat(hozen, count % 4 >= 2);
         Require(pupil.GetQuestObjectiveData(DirectSolution, FeFeng) == int32(count + 1), "A player or pet Fe-Feng defeat lost or duplicated native alias credit");
     }
     Require(pupil.GetQuestStatus(DirectSolution) == QUEST_STATUS_COMPLETE && !pupil.GetQuestObjectiveData(DoNoEvil, RukRuk),
@@ -1424,7 +1447,7 @@ void CheckFeFengVillage(Map& map, LootPlayer& pupil, Teacher& ji)
     Require(!pupil.HasAura(105306) && buddies.empty(), "The Ji companion persisted after leaving for Aysa");
     RewardQuest(pupil, aysa, BalancedPerspective);
     Require(pupil.IsQuestRewarded(BalancedPerspective), "The original Aysa placement did not accept Balanced Perspective");
-    std::cout << "PASS Fe-Feng native companion and 20 player/pet kills, Ruk-Ruk, Ji's rewards and Aysa's turn-in" << std::endl;
+    std::cout << "PASS all 28 Ruffian placements, Ji companion, 20 player/pet Ruffian and Firethief defeats, Ruk-Ruk and Aysa's turn-in" << std::endl;
 #endif
 }
 
