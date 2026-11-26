@@ -4,7 +4,9 @@
 #include "Group.h"
 #include "Item.h"
 #include "MapManager.h"
+#include "ModelIgnoreFlags.h"
 #include "MoveSpline.h"
+#include "MovementTypedefs.h"
 #include "QuestData.h"
 #include "QuestObjectScope.h"
 #include "ScriptMgr.h"
@@ -5589,6 +5591,8 @@ public:
         EventMap events;
         ObjectGuid playerGuid;
         ObjectGuid jiGuid;
+        Position exitLanding;
+        bool triedDeckDescent = false;
 
         enum escortEntry
         {
@@ -5607,6 +5611,11 @@ public:
             EVENT_JI_2          = 12,
             EVENT_JI_3          = 13,
             EVENT_JI_4          = 14,
+            EVENT_FINISH_EXIT   = 15,
+            EVENT_LEAVE_DECK    = 16,
+
+            WAYPOINT_EXIT       = 10,
+            POINT_DECK_DESCENT  = 6072901,
 
             SPELL_SUMMON_JI     = 117597,
             NPC_THORN_JI        = 60741,
@@ -5654,6 +5663,74 @@ public:
         {   
             if (Creature* ji = GetJi())
                 ji->DespawnOrUnsummon();
+        }
+
+        void MovementInform(uint32 type, uint32 point) override
+        {
+            if (type == EFFECT_MOTION_TYPE && point == POINT_DECK_DESCENT)
+            {
+                events.RescheduleEvent(EVENT_FINISH_EXIT, 1);
+                return;
+            }
+
+            if (type == POINT_MOTION_TYPE && point == WAYPOINT_EXIT && IsEscorted())
+            {
+                Position exit;
+                if (GetWaypointPosition(WAYPOINT_EXIT, exit.m_positionX, exit.m_positionY, exit.m_positionZ) &&
+                    me->GetExactDist(exit) >= 1.0f)
+                {
+                    // A finalized point spline can still end at the edge of an incomplete path.
+                    events.RescheduleEvent(EVENT_LEAVE_DECK, 1);
+                    return;
+                }
+            }
+            npc_escortAI::MovementInform(type, point);
+        }
+
+        bool LeaveDeck()
+        {
+            constexpr float verticalSpeed = 12.0f;
+            constexpr float arcHeight = verticalSpeed * verticalSpeed / (2.0f * Movement::gravity);
+            Position const deckEdge{242.896f, 3968.6f, 86.3961f};
+            if (triedDeckDescent || me->GetMapId() != 860 || me->GetExactDist(deckEdge) > 1.5f)
+                return false;
+            triedDeckDescent = true;
+
+            auto map = me->GetMap();
+            auto const& phases = me->GetPhases();
+            constexpr float landingX = 242.0f;
+            constexpr float landingY = 3959.0f;
+            float ground = map->GetHeight(phases, landingX, landingY, 65.0f, true, 5.0f, nullptr, me);
+            if (std::abs(ground - 62.22f) > 1.0f)
+                return false;
+            exitLanding.Relocate(landingX, landingY, ground);
+
+            G3D::Vector3 start{me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()};
+            G3D::Vector3 end{landingX, landingY, ground};
+            auto previous = start;
+            for (uint32 step = 1; step <= 24; ++step)
+            {
+                float fraction = float(step) / 24.0f;
+                auto next = start.lerp(end, fraction);
+                next.z += 4.0f * arcHeight * fraction * (1.0f - fraction);
+                for (float height : {0.45f, 1.75f})
+                    for (float side : {-0.35f, 0.35f})
+                        if (!map->isInLineOfSight(previous.x + side, previous.y, previous.z + height,
+                            next.x + side, next.y, next.z + height, phases, VMAP::ModelIgnoreFlags::Nothing, nullptr, me))
+                            return false;
+                previous = next;
+            }
+
+            me->GetMotionMaster()->MoveJump(exitLanding, 12.0f, verticalSpeed, POINT_DECK_DESCENT);
+            return true;
+        }
+
+        void CancelExit()
+        {
+            TC_LOG_WARN("scripts", "Risking It All: Aysa could not reach escort waypoint %u from %.3f, %.3f, %.3f.",
+                WAYPOINT_EXIT, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+            LastWaypointReached();
+            me->DespawnOrUnsummon();
         }
 
         Creature* GetJi() const
@@ -5736,6 +5813,20 @@ public:
                         if (status == QUEST_STATUS_COMPLETE && me->IsWithinDistInMap(player, 25.0f))
                             player->NearTeleportTo(249.38f, 3939.55f, 65.61f, 1.501471f);
                         break;
+                    case EVENT_LEAVE_DECK:
+                        if (!LeaveDeck())
+                            CancelExit();
+                        break;
+                    case EVENT_FINISH_EXIT:
+                    {
+                        Position exit;
+                        if (me->GetExactDist(exitLanding) < 1.0f &&
+                            GetWaypointPosition(WAYPOINT_EXIT, exit.m_positionX, exit.m_positionY, exit.m_positionZ))
+                            MovePoint(WAYPOINT_EXIT, exit.m_positionX, exit.m_positionY, exit.m_positionZ);
+                        else
+                            CancelExit();
+                        break;
+                    }
                     case EVENT_JI_0:
                         if (Creature* ji = GetJi())
                         {

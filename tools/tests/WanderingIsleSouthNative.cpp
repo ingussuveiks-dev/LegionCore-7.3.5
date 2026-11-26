@@ -578,6 +578,13 @@ void CheckThorn(LootPlayer& pupil, LootPlayer& visitor)
     std::cout << "CASE Thorn debate=" << reachedDebate << " exit motion=" << startedExit << " duration=" << duration
         << " last actor distance from scripted exit=" << lastObserved.GetExactDist(last) << std::endl;
     Require(reachedDebate && startedExit && !map.GetCreature(escortGuid), "The native escort did not reach the debate, depart and clean up");
+    if (sConfigMgr->GetBoolDefault("NativeThornExit.ExpectInterrupted", false))
+    {
+        Require(lastObserved.GetExactDist(last) > 30.0f, "The previous exit no longer reproduces its incomplete waypoint");
+        std::cout << "EXPECTED_BROKEN the deck route stopped above the intended ground waypoint\n";
+    }
+    else
+        Require(lastObserved.GetExactDist(last) < 1.0f, "Aysa despawned before actually reaching the ground waypoint");
     Require(pupil.GetQuestObjectiveData(RiskingItAll, ThornCredit) == 1 && pupil.isWatchingMovie(), "The original escort did not launch its movie and credit its owner");
     Require(!visitor.GetQuestObjectiveData(RiskingItAll, ThornCredit) && !visitor.isWatchingMovie(), "A canceled quest participant received the movie or credit");
     Require(pupil.HasPendingTeleport() && pupil.GetTeleportDest().GetExactDist(Position{249.38f, 3939.55f, 65.61f}) < 1.0f,

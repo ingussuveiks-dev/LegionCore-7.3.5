@@ -1,0 +1,11 @@
+# Risking It All pēdējais eskorta posms
+
+`30767` Aysa ceļā no kuģa uz zemi navigācija atdeva nepilnu maršrutu. Punkta kustības paziņojums pienāca, kad spline beidzās uz klāja pie `242.896, 3968.6, 86.3961`. Pēdējais paredzētais punkts bija 35,7061 jardu attālumā, tādēļ aktieris pazuda pirms ierašanās. Karte `860` apstiprināja divas atsevišķas virsmas un brīvu pāreju no attiecīgās klāja malas.
+
+Tagad Aysa vispirms izmanto parasto navigāciju. No pārbaudītās malas labojums izmēra grīdu, pārbauda lēciena trajektoriju ar aktiera fāzēm un modeļu sadursmēm, sagaida faktisko piezemēšanos un ar parasto navigāciju pabeidz sākotnējo 10. punktu. Ja nokāpšana nav pieejama, eskorts atstāj brīdinājumu un sakopj savus aktierus. Saglabātas kvesta ieskaites, filmas un spēlētāja pārcelšanas prasības.
+
+2015. gada ieraksta kadri pārskatīti no sākuma līdz nodošanai ar piecu sekunžu soli un ap klāja atstāšanu ar vienas sekundes soli. Tajos redzama saruna, aktieru kustība pie malas, filma un atgriešanās pie Ji. Aysa precīzā trajektorija līdz servera 10. punktam ierakstā nav redzama. Nokāpšana rekonstruēta no novērotās ainas un vietējās 26972 ģeometrijas. Faktiskā kameras pāreja, animācija un audio 7.3.5 klientā paliek atvērti. [Spēles ieraksts](https://www.youtube.com/watch?v=oFC3aymLFkw)
+
+Native pretpiemērs atkārtoja apstāšanos uz klāja. Labotais tests izmērīja 0,00047 jardu attālumu līdz sākotnējam galapunktam pirms aktiera izņemšanas. Atkārtoti izgāja Vordraka peta pēdējais sitiens, divi privāti eskorti, atmešana, filmas un pārcelšanas paketes un Ji atlīdzība. Pagaidu un darba serveri sasniedza gatavību un noslēdzās ar statusu 0 bez jaunām avārijām, DBErrors vai servera brīdinājumiem. Gala saistes komandā pārbaudīti faktiskie `scripts.lib` un `game.lib` ceļi un abi kustības simboli. Darba EXE SHA-256 ir `819C328CC56C814218B1F97E7E701BC0AE1E3806C8A843380B524B17A160B769`. [Native zonde](../../tools/tests/WanderingIsleSouthNative.cpp)
+
+Ar kontrolsummām saglabāti 87 diagnostikas faili. Izņemti 42 pagaidu faili jeb 1 729 208 572 baiti. Iepriekšējais EXE un MAP atkopšanai ir `.codex/level-quest-followthrough-20261126/thorn-rollback/`. [Diagnostika un dzēšanas saraksts](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-thorn-deck-descent/)
