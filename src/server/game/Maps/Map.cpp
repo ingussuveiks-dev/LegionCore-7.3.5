@@ -4513,6 +4513,28 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                     return nullptr;
     }
 
+    Player* balloonOwner = nullptr;
+    bool const shenZinSuBalloon = entry == 55649 && spellId == 105002;
+    bool const shenZinSuAysa = entry == 56661 && spellId == 106636;
+    if (shenZinSuBalloon || shenZinSuAysa)
+    {
+        balloonOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!balloonOwner || GetId() != 860 || !properties || properties->ID != (shenZinSuBalloon ? 3283 : 3276) ||
+            !balloonOwner->IsAlive() || balloonOwner->GetAreaId() != 5832 || balloonOwner->GetQuestStatus(29791) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+
+        auto hasActiveSummon = [&](uint32 actor)
+        {
+            for (ObjectGuid const& guid : *balloonOwner->GetSummonList(actor))
+                if (Creature const* summon = GetCreature(guid); summon && summon->IsAlive() && summon->HasQuestObjectScope() &&
+                    !summon->IsQuestObjectExpired())
+                    return true;
+            return false;
+        };
+        if (hasActiveSummon(entry) || (shenZinSuBalloon ? balloonOwner->GetVehicle() != nullptr : !hasActiveSummon(55649)))
+            return nullptr;
+    }
+
     Player* minerOwner = nullptr;
     if (entry == 35813 && spellId == 68059 && GetId() == 648)
     {
@@ -4801,6 +4823,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (shangXiOwner)
         shangXiOwner->BindQuestObject(shangXiQuest, summon);
+
+    if (balloonOwner)
+        balloonOwner->BindQuestObject(29791, summon);
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);

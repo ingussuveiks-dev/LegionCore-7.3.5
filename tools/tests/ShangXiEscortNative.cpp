@@ -8,6 +8,8 @@
 #include "MoveSpline.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptSystem.h"
+#include "SpellPackets.h"
+#include "Vehicle.h"
 
 void AddSC_WanderingIsland();
 
@@ -29,6 +31,11 @@ constexpr uint32 WisdomMaster = 56686;
 constexpr uint32 WisdomCredit = 56688;
 constexpr uint32 Scamp = 55640;
 constexpr uint32 RitualCharm = 74634;
+constexpr uint32 BalloonVehicle = 55649;
+constexpr uint32 BalloonStand = 55918;
+constexpr uint32 BalloonStandSpawn = 245079;
+constexpr uint32 BalloonRideCredit = 56378;
+constexpr uint32 TurtleStoryCredit = 55939;
 
 Quest const* LoadPassing()
 {
@@ -93,13 +100,15 @@ Quest const* LoadPassing()
     Require(summon && summon->GetEffect(EFFECT_0)->MiscValue == ShangXi && summon->GetEffect(EFFECT_0)->MiscValueB == 3276,
         "The native Shang Xi spell was replaced");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE passing_spell_area AS SELECT * FROM spell_area WHERE spell IN (105333,105001,106623)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE passing_spell_area AS SELECT * FROM spell_area WHERE spell IN (105333,105001,106623,105002) OR (spell=60922 AND quest_start=29791)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM passing_spell_area");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245086,245096) OR id=55640)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245086,245096,245079,245127,244855,245235) OR id=55640)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest BETWEEN 29787 AND 29791");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest BETWEEN 29787 AND 29791");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55672,56686)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceTypeOrReferenceId=19 AND SourceEntry=29790");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55672,56686,57769)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29790) OR (SourceTypeOrReferenceId=18 AND SourceGroup IN (55918,55649))");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN (55918,55649)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE vehicle_template_accessory AS SELECT * FROM legion_world.vehicle_template_accessory WHERE EntryOrAura IN (55918,55649)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sSpellMgr->LoadSpellAreas();
     sObjectMgr->LoadItemTemplates();
@@ -120,6 +129,8 @@ Quest const* LoadPassing()
     Require(LootTemplates_Creature.GetLootFor(55640), "Missing the original Thornbranch Scamp loot");
     sObjectMgr->LoadCreatureTemplateAddons();
     sObjectMgr->LoadCreatures();
+    sObjectMgr->LoadNPCSpellClickSpells();
+    sObjectMgr->LoadVehicleTemplateAccessories();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
     if (WorldDatabase.Query("SELECT 1 FROM conditions LIMIT 1"))
@@ -519,6 +530,165 @@ void CheckPassingWisdom()
     std::cout << "PASS Passing Wisdom preparations, native restart, staff ceremony, Aysa reward and follow-up admission\n";
 #endif
 }
+
+void CheckShenZinSu()
+{
+    Map map(860, 303, 0, DIFFICULTY_NONE);
+    auto const* data = sObjectMgr->GetCreatureData(BalloonStandSpawn);
+    Require(data, "The original clickable balloon is missing");
+    Position const dock{data->posX, data->posY, data->posZ, data->orientation};
+    map.LoadGrid(data->posX, data->posY);
+    LootPlayer owner(SupplySession(), map, 2979101, dock);
+    owner.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
+    owner.SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
+    owner.setFactionForRace(RACE_PANDAREN_NEUTRAL);
+    owner.InitDisplayIds();
+    owner.SetLevel(10);
+    owner.SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 15000);
+    owner.SetRewardedQuest(Wisdom);
+    MoveGilneasPlayer(owner, dock);
+    auto* placedBalloon = owner.FindNearestCreature(BalloonStand, 10.0f, true);
+    auto* aysa = owner.FindNearestCreature(56662, 15.0f, true);
+    Require(placedBalloon && placedBalloon->GetDBTableGUIDLow() == BalloonStandSpawn && aysa, "Missing the real balloon stand or Aysa");
+    WorldPackets::Spells::SpellClick click{WorldPacket(CMSG_SPELL_CLICK)};
+    click.SpellClickUnitGuid = placedBalloon->GetGUID();
+    owner.GetSession()->HandleSpellClick(click);
+    Tick(owner, 500);
+    Require(!owner.GetVehicle() && owner.GetSummonList(BalloonVehicle)->empty(), "A balloon appeared before accepting the quest");
+
+    MoveGilneasPlayer(owner, aysa->GetPosition());
+    WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    accept.QuestGiverGUID = aysa->GetGUID();
+    accept.QuestID = Suffering;
+    owner.GetSession()->HandleQuestGiverAcceptQuest(accept);
+    Require(owner.GetQuestStatus(Suffering) == QUEST_STATUS_INCOMPLETE && !owner.GetQuestObjectiveData(Suffering, BalloonRideCredit),
+        "Aysa did not accept Suffering, or supplied boarding credit before the player boarded");
+    Position remote = dock;
+    remote.m_positionX += 35.0f;
+    MoveGilneasPlayer(owner, remote);
+    Require(owner.GetAreaId() == 5832 && !owner.IsWithinDistInMap(placedBalloon, INTERACTION_DISTANCE),
+        "The remote balloon test point must remain in the original dock area outside interaction range");
+    owner.GetSession()->HandleSpellClick(click);
+    Tick(owner, 500);
+#ifdef WANDERING_ISLE_BALLOON_BASELINE
+    Require(owner.GetVehicle() && owner.GetQuestObjectiveData(Suffering, BalloonRideCredit) == 1,
+        "The remote click did not reproduce boarding and its original credit");
+    auto oldFlight = owner.GetVehicleBase()->GetGUID();
+    AbandonSupply(owner, Suffering);
+    Tick(owner, 250);
+    map.RemoveAllObjectsInRemoveList();
+    Require(map.GetCreature(oldFlight) && owner.GetVehicle(), "Abandoning no longer reproduced the continuing unscoped ride");
+    owner.ExitVehicle();
+    Tick(owner, 2000);
+    map.RemoveAllObjectsInRemoveList();
+    std::cout << "EXPECTED_BROKEN the distant dock click boarded a player and abandoning kept the original ride active\n";
+    return;
+#else
+    Require(!owner.GetVehicle() && owner.GetSummonList(BalloonVehicle)->empty() && !owner.GetQuestObjectiveData(Suffering, BalloonRideCredit),
+        "A distant click started the original balloon trip");
+#endif
+    MoveGilneasPlayer(owner, dock);
+    owner.GetSession()->HandleSpellClick(click);
+    Tick(owner, 500);
+    auto list = owner.GetSummonList(BalloonVehicle);
+    Creature* balloon = list->empty() ? nullptr : map.GetCreature(list->front());
+    std::cout << "CASE Shen-zin Su balloons=" << list->size() << " seated=" << bool(owner.GetVehicle()) << " boarding="
+        << owner.GetQuestObjectiveData(Suffering, BalloonRideCredit) << std::endl;
+    Require(balloon && list->size() == 1 && owner.GetVehicleBase() == balloon && owner.GetQuestObjectiveData(Suffering, BalloonRideCredit) == 1,
+        "The actual balloon click did not seat and credit the owner");
+
+#ifndef WANDERING_ISLE_BALLOON_BASELINE
+    ObjectGuid const cancelledFlight = balloon->GetGUID();
+    auto aysaList = owner.GetSummonList(56661);
+    Require(balloon->HasQuestObjectScope() && aysaList->size() == 1, "The first balloon and Aysa were not bound to the quest");
+    ObjectGuid const cancelledAysa = aysaList->front();
+    auto firstAysa = map.GetCreature(cancelledAysa);
+    Require(firstAysa && firstAysa->GetQuestObjectScope().lock() == balloon->GetQuestObjectScope().lock(),
+        "The first balloon and Aysa did not share the accepted attempt");
+    AbandonSupply(owner, Suffering);
+    map.RemoveAllObjectsInRemoveList();
+    Tick(owner, 250);
+    Require(!map.GetCreature(cancelledFlight) && !map.GetCreature(cancelledAysa) && !owner.GetVehicle(),
+        "Abandoning retained the flight, the passenger, or the owner in a seat");
+    MoveGilneasPlayer(owner, aysa->GetPosition());
+    owner.GetSession()->HandleQuestGiverAcceptQuest(accept);
+    MoveGilneasPlayer(owner, dock);
+    owner.GetSession()->HandleSpellClick(click);
+    Tick(owner, 500);
+    balloon = list->empty() ? nullptr : map.GetCreature(list->front());
+    Require(balloon && list->size() == 1 && balloon->GetGUID() != cancelledFlight && owner.GetVehicleBase() == balloon &&
+        owner.GetQuestObjectiveData(Suffering, BalloonRideCredit) == 1, "A real second attempt did not start its own balloon and native boarding credit");
+    Require(!owner.GetQuestObjectiveData(Suffering, TurtleStoryCredit), "Boarding awarded the story objective before flying the route");
+
+    LootPlayer other(SupplySession(), map, 2979102, dock);
+    other.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
+    other.SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
+    other.setFactionForRace(RACE_PANDAREN_NEUTRAL);
+    other.InitDisplayIds();
+    other.SetLevel(10);
+    other.SetRewardedQuest(Wisdom);
+    MoveGilneasPlayer(other, aysa->GetPosition());
+    other.GetSession()->HandleQuestGiverAcceptQuest(accept);
+    MoveGilneasPlayer(other, dock);
+    other.GetSession()->HandleSpellClick(click);
+    Tick(other, 500);
+    auto otherFlight = other.GetVehicleBase();
+    Require(otherFlight && otherFlight != balloon && owner.GetVehicleBase() == balloon && !otherFlight->CanTargetQuestObject(&owner) &&
+        !balloon->CanTargetQuestObject(&other), "Two own attempts unexpectedly shared a balloon or an owner's interaction");
+    auto otherFlightGuid = otherFlight->GetGUID();
+    AbandonSupply(other, Suffering);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(otherFlightGuid) && owner.GetVehicleBase() == balloon, "Canceling the nearby test flight affected the real rider");
+#endif
+
+    auto const& path = sScriptSystemMgr->GetPointMoveList(BalloonVehicle);
+    Require(path.size() == 21, "The original 21-point Shen-zin Su route is missing");
+    ObjectGuid const balloonGuid = balloon->GetGUID();
+    bool hadAysa = false;
+    bool hadJi = false;
+    bool reachedLanding = false;
+    const Position end{path.back().fX, path.back().fY, path.back().fZ};
+    for (uint32 elapsed = 0; elapsed < 480000 && (balloon = map.GetCreature(balloonGuid)); elapsed += 100)
+    {
+        for (uint32 entry : {56660u, 56661u, 65476u, 65477u})
+        {
+            std::list<Creature*> passengers;
+            balloon->GetCreatureListWithEntryInGrid(passengers, entry, 15.0f);
+            for (Creature* npc : passengers)
+                if (auto summon = npc->ToTempSummon(); summon && (summon->GetSummonerGUID() == balloonGuid || summon->GetSummonerGUID() == owner.GetGUID()))
+                    npc->Unit::Update(100);
+        }
+        balloon->Unit::Update(100);
+        balloon->AI()->UpdateAI(100);
+        Tick(owner, 100);
+        map.MoveAllCreaturesInMoveList();
+        if (auto vehicle = balloon->GetVehicleKit())
+            for (int8 seat = 1; seat < 5; ++seat)
+                if (auto passenger = vehicle->GetPassenger(seat))
+                {
+                    hadJi |= passenger->GetEntry() == 56660;
+                    hadAysa |= passenger->GetEntry() == 56661;
+                }
+        reachedLanding |= balloon->GetExactDist(end) < 1.0f;
+        map.RemoveAllObjectsInRemoveList();
+    }
+    std::cout << "CASE Shen-zin Su Ji=" << hadJi << " Aysa=" << hadAysa << " last=" << reachedLanding << " seated=" << bool(owner.GetVehicle())
+        << " story=" << owner.GetQuestObjectiveData(Suffering, TurtleStoryCredit) << std::endl;
+    Require(hadAysa && hadJi && reachedLanding && !owner.GetVehicle() && owner.GetQuestObjectiveData(Suffering, TurtleStoryCredit) == 1,
+        "The actual ride did not carry both original companions, complete the story and reach the final exit");
+
+    auto shaopaiData = sObjectMgr->GetCreatureData(245235);
+    Require(shaopaiData, "Missing the original Elder Shaopai placement");
+    MoveGilneasPlayer(owner, Position{shaopaiData->posX, shaopaiData->posY, shaopaiData->posZ, shaopaiData->orientation});
+    Creature* shaopai = owner.FindNearestCreature(56012, 10.0f, true);
+    Require(shaopai && shaopai->GetDBTableGUIDLow() == 245235, "Elder Shaopai was not available after the flight");
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestGiverGUID = shaopai->GetGUID();
+    reward.QuestID = Suffering;
+    owner.GetSession()->HandleQuestGiverChooseReward(reward);
+    Require(owner.IsQuestRewarded(Suffering), "Elder Shaopai did not accept the two genuine balloon objectives");
+    std::cout << "PASS normal balloon click, abandoned flight cleanup, new attempt, both companions, 21 waypoints and Elder Shaopai reward\n";
+}
 }
 
 int main(int argc, char** argv)
@@ -551,6 +721,9 @@ int main(int argc, char** argv)
         CheckPassing(quest);
         CheckTempleArrival(quest);
         CheckPassingWisdom();
+#ifdef WANDERING_ISLE_BALLOON
+        CheckShenZinSu();
+#endif
         CharacterDatabase.Close();
         LoginDatabase.Close();
         HotfixDatabase.Close();

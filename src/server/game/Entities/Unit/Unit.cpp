@@ -24413,6 +24413,11 @@ bool Unit::HandleSpellClick(Unit* clicker, int8 seatId)
     if (GetEntry() == Dozercism::Dozer && Dozercism::IsEncounterActor(ToCreature()))
         return false;
 
+    if (Creature const* balloon = ToCreature(); balloon && GetMapId() == 860 && GetEntry() == 55918 && balloon->GetDBTableGUIDLow() == 245079 &&
+        (!clicker->IsPlayer() || !clicker->IsAlive() || clicker->GetVehicle() || !IsWithinDistInMap(clicker, INTERACTION_DISTANCE) ||
+            !clicker->IsWithinLOSInMap(this)))
+        return false;
+
     bool res = false;
     uint32 spellClickEntry = GetVehicleKit() ? GetVehicleKit()->GetCreatureEntry() : GetEntry();
     SpellClickInfoMapBounds clickPair = sObjectMgr->GetSpellClickInfoMapBounds(spellClickEntry);

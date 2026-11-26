@@ -13,6 +13,7 @@
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "SpellScript.h"
+#include "Vehicle.h"
 #include "Packets/WorldStatePackets.h"
 
 enum panda_npc
@@ -4395,6 +4396,7 @@ class mop_air_balloon : public VehicleScript
         ObjectGuid shenZiGUID;
         ObjectGuid headGUID;
         EventMap events;
+        uint8 companionChecks = 0;
 
         void Reset()
         {
@@ -4406,6 +4408,8 @@ class mop_air_balloon : public VehicleScript
             firepawGUID.Clear();
             shenZiGUID.Clear();
             headGUID.Clear();
+            events.Reset();
+            companionChecks = 0;
             me->setActive(true);
             me->SetReactState(REACT_PASSIVE);
             me->m_invisibilityDetect.AddFlag(INVISIBILITY_UNK5);
@@ -4556,12 +4560,16 @@ class mop_air_balloon : public VehicleScript
             sCreatureTextMgr->SendChat(shen, text, playerGuid, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_AREA);
         }
 
-        void PassengerBoarded(Unit* passenger, int8 seatId, bool apply)
+        void PassengerBoarded(Unit* passenger, int8 seatId, bool apply) override
         {
             if (!apply)
             {
-                if (passenger->GetTypeId() == TYPEID_PLAYER)
+                if (Player* player = passenger->ToPlayer())
                 {
+                    if (player->GetGUID() != playerGuid)
+                        return;
+                    if (headGUID)
+                        player->RemoveFromExtraLook(headGUID);
                     me->DespawnOrUnsummon(1000);
                     me->CastSpell(passenger, SPELL_PARASHUT, true);
                 }
@@ -4570,14 +4578,17 @@ class mop_air_balloon : public VehicleScript
                 return;
             }
 
-            if (seatId == 0)
+            if (Player* player = passenger->ToPlayer())
             {
-                if (Player* player = passenger->ToPlayer())
+                if (seatId != 0 || player->GetGUID() != playerGuid || !me->CanTargetQuestObject(player) ||
+                    player->GetQuestStatus(QUEST_SUF_SHUN_ZI) != QUEST_STATUS_INCOMPLETE)
                 {
-                    playerGuid = player->GetGUID();
-                    me->CastSpell(player, SPELL_CREDIT_1, true);
-                    InitTalking(player);
+                    player->ExitVehicle();
+                    return;
                 }
+                me->CastSpell(player, SPELL_CREDIT_1, true);
+                InitTalking(player);
+                return;
             }
 
             if (passenger->GetTypeId() != TYPEID_PLAYER)
@@ -4594,11 +4605,17 @@ class mop_air_balloon : public VehicleScript
             }
         }
 
-        void IsSummonedBy(Unit* summoner)
+        void IsSummonedBy(Unit* summoner) override
         {
-            me->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
+            Player* player = summoner->ToPlayer();
+            if (!player || !me->HasQuestObjectScope() || me->IsQuestObjectExpired() ||
+                player->GetQuestStatus(QUEST_SUF_SHUN_ZI) != QUEST_STATUS_INCOMPLETE)
+            {
+                me->DespawnOrUnsummon(1);
+                return;
+            }
             playerGuid = summoner->GetGUID();
-            summoner->EnterVehicle(me, 0);
+            player->EnterVehicle(me, 0);
             events.RescheduleEvent(EVENT_1, 1000);
         }
 
@@ -4611,8 +4628,9 @@ class mop_air_balloon : public VehicleScript
                     break;
                 case 15:
                 {
-                    if (Player* plr = sObjectAccessor->FindPlayer(playerGuid))
-                        me->CastSpell(plr, SPELL_CREDIT_2, true);
+                    Unit* rider = me->GetVehicleKit()->GetPassenger(0);
+                    if (rider && rider->GetGUID() == playerGuid && !me->IsQuestObjectExpired() && aisaGUID && firepawGUID)
+                        me->CastSpell(rider, SPELL_CREDIT_2, true);
                     break;
                 }
                 default:
@@ -4622,6 +4640,11 @@ class mop_air_balloon : public VehicleScript
 
         void UpdateAI(uint32 diff)
         {
+            if (me->IsQuestObjectExpired())
+            {
+                me->DespawnOrUnsummon(1);
+                return;
+            }
             events.Update(diff);
             npc_escortAI::UpdateAI(diff);
 
@@ -4631,9 +4654,27 @@ class mop_air_balloon : public VehicleScript
                 {
                     case EVENT_1:
                     {
-                        if (Creature* f = me->FindNearestCreature(NPC_AISA, 100.0f, true))
-                            f->CastSpell(me, SPELL_AISA_ENTER_SEAT_2, true);
-                        Start(false, true);
+                        Unit* rider = me->GetVehicleKit()->GetPassenger(0);
+                        if (rider && rider->GetGUID() == playerGuid && aisaGUID && firepawGUID)
+                        {
+                            Start(false, true);
+                            break;
+                        }
+                        if (++companionChecks > 8)
+                        {
+                            TC_LOG_WARN("scripts", "Shen-zin Su: balloon %u could not board its owner and companions", me->GetGUIDLow());
+                            me->DespawnOrUnsummon(1);
+                            break;
+                        }
+                        if (rider && rider->GetGUID() == playerGuid && !aisaGUID)
+                            for (ObjectGuid const& guid : *rider->GetSummonList(NPC_AISA))
+                                if (Creature* aysa = me->GetMap()->GetCreature(guid); aysa && !aysa->GetVehicle() &&
+                                    aysa->GetQuestObjectScope().lock() == me->GetQuestObjectScope().lock())
+                                {
+                                    aysa->CastSpell(me, SPELL_AISA_ENTER_SEAT_2, true);
+                                    break;
+                                }
+                        events.RescheduleEvent(EVENT_1, 250);
                         break;
                     }
                     case EVENT_AISA_TALK_3:
