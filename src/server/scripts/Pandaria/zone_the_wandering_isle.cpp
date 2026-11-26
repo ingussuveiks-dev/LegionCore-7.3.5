@@ -2647,124 +2647,183 @@ class npc_water_spirit_dailo : public CreatureScript
 public:
     npc_water_spirit_dailo() : CreatureScript("npc_water_spirit_dailo") { }
 
-    enum Credit
-    {
-        CREDIT_1    = 55548,
-        CREDIT_2    = 55547,
-    };
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
-    {
-        player->PlayerTalkClass->ClearMenus();
-        if (action == 1)
-        {
-            player->CLOSE_GOSSIP_MENU();
-            if (player->GetQuestStatus(QUEST_NOT_IN_FACE) == QUEST_STATUS_INCOMPLETE)
-            {
-                player->KilledMonsterCredit(CREDIT_1);
-                creature->AI()->SetGUID(player->GetGUID());
-            }
-        }
-
-        return true;
-    }
-
     struct npc_water_spirit_dailoAI : public ScriptedAI
     {
-        npc_water_spirit_dailoAI(Creature* creature) : ScriptedAI(creature)
-        {}
+        explicit npc_water_spirit_dailoAI(Creature* creature) : ScriptedAI(creature), _home(creature->GetHomePosition()) { }
 
-        ObjectGuid playerGuid;
-        uint16 eventTimer;
-        uint8  eventProgress;
-
-        void Reset()
+        void Reset() override
         {
-            eventTimer = 0;
-            eventProgress = 0;
-            playerGuid.Clear();
+            _events.Reset();
+            _player.Clear();
+            _wugou.Clear();
+            _attempt.reset();
+            _moving = false;
+            _splashLanded = false;
+            me->SetHomePosition(_home);
+            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_NONE);
         }
 
-        void SetGUID(ObjectGuid const& guid, int32 /*type*/)
+        void sGossipSelect(Player* player, uint32 menuId, uint32 optionIndex) override
         {
-            playerGuid = guid;
-            eventTimer = 2500;
-        }
-
-        void MovementInform(uint32 typeId, uint32 pointId)
-        {
-            if (typeId != POINT_MOTION_TYPE)
+            GossipMenu const& menu = player->PlayerTalkClass->GetGossipMenu();
+            if (me->GetMapId() != 860 || me->GetDBTableGUIDLow() != ShuSpawn || menuId != ShuMenu ||
+                menu.GetMenuId() != ShuMenu || optionIndex != 0 || !menu.GetItem(0))
                 return;
 
-            switch (pointId)
+            player->PlayerTalkClass->ClearMenus();
+            player->PlayerTalkClass->SendCloseGossip();
+            if (_attempt || me->GetExactDist(_home) > 3.0f || !me->IsAlive() || !player->IsAlive() ||
+                !me->IsWithinLOSInMap(player) || player->GetQuestStatus(QUEST_NOT_IN_FACE) != QUEST_STATUS_INCOMPLETE)
+                return;
+
+            _attempt = player->GetQuestCancellationReceipt(QUEST_NOT_IN_FACE);
+            if (!_attempt)
+                return;
+
+            _player = player->GetGUID();
+            _point = 1;
+            _events.Reset();
+            _events.ScheduleEvent(Walk, 2500);
+            player->KilledMonsterCredit(55548);
+        }
+
+        void MovementInform(uint32 motion, uint32 point) override
+        {
+            if (!_attempt || !_moving || motion != POINT_MOTION_TYPE || point != _point ||
+                me->GetExactDist(Route[_point - 1]) > 2.5f)
+                return;
+
+            _moving = false;
+            _events.CancelEvent(Expire);
+            if (_point < 3)
             {
-                case 1:
-                    eventTimer = 250;
-                    ++eventProgress;
-                    break;
-                case 2:
-                    eventTimer = 250;
-                    ++eventProgress;
-                    break;
-                case 3:
-                    if (Creature* wugou = GetClosestCreatureWithEntry(me, 60916, 20.0f))
+                ++_point;
+                _events.ScheduleEvent(Walk, 250);
+            }
+            else
+            {
+                if (Creature* wugou = me->FindNearestCreature(Wugou, 20.0f, true))
+                    if (wugou->GetDBTableGUIDLow() == WugouSpawn)
                         me->SetFacingToObject(wugou);
-                    me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_READY_UNARMED);
-                    eventTimer = 2000;
-                    ++eventProgress;
-                    break;
-                default:
-                    break;
+                me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_READY_UNARMED);
+                _events.ScheduleEvent(Wake, 2000);
             }
         }
 
-        void UpdateAI(uint32 diff)
+        void SpellHitTarget(Unit* target, SpellInfo const* spell) override
         {
-            if (eventTimer)
+            if (!_attempt || _splashLanded || spell->Id != ShuSplash || _wugou.IsEmpty() || target->GetGUID() != _wugou)
+                return;
+
+            _splashLanded = true;
+            _events.CancelEvent(Expire);
+            _events.ScheduleEvent(Credit, 3000);
+            _events.ScheduleEvent(Expire, 15000);
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (!_attempt)
+                return;
+
+            Player* player = ObjectAccessor::GetPlayer(*me, _player);
+            if (!player || !player->IsAlive() || _attempt->load(std::memory_order_acquire) ||
+                player->GetQuestStatus(QUEST_NOT_IN_FACE) != QUEST_STATUS_INCOMPLETE ||
+                !me->IsWithinDistInMap(player, 55.0f))
             {
-                if (eventTimer <= diff)
+                ReturnHome();
+                return;
+            }
+
+            _events.Update(diff);
+            while (uint32 event = _events.ExecuteEvent())
+            {
+                switch (event)
                 {
-                    switch (eventProgress)
+                    case Walk:
+                        _moving = true;
+                        me->GetMotionMaster()->MovePoint(_point, Route[_point - 1]);
+                        _events.ScheduleEvent(Expire, 15000);
+                        break;
+                    case Wake:
                     {
-                        case 0:
-                            me->GetMotionMaster()->MovePoint(1, 650.30f, 3127.16f, 89.62f);
-                            eventTimer = 0;
-                            break;
-                        case 1:
-                            me->GetMotionMaster()->MovePoint(2, 625.25f, 3127.88f, 87.95f);
-                            eventTimer = 0;
-                            break;
-                        case 2:
-                            me->GetMotionMaster()->MovePoint(3, 624.44f, 3142.94f, 87.75f);
-                            eventTimer = 0;
-                            break;
-                        case 3:
-                            if (Creature* wugou = GetClosestCreatureWithEntry(me, 60916, 20.0f))
-                                wugou->CastSpell(wugou, 118027, false);
-                            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_NONE);
-                            eventTimer = 3000;
-                            ++eventProgress;
-                            break;
-                        case 4:
-                            eventTimer = 0;
-                            if (Player* owner = ObjectAccessor::FindPlayer(playerGuid))
-                            {
-                                owner->KilledMonsterCredit(CREDIT_2);  //hack it already done in credit spell, but for cust it need already finished quest.
-                                owner->CastSpell(owner, SPELL_CREDIT_NOT_IN_FACE, false);
-                                me->GetMotionMaster()->MoveTargetedHome();
-                                //me->DespawnOrUnsummon(100);
-                            }
-                            break;
-                        default:
-                            break;
+                        Creature* wugou = me->FindNearestCreature(Wugou, 20.0f, true);
+                        if (!wugou || wugou->GetDBTableGUIDLow() != WugouSpawn || !me->IsWithinLOSInMap(wugou))
+                        {
+                            ReturnHome();
+                            return;
+                        }
+
+                        _wugou = wugou->GetGUID();
+                        _events.ScheduleEvent(Expire, 8000);
+                        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_NONE);
+                        me->CastSpell(wugou, ShuSplash, false);
+                        break;
                     }
+                    case Credit:
+                    {
+                        Creature* wugou = ObjectAccessor::GetCreature(*me, _wugou);
+                        if (!wugou || !wugou->IsAlive())
+                        {
+                            ReturnHome();
+                            return;
+                        }
+
+                        if (!wugou->IsWithinDistInMap(player, 20.0f) || !wugou->IsWithinLOSInMap(player))
+                        {
+                            _events.ScheduleEvent(Credit, 500);
+                            break;
+                        }
+
+                        wugou->CastSpell(player, WaterSplashCredit, true);
+                        if (player->GetQuestStatus(QUEST_NOT_IN_FACE) == QUEST_STATUS_COMPLETE)
+                        {
+                            player->CastSpell(player, SPELL_CREDIT_NOT_IN_FACE, true);
+                            ReturnHome();
+                            return;
+                        }
+
+                        _events.ScheduleEvent(Credit, 500);
+                        break;
+                    }
+                    case Expire:
+                        ReturnHome();
+                        return;
                 }
-                else
-                    eventTimer -= diff;
             }
         }
+
+    private:
+        enum Event { Walk = 1, Wake, Credit, Expire };
+        static constexpr uint32 ShuSpawn = 244646;
+        static constexpr uint32 ShuMenu = 13140;
+        static constexpr uint32 Wugou = 55539;
+        static constexpr uint32 WugouSpawn = 244615;
+        static constexpr uint32 ShuSplash = 118027;
+        static constexpr uint32 WaterSplashCredit = 104023;
+        inline static Position const Route[] = {
+            {650.30f, 3127.16f, 89.62f},
+            {625.25f, 3127.88f, 87.95f},
+            {624.44f, 3142.94f, 87.75f}
+        };
+
+        void ReturnHome()
+        {
+            Reset();
+            me->GetMotionMaster()->MoveTargetedHome();
+        }
+
+        EventMap _events;
+        Position const _home;
+        ObjectGuid _player;
+        ObjectGuid _wugou;
+        std::shared_ptr<QuestCancellationReceipt const> _attempt;
+        uint8 _point = 0;
+        bool _moving = false;
+        bool _splashLanded = false;
     };
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new npc_water_spirit_dailoAI(creature);
     }

@@ -6,8 +6,11 @@
 #include "ConditionMgr.h"
 #include "GameObjectPackets.h"
 #include "GilneasQuestNative.h"
+#include "GossipData.h"
+#include "GossipDef.h"
 #include "MiscPackets.h"
 #include "MoveSpline.h"
+#include "NPCPackets.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptSystem.h"
 #include "ScriptsData.h"
@@ -57,6 +60,13 @@ constexpr uint32 MinSpawn = 244611;
 constexpr uint32 DeloraSpawn = 244620;
 constexpr uint32 RaucousRousing = 29772;
 constexpr uint32 NotInTheFace = 29774;
+constexpr uint32 DaiLoShu = 55556;
+constexpr uint32 DaiLoShuSpawn = 244646;
+constexpr uint32 Wugou = 55539;
+constexpr uint32 WugouSpawn = 244615;
+constexpr uint32 DaiLoShuMenu = 13140;
+constexpr uint32 ShuTalkCredit = 55548;
+constexpr uint32 WugouCredit = 55547;
 constexpr uint32 GongCredit = 55546;
 constexpr uint32 GongEntry = 209626;
 constexpr uint32 GongSpawn = 102443;
@@ -174,13 +184,16 @@ void LoadPools()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
-        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244617,244620,244624,244633,244654,244755,245583)");
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,245583)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
         "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
         "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
-        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry=104012)");
+        "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
         "WHERE spell_id IN (103069,103070,103077,103116,108590,115904)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE areatrigger_scripts AS SELECT * FROM legion_world.areatrigger_scripts "
@@ -211,6 +224,9 @@ void LoadPools()
     creatureLoot = originalCreatureLoot;
     Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
     sObjectMgr->LoadCreatures();
+    sObjectMgr->LoadNPCText();
+    sGossipDataStore->LoadGossipMenu();
+    sGossipDataStore->LoadGossipMenuItems();
     sObjectMgr->LoadNPCSpellClickSpells();
     sScriptSystemMgr->LoadScriptWaypoints();
     sSpellMgr->LoadSpellProcEvents();
@@ -575,7 +591,7 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : VirmenSpawns)
@@ -1120,6 +1136,96 @@ void CheckGong(Map& map, LootPlayer& pupil, Teacher& ji)
 #endif
 }
 
+void SelectDaiLoShu(LootPlayer& pupil, Teacher& shu, int32 index = 0)
+{
+    WorldPackets::NPC::Hello hello{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+    hello.Unit = shu.GetGUID();
+    pupil.GetSession()->HandleGossipHelloOpcode(hello);
+    auto const& menu = pupil.PlayerTalkClass->GetGossipMenu();
+    Require(menu.GetMenuId() == DaiLoShuMenu && menu.GetItem(0) && menu.GetMenuItemAction(0) == 0,
+        "The native Dai-Lo Shu gossip option was not sent");
+    WorldPackets::NPC::GossipSelectOption select{WorldPacket(CMSG_GOSSIP_SELECT_OPTION)};
+    select.GossipUnit = shu.GetGUID();
+    select.GossipID = DaiLoShuMenu;
+    select.GossipIndex = index;
+    pupil.GetSession()->HandleGossipSelectOption(select);
+}
+
+void AdvanceWugouScene(Teacher& shu, uint32 duration)
+{
+    for (uint32 elapsed = 0; elapsed < duration; elapsed += 25)
+    {
+        shu.Unit::Update(25);
+        shu.GetMap()->MoveAllCreaturesInMoveList();
+        shu.AI()->UpdateAI(25);
+    }
+}
+
+void CheckWugou(Map& map, LootPlayer& pupil, LootPlayer& visitor, Teacher& ji)
+{
+    Teacher shu(map, DaiLoShuSpawn, DaiLoShu);
+    MoveGilneasPlayer(pupil, shu.GetPosition());
+#ifdef SINGING_POOLS_WUGOU_BASELINE
+    SelectDaiLoShu(pupil, shu);
+    Require(!pupil.GetQuestObjectiveData(NotInTheFace, ShuTalkCredit) && !pupil.GetQuestObjectiveData(NotInTheFace, WugouCredit),
+        "The legacy script did not reproduce the ignored original Shu option");
+    std::cout << "EXPECTED_BROKEN the original Shu gossip option reached the packet handler without starting the scene" << std::endl;
+#else
+    Position home = shu.GetPosition();
+    SelectDaiLoShu(pupil, shu, 1);
+    Require(!pupil.GetQuestObjectiveData(NotInTheFace, ShuTalkCredit), "An unsent gossip option started Shu's scene");
+    SelectDaiLoShu(pupil, shu);
+    Require(pupil.GetQuestObjectiveData(NotInTheFace, ShuTalkCredit) == 1, "Shu's original gossip did not start the scene");
+    AdvanceWugouScene(shu, 6200);
+    Require(shu.GetExactDist(home) > 3.0f && !pupil.GetQuestObjectiveData(NotInTheFace, WugouCredit),
+        "Shu did not walk or awarded credit on the way");
+    AdvanceWugouScene(shu, 40000);
+    Require(shu.GetExactDist(home) < 1.5f && !pupil.GetQuestObjectiveData(NotInTheFace, WugouCredit),
+        "Missing Wugou did not leave a retry at Shu's pool");
+
+    Teacher wugou(map, WugouSpawn, Wugou);
+    MoveGilneasPlayer(pupil, home);
+    SelectDaiLoShu(pupil, shu);
+    AbandonSupply(pupil, NotInTheFace);
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    AcceptQuest(pupil, ji, NotInTheFace);
+    MoveGilneasPlayer(pupil, wugou.GetPosition());
+    AdvanceWugouScene(shu, 30000);
+    Require(!pupil.GetQuestObjectiveData(NotInTheFace, ShuTalkCredit) && !pupil.GetQuestObjectiveData(NotInTheFace, WugouCredit),
+        "An abandoned scene credited a new quest attempt");
+
+    visitor.SetRewardedQuest(RaucousRousing);
+    MoveGilneasPlayer(visitor, ji.GetPosition());
+    AcceptQuest(visitor, ji, NotInTheFace);
+    MoveGilneasPlayer(pupil, home);
+    MoveGilneasPlayer(visitor, home);
+    SelectDaiLoShu(pupil, shu);
+    SelectDaiLoShu(visitor, shu);
+    Require(pupil.GetQuestObjectiveData(NotInTheFace, ShuTalkCredit) == 1 && !visitor.GetQuestObjectiveData(NotInTheFace, ShuTalkCredit),
+        "Concurrent gossip replaced Shu's active quest attempt");
+    MoveGilneasPlayer(pupil, wugou.GetPosition());
+    MoveGilneasPlayer(visitor, wugou.GetPosition());
+    AdvanceWugouScene(shu, 40000);
+    Require(pupil.GetQuestObjectiveData(NotInTheFace, WugouCredit) == 1 && pupil.GetQuestStatus(NotInTheFace) == QUEST_STATUS_COMPLETE,
+        "Shu's actual splash never led to Wugou's native credit");
+    Require(!visitor.GetQuestObjectiveData(NotInTheFace, WugouCredit) && shu.GetExactDist(home) < 1.5f,
+        "Wugou credited an unrelated player or Shu failed to return home");
+    Tick(pupil, 150);
+    for (uint32 entry : {55558, 60916})
+    {
+        auto const& spirits = *pupil.GetSummonList(entry);
+        Creature* spirit = spirits.size() == 1 ? ObjectAccessor::GetCreature(pupil, spirits.front()) : nullptr;
+        std::cout << "CASE native spirit " << entry << " summons=" << spirits.size() << " water aura=" << pupil.HasAura(104017) << std::endl;
+        Require(spirit && spirit->ToTempSummon() && spirit->ToTempSummon()->GetSummonerGUID() == pupil.GetGUID(),
+            "The native spirit spell failed to summon one owned companion");
+    }
+    MoveGilneasPlayer(pupil, ji.GetPosition());
+    RewardQuest(pupil, ji, NotInTheFace);
+    Require(pupil.IsQuestRewarded(NotInTheFace), "Ji did not reward the original Shu and Wugou objectives");
+    std::cout << "PASS exact Shu option, original Shu movement and Wugou hit, missing actor, abandonment, concurrent request, owned spirits and Ji reward" << std::endl;
+#endif
+}
+
 void CheckDaiLoFarm(Map& map, LootPlayer& pupil)
 {
     Teacher ji(map, JiSpawn, 55477);
@@ -1161,6 +1267,9 @@ void CheckDaiLoFarm(Map& map, LootPlayer& pupil)
 #else
     CheckFarmSupply(map, pupil, visitor, ji, MissingMallet, 214406, 214406, 1, false);
     CheckGong(map, pupil, ji);
+#ifndef SINGING_POOLS_GONG_BASELINE
+    CheckWugou(map, pupil, visitor, ji);
+#endif
 #endif
 #endif
 }
