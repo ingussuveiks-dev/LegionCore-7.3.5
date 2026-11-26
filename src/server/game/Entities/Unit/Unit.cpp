@@ -968,6 +968,22 @@ void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb, SpellInf
 
 uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
 {
+    if (Creature* serpent = victim->ToCreature(); serpent && serpent->GetEntry() == 55786 && serpent->GetMapId() == 860 && serpent->GetDBTableGUIDLow() == 245042)
+    {
+        Player* owner = GetCharmerOrOwnerPlayerOrPlayerItself();
+        bool const participant = owner && owner->IsAlive() && owner->GetQuestStatus(29786) == QUEST_STATUS_INCOMPLETE &&
+            serpent->IsWithinDistInMap(owner, 80.0f);
+        bool const ally = GetEntry() == 64506 && IsCreature() && ToCreature()->GetDBTableGUIDLow() == 245043;
+        // The native firework damages Zhao-Ren in flight. Ordinary attacks become effective on landing.
+        if (spellProto && spellProto->Id == 104855)
+        {
+            if (!IsPlayer() || !participant || !serpent->AI() || !serpent->AI()->GetData(104855))
+                return 0;
+        }
+        else if ((!participant && !ally) || !serpent->HasAura(125992))
+            return 0;
+    }
+
     if (victim->IsAIEnabled)
     {
         victim->GetAI()->DamageTaken(this, damage, damagetype);

@@ -3699,6 +3699,9 @@ enum Enums
     EVENT_NEXT_MOVEMENT = 1,
     EVENT_STUNNED       = 2,
     EVENT_LIGHTNING     = 3,
+    EVENT_FALL_TIMEOUT  = 4,
+
+    ZHAO_FALL_POINT     = 55786,
 
     SPELL_SERPENT_SWEEP = 125990,
     SPELL_STUNNED       = 125992,
@@ -3734,6 +3737,7 @@ public:
         EventMap _events;
         bool eventStarted;
         bool falling;
+        bool grounded;
         uint8 hitCount;
         uint8 currentPos;
 
@@ -3743,6 +3747,7 @@ public:
             me->SetReactState(REACT_PASSIVE);
 
             falling = false;
+            grounded = false;
             eventStarted = false;
             hitCount = 0;
             currentPos = 0;
@@ -3754,16 +3759,25 @@ public:
             me->GetMotionMaster()->MovePoint(0, ZhaoPos[0].GetPositionX(), ZhaoPos[0].GetPositionY(), ZhaoPos[0].GetPositionZ());
         }
 
-        void SpellHit(Unit* caster, const SpellInfo* spell)
+        uint32 GetData(uint32 type) const override
         {
-            if (spell->Id == SPELL_ROCKET_LAUNCH)
+            return type == SPELL_ROCKET_LAUNCH && me->IsAlive() && !falling && !grounded;
+        }
+
+        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        {
+            Player* player = caster->ToPlayer();
+            if (spell->Id == SPELL_ROCKET_LAUNCH && GetData(SPELL_ROCKET_LAUNCH) && player && player->IsAlive() &&
+                player->GetQuestStatus(QIEST_BATTLE_FOR_SKIES) == QUEST_STATUS_INCOMPLETE && me->IsWithinDistInMap(player, 80.0f))
             {
                 if (++hitCount >= 5)
                 {
                     falling = true;
+                    _events.CancelEvent(EVENT_NEXT_MOVEMENT);
+                    _events.CancelEvent(EVENT_LIGHTNING);
                     me->GetMotionMaster()->Clear();
-                    me->GetMotionMaster()->MoveFall();
-                    _events.RescheduleEvent(EVENT_STUNNED, 12000);
+                    me->GetMotionMaster()->MoveFall(ZHAO_FALL_POINT);
+                    _events.RescheduleEvent(EVENT_FALL_TIMEOUT, 5000);
                     hitCount = 0;
                 }else if (hitCount == 1)
                 {
@@ -3801,6 +3815,10 @@ public:
         {
             std::list<Player*> playerList;
             GetPlayerListInGrid(playerList, me, 50.0f);
+            playerList.remove_if([](Player* player)
+            {
+                return !player->IsAlive() || player->GetQuestStatus(QIEST_BATTLE_FOR_SKIES) != QUEST_STATUS_INCOMPLETE;
+            });
 
             if (playerList.empty())
                 return NULL;
@@ -3810,20 +3828,25 @@ public:
             return *playerList.begin();
         }
 
-        void MovementInform(uint32 type, uint32 id)
+        void MovementInform(uint32 type, uint32 id) override
         {
-            if (falling)
+            if (falling && type == EFFECT_MOTION_TYPE && id == ZHAO_FALL_POINT && me->movespline->isFalling() &&
+                me->movespline->Finalized() && me->movespline->ComputeProgress() == 1.0f)
             {
-                me->CastSpell(me, SPELL_STUNNED, true);
                 falling = false;
+                grounded = true;
+                _events.CancelEvent(EVENT_FALL_TIMEOUT);
+                _events.RescheduleEvent(EVENT_STUNNED, 12000);
+                me->CastSpell(me, SPELL_STUNNED, true);
                 if (Creature* aysa = me->FindNearestCreature(NPC_AISA_SHAO, 100.0f, true))
                 {
                     sCreatureTextMgr->SendChat(aysa, TEXT_GENERIC_1);
                     aysa->AI()->AttackStart(me);
                 }
+                return;
             }
 
-            if (type != POINT_MOTION_TYPE)
+            if (type != POINT_MOTION_TYPE || falling || grounded)
                 return;
 
             if (!id)
@@ -3871,17 +3894,24 @@ public:
             {
                 case EVENT_NEXT_MOVEMENT:
                 {
-                    if (me->HasAura(SPELL_STUNNED))
-                        _events.RescheduleEvent(EVENT_NEXT_MOVEMENT, 2000);
-
-                    GoToNextPos();
+                    if (!falling && !grounded)
+                        GoToNextPos();
                     break;
                 }
                 case EVENT_STUNNED:
                 {
+                    grounded = false;
                     me->RemoveAurasDueToSpell(SPELL_STUNNED);
                     me->CastSpell(me, SPELL_SERPENT_SWEEP, false);
                     _events.RescheduleEvent(EVENT_NEXT_MOVEMENT, 3000);
+                    _events.RescheduleEvent(EVENT_LIGHTNING, 5000);
+                    break;
+                }
+                case EVENT_FALL_TIMEOUT:
+                {
+                    falling = false;
+                    _events.RescheduleEvent(EVENT_NEXT_MOVEMENT, 1000);
+                    _events.RescheduleEvent(EVENT_LIGHTNING, 5000);
                     break;
                 }
                 case EVENT_LIGHTNING:
@@ -3919,12 +3949,18 @@ public:
             me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
 
-        void OnSpellClick(Unit* Clicker)
+        void OnSpellClick(Unit* clicker) override
         {
-            if (cooldown)
+            Player* player = clicker->ToPlayer();
+            if (cooldown || !player || !player->IsAlive() || me->GetMapId() != 860 || !me->GetDBTableGUIDLow() ||
+                player->GetQuestStatus(QIEST_BATTLE_FOR_SKIES) != QUEST_STATUS_INCOMPLETE ||
+                !me->IsWithinDistInMap(player, INTERACTION_DISTANCE) || !player->IsWithinLOSInMap(me))
                 return;
-            if (Creature* zhao = GetClosestCreatureWithEntry(me, 55786, 50.0f))
-                Clicker->CastSpell(zhao, SPELL_ROCKET_LAUNCH, false);
+
+            Creature* zhao = me->FindNearestCreature(55786, 50.0f, true);
+            if (!zhao || zhao->GetDBTableGUIDLow() != 245042 || !zhao->AI()->GetData(SPELL_ROCKET_LAUNCH) ||
+                player->CastSpell(zhao, SPELL_ROCKET_LAUNCH, false) != SPELL_CAST_OK)
+                return;
 
             cooldown = 5000;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
