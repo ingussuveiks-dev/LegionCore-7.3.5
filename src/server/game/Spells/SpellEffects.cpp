@@ -9263,11 +9263,17 @@ void Spell::EffectHealBattlePetPct(SpellEffIndex /*effIndex*/)
         player->GetSession()->SendBattlePetsHealed();
         player->GetSession()->SendBattlePetUpdates();
 
-        auto stableMaster = GetOriginalCaster() ? GetOriginalCaster()->ToCreature() : nullptr;
-        if (m_spellInfo->Id == BattlePetStableService::Revive && unitTarget == player && !pets->empty() &&
-            stableMaster && stableMaster->GetEntry() == BattlePetStableService::Jenova && stableMaster->GetMapId() == 0 &&
-            player->GetQuestStatus(BattlePetStableService::OnTheMend) == QUEST_STATUS_INCOMPLETE)
-            player->KilledMonsterCredit(BattlePetStableService::MendCredit);
+        if (m_spellInfo->Id != BattlePetStableService::Revive || unitTarget != player || pets->empty())
+            return;
+
+        auto const* stableMaster = GetOriginalCaster() ? GetOriginalCaster()->ToCreature() : nullptr;
+        if (!stableMaster)
+            return;
+
+        auto const* service = BattlePetStableService::Find(stableMaster->GetEntry(), stableMaster->GetMapId());
+        if (service && service->Credit && (player->GetQuestStatus(service->Quest) == QUEST_STATUS_INCOMPLETE ||
+            (service->AlternateQuest && player->GetQuestStatus(service->AlternateQuest) == QUEST_STATUS_INCOMPLETE)))
+            player->KilledMonsterCredit(service->Credit);
     }
 }
 

@@ -444,6 +444,11 @@ if($Baseline){
  if($manifest.pin -ne '1d9557196' -or (Get-FileHash "$BaselineDirectory/game.lib").Hash -ne $manifest.game){throw 'Pinned Grol''dom counterfactual library differs'}
  $libs=$libs|ForEach-Object {if($_ -eq $game){"$BaselineDirectory/game.lib"}else{$_}}
  $game="$BaselineDirectory/game.lib"
+}elseif($OnTheMend -and $BaselineDirectory){
+ $manifest=Get-Content "$BaselineDirectory/manifest.json" -Raw|ConvertFrom-Json
+ if($manifest.pin -ne '41e014f45' -or (Get-FileHash "$BaselineDirectory/game.lib").Hash -ne $manifest.game){throw 'Pinned regional healing counterfactual library differs'}
+ $libs=$libs|ForEach-Object {if($_ -eq $game){"$BaselineDirectory/game.lib"}else{$_}}
+ $game="$BaselineDirectory/game.lib"
 }elseif(!$AlliedCityBaseline){
  foreach($file in @('Loot/LootMgr.cpp','Loot/LootMgr.h','Entities/Object/Object.h','Entities/Player/Player.cpp','Handlers/LootHandler.cpp')){
   if((Get-Item "$repo/src/server/game/$file").LastWriteTimeUtc -gt (Get-Item $game).LastWriteTimeUtc){throw "Actual game library predates $file"}
@@ -476,7 +481,7 @@ if($LegionAnniversary){
 }
 if($OnTheMend){
  $probeSource = "$PSScriptRoot/OnTheMendNative.cpp"
- [IO.File]::WriteAllText("$out/NativeOnTheMend.inc",$query+' " WHERE ID IN(31591,31592,31821)"')
+ [IO.File]::WriteAllText("$out/NativeOnTheMend.inc",$query+' " WHERE ID IN(31308,31309,31548,31549,31551,31552,31553,31554,31556,31568,31571,31572,31573,31574,31576,31577,31579,31580,31582,31583,31585,31586,31587,31588,31589,31591,31592,31785,31821,31822,31823,31824,31825,31826,31827,31828,31830,31831,31832)"')
 }
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"

@@ -18559,9 +18559,9 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
     if (!menuItemData)
         return;
 
-    bool const paidPetHeal = source->IsCreature() && source->GetMapId() == 0 && gossipOptionNpc == GossipOptionNpc::None &&
-        ((source->GetEntry() == BattlePetStableService::Jenova && menuId == 9821 && gossipListId == 2) ||
-         (source->GetEntry() == BattlePetStableService::Audrey && menuId == 14991 && gossipListId == 1));
+    auto const* petService = source->IsCreature() && gossipOptionNpc == GossipOptionNpc::None
+        ? BattlePetStableService::Find(source->GetEntry(), source->GetMapId()) : nullptr;
+    bool const paidPetHeal = petService && petService->Menu == menuId && petService->Option == gossipListId && item->BoxMoney;
     int32 cost = int32(item->BoxMoney);
     if (!HasEnoughMoney(int64(cost)))
     {
