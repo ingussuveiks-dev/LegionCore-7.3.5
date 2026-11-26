@@ -28,6 +28,7 @@
 #include "MMapManager.h"
 #include "Map.h"
 #include "TransportGroundPath.h"
+#include "SurfaceSwimPath.h"
 #include "MawShipGroundPath.h"
 #include <G3D/Vector3.h>
 
@@ -608,6 +609,25 @@ void PathGenerator::BuildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
                 _pathPolyRefs,
                 reinterpret_cast<int*>(&_polyLength),
                 MAX_PATH_LENGTH);
+
+            if (dtStatusDetail(dtResult, DT_PARTIAL_RESULT) && !startFarFromPoly && !endFarFromPoly &&
+                _source->IsPlayer() && !_source->GetTransport() && _source->ToUnit()->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING) &&
+                startPos == PositionToVector3(_source->GetPosition()))
+            {
+                LiquidData water;
+                auto status = _source->GetMap()->getLiquidStatus(startPos.x, startPos.y, startPos.z,
+                    MAP_LIQUID_TYPE_WATER | MAP_LIQUID_TYPE_OCEAN, &water);
+                if (status == LIQUID_MAP_IN_WATER || status == LIQUID_MAP_WATER_WALK)
+                {
+                    dtPolyRef corridor[MAX_PATH_LENGTH];
+                    if (int count = Movement::FindSurfaceSwimCorridor(*_navMeshQuery, _filter, startPoint, water.level,
+                        startPoly, endPoly, endPoint, corridor, MAX_PATH_LENGTH))
+                    {
+                        std::copy_n(corridor, count, _pathPolyRefs);
+                        _polyLength = count;
+                    }
+                }
+            }
         }
 
         if (!_polyLength || dtStatusFailed(dtResult))

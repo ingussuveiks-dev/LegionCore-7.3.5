@@ -8,7 +8,9 @@ $source=Get-Content "$repo/src/server/scripts/Spells/spell_warrior.cpp" -Raw
 if($Baseline){$source=(& git -C $repo show '7ad477f7:src/server/scripts/Spells/spell_warrior.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned charge baseline missing'}}
 $source=$source.Substring($source.IndexOf('class spell_warr_charge_check_cast :'))
 [IO.File]::WriteAllText("$out/Check.inc",(Block $source 'SpellCastResult CheckCast()'))
-[IO.File]::WriteAllText("$out/Target.inc",(Block (Get-Content "$repo/src/server/game/Movement/PathGenerator.cpp" -Raw) 'bool PathGenerator::CalculatePathToTarget('))
+$pathSource=Get-Content "$repo/src/server/game/Movement/PathGenerator.cpp" -Raw
+$methods=@('bool PathGenerator::CalculatePathToTarget(', 'bool PathGenerator::CalculateTransportGroundPath(')
+[IO.File]::WriteAllText("$out/Target.inc",(($methods | ForEach-Object {Block $pathSource $_}) -join [Environment]::NewLine))
 $core=Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw
 $a=$core.IndexOf('            case SPELL_EFFECT_CHARGE:')
 $b=$core.IndexOf('            case SPELL_EFFECT_JUMP_DEST:', $a)

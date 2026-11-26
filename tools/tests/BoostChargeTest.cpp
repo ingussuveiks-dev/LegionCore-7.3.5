@@ -33,6 +33,8 @@ struct PathGenerator{
  bool CalculatePath(Position const& p){++terrain;_type=_source->GetTransport()?PATHFIND_NOPATH:PATHFIND_NORMAL;SetEndPosition(PositionToVector3(p));return _type==PATHFIND_NORMAL;}
  bool CalculatePath(float x,float y,float z,bool){return CalculatePath(Position{x,y,z});}
  bool CalculatePathToTarget(Unit const*);
+ bool CalculateTransportGroundPath(Position const&);
+ void Clear(){_pathPoints.clear();}
  PathType GetPathType(){return _type;}float GetTotalLength(){return length;}
 };
 unsigned PathGenerator::terrain=0,PathGenerator::targets=0;float PathGenerator::length=12;
