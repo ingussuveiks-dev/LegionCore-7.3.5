@@ -17,10 +17,60 @@
  */
 
 #include "CalendarPackets.h"
+#include "GameEventMgr.h"
+#include "MageTowerCalendar.h"
 #include "GuildMgr.h"
 #include "InstanceSaveMgr.h"
 #include "DatabaseEnv.h"
 #include "SocialMgr.h"
+
+namespace
+{
+// Player-created event IDs are allocated sequentially by CalendarMgr. Server
+// schedule markers have stable IDs and never enter its mutable event store.
+constexpr uint64 TowerMarkerBase = uint64(1) << 48;
+constexpr uint16 MageTowerGameEvent = 400;
+
+template<class Visitor>
+void VisitTowerMarkers(time_t now, Visitor visit)
+{
+    auto const& events = sGameEventMgr->GetEventMap();
+    if (events.size() <= MageTowerGameEvent)
+        return;
+    auto const& tower = events[MageTowerGameEvent];
+    if (tower.state != GAMEEVENT_NORMAL)
+        return;
+
+    time_t const first = now - 62 * DAY;
+    time_t const last = now + 400 * DAY;
+    MageTowerCalendar::VisitWindows(tower.start, tower.end, tower.occurence, tower.length, first, last,
+        [&](time_t open, time_t close)
+        {
+            for (time_t date : { open, close })
+            {
+                if (date < first || date > last)
+                    continue;
+                WorldPackets::Calendar::CalendarSendCalendarEventInfo marker;
+                marker.EventID = TowerMarkerBase + uint64(date) * 2 + (date == close);
+                marker.Date = date;
+                marker.EventName = date == open ? "Mage Tower Opens" : "Mage Tower Closes";
+                marker.EventType = CALENDAR_TYPE_OTHER;
+                marker.Flags = CALENDAR_FLAG_INVITES_LOCKED;
+                marker.TextureID = -1;
+                visit(marker, open, close);
+            }
+        });
+}
+
+std::string TowerCalendarTime(time_t date)
+{
+    tm local;
+    localtime_r(&date, &local);
+    char text[32];
+    strftime(text, sizeof(text), "%Y-%m-%d %H:%M", &local);
+    return text;
+}
+}
 
 void WorldSession::HandleCalendarGetCalendar(WorldPackets::Calendar::CalendarGetCalendar& /*packet*/)
 {
@@ -62,6 +112,8 @@ void WorldSession::HandleCalendarGetCalendar(WorldPackets::Calendar::CalendarGet
         packet.Events.push_back(eventInfo);
     }
 
+    VisitTowerMarkers(currTime, [&](auto const& marker, time_t, time_t) { packet.Events.push_back(marker); });
+
     for (auto const& boundInstances : _player->m_boundInstances)
     {
         for (auto const& boundInstance : boundInstances)
@@ -85,6 +137,29 @@ void WorldSession::HandleCalendarGetEvent(WorldPackets::Calendar::CalendarGetEve
 {
     if (CalendarEvent* calendarEvent = sCalendarMgr->GetEvent(packet.EventID))
         sCalendarMgr->SendCalendarEvent(_player->GetGUID(), *calendarEvent, CALENDAR_SENDTYPE_GET);
+    else if (packet.EventID >= TowerMarkerBase)
+    {
+        bool found = false;
+        VisitTowerMarkers(GameTime::GetGameTime(), [&](auto const& marker, time_t open, time_t close)
+        {
+            if (marker.EventID != packet.EventID)
+                return;
+            WorldPackets::Calendar::CalendarSendEvent detail;
+            detail.EventType = CALENDAR_SENDTYPE_GET;
+            detail.GetEventType = marker.EventType;
+            detail.EventID = marker.EventID;
+            detail.Date = marker.Date;
+            detail.Flags = marker.Flags;
+            detail.TextureID = marker.TextureID;
+            detail.EventName = marker.EventName;
+            detail.Description = "The Mage Tower at Deliverance Point is available from " +
+                TowerCalendarTime(open) + " until " + TowerCalendarTime(close) + " (realm time).";
+            SendPacket(detail.Write());
+            found = true;
+        });
+        if (!found)
+            sCalendarMgr->SendCalendarCommandResult(_player->GetGUID(), CALENDAR_ERROR_EVENT_INVALID);
+    }
     else
         sCalendarMgr->SendCalendarCommandResult(_player->GetGUID(), CALENDAR_ERROR_EVENT_INVALID);
 }
