@@ -25905,7 +25905,15 @@ void Unit::SendTeleportPacket(Position const& destPos)
         float x, y, z, o;
         destPos.GetPosition(x, y, z, o);
         if (TransportBase* transportBase = GetDirectTransport())
+        {
             transportBase->CalculatePassengerOffset(x, y, z, &o);
+            // The ship relocates its passengers from this offset between the
+            // teleport packet and its acknowledgement, including while turning.
+            if (playerMover == this && playerMover->IsBeingTeleportedNear() &&
+                (playerMover->GetTeleportOptions() & TELE_TO_NOT_LEAVE_TRANSPORT) &&
+                GetTransport() && !GetVehicle() && GetTransport()->GetGUID() == m_movementInfo.transport.Guid)
+                m_movementInfo.transport.Pos.Relocate(x, y, z, o);
+        }
 
         WorldPackets::Movement::MoveTeleport selfPacket;
         selfPacket.MoverGUID = GetGUID();

@@ -43,6 +43,7 @@
 #include "ObjectMgr.h"
 #include "Opcodes.h"
 #include "PathGenerator.h"
+#include "TransportGroundPath.h"
 #include "Pet.h"
 #include "Player.h"
 #include "PlayerDefines.h"
@@ -1491,6 +1492,34 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
     }
 }
 
+// Map navigation does not describe the moving tutorial gunship. Stop at the last
+// supported point if Blink reaches a rail, a wall or the edge of the deck.
+static Position GetGunshipBlinkDestination(Unit* caster, Transport* ship, float distance, float angle)
+{
+    Position landing = caster->GetPosition();
+    float const body = caster->GetCollisionHeight() * 0.5f;
+    Movement::PointsArray path;
+    for (float offset = 0.0f; offset < distance;)
+    {
+        offset = std::min(offset + 1.0f, distance);
+        Position next;
+        caster->SimplePosXYRelocationByAngle(next, offset, angle);
+        next.m_positionZ = landing.GetPositionZ();
+        if (Movement::BuildTransportGroundPath(ship, landing, next, caster->GetCollisionHeight(),
+            8, path, caster->GetObjectSize()) != Movement::TransportGroundResult::Complete)
+            break;
+
+        next.m_positionZ = path.back().z;
+        if (!caster->GetMap()->isInLineOfSight(landing.GetPositionX(), landing.GetPositionY(), landing.GetPositionZ() + body,
+            next.GetPositionX(), next.GetPositionY(), next.GetPositionZ() + body, caster->GetPhases(),
+            VMAP::ModelIgnoreFlags::Nothing, nullptr, caster))
+            break;
+
+        landing = next;
+    }
+    return landing;
+}
+
 void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplicitTargetInfo const& targetType)
 {
     SpellDestination dest(*m_caster);
@@ -1586,6 +1615,14 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
             Unit* unitCaster = m_caster->ToUnit();
             if (!unitCaster)
                 break;
+
+            if (m_spellInfo->Id == 1953 && unitCaster->IsPlayer() && !unitCaster->GetVehicle() &&
+                (unitCaster->GetMapId() == 1554 || unitCaster->GetMapId() == 1557))
+                if (Transport* ship = unitCaster->GetTransport())
+                {
+                    dest.Relocate(GetGunshipBlinkDestination(unitCaster, ship, dist, angle));
+                    break;
+                }
 
             Position pos = dest._position;
 

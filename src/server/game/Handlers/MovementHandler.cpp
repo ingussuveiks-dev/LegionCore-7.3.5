@@ -222,7 +222,17 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
     plMover->SetSemaphoreTeleportNear(false);
 
     uint32 old_zone = plMover->GetCurrentZoneID();
-    plMover->UpdatePosition(plMover->GetTeleportDest(), true);
+    Position landing = plMover->GetTeleportDest();
+    if ((plMover->GetTeleportOptions() & TELE_TO_NOT_LEAVE_TRANSPORT) && !plMover->GetVehicle())
+        if (Transport* ship = plMover->GetTransport())
+            if (ship->GetGUID() == plMover->m_movementInfo.transport.Guid)
+            {
+                float x, y, z, o;
+                plMover->GetTransOffset().GetPosition(x, y, z, o);
+                ship->CalculatePassengerPosition(x, y, z, &o);
+                landing.Relocate(x, y, z, o);
+            }
+    plMover->UpdatePosition(landing, true);
     plMover->NotifyMapObjectArrivalLoaded(int32(plMover->GetMapId()));
 
     uint32 newzone, newarea;
