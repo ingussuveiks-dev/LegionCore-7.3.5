@@ -6,6 +6,7 @@
 #include "ScenarioMgr.h"
 #include "ObjectAccessor.h"
 #include "GameObject.h"
+#include "DynamicTree.h"
 #include "LootMgr.h"
 #include "Item.h"
 #include "Group.h"
@@ -223,12 +224,24 @@ inline bool Elapsed(uint32& remaining, uint32 diff)
     return true;
 }
 
-inline bool At(Player* player, WorldObject* object)
+inline bool At(Player* player, WorldObject* object, GameObject const* pickupBox = nullptr)
 {
-    return player && object && object->IsInWorld() && !object->IsPreDelete() &&
-        player->GetMap() == object->GetMap() && player->InSamePhase(object) &&
-        player->CanTargetQuestObject(object) && player->canSeeOrDetect(object) &&
-        player->IsWithinDistInMap(object, INTERACTION_DISTANCE) && player->IsWithinLOSInMap(object);
+    if (!player || !object || !object->IsInWorld() || object->IsPreDelete() ||
+        player->GetMap() != object->GetMap() || !player->InSamePhase(object) ||
+        !player->CanTargetQuestObject(object) || !player->canSeeOrDetect(object) ||
+        !player->IsWithinDistInMap(object, INTERACTION_DISTANCE))
+        return false;
+    if (!pickupBox)
+        return player->IsWithinLOSInMap(object);
+
+    // The staff and its clickable box share a center. Only the box being
+    // opened may intersect this interaction ray. Keep other world geometry.
+    DynamicTreeCallback filter;
+    filter.filter = [pickupBox](GameObject const* obstacle) { return obstacle != pickupBox; };
+    Position target = object->GetHitSpherePointFor(player->GetPosition());
+    return object->GetMap()->isInLineOfSight(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ() + 2.f,
+        target.GetPositionX(), target.GetPositionY(), target.GetPositionZ() + 2.f,
+        player->GetPhases(), VMAP::ModelIgnoreFlags::Nothing, &filter, player);
 }
 
 inline Position Landing()
@@ -382,17 +395,20 @@ inline bool Instance::StaffSpawn(Creature* creature) const
 inline bool Instance::Source(Player* player, WorldObject* object, uint32 entry) const
 {
     return Present(player) && state.victory && Receipt(Progress(), 46663) && object &&
-        object->GetEntry() == entry && object->GetGUID() == (entry == StaffEntry ? state.staff : state.proxy) && At(player, object);
+        object->GetEntry() == entry && object->GetGUID() == (entry == StaffEntry ? state.staff : state.proxy) &&
+        At(player, object, ObjectAt(instance, state.proxy));
 }
 
 inline void Instance::SpawnSource(Player* player)
 {
     if (!Present(player) || !state.victory || state.claimed || state.sourceTries >= 5) return;
     ++state.sourceTries;
-    float z = instance->GetHeight(player->GetPhases(), -1017.29f, -2772.8f, 45.f, true, 15.f);
+    // The staff rests on the fixed pool floor. During replacement the old
+    // clickable box can still be in the dynamic tree above that floor.
+    float z = instance->GetHeight(-1017.29f, -2772.8f, 45.f, true, 15.f);
     if (!std::isfinite(z) || z < 35.f || z > 42.f)
     {
-        TC_LOG_ERROR("scripts", "Sheilun: missing pool support; physical source remains pending");
+        TC_LOG_ERROR("scripts", "Sheilun: missing pool support at height %.3f; physical source remains pending", z);
         state.sourceTimer = 1000;
         return;
     }
@@ -429,7 +445,14 @@ inline void Instance::SpawnSource(Player* player)
 
 inline bool Instance::Open(Player* player, WorldObject* object)
 {
-    if (!object || (!Source(player, object, StaffEntry) && !Source(player, object, ProxyEntry)) || state.claimed) return false;
+    if (!object || !player || state.claimed || player->GetGUID() != state.owner) return false;
+    if (!Source(player, object, StaffEntry) && !Source(player, object, ProxyEntry))
+    {
+        TC_LOG_INFO("scripts", "Sheilun pickup rejected: entry=%u present=%u victory=%u receipt=%u visible=%u nearby=%u",
+            object->GetEntry(), Present(player), state.victory, Receipt(Progress(), 46663),
+            player->canSeeOrDetect(object), player->IsWithinDistInMap(object, INTERACTION_DISTANCE));
+        return false;
+    }
     if (Item* item = InventoryArtifact(player))
     {
         state.manualOpen = true;
@@ -441,8 +464,12 @@ inline bool Instance::Open(Player* player, WorldObject* object)
         return true;
     }
     GameObject* proxy = ObjectAt(instance, state.proxy);
-    if (!proxy || !Source(player, proxy, ProxyEntry)) return false;
-    if (proxy->getLootState() != GO_READY && proxy->getLootState() != GO_ACTIVATED) return false;
+    if (!Source(player, proxy, ProxyEntry) || (proxy->getLootState() != GO_READY && proxy->getLootState() != GO_ACTIVATED))
+    {
+        TC_LOG_INFO("scripts", "Sheilun pickup: chest unavailable on entry %u, loot state %d",
+            object->GetEntry(), proxy ? int(proxy->getLootState()) : -1);
+        return false;
+    }
     // Use and report-use may describe the same click. SendLoot would release
     // the player's already-open loot before trying to open it again.
     if (state.manualOpen && !state.loot.IsEmpty() && player->GetLootGUID() == proxy->GetGUID())
@@ -452,11 +479,22 @@ inline bool Instance::Open(Player* player, WorldObject* object)
             return true;
     }
     uint64 epoch = state.epoch;
+    uint32 clickedEntry = object->GetEntry();
     player->SendLoot(proxy->GetGUID(), LOOT_CORPSE);
     player = Owner(); proxy = ObjectAt(instance, state.proxy);
-    if (!Current(player, epoch) || !proxy || player->GetLootGUID() != proxy->GetGUID()) return false;
+    if (!Current(player, epoch) || !proxy || player->GetLootGUID() != proxy->GetGUID())
+    {
+        TC_LOG_INFO("scripts", "Sheilun pickup: native loot did not open the owned chest");
+        return false;
+    }
     Loot* loot = proxy->IsPersonal() ? player->GetPersonalLoot(proxy->GetGUID()) : &proxy->loot;
-    if (!loot || loot->GetGUID().IsEmpty()) return false;
+    if (!loot || loot->GetGUID().IsEmpty())
+    {
+        TC_LOG_ERROR("scripts", "Sheilun pickup: no native loot container after opening the owned chest");
+        return false;
+    }
+    TC_LOG_INFO("scripts", "Sheilun pickup: opened native chest via entry %u, item slots %zu, quest slots %zu",
+        clickedEntry, loot->items.size(), loot->quest_items.size());
     state.loot = loot->GetGUID(); state.manualOpen = true;
     return true;
 }
@@ -504,7 +542,9 @@ inline void Instance::EndClaim(Player* player, uint64 epoch, uint64 claim, uint8
     if (!Current(player, epoch) || claim != state.claim) return;
     if (!state.claiming)
     {
-        if (Creature* staff = CreatureAt(instance, state.staff)) Open(player, staff);
+        // A delayed initial cast must not reopen loot that the player closed.
+        if (!state.manualOpen)
+            if (Creature* staff = CreatureAt(instance, state.staff)) Open(player, staff);
         return;
     }
     state.claiming = false;

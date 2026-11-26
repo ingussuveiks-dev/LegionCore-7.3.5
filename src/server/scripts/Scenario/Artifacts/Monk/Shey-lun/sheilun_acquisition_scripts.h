@@ -23,6 +23,12 @@ public:
                     }
                 }
         }
+        void OnSpellClick(Unit* clicker) override
+        {
+            if (Player* player = clicker->ToPlayer())
+                if (Instance* controller = Controller(me))
+                    controller->Open(player, me);
+        }
     };
     CreatureAI* GetAI(Creature* creature) const override { return new AI(creature); }
 };
