@@ -380,3 +380,5 @@ Visiem 27 priekšmeta lietošanas kandidātiem ar novietotu piedāvājumu atrast
 Westfall `26320` izņemta neaktīvā pieņemšanas ieskaite. Serverī atkārtoti pārbaudīta īstā Thoralius pieņemšana, Incense Burner un nepareizās atrašanās vietas atteikums. Deadmines vīzijas pilnā secība paliek atvērta, jo pašreizējais aktiera izsaukums pabeidz kvestu uzreiz. [A Vision of the Past](westfall-vision-admission-2026-11-26.md)
 
 Westfall `26322` Vanessa fināls tagad izmanto parasto kvesta pabeigšanu. Serverī pārbaudīta sākotnējā aina, divu tiesīgu aculiecinieku ieskaite, atlīdzība pie Anduin un `Return to Sentinel Hill` pieņemšana. Darba servera palaišanā jaunu avāriju vai DBErrors nebija. Ainas attēlojums klientā paliek atvērts. [Rise of the Brotherhood](westfall-brotherhood-2026-11-26.md)
+
+Deeprun Tram žurkai noņemtas 26 ar veco Westfall ainu saistītas rindas, kas aizstāja tās parasto skriptu. Serverī pārbaudīti pieci īsti ķērieni, atteikums noķert to pašu žurku divreiz, nodošana pie Monty un jauna pieņemšana pēc atmešanas. Darba serveris ielādēja labojumu bez jaunām avārijām vai DBErrors. [Deeprun Rat Roundup](deeprun-rat-roundup-2026-11-26.md)

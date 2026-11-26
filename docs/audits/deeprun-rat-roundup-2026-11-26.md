@@ -1,0 +1,11 @@
+# Deeprun Rat Roundup 6661
+
+Deeprun Tram žurkai `13016/26` bija 26 vecas `Rise of the Brotherhood` SmartAI rindas. Pēc GUID piesaistītais skripts aizstāja žurkas parasto veidnes skriptu. Ar Monty izsniegto flautu `17117` burvestība `21050` sāka izpildi, bet šī žurka nepārvērtās un ieskaiti nedeva. Pēc vecās piesaistes noņemšanas izdevās atrast otru kļūdu. Atkārtots metiens uz jau pārveidotu žurku deva vēl vienu ieskaiti un mēģināja iedarbināt sekošanu aktierim `13017`, kura veidnei nav SmartAI.
+
+Migrācija izņem tikai vecās Westfall rindas, kas piesaistītas konkrētajai Deeprun žurkai. Paliek trīs sākotnējās žurkas darbības, visi 29 novietojumi un 69 saistītās Westfall ainas rindas. Burvestības un tās SmartAI trāpījuma pārbaude pieprasa nepabeigtu kvestu, līdzi esošo flautu un vēl nenoķertu `13016`. [Migrācija](../../sql/updates/world/2026_11_26_24_deeprun_rat_retired_westfall_override.sql)
+
+`Test-QuestObjectLootNative.ps1 -DeeprunRat -DeeprunRatObserve` ar datiem pirms migrācijas atveidoja trūkstošo ķērienu. Labotajā `-DeeprunRat` pārbaudē īstā flauta noķēra piecas dažādas žurkas. Otrs spēlētājs tuvumā ieskaiti nesaņēma. Abi spēlētāji saņēma atteikumu, mēģinot atkārtoti mērķēt jau noķertu žurku. Atsevišķi pārbaudīts trāpījums, kas pienāk pēc mērķa pārvēršanas, un mēģinājums mērķēt Monty. Monty pieņēma piecu žurku ieskaiti un savāca flautu. Atmešana noņēma flautu, un jauna pieņemšana atjaunoja ķeršanu. Atkārtoti izgāja arī `-WestfallRise`. [Servera zonde](../../tools/tests/DeeprunRatNative.cpp)
+
+Darba serveris ielādēja migrāciju, sasniedza gatavību un korekti apstājās. Darba datubāzē pārbaudītas tieši 0 vecās rindas, 3 veidnes rindas, 69 Westfall rindas, 29 novietojumi un 3 nosacījumi katrā flautas pārbaudes posmā. Labotajās zondēs un darba palaišanā nebija jaunu avāriju, DBErrors, servera kļūdu vai brīdinājumu. Agrākajās zondēs labota testa zonas ielāde un vēsturiskās Westfall rindas palīgdati. Izolētā MariaDB korekti apstājās.
+
+Ar kontrolsummām saglabāti 120 faili, tostarp izņemto datu kopija un abas neveiksmīgās uzvedības. Izņemti 75 pārbaudīti pagaidu faili, kopā 2 519 399 365 baiti. Žurkas sekošanas attēlojums un flautas skaņa klientā paliek atsevišķa pārbaude. [Diagnostikas arhīvs](../../build-extractors/bin/Release/fixed/2026-11-26-deeprun-rat-roundup/manifest.json)
