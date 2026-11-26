@@ -443,6 +443,14 @@ inline bool Instance::Open(Player* player, WorldObject* object)
     GameObject* proxy = ObjectAt(instance, state.proxy);
     if (!proxy || !Source(player, proxy, ProxyEntry)) return false;
     if (proxy->getLootState() != GO_READY && proxy->getLootState() != GO_ACTIVATED) return false;
+    // Use and report-use may describe the same click. SendLoot would release
+    // the player's already-open loot before trying to open it again.
+    if (state.manualOpen && !state.loot.IsEmpty() && player->GetLootGUID() == proxy->GetGUID())
+    {
+        Loot* current = proxy->IsPersonal() ? player->GetPersonalLoot(proxy->GetGUID()) : &proxy->loot;
+        if (current && current->GetGUID() == state.loot)
+            return true;
+    }
     uint64 epoch = state.epoch;
     player->SendLoot(proxy->GetGUID(), LOOT_CORPSE);
     player = Owner(); proxy = ObjectAt(instance, state.proxy);

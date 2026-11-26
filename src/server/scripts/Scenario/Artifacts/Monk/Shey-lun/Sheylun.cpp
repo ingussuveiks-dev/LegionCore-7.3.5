@@ -537,11 +537,18 @@ class go_art_sheylun : public GameObjectScript
 public:
     go_art_sheylun() : GameObjectScript("go_art_sheylun") {}
 
-    bool OnGossipHello(Player* player, GameObject* go) override
+    struct AI : GameObjectAI
     {
-        if (SheilunAcquisition::Instance* controller = SheilunAcquisition::Controller(player)) controller->Open(player, go);
-        return true;
-    }
+        using GameObjectAI::GameObjectAI;
+        bool GossipUse(Player* player) override { return GossipHello(player, true); }
+        bool GossipHello(Player* player, bool) override
+        {
+            if (SheilunAcquisition::Instance* controller = SheilunAcquisition::Controller(player))
+                controller->Open(player, go);
+            return true;
+        }
+    };
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
 };
 
 void AddSC_Sheylun()

@@ -15,10 +15,13 @@ public:
             // actual template's invisible alternative, retaining spellclick.
             if (Instance* controller = Controller(me))
                 if (controller->StaffSpawn(me))
+                {
+                    me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_PREVENT_SELECT_NPC);
                     if (uint32 model = me->GetCreatureTemplate()->GetFirstInvisibleModel())
                     {
                         me->SetDisplayId(model); me->SetNativeDisplayId(model);
                     }
+                }
         }
     };
     CreatureAI* GetAI(Creature* creature) const override { return new AI(creature); }
