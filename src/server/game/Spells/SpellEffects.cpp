@@ -6970,6 +6970,17 @@ void Spell::EffectSummonObject(SpellEffIndex effIndex)
         return;
 
     uint32 go_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue;
+    Player* forestGateOwner = nullptr;
+    if (m_caster->GetMapId() == 860 && m_currentExecutedEffect == SPELL_EFFECT_OBJECT_WITH_PERSONAL_VISIBILITY &&
+        ((m_spellInfo->Id == 115426 && go_id == 211294) || (m_spellInfo->Id == 115435 && go_id == 211298)))
+    {
+        forestGateOwner = m_caster->ToPlayer();
+        if (!forestGateOwner || !forestGateOwner->IsAlive() || forestGateOwner->GetQuestStatus(29792) != QUEST_STATUS_INCOMPLETE)
+            return;
+        if (GameObject* previous = forestGateOwner->GetGameObject(m_spellInfo->Id); previous && previous->IsInWorld() &&
+            previous->HasQuestObjectScope() && !previous->IsQuestObjectExpired())
+            return;
+    }
     float x, y, z, o;
 
     ObjectGuid guid = m_caster->m_ObjectSlot[slot];
@@ -7010,6 +7021,25 @@ void Spell::EffectSummonObject(SpellEffIndex effIndex)
     int32 duration = m_spellInfo->GetDuration(m_diffMode);
     pGameObj->SetRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
     pGameObj->SetSpellId(m_spellInfo->Id);
+    if (forestGateOwner)
+    {
+        forestGateOwner->BindQuestObject(29792, pGameObj);
+        if (!pGameObj->EnableQuestScopedCollision())
+        {
+            delete pGameObj;
+            return;
+        }
+        forestGateOwner->AddGameObject(pGameObj);
+        if (!map->AddToMap(pGameObj))
+        {
+            forestGateOwner->RemoveGameObject(pGameObj, false);
+            delete pGameObj;
+            return;
+        }
+        ExecuteLogEffectSummonObject(effIndex, pGameObj);
+        m_caster->m_ObjectSlot[slot] = pGameObj->GetGUID();
+        return;
+    }
     m_caster->AddGameObject(pGameObj);
 
     // object only for SPELL_EFFECT_OBJECT_WITH_PERSONAL_VISIBILITY

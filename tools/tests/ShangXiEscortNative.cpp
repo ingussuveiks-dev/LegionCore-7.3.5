@@ -4,8 +4,10 @@
 
 #include "CreatureTextMgr.h"
 #include "ConditionMgr.h"
+#include "GameObjectModel.h"
 #include "GilneasQuestNative.h"
 #include "MoveSpline.h"
+#include "QuestCollisionQuery.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptSystem.h"
 #include "SpellPackets.h"
@@ -36,13 +38,18 @@ constexpr uint32 BalloonStand = 55918;
 constexpr uint32 BalloonStandSpawn = 245079;
 constexpr uint32 BalloonRideCredit = 56378;
 constexpr uint32 TurtleStoryCredit = 55939;
+constexpr uint32 Bidden = 29792;
+constexpr uint32 MandoriGateSpell = 115426;
+constexpr uint32 PeiWuGateSpell = 115435;
+constexpr uint32 MandoriGateCredit = 59946;
+constexpr uint32 PeiWuGateCredit = 59947;
 
 Quest const* LoadPassing()
 {
     auto row = WorldDatabase.Query(
 #include "NativeShangXiEscort.inc"
     );
-    Require(row && row->GetRowCount() == 5, "Missing the original temple quest templates");
+    Require(row && row->GetRowCount() == 6, "Missing the original temple quest templates");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -55,8 +62,8 @@ Quest const* LoadPassing()
     auto quest = quests[Passing];
     auto addon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID BETWEEN 29787 AND 29791");
-    Require(addon && addon->GetRowCount() == 5, "Missing the original temple prerequisites");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID BETWEEN 29787 AND 29792");
+    Require(addon && addon->GetRowCount() == 6, "Missing the original temple prerequisites");
     do
     {
         auto fields = addon->Fetch();
@@ -80,8 +87,8 @@ Quest const* LoadPassing()
     quest->LoadQuestObjective(objective->Fetch());
     quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     auto wisdomObjective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID BETWEEN 29788 AND 29791 ORDER BY QuestID,StorageIndex");
-    Require(wisdomObjective && wisdomObjective->GetRowCount() == 5, "Missing the original temple preparation and staff planting objectives");
+        "FROM quest_objectives WHERE QuestID BETWEEN 29788 AND 29792 ORDER BY QuestID,StorageIndex");
+    Require(wisdomObjective && wisdomObjective->GetRowCount() == 7, "Missing the original temple and southern forest objectives");
     do
     {
         auto fields = wisdomObjective->Fetch();
@@ -91,6 +98,7 @@ Quest const* LoadPassing()
     quests[UnwelcomeNature]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[SmallButSignificant]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
     quests[Suffering]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    quests[Bidden]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     Require(bool(WorldDatabase.Query("SELECT 1 FROM spell_area WHERE spell=105333 AND quest_start=29787 "
         "AND area=5829 AND quest_start_status=8 AND quest_end=29787 AND quest_end_status=8 AND autocast=1")),
         "Native escort activation requires the actual accepted quest");
@@ -102,15 +110,17 @@ Quest const* LoadPassing()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE passing_spell_area AS SELECT * FROM spell_area WHERE spell IN (105333,105001,106623,105002) OR (spell=60922 AND quest_start=29791)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM passing_spell_area");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245086,245096,245079,245127,244855,245235) OR id=55640)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest BETWEEN 29787 AND 29791");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest BETWEEN 29787 AND 29791");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245086,245096,245079,245127,244855,245235,245239,245264,245266) OR id=55640)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest BETWEEN 29787 AND 29792");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest BETWEEN 29787 AND 29792");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_target_position AS SELECT * FROM legion_world.spell_target_position WHERE id IN (115426,115435)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55672,56686,57769)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29790) OR (SourceTypeOrReferenceId=18 AND SourceGroup IN (55918,55649))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN (55918,55649)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE vehicle_template_accessory AS SELECT * FROM legion_world.vehicle_template_accessory WHERE EntryOrAura IN (55918,55649)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sSpellMgr->LoadSpellAreas();
+    sSpellMgr->LoadSpellTargetPositions();
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadPageTexts();
     sObjectMgr->LoadGameObjectTemplate();
@@ -689,6 +699,162 @@ void CheckShenZinSu()
     Require(owner.IsQuestRewarded(Suffering), "Elder Shaopai did not accept the two genuine balloon objectives");
     std::cout << "PASS normal balloon click, abandoned flight cleanup, new attempt, both companions, 21 waypoints and Elder Shaopai reward\n";
 }
+
+void CheckMandori()
+{
+    Map map(860, 304, 0, DIFFICULTY_NONE);
+    auto data = sObjectMgr->GetCreatureData(245235);
+    Require(data, "The original Elder Shaopai did not load");
+    Position const temple{data->posX, data->posY, data->posZ, data->orientation};
+    map.LoadGrid(data->posX, data->posY);
+    LootPlayer pupil(SupplySession(), map, 2979201, temple);
+    pupil.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
+    pupil.SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
+    pupil.setFactionForRace(RACE_PANDAREN_NEUTRAL);
+    pupil.SetLevel(10);
+    pupil.SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 15000);
+    pupil.SetRewardedQuest(Suffering);
+    MoveGilneasPlayer(pupil, temple);
+    auto shaopai = pupil.FindNearestCreature(56012, 10.0f, true);
+    Require(shaopai && shaopai->GetDBTableGUIDLow() == 245235, "Missing the original Bidden to Greatness questgiver");
+    WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    accept.QuestGiverGUID = shaopai->GetGUID();
+    accept.QuestID = Bidden;
+    pupil.GetSession()->HandleQuestGiverAcceptQuest(accept);
+    Require(pupil.GetQuestStatus(Bidden) == QUEST_STATUS_INCOMPLETE, "Elder Shaopai did not offer Bidden to Greatness");
+
+    Position const approach{715.0f, 3601.79f, 142.91f};
+    map.LoadGrid(approach.GetPositionX(), approach.GetPositionY());
+    MoveGilneasPlayer(pupil, approach);
+    auto trigger = pupil.FindNearestCreature(59962, 50.0f, true);
+    Require(trigger && trigger->GetDBTableGUIDLow() == 245239, "Missing Aysa's original forest entrance");
+    trigger->AI()->MoveInLineOfSight_Safe(&pupil);
+    Tick(pupil, 5000);
+    auto mandori = pupil.GetGameObject(MandoriGateSpell);
+    auto peiWu = pupil.GetGameObject(PeiWuGateSpell);
+    std::cout << "CASE Mandori doors=" << bool(mandori) << ',' << bool(peiWu) << '\n';
+    Require(mandori && peiWu && mandori->GetEntry() == 211294 && peiWu->GetEntry() == 211298 &&
+        sSpellMgr->GetSpellInfo(PeiWuGateSpell)->GetEffect(EFFECT_0)->MiscValueB == 1,
+        "The existing core correction did not keep two different gates in native slots");
+    LootPlayer observer(SupplySession(), map, 2979202, approach);
+    for (GameObject* door : {mandori, peiWu})
+    {
+        door->Update(250);
+        Require(door->m_model && door->m_model->isCollisionEnabled(), "The original closed gate has no native mesh");
+        Require(door->IsInPersonnalVisibilityList(pupil.GetGUID()) && !door->IsInPersonnalVisibilityList(observer.GetGUID()),
+            "The original personal effect did not hide its gate from the second player");
+        auto lo = door->m_model->getBounds().low();
+        auto hi = door->m_model->getBounds().high();
+        float const x = (lo.x + hi.x) / 2.0f;
+        float const y = (lo.y + hi.y) / 2.0f;
+        float const z = lo.z + (hi.z - lo.z) * 0.25f;
+        auto hitsDoor = [&](WorldObject const& requester)
+        {
+            float hitX, hitY, hitZ;
+            DynamicTreeCallback hit;
+            if (map.getObjectHitPos({}, true, lo.x - 2.0f, y, z, hi.x + 2.0f, y, z, hitX, hitY, hitZ, 0.0f, &hit, &requester) && hit.go == door)
+                return true;
+            return map.getObjectHitPos({}, true, x, lo.y - 2.0f, z, x, hi.y + 2.0f, z, hitX, hitY, hitZ, 0.0f, &hit, &requester) && hit.go == door;
+        };
+        Require(hitsDoor(pupil), "The accepted player's native closed gate did not block a real contact ray");
+#ifdef WANDERING_ISLE_MANDORI_BASELINE
+        Require(hitsDoor(observer) && !door->HasQuestObjectScope(), "A hidden forest gate no longer blocks the foreign player's ray");
+#else
+        Require(!hitsDoor(observer) && door->HasQuestObjectScope(), "A hidden but solid forest gate still obstructs the other player");
+#endif
+    }
+#ifndef WANDERING_ISLE_MANDORI_BASELINE
+    ObjectGuid const firstGateGuid = mandori->GetGUID();
+    ObjectGuid const secondGateGuid = peiWu->GetGUID();
+    WorldPackets::Quest::QuestGiverAcceptQuest observerAccept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    observerAccept.QuestGiverGUID = shaopai->GetGUID();
+    observerAccept.QuestID = Bidden;
+    observer.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
+    observer.SetByteValue(UNIT_FIELD_BYTES_0, 1, CLASS_HUNTER);
+    observer.setFactionForRace(RACE_PANDAREN_NEUTRAL);
+    observer.SetLevel(10);
+    observer.SetRewardedQuest(Suffering);
+    MoveGilneasPlayer(observer, temple);
+    observer.GetSession()->HandleQuestGiverAcceptQuest(observerAccept);
+    MoveGilneasPlayer(observer, approach);
+    trigger->AI()->MoveInLineOfSight_Safe(&observer);
+    Tick(observer, 200);
+    auto secondOwnerGate = observer.GetGameObject(MandoriGateSpell);
+    Require(secondOwnerGate && secondOwnerGate != mandori && secondOwnerGate->CanCollideWith(&observer) && !secondOwnerGate->CanCollideWith(&pupil),
+        "The second accepted attempt did not have an independent gate");
+    ObjectGuid const canceledGate = secondOwnerGate->GetGUID();
+    AbandonSupply(observer, Bidden);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetGameObject(canceledGate) && map.GetGameObject(firstGateGuid) && map.GetGameObject(secondGateGuid),
+        "Canceling one accepted route removed another player's gates or kept its own");
+
+    std::vector<ObjectGuid> actors;
+    for (uint32 entry : {59986u, 59988u, 59989u})
+    {
+        auto list = pupil.GetSummonList(entry);
+        Require(list->size() == 1, "The accepted forest route did not create one of each companion");
+        auto escort = map.GetCreature(list->front());
+        Require(escort && escort->GetQuestObjectScope().lock() == mandori->GetQuestObjectScope().lock(), "An escort did not share the real gates' accepted scope");
+        actors.push_back(list->front());
+    }
+    Require(!pupil.GetQuestObjectiveData(Bidden, MandoriGateCredit) && !pupil.GetQuestObjectiveData(Bidden, PeiWuGateCredit),
+        "The closed gates gave credit as soon as they were created");
+    bool firstOpened = false;
+    bool secondOpened = false;
+    uint32 afterCompletion = 0;
+    for (uint32 elapsed = 0; elapsed < 180000 && afterCompletion < 15000; elapsed += 100)
+    {
+        if (auto aysa = map.GetCreature(actors.front()))
+            SupplyMove(pupil, aysa->GetPosition());
+        for (ObjectGuid guid : actors)
+            if (auto escort = map.GetCreature(guid))
+            {
+                escort->Unit::Update(100);
+                escort->AI()->UpdateAI(100);
+            }
+        Tick(pupil, 100);
+        map.MoveAllCreaturesInMoveList();
+        if (auto gate = map.GetGameObject(firstGateGuid))
+            firstOpened |= gate->GetGoState() == GO_STATE_ACTIVE && !gate->m_model->isCollisionEnabled();
+        if (auto gate = map.GetGameObject(secondGateGuid))
+            secondOpened |= gate->GetGoState() == GO_STATE_ACTIVE && !gate->m_model->isCollisionEnabled();
+        map.RemoveAllObjectsInRemoveList();
+        if (pupil.GetQuestStatus(Bidden) == QUEST_STATUS_COMPLETE)
+            afterCompletion += 100;
+    }
+    std::cout << "CASE Mandori opened=" << firstOpened << ',' << secondOpened << " objectives=" << pupil.GetQuestObjectiveData(Bidden, MandoriGateCredit)
+        << ',' << pupil.GetQuestObjectiveData(Bidden, PeiWuGateCredit) << '\n';
+    Require(firstOpened && secondOpened && pupil.GetQuestObjectiveData(Bidden, MandoriGateCredit) == 1 &&
+        pupil.GetQuestObjectiveData(Bidden, PeiWuGateCredit) == 1 && pupil.GetQuestStatus(Bidden) == QUEST_STATUS_COMPLETE,
+        "The genuine escort sequence did not open and credit both forest gates");
+
+    auto weiSpawn = sObjectMgr->GetCreatureData(245266);
+    Require(weiSpawn, "The original forest quest receiver placement is missing");
+    MoveGilneasPlayer(pupil, Position{weiSpawn->posX, weiSpawn->posY, weiSpawn->posZ, weiSpawn->orientation});
+    auto wei = pupil.FindNearestCreature(55943, 10.0f, true);
+    Require(wei && wei->GetDBTableGUIDLow() == 245266, "Wei Palerage did not become visible for the forest turn-in");
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestGiverGUID = wei->GetGUID();
+    reward.QuestID = Bidden;
+    auto quest = sQuestDataStore->GetQuestTemplate(Bidden);
+    if (auto package = sDB2Manager.GetQuestPackageItems(quest->PackageID))
+        for (auto item : *package)
+            if (pupil.CanSelectQuestPackageItem(item))
+            {
+                reward.ItemChoiceID = item->ItemID;
+                break;
+            }
+    pupil.GetSession()->HandleQuestGiverChooseReward(reward);
+    map.RemoveAllObjectsInRemoveList();
+    Require(pupil.IsQuestRewarded(Bidden) && !map.GetGameObject(firstGateGuid) && !map.GetGameObject(secondGateGuid),
+        "Wei Palerage did not reward and clean up the genuine forest route");
+    std::cout << "PASS both original private meshes, separate attempts, actual companions and both gate openings, Wei's reward and scope cleanup\n";
+#else
+    AbandonSupply(pupil, Bidden);
+    map.RemoveAllObjectsInRemoveList();
+    std::cout << "EXPECTED_BROKEN both original personal gates block an unrelated player's actual contact ray\n";
+#endif
+}
 }
 
 int main(int argc, char** argv)
@@ -723,6 +889,9 @@ int main(int argc, char** argv)
         CheckPassingWisdom();
 #ifdef WANDERING_ISLE_BALLOON
         CheckShenZinSu();
+#endif
+#ifdef WANDERING_ISLE_MANDORI
+        CheckMandori();
 #endif
         CharacterDatabase.Close();
         LoginDatabase.Close();

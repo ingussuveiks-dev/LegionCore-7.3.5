@@ -4755,6 +4755,9 @@ public:
             SUMMON_AYSA                 = 115332, // Summon Aysa
             SUMMON_JI                   = 115335, // Summon Ji
             SUMMON_JOJO                 = 115337, // Summon Jojo
+            NPC_AYSA                    = 59986,
+            NPC_JI                      = 59988,
+            NPC_JOJO                    = 59989,
         };
 
         mob_mandori_trigerAI(Creature* creature) : ScriptedAI(creature)
@@ -4765,30 +4768,26 @@ public:
         {
         }
 
-        void MoveInLineOfSight(Unit* who)
+        void MoveInLineOfSight(Unit* who) override
         {
-            Player *player = who->ToPlayer();
-            if (!player)
+            Player* player = who->ToPlayer();
+            if (!player || !player->IsAlive() || player->GetPositionX() < 710.0f || !me->IsWithinDistInMap(player, 50.0f) ||
+                player->GetQuestStatus(QUEST_BIDDEN_TO_GREATNESS) != QUEST_STATUS_INCOMPLETE)
                 return;
 
-           if (player->GetPositionX() < 710.0f || !me->IsWithinDistInMap(who, 50.0f))
-               return;
+            if (!player->GetGameObject(SUMMON_MANDORI_DOOR))
+                player->CastSpell(player, SUMMON_MANDORI_DOOR, true);
+            if (!player->GetGameObject(SUMMON_PEI_WU_DOOR))
+                player->CastSpell(player, SUMMON_PEI_WU_DOOR, true);
+            if (!player->GetGameObject(SUMMON_MANDORI_DOOR) || !player->GetGameObject(SUMMON_PEI_WU_DOOR))
+                return;
 
-           if (player->GetQuestStatus(QUEST_BIDDEN_TO_GREATNESS) != QUEST_STATUS_INCOMPLETE)
-               return;
-
-           if (player->HasAura(SUMMON_MANDORI_DOOR) || player->HasAura(SUMMON_PEI_WU_DOOR))
-               return;
-
-            //summon doors
-            player->CastSpell(player, SUMMON_MANDORI_DOOR, false);
-            player->CastSpell(player, SUMMON_PEI_WU_DOOR, false);
-
-            //summon escort
-            player->CastSpell(player, SUMMON_AYSA, true);
-            player->CastSpell(player, SUMMON_JI, true);
-            player->CastSpell(player, SUMMON_JOJO, true);
-            return;
+            if (player->GetSummonList(NPC_AYSA)->empty())
+                player->CastSpell(player, SUMMON_AYSA, true);
+            if (player->GetSummonList(NPC_JI)->empty())
+                player->CastSpell(player, SUMMON_JI, true);
+            if (player->GetSummonList(NPC_JOJO)->empty())
+                player->CastSpell(player, SUMMON_JOJO, true);
         }
     };
 };
@@ -4815,6 +4814,8 @@ class mob_mandori_escort : public CreatureScript
             SPELL_CREDIT_2          = 115443,
 
             SPELL_VIS_28            = 115449,
+            POINT_JI_SCOUT          = 100,
+            POINT_JOJO_PEIWU        = 101,
 
             EVENT_AISA_0            = 1,    //17:29:44.000 talk + credit
             EVENT_AISA_1            = 2,    //17:29:48.000 start move
@@ -4868,33 +4869,29 @@ class mob_mandori_escort : public CreatureScript
             return me->GetEntry() == npc_entry;
         }
 
-        void IsSummonedBy(Unit* summoner)
+        void IsSummonedBy(Unit* summoner) override
         {
-            Player *player = summoner->ToPlayer();
-            if (!player)
+            Player* player = summoner->ToPlayer();
+            if (!player || !me->HasQuestObjectScope() || me->IsQuestObjectExpired() ||
+                player->GetQuestStatus(QUEST_BIDDEN_TO_GREATNESS) != QUEST_STATUS_INCOMPLETE)
             {
-                me->MonsterSay("SCRIPT::mob_mandori_escort summoner is not player", LANG_UNIVERSAL, ObjectGuid::Empty);
+                me->DespawnOrUnsummon(1);
                 return;
             }
 
-            playerGuid = summoner->GetGUID();
-            me->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
-
-            if (GameObject* mandoriDoor = summoner->GetGameObject(SUMMON_MANDORI_DOOR))
-                mandoriDoorGuid = mandoriDoor->GetGUID();
-            else
+            GameObject* mandoriDoor = player->GetGameObject(SUMMON_MANDORI_DOOR);
+            GameObject* peiwuDoor = player->GetGameObject(SUMMON_PEI_WU_DOOR);
+            auto scope = me->GetQuestObjectScope().lock();
+            if (!mandoriDoor || !peiwuDoor || !scope || mandoriDoor->GetQuestObjectScope().lock() != scope ||
+                peiwuDoor->GetQuestObjectScope().lock() != scope)
             {
-                me->MonsterSay("SCRIPT::mob_mandori_escort no go summoned by SUMMON_MANDORI_DOOR 115426", LANG_UNIVERSAL, playerGuid);
+                TC_LOG_WARN("scripts", "Bidden to Greatness: escort %u could not find its two forest gates", me->GetGUIDLow());
+                me->DespawnOrUnsummon(1);
                 return;
             }
-
-            if (GameObject* mandoriDoor = summoner->GetGameObject(SUMMON_PEI_WU_DOOR))
-                peiwuDoorGuid = mandoriDoor->GetGUID();
-            else
-            {
-                me->MonsterSay("SCRIPT::mob_mandori_escort no go summoned by SUMMON_PEI_WU_DOOR 115435", LANG_UNIVERSAL, playerGuid);
-                return;
-            }
+            playerGuid = player->GetGUID();
+            mandoriDoorGuid = mandoriDoor->GetGUID();
+            peiwuDoorGuid = peiwuDoor->GetGUID();
 
             uint32 t = 4000;                                         //17:29:43.000
             if (Is(NPC_AYSA))
@@ -4941,7 +4938,7 @@ class mob_mandori_escort : public CreatureScript
                         events.RescheduleEvent(EVENT_JOJO_1, t += 1000);      //17:30:10.000
                         events.RescheduleEvent(EVENT_JOJO_2, t += 22000);     //17:30:32.000
                         events.RescheduleEvent(EVENT_JOJO_3, t += 2000);      //17:30:34.000
-                        events.RescheduleEvent(EVENT_JOJO_4, t += 1000);      //17:30:35.000
+                        events.RescheduleEvent(EVENT_JOJO_4, t += 3000);      // Recover if the short movement is interrupted.
                     }
                     break;
                 case 20:
@@ -4975,6 +4972,23 @@ class mob_mandori_escort : public CreatureScript
             }
         }
 
+        void MovementInform(uint32 moveType, uint32 pointId) override
+        {
+            if (moveType == POINT_MOTION_TYPE && ((pointId == POINT_JI_SCOUT && Is(NPC_JI)) ||
+                (pointId == POINT_JOJO_PEIWU && Is(NPC_JOJO))))
+            {
+                if (me->movespline->Finalized() && me->movespline->ComputeProgress() == 1.0f)
+                {
+                    if (pointId == POINT_JI_SCOUT)
+                        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_STEALTH_STAND);
+                    else
+                        events.RescheduleEvent(EVENT_JOJO_4, 1000);
+                }
+                return;
+            }
+            npc_escortAI::MovementInform(moveType, pointId);
+        }
+
         void LastWaypointReached()
         {           
             if (Is(NPC_AYSA))
@@ -4999,13 +5013,14 @@ class mob_mandori_escort : public CreatureScript
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, playerGuid);
                         break;
                     case EVENT_AISA_1:
-                        if (GameObject* mandoriDoor = me->GetMap()->GetGameObject(mandoriDoorGuid))
-                            mandoriDoor->SetGoState(GO_STATE_ACTIVE);
-
-                        if (Player* player = ObjectAccessor::FindPlayer(playerGuid))
+                        if (GameObject* mandoriDoor = me->GetMap()->GetGameObject(mandoriDoorGuid); mandoriDoor && !mandoriDoor->IsQuestObjectExpired())
                         {
-                            me->CastSpell(player, SPELL_CREDIT_1, true);
-                            player->RemoveAurasDueToSpell(SPELL_VIS_28);
+                            mandoriDoor->SetGoState(GO_STATE_ACTIVE);
+                            if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                            {
+                                me->CastSpell(player, SPELL_CREDIT_1, true);
+                                player->RemoveAurasDueToSpell(SPELL_VIS_28);
+                            }
                         }
                         Start(false, true);
                         break;
@@ -5034,8 +5049,7 @@ class mob_mandori_escort : public CreatureScript
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, playerGuid);
                         break;
                     case EVENT_JI_2:
-                        me->GetMotionMaster()->MovePoint(100, 569.153f, 3582.24f, 94.95621f);
-                        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_STEALTH_STAND);
+                        me->GetMotionMaster()->MovePoint(POINT_JI_SCOUT, 569.153f, 3582.24f, 94.95621f);
                         break;
                     case EVENT_JI_3:
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1, playerGuid);
@@ -5065,11 +5079,13 @@ class mob_mandori_escort : public CreatureScript
                         me->PlayDistanceSound(32037);
                         break;
                     case EVENT_JOJO_3:
-                        if (GameObject* peiwuDoor = me->GetMap()->GetGameObject(peiwuDoorGuid))
+                        if (GameObject* peiwuDoor = me->GetMap()->GetGameObject(peiwuDoorGuid); peiwuDoor && !peiwuDoor->IsQuestObjectExpired())
+                        {
                             peiwuDoor->SetGoState(GO_STATE_ACTIVE);
-                        if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
-                            me->CastSpell(player, SPELL_CREDIT_2, true);
-                        me->GetMotionMaster()->MoveCharge(567.99f, 3583.41f, 94.74f);
+                            if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                                me->CastSpell(player, SPELL_CREDIT_2, true);
+                        }
+                        me->GetMotionMaster()->MoveCharge(567.99f, 3583.41f, 94.74f, SPEED_CHARGE, POINT_JOJO_PEIWU);
                         break;
                     case EVENT_JOJO_4:
                         SetEscortPaused(false);

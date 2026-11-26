@@ -4535,6 +4535,24 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             return nullptr;
     }
 
+    Player* forestEscortOwner = nullptr;
+    if ((entry == 59986 && spellId == 115332) || (entry == 59988 && spellId == 115335) || (entry == 59989 && spellId == 115337))
+    {
+        forestEscortOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!forestEscortOwner || GetId() != 860 || !properties || properties->ID != 3276 || !forestEscortOwner->IsAlive() ||
+            forestEscortOwner->GetQuestStatus(29792) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+        for (uint32 gateSpell : {115426u, 115435u})
+        {
+            auto gate = forestEscortOwner->GetGameObject(gateSpell);
+            if (!gate || !gate->IsInWorld() || !gate->HasQuestObjectScope() || gate->IsQuestObjectExpired())
+                return nullptr;
+        }
+        for (ObjectGuid const& guid : *forestEscortOwner->GetSummonList(entry))
+            if (Creature const* escort = GetCreature(guid); escort && escort->IsAlive() && escort->HasQuestObjectScope() && !escort->IsQuestObjectExpired())
+                return nullptr;
+    }
+
     Player* minerOwner = nullptr;
     if (entry == 35813 && spellId == 68059 && GetId() == 648)
     {
@@ -4826,6 +4844,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (balloonOwner)
         balloonOwner->BindQuestObject(29791, summon);
+
+    if (forestEscortOwner)
+        forestEscortOwner->BindQuestObject(29792, summon);
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);

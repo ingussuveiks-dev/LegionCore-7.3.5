@@ -17,7 +17,9 @@ invoke='?_Do_call@?$_Func_impl_no_alloc@V<lambda_1>@?1???0QuestCollisionQuery@@'
 require(invoke,owner)
 table=p['data_symbol']('??_7?$_Func_impl_no_alloc@V<lambda_1>@?1???0QuestCollisionQuery@@')
 assert table in refs(ctor)
-assert n['symbol'](invoke) in struct.unpack_from('<8Q',n['binary'],n['offset'](table))
+# MSVC stores _Do_call in slot 2, which can point to an incremental-link thunk.
+dispatch=struct.unpack_from('<Q',n['binary'],n['offset'](table)+2*8)[0]
+assert n['resolve'](dispatch)==n['symbol'](invoke)
 height='?GetHeight@Map@@QEBAMAEB'
 los='?isInLineOfSight@Map@@'
 for caller,target in [(height,'?getHeight@DynamicMapTree@@'),(los,'?isInLineOfSight@DynamicMapTree@@')]:
