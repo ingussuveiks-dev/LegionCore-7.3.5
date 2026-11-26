@@ -7,7 +7,12 @@
 #include "CreatureTextMgr.h"
 #include "CellImpl.h"
 #include "GridNotifiers.h"
+#include "MiscPackets.h"
+#include "MoveSpline.h"
+#include "MovementPackets.h"
 #include "ObjectVisitors.hpp"
+#include "ScriptedEscortAI.h"
+#include "ScriptSystem.h"
 #include "SpellPackets.h"
 #include "Vehicle.h"
 
@@ -33,6 +38,15 @@ constexpr uint32 MedicalCrateItem = 74958;
 constexpr uint32 InjuredSource = 55999;
 constexpr uint32 CarriedSailor = 56236;
 constexpr uint32 CarryAura = 105520;
+#ifdef WANDERING_ISLE_THORN
+constexpr uint32 FromBadToWorse = 29665;
+constexpr uint32 AncientEvil = 29798;
+constexpr uint32 RiskingItAll = 30767;
+constexpr uint32 Vordraka = 56009;
+constexpr uint32 AysaEscort = 60729;
+constexpr uint32 JiEscort = 60741;
+constexpr uint32 ThornCredit = 60727;
+#endif
 
 struct SouthPet : LootPet
 {
@@ -51,7 +65,14 @@ void LoadSouth()
     auto templates = WorldDatabase.Query(
 #include "NativeWanderingIsleSouth.inc"
     );
-    Require(templates && templates->GetRowCount() == 9, "The southern Wandering Isle quest templates are missing");
+    std::string questIds = "29792,29793,29794,29795,29796,29797,30589,30590,30591";
+    uint32 templateCount = 9, objectiveCount = 6;
+#ifdef WANDERING_ISLE_THORN
+    questIds += ",29665,29798,29799,30767";
+    templateCount += 4;
+    objectiveCount += 4;
+#endif
+    Require(templates && templates->GetRowCount() == templateCount, "The southern Wandering Isle quest templates are missing");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -61,10 +82,10 @@ void LoadSouth()
         quests[quest->Id] = quest;
         const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates()).emplace(quest->Id, quest);
     } while (templates->NextRow());
-    auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
+    auto addons = WorldDatabase.PQuery("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN (29792,29793,29794,29795,29796,29797,30589,30590,30591)");
-    Require(addons && addons->GetRowCount() == 9, "The original southern prerequisites are missing");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN (%s)", questIds.c_str());
+    Require(addons && addons->GetRowCount() == templateCount, "The original southern prerequisites are missing");
     do
     {
         auto fields = addons->Fetch();
@@ -73,9 +94,9 @@ void LoadSouth()
         if (quest->PrevQuestID && quests[std::abs(quest->PrevQuestID)])
             quest->prevQuests.push_back(quest->PrevQuestID);
     } while (addons->NextRow());
-    auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29793,29794,29795,29797,30590,30591)");
-    Require(objectives && objectives->GetRowCount() == 6, "The original forest, bamboo or wreck objectives are missing");
+    auto objectives = WorldDatabase.PQuery("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID IN (%s) AND QuestID NOT IN (29792,29796,30589)", questIds.c_str());
+    Require(objectives && objectives->GetRowCount() == objectiveCount, "The original forest, bamboo or wreck objectives are missing");
     do
     {
         auto row = objectives->Fetch();
@@ -85,14 +106,26 @@ void LoadSouth()
     } while (objectives->NextRow());
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND (guid IN (245135,245137,245264,245266,245384,245389) OR id IN (55946,55999,56007))");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (29793,29794,29795,29796,29797,30589,30590,30591)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (29793,29794,29795,29796,29797,30589,30590,30591)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND "
+#ifdef WANDERING_ISLE_THORN
+        "(guid IN (245135,245137,245146,245264,245266,245384,245389,245495,245497,12924836) OR id IN (55946,55999,56007,56360))");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_target_position AS SELECT * FROM legion_world.spell_target_position WHERE id IN (117497,117597)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry=60729");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55999,56360,60729,60741)");
+#else
+        "(guid IN (245135,245137,245264,245266,245384,245389) OR id IN (55946,55999,56007))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry=55999");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceTypeOrReferenceId=18 AND SourceGroup=55999");
+#endif
+    WorldDatabase.DirectExecute(("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (" + questIds + ")").c_str());
+    WorldDatabase.DirectExecute(("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (" + questIds + ")").c_str());
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE (SourceTypeOrReferenceId=18 AND SourceGroup=55999)"
+#ifdef WANDERING_ISLE_THORN
+        " OR (SourceTypeOrReferenceId=23 AND SourceGroup=5736 AND SourceEntry=2)"
+#endif
+    );
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry=55999");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE vehicle_template_accessory AS SELECT * FROM legion_world.vehicle_template_accessory WHERE EntryOrAura=-105520");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell=56267 AND quest_start=29794");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE (spell=56267 AND quest_start=29794) OR (spell=102613 AND quest_start=29798)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -105,6 +138,11 @@ void LoadSouth()
     sObjectMgr->LoadVehicleTemplateAccessories();
     sConditionMgr->LoadConditions();
     sSpellMgr->LoadSpellAreas();
+#ifdef WANDERING_ISLE_THORN
+    sObjectMgr->LoadPhaseDefinitions();
+    sSpellMgr->LoadSpellTargetPositions();
+    sScriptSystemMgr->LoadScriptWaypoints();
+#endif
     sCreatureTextMgr->LoadCreatureTexts();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
@@ -117,7 +155,7 @@ void LoadSouth()
     Require(count == 26, "The eight objective rows and original bonus loot did not load together");
     auto& tigerLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalTigerLoot = tigerLoot;
-    tigerLoot += " WHERE Entry IN (55946,56007)";
+    tigerLoot += " WHERE Entry IN (55946,56007,56009,56360)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     tigerLoot = originalTigerLoot;
     Require(LootTemplates_Creature.GetLootFor(Tiger) && LootTemplates_Creature.GetLootFor(DarkenedHorror), "Missing the original tiger or horror loot");
@@ -375,6 +413,122 @@ void CheckRescue(LootPlayer& owner, LootPlayer& visitor, Creature& ji)
 #endif
 }
 
+#ifdef WANDERING_ISLE_THORN
+Creature* FindThornEscort(Player& player)
+{
+    for (ObjectGuid guid : *player.GetSummonList(AysaEscort))
+        if (auto actor = player.GetMap()->GetCreature(guid); actor && actor->IsAlive() && !actor->IsQuestObjectExpired())
+            return actor;
+    std::list<Creature*> escorts;
+    player.GetCreatureListWithEntryInGrid(escorts, AysaEscort, 100.0f);
+    for (auto actor : escorts)
+        if (auto summon = actor->ToTempSummon(); summon && summon->GetSummonerGUID() == player.GetGUID() && summon->IsAlive() && !summon->IsQuestObjectExpired())
+            return summon;
+    return nullptr;
+}
+
+void CheckThorn(LootPlayer& pupil, LootPlayer& visitor)
+{
+    for (auto [spellId, entry] : {std::pair{117497u, AysaEscort}, std::pair{117597u, JiEscort}})
+    {
+        auto spell = sSpellMgr->GetSpellInfo(spellId);
+        auto effect = spell ? spell->GetEffect(EFFECT_0) : nullptr;
+        Require(effect && effect->IsEffect(SPELL_EFFECT_SUMMON) && effect->MiscValue == int32(entry) &&
+            effect->MiscValueB == 3276 && sSpellMgr->GetSpellTargetPosition(spellId), "The original personal destination summon changed");
+    }
+    auto& map = *pupil.GetMap();
+    auto& admiral = FindSouthActor(map, 245146);
+    CheckSouthCombat(pupil, admiral, FromBadToWorse, 56360, 8, 22);
+    AcceptSouth(pupil, admiral, AncientEvil);
+    auto& nightmare = FindSouthActor(map, 12924836);
+    auto& aysa = FindSouthActor(map, 245495);
+    MoveGilneasPlayer(pupil, nightmare.GetPosition());
+    MoveGilneasPlayer(visitor, nightmare.GetPosition());
+    SouthPet pet(pupil, map);
+    Require(pet.IsValidAttackTarget(&nightmare), "The pet could not attack the original Vordraka");
+    pet.DealDamage(&nightmare, uint32(nightmare.GetMaxHealth()) * 2);
+    Tick(pupil, 150);
+    Require(!nightmare.IsAlive() && pupil.GetQuestObjectiveData(AncientEvil, Vordraka) == 1 && !visitor.GetQuestObjectiveData(AncientEvil, Vordraka),
+        "The actual pet defeat did not credit the eligible owner once");
+    RewardSouth(pupil, aysa, AncientEvil);
+    AcceptSouth(pupil, aysa, RiskingItAll);
+    Tick(pupil, 250);
+    auto escort = FindThornEscort(pupil);
+    Require(escort, "Normal Aysa acceptance did not cast the original personal escort");
+    ObjectGuid abandonedEscort = escort->GetGUID();
+    AbandonSupply(pupil, RiskingItAll);
+    map.RemoveAllObjectsInRemoveList();
+#ifdef WANDERING_ISLE_THORN_BASELINE
+    Require(map.GetCreature(abandonedEscort), "The previous escort did not reproduce retention after abandonment");
+    std::cout << "EXPECTED_BROKEN the accepted Risking It All escort remained alive after abandoning the quest\n";
+    map.GetCreature(abandonedEscort)->DespawnOrUnsummon();
+    map.RemoveAllObjectsInRemoveList();
+#else
+    Require(!map.GetCreature(abandonedEscort), "The abandoned escort survived cancellation");
+    AcceptSouth(pupil, aysa, RiskingItAll);
+    visitor.SetRewardedQuest(AncientEvil);
+    AcceptSouth(visitor, aysa, RiskingItAll);
+    Tick(pupil, 100);
+    Tick(visitor, 100);
+    escort = FindThornEscort(pupil);
+    auto second = FindThornEscort(visitor);
+    Require(escort && second && escort != second && escort->HasQuestObjectScope() && second->HasQuestObjectScope() &&
+        escort->CanTargetQuestObject(&pupil) && !escort->CanTargetQuestObject(&visitor), "The two original escorts did not have separate owners");
+    pupil.CastSpell(&pupil, 117497, true);
+    Tick(pupil, 100);
+    Require(pupil.GetSummonList(AysaEscort)->size() == 1 && pupil.GetSummonList(JiEscort)->size() == 1 &&
+        visitor.GetSummonList(JiEscort)->size() == 1, "Duplicate summon or missing personal Ji");
+    auto escortGuid = escort->GetGUID();
+    auto secondGuid = second->GetGUID();
+    AbandonSupply(visitor, RiskingItAll);
+    map.RemoveAllObjectsInRemoveList();
+    Require(!map.GetCreature(secondGuid) && map.GetCreature(escortGuid), "One participant canceled another participant's escort");
+
+    auto const& route = sScriptSystemMgr->GetPointMoveList(AysaEscort);
+    Require(route.size() == 10 && route[7].uiPointId == 8, "The original escort route is absent");
+    Position debate{route[7].fX, route[7].fY, route[7].fZ};
+    bool reachedDebate = false, startedExit = false;
+    Position last{route.back().fX, route.back().fY, route.back().fZ};
+    Position lastObserved = escort->GetPosition();
+    uint32 duration = 0;
+    for (uint32 elapsed = 0; elapsed < 190000 && (escort = map.GetCreature(escortGuid)); elapsed += 100)
+    {
+        duration = elapsed;
+        if (!pupil.isWatchingMovie() && !pupil.GetQuestObjectiveData(RiskingItAll, ThornCredit))
+            SupplyMove(pupil, escort->GetPosition());
+        escort->Unit::Update(100);
+        escort->AI()->UpdateAI(100);
+        Tick(pupil, 100);
+        map.MoveAllCreaturesInMoveList();
+        reachedDebate |= escort->movespline->Finalized() && escort->GetExactDist(debate) < 1.0f;
+        startedExit |= reachedDebate && !escort->movespline->Finalized() && escort->GetPositionY() < 3990.0f;
+        lastObserved = escort->GetPosition();
+        map.RemoveAllObjectsInRemoveList();
+    }
+    std::cout << "CASE Thorn debate=" << reachedDebate << " exit motion=" << startedExit << " duration=" << duration
+        << " last actor distance from scripted exit=" << lastObserved.GetExactDist(last) << std::endl;
+    Require(reachedDebate && startedExit && !map.GetCreature(escortGuid), "The native escort did not reach the debate, depart and clean up");
+    Require(pupil.GetQuestObjectiveData(RiskingItAll, ThornCredit) == 1 && pupil.isWatchingMovie(), "The original escort did not launch its movie and credit its owner");
+    Require(!visitor.GetQuestObjectiveData(RiskingItAll, ThornCredit) && !visitor.isWatchingMovie(), "A canceled quest participant received the movie or credit");
+    Require(pupil.HasPendingTeleport() && pupil.GetTeleportDest().GetExactDist(Position{249.38f, 3939.55f, 65.61f}) < 1.0f,
+        "The original conversation did not queue the landing beside Ji");
+    WorldPackets::Misc::CompleteMovie movie{WorldPacket(CMSG_COMPLETE_MOVIE)};
+    pupil.GetSession()->HandleCompleteMovie(movie);
+    pupil.Update(100);
+    WorldPackets::Movement::MoveTeleportAck teleport{WorldPacket(CMSG_MOVE_TELEPORT_ACK)};
+    teleport.MoverGUID = pupil.GetGUID();
+    pupil.GetSession()->HandleMoveTeleportAck(teleport);
+    Require(!pupil.isWatchingMovie() && !pupil.IsBeingTeleported() &&
+        pupil.GetExactDist(Position{249.38f, 3939.55f, 65.61f}) < 1.0f, "The native movie and movement acknowledgements did not complete the landing");
+    auto& ji = FindSouthActor(map, 245497);
+    RewardSouth(pupil, ji, RiskingItAll);
+    auto healing = sQuestDataStore->GetQuestTemplate(29799);
+    Require(healing && pupil.CanTakeQuest(healing, false), "Ji's wounded Shen-zin Su follow-up was unavailable");
+    std::cout << "PASS actual Vordraka pet defeat, private escorts, cancellation, debate, movie and landing acknowledgements, and Ji reward\n";
+#endif
+}
+#endif
+
 void CheckSouth()
 {
     Map map(860, 305, 0, DIFFICULTY_NONE);
@@ -417,6 +571,9 @@ void CheckSouth()
 #endif
 #ifdef WANDERING_ISLE_RESCUE
     CheckRescue(pupil, visitor, ji);
+#endif
+#ifdef WANDERING_ISLE_THORN
+    CheckThorn(pupil, visitor);
 #endif
 #endif
 }

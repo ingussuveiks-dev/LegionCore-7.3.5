@@ -5410,14 +5410,24 @@ public:
         SPELL_ROLL          = 117312,
         SPELL_FIST_FURY     = 117275,
         SPELL_SUMMON_AISA   = 117497,
-        SPELL_SUMMON_JI     = 117597,
         NPC_NIGHMIRE        = 56009,
+        NPC_THORN_ESCORT    = 60729,
     };
+
+    static void StartThornEscort(Player& player)
+    {
+        if (!player.IsAlive() || player.GetQuestStatus(QUEST_RISKING_IT_ALL) != QUEST_STATUS_INCOMPLETE)
+            return;
+        for (ObjectGuid const& guid : *player.GetSummonList(NPC_THORN_ESCORT))
+            if (auto escort = player.GetMap()->GetCreature(guid); escort && escort->IsAlive() && !escort->IsQuestObjectExpired())
+                return;
+        player.CastSpell(&player, SPELL_SUMMON_AISA, true);
+    }
 
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest)
     {
         if (quest->GetQuestId() == QUEST_RISKING_IT_ALL)
-            player->CastSpell(player, SPELL_SUMMON_AISA, true);
+            StartThornEscort(*player);
         return true;
     }
 
@@ -5458,6 +5468,9 @@ public:
 
             if (!me->IsWithinDistInMap(who, 60.0f))
                 return;
+
+            if (me->IsWithinDistInMap(who, INTERACTION_DISTANCE) && me->IsWithinLOSInMap(who))
+                StartThornEscort(*who->ToPlayer());
 
             GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());
             if (itr != m_player_for_event.end())
@@ -5595,37 +5608,30 @@ public:
             EVENT_JI_3          = 13,
             EVENT_JI_4          = 14,
 
-            SPELL_FINISH        = 106037,
+            SPELL_SUMMON_JI     = 117597,
+            NPC_THORN_JI        = 60741,
         };
 
-        void Reset()
-        {
-            playerGuid.Clear();
-            jiGuid.Clear();
-        }
-
-        void IsSummonedBy(Unit* summoner)
+        void IsSummonedBy(Unit* summoner) override
         {
             Player *player = summoner->ToPlayer();
-            if (!player)
+            if (!player || !player->IsAlive() || player->GetQuestStatus(QUEST_RISKING_IT_ALL) != QUEST_STATUS_INCOMPLETE ||
+                !me->HasQuestObjectScope() || me->IsQuestObjectExpired())
             {
-                me->MonsterSay("SCRIPT::mob_aysa_gunship_crash_escort summoner is not player", LANG_UNIVERSAL, ObjectGuid::Empty);
+                me->DespawnOrUnsummon(1);
                 return;
             }
 
             playerGuid = summoner->GetGUID();
-            me->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
-
-            // summoned by spell 117600
-            if (Creature* ji = me->SummonCreature(60741, 230.31f, 4006.67f, 87.27f, 3.38f, TEMPSUMMON_MANUAL_DESPAWN, 0, playerGuid))
-                jiGuid = ji->GetGUID();
+            me->SetReactState(REACT_PASSIVE);
+            player->CastSpell(player, SPELL_SUMMON_JI, true);
 
             uint32 t = 0;                                        //17:54:19.000
             events.RescheduleEvent(EVENT_AISA_0, t += 2000);       //17:54:21.000
             events.RescheduleEvent(EVENT_AISA_1, t += 3000);       //17:54:24.000
         }
 
-        void WaypointReached(uint32 waypointId)
+        void WaypointReached(uint32 waypointId) override
         {
             if (waypointId == 8)
             {
@@ -5641,23 +5647,44 @@ public:
                 events.RescheduleEvent(EVENT_AISA_6, t += 6000);       //17:55:24.000
                 events.RescheduleEvent(EVENT_JI_3, t += 5000);         //17:55:29.000
                 events.RescheduleEvent(EVENT_AISA_7, t += 4000);       //17:55:33.000
-                events.RescheduleEvent(EVENT_AISA_8, t += 500);        //17:55:33.000
             }
         }
 
-        void LastWaypointReached()
+        void LastWaypointReached() override
         {   
-            if (Creature* ji = getJi())
+            if (Creature* ji = GetJi())
                 ji->DespawnOrUnsummon();
         }
 
-        Creature* getJi()
+        Creature* GetJi() const
         {
-            return me->GetMap()->GetCreature(jiGuid);
+            Creature* ji = me->GetMap()->GetCreature(jiGuid);
+            return ji && ji->IsAlive() && !ji->IsQuestObjectExpired() ? ji : nullptr;
         }
 
-        void UpdateAI(uint32 diff)
+        void AttachJi(Player& player)
         {
+            for (ObjectGuid const& guid : *player.GetSummonList(NPC_THORN_JI))
+                if (auto ji = me->GetMap()->GetCreature(guid); ji && ji->IsAlive() &&
+                    ji->GetQuestObjectScope().lock() == me->GetQuestObjectScope().lock())
+                {
+                    jiGuid = guid;
+                    return;
+                }
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+            QuestStatus status = player ? player->GetQuestStatus(QUEST_RISKING_IT_ALL) : QUEST_STATUS_NONE;
+            if (!player || !player->IsAlive() || me->IsQuestObjectExpired() ||
+                (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE))
+            {
+                LastWaypointReached();
+                me->DespawnOrUnsummon();
+                return;
+            }
+
             events.Update(diff);
             npc_escortAI::UpdateAI(diff);
 
@@ -5666,10 +5693,19 @@ public:
                 switch(eventId)
                 {
                     case EVENT_AISA_0:
+                        AttachJi(*player);
+                        if (!GetJi())
+                            player->CastSpell(player, SPELL_SUMMON_JI, true);
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, playerGuid);
                         break;
                     case EVENT_AISA_1:
-                        Start(false, true);
+                        AttachJi(*player);
+                        if (!GetJi())
+                        {
+                            me->DespawnOrUnsummon();
+                            break;
+                        }
+                        Start(false, true, playerGuid);
                         break;
                     case EVENT_AISA_2:
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1, playerGuid);
@@ -5688,33 +5724,35 @@ public:
                         break;
                     case EVENT_AISA_7:
                         SetEscortPaused(false);
-                        if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                        if (status == QUEST_STATUS_INCOMPLETE && GetJi() && me->IsWithinDistInMap(player, 25.0f) && !player->isWatchingMovie())
                         {
+                            SetDespawnAtFar(false);
                             player->KilledMonsterCredit(60727);
                             player->SendMovieStart(117);
+                            events.ScheduleEvent(EVENT_AISA_8, 500);
                         }
                         break;
                     case EVENT_AISA_8:
-                        if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                        if (status == QUEST_STATUS_COMPLETE && me->IsWithinDistInMap(player, 25.0f))
                             player->NearTeleportTo(249.38f, 3939.55f, 65.61f, 1.501471f);
                         break;
                     case EVENT_JI_0:
-                        if (Creature* ji = getJi())
+                        if (Creature* ji = GetJi())
                         {
                             ji->SetFacingToObject(me);
                             sCreatureTextMgr->SendChat(ji, TEXT_GENERIC_0, playerGuid);
                         }
                         break;
                     case EVENT_JI_1:
-                        if (Creature* ji = getJi())
+                        if (Creature* ji = GetJi())
                             sCreatureTextMgr->SendChat(ji, TEXT_GENERIC_1, playerGuid);
                         break;
                     case EVENT_JI_2:
-                        if (Creature* ji = getJi())
+                        if (Creature* ji = GetJi())
                             sCreatureTextMgr->SendChat(ji, TEXT_GENERIC_2, playerGuid);
                         break;
                     case EVENT_JI_3:
-                        if (Creature* ji = getJi())
+                        if (Creature* ji = GetJi())
                             ji->GetMotionMaster()->MovePoint(0, 230.4045f, 3975.614f, 87.7406f);
                         break;
                 }

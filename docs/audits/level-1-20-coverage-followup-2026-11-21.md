@@ -366,3 +366,5 @@ Atjaunota kvesta bambusa piekļuve un bambusa un sprāgstvielu tīrīšana pēc 
 Pie avārijas vietas pārbaudītas astoņas `Evil from the Seas` uzvaras, `Urgent News` nodošana no Aysa pie Ji, un `Medical Supplies` ieguve un nodošana. Medicīnas saiņu izņemšana pēc atmešanas ir darba datubāzē. [Avārijas vietas medicīnas krājumi](wandering-isle-crash-site-medical-2026-11-26.md)
 
 `None Left Behind` pārbaudīta īsta jūrnieka paņemšana, atmešana nešanas un nodošanas brīdī, trīs atsevišķas nodošanas ieskaites un atlīdzība pie Ji. Darba servera pārbaude apstiprināja jauno laidienu bez jaunām avārijām vai DBErrors. [Ievainoto jūrnieku glābšana](wandering-isle-sailor-rescue-2026-11-26.md)
+
+`From Bad to Worse` un `An Ancient Evil` izgāja faktiskas uzvaras ar peta ieskaiti un sākotnējos nodošanas ceļus. `Risking It All` pārbaudīti divi privāti eskorti, atmešana, aktieru saruna, filmas un pārvietošanas apstiprinājumi un nodošana pie Ji. Pēdējā Aysa noiešanas punkta navigācija klientā vēl jāpārbauda. [Vordraka un avārijas vietas eskorts](wandering-isle-thorn-escort-2026-11-26.md)

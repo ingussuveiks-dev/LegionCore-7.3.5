@@ -4562,6 +4562,27 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             return nullptr;
     }
 
+    Player* thornEscortOwner = nullptr;
+    if ((entry == 60729 && spellId == 117497) || (entry == 60741 && spellId == 117597))
+    {
+        thornEscortOwner = summoner ? summoner->ToPlayer() : nullptr;
+        if (!thornEscortOwner || GetId() != 860 || !properties || properties->ID != 3276 ||
+            !thornEscortOwner->IsAlive() || thornEscortOwner->GetQuestStatus(30767) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+
+        bool hasAysa = false;
+        for (uint32 escortEntry : {60729u, 60741u})
+            for (ObjectGuid const& guid : *thornEscortOwner->GetSummonList(escortEntry))
+                if (auto escort = GetCreature(guid); escort && escort->IsAlive() && escort->HasQuestObjectScope() && !escort->IsQuestObjectExpired())
+                {
+                    if (escortEntry == entry)
+                        return nullptr;
+                    hasAysa |= escortEntry == 60729;
+                }
+        if (entry == 60741 && !hasAysa)
+            return nullptr;
+    }
+
     Player* minerOwner = nullptr;
     if (entry == 35813 && spellId == 68059 && GetId() == 648)
     {
@@ -4859,6 +4880,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (injuredSailorCarrier)
         injuredSailorCarrier->BindQuestObject(29794, summon);
+
+    if (thornEscortOwner)
+        thornEscortOwner->BindQuestObject(30767, summon);
 
     if (cannonRider)
         cannonRider->BindQuestObject(27232, summon);
