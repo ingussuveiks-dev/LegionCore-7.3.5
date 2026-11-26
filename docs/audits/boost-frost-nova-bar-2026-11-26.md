@@ -1,0 +1,9 @@
+# Freezing Roots on the Frost Mage tutorial ship
+
+The client showed Frost Nova in Bitabuta’s spellbook and an empty seventh tutorial button. In the build 26972 catalog, scenario 1132 step 2595 uses tree 48840. Its child 48954 tracks script event 52062 through criterion 30623 (type 92). The tutorial bar only collected type 29 casts. It now translates this event to the learned Frost Nova (122) when building the current and past lessons, including on re-entry. Scenario progress is still owned by its original criterion.
+
+The next step, Dropping Ice from the Sky, requires the learned Blizzard (190356) through a direct cast criterion and a separate construct destruction event. The existing bar collector includes Blizzard at that step. The remaining steps cover combat and the faction mount interaction. They introduce no additional mage cast buttons.
+
+The Release build compiled Player.cpp into the original game.lib. The staged linker used that library and resolved Player::SendActionButtons to game:Player.obj. The previous binary and map were backed up under .codex/boost-nova-bar-20261126/rollback and the new pair was deployed with worldserver stopped. Both promoted files matched the staged hashes. The duplicate stage copies (270411401 bytes) were removed. EXE SHA-256 6B8F703BCC6DB2DE832DD1402433CB1EF9BEDC16559BA671F80C832A4DE272B2. Map SHA-256 71592361EBABD94262466CC20ED02264DBEF5A857B3B9B1FE98A2BB84821B7A1.
+
+The 15 compiler warnings occurred outside the changed method; the final link issued no warnings or errors. During the inspected interval, the canonical crash directory and DBErrors.log remained empty and Server.log had no new warning, error or fatal entries. No separate tutorial regression or agent-owned server startup was run during the active client traversal. Display of the two buttons and the associated player actions still require a client retest.

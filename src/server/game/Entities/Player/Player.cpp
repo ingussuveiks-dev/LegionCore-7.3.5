@@ -8508,16 +8508,21 @@ void Player::SendActionButtons(uint32 state)
             {
                 if (!tree)
                     return;
-                if (tree->Criteria && tree->Criteria->Entry->Type == CRITERIA_TYPE_CAST_SPELL)
+                if (tree->Criteria)
                 {
-                    uint32 spell = tree->Criteria->Entry->Asset;
+                    auto const* criterion = tree->Criteria->Entry;
+                    uint32 spell = 0;
+                    if (criterion->Type == CRITERIA_TYPE_CAST_SPELL)
+                        spell = criterion->Asset;
+                    else if (criterion->Type == CRITERIA_TYPE_SCRIPT_EVENT_2 && criterion->Asset == 52062)
+                        spell = 122; // Freezing Roots tracks a successful freeze with Frost Nova.
                     // These Frost lessons track hidden casts. Put the corresponding
                     // player abilities on the bar when their lessons are reached.
                     if (spell == 215880)
                         spell = 84714; // Frozen Orb
                     else if (spell == 229824)
                         spell = 44614; // Flurry with Brain Freeze
-                    if (HasActiveSpell(spell) && std::find(lessonSpells.begin(), lessonSpells.end(), spell) == lessonSpells.end())
+                    if (spell && HasActiveSpell(spell) && std::find(lessonSpells.begin(), lessonSpells.end(), spell) == lessonSpells.end())
                         lessonSpells.push_back(spell);
                 }
                 for (CriteriaTree const* child : tree->Children)
