@@ -111,6 +111,7 @@
 #include "QueryHolder.h"
 #include "QuestData.h"
 #include "QuestItemObjectUse.h"
+#include "GranaryGrainSack.h"
 #include "QuestDef.h"
 #include "QuestPackets.h"
 #include "RestMgr.h"
@@ -11954,6 +11955,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
             (darkmoonSource && !DarkmoonCrafting::CanGather(*go, *this, *darkmoonSource)) ||
             (go->GetEntry() == ThelgenSeismograph::Seismograph && !ThelgenSeismograph::CanRead(*go, *this)) ||
             (KorothBanner::IsBanner(*go) && !KorothBanner::CanLoot(*go, *this)) ||
+            GranaryGrainSack::IsUnavailable(*go, this) ||
             (WoodsEndCoffer::IsCoffer(*go) && !WoodsEndCoffer::CanLoot(*go, *this)) ||
             (go->GetEntry() == IronforgeBait::Trap && !IronforgeBait::CanGather(*go, *this)))
         {

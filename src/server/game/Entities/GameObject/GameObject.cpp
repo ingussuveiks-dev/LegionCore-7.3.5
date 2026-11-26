@@ -31,6 +31,7 @@
 #include "GameObjectPackets.h"
 #include "GameTime.h"
 #include "Garrison.h"
+#include "GranaryGrainSack.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
 #include "GroupMgr.h"
@@ -56,6 +57,13 @@
 
 namespace
 {
+bool IsQuestGrainSack(GameObject const& object)
+{
+    // Pandaria's Stolen Malt Sack and the two quest-only roasted grain chests.
+    return object.GetMapId() == 870 &&
+        (object.GetEntry() == 210001 || object.GetEntry() == 251422 || object.GetEntry() == 251424);
+}
+
 bool IsAridenCampObject(GameObject const* object)
 {
     if (object->GetMapId() != 0)
@@ -1755,8 +1763,17 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
     return captive && captive->AI() && captive->AI()->GetData(ProphecyOfAkida::CaptiveReady);
 }
 
+bool GranaryGrainSack::IsUnavailable(GameObject const& object, Player* player)
+{
+    return IsQuestGrainSack(object) &&
+        (!player || !LootTemplates_Gameobject.HaveQuestLootForPlayer(object.GetGOInfo()->GetLootId(), player));
+}
+
 bool GameObject::ActivateToQuest(Player* target) const
 {
+    if (IsQuestGrainSack(*this))
+        return !GranaryGrainSack::IsUnavailable(*this, target);
+
     if (!CanUseAridenCampObject(this, target))
         return false;
 
@@ -1983,6 +2000,9 @@ void GameObject::Use(Unit* user)
 
 void GameObject::Use(Unit* user, uint32 activationSpell)
 {
+    if (GranaryGrainSack::IsUnavailable(*this, user->ToPlayer()))
+        return;
+
     if (KorothBanner::IsBanner(*this))
         if (Player* player = user->ToPlayer(); !player || !KorothBanner::CanLoot(*this, *player))
             return;
@@ -3411,8 +3431,9 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
         return;
 
     bool campObject = IsAridenCampObject(this);
-    bool canUseCampObject = !campObject || CanUseAridenCampObject(this, target);
-    bool forcedFlags = campObject || (GetGoType() == GAMEOBJECT_TYPE_CHEST && GetGOInfo()->chest.usegrouplootrules && HasLootRecipient());
+    bool const personalFlags = campObject || IsQuestGrainSack(*this);
+    bool const unavailable = (campObject && !CanUseAridenCampObject(this, target)) || GranaryGrainSack::IsUnavailable(*this, target);
+    bool forcedFlags = personalFlags || (GetGoType() == GAMEOBJECT_TYPE_CHEST && GetGOInfo()->chest.usegrouplootrules && HasLootRecipient());
     bool targetIsGM = target->isGameMaster();
 
     std::size_t blockCount = UpdateMask::GetBlockCount(m_valuesCount);
@@ -3429,7 +3450,7 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
 
     for (uint16 index = 0; index < m_valuesCount; ++index)
     {
-        if (_fieldNotifyFlags & flags[index] || (updateType == UPDATETYPE_VALUES ? _changesMask[index] : m_uint32Values[index]) && flags[index] & visibleFlag || index == GAMEOBJECT_FIELD_FLAGS && forcedFlags || campObject && index == OBJECT_FIELD_DYNAMIC_FLAGS)
+        if (_fieldNotifyFlags & flags[index] || (updateType == UPDATETYPE_VALUES ? _changesMask[index] : m_uint32Values[index]) && flags[index] & visibleFlag || index == GAMEOBJECT_FIELD_FLAGS && forcedFlags || personalFlags && index == OBJECT_FIELD_DYNAMIC_FLAGS)
         {
             UpdateMask::SetUpdateBit(data->contents() + maskPos, index);
 
@@ -3486,7 +3507,7 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
                         break;
                 }
 
-                if (!canUseCampObject)
+                if (unavailable)
                     dynFlags &= ~(GO_DYNFLAG_LO_ACTIVATE | GO_DYNFLAG_LO_SPARKLE);
                 *data << uint16(dynFlags);
                 *data << int16(pathProgress);
@@ -3494,7 +3515,7 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
             else if (index == GAMEOBJECT_FIELD_FLAGS)
             {
                 uint32 goFlags = m_uint32Values[GAMEOBJECT_FIELD_FLAGS];
-                if (!canUseCampObject)
+                if (unavailable)
                     goFlags |= GO_FLAG_NOT_SELECTABLE;
                 if (GetGoType() == GAMEOBJECT_TYPE_CHEST)
                     if (GetGOInfo()->chest.usegrouplootrules && !IsLootAllowedFor(target))
