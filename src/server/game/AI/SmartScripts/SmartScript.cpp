@@ -833,6 +833,28 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS:
         {
+            if (e.entryOrGuid == 4237200 && e.GetScriptType() == SMART_SCRIPT_TYPE_TIMED_ACTIONLIST &&
+                e.event_id == 48 && e.action.quest.quest == 26322 && e.GetTargetType() == SMART_TARGET_PLAYER_DISTANCE)
+            {
+                Quest const* quest = sQuestDataStore->GetQuestTemplate(26322);
+                if (!quest || !quest->GetObjectives().empty() || !me || me->GetEntry() != 42372 ||
+                    !me->isSummon() || !me->IsAlive() || me->GetMapId() != 0 || me->GetZoneId() != 40)
+                    break;
+
+                // The original Vanessa finale is the event objective for every eligible eyewitness.
+                std::unique_ptr<ObjectList> witnesses(GetTargets(e, unit));
+                if (witnesses)
+                    for (WorldObject* witness : *witnesses)
+                        if (Player* player = witness->ToPlayer(); player && player->IsAlive() && me->InSamePhase(player) &&
+                            player->FindQuestSlot(26322) < MAX_QUEST_LOG_SIZE && player->GetQuestStatus(26322) == QUEST_STATUS_INCOMPLETE)
+                        {
+                            player->CompleteQuest(26322);
+                            if (player->GetQuestStatus(26322) == QUEST_STATUS_COMPLETE)
+                                player->SendQuestComplete(quest);
+                        }
+                break;
+            }
+
             if (me && me->GetEntry() == 34514 && e.GetEventType() == SMART_EVENT_DATA_SET &&
                 e.GetTargetType() == SMART_TARGET_OWNER_OR_SUMMONER && e.action.quest.quest == 13961)
             {
