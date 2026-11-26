@@ -275,7 +275,15 @@ public:
             SheilunPlan::Select(player, me, menu, option);
         }
         void OnHealApplied(Unit* /*who*/, uint64 /*amount*/, uint64 /*gain*/) override { ObserveWoundHeal(); }
-        void UpdateLifecycle(uint32 /*diff*/) override { RecoverWound(); }
+        void UpdateLifecycle(uint32 /*diff*/) override
+        {
+            RecoverWound();
+            if (me->GetEntry() == 101883 && me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) &&
+                (me->GetDBTableGUIDLow() == 362834 || me->GetDBTableGUIDLow() == 362869))
+                if (Scenario* scenario = SheilunPlan::World(me))
+                    if (scenario->GetCurrentStep() > 2 || SheilunPlan::Receipt(scenario, 46637))
+                        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        }
 
         void Reset() override
         {
