@@ -8511,6 +8511,10 @@ void Player::SendActionButtons(uint32 state)
                 if (tree->Criteria && tree->Criteria->Entry->Type == CRITERIA_TYPE_CAST_SPELL)
                 {
                     uint32 spell = tree->Criteria->Entry->Asset;
+                    // Frozen Fingers tracks a hidden acknowledgement. Show
+                    // Frozen Orb, which generates a charge on its first hit.
+                    if (spell == 215880)
+                        spell = 84714;
                     if (HasActiveSpell(spell) && std::find(lessonSpells.begin(), lessonSpells.end(), spell) == lessonSpells.end())
                         lessonSpells.push_back(spell);
                 }

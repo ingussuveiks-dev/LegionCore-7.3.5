@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "ScriptedCreature.h"
 #include "GridNotifiers.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 //#include "AreaTriggerAI.h"
 //#include "AreaTrigger.h"
 
@@ -1781,6 +1783,8 @@ class spell_mage_ice_lance_main : public SpellScript
 {
     PrepareSpellScript(spell_mage_ice_lance_main);
 
+    bool spentFingers = false;
+
     void HandleOnCast()
     {
         if (Unit* caster = GetCaster())
@@ -1796,8 +1800,9 @@ class spell_mage_ice_lance_main : public SpellScript
                 }
             }
 
-            if (Aura* aura = caster->GetAura(44544))
+            if (Aura* aura = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST_AURA))
             {
+                spentFingers = true;
                 if (aura->ModStackAmount(-1))
                     caster->RemoveAura(aura);
 
@@ -1841,7 +1846,20 @@ class spell_mage_ice_lance_main : public SpellScript
         Unit* caster = GetCaster();
         Unit* target = GetHitUnit();
         if (caster && target)
+        {
             caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true);
+            // The lesson counts the native receipt for one empowered lance.
+            // A secondary Splitting Ice target cannot count the same charge.
+            if (spentFingers && !GetSpell()->IsTriggered() && caster->IsPlayer() && target == GetOriginalTarget() &&
+                target->GetEntry() == 107104 && (caster->GetMapId() == 1554 || caster->GetMapId() == 1557) &&
+                caster->GetTransport() && caster->GetTransport() == target->GetTransport())
+                if (Scenario* scenario = sScenarioMgr->GetScenario(caster->GetInstanceId()))
+                    if (scenario->GetScenarioId() == 1132 && scenario->GetScenarioCriteriaByStep(scenario->GetCurrentStep()) == 48836)
+                    {
+                        spentFingers = false;
+                        caster->CastSpell(caster, 215880, true);
+                    }
+        }
     }
 
     void Register() override
