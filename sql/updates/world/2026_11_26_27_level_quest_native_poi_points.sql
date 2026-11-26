@@ -1,0 +1,71 @@
+-- Restore intact coordinate sets from the matching 26972 QuestPOIBlob and QuestPOIPoint tables.
+-- Require a single original definition and leave any existing point set intact.
+INSERT INTO `quest_poi_points` (`QuestID`,`Idx1`,`Idx2`,`X`,`Y`,`VerifiedBuild`)
+SELECT n.`QuestID`,n.`Idx1`,n.`Idx2`,n.`X`,n.`Y`,26972
+FROM (
+    SELECT 13841 AS `QuestID`, 0 AS `Idx1`, 0 AS `Idx2`, 1 AS `MapID`, 321 AS `WorldMapAreaId`, 0 AS `Floor`, -1 AS `ObjectiveIndex`, 0 AS `PlayerConditionID`, 1664 AS `X`, -4346 AS `Y`
+    UNION ALL SELECT 13841, 1, 0, 1, 43, 0, 32, 0, 2283, -2529
+    UNION ALL SELECT 13842, 0, 0, 1, 321, 0, -1, 0, 1664, -4346
+    UNION ALL SELECT 13842, 1, 0, 1, 43, 0, 0, 0, 2457, -2463
+    UNION ALL SELECT 13842, 2, 0, 1, 43, 0, 1, 0, 2457, -2463
+    UNION ALL SELECT 13842, 3, 0, 1, 321, 0, 32, 0, 1670, -4343
+    UNION ALL SELECT 14375, 0, 0, 654, 545, 0, -1, 0, -1817, 2296
+    UNION ALL SELECT 14375, 1, 0, 654, 545, 0, 32, 0, -1817, 2296
+    UNION ALL SELECT 14434, 0, 0, 654, 545, 0, -1, 0, -1288, 2100
+    UNION ALL SELECT 14434, 1, 0, 654, 545, 0, 32, 0, -1288, 2100
+    UNION ALL SELECT 25804, 0, 0, 0, 40, 0, -1, 0, -3107, -965
+    UNION ALL SELECT 25804, 1, 0, 0, 40, 0, 32, 0, -3201, -951
+    UNION ALL SELECT 25932, 0, 0, 0, 27, 0, -1, 0, -5539, -1311
+    UNION ALL SELECT 25932, 1, 0, 0, 27, 0, 0, 0, -5539, -1312
+    UNION ALL SELECT 25932, 2, 0, 0, 27, 0, 32, 0, -5539, -1311
+    UNION ALL SELECT 26118, 0, 0, 0, 341, 0, -1, 0, -4866, -1023
+    UNION ALL SELECT 26118, 1, 0, 0, 341, 0, 30, 0, -4818, -1019
+    UNION ALL SELECT 26118, 1, 1, 0, 341, 0, 30, 0, -4806, -1018
+    UNION ALL SELECT 26118, 1, 2, 0, 341, 0, 30, 0, -4795, -1015
+    UNION ALL SELECT 26118, 1, 3, 0, 341, 0, 30, 0, -4792, -1011
+    UNION ALL SELECT 26118, 1, 4, 0, 341, 0, 30, 0, -4792, -1003
+    UNION ALL SELECT 26118, 1, 5, 0, 341, 0, 30, 0, -4793, -997
+    UNION ALL SELECT 26118, 1, 6, 0, 341, 0, 30, 0, -4803, -990
+    UNION ALL SELECT 26118, 1, 7, 0, 341, 0, 30, 0, -4811, -990
+    UNION ALL SELECT 26118, 1, 8, 0, 341, 0, 30, 0, -4820, -992
+    UNION ALL SELECT 26118, 1, 9, 0, 341, 0, 30, 0, -4826, -1000
+    UNION ALL SELECT 26118, 1, 10, 0, 341, 0, 30, 0, -4826, -1008
+    UNION ALL SELECT 26118, 1, 11, 0, 341, 0, 30, 0, -4824, -1013
+    UNION ALL SELECT 26118, 2, 0, 0, 341, 0, 31, 0, -4818, -1019
+    UNION ALL SELECT 26118, 2, 1, 0, 341, 0, 31, 0, -4809, -1019
+    UNION ALL SELECT 26118, 2, 2, 0, 341, 0, 31, 0, -4803, -1018
+    UNION ALL SELECT 26118, 2, 3, 0, 341, 0, 31, 0, -4792, -1014
+    UNION ALL SELECT 26118, 2, 4, 0, 341, 0, 31, 0, -4792, -1006
+    UNION ALL SELECT 26118, 2, 5, 0, 341, 0, 31, 0, -4794, -994
+    UNION ALL SELECT 26118, 2, 6, 0, 341, 0, 31, 0, -4801, -990
+    UNION ALL SELECT 26118, 2, 7, 0, 341, 0, 31, 0, -4809, -989
+    UNION ALL SELECT 26118, 2, 8, 0, 341, 0, 31, 0, -4816, -989
+    UNION ALL SELECT 26118, 2, 9, 0, 341, 0, 31, 0, -4824, -993
+    UNION ALL SELECT 26118, 2, 10, 0, 341, 0, 31, 0, -4827, -1003
+    UNION ALL SELECT 26118, 2, 11, 0, 341, 0, 31, 0, -4826, -1013
+    UNION ALL SELECT 26118, 3, 0, 0, 341, 0, 32, 0, -4872, -1028
+    UNION ALL SELECT 26397, 0, 0, 1, 321, 0, -1, 0, 1664, -4346
+    UNION ALL SELECT 26397, 1, 0, 1, 362, 0, 32, 0, -1210, -113
+    UNION ALL SELECT 26398, 0, 0, 1, 321, 0, -1, 0, 1664, -4346
+    UNION ALL SELECT 26398, 1, 0, 1, 362, 0, 32, 0, -1210, -113
+    UNION ALL SELECT 27542, 0, 0, 0, 21, 0, -1, 0, -153, 1269
+    UNION ALL SELECT 27542, 1, 0, 0, 21, 0, 32, 0, -153, 1269
+    UNION ALL SELECT 47709, 0, 0, 0, 673, 0, -1, 0, -14431, 527
+    UNION ALL SELECT 47709, 1, 0, 0, 895, 0, 0, 0, -5189, 525
+    UNION ALL SELECT 47709, 2, 0, 0, 673, 0, 2, 0, -14438, 523
+    UNION ALL SELECT 47709, 3, 0, 0, 27, 10, 32, 0, -5177, 533
+    UNION ALL SELECT 49772, 0, 0, 0, 301, 0, -1, 0, -8173, 801
+    UNION ALL SELECT 49772, 1, 0, 1860, 1212, 1, 32, 0, 464, 1452
+    UNION ALL SELECT 49933, 0, 0, 1, 321, 0, -1, 0, 1570, -4185
+    UNION ALL SELECT 49933, 1, 0, 1220, 1033, 0, 31, 0, 213, 3428
+    UNION ALL SELECT 49933, 2, 0, 1220, 1033, 0, 32, 0, 279, 3363
+) AS n
+WHERE EXISTS (
+    SELECT 1 FROM `quest_poi` AS p
+    WHERE p.`QuestID`=n.`QuestID` AND p.`Idx1`=n.`Idx1`
+      AND p.`MapID`=n.`MapID` AND p.`WorldMapAreaId`=n.`WorldMapAreaId` AND p.`Floor`=n.`Floor`
+      AND p.`ObjectiveIndex`=n.`ObjectiveIndex` AND p.`PlayerConditionID`=n.`PlayerConditionID`
+)
+AND (SELECT COUNT(*) FROM `quest_poi` AS p WHERE p.`QuestID`=n.`QuestID` AND p.`Idx1`=n.`Idx1`)=1
+AND NOT EXISTS (SELECT 1 FROM `quest_poi_points` AS p WHERE p.`QuestID`=n.`QuestID` AND p.`Idx1`=n.`Idx1`)
+AND NOT EXISTS (SELECT 1 FROM `disables` AS d WHERE d.`sourceType`=1 AND d.`entry`=n.`QuestID`);

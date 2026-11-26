@@ -384,3 +384,9 @@ Westfall `26322` Vanessa fināls tagad izmanto parasto kvesta pabeigšanu. Serve
 Deeprun Tram žurkai noņemtas 26 ar veco Westfall ainu saistītas rindas, kas aizstāja tās parasto skriptu. Serverī pārbaudīti pieci īsti ķērieni, atteikums noķert to pašu žurku divreiz, nodošana pie Monty un jauna pieņemšana pēc atmešanas. Darba serveris ielādēja labojumu bez jaunām avārijām vai DBErrors. [Deeprun Rat Roundup](deeprun-rat-roundup-2026-11-26.md)
 
 `A Vision of the Past` serverī tagad sākas ar faktisku iekāpšanu un pabeidzas pēc lidojuma, Edwin nāves un Vanessas fināla. Pārbaudīti divi privāti braucieni, pārtraukšana un nodošana pie Marshal ar pieejamu nākamo kvestu. Kamera un attēlojums WoW klientā paliek jāpārbauda. [Deadmines vīzijas audits](westfall-vision-encounter-2026-11-26.md)
+
+Izlabota augstākā kvesta ID punktu ielāde, kas izlaida visas trīs `50319` atzīmes. Vīzijas fokusam `26320` pārbaudītas abas Deadmines kartes rindas un atsevišķais Marshal nodošanas punkts. [Ielādes pārbaude](quest-poi-highest-id-2026-11-26.md) · [Deadmines atzīme](westfall-vision-marker-2026-11-26.md)
+
+No 26972 klienta datiem atjaunoti 56 precīzi punkti 13 kvestiem. Atrastie desmit ieraksti bez droši atbilstošām koordinātām dokumentēti atsevišķi. Atkārtoti izgāja 36 artefaktu ceļu kartes datu pārbaude. [Kartes punktu audits](level-native-poi-markers-2026-11-26.md)
+
+Jaunākajā darba datu atlasē ir 5 459 ieraksti, tostarp 4 865 ieslēgti un 594 atslēgti. Visi 174 sasaistītie skriptu nosaukumi atrasti darba EXE `14298250F380C8F055F811DAEC9F56649A5F947DC925329252CFFB5468068FBB`. Statiskā atlase un aprakstītās servera zondes apliecina konkrētos datu un uzvedības ceļus. Visu 4 865 kvestu pilna izspēle WoW klientā joprojām ir atvērta. [Jaunākā darba atlase](../../build-extractors/bin/Release/fixed/2026-11-26-level-quest-map-markers/final-survey/summary.json)

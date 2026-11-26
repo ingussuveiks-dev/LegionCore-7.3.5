@@ -1,15 +1,65 @@
 #define LOST_ARMY_NATIVE_SUPPORT_ONLY
 #include "LostArmyLootNative.cpp"
 
+#ifdef CHECK_LEGACY_QUEST_POI
+extern DB2Storage<QuestPOIBlobEntry> sQuestPOIBlobStore;
+extern DB2Storage<QuestPOIPointEntry> sQuestPOIPointStore;
+#endif
 
 namespace
 {
+#ifdef CHECK_LEGACY_QUEST_POI
+void CheckRestoredClientPoints()
+{
+    constexpr uint32 records[] = {
+        421374, 421375, 421370, 421371, 421372, 421373, 422898, 422899,
+        422900, 422901, 418539, 418540, 422939, 422940, 422941,
+        57906, 61584, 345570, 407544, 422949, 422950, 422951, 422952,
+        418516, 418517, 391652, 391653, 391654, 391655,
+        419377, 419378, 419362, 419363, 423216,
+    };
+    std::unordered_map<int32, std::vector<QuestPOIPointEntry const*>> clientPoints;
+    for (auto point : sQuestPOIPointStore)
+        if (std::find(std::begin(records), std::end(records), point->ID) != std::end(records))
+            clientPoints[point->ID].push_back(point);
+
+    size_t total = 0;
+    for (uint32 record : records)
+    {
+        auto client = sQuestPOIBlobStore.LookupEntry(record);
+        Require(client && client->NumPoints && clientPoints[record].size() == client->NumPoints,
+            "The matching client blob must have all its original points");
+        auto serverBlobs = sQuestDataStore->GetQuestPOIVector(client->QuestID);
+        Require(serverBlobs, "The restored existing quest must have server marker data");
+        auto server = std::find_if(serverBlobs->begin(), serverBlobs->end(), [client](QuestPOI const& blob)
+        {
+            return blob.MapID == client->MapID && blob.WorldMapAreaID == client->WorldMapAreaID && blob.Floor == client->Floor &&
+                blob.ObjectiveIndex == client->ObjectiveIndex && blob.PlayerConditionID == client->PlayerConditionID;
+        });
+        Require(server != serverBlobs->end() && server->points.size() == client->NumPoints,
+            "The matching server blob must carry the complete coordinate set");
+        for (size_t i = 0; i < server->points.size(); ++i)
+            Require(server->points[i].X == clientPoints[record][i]->X && server->points[i].Y == clientPoints[record][i]->Y,
+                "Every restored coordinate and its order must match the extracted client data");
+        total += server->points.size();
+    }
+    Require(total == 56, "The restoration must account for all 56 exact client points");
+    std::cout << "CASE 34 server marker groups from 13 quests match all 56 client coordinates and their order\n";
+}
+#endif
 
 void CheckMapMarkers()
 {
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
+#ifdef CHECK_LEGACY_QUEST_POI
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN "
+        "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,50319)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN "
+        "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,50319)");
+#else
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN (26320,50319)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN (26320,50319)");
+#endif
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sQuestDataStore->LoadQuestPOI();
 
@@ -48,6 +98,9 @@ void CheckMapMarkers()
     std::cout << "CASE both Vision focus blobs lead to the Deadmines, and the Marshal marker stays in Westfall\n";
 #endif
 
+#ifdef CHECK_LEGACY_QUEST_POI
+    CheckRestoredClientPoints();
+#endif
 }
 }
 
