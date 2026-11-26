@@ -53,12 +53,12 @@ void CheckMapMarkers()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
 #ifdef CHECK_LEGACY_QUEST_POI
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN "
-        "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,50319)");
+        "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,26520,50319)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN "
-        "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,50319)");
+        "(13841,13842,14375,14434,25804,25932,26118,26397,26398,27542,47709,49772,49933,26320,26520,50319)");
 #else
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN (26320,50319)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN (26320,50319)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi AS SELECT * FROM legion_world.quest_poi WHERE QuestID IN (26320,26520,50319)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_poi_points AS SELECT * FROM legion_world.quest_poi_points WHERE QuestID IN (26320,26520,50319)");
 #endif
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sQuestDataStore->LoadQuestPOI();
@@ -100,6 +100,27 @@ void CheckMapMarkers()
 
 #ifdef CHECK_LEGACY_QUEST_POI
     CheckRestoredClientPoints();
+#endif
+
+#ifdef CHECK_OSLOW_QUEST_POI
+    auto redridge = sWorldMapAreaStore.LookupEntry(36);
+    Require(redridge && redridge->MapID == 0 && redridge->AreaID == 44, "The matching client catalog must identify the Redridge page");
+    auto oslow = sQuestDataStore->GetQuestPOIVector(26520);
+    Require(oslow, "The two primary Foreman Oslow marker groups must load");
+    bool rescue = false;
+    bool turnIn = false;
+    for (auto const& marker : *oslow)
+    {
+        if (marker.MapID != 0 || marker.WorldMapAreaID != 36 || marker.Floor != 0 || marker.points.size() != 1)
+            continue;
+        auto const& point = marker.points.front();
+        if (marker.ObjectiveIndex == 0 && marker.QuestObjectiveID == 252598 && point.X == -9274 && point.Y == -2288)
+            rescue = true;
+        if (marker.ObjectiveIndex == -1 && point.X == -9219 && point.Y == -2222)
+            turnIn = true;
+    }
+    Require(rescue && turnIn, "Redridge markers must lead to Foreman Oslow and Magistrate Solomon");
+    std::cout << "CASE the actual Foreman and Magistrate marker points loaded on the Redridge page\n";
 #endif
 }
 }
