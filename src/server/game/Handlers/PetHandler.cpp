@@ -196,6 +196,10 @@ void WorldSession::HandlePetSetAction(WorldPackets::PetPackets::PetSetAction& pa
     {
         if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellID))
         {
+            // Keep manual abilities such as Freeze manual when moving a button or updating its state.
+            if ((actState == ACT_ENABLED || actState == ACT_DISABLED) && !spellInfo->IsAutocastable())
+                actState = ACT_PASSIVE;
+
             if (actState == ACT_ENABLED)
             {
                 if (pet->GetCharmInfo())

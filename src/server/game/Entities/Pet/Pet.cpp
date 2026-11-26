@@ -1477,7 +1477,9 @@ bool Pet::addSpell(uint32 spellId, ActiveStates active /*= ACT_DECIDE*/, PetSpel
     newspell.state = state;
     newspell.type = type;
 
-    if (active == ACT_DECIDE)                               // active was not used before, so we save it's autocast/passive state here
+    if (spellInfo->HasAttribute(SPELL_ATTR1_UNAUTOCASTABLE_BY_PET))
+        newspell.active = ACT_PASSIVE;
+    else if (active == ACT_DECIDE)                          // active was not used before, so we save it's autocast/passive state here
     {
         SpellInfo const* spellInfoDur = sSpellMgr->GetSpellInfo(GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL));
         if(spellInfoDur && spellInfoDur->GetDuration(GetSpawnMode()) > 0 && spellInfo->GetMaxRange(false))
