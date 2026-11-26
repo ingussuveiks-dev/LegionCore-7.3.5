@@ -4,18 +4,24 @@
 
 #include "GilneasQuestNative.h"
 #include "ConditionMgr.h"
+#include "CharacterPackets.h"
+#include "GossipData.h"
+#include "GossipDef.h"
 #include "CreatureTextMgr.h"
 #include "CellImpl.h"
 #include "GridNotifiers.h"
 #include "MiscPackets.h"
 #include "MoveSpline.h"
 #include "MovementPackets.h"
+#include "NPCPackets.h"
 #include "ObjectVisitors.hpp"
 #include "ScriptedEscortAI.h"
 #include "ScriptSystem.h"
+#include "ScriptsData.h"
 #include "SmartScriptMgr.h"
 #include "SpellPackets.h"
 #include "Vehicle.h"
+#include "WanderingIsleCartNative.h"
 
 void AddSC_go_scripts();
 void AddSC_WanderingIsland();
@@ -52,6 +58,12 @@ constexpr uint32 ThornCredit = 60727;
 constexpr uint32 Healing = 29799;
 constexpr uint32 HealingPower = 117783;
 #endif
+#ifdef WANDERING_ISLE_DEPARTURE
+constexpr uint32 NewAllies = 29800;
+constexpr uint32 NewFate = 31450;
+constexpr uint32 CrashCartTender = 57741;
+constexpr uint32 CrashCartYak = 57742;
+#endif
 
 struct SouthPet : LootPet
 {
@@ -76,6 +88,11 @@ void LoadSouth()
     questIds += ",29665,29798,29799,30767";
     templateCount += 4;
     objectiveCount += 4;
+#endif
+#ifdef WANDERING_ISLE_DEPARTURE
+    questIds += ",29800,31450";
+    templateCount += 2;
+    objectiveCount += 2;
 #endif
     Require(templates && templates->GetRowCount() == templateCount, "The southern Wandering Isle quest templates are missing");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
@@ -113,12 +130,16 @@ void LoadSouth()
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature WHERE map=860 AND "
 #ifdef WANDERING_ISLE_THORN
-        "(guid IN (245135,245137,245146,245264,245266,245384,245389,245495,245497,12924836) OR id IN (55946,55999,56007,56360))");
+        "(guid IN (245135,245137,245146,245264,245266,245384,245389,245495,245497,12924836"
+#ifdef WANDERING_ISLE_DEPARTURE
+        ",245548,245583,245631"
+#endif
+        ") OR id IN (55946,55999,56007,56360))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_target_position AS SELECT * FROM legion_world.spell_target_position WHERE id IN (117497,117597)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry=60729");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry IN (1,2)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry IN (60729,57742)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry IN (1,2,3)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon "
-        "WHERE entry IN (55999,56360,60729,60741,60780,60858,60878,60896)");
+        "WHERE entry IN (55999,56360,60729,60741,60780,60858,60878,60896,57208,57739,57741,57742,56013)");
 #else
         "(guid IN (245135,245137,245264,245266,245384,245389) OR id IN (55946,55999,56007))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry=55999");
@@ -127,18 +148,30 @@ void LoadSouth()
     WorldDatabase.DirectExecute(("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (" + questIds + ")").c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE (SourceTypeOrReferenceId=18 AND SourceGroup=55999)"
 #ifdef WANDERING_ISLE_THORN
-        " OR (SourceTypeOrReferenceId=23 AND SourceGroup=5736 AND SourceEntry=2)"
+        " OR (SourceTypeOrReferenceId=23 AND SourceGroup=5736 AND SourceEntry IN (2,3))"
+#endif
+#ifdef WANDERING_ISLE_DEPARTURE
+        " OR (SourceTypeOrReferenceId=15 AND SourceGroup=13726)"
 #endif
     );
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry=55999");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN (55999,57741)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE vehicle_template_accessory AS SELECT * FROM legion_world.vehicle_template_accessory WHERE EntryOrAura=-105520");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE (spell=56267 AND quest_start=29794) OR (spell=102613 AND quest_start=29798)"
 #ifdef WANDERING_ISLE_HEALING
         " OR (spell=117783 AND quest_start=29799)"
 #endif
+#ifdef WANDERING_ISLE_DEPARTURE
+        " OR (spell IN (105096,108914,108931) AND quest_start=29800)"
+#endif
     );
 #ifdef WANDERING_ISLE_HEALING
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts WHERE source_type=0 AND entryorguid=60858");
+#endif
+#ifdef WANDERING_ISLE_DEPARTURE
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id=115904");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13726");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13726");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=19723");
 #endif
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
@@ -150,6 +183,11 @@ void LoadSouth()
     sObjectMgr->LoadCreatures();
     sObjectMgr->LoadNPCSpellClickSpells();
     sObjectMgr->LoadVehicleTemplateAccessories();
+#ifdef WANDERING_ISLE_DEPARTURE
+    sObjectMgr->LoadNPCText();
+    sGossipDataStore->LoadGossipMenu();
+    sGossipDataStore->LoadGossipMenuItems();
+#endif
     sConditionMgr->LoadConditions();
     sSpellMgr->LoadSpellAreas();
 #ifdef WANDERING_ISLE_THORN
@@ -674,6 +712,117 @@ void CheckHealing(LootPlayer& pupil, LootPlayer& visitor)
 }
 #endif
 
+#ifdef WANDERING_ISLE_DEPARTURE
+void CheckDeparture(LootPlayer& pupil, LootPlayer& visitor)
+{
+    auto& map = *pupil.GetMap();
+    auto& giver = FindSouthActor(map, 245548);
+    auto& tender = FindSouthActor(map, 245583);
+    auto& shang = FindSouthActor(map, 245631);
+    Require(pupil.IsQuestRewarded(Healing), "The farewell probe requires the actual wound defense reward");
+    AcceptSouth(pupil, giver, NewAllies);
+    Require(pupil.GetQuestStatus(NewAllies) == QUEST_STATUS_COMPLETE && !pupil.GetQuestObjectiveData(NewAllies, CrashCartTender),
+        "The crash-site ride should be an optional objective");
+    MoveGilneasPlayer(pupil, tender.GetPosition());
+    auto travel = [&]()
+    {
+        WorldPackets::Spells::SpellClick click{WorldPacket(CMSG_SPELL_CLICK)};
+        click.SpellClickUnitGuid = tender.GetGUID();
+        pupil.GetSession()->HandleSpellClick(click);
+        Creature* cart = FindOwnedCartActor(pupil, 57208);
+        Creature* yak = FindOwnedCartActor(pupil, CrashCartYak);
+        Require(cart && yak && cart->GetVehicleKit(), "The original Wreck tender did not publish a cart and yak");
+        Tick(pupil, 2000);
+        Require(cart->GetVehicleKit()->GetPassenger(0) == &pupil, "The real Wreck cart did not board the owner");
+        return std::pair{cart, yak};
+    };
+    auto [cart, yak] = travel();
+    auto const& route = sScriptSystemMgr->GetPointMoveList(CrashCartYak);
+    Require(route.size() == 24, "The original crash-site route did not load");
+    FinishOwnedCartRoute(map, pupil, *cart, *yak);
+    auto const& last = route.back();
+    Require(pupil.GetExactDist(Position{last.fX, last.fY, last.fZ}) < 8.0f &&
+        pupil.GetQuestObjectiveData(NewAllies, CrashCartTender) == 1, "The actual optional ride did not reach and record its landing");
+    RewardSouth(pupil, shang, NewAllies);
+    AcceptSouth(pupil, shang, NewFate);
+    std::cout << "PASS native crash-site cart, 24 original route points, optional arrival credit and Spirit of Master Shang Xi follow-up\n";
+#ifdef WANDERING_ISLE_DEPARTURE_BASELINE
+    WorldPackets::Character::NeutralPlayerSelectFaction choice{WorldPacket(CMSG_NEUTRAL_PLAYER_SELECT_FACTION)};
+    choice.Faction = 2;
+    pupil.GetSession()->HandleNeutralPlayerSelectFaction(choice);
+    Require(pupil.getRace() == RACE_PANDAREN_NEUTRAL && pupil.GetQuestStatus(NewFate) == QUEST_STATUS_COMPLETE &&
+        !pupil.GetQuestObjectiveData(NewFate, 64594) && pupil.isWatchingMovie(),
+        "The original handler did not reproduce a completed quest without a faction");
+    std::cout << "EXPECTED_BROKEN an unsupported faction choice completed the active quest and issued the movie without a faction or objective\n";
+#else
+    auto choose = [&](LootPlayer& player, uint32 faction)
+    {
+        WorldPackets::Character::NeutralPlayerSelectFaction choice{WorldPacket(CMSG_NEUTRAL_PLAYER_SELECT_FACTION)};
+        choice.Faction = faction;
+        player.GetSession()->HandleNeutralPlayerSelectFaction(choice);
+    };
+    auto requireNeutral = [](LootPlayer& player)
+    {
+        Require(player.getRace() == RACE_PANDAREN_NEUTRAL && !player.HasPendingTeleport() &&
+            !player.isWatchingMovie() && !player.GetQuestObjectiveData(NewFate, 64594), "An inadmissible selection changed faction, transfer or credit");
+    };
+    choose(pupil, 2);
+    requireNeutral(pupil);
+    MoveGilneasPlayer(pupil, giver.GetPosition());
+    choose(pupil, 1);
+    requireNeutral(pupil);
+
+    visitor.SetRewardedQuest(Healing);
+    MoveGilneasPlayer(visitor, shang.GetPosition());
+    choose(visitor, 0);
+    requireNeutral(visitor);
+    AcceptSouth(visitor, giver, NewAllies);
+    RewardSouth(visitor, shang, NewAllies);
+    AcceptSouth(visitor, shang, NewFate);
+    visitor.CompleteQuest(NewFate);
+    Require(visitor.GetQuestStatus(NewFate) == QUEST_STATUS_COMPLETE && !visitor.GetQuestObjectiveData(NewFate, 64594),
+        "The legacy complete character could not be prepared");
+
+    auto finish = [&](LootPlayer& player, uint32 faction, uint8 race, uint32 mapId, uint32 area, uint32 language)
+    {
+        MoveGilneasPlayer(player, shang.GetPosition());
+        WorldPackets::NPC::Hello hello{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+        hello.Unit = shang.GetGUID();
+        player.GetSession()->HandleGossipHelloOpcode(hello);
+        auto const& menu = player.PlayerTalkClass->GetGossipMenu();
+        Require(menu.GetMenuId() == 13726 && menu.GetItem(0) && !menu.GetItem(1) && !menu.GetItem(2), "Neutral Shang Xi gossip did not publish its real option");
+        WorldPackets::NPC::GossipSelectOption selection{WorldPacket(CMSG_GOSSIP_SELECT_OPTION)};
+        selection.GossipUnit = shang.GetGUID();
+        selection.GossipID = 13726;
+        selection.GossipIndex = 0;
+        player.GetSession()->HandleGossipSelectOption(selection);
+        Require(menu.Empty(), "Selecting the actual option did not consume and close the gossip");
+
+        choose(player, faction);
+        std::cout << "CASE faction choice=" << faction << " race=" << uint32(player.getRace()) << " status=" << player.GetQuestStatus(NewFate)
+            << " credit=" << player.GetQuestObjectiveData(NewFate, 64594) << " pending=" << player.HasPendingTeleport()
+            << " dest=" << player.GetTeleportDest().GetMapId() << " movie=" << player.isWatchingMovie()
+            << " bind=" << player.m_homebindMapId << "/" << player.m_homebindAreaId << " language=" << player.HasSpell(language)
+            << " Pandaren=" << player.HasSpell(108127) << std::endl;
+        Require(player.getRace() == race && player.GetQuestObjectiveData(NewFate, 64594) == 1 &&
+            player.GetQuestStatus(NewFate) == QUEST_STATUS_COMPLETE && player.HasPendingTeleport() &&
+            player.GetTeleportDest().GetMapId() == mapId && player.isWatchingMovie() &&
+            player.m_homebindMapId == mapId && player.m_homebindAreaId == area && player.HasSpell(language) && player.HasSpell(108127),
+            "The native faction handoff did not schedule its original capital, language, home bind and objective");
+        choose(player, 1 - faction);
+        Require(player.getRace() == race && player.GetQuestObjectiveData(NewFate, 64594) == 1 && player.GetTeleportDest().GetMapId() == mapId,
+            "A repeated faction selection changed the completed handoff");
+        WorldPackets::Misc::CompleteMovie movie{WorldPacket(CMSG_COMPLETE_MOVIE)};
+        player.GetSession()->HandleCompleteMovie(movie);
+        Require(!player.isWatchingMovie() && player.HasPendingTeleport(), "The movie acknowledgement lost the approved capital transfer");
+    };
+    finish(pupil, 1, RACE_PANDAREN_ALLIANCE, 0, 9, 668);
+    finish(visitor, 0, RACE_PANDAREN_HORDE, 1, 363, 669);
+    std::cout << "PASS both native faction selections, stale complete recovery, one objective, matching capital, home and languages\n";
+#endif
+}
+#endif
+
 void CheckSouth()
 {
     Map map(860, 305, 0, DIFFICULTY_NONE);
@@ -723,6 +872,9 @@ void CheckSouth()
 #ifdef WANDERING_ISLE_HEALING
     CheckHealing(pupil, visitor);
 #endif
+#ifdef WANDERING_ISLE_DEPARTURE
+    CheckDeparture(pupil, visitor);
+#endif
 #endif
 }
 }
@@ -752,6 +904,10 @@ int main(int argc, char** argv)
         AddSC_go_scripts();
         AddSC_WanderingIsland();
         sScriptMgr->SwapScriptContext(true);
+#ifdef WANDERING_ISLE_DEPARTURE
+        sScriptDataStore->LoadSpellScriptNames();
+        sScriptDataStore->ValidateSpellScripts();
+#endif
         CheckSouth();
         CharacterDatabase.Close();
         LoginDatabase.Close();

@@ -552,43 +552,67 @@ void WorldSession::HandleObjectUpdateRescued(WorldPackets::Misc::ObjectUpdateRes
     _player->AddClient(packet.ObjectGUID);
 }
 
-// DestrinyFrame.xml : lua function NeutralPlayerSelectFaction
-#define JOIN_THE_ALLIANCE 1
-#define JOIN_THE_HORDE    0
-
 void WorldSession::HandleNeutralPlayerSelectFaction(WorldPackets::Character::NeutralPlayerSelectFaction& packet)
 {
-    if (_player->getRace() != RACE_PANDAREN_NEUTRAL)
+    constexpr uint32 NewFate = 31450;
+    constexpr uint32 FactionCredit = 64594;
+    constexpr uint32 ShangXi = 56013;
+    constexpr uint32 JoinAlliance = 1;
+    constexpr uint32 JoinHorde = 0;
+
+    Player* player = GetPlayer();
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->getRace() != RACE_PANDAREN_NEUTRAL ||
+        player->HasPendingTeleport() || player->isWatchingMovie() || (packet.Faction != JoinAlliance && packet.Faction != JoinHorde))
         return;
 
-    if (packet.Faction == JOIN_THE_HORDE)
+    QuestStatus status = player->GetQuestStatus(NewFate);
+    bool activeQuest = status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE;
+    // Keep the administrator's explicit selectfaction command available.
+    if (GetSecurity() < SEC_ADMINISTRATOR)
     {
-        _player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_HORDE);
-        _player->setFactionForRace(RACE_PANDAREN_HORDE);
-        _player->SaveToDB();
-        WorldLocation location(1, 1349.72f, -4374.50f, 26.15f, float(M_PI));
-        _player->TeleportTo(location);
-        _player->SetHomebind(location, 363);
-        _player->learnSpell(669, false); // Language Orcish
-        _player->learnSpell(108127, false); // Language Pandaren
-    }
-    else if (packet.Faction == JOIN_THE_ALLIANCE)
-    {
-        _player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_ALLIANCE);
-        _player->setFactionForRace(RACE_PANDAREN_ALLIANCE);
-        _player->SaveToDB();
-        WorldLocation location(0, -9076.77f, 424.74f, 92.42f, float(M_PI));
-        _player->TeleportTo(location);
-        _player->SetHomebind(location, 9);
-        _player->learnSpell(668, false); // Language Common
-        _player->learnSpell(108127, false); // Language Pandaren
+        if (player->GetMapId() != 860 || (!activeQuest && status != QUEST_STATUS_REWARDED))
+            return;
+        Creature* guide = player->FindNearestCreature(ShangXi, INTERACTION_DISTANCE);
+        if (!guide || !player->GetNPCIfCanInteractWith(guide->GetGUID(), UNIT_NPC_FLAG_GOSSIP) || !player->IsWithinLOSInMap(guide))
+            return;
     }
 
-    //if (_player->GetQuestStatus(31450) == QUEST_STATUS_INCOMPLETE)
-        //_player->KilledMonsterCredit(64594);
+    bool joinAlliance = packet.Faction == JoinAlliance;
+    uint8 newRace = joinAlliance ? RACE_PANDAREN_ALLIANCE : RACE_PANDAREN_HORDE;
+    WorldLocation arrival = joinAlliance ? WorldLocation(0, -9076.77f, 424.74f, 92.42f, float(M_PI)) :
+        WorldLocation(1, 1349.72f, -4374.50f, 26.15f, float(M_PI));
+    player->SetByteValue(UNIT_FIELD_BYTES_0, 0, newRace);
+    player->setFactionForRace(newRace);
 
-    _player->CompleteQuest(31450);
-    _player->SendMovieStart(116);
+    {
+        Player::ScopedTeleportDelay delay(*player);
+        if (!player->TeleportTo(arrival))
+        {
+            player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_PANDAREN_NEUTRAL);
+            player->setFactionForRace(RACE_PANDAREN_NEUTRAL);
+            return;
+        }
+    }
+
+    if (activeQuest)
+    {
+        if (!player->GetQuestObjectiveData(NewFate, FactionCredit))
+        {
+            // Recover quests the earlier handler marked complete before a selection.
+            if (status == QUEST_STATUS_COMPLETE)
+                player->IncompleteQuest(NewFate);
+            player->KilledMonsterCredit(FactionCredit);
+        }
+        // The legacy exploration flag also expects the actual faction event.
+        if (player->GetQuestStatus(NewFate) == QUEST_STATUS_INCOMPLETE && player->GetQuestObjectiveData(NewFate, FactionCredit) == 1)
+            player->CompleteQuest(NewFate);
+    }
+
+    player->SetHomebind(arrival, joinAlliance ? 9 : 363);
+    player->learnSpell(joinAlliance ? 668 : 669, false);
+    player->learnSpell(108127, false);
+    player->SendMovieStart(116);
+    player->SaveToDB();
 }
 
 void WorldSession::HandleRequestCemeteryList(WorldPackets::Misc::RequestCemeteryList& /*packet*/)

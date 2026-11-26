@@ -370,3 +370,5 @@ Pie avārijas vietas pārbaudītas astoņas `Evil from the Seas` uzvaras, `Urgen
 `From Bad to Worse` un `An Ancient Evil` izgāja faktiskas uzvaras ar peta ieskaiti un sākotnējos nodošanas ceļus. `Risking It All` pārbaudīti divi privāti eskorti, atmešana, aktieru saruna, filmas un pārvietošanas apstiprinājumi un nodošana pie Ji. Pēdējā Aysa noiešanas punkta navigācija klientā vēl jāpārbauda. [Vordraka un avārijas vietas eskorts](wandering-isle-thorn-escort-2026-11-26.md)
 
 `The Healing of Shen-zin Su` atjaunota progresa josla un novērsta norise pēc pēdējā dalībnieka aiziešanas. Servera pārbaudē ieskaitīti dzīvie dziednieki, 35 īstas uzvaras pār uzbrucējiem, 700 dziedināšanas punkti un atlīdzība pie Ji. [Shen-zin Su dziedināšana](wandering-isle-healing-defense-2026-11-26.md)
+
+`New Allies` pārbaudīta 24 punktu ratu kustība, izvēles ieskaite un abas nodošanas iespējas pie Master Shang Xi. `A New Fate` serverī pārbaudīti abi dialoga un frakcijas ceļi līdz pareizam gaidošajam galamērķim, valodām, mājvietai un vienai ieskaitei. Kapitālpilsētas ielāde un pēdējā nodošana klientā paliek atvērta. [Wandering Isle atvadīšanās](wandering-isle-departure-2026-11-26.md)

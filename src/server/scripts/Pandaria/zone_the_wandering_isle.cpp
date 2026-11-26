@@ -6080,20 +6080,8 @@ class npc_shang_xi_choose_faction : public CreatureScript
     public:
         npc_shang_xi_choose_faction() : CreatureScript("npc_shang_xi_choose_faction") { }
 
-    bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 /*sender*/, uint32 action)
+    bool OnGossipSelect(Player*, Creature*, uint32, uint32) override
     {
-        if (action == 1)
-        {
-            if (player->GetQuestStatus(QUSRT_NEW_FATE) == QUEST_STATUS_REWARDED || 
-                player->GetQuestStatus(QUSRT_NEW_FATE) == QUEST_STATUS_INCOMPLETE)
-                player->ShowNeutralPlayerFactionSelectUI();
-        }
-        else if (action == 2)
-            player->TeleportTo(0, -8866.55f, 671.93f, 97.90f, 5.31f);
-        else if (action == 3)
-            player->TeleportTo(1, 1577.30f, -4453.64f, 15.68f, 1.84f);
-
-        player->PlayerTalkClass->SendCloseGossip();
         return true;
     }
 
@@ -6117,6 +6105,36 @@ class npc_shang_xi_choose_faction : public CreatureScript
 
         EventMap events;
         ObjectGuid playerGuid;
+
+        void sGossipSelect(Player* player, uint32 menuId, uint32 optionIndex) override
+        {
+            constexpr uint32 FarewellMenu = 13726;
+            auto const& menu = player->PlayerTalkClass->GetGossipMenu();
+            if (menuId != FarewellMenu || menu.GetMenuId() != FarewellMenu || !menu.GetItem(optionIndex) ||
+                !player->IsAlive() || !me->IsWithinLOSInMap(player))
+                return;
+
+            player->PlayerTalkClass->ClearMenus();
+            player->PlayerTalkClass->SendCloseGossip();
+            switch (optionIndex)
+            {
+                case 0:
+                {
+                    QuestStatus status = player->GetQuestStatus(QUSRT_NEW_FATE);
+                    if (player->getRace() == RACE_PANDAREN_NEUTRAL &&
+                        (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE || status == QUEST_STATUS_REWARDED))
+                        player->ShowNeutralPlayerFactionSelectUI();
+                    break;
+                }
+                case 1:
+                    player->TeleportTo(0, -8866.55f, 671.93f, 97.90f, 5.31f);
+                    break;
+                case 2:
+                    player->TeleportTo(1, 1577.30f, -4453.64f, 15.68f, 1.84f);
+                    break;
+            }
+        }
+
         enum ev
         {
             EVENT_0        = 1, 

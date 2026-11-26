@@ -1,0 +1,11 @@
+# New Allies un A New Fate
+
+Pēc `The Healing of Shen-zin Su` atlīdzības `New Allies` pieņemts pie īstā Ji `57739/245548`. Klikšķis uz `57741/245583` ar sākotnējo `115904` izsauca ratus un jaku, un spēlētājs iekāpa sēdvietā 0. Pārbaudīts viss 24 punktu ceļš. Tikai pēc ierašanās reģistrēta viena izvēles brauciena ieskaite. Master Shang Xi `56013/245631` pieņēma kvestu. Otrs dalībnieks nodeva kvestu arī bez brauciena.
+
+Dialoga `13726` visām trim rindām ir kopīgs opcijas tips 0. Vecais skripts apstrādāja atšķirīgus tipu skaitļus un spēlētāja izvēli neatpazina. Tagad aktieris lieto spēlētājam faktiski piedāvātās rindas indeksu. Neitrālā Pandaren izvēlei jābūt pie īstā aktiera ar aktīvu kvestu vai agrāk pabeigtu kvesta ierakstu. Administratora komanda saglabāta.
+
+Vecais frakcijas apstrādātājs pēc neatbalstītas izvēles spēlēja filmu un pabeidza kvestu ar nulles ieskaiti. Labojums pieņem tikai abas derīgās izvēles. Faktiskā frakcijas maiņa sagatavo sākotnējo pārcelšanu, ieraksta īsto `64594` ieskaiti, mājvietu un valodas un palaiž filmu `116`. Aktīvu, vecajā versijā priekšlaikus pabeigtu ierakstu ar nulles ieskaiti var izlabot, izdarot derīgu izvēli pie Master Shang Xi.
+
+Servera pārbaudē izmantotas sākotnējās dialoga un frakcijas paketes, pārbaudīta derīga Alliance izvēle un Horde izvēle ar priekšlaikus pabeigtu kvesta ierakstu. Abos gadījumos ieskaite bija viena un aizpildījās pareizā mājvieta, valodas un gaidošais pārcelšanas galamērķis. Noraidīti neatbalstīta izvēle, izvēle bez kvesta, izvēle tālu no devēja un atkārtota maiņa. Filmas pabeigšanas pakete saglabāja gaidošo pārcelšanu. Faktiska kapitālpilsētas ielāde un nodošana attiecīgajam NPC klientā paliek atvērta.
+
+Pagaidu un darba serveris sasniedza gatavību un izslēdzās ar statusu 0. Darba EXE SHA-256 ir `45D61C62EBA9266F397C4F0AB76DE6C369693547D5A1F371DF5F42B2FA83371C`. Pārbaudīta faktiskā gala saistīšana, PE izsaukumi, abi mērķi un 24 maršruta punkti darba datubāzē. Jaunu avāriju, DBErrors vai neizskaidrotu servera ierakstu nebija. Ar kontrolsummām arhivēti 138 pārbaudes faili un trīs izolētās MariaDB izslēgšanās faili. Izņemti 56 pagaidu faili un vecāks atkopšanas pāris, kopā 2 365 351 650 baiti. Saglabāts tieši iepriekšējais EXE/MAP pāris. [Diagnostika](../../build-extractors/bin/Release/fixed/2026-11-26-wandering-isle-departure/)
