@@ -35,6 +35,7 @@
 #include "BattlePayMgr.h"
 #include "BattlePayPackets.h"
 #include "BattlePetData.h"
+#include "BattlePetStableService.h"
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "BattlegroundAlteracValley.h"
@@ -18558,10 +18559,27 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
     if (!menuItemData)
         return;
 
+    bool const paidPetHeal = source->IsCreature() && source->GetMapId() == 0 && gossipOptionNpc == GossipOptionNpc::None &&
+        ((source->GetEntry() == BattlePetStableService::Jenova && menuId == 9821 && gossipListId == 2) ||
+         (source->GetEntry() == BattlePetStableService::Audrey && menuId == 14991 && gossipListId == 1));
     int32 cost = int32(item->BoxMoney);
     if (!HasEnoughMoney(int64(cost)))
     {
         SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY);
+        if (paidPetHeal)
+            PlayerTalkClass->ClearMenus();
+        PlayerTalkClass->SendCloseGossip();
+        return;
+    }
+
+    if (paidPetHeal)
+    {
+        if (_petBattleId || GetBattlePets()->empty() ||
+            CastSpell(this, BattlePetStableService::Revive, false, nullptr, nullptr, guid) != SPELL_CAST_OK)
+            return;
+
+        ModifyMoney(-cost);
+        PlayerTalkClass->ClearMenus();
         PlayerTalkClass->SendCloseGossip();
         return;
     }

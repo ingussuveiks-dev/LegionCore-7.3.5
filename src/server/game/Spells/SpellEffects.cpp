@@ -62,6 +62,7 @@
 #include "PathGenerator.h"
 #include "Pet.h"
 #include "PetBattle.h"
+#include "BattlePetStableService.h"
 #include "Player.h"
 #include "EmbassyAllyChoice.h"
 #include "QuestData.h"
@@ -9261,6 +9262,12 @@ void Spell::EffectHealBattlePetPct(SpellEffIndex /*effIndex*/)
 
         player->GetSession()->SendBattlePetsHealed();
         player->GetSession()->SendBattlePetUpdates();
+
+        auto stableMaster = GetOriginalCaster() ? GetOriginalCaster()->ToCreature() : nullptr;
+        if (m_spellInfo->Id == BattlePetStableService::Revive && unitTarget == player && !pets->empty() &&
+            stableMaster && stableMaster->GetEntry() == BattlePetStableService::Jenova && stableMaster->GetMapId() == 0 &&
+            player->GetQuestStatus(BattlePetStableService::OnTheMend) == QUEST_STATUS_INCOMPLETE)
+            player->KilledMonsterCredit(BattlePetStableService::MendCredit);
     }
 }
 
