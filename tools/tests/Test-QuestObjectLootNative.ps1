@@ -471,7 +471,7 @@ if($BertsBots){
 }
 if($LegionAnniversary){
  $probeSource = "$PSScriptRoot/LegionAnniversaryNative.cpp"
- [IO.File]::WriteAllText("$out/NativeLegionAnniversary.inc",$query+' " WHERE ID IN(43471,43472,47251,47252)"')
+ [IO.File]::WriteAllText("$out/NativeLegionAnniversary.inc",$query+' " WHERE ID IN(43323,43461,43471,43472,47251,47252)"')
 }
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"

@@ -1,11 +1,16 @@
 #define LOST_ARMY_NATIVE_SUPPORT_ONLY
 #include "LostArmyLootNative.cpp"
 #include "GameEventMgr.h"
+#include "GossipData.h"
+#include "GossipDef.h"
 #include "LegionAnniversary.h"
+#include "../../src/server/scripts/World/legion_anniversary_trivia.h"
 #include "Mail.h"
+#include "NPCPackets.h"
 #include "QuestPackets.h"
 
 void AddSC_legion_anniversary();
+void AddSC_legion_anniversary_trivia();
 namespace GameTime { extern time_t GameTime; }
 
 namespace
@@ -72,7 +77,7 @@ void LoadWorldData()
     auto rows = WorldDatabase.Query(
 #include "NativeLegionAnniversary.inc"
     );
-    Require(rows && rows->GetRowCount() == 4, "Anniversary quest templates missing");
+    Require(rows && rows->GetRowCount() == 6, "Anniversary quest templates missing");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(47253);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -83,15 +88,44 @@ void LoadWorldData()
         const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates()).emplace(quest->GetQuestId(), quest);
     } while (rows->NextRow());
 
+    auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives WHERE QuestID IN(43323,43461)");
+    Require(objectives && objectives->GetRowCount() == 2, "The native trivia objectives are required");
+    do
+    {
+        auto quest = quests[objectives->Fetch()[1].GetUInt32()];
+        quest->LoadQuestObjective(objectives->Fetch());
+        Require(quest->IsDaily() && quest->GetObjectives().front().ObjectID == LegionAnniversary::TriviaCredit &&
+            quest->GetObjectives().front().Amount == 1, "Each native trivia daily requires exactly one answer");
+        quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_REPEATABLE | QUEST_SPECIAL_FLAGS_KILL);
+    } while (objectives->NextRow());
+
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
     sObjectMgr->LoadPlayerInfo();
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT c.* FROM legion_world.creature c JOIN game_event_creature e ON e.guid=c.guid AND e.eventEntry=693 WHERE c.id IN (110034,110035)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (43471,43472,47251,47252)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN (43323,43461,43471,43472,47251,47252)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN (43323,43461)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=29788 OR ID BETWEEN 116033 AND 116272");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=20052");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=20052");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadCreatures();
+    sObjectMgr->LoadNPCText();
+    sGossipDataStore->LoadGossipMenu();
+    sGossipDataStore->LoadGossipMenuItems();
+    sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
+    for (auto const& question : LegionAnniversary::TriviaQuestions)
+    {
+        Require(sObjectMgr->GetNpcText(question.Prompt) && sBroadcastTextStore.LookupEntry(question.Prompt) &&
+            question.Correct < question.Answers.size(), "Native historian question did not load");
+        for (auto answer : question.Answers)
+        {
+            auto row = sBroadcastTextStore.LookupEntry(answer);
+            Require(row && *DB2Manager::GetBroadcastTextValue(row, LOCALE_enUS), "Native historian answer did not load");
+        }
+    }
 
     auto& lootTable = LootTemplates_Item.*Access(LootTableNameTag{});
     auto original = lootTable;
@@ -119,6 +153,88 @@ void LoadWorldData()
             (sConditionMgr->*Access(AttachLootConditionTag{}))(condition, LootTemplates_Item.GetLootForConditionFill(condition->SourceGroup)),
             "Native loot rejected a gift condition");
     } while (conditions->NextRow());
+}
+
+void CheckTrivia(LootPlayer& player, Creature& historian, Route const& route)
+{
+    uint32 const quest = route.Race == RACE_HUMAN ? LegionAnniversary::AllianceTrivia : LegionAnniversary::HordeTrivia;
+    auto& active = const_cast<GameEventMgr::ActiveEvents&>(sGameEventMgr->GetActiveEventList());
+    active.insert(LegionAnniversary::Event);
+    auto* session = player.GetSession();
+    WorldPackets::NPC::Hello hello{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+    hello.Unit = historian.GetGUID();
+    auto& menu = player.PlayerTalkClass->GetGossipMenu();
+    auto getAsk = [&]() -> int32
+    {
+        session->HandleGossipHelloOpcode(hello);
+        for (auto const& entry : menu.GetMenuItems())
+            if (entry.second.Sender == LegionAnniversary::Event)
+                return entry.first;
+        return -1;
+    };
+    auto select = [&](uint32 id, uint32 index)
+    {
+        WorldPackets::NPC::GossipSelectOption packet{WorldPacket(CMSG_GOSSIP_SELECT_OPTION)};
+        packet.GossipUnit = historian.GetGUID();
+        packet.GossipID = id;
+        packet.GossipIndex = index;
+        session->HandleGossipSelectOption(packet);
+    };
+    auto openQuestion = [&]() -> LegionAnniversary::TriviaQuestion const&
+    {
+        auto ask = getAsk();
+        Require(ask >= 0, "Active faction daily must offer the question");
+        select(menu.GetMenuId(), ask);
+        auto const& list = LegionAnniversary::TriviaQuestions;
+        auto question = std::find_if(list.begin(), list.end(), [&](auto const& q) { return q.Prompt == menu.GetMenuId(); });
+        Require(question != list.end() && menu.GetMenuItems().size() == 4, "The native gossip must publish one of 43 four-option questions");
+        for (uint8 i = 0; i != 4; ++i)
+            Require(menu.GetItem(i) && menu.GetItem(i)->Action == question->Answers[i], "The sent answer order changed");
+        return *question;
+    };
+
+    Require(getAsk() < 0 && player.PlayerTalkClass->GetQuestMenu().HasItem(quest), "The historian should offer the daily before allowing an answer");
+    WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    accept.QuestGiverGUID = historian.GetGUID();
+    accept.QuestID = quest;
+    session->HandleQuestGiverAcceptQuest(accept);
+    Require(player.GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE, "The native historian could not offer its daily");
+
+    auto const& wrong = openQuestion();
+    select(wrong.Prompt + 1, wrong.Correct);
+    Require(player.GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE, "A stale question packet granted credit");
+    select(wrong.Prompt, (wrong.Correct + 1) % 4);
+    select(wrong.Prompt, wrong.Correct);
+    Require(player.GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE, "A wrong answer or a replay granted credit");
+
+    auto const& expired = openQuestion();
+    active.erase(LegionAnniversary::Event);
+    select(expired.Prompt, expired.Correct);
+    Require(player.GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE, "A correct answer outside the season granted credit");
+    active.insert(LegionAnniversary::Event);
+    auto const otherRace = route.Race == RACE_HUMAN ? RACE_ORC : RACE_HUMAN;
+    player.SetByteValue(UNIT_FIELD_BYTES_0, 0, otherRace);
+    Require(getAsk() < 0, "The other faction could answer this historian's question");
+    player.SetByteValue(UNIT_FIELD_BYTES_0, 0, route.Race);
+
+    auto const& right = openQuestion();
+    select(right.Prompt, right.Correct);
+    select(right.Prompt, right.Correct);
+    Require(player.GetQuestStatus(quest) == QUEST_STATUS_COMPLETE && player.GetQuestObjectiveData(quest, LegionAnniversary::TriviaCredit) == 1,
+        "The real correct choice must issue exactly one native objective credit");
+    uint32 badges = player.GetCurrency(1166);
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestGiverGUID = historian.GetGUID();
+    reward.QuestID = quest;
+    session->HandleQuestGiverChooseReward(reward);
+    session->HandleQuestGiverChooseReward(reward);
+    auto daily = sQuestDataStore->GetQuestTemplate(quest);
+    Require(player.IsQuestDailyRewarded(quest) && player.GetCurrency(1166) == badges + 25 && !player.CanTakeQuest(daily, false),
+        "The historian should pay exactly 25 badges and lock the daily until reset");
+    player.DailyReset();
+    Require(player.CanTakeQuest(daily, false), "The native daily reset did not renew admission");
+    active.erase(LegionAnniversary::Event);
+    std::cout << "PASS " << quest << " 43 localized-authoring rows, wrong/replayed/stale answer, faction, season, victory and daily reset\n";
 }
 
 void CheckGiftLoot(LootPlayer& player, Route const& route, bool currentLetter, bool legacyLetter)
@@ -214,6 +330,7 @@ void CheckRoute(Map& map, Route const& route)
     }
     CheckGiftLoot(player, route, false, false);
     std::cout << "PASS " << route.Historian << " season, mailbox, item loot, letter offers and both historian rewards\n";
+    CheckTrivia(player, *historian, route);
 }
 }
 
@@ -243,6 +360,7 @@ int main(int argc, char** argv)
             LoadWorldData();
             sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
             AddSC_legion_anniversary();
+            AddSC_legion_anniversary_trivia();
             sScriptMgr->SwapScriptContext(true);
         }
         for (Route const& route : {Alliance, Horde})

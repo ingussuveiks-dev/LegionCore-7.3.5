@@ -5,6 +5,7 @@
 #include "GameEventMgr.h"
 #include "GameTime.h"
 #include "LegionAnniversary.h"
+#include "legion_anniversary_trivia.h"
 #include "Player.h"
 #include "QuestData.h"
 #include "Bag.h"
@@ -1013,6 +1014,84 @@ void AddSC_legion_anniversary()
     new player_legion_anniversary();
 }
 
+class npc_legion_anniversary_historian : public CreatureScript
+{
+public:
+    npc_legion_anniversary_historian() : CreatureScript("npc_legion_anniversary_historian") {}
+
+    struct HistorianAI : ScriptedAI
+    {
+        explicit HistorianAI(Creature* creature) : ScriptedAI(creature) {}
+
+        static constexpr uint32 TriviaSender = LegionAnniversary::Event;
+        static constexpr uint32 AskQuestion = GOSSIP_ACTION_INFO_DEF;
+
+        bool CanAnswer(Player* player) const
+        {
+            if (!sGameEventMgr->IsActiveEvent(LegionAnniversary::Event))
+                return false;
+            if (me->GetEntry() == LegionAnniversary::HistorianLlore && me->GetMapId() == 0 && player->GetNativeTeam() == ALLIANCE)
+                return player->GetQuestStatus(LegionAnniversary::AllianceTrivia) == QUEST_STATUS_INCOMPLETE;
+            if (me->GetEntry() == LegionAnniversary::HistorianJupa && me->GetMapId() == 1 && player->GetNativeTeam() == HORDE)
+                return player->GetQuestStatus(LegionAnniversary::HordeTrivia) == QUEST_STATUS_INCOMPLETE;
+            return false;
+        }
+
+        void sGossipSelect(Player* player, uint32 menuId, uint32 selection) override
+        {
+            auto& menu = player->PlayerTalkClass->GetGossipMenu();
+            auto option = menu.GetItem(selection);
+            if (!option || option->Sender != TriviaSender || menuId != menu.GetMenuId() || !CanAnswer(player))
+                return;
+
+            uint32 action = option->Action;
+            player->PlayerTalkClass->ClearMenus();
+            if (action == AskQuestion)
+            {
+                auto const& question = LegionAnniversary::TriviaQuestions[urand(0, LegionAnniversary::TriviaQuestions.size() - 1)];
+                menu.SetMenuId(question.Prompt);
+                auto locale = player->GetSession()->GetSessionDbLocaleIndex();
+                for (uint32 answerId : question.Answers)
+                {
+                    auto answer = sBroadcastTextStore.LookupEntry(answerId);
+                    if (!answer)
+                    {
+                        TC_LOG_ERROR("scripts", "Legion Anniversary: missing BroadcastText %u for question %u", answerId, question.Prompt);
+                        player->PlayerTalkClass->ClearMenus();
+                        player->CLOSE_GOSSIP_MENU();
+                        return;
+                    }
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, DB2Manager::GetBroadcastTextValue(answer, locale), TriviaSender, answerId);
+                }
+                player->SEND_GOSSIP_MENU(question.Prompt, me->GetGUID());
+                return;
+            }
+
+            player->CLOSE_GOSSIP_MENU();
+            auto const& questions = LegionAnniversary::TriviaQuestions;
+            auto question = std::find_if(questions.begin(), questions.end(), [menuId](auto const& entry) { return entry.Prompt == menuId; });
+            if (question != questions.end() && action == question->Answers[question->Correct])
+                player->KilledMonsterCredit(LegionAnniversary::TriviaCredit);
+        }
+    };
+
+    bool OnGossipHello(Player* player, Creature* creature) override
+    {
+        player->PrepareGossipMenu(creature, creature->GetCreatureTemplate()->GossipMenuId, true);
+        if (auto const* ai = static_cast<HistorianAI*>(creature->AI()); ai->CanAnswer(player))
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I'm ready for a question.", HistorianAI::TriviaSender, HistorianAI::AskQuestion);
+        player->SendPreparedGossip(creature);
+        return true;
+    }
+
+    CreatureAI* GetAI(Creature* creature) const override { return new HistorianAI(creature); }
+};
+
+void AddSC_legion_anniversary_trivia()
+{
+    new npc_legion_anniversary_historian();
+}
+
 class player_clear_timed_titles : public PlayerScript
 {
 public:
@@ -1092,6 +1171,7 @@ void AddSC_player_special_scripts()
     new player_heirloom_achieve_check();
     new player_chineese_event();
     AddSC_legion_anniversary();
+    AddSC_legion_anniversary_trivia();
     new player_clear_timed_titles();
     new player_invisible_status_mod_map_handler();
 };
