@@ -2,7 +2,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallRise,[switch]$WestfallVision,[switch]$WestfallVisionObserve,[switch]$WestfallVisionScene,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
-      [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DeeprunRat,[switch]$DeeprunRatObserve,[switch]$HighestQuestPOI,[switch]$VisionQuestPOI,[switch]$LegacyQuestPOI,[switch]$EtchedNote,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
+      [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DeeprunRat,[switch]$DeeprunRatObserve,[switch]$HighestQuestPOI,[switch]$VisionQuestPOI,[switch]$LegacyQuestPOI,[switch]$EtchedNote,[switch]$ForemanOslow,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
       [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,[switch]$WanderingFirstLesson,
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,
@@ -38,6 +38,7 @@ $scopedProbes = @(@($TakingPrecautions,$Collector,$Scenes,$Kyle,$Seasoning,$Seas
 if($DeeprunRat){++$scopedProbes}
 if($HighestQuestPOI -or $VisionQuestPOI -or $LegacyQuestPOI){++$scopedProbes}
 if($EtchedNote){++$scopedProbes}
+if($ForemanOslow){++$scopedProbes}
 if($DarkshoreWildlifeFlight){++$scopedProbes}
 if($WanderingIsleSouth){++$scopedProbes}
 if($BrazieBasicBotany){++$scopedProbes}
@@ -750,6 +751,11 @@ if($HighestQuestPOI -or $VisionQuestPOI -or $LegacyQuestPOI){$probeSource="$PSSc
 if($EtchedNote){
  $probeSource="$PSScriptRoot/EtchedNoteNative.cpp"
  [IO.File]::WriteAllText("$out/NativeEtchedNote.inc",$query+' " WHERE ID IN (24852,3092,27021)"')
+ [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
+}
+if($ForemanOslow){
+ $probeSource="$PSScriptRoot/ForemanOslowNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeForemanOslow.inc",$query+' " WHERE ID IN (26519,26520)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($WestfallVision){

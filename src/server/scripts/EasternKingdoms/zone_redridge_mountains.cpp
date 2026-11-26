@@ -25,6 +25,8 @@ Script Data End */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
+#include "TemporarySummon.h"
+#include "Vehicle.h"
 
 enum RedridgeCreature
 {
@@ -49,14 +51,39 @@ enum RedridgeSpell
     SPELL_EJECT_PASSENGER_1 = 80743
 };
 
+namespace
+{
+constexpr uint32 SavingForemanOslow = 26520;
+constexpr uint32 EttinControlOrb = 58895;
+enum OslowActor : int32 { RescueBoulder = 1, RescueEttin = 2 };
+enum OslowSeat : uint32 { BoulderLifted, BoulderDropped, BoulderReleasedEarly };
+
+bool CanRescueOslow(Player const* player)
+{
+    return player && player->IsAlive() && player->IsInWorld() && player->GetMapId() == 0 && player->GetZoneId() == 44 &&
+        player->FindQuestSlot(SavingForemanOslow) < MAX_QUEST_LOG_SIZE &&
+        player->GetQuestStatus(SavingForemanOslow) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(EttinControlOrb, 1, false);
+}
+
+Creature* FindRescueEttin(Player* player, Creature const* boulder = nullptr)
+{
+    for (ObjectGuid const& guid : *player->GetSummonList(NPC_SUBDUED_CANYON_ETTIN))
+        if (Creature* ettin = ObjectAccessor::GetCreature(*player, guid); ettin && ettin->IsAlive() && !ettin->IsDespawn() &&
+            ettin->ToTempSummon() && ettin->ToTempSummon()->GetSummonerGUID() == player->GetGUID() &&
+            (!boulder || boulder->IsWithinDistInMap(ettin, 20.0f)))
+            return ettin;
+    return nullptr;
+}
+}
+
 class spell_redridge_control_ettin : public SpellScript
 {
     PrepareSpellScript(spell_redridge_control_ettin);
 
     void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
-        Unit* caster = GetCaster();
-        if (!caster || !caster->IsPlayer())
+        Player* caster = GetCaster()->ToPlayer();
+        if (!CanRescueOslow(caster) || !GetCastItem() || GetCastItem()->GetEntry() != EttinControlOrb || FindRescueEttin(caster))
             return;
 
         if (Creature* target = GetHitCreature())
@@ -74,6 +101,15 @@ class spell_redridge_lift_huge_boulder : public SpellScript
 {
     PrepareSpellScript(spell_redridge_lift_huge_boulder);
 
+    void ChooseAssignedEttin(WorldObject*& target)
+    {
+        target = nullptr;
+        if (Creature* boulder = GetCaster()->ToCreature(); boulder && boulder->GetEntry() == NPC_HUGE_BOULDER && boulder->AI())
+            if (Creature* ettin = ObjectAccessor::GetCreature(*boulder, boulder->AI()->GetGUID(RescueEttin));
+                ettin && ettin->IsAlive() && boulder->IsWithinDistInMap(ettin, 10.0f))
+                target = ettin;
+    }
+
     void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
         if (Unit* caster = GetCaster())
@@ -83,6 +119,7 @@ class spell_redridge_lift_huge_boulder : public SpellScript
 
     void Register() override
     {
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_redridge_lift_huge_boulder::ChooseAssignedEttin, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
         OnEffectHitTarget += SpellEffectFn(spell_redridge_lift_huge_boulder::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
@@ -152,10 +189,54 @@ public:
         {
             me->SetReactState(REACT_PASSIVE);
             _events.Reset();
+            _boulderGUID.Clear();
+            _boarded = false;
+            _throwing = false;
+            _rescued = false;
+            _liftRequests = 0;
+        }
+
+        void SetGUID(ObjectGuid const& guid, int32 type) override
+        {
+            if (type == RescueBoulder)
+                _boulderGUID = guid;
+        }
+
+        void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
+        {
+            if (seat != 0 || passenger->GetGUID() != _boulderGUID || !passenger->IsCreature() || !passenger->ToCreature()->AI())
+                return;
+
+            if (apply && !_boarded && passenger->GetVehicleBase() == me)
+            {
+                _boarded = true;
+                _events.CancelEvent(EVENT_LIFT_BOULDER);
+                passenger->ToCreature()->AI()->SetData(RescueEttin, BoulderLifted);
+                _events.ScheduleEvent(EVENT_ETTIN_LINE_1, 1s);
+            }
+            else if (!apply && _boarded)
+            {
+                _boarded = false;
+                if (!_throwing)
+                {
+                    _events.Reset();
+                    passenger->ToCreature()->AI()->SetData(RescueEttin, BoulderReleasedEarly);
+                    return;
+                }
+                _throwing = false;
+                _rescued = true;
+                passenger->ToCreature()->AI()->SetData(RescueEttin, BoulderDropped);
+                _events.ScheduleEvent(EVENT_PATH_AWAY, 6s);
+            }
         }
 
         void UpdateAI(uint32 diff) override
         {
+            if (!_rescued && !CanRescueOslow(me->GetCharmerOrOwnerPlayerOrPlayerItself()))
+            {
+                me->DespawnOrUnsummon();
+                return;
+            }
             _events.Update(diff);
 
             while (uint32 eventId = _events.ExecuteEvent())
@@ -163,13 +244,14 @@ public:
                 switch (eventId)
                 {
                     case EVENT_LIFT_BOULDER:
-                        if (Creature* boulder = me->FindNearestCreature(NPC_HUGE_BOULDER, 10.0f))
+                        if (Creature* boulder = ObjectAccessor::GetCreature(*me, _boulderGUID);
+                            boulder && boulder->AI() && boulder->AI()->GetGUID(RescueEttin) == me->GetGUID() && _liftRequests < 3)
                         {
-                            _boulderGUID = boulder->GetGUID();
+                            ++_liftRequests;
                             boulder->CastSpell(me, SPELL_LIFT_HUGE_BOULDER, false);
-                            boulder->GetAI()->SetData(0, 0);
+                            if (!_boarded)
+                                _events.ScheduleEvent(EVENT_LIFT_BOULDER, 2s);
                         }
-                        _events.ScheduleEvent(EVENT_ETTIN_LINE_1, 1s);
                         break;
                     case EVENT_ETTIN_LINE_1:
                         sCreatureTextMgr->SendChat(me, 0);
@@ -192,14 +274,15 @@ public:
                         break;
                     }
                     case EVENT_THROW_BOULDER:
-                        me->RemoveAurasDueToSpell(SPELL_LIFT_BOULDER_RIDE);
-                        _events.ScheduleEvent(EVENT_PATH_AWAY, 6s);
+                        if (_boarded && me->GetVehicleKit() && me->GetVehicleKit()->GetPassenger(0) &&
+                            me->GetVehicleKit()->GetPassenger(0)->GetGUID() == _boulderGUID)
+                        {
+                            _throwing = true;
+                            me->RemoveAurasDueToSpell(SPELL_LIFT_BOULDER_RIDE);
+                        }
                         break;
                     case EVENT_PATH_AWAY:
                     {
-                        if (Creature* boulder = me->GetMap()->GetCreature(_boulderGUID))
-                            boulder->GetAI()->SetData(0, 1);
-
                         // run up path
                         Movement::MoveSplineInit init(*me);
                         Movement::PointsArray path(EttinPathUpHill, EttinPathUpHill + EttinPathUpHillSize);
@@ -232,12 +315,16 @@ public:
             switch (pointId)
             {
                 case POINT_NEAR_ROCK:
+                    if (_boulderGUID.IsEmpty() || !me->IsWithinDist3d(-9271.833f, -2290.7075f, 68.538925f, 1.5f))
+                        break;
                     if (Creature* daniel = me->FindNearestCreature(NPC_BRIDGE_WORKER_DANIEL, 20.0f))
                         me->SetFacingTo(daniel);
 
                     _events.ScheduleEvent(EVENT_LIFT_BOULDER, 0);
                     break;
                 case POINT_NEAR_WATER:
+                    if (!_boarded || !me->IsWithinDist3d(EttinPathToWater[4].x, EttinPathToWater[4].y, EttinPathToWater[4].z, 2.0f))
+                        break;
                     me->SetFacingTo(5.0614f);
                     _events.ScheduleEvent(EVENT_THROW_BOULDER, 1s);
                     break;
@@ -249,6 +336,10 @@ public:
     private:
         EventMap _events;
         ObjectGuid _boulderGUID;
+        uint8 _liftRequests = 0;
+        bool _boarded = false;
+        bool _throwing = false;
+        bool _rescued = false;
     };
 };
 
@@ -269,6 +360,10 @@ public:
         void Reset() override
         {
             _events.Reset();
+            _playerGUID.Clear();
+            _ettinGUID.Clear();
+            _attemptRemaining = 0;
+            _liftConfirmed = false;
             _events.ScheduleEvent(EVENT_START_PHASE_IDLE, 0);
         }
 
@@ -279,23 +374,52 @@ public:
 
         void SpellHit(Unit* caster, SpellInfo const* spell) override
         {
-            if (!caster || !caster->IsPlayer())
+            Player* player = caster ? caster->ToPlayer() : nullptr;
+            if (spell->Id != SPELL_CONTROL_ETTIN || !_playerGUID.IsEmpty() || !CanRescueOslow(player) ||
+                !player->IsWithinDistInMap(me, 20.0f) || !LocateGUIDs())
                 return;
 
-            if (spell->Id != SPELL_CONTROL_ETTIN)
-                return;
-
-            if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_CANYON_ETTIN, 20.0f))
+            if (Creature* ettin = FindRescueEttin(player, me); ettin && ettin->AI())
             {
-                _playerGUID = caster->GetGUID();
+                _playerGUID = player->GetGUID();
                 _ettinGUID = ettin->GetGUID();
+                _attemptRemaining = 120000;
+                ettin->AI()->SetGUID(me->GetGUID(), RescueBoulder);
                 _events.Reset();
                 _events.ScheduleEvent(EVENT_REPOSITION, 1s);
             }
         }
 
+        ObjectGuid GetGUID(int32 type) override
+        {
+            return type == RescueEttin ? _ettinGUID : ObjectGuid::Empty;
+        }
+
         void UpdateAI(uint32 diff) override
         {
+            if (!_playerGUID.IsEmpty())
+            {
+                Creature* ettin = GetEttin();
+                Player* player = ObjectAccessor::FindPlayer(me->GetMap(), _playerGUID);
+                if (_attemptRemaining <= diff || !CanRescueOslow(player) || !ettin || !ettin->IsAlive())
+                {
+                    Reset();
+                    if (me->GetVehicle())
+                        me->ExitVehicle();
+                    if (ettin)
+                        ettin->DespawnOrUnsummon();
+                    me->NearTeleportTo(me->GetHomePosition());
+                    for (Creature* actor : { GetForeman(), GetAlex(), GetMatthew(), GetTrent(), GetDmitri(), GetJess(), GetDaniel() })
+                        if (actor)
+                        {
+                            actor->LoadCreaturesAddon();
+                            actor->GetMotionMaster()->MoveTargetedHome();
+                        }
+                    return;
+                }
+                _attemptRemaining -= diff;
+            }
+
             _events.Update(diff);
 
             while (uint32 eventId = _events.ExecuteEvent())
@@ -524,9 +648,9 @@ public:
                             foreman->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 64);
                         break;
                     case EVENT_DONE:
-                        // quest credit
-                        if (Player* player = ObjectAccessor::FindPlayer(me->GetMap(), _playerGUID))
-                            player->RewardPlayerAndGroupAtEvent(NPC_FOREMAN_OSLOW, player);
+                        if (Player* player = ObjectAccessor::FindPlayer(me->GetMap(), _playerGUID); CanRescueOslow(player))
+                            if (Creature* foreman = GetForeman(); foreman && player->IsAtGroupRewardDistance(foreman))
+                                player->RewardPlayerAndGroupAtEvent(NPC_FOREMAN_OSLOW, player);
 
                         if (Creature* alex = GetAlex())
                             alex->DisappearAndDie();
@@ -550,12 +674,21 @@ public:
             }
         }
 
-        void SetData(uint32 /*id*/, uint32 value) override
+        void SetData(uint32 id, uint32 value) override
         {
-            if (value == 0)
+            Creature* ettin = GetEttin();
+            if (id != RescueEttin || _playerGUID.IsEmpty() || !ettin || me->GetVehicleBase() != ettin)
+                return;
+
+            if (value == BoulderLifted && !_liftConfirmed)
+            {
+                _liftConfirmed = true;
                 _events.ScheduleEvent(EVENT_FOREMAN_GET_UP, 3s);
-            else
+            }
+            else if (value == BoulderDropped && _liftConfirmed)
                 _events.ScheduleEvent(EVENT_DONE, 0);
+            else if (value == BoulderReleasedEarly)
+                _attemptRemaining = 0;
         }
 
         bool LocateGUIDs()
@@ -632,6 +765,8 @@ public:
         ObjectGuid _jessGUID;
         ObjectGuid _danielGUID;
         ObjectGuid _ettinGUID;
+        uint32 _attemptRemaining = 0;
+        bool _liftConfirmed = false;
     };
 };
 
