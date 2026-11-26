@@ -65,6 +65,13 @@ constexpr uint32 MorningBreeze = 29776;
 constexpr uint32 RewrittenWisdoms = 29778;
 constexpr uint32 BreezeJiSpawn = 244900;
 constexpr uint32 DefacedScrollCredit = 55600;
+constexpr uint32 ToolsOfEnemy = 29777;
+constexpr uint32 Warning = 29781;
+constexpr uint32 StrongStone = 29783;
+constexpr uint32 ElderSpawn = 244884;
+constexpr uint32 VillageJojoSpawn = 244886;
+constexpr uint32 BrushHozen = 55601;
+constexpr uint32 PaintBrush = 74615;
 constexpr uint32 DaiLoShu = 55556;
 constexpr uint32 DaiLoShuSpawn = 244646;
 constexpr uint32 Wugou = 55539;
@@ -96,7 +103,7 @@ void LoadPools()
     auto rows = WorldDatabase.Query(
 #include "NativeSingingPools.inc"
     );
-    Require(rows && rows->GetRowCount() == 20, "Missing the Singing Pools, farm and village quests");
+    Require(rows && rows->GetRowCount() == 23, "Missing the Singing Pools, farm and village quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -110,8 +117,8 @@ void LoadPools()
     auto rowsAddon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
         "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon "
-        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29778)");
-    Require(rowsAddon && rowsAddon->GetRowCount() == 20, "Missing the original Pools, farm and village prerequisites");
+        "WHERE ID IN (29423,29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29781,29783)");
+    Require(rowsAddon && rowsAddon->GetRowCount() == 23, "Missing the original Pools, farm and village prerequisites");
     do
     {
         auto row = rowsAddon->Fetch();
@@ -172,8 +179,8 @@ void LoadPools()
         (cartObjective->Fetch()[6].GetUInt32() & QUEST_OBJECTIVE_FLAG_OPTIONAL), "Missing the optional cart objective");
     quests[Livelihood]->LoadQuestObjective(cartObjective->Fetch());
     auto farmObjectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29778) ORDER BY QuestID,StorageIndex");
-    Require(farmObjectives && farmObjectives->GetRowCount() == 11, "Missing the original farm and village objectives");
+        "FROM quest_objectives WHERE QuestID IN (29768,29769,29770,29771,29772,29774,29775,29777,29778,29781,29783) ORDER BY QuestID,StorageIndex");
+    Require(farmObjectives && farmObjectives->GetRowCount() == 14, "Missing the original farm and village objectives");
     do
     {
         auto fields = farmObjectives->Fetch();
@@ -186,18 +193,21 @@ void LoadPools()
     quests[RaucousRousing]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[NotInTheFace]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
     quests[RewrittenWisdoms]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
+    for (uint32 quest : {ToolsOfEnemy, Warning, StrongStone})
+        quests[quest]->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
         "WHERE guid IN (243552,244137,244247,244270,244325,244326,244327,244421,244422,244436,244441,244443,244444,244449,244450,"
-        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244900,245583)");
+        "244485,244519,244520,244586,244589,244590,244591,244592,244595,244596,244611,244615,244617,244620,244624,244633,244646,244654,244755,244884,244886,244900,245583)"
+        " OR (map=860 AND id=55601)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=13140");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=18503");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29778)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29781,29783)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
-        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29778)");
+        "WHERE quest IN (29521,29661,29662,29663,29666,29676,29677,29678,29679,29680,29768,29769,29770,29771,29772,29774,29775,29776,29777,29778,29781,29783)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
         "WHERE (SourceTypeOrReferenceId=19 AND SourceEntry=29678) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN (104012,104127,118027))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
@@ -218,14 +228,14 @@ void LoadPools()
     sObjectMgr->LoadGameObjectTemplate();
     auto& table = LootTemplates_Gameobject.*Access(LootTableNameTag{});
     auto const original = table;
-    table += " WHERE Entry IN (209507,209584,209639,209640,209641,209642,209643,209644,209645,209646,214406)";
+    table += " WHERE Entry IN (209507,209584,209639,209640,209641,209642,209643,209644,209645,209646,209665,209669,214406)";
     auto const loaded = (LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();
     table = original;
-    Require(loaded == 11 && LootTemplates_Gameobject.GetLootFor(209507) && LootTemplates_Gameobject.GetLootFor(209584),
+    Require(loaded == 13 && LootTemplates_Gameobject.GetLootFor(209507) && LootTemplates_Gameobject.GetLootFor(209584),
         "Missing the original reed, pearl or farm loot rows");
     auto& creatureLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalCreatureLoot = creatureLoot;
-    creatureLoot += " WHERE Entry IN (55483,60411)";
+    creatureLoot += " WHERE Entry IN (55483,55601,60411)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     creatureLoot = originalCreatureLoot;
     Require(LootTemplates_Creature.GetLootFor(WaterPincer) && LootTemplates_Creature.GetLootFor(Virmen), "Missing the original Water Pincer or Virmen loot");
@@ -598,12 +608,19 @@ void CheckBell()
     for (uint32 spawn : PincerSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
-    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn})
+    for (uint32 spawn : {CartTenderSpawn, ShoreAysaSpawn, ShuSpawn, FarmCartSpawn, JiSpawn, WreckCartSpawn, MinSpawn, DeloraSpawn, DaiLoShuSpawn, WugouSpawn, BreezeJiSpawn, ElderSpawn, VillageJojoSpawn})
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
     for (uint32 spawn : VirmenSpawns)
         if (auto data = sObjectMgr->GetCreatureData(spawn))
             sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+    if (auto spawns = WorldDatabase.Query("SELECT guid FROM creature WHERE id=55601"))
+        do
+        {
+            uint32 spawn = spawns->Fetch()[0].GetUInt32();
+            if (auto data = sObjectMgr->GetCreatureData(spawn))
+                sObjectMgr->RemoveCreatureFromGrid(spawn, data);
+        } while (spawns->NextRow());
     Map map(860, 663, 0, DIFFICULTY_NONE);
     Teacher aysa(map);
     Teacher shang(map, ShangTempleSpawn, 54786);
@@ -1213,6 +1230,72 @@ void AdvanceWugouScene(Teacher& shu, uint32 duration)
     }
 }
 
+bool LootPaintBrush(Map& map, LootPlayer& pupil, PoolPet& pet, uint32 spawn, bool byPet)
+{
+    Teacher hozen(map, spawn, BrushHozen);
+    MoveGilneasPlayer(pupil, hozen.GetPosition());
+    if (byPet)
+    {
+        map.CreatureRelocation(&pet, hozen.GetPositionX(), hozen.GetPositionY(), hozen.GetPositionZ(), hozen.GetOrientation());
+        map.MoveAllCreaturesInMoveList();
+    }
+    Unit& killer = byPet ? static_cast<Unit&>(pet) : static_cast<Unit&>(pupil);
+    Require(killer.IsValidAttackTarget(&hozen), "The placed Hozen is not a native hostile actor");
+    killer.DealDamage(&hozen, uint32(hozen.GetMaxHealth()) * 2);
+    Tick(pupil, 100);
+    Require(!hozen.IsAlive(), "The actual Hozen did not die");
+    WorldPackets::Loot::LootResponse response;
+    hozen.loot.BuildLootResponse(response, &pupil, ALL_PERMISSION);
+    for (auto const& row : response.Items)
+        if (row.Loot.ItemID == PaintBrush)
+        {
+            uint32 const before = pupil.GetItemCount(PaintBrush);
+            WorldPackets::Loot::AutoStoreLootItem request{WorldPacket(CMSG_LOOT_ITEM)};
+            request.Loot.push_back({hozen.loot.GetGUID(), row.LootListID});
+            pupil.GetSession()->HandleAutostoreLootItemOpcode(request);
+            Require(pupil.GetItemCount(PaintBrush) == before + 1, "The actual corpse loot did not place a brush in the bag");
+            return true;
+        }
+    return false;
+}
+
+void CheckVillageSupplies(Map& map, LootPlayer& pupil, Teacher& ji)
+{
+    Teacher elder(map, ElderSpawn, 55588);
+    Teacher jojo(map, VillageJojoSpawn, 55585);
+    LootPlayer passerby(SupplySession(), map, 2978302, elder.GetPosition());
+    PreparePoolHunter(passerby);
+    PoolPet pet(pupil, map);
+    std::vector<uint32> spawns;
+    if (auto rows = WorldDatabase.Query("SELECT guid FROM creature WHERE id=55601 ORDER BY guid"))
+        do { spawns.push_back(rows->Fetch()[0].GetUInt32()); } while (rows->NextRow());
+    Require(spawns.size() == 48, "Missing the 48 original brush Hozen placements");
+    Require(!LootPaintBrush(map, pupil, pet, spawns[0], false), "The quest-only brush dropped without the quest");
+    MoveGilneasPlayer(pupil, elder.GetPosition());
+    AcceptQuest(pupil, elder, ToolsOfEnemy);
+    Require(LootPaintBrush(map, pupil, pet, spawns[1], false) && LootPaintBrush(map, pupil, pet, spawns[2], true),
+        "The native Hozen loot lost the brush on a player or pet final blow");
+    AbandonSupply(pupil, ToolsOfEnemy);
+#ifdef SINGING_POOLS_BREEZE_SUPPLIES_BASELINE
+    Require(pupil.GetItemCount(PaintBrush) == 2, "The old brush quest did not reproduce stale loot after abandonment");
+    std::cout << "EXPECTED_BROKEN abandoned Tools of the Enemy left two actual brushes in the bag" << std::endl;
+    CheckFarmSupply(map, pupil, passerby, ji, Warning, 209669, 209669, 46, true);
+    CheckFarmSupply(map, pupil, passerby, jojo, StrongStone, 209665, 209665, 26, true);
+#else
+    Require(!pupil.GetItemCount(PaintBrush), "Abandoning Tools of the Enemy left old brushes");
+    MoveGilneasPlayer(pupil, elder.GetPosition());
+    AcceptQuest(pupil, elder, ToolsOfEnemy);
+    for (size_t index = 0; index < 8; ++index)
+        Require(LootPaintBrush(map, pupil, pet, spawns[index + 3], index % 2 != 0), "Native brush loot stopped before the eight-item objective");
+    MoveGilneasPlayer(pupil, elder.GetPosition());
+    RewardQuest(pupil, elder, ToolsOfEnemy);
+    Require(pupil.IsQuestRewarded(ToolsOfEnemy) && !pupil.GetItemCount(PaintBrush), "The Elder did not accept the eight genuine brushes");
+    CheckFarmSupply(map, pupil, passerby, ji, Warning, 209669, 209669, 46, false);
+    CheckFarmSupply(map, pupil, passerby, jojo, StrongStone, 209665, 209665, 26, false);
+    std::cout << "PASS native Hozen brush loot with player and pet, abandoned items, eight-brush reward and both village supply routes" << std::endl;
+#endif
+}
+
 void CheckMorningBreezeScrolls(Map& map, LootPlayer& pupil)
 {
     Tick(pupil, 2000);
@@ -1322,6 +1405,7 @@ void CheckMorningBreezeScrolls(Map& map, LootPlayer& pupil)
     RewardQuest(pupil, ji, RewrittenWisdoms, choice);
     Require(pupil.IsQuestRewarded(RewrittenWisdoms) && pupil.GetItemCount(choice) == 1, "Ji did not reward the five original scroll burns");
     std::cout << "PASS actual Temple wind vehicle, Ji handoff, 14 markers, four scroll templates, five burns both packet forms, retry and reward" << std::endl;
+    CheckVillageSupplies(map, pupil, ji);
 #endif
 }
 
