@@ -62,7 +62,8 @@ enum Creatures : uint32
 enum Spells : uint32
 {
     SPELL_START_TRAINING = 219615,
-    SPELL_LEAVE_TUTORIAL = 219912
+    SPELL_LEAVE_TUTORIAL = 219912,
+    SPELL_FROST_NOVA = 122
 };
 
 // CreatureTemplateWDB 112639 also lists 11686, its invisible display.
@@ -71,7 +72,8 @@ constexpr uint32 FelblazeInfernalDisplay = 62196;
 enum Criteria : uint32
 {
     CRITERIA_SPAR_COMPLETE = 48772,
-    CRITERIA_CONSTRUCTS_DESTROYED = 50571
+    CRITERIA_CONSTRUCTS_DESTROYED = 50571,
+    CRITERIA_FREEZING_ROOTS = 52062
 };
 
 enum InstanceData : uint32
@@ -1380,6 +1382,22 @@ struct npc_boost_training_dummy : public ScriptedAI
     // when a lesson changes. Its position is maintained by the moving ship.
     void AttackStart(Unit* /*target*/) override { }
     void UpdateAI(uint32 /*diff*/) override { }
+
+    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    {
+        if (spell->Id != SPELL_FROST_NOVA || (me->GetMapId() != MAP_ALLIANCE && me->GetMapId() != MAP_HORDE))
+            return;
+
+        Player* player = caster ? caster->ToPlayer() : nullptr;
+        if (!player || !me->GetTransport() || player->GetTransport() != me->GetTransport() ||
+            !me->GetAuraEffect(SPELL_FROST_NOVA, EFFECT_1, player->GetGUID()))
+            return;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (scenario && scenario->GetScenarioId() == 1132 &&
+            scenario->GetScenarioCriteriaByStep(scenario->GetCurrentStep()) == 48840)
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_FREEZING_ROOTS);
+    }
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*damageType*/) override
     {
