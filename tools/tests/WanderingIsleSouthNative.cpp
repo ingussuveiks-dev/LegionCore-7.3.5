@@ -13,6 +13,7 @@
 #include "ObjectVisitors.hpp"
 #include "ScriptedEscortAI.h"
 #include "ScriptSystem.h"
+#include "SmartScriptMgr.h"
 #include "SpellPackets.h"
 #include "Vehicle.h"
 
@@ -46,6 +47,10 @@ constexpr uint32 Vordraka = 56009;
 constexpr uint32 AysaEscort = 60729;
 constexpr uint32 JiEscort = 60741;
 constexpr uint32 ThornCredit = 60727;
+#endif
+#ifdef WANDERING_ISLE_HEALING
+constexpr uint32 Healing = 29799;
+constexpr uint32 HealingPower = 117783;
 #endif
 
 struct SouthPet : LootPet
@@ -111,7 +116,9 @@ void LoadSouth()
         "(guid IN (245135,245137,245146,245264,245266,245384,245389,245495,245497,12924836) OR id IN (55946,55999,56007,56360))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_target_position AS SELECT * FROM legion_world.spell_target_position WHERE id IN (117497,117597)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry=60729");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry IN (55999,56360,60729,60741)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=5736 AND entry IN (1,2)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon "
+        "WHERE entry IN (55999,56360,60729,60741,60780,60858,60878,60896)");
 #else
         "(guid IN (245135,245137,245264,245266,245384,245389) OR id IN (55946,55999,56007))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon AS SELECT * FROM legion_world.creature_template_addon WHERE entry=55999");
@@ -125,7 +132,14 @@ void LoadSouth()
     );
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry=55999");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE vehicle_template_accessory AS SELECT * FROM legion_world.vehicle_template_accessory WHERE EntryOrAura=-105520");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE (spell=56267 AND quest_start=29794) OR (spell=102613 AND quest_start=29798)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE (spell=56267 AND quest_start=29794) OR (spell=102613 AND quest_start=29798)"
+#ifdef WANDERING_ISLE_HEALING
+        " OR (spell=117783 AND quest_start=29799)"
+#endif
+    );
+#ifdef WANDERING_ISLE_HEALING
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts WHERE source_type=0 AND entryorguid=60858");
+#endif
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
@@ -143,6 +157,9 @@ void LoadSouth()
     sSpellMgr->LoadSpellTargetPositions();
     sScriptSystemMgr->LoadScriptWaypoints();
 #endif
+#ifdef WANDERING_ISLE_HEALING
+    sSmartScriptMgr->LoadSmartAIFromDB();
+#endif
     sCreatureTextMgr->LoadCreatureTexts();
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
@@ -155,7 +172,7 @@ void LoadSouth()
     Require(count == 26, "The eight objective rows and original bonus loot did not load together");
     auto& tigerLoot = LootTemplates_Creature.*Access(LootTableNameTag{});
     auto const originalTigerLoot = tigerLoot;
-    tigerLoot += " WHERE Entry IN (55946,56007,56009,56360)";
+    tigerLoot += " WHERE Entry IN (55946,56007,56009,56360,60780,60858)";
     (LootTemplates_Creature.*Access(LoadLootTableTag{}))();
     tigerLoot = originalTigerLoot;
     Require(LootTemplates_Creature.GetLootFor(Tiger) && LootTemplates_Creature.GetLootFor(DarkenedHorror), "Missing the original tiger or horror loot");
@@ -529,6 +546,134 @@ void CheckThorn(LootPlayer& pupil, LootPlayer& visitor)
 }
 #endif
 
+#ifdef WANDERING_ISLE_HEALING
+void CheckHealing(LootPlayer& pupil, LootPlayer& visitor)
+{
+    auto& map = *pupil.GetMap();
+    auto& ji = FindSouthActor(map, 245497);
+    auto findActors = [&](std::initializer_list<uint32> entries)
+    {
+        std::list<Creature*> actors;
+        for (uint32 entry : entries)
+            ji.GetCreatureListWithEntryInGrid(actors, entry, ji.GetVisibilityRange());
+        actors.remove_if([&](Creature* creature)
+        {
+            auto summon = creature->ToTempSummon();
+            return !summon || !summon->IsAlive() || summon->GetSummonerGUID() != ji.GetGUID();
+        });
+        return actors;
+    };
+    auto approach = [&](LootPlayer& player)
+    {
+        MoveGilneasPlayer(player, ji.GetPosition());
+        Trinity::AIRelocationNotifier notifier(player);
+        Trinity::VisitNearbyObject(&player, ji.GetVisibilityRange(), notifier);
+    };
+    uint32 defeated = 0;
+    SouthPet pet(pupil, map);
+    auto run = [&](uint32 duration, bool defend = false)
+    {
+        for (uint32 elapsed = 0; elapsed < duration; elapsed += 250)
+        {
+            ji.Unit::Update(250);
+            ji.AI()->UpdateAI(250);
+            if (defend)
+            {
+                for (auto enemy : findActors({60780,60858}))
+                {
+                    map.LoadGrid(enemy->GetPositionX(), enemy->GetPositionY());
+                    enemy->Unit::Update(250);
+                    if (enemy->getVictim() && (enemy->getVictim()->GetEntry() == 60878 || enemy->getVictim()->GetEntry() == 60896))
+                    {
+                        Unit& attacker = defeated % 2 ? static_cast<Unit&>(pupil) : static_cast<Unit&>(pet);
+                        if (attacker.IsValidAttackTarget(enemy))
+                        {
+                            attacker.DealDamage(enemy, uint32(enemy->GetMaxHealth()) * 2);
+                            defeated += !enemy->IsAlive();
+                        }
+                    }
+                }
+            }
+            Tick(pupil, 250);
+            Tick(visitor, 250);
+            map.MoveAllCreaturesInMoveList();
+            map.RemoveAllObjectsInRemoveList();
+        }
+    };
+    AcceptSouth(pupil, ji, Healing);
+    approach(pupil);
+    run(22000);
+    auto healers = findActors({60878,60896});
+    std::cout << "CASE Healing status=" << pupil.GetQuestStatus(Healing) << " zone=" << pupil.GetZoneId()
+        << " area=" << pupil.GetAreaId() << " phase=" << pupil.GetPhaseMask() << " healers=" << healers.size()
+        << " aura=" << pupil.HasAura(HealingPower) << " power=" << pupil.GetPower(POWER_ALTERNATE)
+        << " max=" << pupil.GetMaxPower(POWER_ALTERNATE) << " credit=" << pupil.GetQuestObjectiveData(Healing, 56011) << std::endl;
+#ifdef WANDERING_ISLE_HEALING_BASELINE
+    Require(!healers.empty() && !pupil.HasAura(HealingPower) && !pupil.GetQuestObjectiveData(Healing, 56011),
+        "The earlier quest did not reproduce a missing power bar with live healers");
+    std::cout << "EXPECTED_BROKEN the original spell area refused the active quest's healing power bar\n";
+#else
+    Require(!healers.empty() && pupil.HasAura(HealingPower) && pupil.GetPower(POWER_ALTERNATE) > 0 &&
+        !pupil.GetQuestObjectiveData(Healing, 56011), "An accepted participant did not join real active healing");
+#endif
+    AbandonSupply(pupil, Healing);
+#ifndef WANDERING_ISLE_HEALING_BASELINE
+    Require(!pupil.HasAura(HealingPower) && !pupil.GetPower(POWER_ALTERNATE), "Native abandonment did not remove the power bar immediately");
+#endif
+    Position away = ji.GetPosition();
+    away.m_positionY -= 165.0f;
+    MoveGilneasPlayer(pupil, away);
+    run(18000);
+#ifdef WANDERING_ISLE_HEALING_BASELINE
+    visitor.SetRewardedQuest(RiskingItAll);
+    approach(visitor);
+    Require(findActors({60878,60896}).size() >= 2,
+        "The earlier controller did not reproduce spawning more healers after the only participant abandoned");
+    std::cout << "EXPECTED_BROKEN the original controller continued the defense after its only participant abandoned\n";
+#else
+    Require(findActors({60878,60896,60780,60858}).empty() && !pupil.HasAura(HealingPower) && !pupil.GetPower(POWER_ALTERNATE),
+        "An abandoned participant retained the wound-healing aura or alternate power");
+
+    AcceptSouth(pupil, ji, Healing);
+    approach(pupil);
+    run(14500);
+    healers = findActors({60878,60896});
+    auto enemies = findActors({60780,60858});
+    Require(healers.size() == 1 && !enemies.empty() && pupil.HasAura(HealingPower), "A fresh attempt did not begin with a real healer and an attacker");
+    Creature* healer = healers.front();
+    enemies.front()->DealDamage(healer, uint32(healer->GetMaxHealth()) * 2);
+    Require(!healer->IsAlive(), "The real attacker did not kill the first healer");
+    auto power = pupil.GetPower(POWER_ALTERNATE);
+    run(3500);
+    Require(findActors({60878,60896}).empty() && pupil.GetPower(POWER_ALTERNATE) == power,
+        "A dead healer still increased healing progress");
+    MoveGilneasPlayer(pupil, away);
+    run(500);
+    Require(!pupil.HasAura(HealingPower) && !pupil.GetPower(POWER_ALTERNATE), "Leaving the defense did not clear the power bar");
+
+    visitor.SetRewardedQuest(RiskingItAll);
+    AcceptSouth(visitor, ji, Healing);
+    approach(pupil);
+    approach(visitor);
+    run(16500, true);
+    Require(pupil.HasAura(HealingPower) && visitor.HasAura(HealingPower), "Two valid participants did not join the same defense");
+    MoveGilneasPlayer(visitor, away);
+    run(250, true);
+    Require(pupil.HasAura(HealingPower) && !visitor.HasAura(HealingPower), "One departure canceled another participant or left a stale power bar");
+    for (uint32 round = 0; round < 42 && !pupil.GetQuestObjectiveData(Healing, 56011); ++round)
+        run(10000, true);
+    Require(pupil.GetQuestObjectiveData(Healing, 56011) == 1 && defeated >= 2 &&
+        !visitor.GetQuestObjectiveData(Healing, 56011) && visitor.GetQuestStatus(Healing) == QUEST_STATUS_INCOMPLETE,
+        "Actual healing and defense did not credit only the remaining eligible participant");
+    Require(findActors({60878,60896,60780,60858}).empty() && !pupil.HasAura(HealingPower) && !pupil.GetPower(POWER_ALTERNATE),
+        "Completing healing left active attackers, healers or the quest power bar");
+    RewardSouth(pupil, ji, Healing);
+    AbandonSupply(visitor, Healing);
+    std::cout << "PASS actual healing bar, abandonment, range departure, dead healer stop, shared defense and Ji reward; actual defeats=" << defeated << '\n';
+#endif
+}
+#endif
+
 void CheckSouth()
 {
     Map map(860, 305, 0, DIFFICULTY_NONE);
@@ -575,6 +720,9 @@ void CheckSouth()
 #ifdef WANDERING_ISLE_THORN
     CheckThorn(pupil, visitor);
 #endif
+#ifdef WANDERING_ISLE_HEALING
+    CheckHealing(pupil, visitor);
+#endif
 #endif
 }
 }
@@ -587,8 +735,8 @@ int main(int argc, char** argv)
     {
         InitializeNative(argc, argv);
         opcodeTable.Initialize();
-        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{860, {}}});
-        MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{860, {}}});
+        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{860, {}}, {975, {}}});
+        MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{860, {}}, {975, {}}});
         LoadGameObjectModelList(argv[2]);
         LoginDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("LoginDatabaseInfo", ""), 1, 1);
         CharacterDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("CharacterDatabaseInfo", ""), 1, 1);

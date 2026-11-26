@@ -368,3 +368,5 @@ Pie avārijas vietas pārbaudītas astoņas `Evil from the Seas` uzvaras, `Urgen
 `None Left Behind` pārbaudīta īsta jūrnieka paņemšana, atmešana nešanas un nodošanas brīdī, trīs atsevišķas nodošanas ieskaites un atlīdzība pie Ji. Darba servera pārbaude apstiprināja jauno laidienu bez jaunām avārijām vai DBErrors. [Ievainoto jūrnieku glābšana](wandering-isle-sailor-rescue-2026-11-26.md)
 
 `From Bad to Worse` un `An Ancient Evil` izgāja faktiskas uzvaras ar peta ieskaiti un sākotnējos nodošanas ceļus. `Risking It All` pārbaudīti divi privāti eskorti, atmešana, aktieru saruna, filmas un pārvietošanas apstiprinājumi un nodošana pie Ji. Pēdējā Aysa noiešanas punkta navigācija klientā vēl jāpārbauda. [Vordraka un avārijas vietas eskorts](wandering-isle-thorn-escort-2026-11-26.md)
+
+`The Healing of Shen-zin Su` atjaunota progresa josla un novērsta norise pēc pēdējā dalībnieka aiziešanas. Servera pārbaudē ieskaitīti dzīvie dziednieki, 35 īstas uzvaras pār uzbrucējiem, 700 dziedināšanas punkti un atlīdzība pie Ji. [Shen-zin Su dziedināšana](wandering-isle-healing-defense-2026-11-26.md)

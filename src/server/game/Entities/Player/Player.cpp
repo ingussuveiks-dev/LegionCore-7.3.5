@@ -20989,6 +20989,8 @@ void Player::CancelQuestObjects(uint32 questId)
     // Mark the passenger for removal before the vehicle's dismount callback can defer it.
     if (questId == 29794)
         RemoveAurasDueToSpell(105520);
+    else if (questId == 29799)
+        RemoveAurasDueToSpell(117783);
 }
 
 void Player::ResetNewBloodQuest()

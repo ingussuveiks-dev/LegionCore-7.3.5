@@ -5782,7 +5782,7 @@ enum eEnums
 {           
     NPC_HEALER_A            = 60878,
     NPC_HEALER_H            = 60896,
-    NPC_ENNEMY              = 60858,
+    NPC_ENEMY               = 60858,
     NPC_ENEMY_2             = 60780,
 
     NPC_SHEN_HEAL_CREDIT    = 56011,
@@ -5826,233 +5826,222 @@ public:
         npc_ji_end_eventAI(Creature* creature) : ScriptedAI(creature), _summons(creature)
         {}
 
-        EventMap   _events;
+        EventMap _events;
         SummonList _summons;
+        std::unordered_map<ObjectGuid, std::shared_ptr<QuestCancellationReceipt const>> participants;
+        bool inProgress = false;
+        uint16 actualPower = 0;
 
-        bool       inProgress;
-        uint8      healerCount;
-        uint8      ennemiesCount;
-        uint16     actualPower;
-
-        GuidSet m_player_for_event;
-
-        void Reset()
+        void Reset() override
         {
+            for (auto const& participant : participants)
+                if (Player* player = ObjectAccessor::GetPlayer(*me, participant.first))
+                    ClearState(*player);
+            participants.clear();
             _summons.DespawnAll();
-
-            healerCount   = 0;
-            ennemiesCount = 0;
-            actualPower   = 0;
-
+            actualPower = 0;
             inProgress = false;
-
             _events.Reset();
-            _events.RescheduleEvent(EVENT_CHECK_PLAYERS, 5000);
+            _events.ScheduleEvent(EVENT_CHECK_PLAYERS, 5000);
         }
 
+        bool CanParticipate(Player const& player) const
+        {
+            return player.IsAlive() && player.GetQuestStatus(QUEST_HEALING_SHEN) == QUEST_STATUS_INCOMPLETE &&
+                me->IsWithinDistInMap(&player, me->GetVisibilityRange());
+        }
 
-        void MoveInLineOfSight(Unit* who)
+        void MoveInLineOfSight(Unit* who) override
         {
             Player* player = who->ToPlayer();
-            if (!player)
+            if (!player || !CanParticipate(*player) || !me->IsWithinLOSInMap(player))
                 return;
-
-            if (player->GetQuestStatus(QUEST_HEALING_SHEN) != QUEST_STATUS_INCOMPLETE)
+            auto receipt = player->GetQuestCancellationReceipt(QUEST_HEALING_SHEN);
+            if (!receipt)
                 return;
-
-            GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());
-            if (itr != m_player_for_event.end())
-                return;
-
-            m_player_for_event.insert(who->GetGUID());
-            SendState(player, 1);
+            RemoveIneligibleParticipants();
+            if (inProgress && participants.empty())
+                Reset();
+            if (participants.emplace(player->GetGUID(), std::move(receipt)).second)
+                SendState(*player, 1);
         }
 
-        void SendState(Player* player, int32 value)
+        void SendState(Player& player, int32 value)
         {
             WorldPackets::WorldState::InitWorldStates packet;
-            packet.AreaID = 5833;
-            packet.MapID = 860;
-            packet.SubareaID = 5736;
+            packet.AreaID = player.GetZoneId();
+            packet.MapID = player.GetMapId();
+            packet.SubareaID = player.GetAreaId();
             packet.Worldstates.emplace_back(WorldStates::WS_ENABLE, value);
-            packet.Worldstates.emplace_back(WorldStates::WS_HEALER_COUNT, healerCount);
-            player->SendDirectMessage(packet.Write());            
+            packet.Worldstates.emplace_back(WorldStates::WS_HEALER_COUNT, int32(GetLivingHealers().size()));
+            player.SendDirectMessage(packet.Write());
         }
 
-        void UpdateState()
+        void ClearState(Player& player)
         {
-            for (GuidSet::iterator itr = m_player_for_event.begin(); itr != m_player_for_event.end(); ++itr)
-                if (Player* player = sObjectAccessor->FindPlayer(*itr))
-                    player->SendUpdateWorldState(WorldStates::WS_HEALER_COUNT, healerCount);
+            player.RemoveAurasDueToSpell(SPELL_SHEN_HEALING);
+            SendState(player, 0);
         }
 
-        bool CheckPlayers()
+        void RemoveIneligibleParticipants()
         {
-            for (GuidSet::iterator itr = m_player_for_event.begin(); itr != m_player_for_event.end(); ++itr)
-                if (Player* player = sObjectAccessor->FindPlayer(*itr))
-                    if (player->IsAlive())
-                        return true;
-
-            return false;
+            for (auto participant = participants.begin(); participant != participants.end();)
+            {
+                Player* player = ObjectAccessor::GetPlayer(*me, participant->first);
+                if (player && CanParticipate(*player) && !participant->second->load(std::memory_order_acquire))
+                {
+                    ++participant;
+                    continue;
+                }
+                if (player)
+                    ClearState(*player);
+                participant = participants.erase(participant);
+            }
         }
 
         void UpdatePower()
         {
-            actualPower = (actualPower + healerCount <= 700) ? actualPower + healerCount: 700;
-            for (GuidSet::iterator itr = m_player_for_event.begin(); itr != m_player_for_event.end(); ++itr)
-                if (Player* player = sObjectAccessor->FindPlayer(*itr))
+            actualPower = std::min<uint16>(700, actualPower + uint16(GetLivingHealers().size()));
+            for (auto const& participant : participants)
+                if (Player* player = ObjectAccessor::GetPlayer(*me, participant.first))
                 {
-                    if (player->IsAlive())
+                    if (actualPower == 700)
+                        player->KilledMonsterCredit(NPC_SHEN_HEAL_CREDIT);
+                    else
                     {
-                        if (actualPower < 700) // IN_PROGRESS
-                        {
-                            if (!player->HasAura(SPELL_SHEN_HEALING))
-                                player->CastSpell(player, SPELL_SHEN_HEALING, true);
-
+                        if (!player->HasAura(SPELL_SHEN_HEALING))
+                            player->CastSpell(player, SPELL_SHEN_HEALING, true);
+                        if (player->HasAura(SPELL_SHEN_HEALING))
                             player->SetPower(POWER_ALTERNATE, actualPower);
-                        }
-                        else
-                        {
-                            if (player->HasAura(SPELL_SHEN_HEALING))
-                                player->RemoveAurasDueToSpell(SPELL_SHEN_HEALING);
-
-                            player->KilledMonsterCredit(NPC_SHEN_HEAL_CREDIT);
-                            SendState(player, 0);
-                            continue;
-                        }
                     }
-                    
                 }
-
-            if (actualPower >= 700)
-            {
-                m_player_for_event.clear();
+            if (actualPower == 700)
                 Reset();
-            }
         }
 
-        void SummonEnnemy()
+        std::vector<Creature*> GetLivingHealers()
         {
-            for(uint32 i = 0; i < 1; ++i)
-                me->SummonCreature(RAND(NPC_ENEMY_2, NPC_ENNEMY), ennemiesPositions[i], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000);
+            std::vector<Creature*> healers;
+            for (ObjectGuid const& guid : _summons)
+                if (guid.GetEntry() == NPC_HEALER_A || guid.GetEntry() == NPC_HEALER_H)
+                    if (Creature* healer = me->GetMap()->GetCreature(guid); healer && healer->IsAlive())
+                        healers.push_back(healer);
+            return healers;
+        }
+
+        size_t GetLivingEnemyCount()
+        {
+            return std::count_if(_summons.begin(), _summons.end(), [this](ObjectGuid const& guid)
+            {
+                if (guid.GetEntry() != NPC_ENEMY && guid.GetEntry() != NPC_ENEMY_2)
+                    return false;
+                auto enemy = me->GetMap()->GetCreature(guid);
+                return enemy && enemy->IsAlive();
+            });
+        }
+
+        void SummonAttacker()
+        {
+            me->SummonCreature(RAND(NPC_ENEMY_2, NPC_ENEMY), ennemiesPositions[0], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000);
         }
 
         void SummonHealer()
         {
-            Map* map = sMapMgr->CreateMap(975, NULL);
+            Map* map = sMapMgr->CreateMap(975, nullptr);
             if (!map)
                 return;
 
-            float posX = frand(228.0f, 270.0f);
-            float posY = frand(3949.0f, 3962.0f);
-
-            me->SummonCreature(RAND(NPC_HEALER_A, NPC_HEALER_H), posX, posY, map->GetHeight(me->GetPhases(), posX, posY, 100.0f), 1.37f, TEMPSUMMON_CORPSE_DESPAWN);
+            float x = frand(228.0f, 270.0f);
+            float y = frand(3949.0f, 3962.0f);
+            me->SummonCreature(RAND(NPC_HEALER_A, NPC_HEALER_H), x, y, map->GetHeight(me->GetPhases(), x, y, 100.0f), 1.37f, TEMPSUMMON_CORPSE_DESPAWN);
         }
 
-        void JustSummoned(Creature* summon)
+        void JustSummoned(Creature* summon) override
         {
             _summons.Summon(summon);
-
             switch (summon->GetEntry())
             {
                 case NPC_HEALER_A:
                 case NPC_HEALER_H:
-                     _events.RescheduleEvent(EVENT_SEND_PHASE, 1000);
-                    ++healerCount;
+                    _events.RescheduleEvent(EVENT_SEND_PHASE, 1000);
                     break;
-                case NPC_ENNEMY:
+                case NPC_ENEMY:
                 case NPC_ENEMY_2:
                     AttackHealers(summon);
-                    ++ennemiesCount;
                     break;
             }
         }
 
         void AttackHealers(Creature* summon)
         {
-            uint32 hAttack = urand(0, healerCount - 1);
-            uint32 i = 0;
-            for(SummonList::iterator itr = _summons.begin(); itr != _summons.end(); ++itr)
-            {
-                if ((*itr).GetEntry() == NPC_HEALER_A || (*itr).GetEntry() == NPC_HEALER_H)
-                {
-                    if (Creature* healer = me->GetMap()->GetCreature(*itr))
-                    {
-                        if (i == hAttack)
-                        {
-                            summon->JumpTo(healer, 20.0f);
-                            summon->AI()->AttackStart(healer);
-                        }
-
-                        summon->AddThreat(healer, 1000.0f);
-                        ++i;
-                    }
-                }
-            }
+            auto healers = GetLivingHealers();
+            if (healers.empty())
+                return;
+            Creature* target = healers[urand(0, uint32(healers.size() - 1))];
+            summon->JumpTo(target, 20.0f);
+            summon->AI()->AttackStart(target);
+            for (Creature* healer : healers)
+                summon->AddThreat(healer, 1000.0f);
         }
 
-        void SummonedCreatureDespawn(Creature* summon)
+        void SummonedCreatureDies(Creature* summon, Unit*) override
+        {
+            if (summon->GetEntry() == NPC_HEALER_A || summon->GetEntry() == NPC_HEALER_H)
+                _events.RescheduleEvent(EVENT_SEND_PHASE, 1000);
+        }
+
+        void SummonedCreatureDespawn(Creature* summon) override
         {
             _summons.Despawn(summon);
-
-            switch (summon->GetEntry())
-            {
-                case NPC_HEALER_A:
-                case NPC_HEALER_H:
-                    _events.RescheduleEvent(EVENT_SEND_PHASE, 1000);
-                    --healerCount;
-                    break;
-                case NPC_ENNEMY:
-                case NPC_ENEMY_2:
-                    --ennemiesCount;
-                    break;
-            }
+            if (summon->GetEntry() == NPC_HEALER_A || summon->GetEntry() == NPC_HEALER_H)
+                _events.RescheduleEvent(EVENT_SEND_PHASE, 1000);
         }
 
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) override
         {
+            RemoveIneligibleParticipants();
+            if (inProgress && participants.empty())
+            {
+                Reset();
+                return;
+            }
             _events.Update(diff);
-
             switch (_events.ExecuteEvent())
             {
                 case EVENT_CHECK_PLAYERS:
-                {
-                    bool playerNearWithQuest = CheckPlayers();
-
-                    if (inProgress && !playerNearWithQuest)
-                    {
-                        inProgress = false;
-                        Reset();
-                    }
-                    else if (!inProgress && playerNearWithQuest)
+                    if (!inProgress && !participants.empty())
                     {
                         sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0);
                         inProgress = true;
-                        _events.RescheduleEvent(EVENT_UPDATE_POWER,  UPDATE_POWER_TIMER);
-                        _events.RescheduleEvent(EVENT_SUMMON_ENNEMY, 6000);
-                        _events.RescheduleEvent(EVENT_SUMMON_HEALER, 5000);
+                        _events.ScheduleEvent(EVENT_UPDATE_POWER, UPDATE_POWER_TIMER);
+                        _events.ScheduleEvent(EVENT_SUMMON_ENNEMY, 6000);
+                        _events.ScheduleEvent(EVENT_SUMMON_HEALER, 5000);
                     }
-                    _events.RescheduleEvent(EVENT_CHECK_PLAYERS, 5000);
+                    _events.ScheduleEvent(EVENT_CHECK_PLAYERS, 5000);
                     break;
-                }
                 case EVENT_UPDATE_POWER:
                     UpdatePower();
-                    _events.RescheduleEvent(EVENT_UPDATE_POWER, UPDATE_POWER_TIMER);
+                    if (inProgress)
+                        _events.ScheduleEvent(EVENT_UPDATE_POWER, UPDATE_POWER_TIMER);
                     break;
                 case EVENT_SUMMON_ENNEMY:
-                    if (healerCount > 0 && ennemiesCount < 5 && ennemiesCount < healerCount*2)
-                        SummonEnnemy();
-                    _events.RescheduleEvent(EVENT_SUMMON_ENNEMY, 7000);
+                    if (size_t healers = GetLivingHealers().size(); healers && GetLivingEnemyCount() < std::min<size_t>(5, healers * 2))
+                        SummonAttacker();
+                    _events.ScheduleEvent(EVENT_SUMMON_ENNEMY, 7000);
                     break;
                 case EVENT_SUMMON_HEALER:
-                    if (healerCount < MAX_HEALER_COUNT)
+                    if (GetLivingHealers().size() < MAX_HEALER_COUNT)
                         SummonHealer();
-
-                    _events.RescheduleEvent(EVENT_SUMMON_HEALER, 12500);
+                    _events.ScheduleEvent(EVENT_SUMMON_HEALER, 12500);
                     break;
                 case EVENT_SEND_PHASE:
-                    UpdateState();
+                {
+                    uint32 healerCount = uint32(GetLivingHealers().size());
+                    for (auto const& participant : participants)
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, participant.first))
+                            player->SendUpdateWorldState(WorldStates::WS_HEALER_COUNT, healerCount);
                     break;
+                }
             }
         }
     };
