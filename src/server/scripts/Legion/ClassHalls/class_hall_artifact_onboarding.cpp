@@ -164,6 +164,27 @@ namespace
             if (player->CanTakeQuest(quest, false) && player->CanAddQuest(quest, false))
                 player->AddQuestAndCheckCompletion(quest, nullptr);
     }
+
+    void ResumeFuZanRiddles(Player* player)
+    {
+        // These three parallel quests have the same rewarded introduction.
+        // Offer the outstanding objectives on an explicit return to Ponshu.
+        Creature* ponshu = player->FindNearestCreature(100438, INTERACTION_DISTANCE);
+        if (!ponshu || !player->GetNPCIfCanInteractWith(ponshu->GetGUID(), UNIT_NPC_FLAG_GOSSIP))
+            return;
+
+        for (uint32 questId : { 42766u, 42767u, 42768u })
+        {
+            Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
+            if (!quest || !player->CanTakeQuest(quest, false))
+                continue;
+
+            if (!player->CanAddQuest(quest, true))
+                break;
+
+            player->AddQuestAndCheckCompletion(quest, nullptr);
+        }
+    }
 }
 
 class class_hall_artifact_onboarding : public PlayerScript
@@ -238,7 +259,10 @@ public:
                 continue;
 
             CreditArtifactSelectionQuest(player);
-            StartArtifactQuest(player, route.QuestId);
+            if (route.QuestId == 42762 && player->IsQuestRewarded(route.QuestId))
+                ResumeFuZanRiddles(player);
+            else
+                StartArtifactQuest(player, route.QuestId);
             return;
         }
     }
