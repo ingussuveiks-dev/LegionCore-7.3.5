@@ -1,6 +1,9 @@
 #define LOST_ARMY_NATIVE_SUPPORT_ONLY
 #include "LostArmyLootNative.cpp"
 
+#include "GossipData.h"
+#include "GossipDef.h"
+#include "NPCPackets.h"
 #include "QuestPackets.h"
 #include "ScriptsData.h"
 #include "Spell.h"
@@ -10,15 +13,26 @@ void AddSC_gilneas();
 namespace
 {
 constexpr uint32 Battle = 24904;
+constexpr uint32 PushThemOut = 24676;
+constexpr uint32 BattlePhase = 69485;
+constexpr uint32 KrennanMenu = 11061;
 constexpr uint32 Rapier = 50334;
 constexpr uint32 Inspire = 71388;
+
+struct BattlePet : LootPet
+{
+    BattlePet(LootPlayer& owner, Map& map) : LootPet(owner, map)
+    {
+        m_ControlledByPlayer = true;
+    }
+};
 
 void LoadBattleInputs(bool baseline)
 {
     auto row = WorldDatabase.Query(
 #include "NativeGilneasRapier.inc"
     );
-    Require(row && row->GetRowCount() == 3, "Missing the actual Worgen phase, prerequisite or battle quest");
+    Require(row && row->GetRowCount() == 4, "Missing the actual Worgen phase, prerequisite or battle quest");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -29,25 +43,36 @@ void LoadBattleInputs(bool baseline)
         const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates()).emplace(quest->Id, quest);
     } while (row->NextRow());
 
-    auto battle = quests[Battle];
-    auto addon = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
+    auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID=24904");
-    Require(bool(addon) && addon->Fetch()[4].GetUInt32() == 24676, "Missing the original battle prerequisite");
-    battle->LoadQuestTemplateAddon(addon->Fetch());
-    battle->prevQuests.push_back(battle->PrevQuestID);
-    auto objective = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID=24904");
-    Require(objective && objective->GetRowCount() == 1 && objective->Fetch()[4].GetUInt32() == 38854 &&
-        objective->Fetch()[5].GetUInt32() == 1, "The real victory objective is required");
-    battle->LoadQuestObjective(objective->Fetch());
-    battle->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL);
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24904)");
+    Require(addons && addons->GetRowCount() == 2, "Missing the original battle prerequisites");
+    do
+    {
+        auto fields = addons->Fetch();
+        auto quest = quests[fields[0].GetUInt32()];
+        quest->LoadQuestTemplateAddon(fields);
+        quest->prevQuests.push_back(quest->PrevQuestID);
+    } while (addons->NextRow());
+    Require(quests[PushThemOut]->PrevQuestID == 24575 && quests[Battle]->PrevQuestID == PushThemOut,
+        "The original Liberation Day and Push Them Out requirements must remain in order");
+    auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
+        "FROM quest_objectives WHERE QuestID IN(24676,24904)");
+    Require(objectives && objectives->GetRowCount() == 4, "The original combat and victory objectives are required");
+    do
+    {
+        auto fields = objectives->Fetch();
+        auto quest = quests[fields[1].GetUInt32()];
+        quest->LoadQuestObjective(fields);
+        quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL);
+    } while (objectives->NextRow());
 
     sObjectMgr->LoadItemTemplates();
     sObjectMgr->LoadItemTemplateAddon();
     sObjectMgr->LoadPlayerInfo();
     sObjectMgr->LoadEquipmentTemplates();
     sSpellMgr->LoadSpellProcEvents();
+    sSpellMgr->LoadSpellPrcoCheck();
     sSpellMgr->LoadSpellProcs();
     auto item = sObjectMgr->GetItemTemplate(Rapier);
     auto spell = sSpellMgr->GetSpellInfo(Inspire);
@@ -58,15 +83,26 @@ void LoadBattleInputs(bool baseline)
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN(148108,148116,148208,149656,149660)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest=24904");
+        "WHERE guid IN(148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24904)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24904)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID IN(15377)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=11061");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area "
         "WHERE (spell=68483 AND area=4714 AND quest_start=14386) OR spell=71388 OR (spell=69485 AND quest_start=24676)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceEntry=71388 AND SourceTypeOrReferenceId=13");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id=71388");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_loot_template AS SELECT * FROM legion_world.creature_loot_template "
+        "WHERE Entry IN(37685,37686,37692)");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
+    Require((LootTemplates_Creature.*Access(LoadLootTableTag{}))() > 0, "Missing the prerequisite enemies' original loot data");
     sObjectMgr->LoadCreatures();
     sQuestDataStore->LoadCreatureQuestRelations();
+    sQuestDataStore->LoadCreatureInvolvedRelations();
+    sObjectMgr->LoadNPCText();
+    sGossipDataStore->LoadGossipMenu();
+    sGossipDataStore->LoadGossipMenuItems();
     sSpellMgr->LoadSpellAreas();
     if (!baseline)
     {
@@ -111,6 +147,86 @@ void UseRapier(LootPlayer& player, Position const& target)
     Tick(player, 600);
 }
 
+void AcceptAtLorna(LootPlayer& player, Creature const& lorna, uint32 quest)
+{
+    MoveForRapier(player, lorna.GetPosition());
+    WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
+    accept.QuestGiverGUID = lorna.GetGUID();
+    accept.QuestID = quest;
+    player.GetSession()->HandleQuestGiverAcceptQuest(accept);
+}
+
+void FinishPushThemOut(LootPlayer& player, Creature const& lorna)
+{
+    AcceptAtLorna(player, lorna, Battle);
+    Require(player.GetQuestStatus(Battle) == QUEST_STATUS_NONE && !player.GetItemByEntry(Rapier),
+        "The Battle cannot start before Push Them Out is rewarded");
+    AcceptAtLorna(player, lorna, PushThemOut);
+    Require(player.GetQuestStatus(PushThemOut) == QUEST_STATUS_INCOMPLETE && !player.HasAura(BattlePhase),
+        "Lorna should admit Push Them Out without activating the battle phase");
+
+    auto& map = *player.GetMap();
+    auto defeat = [&](uint32 entry, uint64 guid, bool petFinalBlow)
+    {
+        auto& enemy = BattleActor(map, entry, guid);
+        MoveForRapier(player, enemy.GetPosition());
+        Require(player.InSamePhase(&enemy) && player.IsValidAttackTarget(&enemy), "The real prerequisite enemy must be reachable");
+        if (petFinalBlow)
+        {
+            BattlePet pet(player, map);
+            pet.SetPhaseMask(player.GetPhaseMask(), false);
+            pet.DealDamage(&enemy, uint32(enemy.GetMaxHealth()), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+        }
+        else
+            player.DealDamage(&enemy, uint32(enemy.GetMaxHealth()), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+        Tick(player, 200);
+        Require(enemy.isDead(false), "A real prerequisite enemy did not die");
+    };
+    defeat(37692, 148209, false);
+    defeat(37692, 148213, true);
+    defeat(37692, 148228, false);
+    defeat(37692, 148229, true);
+    defeat(37686, 148225, false);
+    Require(player.GetQuestStatus(PushThemOut) == QUEST_STATUS_INCOMPLETE,
+        "Four infantry and Cornell must still require Valnov");
+    defeat(37685, 149706, true);
+    Require(player.GetQuestStatus(PushThemOut) == QUEST_STATUS_COMPLETE && !player.HasAura(BattlePhase),
+        "All six real deaths must complete Push Them Out before its reward applies the next phase");
+
+    MoveForRapier(player, lorna.GetPosition());
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestGiverGUID = lorna.GetGUID();
+    reward.QuestID = PushThemOut;
+    reward.ItemChoiceID = 0;
+    player.GetSession()->HandleQuestGiverChooseReward(reward);
+    MoveForRapier(player, lorna.GetPosition());
+    Require(player.GetQuestRewardStatus(PushThemOut) && player.HasAura(BattlePhase),
+        "Lorna's real reward must open the native battle phase");
+    std::cout << "PASS Push Them Out admits six real player or pet kills, rewards at Lorna and opens the battle phase\n";
+}
+
+void ReportBattleAdmission(LootPlayer& player, Creature& krennan)
+{
+    MoveForRapier(player, krennan.GetPosition());
+    Require(player.GetAreaId() == 4842 && player.InSamePhase(&krennan) && player.IsWithinLOSInMap(&krennan),
+        "Krennan's original Livery actor must be visible after the prerequisite");
+    auto& map = *player.GetMap();
+    auto& liam = BattleActor(map, 38218, 148114);
+    auto& almyra = BattleActor(map, 38466, 148102);
+    auto& myriam = BattleActor(map, 38465, 148103);
+    auto bounds = sGossipDataStore->GetGossipMenuItemsMapBounds(KrennanMenu);
+    Require(std::distance(bounds.first, bounds.second) == 1 && bounds.first->second.OptionBroadcastTextID == 38484,
+        "The original Krennan option is required in the catalog");
+
+    WorldPackets::NPC::Hello hello{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+    hello.Unit = krennan.GetGUID();
+    player.GetSession()->HandleGossipHelloOpcode(hello);
+    auto& menu = player.PlayerTalkClass->GetGossipMenu();
+    std::cout << "OBSERVED Krennan menu=" << menu.GetMenuId() << " choices=" << menu.GetMenuItemCount()
+        << " Liam distance=" << krennan.GetDistance(&liam) << " Liam phase=" << player.InSamePhase(&liam)
+        << " Almyra phase=" << player.InSamePhase(&almyra) << " Myriam phase=" << player.InSamePhase(&myriam) << '\n';
+}
+
 void CheckRapier(bool baseline)
 {
     Map map(654, 832, 0, DIFFICULTY_NONE);
@@ -126,17 +242,16 @@ void CheckRapier(bool baseline)
     player.InitDisplayIds();
     player.SetLevel(15);
     player.SetRewardedQuest(14386);
-    player.SetRewardedQuest(24676);
+    player.SetRewardedQuest(24575);
     MoveForRapier(player, lorna.GetPosition());
 
     auto spell = sSpellMgr->GetSpellInfo(Inspire);
     auto here = [&]() { return spell->CheckLocation(map.GetId(), player.GetZoneId(), player.GetAreaId(), &player); };
     Require(here() == SPELL_FAILED_INCORRECT_AREA, "An unaccepted battle must not admit the rapier");
-    WorldPackets::Quest::QuestGiverAcceptQuest accept{WorldPacket(CMSG_QUEST_GIVER_ACCEPT_QUEST)};
-    accept.QuestGiverGUID = lorna.GetGUID();
-    accept.QuestID = Battle;
-    session->HandleQuestGiverAcceptQuest(accept);
+    FinishPushThemOut(player, lorna);
+    AcceptAtLorna(player, lorna, Battle);
     Require(player.GetQuestStatus(Battle) == QUEST_STATUS_INCOMPLETE && player.GetItemByEntry(Rapier), "Lorna did not give the actual quest and rapier");
+    ReportBattleAdmission(player, unrelated);
 
     MoveForRapier(player, militia.GetPosition());
     if (baseline)
@@ -192,8 +307,7 @@ void CheckRapier(bool baseline)
     session->HandleQuestLogRemoveQuest(abandon);
     Require(here() == SPELL_FAILED_INCORRECT_AREA && !player.GetItemByEntry(Rapier),
         "Abandoning the battle should clear the item and close casting");
-    MoveForRapier(player, lorna.GetPosition());
-    session->HandleQuestGiverAcceptQuest(accept);
+    AcceptAtLorna(player, lorna, Battle);
     Require(player.GetQuestStatus(Battle) == QUEST_STATUS_INCOMPLETE && player.GetItemByEntry(Rapier) && here() == SPELL_CAST_OK,
         "The legitimate retry must receive a rapier that can be used normally");
     std::cout << "PASS original rapier effects at Livery and in the city, eligibility and phase gates, complete, abandon and retry\n";
@@ -221,6 +335,7 @@ int main(int argc, char** argv)
         auto baseline = sConfigMgr->GetBoolDefault("NativeGilneasRapier.Baseline", false);
         LoadBattleInputs(baseline);
         HashMapHolder<Player>::SetSize(32);
+        HashMapHolder<Pet>::SetSize(32);
         GameTime::UpdateGameTimers();
         CheckRapier(baseline);
         CharacterDatabase.Close();

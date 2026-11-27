@@ -521,7 +521,7 @@ if($GilneasFlank){
 }
 if($GilneasRapier){
  $probeSource = "$PSScriptRoot/GilneasRapierNative.cpp"
- [IO.File]::WriteAllText("$out/NativeGilneasRapier.inc",$query+' " WHERE ID IN(14386,24676,24904)"')
+ [IO.File]::WriteAllText("$out/NativeGilneasRapier.inc",$query+' " WHERE ID IN(14386,24575,24676,24904)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($Collector){
