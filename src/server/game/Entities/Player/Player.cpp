@@ -4300,6 +4300,10 @@ SpellInfo const* Player::GetCastSpellInfo(SpellInfo const* spellInfo, uint32 new
 
 void Player::AddOverrideSpell(uint32 overridenSpellId, uint32 newSpellId)
 {
+    // Shimmer is available to all mages. Its Displacement override belongs to Arcane.
+    if (overridenSpellId == 195676 && newSpellId == 212801 && GetSpecializationId() != SPEC_MAGE_ARCANE)
+        return;
+
     m_overrideSpells[overridenSpellId].insert(newSpellId);
     m_spellOverrides[newSpellId].insert(overridenSpellId);
 }
@@ -4823,6 +4827,10 @@ bool Player::AddPvPTalent(PvpTalentEntry const* talent, uint8 index)
 
 bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent, bool disabled, bool loading /*= false*/, uint32 fromSkill /*= 0*/, bool battlePet /*= false*/)
 {
+    // SpellLearnSpell links Shimmer to Displacement without a specialization field.
+    if (spellId == 212801 && GetSpecializationId() != SPEC_MAGE_ARCANE)
+        return false;
+
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
     {
