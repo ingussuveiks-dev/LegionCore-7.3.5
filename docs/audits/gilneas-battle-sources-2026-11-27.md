@@ -1,0 +1,9 @@
+# The Battle for Gilneas City (24904)
+
+Kvests sākas pie Lorna Crowley `37783` pēc `24676` un prasa vienu `38854` ieskaiti. Finiša saņēmējs ir Lorna `38611`, no kuras sākas `24902`. Darba Krennan `38553/149660` stāv Livery Outpost, un datubāzē ir sākuma dialoga `11061` ieraksts ar `38484`. Aktiera veidne neizmanto šo izvēlni un tai nav cīņas skripta. Sister Almyra `38466/148102` ir Livery Outpost, kamēr Prince Liam `38218/148114` un Gorerot `38331/148113` stāv Gilneas City. Viena gatava dalībnieku grupa pie Krennan no šiem novietojumiem neveidojas.
+
+26972 `SpellEffect.db2` rāda `72349` ar vienu personiskas ieskaites efektu `90`, mērķa ierakstu `38854` un `TARGET_UNIT_SRC_AREA_ENTRY`. Tas apstiprina īsto fināla ieskaites burvestību. Tāpat katalogā ir oriģinālie `72113`, `72115`, `72116`, `72361` un `72384` fināla efekti. Darba datos nav šo burvestību izsaukuma no kaujas, `72349` mērķu nosacījuma vai pārbaudīta Dalībnieku saraksta.
+
+Vietējā DestinyCore revīzijā `2d631f4e79` Krennan izvēlne sāk cīņu, Almyra koordinē grupas, Liam un pārējie vadītāji iziet viļņus, un Sylvanas finālā izsauc `72349`. Atsauces skripts papildus tieši izsniedz `38854` visiem tuvākajiem aktīvā kvesta spēlētājiem. Legion klienta efekts pats satur `38854`, tāpēc adaptācijā jānosaka faktiskie cīņas dalībnieki un jāpārbauda vienreizēja ieskaite no oriģinālā efekta. Darba `waypoint_data` nav atsauces `3846901`, `3847401` vai pārbaudīto Liam, Krennan un Almyra ceļu. Rapierim `50334/71388` joprojām trūkst paredzēto sabiedroto mērķu atlases un abiem kvesta statusa laukiem ir pretrunīgas vērtības.
+
+Nākamais pārbaudāmais posms sākas ar `38553/11061` darbību un īstu dalībnieku uzņemšanu. Jāsalīdzina maršrutu punkti, izsaucamo aktieru izvietojumi, viļņu uzvaras noteikumi un fināla secība. Jāpārbauda atkārtota saruna, iziešana un atgriešanās, atmešana, mājdzīvnieka pēdējais sitiens un vienlaicīgi mēģinājumi. Šajā pārskatā darba Gilneas dati netika mainīti.

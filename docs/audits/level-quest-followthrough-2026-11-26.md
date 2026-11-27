@@ -62,3 +62,11 @@ Pārbaudītas 12 `On The Mend` ķēdes un atjaunoti desmit petu apmācības pied
 ## Kvesta burvestību nosacījumi
 
 Izvietoti `14005` Vengeance of Elune darbību joslas un `24452` Profitability Scouting ierīces labojumi. Atkārtotā darba atlase pārbaudīja 4 865 ieslēgtus kvestus un 177 skriptu nosaukumus Release failā. `24904` Gilneas City revīzijā identificēts bloķēts rapieris, trūkstošs cīņas sākuma skripts un neizsekota fināla ieskaite. Abu izvietoto labojumu izspēle klientā paliek atvērta. [Burvestību nosacījumu audits](low-level-quest-auras-2026-11-27.md)
+
+## Gilneas fināls un laupījuma avoti
+
+Gilneas `24904` klienta datos atrasta oriģinālā `72349` fināla burvestība, kas satur `38854` ieskaiti. Tās izsaukums, viļņu maršruti un dalībnieku atlase darba versijā joprojām trūkst. [Gilneas avoti](gilneas-battle-sources-2026-11-27.md)
+
+`24972` Vital Intelligence pats izsniedz vienu `2885` dokumentu no Sarvis pirms nodošanas Simmer. Neizsekotais `1667` laupījuma ieraksts nav prasība šajā piegādes kvestā. `29482` Transmutation Master prasa Alchemy `475` un četrus `72104` transmutācijas materiālus, lai gan kvestam ir zems nominālais minimums.
+
+`2499` Oakenscowl atkal ir atrodams Teldrassil. `29401/29412` Blown Away atjaunoti 38 balonu novietojumi, un svešs spēlētājs nevar iztukšot balonu. Servera pārbaudē savākti prasītie priekšmeti un pārbaudīta to izņemšana pēc atmešanas. [Novietojumu un laupījuma audits](low-level-world-spawns-2026-11-27.md)
