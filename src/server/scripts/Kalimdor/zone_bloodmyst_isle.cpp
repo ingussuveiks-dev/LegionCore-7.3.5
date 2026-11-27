@@ -39,6 +39,7 @@ EndContentData */
 #include "QuestItemObjectUse.h"
 #include "SmartAI.h"
 #include "Group.h"
+#include <array>
 
 /*######
 ## mob_webbed_creature
@@ -330,6 +331,132 @@ public:
     };
 
     GameObjectAI* GetAI(GameObject* cage) const override { return new CageAI(cage); }
+};
+
+namespace
+{
+constexpr uint32 SunGateQuest = 9740;
+constexpr uint32 SunGateEntry = 182026;
+constexpr uint32 SunhawkControllerEntry = 184850;
+constexpr uint32 SunhawkStabilizerEntry = 17886;
+
+struct SunhawkController
+{
+    uint64 ObjectSpawn;
+    uint64 StabilizerSpawn;
+};
+
+constexpr std::array<SunhawkController, 4> SunhawkControllers =
+{{
+    {4415, 17361},
+    {4416, 17360},
+    {4417, 17359},
+    {4418, 17362}
+}};
+
+bool IsSunGate(GameObject const& object)
+{
+    return object.GetMapId() == 530 && object.GetEntry() == SunGateEntry && object.GetDBTableGUIDLow() == 13526;
+}
+
+SunhawkController const* FindSunhawkController(GameObject const& object)
+{
+    if (object.GetMapId() != 530 || object.GetEntry() != SunhawkControllerEntry)
+        return nullptr;
+
+    for (auto const& controller : SunhawkControllers)
+        if (controller.ObjectSpawn == object.GetDBTableGUIDLow())
+            return &controller;
+
+    return nullptr;
+}
+
+bool AreSunhawkControllersDown(GameObject& gate)
+{
+    std::list<GameObject*> objects;
+    gate.GetGameObjectListWithEntryInGrid(objects, SunhawkControllerEntry, 60.0f);
+
+    std::array<bool, SunhawkControllers.size()> disabled{};
+    for (GameObject const* object : objects)
+    {
+        auto const* controller = FindSunhawkController(*object);
+        if (controller && gate.InSamePhase(object) && object->IsInWorld() && !object->IsPreDelete() && !object->isSpawned())
+            disabled[controller - SunhawkControllers.data()] = true;
+    }
+    return std::all_of(disabled.begin(), disabled.end(), [](bool down) { return down; });
+}
+}
+
+class go_bloodmyst_sun_gate : public GameObjectScript
+{
+public:
+    go_bloodmyst_sun_gate() : GameObjectScript("go_bloodmyst_sun_gate") { }
+
+    struct SunGateAI : GameObjectAI
+    {
+        explicit SunGateAI(GameObject* object) : GameObjectAI(object), gate(IsSunGate(*object)), controller(FindSunhawkController(*object)) { }
+
+        bool GossipUse(Player* player) override
+        {
+            if (!gate && !controller)
+                return false;
+
+            if (!player || !player->IsAlive() || player->GetQuestStatus(SunGateQuest) != QUEST_STATUS_INCOMPLETE ||
+                !go->IsWithinDistInMap(player, go->GetInteractionDistance()) || !go->IsWithinLOSInMap(player))
+                return true;
+
+            if (!gate)
+                return false;
+
+            return RefreshGateLock();
+        }
+
+        void OnStateChanged(uint32 state, Unit* user) override
+        {
+            if (state != GO_ACTIVATED || !controller || !user || !user->IsPlayer())
+                return;
+
+            std::list<Creature*> stabilizers;
+            GetCreatureListWithEntryInGrid(stabilizers, go, SunhawkStabilizerEntry, 5.0f);
+            for (Creature* stabilizer : stabilizers)
+                if (stabilizer->GetDBTableGUIDLow() == controller->StabilizerSpawn && stabilizer->IsAlive() && go->InSamePhase(stabilizer))
+                {
+                    stabilizer->Kill(stabilizer);
+                    break;
+                }
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (controller && go->getLootState() == GO_ACTIVATED)
+                go->SetLootState(GO_JUST_DEACTIVATED);
+
+            if (gate)
+            {
+                if (diff >= lockCheck)
+                {
+                    RefreshGateLock();
+                    lockCheck = IN_MILLISECONDS;
+                }
+                else
+                    lockCheck -= diff;
+            }
+        }
+
+    private:
+        bool RefreshGateLock()
+        {
+            bool const locked = !AreSunhawkControllersDown(*go);
+            go->ApplyModFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE, locked);
+            return locked;
+        }
+
+        bool const gate;
+        SunhawkController const* const controller;
+        uint32 lockCheck = 0;
+    };
+
+    GameObjectAI* GetAI(GameObject* object) const override { return new SunGateAI(object); }
 };
 
 /*######
@@ -1064,6 +1191,7 @@ void AddSC_bloodmyst_isle()
     new npc_captured_sunhawk_agent();
     new npc_princess_stillpine();
     new go_princess_stillpines_cage();
+    new go_bloodmyst_sun_gate();
     new npc_bristlelimb_high_chief();
     new npc_bristlelimb_camp_member();
     new npc_sironas();
