@@ -21,6 +21,7 @@
 #include "Vehicle.h"
 #include "CharmInfo.h"
 #include "QuestItemObjectUse.h"
+#include "SpellScript.h"
 
 //Phase 1
 /*######
@@ -3125,8 +3126,26 @@ public:
     };
 };
 
+class spell_gilneas_patriots_rapier : public SpellScript
+{
+    PrepareSpellScript(spell_gilneas_patriots_rapier);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        auto caster = GetCaster();
+        targets.remove_if([caster](WorldObject const* target) { return !caster->InSamePhase(target); });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_gilneas_patriots_rapier::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_gilneas_patriots_rapier::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENTRY);
+    }
+};
+
 void AddSC_gilneas()
 {
+    RegisterSpellScript(spell_gilneas_patriots_rapier);
     new npc_gilneas_city_guard_phase1();
     new npc_prince_liam_greymane_phase1();
     new npc_gilneas_city_guard_phase2();
