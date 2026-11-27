@@ -1,0 +1,7 @@
+# Ritual Focus selection and ritual progress
+
+The user confirmed that the upgraded server showed the pink focus and four blue crystals. The center-arrival objective was complete. The focus had no click cursor. Live template `108855` had `npcflag=16777216` for spell-click and `unit_flags=33554944`, which includes `UNIT_FLAG_NOT_SELECTABLE` (`0x02000000`). The template has no trigger extra flag that would reapply that bit at spawn. The SQL removes exactly the selectability bit from that template while retaining its remaining flags, native spells and step gates.
+
+The normal first click uses `216529`, which publishes event `51386`; subsequent clicks use `216215`. Both channel paths trigger `216223` on ticks, which publishes event `51389`. Scenario root `48466` accumulates that event with weight 3 toward the threshold of 100 and does not cap the leaf at three ticks. The existing six wave lists `10809700` through `10809705` remain scheduled by `107691`, gated at stage index 3, first after 10 seconds and then every 20 seconds. The ordinary wave deaths have no progress-event action. The matching quest sequence describes interrupting channeling to fight and returning to the focus. Nothing was added to grant kill or stage credit. [The Mage Hunter](https://warcraft.wiki.gg/wiki/The_Mage_Hunter)
+
+The click failure was verified in the client before the fix. The corrected click, channel, demon waves, progress completion and transfer still need the user's next in-game run. No separate automated gameplay test or startup was run.
