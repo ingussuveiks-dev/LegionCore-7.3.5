@@ -38,6 +38,7 @@
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include "MapManager.h"
+#include "MardumInvasionBanner.h"
 #include "MiscPackets.h"
 #include "MotionMaster.h"
 #include "ObjectMgr.h"
@@ -3431,8 +3432,12 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
         return;
 
     bool campObject = IsAridenCampObject(this);
-    bool const personalFlags = campObject || IsQuestGrainSack(*this);
-    bool const unavailable = (campObject && !CanUseAridenCampObject(this, target)) || GranaryGrainSack::IsUnavailable(*this, target);
+    bool const invasionBanner = MardumInvasionBanner::IsBanner(*this);
+    bool const personalFlags = campObject || IsQuestGrainSack(*this) || invasionBanner;
+    bool const bannerUsed = invasionBanner && (target->GetQuestRewardStatus(MardumInvasionBanner::Quest) ||
+        target->GetQuestObjectiveData(MardumInvasionBanner::Quest, GetEntry()) > 0);
+    bool const unavailable = (campObject && !CanUseAridenCampObject(this, target)) ||
+        GranaryGrainSack::IsUnavailable(*this, target) || bannerUsed;
     bool forcedFlags = personalFlags || (GetGoType() == GAMEOBJECT_TYPE_CHEST && GetGOInfo()->chest.usegrouplootrules && HasLootRecipient());
     bool targetIsGM = target->isGameMaster();
 

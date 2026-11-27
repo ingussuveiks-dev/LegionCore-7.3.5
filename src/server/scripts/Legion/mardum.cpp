@@ -3,6 +3,7 @@
 #include "MapManager.h"
 #include "ScriptMgr.h"
 #include "GameObjectAI.h"
+#include "MardumInvasionBanner.h"
 #include "SpellAuraEffects.h"
 
 class sceneTrigger_dh_init : public SceneTriggerScript
@@ -51,18 +52,11 @@ public:
 
         enum data
         {
-            MAP_MARDUM = 1481,
-            QUEST_THE_INVASION_BEGINS = 40077,
             DEMON_KILL_CREDIT = 98486,
             REQUIRED_DEMONS = 15,
             OPEN_BANNER = 6477,
             SCENE = 191677,
         };
-
-        bool IsInvasionBanner() const
-        {
-            return go->GetMapId() == MAP_MARDUM && go->GetDBTableGUIDLow() == 131210;
-        }
 
         bool CanUseBanner(Player* player) const
         {
@@ -70,14 +64,14 @@ public:
                 !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) &&
                 go->InSamePhase(player) && player->HaveAtClient(go) &&
                 go->IsWithinDistInMap(player, go->GetInteractionDistance()) && go->IsWithinLOSInMap(player) &&
-                player->GetQuestStatus(QUEST_THE_INVASION_BEGINS) == QUEST_STATUS_INCOMPLETE &&
-                player->GetQuestObjectiveData(QUEST_THE_INVASION_BEGINS, DEMON_KILL_CREDIT) >= REQUIRED_DEMONS &&
-                player->GetQuestObjectiveData(QUEST_THE_INVASION_BEGINS, go->GetEntry()) == 0;
+                player->GetQuestStatus(MardumInvasionBanner::Quest) == QUEST_STATUS_INCOMPLETE &&
+                player->GetQuestObjectiveData(MardumInvasionBanner::Quest, DEMON_KILL_CREDIT) >= REQUIRED_DEMONS &&
+                player->GetQuestObjectiveData(MardumInvasionBanner::Quest, go->GetEntry()) == 0;
         }
 
         bool GossipHello(Player* player, bool isUse) override
         {
-            if (isUse || !IsInvasionBanner())
+            if (isUse || !MardumInvasionBanner::IsBanner(*go))
                 return false;
 
             // The interaction report can arrive without a separate use. Start the real Lock 93 spell.
@@ -92,7 +86,7 @@ public:
 
         bool GossipUse(Player* player) override
         {
-            if (!IsInvasionBanner())
+            if (!MardumInvasionBanner::IsBanner(*go))
                 return false;
 
             if (!CanUseBanner(player))
@@ -100,8 +94,11 @@ public:
 
             // This shared goober has a personal scene. Keep its state available to other players.
             player->KillCreditGO(go->GetEntry(), go->GetGUID());
-            if (player->GetQuestObjectiveData(QUEST_THE_INVASION_BEGINS, go->GetEntry()) > 0)
+            if (player->GetQuestObjectiveData(MardumInvasionBanner::Quest, go->GetEntry()) > 0)
+            {
+                go->SendUpdateToPlayer(player);
                 player->CastSpell(player, SCENE, true);
+            }
             return true;
         }
     };
