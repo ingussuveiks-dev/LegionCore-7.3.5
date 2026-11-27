@@ -39452,9 +39452,9 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     if (!playerChoice)
         return;
 
-    // Odyn, Calydus and Emmarel offer only eligible, unfinished acquisition routes.
+    // These artifact choices offer only eligible, unfinished acquisition routes.
     // Other choice-condition data has not received this content audit.
-    if ((choiceId == 236 || choiceId == 245 || choiceId == 240 || choiceId == 242) && !sConditionMgr->IsObjectMeetToConditions(this,
+    if ((choiceId == 236 || choiceId == 245 || choiceId == 240 || choiceId == 242 || choiceId == 265) && !sConditionMgr->IsObjectMeetToConditions(this,
         sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))
         return;
 
@@ -39484,7 +39484,7 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
                 continue;
         }
 
-        if ((choiceId == 236 || choiceId == 245 || choiceId == 240 || choiceId == 242) && !sConditionMgr->IsObjectMeetToConditions(this,
+        if ((choiceId == 236 || choiceId == 245 || choiceId == 240 || choiceId == 242 || choiceId == 265) && !sConditionMgr->IsObjectMeetToConditions(this,
             sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
             continue;
 
@@ -39573,8 +39573,8 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     }
 
     // A retry or completed collection may have no remaining eligible route.
-    // Never display an empty Warrior or Hunter artifact selection frame.
-    if ((choiceId == 236 || choiceId == 240 || choiceId == 242) && displayPlayerChoice.Responses.empty())
+    // Suppress the empty selection frame for these artifact menus.
+    if ((choiceId == 236 || choiceId == 240 || choiceId == 242 || choiceId == 265) && displayPlayerChoice.Responses.empty())
         return;
     SendDirectMessage(displayPlayerChoice.Write());
 }
