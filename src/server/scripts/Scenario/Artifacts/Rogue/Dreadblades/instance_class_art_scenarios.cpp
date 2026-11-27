@@ -353,6 +353,17 @@ struct instance_faronaar_mage : public InstanceScript
     void OnPlayerLeave(Player* player) override { _ritual.Leave(*player); }
     void Update(uint32 diff) override { _ritual.Update(*instance, diff); }
 
+    uint32 GetData(uint32 type) const override
+    {
+        return type == FaronaarRitual::FocusReadyData ? _ritual.IsFocusReady() : InstanceScript::GetData(type);
+    }
+
+    void SetData(uint32 type, uint32 value) override
+    {
+        if (type == FaronaarRitual::FocusReadyData && value == 1)
+            _ritual.EnableFocus(*instance);
+    }
+
     WorldLocation loc_res_pla;
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
