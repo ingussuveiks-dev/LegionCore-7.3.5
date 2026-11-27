@@ -13,6 +13,7 @@
 #include <array>
 #include <cmath>
 #include <map>
+#include <set>
 
 namespace FaronaarRitual
 {
@@ -25,6 +26,7 @@ constexpr uint32 RitualFocus = 108855;
 constexpr uint32 ManaGem = 108854;
 constexpr uint32 PortalVisual = 214695;
 constexpr uint32 RealmTransfer = 214730;
+constexpr uint32 ShowdownIntro = 214758;
 constexpr uint32 RitualOverride = 214607;
 constexpr uint32 CenterReachedTree = 48464;
 constexpr uint32 AltarStep = 2;
@@ -220,7 +222,7 @@ private:
     {
         Creature* portal = map.GetCreature(_portalEmitter);
         SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(RealmTransfer);
-        if (!portal || !portal->HasAura(PortalVisual) || !destination || destination->target_mapId != MapId)
+        if (!destination || destination->target_mapId != MapId)
             return;
 
         for (auto const& reference : map.GetPlayers())
@@ -233,10 +235,15 @@ private:
             {
                 player->RemoveAurasDueToSpell(RitualOverride);
                 _transfers.erase(player->GetGUID());
+                if (_showdownIntroduced.insert(player->GetGUID()).second &&
+                    player->CastSpell(player, ShowdownIntro, true) != SPELL_CAST_OK)
+                    TC_LOG_ERROR("scripts", "The Mage Hunter: could not start Balaadur's reveal for player %u in instance %u",
+                        player->GetGUIDLow(), map.GetInstanceId());
                 continue;
             }
 
-            if (!IsAtAltar(*player) || !player->InSamePhase(portal) || player->GetVehicle() || player->isInFlight())
+            if (!portal || !portal->HasAura(PortalVisual) || !IsAtAltar(*player) ||
+                !player->InSamePhase(portal) || player->GetVehicle() || player->isInFlight())
                 continue;
 
             PendingTransfer& transfer = _transfers[player->GetGUID()];
@@ -274,6 +281,7 @@ private:
     std::array<ObjectGuid, 4> _gems;
     std::map<ObjectGuid, PendingTransfer> _transfers;
     std::map<ObjectGuid, PendingExit> _realmExits;
+    std::set<ObjectGuid> _showdownIntroduced;
 };
 }
 
