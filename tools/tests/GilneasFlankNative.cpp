@@ -2,6 +2,17 @@
 #include "QuestSupplyChestsNative.cpp"
 #undef main
 
+#include "GossipData.h"
+#include "GossipDef.h"
+#include "NPCPackets.h"
+#include "ScriptsData.h"
+#include "SmartScriptMgr.h"
+#include "Vehicle.h"
+#include "VehiclePackets.h"
+
+void AddSC_SmartScripts();
+void AddSC_generic_spell_scripts();
+
 namespace
 {
 constexpr uint32 Betrayal = 24592;
@@ -12,6 +23,10 @@ constexpr uint32 SlavesToNoOne = 24674;
 constexpr uint32 LiveryAura = 69484;
 constexpr uint32 MarcusEntry = 37803;
 constexpr uint64 MarcusSpawn = 3101074;
+constexpr uint32 HewellEntry = 38764;
+constexpr uint64 HewellSpawn = 149553;
+constexpr uint32 StoutHorse = 38765;
+constexpr uint32 HewellMenu = 11079;
 
 struct GilneasLootPet : LootPet
 {
@@ -70,7 +85,7 @@ void LoadFlankInputs()
     sObjectMgr->LoadEquipmentTemplates();
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN(148907,149547,149554,149591,149605,149656,3101074)");
+        "WHERE guid IN(148907,149547,149553,149554,149591,149605,149656,3101074)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter "
         "WHERE quest IN(24575,24592,24674,24677)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender "
@@ -85,6 +100,42 @@ void LoadFlankInputs()
     sQuestDataStore->LoadCreatureInvolvedRelations();
     sSpellMgr->LoadSpellAreas();
     sObjectMgr->LoadCreatures();
+}
+
+void LoadHewellInputs()
+{
+    auto summon = sSpellMgr->GetSpellInfo(72772);
+    auto forcecast = sSpellMgr->GetSpellInfo(72773);
+    auto vehicle = sVehicleStore.LookupEntry(542);
+    Require(summon && summon->GetEffect(EFFECT_0)->MiscValue == StoutHorse &&
+        summon->GetEffect(EFFECT_0)->MiscValueB == 161 && forcecast &&
+        forcecast->GetEffect(EFFECT_0)->TriggerSpell == 72772 && vehicle && vehicle->SeatID[0],
+        "The native Hewell spell chain and horse seat are required");
+
+    sSpellMgr->LoadSpellProcEvents();
+    sSpellMgr->LoadSpellProcs();
+    WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID=15408");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=11079");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=11079");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts AS SELECT * FROM legion_world.smart_scripts WHERE source_type=0 AND entryorguid IN(38764,38765)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
+        "WHERE (SourceTypeOrReferenceId=15 AND SourceGroup=11079) OR (SourceTypeOrReferenceId=22 AND SourceEntry IN(38764,38765))");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE waypoints AS SELECT * FROM legion_world.waypoints WHERE entry=3876500");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id=51254");
+    WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
+    sObjectMgr->LoadNPCText();
+    sGossipDataStore->LoadGossipMenu();
+    sGossipDataStore->LoadGossipMenuItems();
+    sSmartWaypointMgr->LoadFromDB();
+    sSmartScriptMgr->LoadSmartAIFromDB();
+    sConditionMgr->LoadConditions();
+    sScriptDataStore->LoadSpellScriptNames();
+    sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
+    AddSC_SmartScripts();
+    AddSC_generic_spell_scripts();
+    sScriptMgr->SwapScriptContext(true);
+    sScriptDataStore->ValidateSpellScripts();
 }
 
 Creature& GilneasActor(Map& map, uint32 entry, uint64 guid)
@@ -125,6 +176,112 @@ void RewardGilneas(LootPlayer& player, Creature const& receiver, uint32 id, uint
     packet.QuestID = id;
     packet.ItemChoiceID = itemChoice;
     player.GetSession()->HandleQuestGiverChooseReward(packet);
+}
+
+void HewellHello(LootPlayer& player, Creature const& hewell)
+{
+    MoveGilneas(player, hewell.GetPosition());
+    WorldPackets::NPC::Hello hello{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+    hello.Unit = hewell.GetGUID();
+    player.GetSession()->HandleGossipHelloOpcode(hello);
+}
+
+void HewellSelect(LootPlayer& player, Creature const& hewell)
+{
+    WorldPackets::NPC::GossipSelectOption packet{WorldPacket(CMSG_GOSSIP_SELECT_OPTION)};
+    packet.GossipUnit = hewell.GetGUID();
+    packet.GossipID = HewellMenu;
+    packet.GossipIndex = 0;
+    player.GetSession()->HandleGossipSelectOption(packet);
+}
+
+void UpdateHorse(LootPlayer& player, ObjectGuid horseGuid, uint32 diff)
+{
+    auto map = player.GetMap();
+    player.Unit::Update(diff);
+    if (auto horse = map->GetCreature(horseGuid))
+        horse->Update(diff);
+    map->MoveAllCreaturesInMoveList();
+    map->RemoveAllObjectsInRemoveList();
+}
+
+ObjectGuid BoardHewellHorse(LootPlayer& player, Creature const& hewell)
+{
+    HewellHello(player, hewell);
+    Require(player.PlayerTalkClass->GetGossipMenu().GetMenuItemCount() == 1, "Hewell's native ride choice was not offered");
+    HewellSelect(player, hewell);
+    for (uint32 elapsed = 0; elapsed < 2000 && !player.GetVehicleBase(); elapsed += 20)
+        player.Unit::Update(20);
+    auto horse = player.GetVehicleCreatureBase();
+    Require(horse && horse->GetEntry() == StoutHorse && horse->ToTempSummon() &&
+        horse->ToTempSummon()->GetSummonerGUID() == player.GetGUID() && horse->GetVehicleKit()->GetPassenger(0) == &player,
+        "The actual forcecast did not board its summoner in the native horse seat");
+    return horse->GetGUID();
+}
+
+void InterruptHewellRide(LootPlayer& player)
+{
+    auto seat = player.GetVehicle()->GetSeatForPassenger(&player);
+    Require(seat && !seat->CanEnterOrExit(), "The original scripted horseback seat restricts player exits");
+    WorldPackets::Vehicle::RequestVehicleExit exitPacket{WorldPacket(CMSG_REQUEST_VEHICLE_EXIT)};
+    player.GetSession()->HandleRequestVehicleExit(exitPacket);
+    Require(player.GetVehicleBase(), "A manual exit ignored the original scripted seat restriction");
+    player.ExitVehicle();
+}
+
+void CheckHewell(Map& map, LootPlayer& owner, Creature const& genn, Creature const& lorna, bool baseline)
+{
+    auto& hewell = GilneasActor(map, HewellEntry, HewellSpawn);
+    if (baseline)
+    {
+        Require(!hewell.HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) &&
+            sObjectMgr->GetCreatureTemplate(StoutHorse)->VehicleId == 0,
+            "The old world no longer reproduces Hewell's disabled gossip and missing vehicle");
+        std::cout << "EXPECTED_BROKEN Hewell had no usable horse choice or vehicle kit\n";
+        return;
+    }
+
+    LootPlayer early(SupplySession(), map, 2467702, hewell.GetPosition());
+    early.SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_WORGEN);
+    early.setFactionForRace(RACE_WORGEN);
+    early.InitDisplayIds();
+    early.SetLevel(15);
+    early.SetRewardedQuest(14386);
+    HewellHello(early, hewell);
+    Require(!early.PlayerTalkClass->GetGossipMenu().GetMenuItemCount(), "A pre-quest Worgen saw Hewell's ride");
+    HewellSelect(early, hewell);
+    Require(!early.GetVehicleBase(), "An early rider passed the SmartAI admission");
+
+    auto firstHorse = BoardHewellHorse(owner, hewell);
+    HewellSelect(owner, hewell);
+    Require(owner.GetVehicleBase() && owner.GetVehicleBase()->GetGUID() == firstHorse, "Repeated selection replaced the actual horse");
+    InterruptHewellRide(owner);
+    for (unsigned tick = 0; tick < 25 && map.GetCreature(firstHorse); ++tick)
+        UpdateHorse(owner, firstHorse, 20);
+    Require(!owner.GetVehicleBase() && !map.GetCreature(firstHorse) && owner.GetQuestStatus(Flank) == QUEST_STATUS_COMPLETE,
+        "Dismount did not clean up the ride and preserve the normal turn-in");
+
+    auto horseGuid = BoardHewellHorse(owner, hewell);
+    Require(horseGuid != firstHorse, "Retry reused an ended ride");
+    early.SetRewardedQuest(Betrayal);
+    AcceptGilneas(early, genn, Flank);
+    auto secondRiderHorse = BoardHewellHorse(early, hewell);
+    Require(secondRiderHorse != horseGuid && owner.GetVehicleBase() && owner.GetVehicleBase()->GetGUID() == horseGuid,
+        "A second rider displaced the first rider from their horse");
+    InterruptHewellRide(early);
+    for (unsigned tick = 0; tick < 25 && map.GetCreature(secondRiderHorse); ++tick)
+        UpdateHorse(early, secondRiderHorse, 20);
+    Require(!early.GetVehicleBase() && !map.GetCreature(secondRiderHorse) && owner.GetVehicleBase() && owner.GetVehicleBase()->GetGUID() == horseGuid,
+        "The second rider's exit affected the first ride");
+    for (uint32 elapsed = 0; elapsed < 240000 && owner.GetVehicleBase(); elapsed += 100)
+        UpdateHorse(owner, horseGuid, 100);
+    Require(!owner.GetVehicleBase() && owner.GetDistance2d(&lorna) < 25.0f &&
+        owner.GetQuestStatus(Flank) == QUEST_STATUS_COMPLETE && !owner.GetQuestRewardStatus(Flank),
+        "The actual route did not unload a still-unrewarded rider at Livery Outpost");
+    for (unsigned tick = 0; tick < 25 && map.GetCreature(horseGuid); ++tick)
+        UpdateHorse(owner, horseGuid, 20);
+    Require(!map.GetCreature(horseGuid), "The completed horse survived its cleanup");
+    std::cout << "PASS Hewell gossip, pre-quest and duplicate refusal, actual two-owner seats, interrupted ride cleanup, retry and original route arrival\n";
 }
 
 uint32 GilneasRewardChoice(LootPlayer const& player, Quest const& quest)
@@ -188,7 +345,7 @@ void CheckMarcus(Map& map, LootPlayer& owner, Creature const& lorna)
     std::cout << "PASS Marcus native placement, Worgen phase isolation and re-entry, Brothogg pet kill, normal turn-in and exactly-once reward\n";
 }
 
-void CheckFlank(bool baseline, bool checkMarcus, bool expectMissingMarcus)
+void CheckFlank(bool baseline, bool checkMarcus, bool expectMissingMarcus, bool checkHewell, bool expectMissingHewell)
 {
     Map map(654, 616, 0, DIFFICULTY_NONE);
     auto& krennan = GilneasActor(map, 37874, 149547);
@@ -253,9 +410,19 @@ void CheckFlank(bool baseline, bool checkMarcus, bool expectMissingMarcus)
     AcceptGilneas(owner, genn, Flank);
     Require(owner.GetQuestStatus(Flank) == QUEST_STATUS_COMPLETE && !owner.CanTakeQuest(liberation, false),
         "The actual Flank travel quest did not become ready for its receiver");
+    if (checkHewell || expectMissingHewell)
+        CheckHewell(map, owner, genn, lorna, expectMissingHewell);
     RewardGilneas(owner, lorna, Flank);
     Require(owner.GetQuestRewardStatus(Flank) && owner.CanTakeQuest(liberation, false) && owner.GetNextQuest(lorna.GetGUID(), flank) == liberation,
         "Lorna did not accept the real Flank turn-in or expose Liberation Day");
+    if (checkHewell)
+    {
+        auto& hewell = GilneasActor(map, HewellEntry, HewellSpawn);
+        HewellHello(owner, hewell);
+        HewellSelect(owner, hewell);
+        Require(!owner.PlayerTalkClass->GetGossipMenu().GetMenuItemCount() && !owner.GetVehicleBase(),
+            "A player who turned in Flank could still take Hewell's ride");
+    }
     std::cout << "PASS on real Gilneas actors: both player and pet kills, early packet refusal, Genn reward and offer, Lorna reward and Liberation Day\n";
     if (expectMissingMarcus)
     {
@@ -288,12 +455,16 @@ int main(int argc, char** argv)
         Require(!LoginDatabase.Open() && LoginDatabase.PrepareStatements(), "Private login pool failed");
         Require(!CharacterDatabase.Open() && CharacterDatabase.PrepareStatements(), "Private character pool failed");
         LoadFlankInputs();
+        bool checkHewell = sConfigMgr->GetBoolDefault("NativeGilneasFlank.CheckHewell", false);
+        if (checkHewell)
+            LoadHewellInputs();
         HashMapHolder<Player>::SetSize(32);
         HashMapHolder<Pet>::SetSize(32);
         GameTime::UpdateGameTimers();
         CheckFlank(sConfigMgr->GetBoolDefault("NativeGilneasFlank.ExpectOldAdmission", false),
             sConfigMgr->GetBoolDefault("NativeGilneasFlank.CheckMarcus", false),
-            sConfigMgr->GetBoolDefault("NativeGilneasFlank.ExpectMissingMarcus", false));
+            sConfigMgr->GetBoolDefault("NativeGilneasFlank.ExpectMissingMarcus", false), checkHewell,
+            sConfigMgr->GetBoolDefault("NativeGilneasFlank.ExpectMissingHewell", false));
         CharacterDatabase.Close();
         LoginDatabase.Close();
         HotfixDatabase.Close();

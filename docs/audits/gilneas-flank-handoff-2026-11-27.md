@@ -7,3 +7,5 @@ Izolētā MariaDB kopijā vecie dati atļāva sākt `24677` pirms `24592`, un Ge
 Darba servera atjauninātājs ielādēja World33. Serveris sasniedza gatavību un apstājās ar kodu 0. Pārbaudēs nebija jaunu avāriju, neizskaidrotu brīdinājumu vai papildinājumu `DBErrors.log`. Darba EXE SHA-256 ir `F98104123F352D8F65F74AF67EE80175851DEA3F50949F727421DC2B6B83D926`. Zem `build-extractors/bin/Release/fixed/2026-11-27-gilneas-flank/` saglabāts 51 pārbaudes fails ar kontrolsummām un saraksts ar 41 izdzēstu pagaidu failu (721 782 756 baiti).
 
 Klienta izspēle, Lord Hewell brauciens un vēlākā Gilneas kauja `24904` paliek atvērti. Vietējais Hewell references skripts izmanto teleportu ar izpletni. Kvesta tekstā paredzēts brauciens līdz Livery Outpost, tāpēc šī pāreja izmanto esošo ceļu uz Lorna. [Gilneas kaujas avotu audits](gilneas-battle-sources-2026-11-27.md)
+
+World36 atjaunoja un serverī pārbaudīja Lord Hewell braucienu ar 42 arhīva punktiem un īsto zirga sēdvietu. [Lord Hewell brauciena pārbaude](gilneas-hewell-ride-2026-11-27.md)
