@@ -528,6 +528,12 @@ class Audit:
         result["quest_conditions"] = [r for source in (19, 20) for r in self.conditions.get((source, 0, quest, 0), [])]
         result["phases"] = self.phase_quests.get(quest, [])
         result["spell_area"] = self.spell_area.get(quest, [])
+        # The core requires both masks to include the quest's current status.
+        for spell_area in result["spell_area"]:
+            start, end, start_mask, end_mask = integers(
+                spell_area, "quest_start", "quest_end", "quest_start_status", "quest_end_status")
+            if start == end == quest and not (start_mask & end_mask):
+                findings.add("spell_area_quest_status_masks_conflict")
         result["object_visuals"] = self.object_visuals.get(quest, [])
         result["poi_count"] = len(self.quest_poi.get(quest, []))
         result["quest_spells"] = self.quest_spells.get(quest, [])
