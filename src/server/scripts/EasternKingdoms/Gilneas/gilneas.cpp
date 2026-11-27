@@ -17,6 +17,7 @@
 
 #include "Unit.h"
 #include "gilneas.h"
+#include "gilneas_battle_opening.h"
 #include "ScriptedEscortAI.h"
 #include "Vehicle.h"
 #include "CharmInfo.h"
@@ -3145,6 +3146,8 @@ class spell_gilneas_patriots_rapier : public SpellScript
 
 void AddSC_gilneas()
 {
+    if (sObjectMgr->GetScriptId("npc_gilneas_battle_krennan"))
+        new GilneasBattle::npc_gilneas_battle_krennan();
     RegisterSpellScript(spell_gilneas_patriots_rapier);
     new npc_gilneas_city_guard_phase1();
     new npc_prince_liam_greymane_phase1();
