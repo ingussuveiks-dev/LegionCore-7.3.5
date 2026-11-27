@@ -336,6 +336,14 @@ bool WorldSession::Update(uint32 diff, Map* map)
                 case STATUS_LOGGEDIN:
                     if (!_player)
                     {
+                        // No new character can have sent a time-sync request yet.
+                        // Do not deliver a delayed response to that character's new counters.
+                        if (opcode == CMSG_TIME_SYNC_RESPONSE && PlayerLoading())
+                        {
+                            opHandle->Call(this, *packet);
+                            break;
+                        }
+
                         // skip STATUS_LOGGEDIN opcode unexpected errors if player logout sometime ago - this can be network lag delayed packets
                         //! If player didn't log out a while ago, it means packets are being sent while the server does not recognize
                         //! the client to be in world yet. We will re-add the packets to the bottom of the queue and process them later.

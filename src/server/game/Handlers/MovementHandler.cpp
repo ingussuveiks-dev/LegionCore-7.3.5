@@ -642,7 +642,10 @@ void WorldSession::HandleTimeSyncResponse(WorldPackets::Movement::TimeSyncRespon
     Player* player = GetPlayer();
 
     if (!player)
+    {
+        TC_LOG_DEBUG("network", "Discarding time sync response %u while character login has no active player", packet.SequenceIndex);
         return;
+    }
 
     if (!TimeSync::ConsumeResponse(player->m_timeSyncQueue, packet.SequenceIndex))
     {
