@@ -48,3 +48,11 @@ Pārbaudītas 12 `On The Mend` ķēdes un atjaunoti desmit petu apmācības pied
 `37474` un atsevišķajai `31554` versijai trūkst pārbaudīta sākuma avota. Vecais `SmartScript: Action target Creature(entry: 0)` ieraksts palika aktīvajā `DBErrors.log`. Ierakstā nav aktiera vai skripta rindas, un tajā pašā sekundē žurnālā redzamās kaujas rindas neļauj sasaistīt kļūdu ar konkrētu 1.–20. līmeņa kvestu. Gala servera pārbaudēs tas neatkārtojās. [Atvērtā sākuma avota audits](low-level-quest-source-review-2026-11-26.md)
 
 2026-11-27 pārbaudē abi 703.00 arhīva nodošanas ieraksti apstiprināja saņēmējus. Atkārtoti izgāja 24 petu dziedināšanas dialogu zondes. Atsevišķā Violet Hold pārbaudē vecais Meryl portāla skripts atkārtoja SmartScript kļūdas tekstu, bet darba datu variants izgāja pārejas un portāla tīrīšanas servera pārbaudi. [Violet Hold pārbaude](dreadlords-prize-portal-2026-11-26.md#2026-11-27-pārbaude)
+
+## Bloodmyst portāls un pārējie klikšķu ceļi
+
+`9740` darba serverī prasa izslēgt visus četrus oriģinālos Sunhawk kontrolierus. Pieņemšana, atmešana, atjaunošanās un nodošana pārbaudīta ar servera paketēm. Jaunākajā datu eksportā ir 5 459 ieraksti, 4 865 ieslēgti kvesti un 176 gala laidienā atrasti piesaistītie skriptu nosaukumi. [Sun Gate audits](bloodmyst-sun-gate-2026-11-27.md) · [Darba datu izlase](../../build-extractors/bin/Release/fixed/2026-11-27-bloodmyst-sun-gate/coverage/summary.json)
+
+`14476` Rigged to Blow pārbaudīta pieņemšana pēc Grounded, visu trīs oriģinālo lādiņu ieskaite un nodošana pie Smooks. Darba `event_scripts` tabulā nav `22494/22497/22498` rindu. Sargu reakcijai un animācijai joprojām vajadzīgs atbilstošs 7.3.5 pierādījums. [Kvesta secība un sargu reakcijas apraksts](https://warcraft.wiki.gg/wiki/Rigged_to_Blow)
+
+`29364` Corn Mash pieder Aska piecu kvestu dienas rotācijai `5684`. Zondē publicēts rotācijā izvēlēts kvests un pārbaudīta Cooking prasība, sešas īstās bļodas, atkārtota klikšķa atteikums un nodošana. Dienu maiņa un malšanas animācija klientā paliek atsevišķas pārbaudes. [Zondes izvade](../../build-extractors/bin/Release/fixed/2026-11-27-bloodmyst-sun-gate/goober-survey-verified-diagnostics/check-output.log) · [Rotācijas dati](../../build-extractors/bin/Release/fixed/2026-11-27-bloodmyst-sun-gate/goober-live-readback.tsv)
