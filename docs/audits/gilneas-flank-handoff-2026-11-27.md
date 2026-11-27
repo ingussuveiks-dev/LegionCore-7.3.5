@@ -1,0 +1,9 @@
+# Betrayal at Tempest’s Reach un Flank the Forsaken
+
+Legion 7.3.5 (26972) `QuestLineXQuest.db2` rindas 79–81 ķēdē 572 rāda `24592 → 24677 → 24575`. Darba datos pirmajai pārejai trūka gan atlīdzības piedāvājuma, gan priekšnoteikuma. King Genn Greymane `37876/149554` jau saņēma `24592` un piedāvāja `24677`. World33 izmanto šīs esošās attiecības un atjauno pāreju.
+
+Izolētā MariaDB kopijā vecie dati atļāva sākt `24677` pirms `24592`, un Genn pēc nodošanas nevarēja piedāvāt turpinājumu. Pēc labojuma pārbaudītas faktiskās pieņemšanas un atlīdzības paketes, Lord Walden uzvara ar spēlētāju, Baron Ashbury uzvara ar petu, dzīvās Gilneas fāzes un nodošana pie Lorna Crowley. Pēc vienas uzvaras kvests palika nepabeigts. Pirms Genn atlīdzības nākamais kvests palika slēgts. Pirmajā labotās zondes mēģinājumā pietrūka atlīdzības izvēles. Atkārtotā zonde apstiprināja, ka tukšs pieprasījums saglabā abus sasniegtos mērķus, īstā 2049 paketes izvēle tiek ievietota inventārā un Lorna pēc `24677` piedāvā `Liberation Day`. Migrācija izolētajā kopijā sekmīgi izpildījās divreiz.
+
+Darba servera atjauninātājs ielādēja World33. Serveris sasniedza gatavību un apstājās ar kodu 0. Pārbaudēs nebija jaunu avāriju, neizskaidrotu brīdinājumu vai papildinājumu `DBErrors.log`. Darba EXE SHA-256 ir `F98104123F352D8F65F74AF67EE80175851DEA3F50949F727421DC2B6B83D926`. Zem `build-extractors/bin/Release/fixed/2026-11-27-gilneas-flank/` saglabāts 51 pārbaudes fails ar kontrolsummām un saraksts ar 41 izdzēstu pagaidu failu (721 782 756 baiti).
+
+Klienta izspēle, Lord Hewell brauciens un vēlākā Gilneas kauja `24904` paliek atvērti. Vietējais Hewell references skripts izmanto teleportu ar izpletni. Kvesta tekstā paredzēts brauciens līdz Livery Outpost, tāpēc šī pāreja izmanto esošo ceļu uz Lorna. [Gilneas kaujas avotu audits](gilneas-battle-sources-2026-11-27.md)
