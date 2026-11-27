@@ -13,19 +13,27 @@ public:
 
     enum data
     {
+        MAP_MARDUM = 1481,
+        QUEST_START_DEMON_HUNTER = 40076,
         NPC_CONV = 705,
-        SPELL_CUEILLIDANTH = 191667,
     };
 
     bool OnTrigger(Player* player, SpellScene const* /*trigger*/, std::string type) override
     {
-        if (type == "CUEILLIDANTH")
+        if (type == "CUEILLIDANTH" && player->GetMapId() == MAP_MARDUM && player->getClass() == CLASS_DEMON_HUNTER)
         {
-            //player->CastSpell(player, CUEILLIDANTH, false);
+            // The intro scene can send its cue again after the tracking quest is rewarded.
+            QuestStatus const status = player->GetQuestStatus(QUEST_START_DEMON_HUNTER);
+            if (status != QUEST_STATUS_NONE && status != QUEST_STATUS_INCOMPLETE)
+                return true;
+
             Conversation* conversation = new Conversation;
             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), NPC_CONV, player, NULL, *player))
+            {
                 delete conversation;
-            player->CompleteQuest(40076);
+                return true;
+            }
+            player->CompleteQuest(QUEST_START_DEMON_HUNTER);
         }
         return true;
     }
