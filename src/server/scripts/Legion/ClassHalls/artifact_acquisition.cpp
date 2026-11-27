@@ -2119,6 +2119,85 @@ bool Complete(Player* player, SpellScene const* scene, std::string const& trigge
 #include "fire_lyandra_phase.h"
 #include "fire_return_recovery.h"
 
+namespace FireReturnRecovery
+{
+void RestoreEarnedPortal(Player* player, uint32 diff, State& state)
+{
+    constexpr uint32 portalEntry = 99861;
+    constexpr uint32 exitSpell = 196604;
+    Position const portalPosition{4625.47f, 2769.47f, 361.248f};
+
+    // The native escort remains the first path. After it has failed, recover
+    // the exit only for the player who actually received the blade.
+    Item const* blade = player->GetItemByEntry(128820, false);
+    if (player->getClass() != CLASS_MAGE || player->GetQuestStatus(11997) != QUEST_STATUS_COMPLETE ||
+        player->GetQuestRewardStatus(11997) || player->GetQuestObjectiveData(11997, 99418) < 1 ||
+        player->GetQuestObjectiveData(11997, 100290) < 1 || !blade ||
+        blade->GetOwnerGUID() != player->GetGUID() || !blade->GetCount() || blade->IsInTrade())
+    {
+        if (Creature* portal = ObjectAccessor::GetCreature(*player, state.fallbackPortal))
+            portal->DespawnOrUnsummon();
+        state.fallbackPortal.Clear();
+        return;
+    }
+
+    if (!player->IsWithinDist3d(portalPosition.GetPositionX(), portalPosition.GetPositionY(), portalPosition.GetPositionZ(), 65.f))
+        return;
+    if (state.portalTimer > diff)
+    {
+        state.portalTimer -= diff;
+        return;
+    }
+    state.portalTimer = 1000;
+
+    std::list<Creature*> portals;
+    player->GetCreatureListWithEntryInGrid(portals, portalEntry, 65.f);
+    for (Creature* portal : portals)
+        if (portal && portal->IsInWorld() && portal->IsAlive() && !portal->IsQuestObjectExpired() &&
+            portal->GetMap() == player->GetMap() && player->InSamePhase(portal) && player->canSeeOrDetect(portal) &&
+            portal->GetExactDist(&portalPosition) <= 2.f && NativeActor(portal, false))
+        {
+            if (portal->GetGUID() != state.fallbackPortal)
+            {
+                if (Creature* previous = ObjectAccessor::GetCreature(*player, state.fallbackPortal))
+                    previous->DespawnOrUnsummon();
+                state.fallbackPortal.Clear();
+                return;
+            }
+        }
+
+    if (ObjectAccessor::GetCreature(*player, state.fallbackPortal) || state.portalFailures >= 3)
+        return;
+
+    CreatureTemplate const* model = sObjectMgr->GetCreatureTemplate(portalEntry);
+    auto const clicks = sObjectMgr->GetSpellClickInfoMapBounds(portalEntry);
+    SpellInfo const* spell = sSpellMgr->GetSpellInfo(exitSpell);
+    SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(exitSpell);
+    if (!model || !model->AIName.empty() || model->ScriptID || !(model->npcflag & UNIT_NPC_FLAG_SPELLCLICK) ||
+        clicks.first == clicks.second || std::next(clicks.first) != clicks.second ||
+        clicks.first->second.spellId != exitSpell || clicks.first->second.castFlags != NPC_CLICK_CAST_CASTER_CLICKER ||
+        clicks.first->second.userType != SPELL_CLICK_USER_ANY || !spell || !spell->HasEffect(SPELL_EFFECT_TELEPORT_L) ||
+        !destination || destination->target_mapId != 1220 || !Near(destination->target_X, -828.61f) ||
+        !Near(destination->target_Y, 4371.63f) || !Near(destination->target_Z, 738.64f))
+    {
+        state.portalFailures = 3;
+        TC_LOG_WARN("scripts", "Fire artifact return: native Mage Portal 99861 or teleport 196604 differs; portal recovery withheld");
+        return;
+    }
+
+    if (TempSummon* portal = player->SummonCreature(portalEntry, portalPosition,
+        TEMPSUMMON_TIMED_DESPAWN, 300000, 0, player->GetGUID()))
+    {
+        state.fallbackPortal = portal->GetGUID();
+        state.portalFailures = 0;
+    }
+    else if (++state.portalFailures == 3)
+        TC_LOG_WARN("scripts", "Fire artifact return: could not publish Mage Portal 99861 for player %u after three attempts",
+            player->GetGUIDLow());
+}
+}
+
+
 namespace FireArtifactScene
 {
 struct Pickup
@@ -2631,7 +2710,7 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
     new scene_fire_artifact_equipment();
-    new player_fire_artifact_return();
+    new player_fire_artifact_return(FireReturnRecovery::RestoreEarnedPortal);
     RegisterCreatureAI(npc_fire_artifact_lyandra);
     RegisterCreatureAI(npc_fire_artifact_aethas);
     new scene_frost_artifact_equipment();

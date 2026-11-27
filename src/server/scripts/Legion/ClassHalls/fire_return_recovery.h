@@ -9,7 +9,12 @@ struct State
     uint32 elapsed = 0;
     bool stopped = false;
     bool waiting = false;
+    ObjectGuid fallbackPortal;
+    uint32 portalTimer = 0;
+    uint8 portalFailures = 0;
 };
+
+using PortalRecovery = void (*)(Player*, uint32, State&);
 
 bool Earned(Player* player)
 {
@@ -252,10 +257,12 @@ void Tick(Player* player, uint32 diff, State& state)
     }
     state.timer = 500;
     SmartScriptHolder summon;
-    if (!NativeSummon(summon) || !NativeAethas())
+    bool const summonMatches = NativeSummon(summon);
+    if (!summonMatches || !NativeAethas())
     {
         state.stopped = true;
-        TC_LOG_WARN("scripts", "Fire artifact return: native Aethas data/scope differs for player %u; recovery withheld", player->GetGUIDLow());
+        TC_LOG_WARN("scripts", "Fire artifact return: %s differs for player %u; Aethas replay withheld",
+            summonMatches ? "Aethas script or intro conditions" : "Lyandra's Aethas summon", player->GetGUIDLow());
         return;
     }
     if (!player->IsWithinDist3d(summon.target.x, summon.target.y, summon.target.z, 100.f))
@@ -287,7 +294,7 @@ void Forget(Player* player)
     std::lock_guard<std::mutex> guard(stateLock);
     states.erase(player->GetGUID());
 }
-void Update(Player* player, uint32 diff)
+void Update(Player* player, uint32 diff, PortalRecovery recoverPortal = nullptr)
 {
     if (!player)
         return;
@@ -309,6 +316,8 @@ void Update(Player* player, uint32 diff)
         Forget(player);
         return;
     }
+    if (state.stopped && recoverPortal)
+        recoverPortal(player, diff, state);
     std::lock_guard<std::mutex> guard(stateLock);
     states[player->GetGUID()] = state;
 }
@@ -317,8 +326,12 @@ void Update(Player* player, uint32 diff)
 class player_fire_artifact_return : public PlayerScript
 {
 public:
-    player_fire_artifact_return() : PlayerScript("player_fire_artifact_return") { }
-    void OnUpdate(Player* player, uint32 diff) override { FireReturnRecovery::Update(player, diff); }
+    explicit player_fire_artifact_return(FireReturnRecovery::PortalRecovery recoverPortal = nullptr) :
+        PlayerScript("player_fire_artifact_return"), _recoverPortal(recoverPortal) { }
+    void OnUpdate(Player* player, uint32 diff) override { FireReturnRecovery::Update(player, diff, _recoverPortal); }
     void OnLogout(Player* player) override { FireReturnRecovery::Forget(player); }
     void OnMapChanged(Player* player) override { FireReturnRecovery::Forget(player); }
+
+private:
+    FireReturnRecovery::PortalRecovery _recoverPortal;
 };

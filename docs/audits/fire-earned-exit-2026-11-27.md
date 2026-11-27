@@ -1,0 +1,9 @@
+# Felo’melorn fināla izeja
+
+Spēlētājs uzvarēja Lyandra, saņēma Felo’melorn `128820` un redzēja, ka The Frozen Flame `11997` ir gatavs nodošanai. Datu lasījums apstiprināja abas uzdevuma atzīmes `99418` un `100290`, kā arī iegūto ieroci. Spēlētājs plānoja izmantot savu burvja teleportu. Tas nav jaunā portāla pārbaudes rezultāts.
+
+Iepriekšējā Aethas atjaunošana atteicās divreiz ar brīdinājumu par datu vai tvēruma neatbilstību. Brīdinājums varēja attiekties gan uz Lyandra izsaukuma rindu, gan uz Aethas SmartAI un ievada nosacījumiem. Saglabātās datubāzes rindas abos gadījumos sakrita ar avota pārbaudēm. Konkrētā izpildlaika atteikuma pārbaude vēl jānoskaidro. Jaunais brīdinājums norāda, kuru no abām daļām serveris noraidījis.
+
+Aethas turpina izmantot esošo gājienu uz portālu. Ja šī atjaunošana apstājas, nokautās Lyandra uzskaite scenārijā `957`, abi pabeigtie `11997` mērķi un spēlētājam piederošais līdzi esošais ierocis ļauj izveidot personīgu oriģinālā Mage Portal `99861` kopiju. Izmantoti esošās izsaukuma rindas koordināti telpā un esošā klikšķa burvestība `196604` uz Dalaranu. Rezerves portāls ir terminēts uz piecām minūtēm. Izveidošanas kļūdu gadījumā ir līdz trim mēģinājumiem. Ja redzamais oriģinālais portāls parādās, serveris novāc savu rezerves kopiju.
+
+Release x64 būvējums ir izvietots `build-extractors/bin/Release`. Izpildfaila SHA-256 ir `672A1CF179931A6D653A0F5D47833E5FFFDD9E90A718CC44FA63CEEE5AE70D9A`. Gala saišu kartē pārbaudīts `RestoreEarnedPortal` no pārbūvētā `artifact_acquisition.obj`. Iepriekšējais darba binārais pāris ir atjaunojams no lokālās `.codex/ebonchill-realm-exit-20261127/rollback` mapes. Pirms izvietošanas avāriju direktorija bija tukša un esošais SQL kļūdu žurnāls palika 722 baiti. Aethas brīdinājumi ir saglabāti. Aktīvajā spēles darbplūsmā netika palaists atsevišķs testa serveris vai automatizēts tests. Portāla izskats, klikšķis un faktiskā ierašanās gaida klienta pārbaudi.
