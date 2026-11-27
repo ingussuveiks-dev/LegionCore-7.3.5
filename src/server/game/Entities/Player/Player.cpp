@@ -20932,7 +20932,8 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
         PhaseUpdateData phaseUdateData;
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-        if (quest_id == 29402 || quest_id == 29426 || HallowsEndCrate::RefreshVisibility(quest_id))
+        if (quest_id == 29402 || quest_id == 29426 || HallowsEndCrate::RefreshVisibility(quest_id) ||
+            (quest_id == 42477 && GetMapId() == 0 && GetAreaId() == 73))
             UpdateVisibilityForPlayer();
         UpdateForQuestWorldObjects();
     });

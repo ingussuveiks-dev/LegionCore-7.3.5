@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "AreaTrigger.h"
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "BrazieBotany.h"
@@ -2411,6 +2412,29 @@ void WorldObject::SetVisible(bool x)
     UpdateObjectVisibility();
 }
 
+namespace
+{
+bool IsDaioTrialPortal(WorldObject const* object)
+{
+    if (AreaTrigger const* areaTrigger = object->ToAreaTrigger())
+    {
+        if (areaTrigger->GetSpellId() != 214729)
+            return false;
+
+        object = areaTrigger->GetCaster();
+        if (!object)
+            return false;
+    }
+
+    Creature const* emitter = object->ToCreature();
+    if (!emitter || emitter->GetEntry() != 107691)
+        return false;
+
+    uint64 const spawnId = emitter->GetDBTableGUIDLow();
+    return spawnId >= 369705 && spawnId <= 369707;
+}
+}
+
 bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, bool distanceCheck) const
 {
     if (this == obj || m_Teleports && obj->m_Teleports)
@@ -2418,6 +2442,12 @@ bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
 
     if (GetGUID().IsPlayer())
     {
+        // Keep Daio visible for his closing lines while clearing his portal visuals for the winner.
+        if ((obj->GetEntry() == 107691 || obj->IsAreaTrigger()) && GetMapId() == 0 && GetAreaId() == 73)
+            if (Player const* player = ToPlayer(); player && IsDaioTrialPortal(obj) &&
+                player->GetQuestStatus(42477) == QUEST_STATUS_COMPLETE)
+                return false;
+
         if (obj->MustBeVisibleOnlyForSomePlayers())
         {
             Player const* thisPlayer = ToPlayer();
