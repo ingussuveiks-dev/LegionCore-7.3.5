@@ -47,41 +47,63 @@ public:
 
     struct go_q40077AI : public GameObjectAI
     {
-        go_q40077AI(GameObject* go) : GameObjectAI(go)
-        {
-
-        }
+        go_q40077AI(GameObject* go) : GameObjectAI(go) { }
 
         enum data
         {
+            MAP_MARDUM = 1481,
+            QUEST_THE_INVASION_BEGINS = 40077,
+            DEMON_KILL_CREDIT = 98486,
+            REQUIRED_DEMONS = 15,
+            OPEN_BANNER = 6477,
             SCENE = 191677,
         };
 
-        bool GossipHello(Player* player, bool isUse) override
+        bool IsInvasionBanner() const
         {
-            if (!isUse)
-                return true;
-
-            /*
-
-            ServerToClient: SMSG_PLAY_SCENE (0x2651) Length: 34 ConnIdx: 0 Time: 02/22/2016 12:57:13.116 Number: 11210
-            SceneID: 1116
-            PlaybackFlags: 27
-            SceneInstanceID: 2
-            SceneScriptPackageID: 1493
-            TransportGUID: Full: 0x0
-            Pos: X: 1002.885 Y: 2956.695 Z: -10.55672
-            Facing: 4.76053
-            */
-            if (player->GetQuestStatus(40077) == QUEST_STATUS_INCOMPLETE)
-            {
-                player->CastSpell(player, SCENE, true);
-                player->KillCreditGO(go->GetEntry(), go->GetGUID());
-                return true;
-            } else
-                return false;
+            return go->GetMapId() == MAP_MARDUM && go->GetDBTableGUIDLow() == 131210;
         }
 
+        bool CanUseBanner(Player* player) const
+        {
+            return player->IsAlive() && player->CanContact() && !player->IsSpectator() && go->isSpawned() &&
+                !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) &&
+                go->InSamePhase(player) && player->HaveAtClient(go) &&
+                go->IsWithinDistInMap(player, go->GetInteractionDistance()) && go->IsWithinLOSInMap(player) &&
+                player->GetQuestStatus(QUEST_THE_INVASION_BEGINS) == QUEST_STATUS_INCOMPLETE &&
+                player->GetQuestObjectiveData(QUEST_THE_INVASION_BEGINS, DEMON_KILL_CREDIT) >= REQUIRED_DEMONS &&
+                player->GetQuestObjectiveData(QUEST_THE_INVASION_BEGINS, go->GetEntry()) == 0;
+        }
+
+        bool GossipHello(Player* player, bool isUse) override
+        {
+            if (isUse || !IsInvasionBanner())
+                return false;
+
+            // The interaction report can arrive without a separate use. Start the real Lock 93 spell.
+            if (CanUseBanner(player) && !player->FindCurrentSpellBySpellId(OPEN_BANNER))
+            {
+                SpellCastResult const result = player->CastSpell(go, OPEN_BANNER, false);
+                if (result != SPELL_CAST_OK)
+                    TC_LOG_DEBUG("scripts", "Mardum Banner Illidari: Opening cast returned %u", uint32(result));
+            }
+            return true;
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            if (!IsInvasionBanner())
+                return false;
+
+            if (!CanUseBanner(player))
+                return true;
+
+            // This shared goober has a personal scene. Keep its state available to other players.
+            player->KillCreditGO(go->GetEntry(), go->GetGUID());
+            if (player->GetQuestObjectiveData(QUEST_THE_INVASION_BEGINS, go->GetEntry()) > 0)
+                player->CastSpell(player, SCENE, true);
+            return true;
+        }
     };
 
     GameObjectAI* GetAI(GameObject* go) const override
