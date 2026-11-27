@@ -18,8 +18,6 @@ constexpr uint32 MapId = 1616;
 constexpr uint32 ScenarioId = 1122;
 constexpr uint32 Quest = 42479;
 constexpr uint32 Meryl = 108097;
-constexpr uint32 MerylSpawn = 369855;
-constexpr uint32 MerylRitualMenu = 19816;
 constexpr uint32 PortalEmitter = 107691;
 constexpr uint32 RitualFocus = 108855;
 constexpr uint32 ManaGem = 108854;
@@ -27,7 +25,6 @@ constexpr uint32 PortalVisual = 214695;
 constexpr uint32 RealmTransfer = 214730;
 constexpr uint32 RitualOverride = 214607;
 constexpr uint32 CenterReachedTree = 48464;
-constexpr uint32 FocusReadyData = 108855;
 constexpr uint32 AltarStep = 2;
 constexpr uint32 RitualStep = 3;
 constexpr uint32 ShowdownStep = 4;
@@ -45,7 +42,7 @@ class State
 public:
     void Observe(Creature const* creature)
     {
-        if (creature->GetEntry() == Meryl && creature->GetDBTableGUIDLow() == MerylSpawn)
+        if (creature->GetEntry() == Meryl && creature->GetDBTableGUIDLow() == 369855)
             _meryl = creature->GetGUID();
         else if (creature->GetEntry() == PortalEmitter && creature->GetDBTableGUIDLow() == 369856)
             _portalEmitter = creature->GetGUID();
@@ -87,22 +84,6 @@ public:
         _transfers.erase(player.GetGUID());
     }
 
-    bool IsFocusReady() const { return _focusReady; }
-
-    bool EnableFocus(InstanceMap& map, Creature const& meryl, Player const& player)
-    {
-        Scenario* scenario = sScenarioMgr->GetScenario(map.GetInstanceId());
-        if (!scenario || scenario->GetScenarioId() != ScenarioId || scenario->GetCurrentStep() != AltarStep ||
-            !scenario->GetAchievementMgr().GetCriteriaProgressMap()->count(CenterReachedTree) ||
-            meryl.GetGUID() != _meryl || !CanParticipate(player) || !IsAtAltar(player))
-            return false;
-
-        _focusReady = true;
-        if (Creature* focus = map.GetCreature(_focus))
-            focus->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-        return true;
-    }
-
 private:
     static bool CanParticipate(Player const& player)
     {
@@ -116,20 +97,18 @@ private:
             std::fabs(player.GetPositionZ() - Center.GetPositionZ()) < 6.0f;
     }
 
-    static Creature* EnsureCrystal(InstanceMap& map, Creature& meryl, ObjectGuid& guid, uint32 entry,
+    static void EnsureCrystal(InstanceMap& map, Creature& meryl, ObjectGuid& guid, uint32 entry,
         uint32 display, Position const& position)
     {
-        if (Creature* crystal = map.GetCreature(guid))
-            return crystal;
+        if (map.GetCreature(guid))
+            return;
 
-        TempSummon* crystal = meryl.SummonCreature(entry, position);
-        if (crystal)
+        if (TempSummon* crystal = meryl.SummonCreature(entry, position))
         {
             crystal->SetDisplayId(display);
             crystal->SetReactState(REACT_PASSIVE);
             guid = crystal->GetGUID();
         }
-        return crystal;
     }
 
     void PrepareRitual(InstanceMap& map, Creature& meryl, uint32 step)
@@ -145,9 +124,7 @@ private:
         if (!participant)
             return;
 
-        if (Creature* focus = EnsureCrystal(map, meryl, _focus, RitualFocus, 70744, Center))
-            if (_focusReady || step == RitualStep)
-                focus->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+        EnsureCrystal(map, meryl, _focus, RitualFocus, 70744, Center);
         for (std::size_t i = 0; i < _gems.size(); ++i)
             EnsureCrystal(map, meryl, _gems[i], ManaGem, 70743, GemPositions[i]);
 
@@ -173,7 +150,6 @@ private:
 
     void ClearCrystals(InstanceMap& map)
     {
-        _focusReady = false;
         ClearCrystal(map, _focus);
         for (ObjectGuid& gem : _gems)
             ClearCrystal(map, gem);
@@ -225,7 +201,6 @@ private:
     };
 
     uint32 _timer = UpdateInterval;
-    bool _focusReady = false;
     bool _announcedRitual = false;
     ObjectGuid _meryl;
     ObjectGuid _portalEmitter;

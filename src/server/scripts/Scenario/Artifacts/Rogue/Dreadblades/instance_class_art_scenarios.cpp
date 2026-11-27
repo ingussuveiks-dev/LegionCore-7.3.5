@@ -13,8 +13,6 @@
 #include "Group.h"
 #include "ObjectAccessor.h"
 #include "GameObject.h"
-#include "GossipDef.h"
-#include "SmartAI.h"
 #include "SmartScriptMgr.h"
 #include "VioletHoldBarrier.h"
 #include "bilaal_death.h"
@@ -355,16 +353,6 @@ struct instance_faronaar_mage : public InstanceScript
     void OnPlayerLeave(Player* player) override { _ritual.Leave(*player); }
     void Update(uint32 diff) override { _ritual.Update(*instance, diff); }
 
-    uint32 GetData(uint32 type) const override
-    {
-        return type == FaronaarRitual::FocusReadyData ? _ritual.IsFocusReady() : InstanceScript::GetData(type);
-    }
-
-    bool BeginRitual(Creature const& meryl, Player const& player)
-    {
-        return _ritual.EnableFocus(*instance, meryl, player);
-    }
-
     WorldLocation loc_res_pla;
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
@@ -382,35 +370,6 @@ struct instance_faronaar_mage : public InstanceScript
 
 private:
     FaronaarRitual::State _ritual;
-};
-
-struct npc_faronaar_meryl_ritual : public SmartAI
-{
-    explicit npc_faronaar_meryl_ritual(Creature* creature) : SmartAI(creature) { }
-
-    void sGossipSelect(Player* player, uint32 menu, uint32 option) override
-    {
-        using namespace FaronaarRitual;
-        if (me->GetMapId() != MapId || me->GetEntry() != Meryl || me->GetDBTableGUIDLow() != MerylSpawn ||
-            menu != MerylRitualMenu || option != 0)
-        {
-            SmartAI::sGossipSelect(player, menu, option);
-            return;
-        }
-
-        GossipMenu const& openMenu = player->PlayerTalkClass->GetGossipMenu();
-        if (!me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) || openMenu.GetMenuId() != menu || !openMenu.GetItem(option))
-            return;
-
-        auto* script = dynamic_cast<instance_faronaar_mage*>(me->GetInstanceScript());
-        if (script && script->BeginRitual(*me, *player))
-        {
-            TC_LOG_INFO("scripts", "Faronaar: Meryl accepted the incantation selection in instance %u", me->GetInstanceId());
-            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-        }
-        else
-            TC_LOG_WARN("scripts", "Faronaar: Meryl could not enable the Ritual Focus in instance %u", me->GetInstanceId());
-    }
 };
 
 // feraldruid
@@ -509,7 +468,6 @@ void AddSC_instance_class_art_scenarios()
     RegisterInstanceScript(instance_priest_mage_nexus_art, 1583);
     RegisterInstanceScript(instance_nightborne_sunwell, 1840);
     RegisterInstanceScript(instance_faronaar_mage, 1616);
-    RegisterCreatureAI(npc_faronaar_meryl_ritual);
     RegisterInstanceScript(instance_ruins_of_falanaar_feral, 1612);
     RegisterInstanceScript(instance_monk_intro, 1014);
     RegisterCreatureAI(npc_stormstout_brewer_q45404);
