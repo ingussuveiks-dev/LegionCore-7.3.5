@@ -1,6 +1,8 @@
 #ifndef FARONAAR_RITUAL_H
 #define FARONAAR_RITUAL_H
 
+#include "EbonchillReturn.h"
+#include "GameObject.h"
 #include "InstanceScript.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
@@ -28,10 +30,13 @@ constexpr uint32 CenterReachedTree = 48464;
 constexpr uint32 AltarStep = 2;
 constexpr uint32 RitualStep = 3;
 constexpr uint32 ShowdownStep = 4;
+constexpr uint32 EbonchillStep = 5;
+constexpr uint32 RealmExit = 251051;
 constexpr float AltarRadius = 28.0f;
 constexpr uint32 UpdateInterval = 500;
 
 Position const Center{-418.688f, 8009.09f, 66.65f};
+Position const StaffPickup{-4384.41f, 471.078f, 435.011f, 4.90771f};
 std::array<Position, 4> const GemPositions{{
     {-412.69f, 8009.09f, 66.65f}, {-418.69f, 8015.09f, 66.65f},
     {-424.69f, 8009.09f, 66.65f}, {-418.69f, 8003.09f, 66.65f}
@@ -77,14 +82,70 @@ public:
 
         if (step == ShowdownStep)
             TransferToRealm(map);
+        if (step >= EbonchillStep)
+            UpdateRealmExits(map);
     }
 
-    void Leave(Player const& player)
+    void Leave(InstanceMap& map, Player const& player)
     {
         _transfers.erase(player.GetGUID());
+        RemoveRealmExit(map, player.GetGUID());
     }
 
 private:
+    void RemoveRealmExit(InstanceMap& map, ObjectGuid player)
+    {
+        auto exit = _realmExits.find(player);
+        if (exit == _realmExits.end())
+            return;
+        if (GameObject* portal = map.GetGameObject(exit->second.portal))
+            portal->Delete();
+        _realmExits.erase(exit);
+    }
+
+    void UpdateRealmExits(InstanceMap& map)
+    {
+        for (auto const& reference : map.GetPlayers())
+        {
+            Player* player = reference.getSource();
+            if (!player || !player->IsInWorld() || player->IsBeingTeleported())
+                continue;
+
+            ObjectGuid const owner = player->GetGUID();
+            if (!player->IsAlive() || !EbonchillReturn::HasPendingReturn(*player) ||
+                player->GetDistance2d(StaffPickup.GetPositionX(), StaffPickup.GetPositionY()) > 75.0f ||
+                std::fabs(player->GetPositionZ() - StaffPickup.GetPositionZ()) > 20.0f)
+            {
+                RemoveRealmExit(map, owner);
+                continue;
+            }
+
+            PendingExit& exit = _realmExits[owner];
+            if (map.GetGameObject(exit.portal) || exit.failures >= 3)
+                continue;
+
+            // Keep the entrance clear of the staff model. Use the nearby
+            // platform floor if it resolves at the reconstructed position.
+            Position position{-4379.0f, 469.0f, StaffPickup.GetPositionZ(), StaffPickup.GetOrientation()};
+            float const floor = map.GetHeight(player->GetPhases(), position.GetPositionX(), position.GetPositionY(),
+                position.GetPositionZ() + 3.0f, true, 8.0f, nullptr, player);
+            if (std::fabs(floor - position.GetPositionZ()) <= 3.0f)
+                position.Relocate(position.GetPositionX(), position.GetPositionY(), floor, position.GetOrientation());
+            else
+                position = StaffPickup;
+
+            float const facing = position.GetOrientation();
+            if (GameObject* portal = player->SummonGameObject(RealmExit, position, facing,
+                0.0f, 0.0f, std::sin(facing * 0.5f), std::cos(facing * 0.5f), 300, owner))
+            {
+                exit.portal = portal->GetGUID();
+                exit.failures = 0;
+            }
+            else
+                ++exit.failures;
+        }
+    }
+
     static bool CanParticipate(Player const& player)
     {
         return player.IsAlive() && player.IsInWorld() && !player.IsBeingTeleported() &&
@@ -199,6 +260,11 @@ private:
         uint32 wait = 2500;
         uint8 attempts = 0;
     };
+    struct PendingExit
+    {
+        ObjectGuid portal;
+        uint8 failures = 0;
+    };
 
     uint32 _timer = UpdateInterval;
     bool _announcedRitual = false;
@@ -207,6 +273,7 @@ private:
     ObjectGuid _focus;
     std::array<ObjectGuid, 4> _gems;
     std::map<ObjectGuid, PendingTransfer> _transfers;
+    std::map<ObjectGuid, PendingExit> _realmExits;
 };
 }
 

@@ -350,7 +350,7 @@ struct instance_faronaar_mage : public InstanceScript
         _ritual.Observe(creature);
     }
 
-    void OnPlayerLeave(Player* player) override { _ritual.Leave(*player); }
+    void OnPlayerLeave(Player* player) override { _ritual.Leave(*instance, *player); }
     void Update(uint32 diff) override { _ritual.Update(*instance, diff); }
 
     WorldLocation loc_res_pla;

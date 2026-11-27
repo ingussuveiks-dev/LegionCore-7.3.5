@@ -29,6 +29,7 @@
 #include "Chat.h"
 #include "ClientConfigPackets.h"
 #include "DatabaseEnv.h"
+#include "EbonchillReturn.h"
 #include "GameEventMgr.h"
 #include "GameTime.h"
 #include "GitRevision.h"
@@ -44,11 +45,43 @@
 #include "PlayerDefines.h"
 #include "PlayerDump.h"
 #include "QuestData.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 #include "ScriptMgr.h"
 #include "SocialMgr.h"
+#include "SpellMgr.h"
 #include "SystemPackets.h"
 #include "WorldStateMgr.h"
 #include "WorldSocket.h"
+
+namespace
+{
+bool ExitCompletedEbonchillLogin(Player& player)
+{
+    if (!EbonchillReturn::HasPendingReturn(player) || (player.GetScenarioId() && player.GetScenarioId() != 1122))
+        return false;
+
+    if (Scenario* scenario = sScenarioMgr->GetScenario(player.GetInstanceId()))
+        if (scenario->GetMap() != player.GetMap() || scenario->GetScenarioId() != 1122)
+            return false;
+
+    // The completed instance may have expired while the mage was still
+    // inside. Use the aftermath's existing Hall of the Guardian destination.
+    SpellTargetPosition const* exit = sSpellMgr->GetSpellTargetPosition(214991);
+    if (!exit || exit->target_mapId != 1513 ||
+        !MapManager::IsValidMapCoord(exit->target_mapId, exit->target_X, exit->target_Y, exit->target_Z, exit->target_Orientation))
+        return false;
+    if (player.IsBeingTeleported())
+        return player.IsBeingTeleportedFar() && player.GetTeleportDest().GetMapId() == exit->target_mapId &&
+            player.GetTeleportDest().GetExactDist(exit->target_X, exit->target_Y, exit->target_Z) < 0.01f;
+    if (!player.TeleportTo(exit->target_mapId, exit->target_X, exit->target_Y, exit->target_Z, exit->target_Orientation))
+        return false;
+
+    player.SetScenarioId(0);
+    TC_LOG_INFO("entities.player", "Ebonchill: completed scenario login returns artifact owner %u to the Hall of the Guardian", player.GetGUIDLow());
+    return true;
+}
+}
 
 void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
 {
@@ -936,7 +969,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
         bool addedToLoginMap = player->GetMap()->AddPlayerToMap(player);
         bool validLoginMap = addedToLoginMap && (player->GetMap()->IsGarrison() || player->CheckInstanceLoginValid());
-        if (!validLoginMap && !player->ExitCompletedDarkRidersLogin() && !player->ExitCompletedBrokenShoreLogin() && !player->ExitCompletedSheilunLogin() && !player->ExitCompletedTalonclawLogin())
+        if (!validLoginMap && !player->ExitCompletedDarkRidersLogin() && !player->ExitCompletedBrokenShoreLogin() &&
+            !player->ExitCompletedSheilunLogin() && !player->ExitCompletedTalonclawLogin() && !ExitCompletedEbonchillLogin(*player))
         {
             TC_LOG_ERROR("entities.player", "Login map rejected: player %u map %u instance %u added %u; using exit/home fallback",player->GetGUIDLow(),player->GetMapId(),player->GetInstanceId(),uint32(addedToLoginMap));
             if (AreaTriggerStruct const* at = sAreaTriggerDataStore->GetGoBackTrigger(player->GetMapId()))
