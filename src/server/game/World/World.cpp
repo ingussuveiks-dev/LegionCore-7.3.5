@@ -3931,22 +3931,25 @@ void World::ResetWeekly()
 
 void World::ResetEventSeasonalQuests(uint16 event_id)
 {
-    if (event_id == 75)
+    if (event_id == 12 || event_id == 75)
     {
-        // Startup reapplies active events. Only a different Faire occurrence resets rewards.
+        // Startup reapplies active holidays. Reset rewards only for a new occurrence.
+        constexpr uint32 HallowsEndOccurrence = 20028;
         constexpr uint32 DarkmoonFaireOccurrence = 20027;
-        GameEventData const& faire = sGameEventMgr->GetEventMap()[event_id];
+        uint32 occurrenceState = event_id == 12 ? HallowsEndOccurrence : DarkmoonFaireOccurrence;
+        char const* description = event_id == 12 ? "Hallow''s End occurrence" : "Darkmoon Faire occurrence";
+        GameEventData const& event = sGameEventMgr->GetEventMap()[event_id];
         time_t now = GameTime::GetGameTime();
-        auto period = time_t(faire.occurence * MINUTE);
-        auto occurrence = uint32(period > 0 && now >= faire.start ? now - (now - faire.start) % period : faire.start);
-        auto saved = CharacterDatabase.PQuery("SELECT `value` FROM worldstates WHERE entry = %u", DarkmoonFaireOccurrence);
+        auto period = time_t(event.occurence * MINUTE);
+        auto occurrence = uint32(period > 0 && now >= event.start ? now - (now - event.start) % period : event.start);
+        auto saved = CharacterDatabase.PQuery("SELECT `value` FROM worldstates WHERE entry = %u", occurrenceState);
         if (saved && saved->Fetch()[0].GetUInt32() == occurrence)
             return;
 
         auto reset = CharacterDatabase.BeginTransaction();
-        reset->Append("DELETE FROM character_queststatus_seasonal WHERE event = 75");
-        reset->PAppend("INSERT INTO worldstates (entry, `value`, comment) VALUES (%u, %u, 'Darkmoon Faire occurrence') "
-            "ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)", DarkmoonFaireOccurrence, occurrence);
+        reset->PAppend("DELETE FROM character_queststatus_seasonal WHERE event = %u", event_id);
+        reset->PAppend("INSERT INTO worldstates (entry, `value`, comment) VALUES (%u, %u, '%s') "
+            "ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)", occurrenceState, occurrence, description);
         CharacterDatabase.DirectCommitTransaction(reset);
     }
     else

@@ -19257,6 +19257,12 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     if (quest->GetQuestId() == 29433 && (GetMapId() != 974 || !sGameEventMgr->IsActiveEvent(75)))
         return false;
 
+    // This shared Candy Bucket can be claimed without a quest log entry.
+    // Retain historical rewards and require the current inn's admission conditions.
+    if (quest->GetQuestId() == 12409 &&
+        (GetQuestStatus(12409) == QUEST_STATUS_REWARDED || !SatisfyQuestConditions(quest, msg)))
+        return false;
+
     switch (quest->GetQuestId())
     {
         case 29506:
@@ -20259,6 +20265,8 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     // survive a restart while the chosen reward still awaited the next save.
     SaveInventoryAndGoldToDB(rewardTrans);
     _SaveQuestStatus(rewardTrans);
+    if (quest->IsSeasonal())
+        _SaveSeasonalQuestStatus(rewardTrans);
     _SaveWorldQuestStatus(rewardTrans);
     CharacterDatabase.CommitTransaction(rewardTrans);
 

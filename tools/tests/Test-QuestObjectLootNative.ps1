@@ -11,7 +11,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$SingingPoolsReedsBaseline,[switch]$SingingPoolsRockBaseline,[switch]$SingingPoolsPearlBaseline,[switch]$SingingPoolsShuAdmissionBaseline,[switch]$SingingPoolsReflectionBaseline,[switch]$SingingPoolsCoaxBaseline,[switch]$SingingPoolsSpoutBaseline,[switch]$SingingPoolsCartBaseline,[switch]$SingingPoolsFarmBaseline,[switch]$SingingPoolsMalletBaseline,[switch]$SingingPoolsGongBaseline,[switch]$SingingPoolsWugouBaseline,[switch]$SingingPoolsScrollBaseline,[switch]$SingingPoolsBreezeSuppliesBaseline,[switch]$SingingPoolsFeFengBaseline,[switch]$SingingPoolsRuffianBaseline,[switch]$SingingPoolsWindEscortBaseline,[switch]$SingingPoolsZhaoBaseline,
       [switch]$ForestEttin,[switch]$ForestEttinBaseline,
       [switch]$KezanHotRod,[switch]$KezanHotRodBaseline,
-      [switch]$TakingPrecautions,[switch]$CandyBuckets,[switch]$Collector,[switch]$Scenes,[switch]$Kyle,[switch]$Seasoning,[switch]$SeasoningBaseline,
+      [switch]$TakingPrecautions,[switch]$CandyBuckets,[switch]$ShadowmoonCandy,[switch]$Collector,[switch]$Scenes,[switch]$Kyle,[switch]$Seasoning,[switch]$SeasoningBaseline,
       [switch]$Aquantion,[switch]$AquantionBaseline,[switch]$Anowyn,[switch]$AnowynBaseline,
       [switch]$AlliedCity,[switch]$AlliedCityBaseline,[switch]$Duskwither,[switch]$DuskwitherBaseline,
       [switch]$RedSnapper,[switch]$RedSnapperBaseline,[switch]$SwiftDiscipline,[switch]$SwiftDisciplineBaseline,
@@ -41,6 +41,7 @@ if($HighestQuestPOI -or $VisionQuestPOI -or $LegacyQuestPOI -or $OslowQuestPOI -
 if($EtchedNote){++$scopedProbes}
 if($ForemanOslow){++$scopedProbes}
 if($CandyBuckets){++$scopedProbes}
+if($ShadowmoonCandy){++$scopedProbes}
 if($MoonkinMonitoring){++$scopedProbes}
 if($BertsBots){++$scopedProbes}
 if($LegionAnniversary){++$scopedProbes}
@@ -473,6 +474,11 @@ if($TakingPrecautions){
 }
 if($CandyBuckets){
  $probeSource = "$PSScriptRoot/HallowsEndCandyBucketsNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeHallowsEndCandyBuckets.inc",$query+' " WHERE ID IN(12286,39657,43055)"')
+}
+if($ShadowmoonCandy){
+ $probeSource = "$PSScriptRoot/ShadowmoonCandyNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeShadowmoonCandy.inc",$query+' " WHERE ID=12409"')
  [IO.File]::WriteAllText("$out/NativeHallowsEndCandyBuckets.inc",$query+' " WHERE ID IN(12286,39657,43055)"')
 }
 if($MoonkinMonitoring){
