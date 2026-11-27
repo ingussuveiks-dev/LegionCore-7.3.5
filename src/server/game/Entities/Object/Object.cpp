@@ -39,6 +39,7 @@
 #include "MiscPackets.h"
 #include "MovementPackets.h"
 #include "MovementTypedefs.h"
+#include "MovementCollision.h"
 #include "Object.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
@@ -3407,9 +3408,17 @@ Position WorldObject::GetNearPosition(float dist, float angle)
 
 void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float angle)
 {
-    angle += GetOrientation();
-    if (!IsInWater())
+    MovePositionWithCollision(*this, pos, dist, angle);
+}
+
+void MovePositionWithCollision(WorldObject& mover, Position& pos, float dist, float angle,
+    DynamicTreeCallback* query, bool measureHeightFromFeet)
+{
+    angle += mover.GetOrientation();
+    float const feetZ = pos.GetPositionZ();
+    if (!mover.IsInWater())
         pos.m_positionZ += 2.0f;
+    float const heightCheckZ = measureHeightFromFeet ? feetZ : pos.GetPositionZ();
     float destx = pos.m_positionX + dist * std::cos(angle);
     float desty = pos.m_positionY + dist * std::sin(angle);
 
@@ -3420,12 +3429,13 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         return;
     }
 
-    bool isFalling = m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
-    float ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-    float floor = GetHeight(destx, desty, pos.m_positionZ, true);
+    MovementInfo const& movement = mover.m_movementInfo;
+    bool isFalling = movement.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
+    float ground = mover.GetHeight(destx, desty, MAX_HEIGHT, true);
+    float floor = mover.GetHeight(destx, desty, pos.m_positionZ, true);
     float destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
-    if (IsInWater()) // In water not allow change Z to ground
+    if (mover.IsInWater()) // In water not allow change Z to ground
     {
         if (pos.m_positionZ > destz)
             destz = pos.m_positionZ;
@@ -3434,7 +3444,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     bool _checkZ = true;
     if (isFalling) // Allowed point in air if we falling
     {
-        float z_now = m_movementInfo.fall.lastTimeUpdate ? (pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - m_movementInfo.fall.lastTimeUpdate), false) - 5.0f) : pos.m_positionZ;
+        float z_now = movement.fall.lastTimeUpdate ? (pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - movement.fall.lastTimeUpdate), false) - 5.0f) : pos.m_positionZ;
         if ((z_now - ground) > 10.0f)
         {
             destz = z_now;
@@ -3445,19 +3455,19 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     float step = dist / 10.0f;
     for (uint8 j = 0; j < 10; ++j)
     {
-        if (fabs(pos.m_positionZ - destz) > 6 && _checkZ)
+        if (fabs(heightCheckZ - destz) > 6 && _checkZ)
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            ground = mover.GetHeight(destx, desty, MAX_HEIGHT, true);
+            floor = mover.GetHeight(destx, desty, pos.m_positionZ, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         else
             break;
     }
 
-    bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mover.GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
     // collision occurred
     if (col)
     {
@@ -3470,7 +3480,9 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         destz -= 0.5f;
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f, nullptr, this);
+    col = mover.GetMap()->getObjectHitPos(mover.GetPhases(), mover.IsPlayer() || mover.IsUnitOwnedByPlayer(),
+        pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f,
+        destx, desty, destz, -0.5f, query, &mover);
 
     // Collided with a gameobject
     if (col)
@@ -3486,12 +3498,12 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     for (uint8 j = 0; j < 10; ++j)
     {
         // do not allow too big z changes
-        if (fabs(pos.m_positionZ - destz) > 6 && _checkZ)
+        if (fabs(heightCheckZ - destz) > 6 && _checkZ)
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            ground = mover.GetHeight(destx, desty, MAX_HEIGHT, true);
+            floor = mover.GetHeight(destx, desty, pos.m_positionZ, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         // we have correct destz now
@@ -3505,20 +3517,20 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     float groundZ = VMAP_INVALID_HEIGHT_VALUE;
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
-    UpdateAllowedPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ, &groundZ);
-    pos.SetOrientation(GetOrientation());
+    mover.UpdateAllowedPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ, &groundZ);
+    pos.SetOrientation(mover.GetOrientation());
 
     // position has no ground under it (or is too far away)
     if (groundZ <= INVALID_HEIGHT)
     {
-        if (Unit const* unit = ToUnit())
+        if (Unit const* unit = mover.ToUnit())
         {
             // unit can fly, ignore
             if (unit->CanFly())
                 return;
 
             // fall back to gridHeight if any
-            float gridHeight = GetMap()->GetGridMapHeigh(pos.m_positionX, pos.m_positionY);
+            float gridHeight = mover.GetMap()->GetGridMapHeigh(pos.m_positionX, pos.m_positionY);
             if (gridHeight > INVALID_HEIGHT)
                 pos.m_positionZ = gridHeight + unit->GetHoverOffset();
         }

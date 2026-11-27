@@ -13,6 +13,7 @@
 #include "ObjectAccessor.h"
 #include "GameObject.h"
 #include "SmartScriptMgr.h"
+#include "VioletHoldBarrier.h"
 #include "bilaal_death.h"
 #include "bilaal_portal.h"
 #include "../../Monk/Intro/chen_rescue.h"
@@ -56,6 +57,122 @@ struct instance_violethold_mage : public InstanceScript
 {
     instance_violethold_mage(InstanceMap* map) : InstanceScript(map) {}
 
+    void OnGameObjectCreate(GameObject* object) override
+    {
+        InstanceScript::OnGameObjectCreate(object);
+        if (!VioletHoldBarrier::IsBarrier(object))
+            return;
+
+        object->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
+        _barriers.insert(object->GetGUID());
+    }
+
+    void OnGameObjectRemove(GameObject* object) override
+    {
+        InstanceScript::OnGameObjectRemove(object);
+        if (VioletHoldBarrier::IsBarrier(object))
+            _barriers.erase(object->GetGUID());
+    }
+
+    void OnCreatureCreate(Creature* creature) override
+    {
+        InstanceScript::OnCreatureCreate(creature);
+        if (creature->GetEntry() == 102785 && creature->GetDBTableGUIDLow() == 376617)
+            _kathranatir = creature->GetGUID();
+    }
+
+    void OnCreatureRemove(Creature* creature) override
+    {
+        InstanceScript::OnCreatureRemove(creature);
+        if (creature->GetGUID() == _kathranatir)
+            _kathranatir.Clear();
+    }
+
+    void OnCreatureDamageTaken(Creature* creature, Unit* attacker, uint32& damage) override
+    {
+        if (creature->GetGUID() != _kathranatir)
+            return;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != VioletHoldBarrier::Scenario)
+            return;
+
+        // Preserve the two native health triggers at 85% (Tomb of Ice) and
+        // 10% (scripted escape). This hook receives the final damage and uses
+        // the same attacker-relative health as Unit::DealDamage/ModifyHealth.
+        uint32 const step = scenario->GetCurrentStep();
+        int32 const minimumPercent = step < 3 ? 85 : 10;
+        uint64 const minimum = std::max<uint64>(1, creature->CountPctFromMaxHealth(minimumPercent, attacker));
+        uint64 const health = creature->GetHealth(attacker);
+        damage = health > minimum ? uint32(std::min<uint64>(damage, health - minimum)) : 0;
+    }
+
+    void Update(uint32 diff) override
+    {
+        if (_kathranatir.IsEmpty() && _barriers.empty())
+            return;
+
+        if (_openingCheck > diff)
+        {
+            _openingCheck -= diff;
+            return;
+        }
+        _openingCheck = 500;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != VioletHoldBarrier::Scenario)
+            return;
+
+        if (scenario->GetCurrentStep() >= VioletHoldBarrier::FinalStage)
+        {
+            auto barriers = std::move(_barriers);
+            _barriers.clear();
+            for (ObjectGuid const& guid : barriers)
+                if (GameObject* object = instance->GetGameObject(guid))
+                    object->Delete();
+            return;
+        }
+
+        if (scenario->GetCurrentStep() == 1)
+        {
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto const crossing = progress->find(51519);
+            if (crossing == progress->end() || !crossing->second.Counter)
+                for (auto const& reference : instance->GetPlayers())
+                {
+                    Player* player = reference.getSource();
+                    // Use the player's current world position. A mage who
+                    // Blinked before the stage update can already be across.
+                    if (VioletHoldBarrier::IsParticipant(player) && VioletHoldBarrier::IsInCourtyard(player->GetPosition()))
+                    {
+                        scenario->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48802, 0, 0, nullptr, player);
+                        break;
+                    }
+                }
+            return;
+        }
+
+        if (scenario->GetCurrentStep() != 0)
+            return;
+
+        // The existing health event applies the Tomb of Ice to the dreadlord.
+        // Meryl may be his victim at that moment. Use a quest participant as
+        // the reference for the shared scenario criterion once the aura lands.
+        Creature* kathranatir = instance->GetCreature(_kathranatir);
+        if (!kathranatir || !kathranatir->IsAlive() || !kathranatir->HasAura(211589, _kathranatir))
+            return;
+
+        for (auto const& reference : instance->GetPlayers())
+        {
+            Player* player = reference.getSource();
+            if (VioletHoldBarrier::IsParticipant(player) && player->IsWithinDistInMap(kathranatir, 80.0f))
+            {
+                scenario->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48801, 0, 0, nullptr, player);
+                break;
+            }
+        }
+    }
+
     WorldLocation loc_res_pla;
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
@@ -70,6 +187,11 @@ struct instance_violethold_mage : public InstanceScript
         }
         return &loc_res_pla;
     }
+
+private:
+    GuidUnorderedSet _barriers;
+    ObjectGuid _kathranatir;
+    uint32 _openingCheck = 0;
 };
 
 //mage & priest nexus 1583

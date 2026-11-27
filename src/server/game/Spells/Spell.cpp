@@ -39,6 +39,7 @@
 #include "LootMgr.h"
 #include "MapInstanced.h"
 #include "MapManager.h"
+#include "MovementCollision.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Opcodes.h"
@@ -47,6 +48,7 @@
 #include "Pet.h"
 #include "Player.h"
 #include "PlayerDefines.h"
+#include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "ScriptMgr.h"
 #include "SharedDefines.h"
@@ -68,6 +70,7 @@
 #include "Util.h"
 #include "Vehicle.h"
 #include "VMapFactory.h"
+#include "VioletHoldBarrier.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
@@ -1626,7 +1629,31 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
 
             Position pos = dest._position;
 
-            unitCaster->MovePositionToFirstCollision(pos, dist, angle);
+            Scenario const* violetHold = nullptr;
+            if ((m_spellInfo->Id == 1953 || m_spellInfo->Id == 212653) &&
+                VioletHoldBarrier::IsParticipant(unitCaster->ToPlayer()))
+                violetHold = sScenarioMgr->GetScenario(unitCaster->GetInstanceId());
+
+            if (violetHold && violetHold->GetScenarioId() == VioletHoldBarrier::Scenario &&
+                violetHold->GetCurrentStep() < VioletHoldBarrier::FinalStage)
+            {
+                DynamicTreeCallback query;
+                query.filter = [](GameObject const* hit) { return !VioletHoldBarrier::IsBarrier(hit); };
+                bool const onBalcony = pos.GetPositionX() >= 1293.0f && pos.GetPositionX() <= 1325.0f &&
+                    pos.GetPositionY() >= -296.0f && pos.GetPositionY() <= -229.0f &&
+                    pos.GetPositionZ() >= 43.0f && pos.GetPositionZ() <= 46.0f;
+                MovePositionWithCollision(*unitCaster, pos, dist, angle, &query, onBalcony);
+                // This particular leap drops over the balcony lip. The
+                // collision trace has found its landing in the courtyard;
+                // the route a walker would take down the stairs is longer.
+                if (onBalcony && VioletHoldBarrier::IsInCourtyard(pos))
+                {
+                    dest.Relocate(pos);
+                    break;
+                }
+            }
+            else
+                unitCaster->MovePositionToFirstCollision(pos, dist, angle);
             // Generate path to that point
             if (!m_preGeneratedPath)
                 m_preGeneratedPath = std::make_unique<PathGenerator>(unitCaster);
