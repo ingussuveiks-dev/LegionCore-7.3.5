@@ -20,6 +20,15 @@ WHERE EXISTS (SELECT 1 FROM `smart_scripts` WHERE `entryorguid` = 107716 AND `so
     AND `id` = 2 AND `link` = 3 AND `event_type` = 61 AND `action_type` = 1)
 AND NOT EXISTS (SELECT 1 FROM `smart_scripts` WHERE `entryorguid` = 107716 AND `source_type` = 0 AND `id` = 3);
 
+-- The closing line is the last authored row. Portal visibility now follows quest completion.
+UPDATE `smart_scripts` AS outro
+LEFT JOIN `smart_scripts` AS continuation ON continuation.`entryorguid` = outro.`entryorguid`
+    AND continuation.`source_type` = outro.`source_type` AND continuation.`id` = outro.`link`
+SET outro.`link` = 0
+WHERE outro.`entryorguid` = 107716 AND outro.`source_type` = 0 AND outro.`id` = 19
+  AND outro.`link` = 20 AND outro.`event_type` = 52 AND outro.`action_type` = 1
+  AND outro.`action_param1` = 5 AND continuation.`entryorguid` IS NULL;
+
 -- Let the actual player or pet/guardian owner create the stone after the final kill.
 UPDATE `smart_scripts`
 SET `action_param2` = 128, `target_type` = 130, `target_param1` = 100
