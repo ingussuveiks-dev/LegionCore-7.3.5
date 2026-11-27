@@ -1,6 +1,6 @@
 param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='',[switch]$PassingWisdomBaseline,[switch]$PassingWisdomOrphanBaseline,[switch]$WanderingIsleBalloon,[switch]$WanderingIsleBalloonBaseline,[switch]$WanderingIsleMandori,[switch]$WanderingIsleMandoriBaseline,[switch]$WanderingIsleSouth,[switch]$WanderingIsleSouthBaseline,[switch]$WanderingIsleMedicalBaseline,[switch]$WanderingIsleRescue,[switch]$WanderingIsleRescueBaseline,[switch]$WanderingIsleThorn,[switch]$WanderingIsleThornBaseline,[switch]$WanderingIsleHealing,[switch]$WanderingIsleHealingBaseline,[switch]$WanderingIsleDeparture,[switch]$WanderingIsleDepartureBaseline,
       [switch]$MoonkinQuestPOI,[switch]$MoonkinMonitoring,[switch]$CameraQuestPOI,[switch]$BertsBots,[switch]$LegionAnniversary,[switch]$OnTheMend,[switch]$DreadlordsPrizePortal,[switch]$DreadlordsPrizePortalBaseline,[switch]$SunGate,[switch]$SunGateBaseline,
-      [switch]$AzsharaDetonator,[switch]$AzsharaDetonatorBaseline,[switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
+      [switch]$AzsharaDetonator,[switch]$AzsharaDetonatorBaseline,[switch]$LowLevelWorldSpawns,[switch]$WoodsEndCoffer,[switch]$WoodsEndCofferBaseline,[switch]$FromTheShadows,[switch]$FromTheShadowsBaseline,
       [switch]$Volcanoth,[switch]$VolcanothBaseline,[switch]$OldFriends,[switch]$ScorpidVenom,[switch]$ScorpidVenomBaseline,[switch]$PricelessTreasures,[switch]$PricelessTreasuresBaseline,[switch]$WestfallRise,[switch]$WestfallVision,[switch]$WestfallVisionObserve,[switch]$WestfallVisionScene,[switch]$WestfallStew,[switch]$WestfallStewBaseline,[switch]$NoTanks,[switch]$NoTanksBaseline,[switch]$PaintItBlack,[switch]$PaintItBlackBaseline,
       [switch]$DownWithCrushcog,[switch]$DownWithCrushcogBaseline,[switch]$StaggeringEffort,[switch]$StaggeringEffortBaseline,
       [switch]$RedridgeSeaforium,[switch]$RedridgeSeaforiumBaseline,[switch]$DeeprunRat,[switch]$DeeprunRatObserve,[switch]$HighestQuestPOI,[switch]$VisionQuestPOI,[switch]$LegacyQuestPOI,[switch]$OslowQuestPOI,[switch]$EtchedNote,[switch]$ForemanOslow,[switch]$DarkshoreWildlifeFlight,[switch]$BrazieBasicBotany,[switch]$BrazieFlowerPower,[switch]$BrazieGhouls,[switch]$BraziePumpkin,[switch]$BrazieWarden,[switch]$BrazieGarden,
@@ -51,6 +51,7 @@ if($SunGate -or $SunGateBaseline){++$scopedProbes}
 if($SunGate -and $SunGateBaseline){throw 'Select either the working Sun Gate or its pre-migration fixture'}
 if($AzsharaDetonator -or $AzsharaDetonatorBaseline){++$scopedProbes}
 if($AzsharaDetonator -and $AzsharaDetonatorBaseline){throw 'Select either the working detonator or its pre-migration fixture'}
+if($LowLevelWorldSpawns){++$scopedProbes}
 if($DarkshoreWildlifeFlight){++$scopedProbes}
 if($WanderingIsleSouth){++$scopedProbes}
 if($BrazieBasicBotany){++$scopedProbes}
@@ -499,6 +500,11 @@ if($SunGate -or $SunGateBaseline){
 if($AzsharaDetonator -or $AzsharaDetonatorBaseline){
  $probeSource = "$PSScriptRoot/AzsharaDetonatorNative.cpp"
  [IO.File]::WriteAllText("$out/NativeAzsharaDetonator.inc",$query+' " WHERE ID IN(14475,14476,14477)"')
+}
+if($LowLevelWorldSpawns){
+ $probeSource = "$PSScriptRoot/LowLevelWorldSpawnsNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeLowLevelWorldSpawns.inc",$query+' " WHERE ID IN(2498,2499,29401,29412)"')
+ [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($Collector){
  $probeSource = "$PSScriptRoot/HallowsEndCollectorNative.cpp"

@@ -3,7 +3,7 @@
 class GameObject;
 class Player;
 
-namespace GranaryGrainSack
+namespace QuestLootChest
 {
     bool IsUnavailable(GameObject const& object, Player* player);
 }

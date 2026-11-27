@@ -31,7 +31,7 @@
 #include "GameObjectPackets.h"
 #include "GameTime.h"
 #include "Garrison.h"
-#include "GranaryGrainSack.h"
+#include "QuestLootChest.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
 #include "GroupMgr.h"
@@ -63,6 +63,20 @@ bool IsQuestGrainSack(GameObject const& object)
     // Pandaria's Stolen Malt Sack and the two quest-only roasted grain chests.
     return object.GetMapId() == 870 &&
         (object.GetEntry() == 210001 || object.GetEntry() == 251422 || object.GetEntry() == 251424);
+}
+
+uint32 GetWindsweptBalloonQuest(GameObject const& object)
+{
+    if (object.GetEntry() == 209058 && object.GetMapId() == 1 && object.GetZoneId() == 1637)
+        return 29401;
+    if (object.GetEntry() == 209242 && object.GetMapId() == 0 && object.GetZoneId() == 1519)
+        return 29412;
+    return 0;
+}
+
+bool IsQuestLootChest(GameObject const& object)
+{
+    return IsQuestGrainSack(object) || GetWindsweptBalloonQuest(object) != 0;
 }
 
 bool IsAridenCampObject(GameObject const* object)
@@ -1764,16 +1778,20 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
     return captive && captive->AI() && captive->AI()->GetData(ProphecyOfAkida::CaptiveReady);
 }
 
-bool GranaryGrainSack::IsUnavailable(GameObject const& object, Player* player)
+bool QuestLootChest::IsUnavailable(GameObject const& object, Player* player)
 {
-    return IsQuestGrainSack(object) &&
-        (!player || !LootTemplates_Gameobject.HaveQuestLootForPlayer(object.GetGOInfo()->GetLootId(), player));
+    uint32 quest = GetWindsweptBalloonQuest(object);
+    if (!quest && !IsQuestGrainSack(object))
+        return false;
+
+    return !player || (quest && player->GetQuestStatus(quest) != QUEST_STATUS_INCOMPLETE) ||
+        !LootTemplates_Gameobject.HaveQuestLootForPlayer(object.GetGOInfo()->GetLootId(), player);
 }
 
 bool GameObject::ActivateToQuest(Player* target) const
 {
-    if (IsQuestGrainSack(*this))
-        return !GranaryGrainSack::IsUnavailable(*this, target);
+    if (IsQuestLootChest(*this))
+        return !QuestLootChest::IsUnavailable(*this, target);
 
     if (!CanUseAridenCampObject(this, target))
         return false;
@@ -2001,7 +2019,7 @@ void GameObject::Use(Unit* user)
 
 void GameObject::Use(Unit* user, uint32 activationSpell)
 {
-    if (GranaryGrainSack::IsUnavailable(*this, user->ToPlayer()))
+    if (QuestLootChest::IsUnavailable(*this, user->ToPlayer()))
         return;
 
     if (KorothBanner::IsBanner(*this))
@@ -3433,11 +3451,11 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
 
     bool campObject = IsAridenCampObject(this);
     bool const invasionBanner = MardumInvasionBanner::IsBanner(*this);
-    bool const personalFlags = campObject || IsQuestGrainSack(*this) || invasionBanner;
+    bool const personalFlags = campObject || IsQuestLootChest(*this) || invasionBanner;
     bool const bannerUsed = invasionBanner && (target->GetQuestRewardStatus(MardumInvasionBanner::Quest) ||
         target->GetQuestObjectiveData(MardumInvasionBanner::Quest, GetEntry()) > 0);
     bool const unavailable = (campObject && !CanUseAridenCampObject(this, target)) ||
-        GranaryGrainSack::IsUnavailable(*this, target) || bannerUsed;
+        QuestLootChest::IsUnavailable(*this, target) || bannerUsed;
     bool forcedFlags = personalFlags || (GetGoType() == GAMEOBJECT_TYPE_CHEST && GetGOInfo()->chest.usegrouplootrules && HasLootRecipient());
     bool targetIsGM = target->isGameMaster();
 
