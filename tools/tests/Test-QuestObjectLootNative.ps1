@@ -509,7 +509,7 @@ if($LowLevelWorldSpawns){
 }
 if($GilneasFlank){
  $probeSource = "$PSScriptRoot/GilneasFlankNative.cpp"
- [IO.File]::WriteAllText("$out/NativeGilneasFlank.inc",$query+' " WHERE ID IN(14386,24575,24592,24672,24677)"')
+ [IO.File]::WriteAllText("$out/NativeGilneasFlank.inc",$query+' " WHERE ID IN(14386,24575,24592,24672,24674,24677)"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN (13909,28325,29360,29418)"')
 }
 if($Collector){
