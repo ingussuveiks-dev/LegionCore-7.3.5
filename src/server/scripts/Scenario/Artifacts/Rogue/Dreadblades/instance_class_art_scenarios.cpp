@@ -9,6 +9,7 @@
 #include "ScenarioMgr.h"
 #include "MapManager.h"
 #include "TemporarySummon.h"
+#include "Vehicle.h"
 #include "Group.h"
 #include "ObjectAccessor.h"
 #include "GameObject.h"
@@ -194,6 +195,94 @@ private:
     uint32 _openingCheck = 0;
 };
 
+struct npc_violet_hold_forge_lift : ScriptedAI
+{
+    explicit npc_violet_hold_forge_lift(Creature* creature) : ScriptedAI(creature) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        Player* player = summoner->ToPlayer();
+        if (me->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 203356 ||
+            !VioletHoldBarrier::IsParticipant(player) || player->GetVehicle() || !me->GetVehicleKit())
+            return;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != VioletHoldBarrier::Scenario ||
+            (scenario->GetCurrentStep() != 2 && scenario->GetCurrentStep() != 3))
+            return;
+
+        _rider = player->GetGUID();
+        _ground = me->GetPosition();
+        me->SetReactState(REACT_PASSIVE);
+        me->SetCanFly(true);
+        me->SetDisableGravity(true);
+        me->DespawnOrUnsummon(12000);
+        _events.ScheduleEvent(BOARDING_TIMEOUT, 2500);
+        player->EnterVehicle(me, 0, true);
+    }
+
+    void PassengerBoarded(Unit* passenger, int8 seat, bool apply) override
+    {
+        if (seat != 0 || passenger->GetGUID() != _rider)
+            return;
+
+        _events.Reset();
+        if (!apply)
+            return;
+
+        // Let the native seat-entry spline finish before moving the vehicle.
+        _events.ScheduleEvent(RISE, 1000);
+        _events.ScheduleEvent(DESCEND, 5700);
+        _events.ScheduleEvent(EXIT_FALLBACK, 8000);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+        switch (_events.ExecuteEvent())
+        {
+            case BOARDING_TIMEOUT:
+                TC_LOG_WARN("scripts", "Violet Hold Forge lift: the activating mage did not board seat 0");
+                break;
+            case RISE:
+                if (GetRider())
+                    me->GetMotionMaster()->MovePoint(RISE, _ground.GetPositionX(), _ground.GetPositionY(),
+                        _ground.GetPositionZ() + 4.0f, false, 3.5f);
+                break;
+            case DESCEND:
+                if (GetRider())
+                    me->GetMotionMaster()->MovePoint(LANDING_POINT, _ground, false, 3.5f);
+                break;
+            case EXIT_FALLBACK:
+                if (Unit* rider = GetRider())
+                    rider->ExitVehicle(&_ground);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (type == POINT_MOTION_TYPE && id == LANDING_POINT)
+            if (Unit* rider = GetRider())
+                rider->ExitVehicle(&_ground);
+    }
+
+private:
+    enum : uint32 { BOARDING_TIMEOUT = 1, RISE, DESCEND, EXIT_FALLBACK, LANDING_POINT };
+
+    Unit* GetRider() const
+    {
+        Unit* passenger = me->GetVehicleKit()->GetPassenger(0);
+        return passenger && passenger->GetGUID() == _rider ? passenger : nullptr;
+    }
+
+    EventMap _events;
+    ObjectGuid _rider;
+    Position _ground;
+};
+
 //mage & priest nexus 1583
 struct instance_priest_mage_nexus_art : public InstanceScript
 {
@@ -362,6 +451,7 @@ void AddSC_instance_class_art_scenarios()
 {
     RegisterInstanceScript(instance_dreadblades, 1545);
     RegisterInstanceScript(instance_violethold_mage, 1494);
+    RegisterCreatureAI(npc_violet_hold_forge_lift);
     RegisterInstanceScript(instance_priest_mage_nexus_art, 1583);
     RegisterInstanceScript(instance_nightborne_sunwell, 1840);
     RegisterInstanceScript(instance_faronaar_mage, 1616);
