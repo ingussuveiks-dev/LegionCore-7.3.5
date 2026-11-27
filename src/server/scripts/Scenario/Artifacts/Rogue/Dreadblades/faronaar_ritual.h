@@ -18,6 +18,8 @@ constexpr uint32 MapId = 1616;
 constexpr uint32 ScenarioId = 1122;
 constexpr uint32 Quest = 42479;
 constexpr uint32 Meryl = 108097;
+constexpr uint32 MerylSpawn = 369855;
+constexpr uint32 MerylRitualMenu = 19816;
 constexpr uint32 PortalEmitter = 107691;
 constexpr uint32 RitualFocus = 108855;
 constexpr uint32 ManaGem = 108854;
@@ -43,7 +45,7 @@ class State
 public:
     void Observe(Creature const* creature)
     {
-        if (creature->GetEntry() == Meryl && creature->GetDBTableGUIDLow() == 369855)
+        if (creature->GetEntry() == Meryl && creature->GetDBTableGUIDLow() == MerylSpawn)
             _meryl = creature->GetGUID();
         else if (creature->GetEntry() == PortalEmitter && creature->GetDBTableGUIDLow() == 369856)
             _portalEmitter = creature->GetGUID();
@@ -87,16 +89,18 @@ public:
 
     bool IsFocusReady() const { return _focusReady; }
 
-    void EnableFocus(InstanceMap& map)
+    bool EnableFocus(InstanceMap& map, Creature const& meryl, Player const& player)
     {
         Scenario* scenario = sScenarioMgr->GetScenario(map.GetInstanceId());
         if (!scenario || scenario->GetScenarioId() != ScenarioId || scenario->GetCurrentStep() != AltarStep ||
-            !scenario->GetAchievementMgr().GetCriteriaProgressMap()->count(CenterReachedTree))
-            return;
+            !scenario->GetAchievementMgr().GetCriteriaProgressMap()->count(CenterReachedTree) ||
+            meryl.GetGUID() != _meryl || !CanParticipate(player) || !IsAtAltar(player))
+            return false;
 
         _focusReady = true;
         if (Creature* focus = map.GetCreature(_focus))
             focus->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+        return true;
     }
 
 private:
