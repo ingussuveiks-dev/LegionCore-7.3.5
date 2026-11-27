@@ -58,3 +58,7 @@ Pārbaudītas 12 `On The Mend` ķēdes un atjaunoti desmit petu apmācības pied
 `29364` Corn Mash pieder Aska piecu kvestu dienas rotācijai `5684`. Zondē publicēts rotācijā izvēlēts kvests un pārbaudīta Cooking prasība, sešas īstās bļodas, atkārtota klikšķa atteikums un nodošana. Dienu maiņa un malšanas animācija klientā paliek atsevišķas pārbaudes. [Zondes izvade](../../build-extractors/bin/Release/fixed/2026-11-27-bloodmyst-sun-gate/goober-survey-verified-diagnostics/check-output.log) · [Rotācijas dati](../../build-extractors/bin/Release/fixed/2026-11-27-bloodmyst-sun-gate/goober-live-readback.tsv)
 
 `14477` Push the Button! darba serverī prasa nospiest Goblin Detonator pie Smooks. Atjaunoti oriģinālās pogas, kastes un Gorek novietojumi. Pārbaudīta faktiskā slēdzene, vairāku spēlētāju atsevišķi mēģinājumi un Kroum atlīdzība. Legion video redzamā torņa demonstrācija un `14476` precīzā sargu kustība paliek atvērtas. [Azshara audits](azshara-goblin-detonator-2026-11-27.md)
+
+## Kvesta burvestību nosacījumi
+
+Izvietoti `14005` Vengeance of Elune darbību joslas un `24452` Profitability Scouting ierīces labojumi. Atkārtotā darba atlase pārbaudīja 4 865 ieslēgtus kvestus un 177 skriptu nosaukumus Release failā. `24904` Gilneas City revīzijā identificēts bloķēts rapieris, trūkstošs cīņas sākuma skripts un neizsekota fināla ieskaite. Abu izvietoto labojumu izspēle klientā paliek atvērta. [Burvestību nosacījumu audits](low-level-quest-auras-2026-11-27.md)
