@@ -266,36 +266,48 @@ public:
 
     struct go_q40378AI : public GameObjectAI
     {
-        go_q40378AI(GameObject* go) : GameObjectAI(go)
-        {
+        go_q40378AI(GameObject* go) : GameObjectAI(go) { }
 
+        static constexpr uint32 Quest = 40378;
+        static constexpr uint32 AshtongueCredit = 88872;
+        static constexpr uint32 Opening = 6477;
+        static constexpr uint32 Scene = 189261;
+
+        bool CanActivate(Player* player) const
+        {
+            return player->IsAlive() && player->CanContact() && !player->IsSpectator() &&
+                go->GetMapId() == 1481 && go->GetEntry() == 241751 && go->GetDBTableGUIDLow() == 131213 &&
+                go->isSpawned() && !go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) &&
+                go->InSamePhase(player) && player->HaveAtClient(go) &&
+                go->IsWithinDistInMap(player, go->GetInteractionDistance()) && go->IsWithinLOSInMap(player) &&
+                player->GetQuestStatus(Quest) == QUEST_STATUS_INCOMPLETE &&
+                player->GetQuestObjectiveData(Quest, AshtongueCredit) == 0;
         }
-
-        enum data
-        {
-            SCENE = 189261,
-        };
 
         bool GossipHello(Player* player, bool isUse) override
         {
-            if (!isUse)
+            if (isUse)
+                return false;
+
+            if (CanActivate(player) && !player->FindCurrentSpellBySpellId(Opening))
+                player->CastSpell(go, Opening, false);
+            return true;
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            if (!CanActivate(player))
                 return true;
 
-            /*
-            ClientToServer: CMSG_GAME_OBJ_REPORT_USE (0x34DE) Length: 15 ConnIdx: 2 Time: 02/06/2016 22:39:25.012 Number: 16325
-            GameObjectGUID: Full: 0x2C2090B920EEB5C00000100001364D15; HighType: GameObject; Low: 20335893; Map: 1481; Entry: 244439;
-            */
             player->Dismount();
-            player->KilledMonsterCredit(88872);
-            player->CastSpell(player, SCENE, true);
-            
+            player->KilledMonsterCredit(AshtongueCredit);
+            if (player->GetQuestObjectiveData(Quest, AshtongueCredit) == 0)
+                return true;
+
+            player->CastSpell(player, Scene, true);
             player->SummonCreature(99916, 1023.25f, 2849.71f, 5.42f, 1.75f, TEMPSUMMON_MANUAL_DESPAWN, 0, player->GetGUID(), NULL);
-            //    sayer->AddPlayerInPersonnalVisibilityList(player->GetGUID());
             if (Creature* mount = player->SummonCreature(101518, 1016.71f, 2849.31f, 5.48f, 1.38f, TEMPSUMMON_MANUAL_DESPAWN, 0, player->GetGUID(), NULL))   // 16
-            {
-              //  mount->AddPlayerInPersonnalVisibilityList(player->GetGUID());
                 mount->SetVisible(false);
-            }
             return true;
         }
  
