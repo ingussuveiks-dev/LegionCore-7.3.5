@@ -19280,6 +19280,10 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     if (quest->GetQuestId() == 13975 && GetQuestObjectiveData(13975, 65892) < 1)
         return false;
 
+    // Old Push the Button logs could complete on acceptance without using the detonator.
+    if (quest->GetQuestId() == 14477 && GetQuestObjectiveData(14477, 196870) < 1)
+        return false;
+
     if (quest->GetQuestId() == AmaniCatacombs::Quest)
         for (QuestObjective const& objective : quest->GetObjectives())
             if ((objective.Type == QUEST_OBJECTIVE_GAMEOBJECT || objective.Type == QUEST_OBJECTIVE_AREATRIGGER) &&
@@ -23625,6 +23629,9 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
     AlliedRaceCityBoard::RestoreIncompleteQuests(*this);
     AmaniCatacombs::RestoreIncompleteQuest(*this);
+    if (GetQuestStatus(14477) == QUEST_STATUS_COMPLETE && !GetQuestRewardStatus(14477) &&
+        GetQuestObjectiveData(14477, 196870) < 1)
+        IncompleteQuest(14477);
     // The New Blood's scenario selector is transient. Restore it before login
     // adds the player to map 1522 (also used by the later order-hall scenario).
     // A new instance has no saved scenario criteria or actor state: restart at
