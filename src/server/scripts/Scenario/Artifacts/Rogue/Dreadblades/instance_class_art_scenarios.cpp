@@ -17,6 +17,7 @@
 #include "VioletHoldBarrier.h"
 #include "bilaal_death.h"
 #include "bilaal_portal.h"
+#include "faronaar_ritual.h"
 #include "../../Monk/Intro/chen_rescue.h"
 #include "../../Monk/Intro/jorvinax_defeat.h"
 #include "../../Monk/Intro/chen_presentation.h"
@@ -343,6 +344,15 @@ struct instance_faronaar_mage : public InstanceScript
 {
     instance_faronaar_mage(InstanceMap* map) : InstanceScript(map) {}
 
+    void OnCreatureCreate(Creature* creature) override
+    {
+        InstanceScript::OnCreatureCreate(creature);
+        _ritual.Observe(creature);
+    }
+
+    void OnPlayerLeave(Player* player) override { _ritual.Leave(*player); }
+    void Update(uint32 diff) override { _ritual.Update(*instance, diff); }
+
     WorldLocation loc_res_pla;
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
@@ -357,6 +367,9 @@ struct instance_faronaar_mage : public InstanceScript
         }
         return &loc_res_pla;
     }
+
+private:
+    FaronaarRitual::State _ritual;
 };
 
 // feraldruid
