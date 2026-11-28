@@ -557,6 +557,107 @@ class spell_darkshore_gather_ritual_material : public SpellScript
     RitualMaterial const* _material = nullptr;
     uint32 _before = 0;
 };
+
+Player* GetGreymistRider(Unit* caster)
+{
+    TempSummon* decoy = caster->ToTempSummon();
+    if (!decoy || decoy->GetEntry() != 34207 || decoy->GetMapId() != 1 ||
+        decoy->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != 64923 || decoy->IsQuestObjectExpired())
+        return nullptr;
+
+    auto scope = decoy->GetQuestObjectScope().lock();
+    Unit* summoner = decoy->GetSummoner();
+    Player* player = summoner ? summoner->ToPlayer() : nullptr;
+    if (!scope || !player || scope->Owner != player->GetGUID() || !player->IsAlive() ||
+        player->IsBeingTeleported() ||
+        !player->IsWithinDistInMap(decoy, INTERACTION_DISTANCE))
+        return nullptr;
+
+    QuestStatus status = player->GetQuestStatus(13560);
+    return status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE ? player : nullptr;
+}
+
+class spell_darkshore_greymist_countdown : public SpellScript
+{
+    PrepareSpellScript(spell_darkshore_greymist_countdown);
+
+    SpellCastResult CheckCountdown()
+    {
+        Unit* decoy = GetCaster();
+        Player* player = GetGreymistRider(decoy);
+        if (!player || player->GetQuestStatus(13560) != QUEST_STATUS_INCOMPLETE ||
+            player->GetVehicleBase() != decoy || decoy->HasAura(GetSpellInfo()->Id))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        return SPELL_CAST_OK;
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_darkshore_greymist_countdown::CheckCountdown);
+    }
+};
+
+class spell_darkshore_greymist_detonation : public SpellScript
+{
+    PrepareSpellScript(spell_darkshore_greymist_detonation);
+
+    void CaptureDriver()
+    {
+        if (Player* player = GetGreymistRider(GetCaster()))
+            if (player->GetVehicleBase() == GetCaster())
+                _mountedRider = player->GetGUID();
+    }
+
+    void BeforeDetonationHit()
+    {
+        Creature* victim = GetHitCreature();
+        _liveMurloc.Clear();
+        if (victim && victim->IsAlive() &&
+            (victim->GetEntry() == 33262 || victim->GetEntry() == 33277))
+            _liveMurloc = victim->GetGUID();
+    }
+
+    void AfterDetonationHit()
+    {
+        Creature* victim = GetHitCreature();
+        if (!victim || victim->GetGUID() != _liveMurloc || victim->IsAlive())
+            return;
+
+        _liveMurloc.Clear();
+        if (Player* player = GetGreymistRider(GetCaster()))
+            // Effect 134 in 62683 uses the recipient player as the group reward source.
+            player->RewardPlayerAndGroupAtEvent(32852, player);
+    }
+
+    void ReturnDriver()
+    {
+        Player* player = GetGreymistRider(GetCaster());
+        if (!player || player->GetGUID() != _mountedRider)
+            return;
+
+        if (Unit* vehicle = player->GetVehicleBase())
+        {
+            if (vehicle != GetCaster())
+                return;
+            player->ExitVehicle();
+        }
+
+        // The original sequence returns control at the raft beside Gary.
+        player->NearTeleportTo(7746.5f, -407.873f, 1.62461f, 0.14f);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_darkshore_greymist_detonation::CaptureDriver);
+        BeforeHit += SpellHitFn(spell_darkshore_greymist_detonation::BeforeDetonationHit);
+        AfterHit += SpellHitFn(spell_darkshore_greymist_detonation::AfterDetonationHit);
+        AfterCast += SpellCastFn(spell_darkshore_greymist_detonation::ReturnDriver);
+    }
+
+    ObjectGuid _liveMurloc;
+    ObjectGuid _mountedRider;
+};
 }
 
 void AddSC_darkshore()
@@ -567,5 +668,7 @@ void AddSC_darkshore()
     RegisterSpellScript(spell_darkshore_buried_artifact_detector);
     RegisterCreatureAI(npc_darkshore_ritual_material_source);
     RegisterSpellScript(spell_darkshore_gather_ritual_material);
+    RegisterSpellScript(spell_darkshore_greymist_countdown);
+    RegisterSpellScript(spell_darkshore_greymist_detonation);
     new condition_darkshore_ritual_material();
 }

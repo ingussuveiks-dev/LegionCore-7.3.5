@@ -27,6 +27,8 @@ Scarlet Corpse `49340` izmeklēšana noveda pie labojuma aktīvajā C++ savākš
 
 Darkshore trīs savākšanas pārejas salabotas kopā ar `Ritual Materials` priekšmetu saņemšanas apstrādi. [Ritual Materials pārbaude](darkshore-ritual-materials-2026-11-28.md)
 
+Abas Greymist pārejas salabotas kopā ar kvesta `13560` robota izsaukšanu, detonāciju un atgriešanos pie konsoles. Pēc šā labojuma sākotnējā atlasē atvērtas četras pārejas, tostarp divas Archmage Ataeric un pa vienai Kolkar Marauder un Bluegill Representative. [Greymist pārbaude](darkshore-greymist-decoy-2026-11-28.md)
+
 Tabulā `⇒` rāda mainīto ceļu, karte un zona ir norādītas ar to datubāzes ID. Kvesta kolonnā uzskaitīti mērķi, kas tieši atsaucas uz attiecīgā tēla ID. Papildu kredīta un burvestību saites atvērtajiem gadījumiem norādītas rezultātā.
 
 ### Partija 1

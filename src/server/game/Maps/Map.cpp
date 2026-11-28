@@ -4466,6 +4466,27 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         duration = 5 * MINUTE * IN_MILLISECONDS;
     }
 
+    Player* greymistRider = nullptr;
+    if (entry == 34207 && spellId == 64923)
+    {
+        greymistRider = summoner ? summoner->ToPlayer() : nullptr;
+        if (!greymistRider || GetId() != 1 || !properties || properties->ID != 1201 ||
+            !greymistRider->IsAlive() || greymistRider->GetVehicle() || greymistRider->IsBeingTeleported() ||
+            greymistRider->GetQuestStatus(13560) != QUEST_STATUS_INCOMPLETE)
+            return nullptr;
+
+        GameObject const* console = greymistRider->FindNearestGameObject(195006, INTERACTION_DISTANCE);
+        if (!console || console->GetDBTableGUIDLow() != 37921 || !greymistRider->IsWithinLOSInMap(console))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *greymistRider->GetSummonList(entry))
+            if (Creature const* decoy = GetCreature(guid))
+                if (decoy->IsAlive() && !decoy->IsDespawn() && !decoy->IsQuestObjectExpired())
+                    return nullptr;
+
+        duration = 2 * MINUTE * IN_MILLISECONDS;
+    }
+
     Player* botanist = nullptr;
     uint32 botanyQuest = 0;
     if (entry == BrazieBotany::Board && spellId == BrazieBotany::SummonBoard)
@@ -4914,6 +4935,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (wildlifeRider)
         wildlifeRider->BindQuestObject(DarkshoreWildlifeFlight::QuestId, summon, false);
+
+    if (greymistRider)
+        greymistRider->BindQuestObject(13560, summon, false);
 
     if (botanist)
         botanist->BindQuestObject(botanyQuest, summon);
