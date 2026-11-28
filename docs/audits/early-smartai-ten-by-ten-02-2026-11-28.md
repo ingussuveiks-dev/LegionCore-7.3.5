@@ -5,12 +5,22 @@
 ## Konstatētās problēmas
 
 - **Runaway Shredder! (14129).** Tēla 35111 veselības notikums pie 0–10% pārslēdz to uz draudzīgu frakciju un pa 1 → 2 → 3 → 7 izsauc sagūstīšanas kredītu. ProcessAction saglabā agresijas izraisītāju, un SMART_TARGET_ACTION_INVOKER to izmanto, ja veselības taimeris nav saņēmis savu izraisītāju. Tādējādi kredīta ceļš var sasniegt spēlētāju pirms iekāpšanas. Klikšķim ir sava ķēde 4 → 5 ar burvestību 66778 un tēla pazušanu pēc vienas sekundes. Pirms remonta jāpārbauda faktiskais iekāpšanas vai burvestības saņemšanas apliecinājums. Jāpārbauda arī vairāku spēlētāju, mājdzīvnieka un neveiksmīga klikšķa gadījumi.
-- **Fourth and Goal (24503 un 28414).** Mērķim 37203 ir divi SPELLHIT 70052 notikumi ar ID 0. ProcessEventsFor apstrādā abas rindas. Pirmais derīgais trāpījums pēc atiestatīšanas divreiz izsauc CALL_KILLEDMONSTER 37203. Neatkārtojamais notikums papildus izsauc tēlu 423070. Abu kvestu mērķim vajag vienu trāpījumu. Dubults kredīta izsaukums apstiprināts datos un servera kodā. Spēlētāja skaitītāja dubults pieaugums nav pārbaudīts. Remontā jāsaglabā viens kredīta izsaukums katram derīgam trāpījumam un esošais 423070 izsaukums ar tā posmiem.
+- **Fourth and Goal (24503 un 28414). Salabots.** Mērķim 37203 bija divi SPELLHIT 70052 notikumi ar ID 0. Pirmais derīgais trāpījums pēc atiestatīšanas divreiz izsauca CALL_KILLEDMONSTER 37203. Tagad katrs derīgais trāpījums izsauc kredītu vienreiz. Pirmais trāpījums atsevišķi izsauc to pašu ainas tēlu 423070. [Labojums un pārbaudes](#fourth-and-goal-labojums)
 - **Bad Science! Bad! (14322).** Static-Charged Hippogryph 36147 pēc burvestības 8599 pie 0–30% veselības izsauc teksta grupu 0, kuras datubāzē nav.
 - **The Terrible Tinkers of the Ruined Reaches (14383).** Zapper Gnome 36384 un Netgun Gnome 36385 pēc burvestībām 68664 un 68658 katrs izsauc savu teksta grupu 0. Trūkst abu grupu. Burvestības ir atrodamas 26972 DB2 datos.
 - **Ace (38441).** Atlasītā pāreja 1 → 2 mēģina atskaņot teksta grupu 1. Trūkst arī pārējo septiņu grupu, uz kurām atsaucas tā paša tēla pilnā secība. Sākuma signālu DATA 1,1 dod tēls 38432, pieņemot kvestu 24868. Ace ir arī kvesta 25122 mērķis. Maršrutam 38441 ir 20 punkti. Serveris iestata dialoga taimeri pirms teksta meklēšanas un pēc termiņa izsauc TEXT_OVER arī bez teksta. Jāatgūst teksta rindas un jāpārbauda to parādīšanās kopā ar secības sākumu un beigām.
 
-Četras trūkstošā teksta atsauces attiecas uz atlasītajām pārejām. Ace pilnajā secībā konstatētas vēl septiņas. Šajā partijā veiktas datu un avota koda pārbaudes. Atrastie trūkumi paliek atvērti remontam.
+Četras trūkstošā teksta atsauces attiecas uz atlasītajām pārejām. Ace pilnajā secībā konstatētas vēl septiņas. Dialogu un pārējo kvestu problēmas paliek atvērtas remontam.
+
+## Fourth and Goal labojums
+
+Migrācija `2026_11_28_18_fourth_and_goal_credit.sql` atstāj atkārtojamo kredīta notikumu ar tā sākotnējo saņēmēju. Bijušais saites notikums kļūst par atsevišķu, vienreizēju reakciju uz `70052`. Tā saglabā izsaukšanas veidu, koordinātas un 300 sekunžu dzīves ilgumu. Mērķa īpašie notikuma nosacījumi vai atšķirīgas SmartAI rindas pasargā vietējo versiju no aizvietošanas.
+
+`Test-FourthAndGoalCredit.ps1` pārbaudīja sākotnējās un labotās rindas pagaidu MariaDB tabulās. Atkārtota migrācija, cita avota rindas, vietējs laika parametrs un notikuma nosacījums deva paredzēto rezultātu. Pirmajā testa mēģinājumā MariaDB noraidīja pagaidu tabulu ar avota tabulas vārdu. Pēc atsevišķu shēmas tabulu ieviešanas pārbaude izdevās. Saglabāti abi testa rezultāti.
+
+Kanoniskais worldserver ielādēja migrāciju ar statusu `RELEASED` un SHA-1 `BA64C8FBEAC69416FC4BD8687C66776FFF94090F`. Tas sasniedza gatavību un korekti izslēdzās ar kodu 0. Dzīvo datu pārbaude apstiprināja abas SmartAI rindas, abu kvestu `37203` mērķi ar nepieciešamo skaitu 1 un septiņus ainas maršruta punktus. Jaunu avāriju, kļūdu vai brīdinājumu nav. Sākotnējā testa diagnostika un veiksmīgās pārbaudes saglabātas vietējā `build-extractors/bin/Release/fixed/2026-11-28-fourth-and-goal/` ar pārbaudītām SHA-256 kontrolsummām. Pēc 26972 burvestību kataloga pārbaudes izdzēsti divi pagaidu būvējuma faili, atbrīvojot 256 619 baitus. Kanonisko bināro failu un konfigurācijas kontrolsummas pārbaudītas pēc tīrīšanas.
+
+Spēles klientā vēl jāpārbauda pats Footbomb sitiens no transportlīdzekļa, ainas izskats, atkārtots trāpījums un abi kvesta varianti. Kredīta saņēmēju joprojām nosaka oriģinālā SmartAI darbība, kas izmanto spēlētāju vai atbilstošo izraisītāja īpašnieku un native grupas atbilstības pārbaudi.
 
 ## Papildu pārbaudes
 
@@ -139,7 +149,7 @@
 
 | Tēls | Karte un zona | Tiešie kvestu mērķi | Notikumu ID | Rezultāts |
 | --- | --- | --- | --- | --- |
-| 37203 Fourth And Goal Target | 648:4737 | 24503, 28414 | 0 → 1 | Pirmais trāpījums izsauc kredītu divreiz |
+| 37203 Fourth And Goal Target | 648:4737 | 24503, 28414 | 0 → 1 | Salabota. Kredīts un ainas izsaukšana ir atsevišķi trāpījuma notikumi. |
 | 38035 Chemical Wagon | 0:10,1:14,1:15,1:5034 | 24638, 24645, 24658, 24659, 44546, 44558 | 0 → 1 → 2 | Saite derīga |
 | 38035 Chemical Wagon | 0:10,1:14,1:15,1:5034 | 24638, 24645, 24658, 24659, 44546, 44558 | 1 → 2 | Saite derīga |
 | 38306 Zar'jira | 1:6453 | 24814 | 0 → 1 | Saite derīga |
