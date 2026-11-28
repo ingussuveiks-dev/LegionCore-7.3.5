@@ -14,6 +14,8 @@ Scarlet Corpse `49340` jāizmeklē kā viena `26800` secība, jo klikšķis, izs
 
 ## Pārbaudes un uzstādīšana
 
+**Noslēguma stāvoklis** — pārbaudītas visas 100 atlasītās pārejas. Sākotnēji derīgas bija 86, bet 14 atradnes salabotas. Spēles klienta iziešanas pārbaudes norādītas pie katra labojuma.
+
 - **86 pārejas** atrisinās līdz derīgam gala notikumam. **3 pārejas** salabotas un pārbaudītas dzīvajā datubāzē. **11 pārejas** atstātas atvērtas ar nākamo izpētes punktu. Tabulās parādīts struktūras rezultāts. Tēlu parādīšanos, fāzes, redzamību, runu, uzvedību un kvestu iziešanu spēles klientā šis audits nepārbaudīja.
 - MariaDB pārbaudē izmantoti pagaidu galdi un lietotājs ar lasīšanas tiesībām. Pārbaudītas precīzas rindas pirms un pēc labojuma, atkārtota migrācija, nesaistīts avota tips un trīs atšķirīgu lokālo variantu saudzēšana. Pirmajā pārbaudes palaišanā MariaDB noraidīja pagaidu tabulas izveidi ar tādu pašu nosaukumu kā shēmas avotam. Shēmas kopija pārdēvēta. Pēc labojuma gan izolētā pārbaude, gan dzīvo datu salīdzinājums izdevās.
 - Kanoniskais `worldserver` ielādēja `2026_11_28_10_early_smartai_continuations.sql`. Pārbaudīta precīza `RELEASED` rindas un migrācijas kontrolsummas atbilstība. Serveris sasniedza gatavību un izslēdzās ar kodu 0. Nebija jaunu avāriju, pievienotu DB kļūdu, brīdinājumu vai assert ierakstu. Vecais jauktais 1347 baitu `DBErrors.log` ir saglabāts. Diagnostikas oriģinālie baiti un SHA-256 kontrolsummas glabājas lokāli `build-extractors/bin/Release/fixed/2026-11-28-early-smartai-continuations/`.
@@ -32,6 +34,8 @@ Abas Greymist pārejas salabotas kopā ar kvesta `13560` robota izsaukšanu, det
 Kolkar Marauder pāreja novērsta, izņemot pirms Cataclysm izmantoto nejaušo Verog izsaukšanas ceļu un pārbaudot pašreizējo Wyneth ceļu. Vēl atvērtas divas Archmage Ataeric pārejas un viena Bluegill Representative pāreja. [Verog pārbaude](verog-wyneth-source-2026-11-28.md)
 
 Abas Archmage Ataeric pārejas aizstātas ar sākotnējo vairoga un Arcane Fiend burvestību secību, kas ieskaita `27518` pēc faktiskas vairoga pārslodzes. Pēc šā labojuma atvērta Bluegill Representative pāreja. [Ataeric pārbaude](ataeric-shield-2026-11-28.md)
+
+Pēdējā Bluegill Representative pāreja atjaunota ar vadītāja kliedzienu pirms uzbrukuma. `26868` ieskaita maskētā spēlētāja faktisko feromonu trāpījumu. [Axis of Awful pārbaude](axis-of-awful-bluegill-2026-11-28.md)
 
 Tabulā `⇒` rāda mainīto ceļu, karte un zona ir norādītas ar to datubāzes ID. Kvesta kolonnā uzskaitīti mērķi, kas tieši atsaucas uz attiecīgā tēla ID. Papildu kredīta un burvestību saites atvērtajiem gadījumiem norādītas rezultātā.
 
