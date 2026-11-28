@@ -7,7 +7,7 @@ param([switch]$Baseline,[string]$OutputDirectory='',[string]$BaselineDirectory='
       [switch]$BlackrockPrisoners,[switch]$BlackrockPrisonersBaseline,[switch]$WanderingFirstLesson,
       [switch]$IlgalarWard,[switch]$IlgalarWardBaseline,[switch]$AdericRepose,[switch]$KeelHarbor,[switch]$KeelHarborObserve,[switch]$EndgameGunship,[switch]$EndgameGunshipObserve,
       [switch]$ChallengerFires,[switch]$ChallengerFiresBaseline,[switch]$SkitteringSpiderling,[switch]$SkitteringSpiderlingBaseline,
-      [switch]$Recruitment,[switch]$RecruitmentBaseline,[switch]$RitualMaterials,[switch]$RitualMaterialsBaseline,[switch]$Greymist,
+      [switch]$Recruitment,[switch]$RecruitmentBaseline,[switch]$RitualMaterials,[switch]$RitualMaterialsBaseline,[switch]$Greymist,[switch]$Verog,
       [switch]$HuoOfferings,[switch]$HuoOfferingsBaseline,[switch]$SingingPools,[switch]$SingingPoolsBaseline,[switch]$SingingPoolsWaterBaseline,
       [switch]$SingingPoolsReedsBaseline,[switch]$SingingPoolsRockBaseline,[switch]$SingingPoolsPearlBaseline,[switch]$SingingPoolsShuAdmissionBaseline,[switch]$SingingPoolsReflectionBaseline,[switch]$SingingPoolsCoaxBaseline,[switch]$SingingPoolsSpoutBaseline,[switch]$SingingPoolsCartBaseline,[switch]$SingingPoolsFarmBaseline,[switch]$SingingPoolsMalletBaseline,[switch]$SingingPoolsGongBaseline,[switch]$SingingPoolsWugouBaseline,[switch]$SingingPoolsScrollBaseline,[switch]$SingingPoolsBreezeSuppliesBaseline,[switch]$SingingPoolsFeFengBaseline,[switch]$SingingPoolsRuffianBaseline,[switch]$SingingPoolsWindEscortBaseline,[switch]$SingingPoolsZhaoBaseline,
       [switch]$ForestEttin,[switch]$ForestEttinBaseline,
@@ -51,6 +51,7 @@ if($Recruitment -or $RecruitmentBaseline){++$scopedProbes}
 if($Recruitment -and $RecruitmentBaseline){throw 'Select either the working Recruitment pickup or its original fixture'}
 if($RitualMaterials -or $RitualMaterialsBaseline){++$scopedProbes}
 if($Greymist){++$scopedProbes}
+if($Verog){++$scopedProbes}
 if($RitualMaterials -and $RitualMaterialsBaseline){throw 'Select either the working Ritual Materials pickup or its original fixture'}
 if($HighestQuestPOI -or $VisionQuestPOI -or $LegacyQuestPOI -or $OslowQuestPOI -or $MoonkinQuestPOI -or $CameraQuestPOI){++$scopedProbes}
 if($EtchedNote){++$scopedProbes}
@@ -592,6 +593,11 @@ if($Greymist){
  $probeSource = "$PSScriptRoot/GreymistNative.cpp"
  [IO.File]::WriteAllText("$out/NativeGreymist.inc",$query+' " WHERE ID=13560"')
  [IO.File]::WriteAllText("$out/NativeQuestSupplyChests.inc",$query+' " WHERE ID IN(13909,28325,29360,29418)"')
+}
+if($Verog){
+ if(!$OutputDirectory){throw 'Provide a private Verog output directory'}
+ $probeSource = "$PSScriptRoot/VerogNative.cpp"
+ [IO.File]::WriteAllText("$out/NativeVerog.inc",$query+' " WHERE ID=851"')
 }
 if($SwiftDiscipline -or $SwiftDisciplineBaseline){
  $probeSource = "$PSScriptRoot/SwiftDisciplineNative.cpp"

@@ -29,6 +29,8 @@ Darkshore trīs savākšanas pārejas salabotas kopā ar `Ritual Materials` prie
 
 Abas Greymist pārejas salabotas kopā ar kvesta `13560` robota izsaukšanu, detonāciju un atgriešanos pie konsoles. Pēc šā labojuma sākotnējā atlasē atvērtas četras pārejas, tostarp divas Archmage Ataeric un pa vienai Kolkar Marauder un Bluegill Representative. [Greymist pārbaude](darkshore-greymist-decoy-2026-11-28.md)
 
+Kolkar Marauder pāreja novērsta, izņemot pirms Cataclysm izmantoto nejaušo Verog izsaukšanas ceļu un pārbaudot pašreizējo Wyneth ceļu. Vēl atvērtas divas Archmage Ataeric pārejas un viena Bluegill Representative pāreja. [Verog pārbaude](verog-wyneth-source-2026-11-28.md)
+
 Tabulā `⇒` rāda mainīto ceļu, karte un zona ir norādītas ar to datubāzes ID. Kvesta kolonnā uzskaitīti mērķi, kas tieši atsaucas uz attiecīgā tēla ID. Papildu kredīta un burvestību saites atvērtajiem gadījumiem norādītas rezultātā.
 
 ### Partija 1
