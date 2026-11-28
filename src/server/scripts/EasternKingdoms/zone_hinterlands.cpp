@@ -28,8 +28,10 @@ npc_00x09hl
 EndContentData */
 
 #include "ScriptMgr.h"
+#include "Player.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
+#include "SpellScript.h"
 
 /*######
 ## npc_00x09hl
@@ -149,7 +151,70 @@ public:
     };
 };
 
+namespace
+{
+    constexpr uint32 SkitteringSpiderling = 42689;
+    constexpr uint32 SkitteringSpiderlingItem = 58120;
+    constexpr uint32 AllThatSkittersHorde = 26310;
+    constexpr uint32 AllThatSkittersAlliance = 26523;
+
+    class spell_hinterlands_collect_spiderling : public SpellScript
+    {
+        PrepareSpellScript(spell_hinterlands_collect_spiderling);
+
+        Creature* GetSpiderling() const
+        {
+            Creature* spiderling = GetCaster()->ToCreature();
+            if (spiderling && spiderling->GetEntry() == SkitteringSpiderling && spiderling->GetMapId() == 0 &&
+                spiderling->GetZoneId() == 47 && spiderling->GetDBTableGUIDLow())
+                return spiderling;
+            return nullptr;
+        }
+
+        SpellCastResult CheckPickup()
+        {
+            // The packet lookup can still see the actor during deferred despawn.
+            if (Creature* spiderling = GetSpiderling())
+                if (!spiderling->IsAlive() || spiderling->IsDespawn())
+                    return SPELL_FAILED_BAD_TARGETS;
+            return SPELL_CAST_OK;
+        }
+
+        void SaveCarriedCount()
+        {
+            _collecting = false;
+            Player* player = GetHitPlayer();
+            if (!GetSpiderling() || !player ||
+                (player->GetQuestStatus(AllThatSkittersHorde) != QUEST_STATUS_INCOMPLETE &&
+                    player->GetQuestStatus(AllThatSkittersAlliance) != QUEST_STATUS_INCOMPLETE))
+                return;
+
+            _carriedBefore = player->GetItemCount(SkitteringSpiderlingItem, false);
+            _collecting = true;
+        }
+
+        void RemoveCollectedSpiderling()
+        {
+            if (!_collecting || GetHitPlayer()->GetItemCount(SkitteringSpiderlingItem, false) <= _carriedBefore)
+                return;
+
+            GetCaster()->ToCreature()->DespawnOrUnsummon(1);
+        }
+
+        void Register() override
+        {
+            OnCheckCast += SpellCheckCastFn(spell_hinterlands_collect_spiderling::CheckPickup);
+            BeforeHit += SpellHitFn(spell_hinterlands_collect_spiderling::SaveCarriedCount);
+            AfterHit += SpellHitFn(spell_hinterlands_collect_spiderling::RemoveCollectedSpiderling);
+        }
+
+        uint32 _carriedBefore = 0;
+        bool _collecting = false;
+    };
+}
+
 void AddSC_hinterlands()
 {
     //new npc_00x09hl();
+    RegisterSpellScript(spell_hinterlands_collect_spiderling);
 }

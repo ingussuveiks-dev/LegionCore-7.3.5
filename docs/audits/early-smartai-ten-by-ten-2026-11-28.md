@@ -21,6 +21,8 @@ Scarlet Corpse `49340` jāizmeklē kā viena `26800` secība, jo klikšķis, izs
 
 ## Pārbaudītās pārejas
 
+Turpinājumā salabota Skittering Spiderling `42689` savākšana. Tālāk redzamās tabulas saglabā sākotnējās 10×10 partijas stāvokli. [All That Skitters pārbaude](skittering-spiderling-2026-11-28.md)
+
 Tabulā `⇒` rāda mainīto ceļu, karte un zona ir norādītas ar to datubāzes ID. Kvesta kolonnā uzskaitīti mērķi, kas tieši atsaucas uz attiecīgā tēla ID. Papildu kredīta un burvestību saites atvērtajiem gadījumiem norādītas rezultātā.
 
 ### Partija 1
