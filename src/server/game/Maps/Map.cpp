@@ -1044,7 +1044,7 @@ bool Map::AddToMap(Transport* obj)
     // Broadcast creation to players
     ApplyOnEveryPlayer([&](Player* player)
     {
-        if (player->GetTransport() != obj/* && (player->GetDistance(obj) <= MAX_VISIBILITY_DISTANCE || IsBattlegroundOrArena())*/)
+        if (player->GetTransport() != obj && player->InSamePhaseId(obj))
         {
             UpdateData data(GetId());
             obj->BuildCreateUpdateBlockForPlayer(&data, player);

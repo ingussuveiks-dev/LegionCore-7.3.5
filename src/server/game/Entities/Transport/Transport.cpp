@@ -109,6 +109,13 @@ bool Transport::CreateTransport(ObjectGuid::LowType guidlow, uint32 entry, uint3
     G3D::Quat parentRotation(0.0f, 0.0f, 0.0f, 1.0f);
     SetParentRotation(parentRotation);
 
+    // The Endgame gunship belongs to the phase granted by 74093 after the Keel Harbor siege.
+    if (entry == 203428 && mapid == 654)
+    {
+        SetPhaseMask(4194304, false);
+        SetPhaseId({191}, false);
+    }
+
     m_model = CreateModel();
     MMAP::MMapFactory::createOrGetMMapManager()->loadGameObject(goinfo->displayId, sWorld->GetDataPath());
     return true;

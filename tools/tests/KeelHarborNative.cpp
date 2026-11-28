@@ -62,9 +62,9 @@ void LoadHarborData()
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24681,26706)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area WHERE spell IN(69486,70695,74093)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions AS SELECT * FROM legion_world.phase_definitions WHERE zoneId=4714");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(38150,37927)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(38150,37927,43747)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE (SourceTypeOrReferenceId=23 AND SourceGroup=4714) "
-        "OR (SourceTypeOrReferenceId=18 AND SourceGroup IN(38150,37927)) OR (SourceTypeOrReferenceId IN(19,20) AND SourceEntry IN(24681,26706))");
+        "OR (SourceTypeOrReferenceId=18 AND SourceGroup IN(38150,37927,43747)) OR (SourceTypeOrReferenceId IN(19,20) AND SourceEntry IN(24681,26706))");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     sQuestDataStore->LoadCreatureQuestRelations();
     sQuestDataStore->LoadCreatureInvolvedRelations();
@@ -226,6 +226,7 @@ void CheckHarbor(bool observe)
 }
 }
 
+#ifndef KEEL_HARBOR_NATIVE_SUPPORT_ONLY
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
@@ -258,3 +259,4 @@ int main(int argc, char** argv)
         return 1;
     }
 }
+#endif
