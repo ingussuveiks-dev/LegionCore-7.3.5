@@ -32,11 +32,13 @@ EndContentData */
 #include "ScriptedEscortAI.h"
 #include "ScriptedFollowerAI.h"
 #include "ChatTextBuilder.h"
+#include "ConditionMgr.h"
 #include "DarkshoreWildlifeFlight.h"
 #include "Map.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
 #include "ObjectAccessor.h"
+#include "Player.h"
 #include "QuestObjectScope.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
@@ -371,10 +373,199 @@ class spell_darkshore_buried_artifact_detector : public SpellScript
     }
 };
 
+namespace
+{
+constexpr uint32 RitualMaterialsQuest = 13566;
+constexpr uint32 SleepingMoonstalker = 33127;
+
+struct RitualMaterial
+{
+    uint32 Creature;
+    uint32 Spell;
+    uint32 Item;
+};
+
+constexpr RitualMaterial RitualMaterialSources[] = {{SleepingMoonstalker, 62512, 44969},
+    {33313, 62788, 45027}, {33978, 64116, 45885}};
+
+RitualMaterial const* GetRitualMaterial(Creature const* creature)
+{
+    if (!creature || !creature->GetDBTableGUIDLow() || creature->GetMapId() != 1 || creature->GetZoneId() != 148)
+        return nullptr;
+
+    for (RitualMaterial const& material : RitualMaterialSources)
+        if (creature->GetEntry() == material.Creature)
+            return &material;
+
+    return nullptr;
+}
+
+struct npc_darkshore_ritual_material_source : public ScriptedAI
+{
+    npc_darkshore_ritual_material_source(Creature* creature) : ScriptedAI(creature) { }
+
+    void Reset() override
+    {
+        _wakeTimer = 0;
+        _collector.Clear();
+        if (me->GetEntry() == SleepingMoonstalker && GetRitualMaterial(me))
+        {
+            me->RestoreFaction();
+            me->SetStandState(UNIT_STAND_STATE_SLEEP);
+        }
+        me->ForceValuesUpdateAtIndex(UNIT_FIELD_NPC_FLAGS);
+    }
+
+    void JustRespawned() override
+    {
+        _samples.clear();
+        Reset();
+    }
+
+    void EnterCombat(Unit* /*opponent*/) override
+    {
+        if (me->GetEntry() == SleepingMoonstalker && GetRitualMaterial(me))
+            me->SetStandState(UNIT_STAND_STATE_STAND);
+        me->ForceValuesUpdateAtIndex(UNIT_FIELD_NPC_FLAGS);
+    }
+
+    bool CanGather(Player const& player, RitualMaterial const& material) const
+    {
+        if (!me->IsAlive() || me->isInCombat() || _wakeTimer || !player.IsAlive() ||
+            player.GetQuestStatus(RitualMaterialsQuest) != QUEST_STATUS_INCOMPLETE || player.GetItemCount(material.Item, false) >= 3)
+            return false;
+
+        auto sample = _samples.find(player.GetGUID());
+        if (sample == _samples.end())
+            return true;
+
+        auto receipt = sample->second.lock();
+        return !receipt || receipt->load();
+    }
+
+    void Gathered(Player& player)
+    {
+        for (auto it = _samples.begin(); it != _samples.end();)
+        {
+            auto receipt = it->second.lock();
+            if (!receipt || receipt->load())
+                it = _samples.erase(it);
+            else
+                ++it;
+        }
+        _samples[player.GetGUID()] = player.GetQuestCancellationReceipt(RitualMaterialsQuest);
+
+        if (me->GetEntry() == SleepingMoonstalker)
+        {
+            _collector = player.GetGUID();
+            _wakeTimer = 1000;
+        }
+        me->ForceValuesUpdateAtIndex(UNIT_FIELD_NPC_FLAGS);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_wakeTimer > diff)
+            _wakeTimer -= diff;
+        else if (_wakeTimer)
+        {
+            _wakeTimer = 0;
+            auto sample = _samples.find(_collector);
+            auto receipt = sample != _samples.end() ? sample->second.lock() : nullptr;
+            if (receipt && !receipt->load() && !me->isInCombat())
+                if (Player* player = ObjectAccessor::GetPlayer(*me, _collector))
+                    if (player->IsAlive() && me->IsWithinDistInMap(player, 10.0f) && me->IsWithinLOSInMap(player))
+                    {
+                        me->SetStandState(UNIT_STAND_STATE_STAND);
+                        me->setFaction(14);
+                        AttackStart(player);
+                    }
+            _collector.Clear();
+            me->ForceValuesUpdateAtIndex(UNIT_FIELD_NPC_FLAGS);
+        }
+
+        if (UpdateVictim())
+            DoMeleeAttackIfReady();
+    }
+
+private:
+    std::unordered_map<ObjectGuid, std::weak_ptr<QuestCancellationReceipt const>> _samples;
+    ObjectGuid _collector;
+    uint32 _wakeTimer = 0;
+};
+
+class condition_darkshore_ritual_material : public ConditionScript
+{
+public:
+    condition_darkshore_ritual_material() : ConditionScript("condition_darkshore_ritual_material") { }
+
+    bool OnConditionCheck(Condition* /*condition*/, ConditionSourceInfo& source) override
+    {
+        Player const* player = source.mConditionTargets[0] ? source.mConditionTargets[0]->ToPlayer() : nullptr;
+        Creature* creature = source.mConditionTargets[1] ? source.mConditionTargets[1]->ToCreature() : nullptr;
+        RitualMaterial const* material = GetRitualMaterial(creature);
+        auto actor = material ? dynamic_cast<npc_darkshore_ritual_material_source*>(creature->AI()) : nullptr;
+        return actor && player && actor->CanGather(*player, *material);
+    }
+};
+
+class spell_darkshore_gather_ritual_material : public SpellScript
+{
+    PrepareSpellScript(spell_darkshore_gather_ritual_material);
+
+    SpellCastResult CheckGather()
+    {
+        Creature* creature = GetCaster()->ToCreature();
+        _material = GetRitualMaterial(creature);
+        if (!_material)
+            return SPELL_CAST_OK;
+
+        Unit* target = GetExplTargetUnit();
+        Player* player = target ? target->ToPlayer() : nullptr;
+        auto actor = dynamic_cast<npc_darkshore_ritual_material_source*>(creature->AI());
+        if (!actor || !player || GetSpellInfo()->Id != _material->Spell ||
+            GetSpellInfo()->GetEffect(EFFECT_0)->ItemType != _material->Item || !actor->CanGather(*player, *_material) ||
+            !creature->IsWithinDistInMap(player, INTERACTION_DISTANCE) || !creature->IsWithinLOSInMap(player))
+            return SPELL_FAILED_BAD_TARGETS;
+
+        return SPELL_CAST_OK;
+    }
+
+    void BeforeGather()
+    {
+        if (Player* player = GetHitPlayer(); _material && player)
+            _before = player->GetItemCount(_material->Item, false);
+    }
+
+    void AfterGather()
+    {
+        Player* player = GetHitPlayer();
+        if (!_material || !player || player->GetItemCount(_material->Item, false) <= _before)
+            return;
+
+        if (auto actor = dynamic_cast<npc_darkshore_ritual_material_source*>(GetCaster()->ToCreature()->AI()))
+            actor->Gathered(*player);
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_darkshore_gather_ritual_material::CheckGather);
+        BeforeHit += SpellHitFn(spell_darkshore_gather_ritual_material::BeforeGather);
+        AfterHit += SpellHitFn(spell_darkshore_gather_ritual_material::AfterGather);
+    }
+
+    RitualMaterial const* _material = nullptr;
+    uint32 _before = 0;
+};
+}
+
 void AddSC_darkshore()
 {
     RegisterCreatureAI(npc_darkshore_orseus);
     RegisterCreatureAI(npc_darkshore_grove_hippogryph);
     RegisterSpellScript(spell_darkshore_protect_wildlife);
     RegisterSpellScript(spell_darkshore_buried_artifact_detector);
+    RegisterCreatureAI(npc_darkshore_ritual_material_source);
+    RegisterSpellScript(spell_darkshore_gather_ritual_material);
+    new condition_darkshore_ritual_material();
 }

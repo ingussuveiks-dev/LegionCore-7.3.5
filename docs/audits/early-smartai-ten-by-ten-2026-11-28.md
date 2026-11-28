@@ -25,6 +25,8 @@ Turpinājumā salabota Skittering Spiderling `42689` savākšana. Tālāk redzam
 
 Scarlet Corpse `49340` izmeklēšana noveda pie labojuma aktīvajā C++ savākšanas un Darnell izsaukšanas ceļā. [Recruitment pārbaude](recruitment-darnell-2026-11-28.md)
 
+Darkshore trīs savākšanas pārejas salabotas kopā ar `Ritual Materials` priekšmetu saņemšanas apstrādi. [Ritual Materials pārbaude](darkshore-ritual-materials-2026-11-28.md)
+
 Tabulā `⇒` rāda mainīto ceļu, karte un zona ir norādītas ar to datubāzes ID. Kvesta kolonnā uzskaitīti mērķi, kas tieši atsaucas uz attiecīgā tēla ID. Papildu kredīta un burvestību saites atvērtajiem gadījumiem norādītas rezultātā.
 
 ### Partija 1
