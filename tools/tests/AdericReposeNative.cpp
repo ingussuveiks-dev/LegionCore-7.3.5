@@ -276,6 +276,7 @@ void CheckRepose()
 }
 }
 
+#ifndef ADERIC_REPOSE_NATIVE_SUPPORT_ONLY
 int main(int argc, char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
@@ -309,3 +310,4 @@ int main(int argc, char** argv)
         return 1;
     }
 }
+#endif
