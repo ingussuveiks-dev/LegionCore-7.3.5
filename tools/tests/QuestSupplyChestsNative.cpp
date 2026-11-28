@@ -88,10 +88,10 @@ std::vector<Placement> FindSupplies(uint32 map, uint32 zone, uint32 item, uint64
 
 struct Supply : GameObject
 {
-    Supply(Map& map, Placement const& placement) : respawn(placement.respawn)
+    Supply(Map& map, Placement const& placement, uint32 phaseMask = PHASEMASK_NORMAL) : respawn(placement.respawn)
     {
         m_DBTableGuid = placement.guid;
-        Require(Create(placement.guid, placement.entry, &map, 1, placement.position, placement.rotation, 255, GO_STATE_READY) &&
+        Require(Create(placement.guid, placement.entry, &map, phaseMask, placement.position, placement.rotation, 255, GO_STATE_READY) &&
             map.AddToMap(static_cast<GameObject*>(this)), "Could not publish original supply object");
         SetRespawnDelayTime(respawn);
         Update(10000);

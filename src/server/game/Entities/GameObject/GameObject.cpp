@@ -65,18 +65,20 @@ bool IsQuestGrainSack(GameObject const& object)
         (object.GetEntry() == 210001 || object.GetEntry() == 251422 || object.GetEntry() == 251424);
 }
 
-uint32 GetWindsweptBalloonQuest(GameObject const& object)
+uint32 GetRequiredLootQuest(GameObject const& object)
 {
     if (object.GetEntry() == 209058 && object.GetMapId() == 1 && object.GetZoneId() == 1637)
         return 29401;
     if (object.GetEntry() == 209242 && object.GetMapId() == 0 && object.GetZoneId() == 1519)
         return 29412;
+    if (object.GetEntry() == 201871 && object.GetMapId() == 654)
+        return 24602; // Disturbed Soil in Gilneas.
     return 0;
 }
 
 bool IsQuestLootChest(GameObject const& object)
 {
-    return IsQuestGrainSack(object) || GetWindsweptBalloonQuest(object) != 0;
+    return IsQuestGrainSack(object) || GetRequiredLootQuest(object) != 0;
 }
 
 bool IsAridenCampObject(GameObject const* object)
@@ -1780,7 +1782,7 @@ bool QuestItemObjectUse::CanUse(GameObject const* object, Player const* player, 
 
 bool QuestLootChest::IsUnavailable(GameObject const& object, Player* player)
 {
-    uint32 quest = GetWindsweptBalloonQuest(object);
+    uint32 quest = GetRequiredLootQuest(object);
     if (!quest && !IsQuestGrainSack(object))
         return false;
 
