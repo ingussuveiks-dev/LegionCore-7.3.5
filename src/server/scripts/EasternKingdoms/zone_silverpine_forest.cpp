@@ -18,11 +18,13 @@
 
 #include "Item.h"
 #include "MoveSplineInit.h"
+#include "ObjectAccessor.h"
 #include "PassiveAI.h"
 #include "QuestObjectScope.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
+#include "TemporarySummon.h"
 #include "Vehicle.h"
 
 namespace
@@ -544,6 +546,201 @@ class spell_silverpine_chicken_explosion : public SpellScript
         OnHit += SpellHitFn(spell_silverpine_chicken_explosion::WeakenEttin);
     }
 };
+
+constexpr uint32 AtaericQuest = 27518;
+constexpr uint32 ShieldCredit = 45769;
+constexpr uint32 ArcaneFiend = 45766;
+constexpr uint32 ArcaneExpulsion = 87249;
+constexpr uint32 ArcaneShield = 87251;
+constexpr uint32 SummonArcaneFiend = 87253;
+constexpr uint32 AtaericSuicide = 87255;
+constexpr float ExpulsionDistance = 15.0f;
+
+struct npc_silverpine_ataeric : ScriptedAI
+{
+    explicit npc_silverpine_ataeric(Creature* creature) : ScriptedAI(creature), _fiends(me) { }
+
+    void Reset() override
+    {
+        _owner.Clear();
+        _expellingFiend.Clear();
+        _attempt.reset();
+        _finished = false;
+        _summonTimer = 3500;
+        _missingOwner = 0;
+        _fiends.DespawnAll();
+
+        me->SetReactState(REACT_PASSIVE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
+        me->SetPowerType(POWER_ENERGY);
+        me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 0);
+        if (!me->HasAura(ArcaneShield))
+            DoCastSelf(ArcaneShield, true);
+    }
+
+    void MoveInLineOfSight(Unit* who) override
+    {
+        if (!_owner.IsEmpty() || _finished || me->GetMapId() != 0 || me->GetDBTableGUIDLow() != 254632)
+            return;
+
+        Player* player = who->ToPlayer();
+        if (!IsEligible(player, 24.0f))
+            return;
+
+        _attempt = player->GetQuestCancellationReceipt(AtaericQuest);
+        if (!_attempt || _attempt->load())
+            return;
+
+        _owner = player->GetGUID();
+        Talk(0);
+        Talk(7, player->GetGUID());
+    }
+
+    void JustSummoned(Creature* summon) override
+    {
+        if (summon->GetEntry() != ArcaneFiend ||
+            summon->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != SummonArcaneFiend)
+            return;
+
+        _fiends.Summon(summon);
+        if (auto player = ActiveOwner())
+            summon->AI()->AttackStart(player);
+    }
+
+    void SummonedCreatureDespawn(Creature* summon) override { _fiends.Despawn(summon); }
+
+    void SummonedCreatureDies(Creature* summon, Unit* killer) override
+    {
+        auto found = std::find(_fiends.begin(), _fiends.end(), summon->GetGUID());
+        if (found == _fiends.end())
+            return;
+
+        _fiends.Despawn(summon);
+        Player* owner = ActiveOwner();
+        Player* recipient = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        if (!owner || !IsEligible(recipient, 35.0f) ||
+            (recipient != owner && (!owner->GetGroup() || owner->GetGroup() != recipient->GetGroup())) ||
+            !me->IsWithinDistInMap(summon, ExpulsionDistance) || !me->IsWithinLOSInMap(summon))
+            return;
+
+        int32 previous = me->GetPower(POWER_ENERGY);
+        _expellingFiend = summon->GetGUID();
+        summon->CastSpell(summon, ArcaneExpulsion, true);
+        _expellingFiend.Clear();
+        int32 energy = me->GetPower(POWER_ENERGY);
+        if (energy <= previous)
+            return;
+
+        if (energy >= 100)
+        {
+            _finished = true;
+            Talk(5);
+            Talk(6);
+            me->RemoveAurasDueToSpell(ArcaneShield);
+            DoCastSelf(AtaericSuicide, true);
+        }
+        else if (energy / 20 > previous / 20)
+            Talk(uint8(energy / 20));
+    }
+
+    bool AcceptsExpulsion(Unit const& caster) const
+    {
+        return !_finished && caster.GetGUID() == _expellingFiend && !caster.IsAlive() &&
+            me->HasAura(ArcaneShield);
+    }
+
+    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType) override
+    {
+        if (!_finished && me->HasAura(ArcaneShield) && damage >= me->GetHealth(attacker))
+            damage = 0;
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        _fiends.DespawnAll();
+        if (_finished && killer == me && me->GetPower(POWER_ENERGY) >= 100)
+            if (Player* owner = ActiveOwner())
+                // Native 85376 uses effect 134 with the player as reward source.
+                owner->RewardPlayerAndGroupAtEvent(ShieldCredit, owner);
+
+        _owner.Clear();
+        _attempt.reset();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_owner.IsEmpty() || _finished)
+            return;
+
+        if (!ActiveOwner())
+        {
+            _missingOwner += diff;
+            if (!_attempt || _attempt->load() || _missingOwner >= 6000)
+                Reset();
+            return;
+        }
+        _missingOwner = 0;
+
+        if (_fiends.size() >= 3)
+            return;
+        if (diff < _summonTimer)
+        {
+            _summonTimer -= diff;
+            return;
+        }
+
+        _summonTimer = 7000;
+        DoCastSelf(SummonArcaneFiend, true);
+    }
+
+private:
+    bool IsEligible(Player const* player, float distance) const
+    {
+        return player && player->IsAlive() && !player->isGameMaster() &&
+            player->GetQuestStatus(AtaericQuest) == QUEST_STATUS_INCOMPLETE &&
+            me->IsWithinDistInMap(player, distance) && me->InSamePhase(player) && me->IsWithinLOSInMap(player);
+    }
+
+    Player* ActiveOwner() const
+    {
+        if (!_attempt || _attempt->load())
+            return nullptr;
+        auto player = ObjectAccessor::GetPlayer(*me, _owner);
+        return IsEligible(player, 35.0f) ? player : nullptr;
+    }
+
+    SummonList _fiends;
+    ObjectGuid _owner;
+    ObjectGuid _expellingFiend;
+    std::shared_ptr<QuestCancellationReceipt const> _attempt;
+    uint32 _summonTimer = 3500;
+    uint32 _missingOwner = 0;
+    bool _finished = false;
+};
+
+class spell_silverpine_arcane_expulsion : public SpellScript
+{
+    PrepareSpellScript(spell_silverpine_arcane_expulsion);
+
+    void SelectShield(std::list<WorldObject*>& targets)
+    {
+        targets.clear();
+        TempSummon* fiend = GetCaster()->ToTempSummon();
+        if (!fiend || fiend->GetEntry() != ArcaneFiend)
+            return;
+        Unit* summoner = fiend->GetSummoner();
+        auto boss = summoner ? summoner->ToCreature() : nullptr;
+        auto ai = boss ? CAST_AI(npc_silverpine_ataeric, boss->AI()) : nullptr;
+        if (ai && ai->AcceptsExpulsion(*fiend))
+            targets.push_back(boss);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_silverpine_arcane_expulsion::SelectShield, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+    }
+};
 }
 
 void AddSC_silverpine_forest()
@@ -555,4 +752,6 @@ void AddSC_silverpine_forest()
     RegisterSpellScript(spell_silverpine_release_bush_chicken);
     RegisterSpellScript(spell_silverpine_ettin_grab);
     RegisterSpellScript(spell_silverpine_chicken_explosion);
+    RegisterCreatureAI(npc_silverpine_ataeric);
+    RegisterSpellScript(spell_silverpine_arcane_expulsion);
 }

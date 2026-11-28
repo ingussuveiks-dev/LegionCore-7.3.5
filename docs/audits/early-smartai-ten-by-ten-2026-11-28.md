@@ -31,6 +31,8 @@ Abas Greymist pārejas salabotas kopā ar kvesta `13560` robota izsaukšanu, det
 
 Kolkar Marauder pāreja novērsta, izņemot pirms Cataclysm izmantoto nejaušo Verog izsaukšanas ceļu un pārbaudot pašreizējo Wyneth ceļu. Vēl atvērtas divas Archmage Ataeric pārejas un viena Bluegill Representative pāreja. [Verog pārbaude](verog-wyneth-source-2026-11-28.md)
 
+Abas Archmage Ataeric pārejas aizstātas ar sākotnējo vairoga un Arcane Fiend burvestību secību, kas ieskaita `27518` pēc faktiskas vairoga pārslodzes. Pēc šā labojuma atvērta Bluegill Representative pāreja. [Ataeric pārbaude](ataeric-shield-2026-11-28.md)
+
 Tabulā `⇒` rāda mainīto ceļu, karte un zona ir norādītas ar to datubāzes ID. Kvesta kolonnā uzskaitīti mērķi, kas tieši atsaucas uz attiecīgā tēla ID. Papildu kredīta un burvestību saites atvērtajiem gadījumiem norādītas rezultātā.
 
 ### Partija 1
