@@ -54,6 +54,7 @@
 #include "SharedDefines.h"
 #include "SpectatorAddon.h"
 #include "Spell.h"
+#include "GilneasBatFlight.h"
 #include "HealingAmount.h"
 #include "SpellAuraEffects.h"
 #include "SpellInfo.h"
@@ -7549,6 +7550,11 @@ SpellCastResult Spell::CheckCast(bool strict)
     {
         uint32 zone = m_caster->GetCurrentZoneID();
         uint32 area = m_caster->GetCurrentAreaID();
+        // The flying bat can cross into native area group 2708 before its
+        // cached creature zone is refreshed. Check the actual position.
+        if (m_spellInfo->Id == GilneasBatFlight::FlyBack && m_caster->GetMapId() == GilneasBatFlight::Map &&
+            m_caster->GetEntry() == GilneasBatFlight::Bat && m_caster->HasQuestObjectScope())
+            m_caster->GetZoneAndAreaId(zone, area);
 
         SpellCastResult locRes = m_spellInfo->CheckLocation(m_caster->GetMapId(), zone, area, m_caster->IsPlayer() ? m_caster->ToPlayer() : nullptr);
         if (locRes != SPELL_CAST_OK)

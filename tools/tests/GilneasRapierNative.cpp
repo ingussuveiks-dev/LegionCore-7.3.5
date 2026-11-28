@@ -3,11 +3,15 @@
 
 #include "GossipData.h"
 #include "GossipDef.h"
+#include "GilneasBatFlight.h"
 #include "CreatureTextMgr.h"
 #include "NPCPackets.h"
 #include "QuestPackets.h"
 #include "ScriptsData.h"
+#include "ScriptSystem.h"
 #include "Spell.h"
+#include "SpellPackets.h"
+#include "Vehicle.h"
 
 void AddSC_gilneas();
 
@@ -30,12 +34,12 @@ struct BattlePet : LootPet
     }
 };
 
-void LoadBattleInputs(bool baseline, bool opening)
+void LoadBattleInputs(bool baseline, bool opening, bool bat)
 {
     auto row = WorldDatabase.Query(
 #include "NativeGilneasRapier.inc"
     );
-    Require(row && row->GetRowCount() == 6, "Missing the actual Worgen phase, prerequisite or Gilneas quests");
+    Require(row && row->GetRowCount() == 8, "Missing the actual Worgen phase, prerequisite or Gilneas quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -48,8 +52,8 @@ void LoadBattleInputs(bool baseline, bool opening)
 
     auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24904,24902,24903)");
-    Require(addons && addons->GetRowCount() == 4, "Missing the original Gilneas prerequisites");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24678,24904,24902,24903,24920)");
+    Require(addons && addons->GetRowCount() == 6, "Missing the original Gilneas prerequisites");
     do
     {
         auto fields = addons->Fetch();
@@ -60,8 +64,8 @@ void LoadBattleInputs(bool baseline, bool opening)
     Require(quests[PushThemOut]->PrevQuestID == 24575 && quests[Battle]->PrevQuestID == PushThemOut,
         "The original Liberation Day and Push Them Out requirements must remain in order");
     auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN(24676,24904,24902)");
-    Require(objectives && objectives->GetRowCount() >= 4, "The original combat and victory objectives are required");
+        "FROM quest_objectives WHERE QuestID IN(24676,24904,24902,24920)");
+    Require(objectives && objectives->GetRowCount() >= 6, "The original combat and victory objectives are required");
     do
     {
         auto fields = objectives->Fetch();
@@ -77,7 +81,7 @@ void LoadBattleInputs(bool baseline, bool opening)
     sSpellMgr->LoadSpellProcEvents();
     sSpellMgr->LoadSpellPrcoCheck();
     sSpellMgr->LoadSpellProcs();
-    if (opening)
+    if (opening || bat)
         sSpellMgr->LoadSpellBonusess();
     auto item = sObjectMgr->GetItemTemplate(Rapier);
     auto spell = sSpellMgr->GetSpellInfo(Inspire);
@@ -87,19 +91,33 @@ void LoadBattleInputs(bool baseline, bool opening)
         spell->GetEffect(EFFECT_1)->TargetA.GetTarget() == TARGET_UNIT_DEST_AREA_ENTRY, "The actual item and both native area effects are required");
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN(148016,148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706,149746)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24904,24902,24903)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24904,24902,24903)");
+    if (bat)
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
+            "WHERE map=654 AND (guid IN(148016,149342,149746) OR id IN(38287,38363,38364))");
+    else
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
+            "WHERE guid IN(148016,148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706,149746)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24678,24904,24902,24903,24920)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24678,24904,24902,24903,24920)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID IN(15377)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area "
         "WHERE (spell=68483 AND area=4714 AND quest_start=14386) OR spell=71388 OR (spell=69485 AND quest_start=24676) OR (spell=69486 AND quest_start=24903)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceEntry IN(71388,72114,72116,72361) AND SourceTypeOrReferenceId=13");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(71388,72050,72113,72114,72116,72239,72349,72361,72384,72470,72471)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions "
+        "WHERE (SourceEntry IN(71388,72114,72116,72361) AND SourceTypeOrReferenceId=13) OR (SourceEntry=72472 AND SourceGroup=38615 AND SourceTypeOrReferenceId=18)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names "
+        "WHERE spell_id IN(71388,72050,72113,72114,72116,72239,72246,72247,72349,72361,72384,72470,72471,72849)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_loot_template AS SELECT * FROM legion_world.creature_loot_template "
-        "WHERE Entry IN(37685,37686,37692,38464,38473)");
+        "WHERE Entry IN(37685,37686,37692,38287,38363,38364,38464,38473)");
+    if (bat)
+    {
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(38287,38363,38615)");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE script_waypoint AS SELECT * FROM legion_world.script_waypoint WHERE entry=38540");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_movement AS SELECT * FROM legion_world.creature_template_movement WHERE CreatureId=38540");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_movement_override AS SELECT * FROM legion_world.creature_movement_override "
+            "WHERE SpawnId IN (SELECT guid FROM creature)");
+    }
     if (opening)
     {
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
@@ -116,6 +134,12 @@ void LoadBattleInputs(bool baseline, bool opening)
     sObjectMgr->LoadNPCText();
     sGossipDataStore->LoadGossipMenu();
     sGossipDataStore->LoadGossipMenuItems();
+    if (bat)
+    {
+        sObjectMgr->LoadNPCSpellClickSpells();
+        sObjectMgr->LoadCreatureMovementOverrides();
+        sScriptSystemMgr->LoadScriptWaypoints();
+    }
     if (opening)
     {
         Require(quests[Battle]->StartScript == 0 && quests[Battle]->CompleteScript == Battle &&
@@ -825,6 +849,283 @@ void CheckRapier(bool baseline)
         "The legitimate retry must receive a rapier that can be used normally");
     std::cout << "PASS original rapier effects at Livery and in the city, eligibility and phase gates, complete, abandon and retry\n";
 }
+
+void CheckBat()
+{
+    constexpr uint32 FlightQuest = GilneasBatFlight::Quest;
+    constexpr uint32 Bat = GilneasBatFlight::Bat;
+    constexpr uint32 GroundBat = GilneasBatFlight::GroundBat;
+    constexpr uint32 Catapult = 38287;
+    constexpr uint32 Invader = 38363;
+    sWorld->setFloatConfig(CONFIG_GROUP_XP_DISTANCE, sConfigMgr->GetFloatDefault("MaxGroupXPDistance", 74.0f));
+    Map map(654, 839, 0, DIFFICULTY_NONE);
+    Creature& genn = BattleActor(map, 38539, 148016);
+    Creature& ground = BattleActor(map, GroundBat, GilneasBatFlight::GroundBatSpawn);
+    auto first = new WorldSession(0, "Native Gilneas riding bat", {}, SEC_PLAYER, 6, 0, "Win", LOCALE_enUS, 0, false, AT_AUTH_FLAG_NONE, {});
+    auto second = new WorldSession(0, "Native Gilneas bat comparison", {}, SEC_PLAYER, 6, 0, "Win", LOCALE_enUS, 0, false, AT_AUTH_FLAG_NONE, {});
+    auto third = new WorldSession(0, "Native Gilneas bat party member", {}, SEC_PLAYER, 6, 0, "Win", LOCALE_enUS, 0, false, AT_AUTH_FLAG_NONE, {});
+    LootPlayer owner(first, map, 2492010, genn.GetPosition());
+    LootPlayer observer(second, map, 2492011, genn.GetPosition());
+    LootPlayer member(third, map, 2492012, genn.GetPosition());
+    for (LootPlayer* player : {&owner, &observer, &member})
+    {
+        player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_WORGEN);
+        player->setFactionForRace(RACE_WORGEN);
+        player->InitDisplayIds();
+        player->SetLevel(13);
+        player->SetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP, 30000);
+        player->SetRewardedQuest(Vengeance);
+        MoveForRapier(*player, genn.GetPosition());
+    }
+    auto click = [&](LootPlayer& player)
+    {
+        WorldPackets::Spells::SpellClick request{WorldPacket(CMSG_SPELL_CLICK)};
+        request.SpellClickUnitGuid = ground.GetGUID();
+        player.GetSession()->HandleSpellClick(request);
+        Tick(player, 1000);
+    };
+    auto findBat = [&](LootPlayer& player) -> Creature*
+    {
+        auto const& bats = *player.GetSummonList(Bat);
+        Require(bats.size() <= 1, "A repeat click spawned another active bat");
+        return bats.empty() ? nullptr : map.GetCreature(bats.front());
+    };
+    auto tick = [&](LootPlayer& player, ObjectGuid guid, uint32 diff)
+    {
+        Tick(player, diff);
+        if (Creature* bat = map.GetCreature(guid))
+            bat->Update(diff);
+        map.MoveAllCreaturesInMoveList();
+        map.RemoveAllObjectsInRemoveList();
+    };
+    auto castButton = [&](LootPlayer& player, Creature& bat, uint32 spell, Position const* point)
+    {
+        WorldPackets::Spells::PetCastSpell request{WorldPacket(CMSG_PET_CAST_SPELL)};
+        request.PetGUID = bat.GetGUID();
+        request.Cast.SpellID = spell;
+        request.Cast.SpellGuid = ObjectGuid::Create<HighGuid::Cast>(bat.GetMapId(), spell,
+            sObjectMgr->GetGenerator<HighGuid::Cast>()->Generate(), SPELL_CAST_TYPE_NORMAL);
+        if (point)
+        {
+            request.Cast.Target.Flags = TARGET_FLAG_DEST_LOCATION;
+            request.Cast.Target.DstLocation = WorldPackets::Spells::TargetLocation{ObjectGuid::Empty, *point};
+        }
+        else
+        {
+            request.Cast.Target.Flags = TARGET_FLAG_UNIT;
+            request.Cast.Target.Unit = bat.GetGUID();
+        }
+        player.GetSession()->HandlePetCastSpellOpcode(request);
+    };
+    auto board = [&](LootPlayer& player) -> ObjectGuid
+    {
+        MoveForRapier(player, ground.GetPosition());
+        click(player);
+        Creature* bat = findBat(player);
+        Require(bat && bat->HasQuestObjectScope() && bat->GetVehicleKit(), "The original spell click failed to publish a private vehicle");
+        ObjectGuid guid = bat->GetGUID();
+        for (unsigned attempt = 0; attempt < 30 && !player.GetVehicle(); ++attempt)
+            tick(player, guid, 100);
+        Require(player.GetVehicleCreatureBase() == bat && bat->GetVehicleKit()->GetPassenger(GilneasBatFlight::RiderSeat) == &player,
+            "The native rider did not enter seat zero");
+        return guid;
+    };
+    auto abandon = [&](LootPlayer& player)
+    {
+        WorldPackets::Quest::QuestLogRemoveQuest request{WorldPacket(CMSG_QUEST_LOG_REMOVE_QUEST)};
+        request.Entry = player.FindQuestSlot(FlightQuest);
+        player.GetSession()->HandleQuestLogRemoveQuest(request);
+        map.RemoveAllObjectsInRemoveList();
+    };
+
+    MoveForRapier(observer, ground.GetPosition());
+    click(observer);
+    Require(!findBat(observer), "The ground bat admitted a player without the quest");
+    AcceptAtLorna(owner, genn, FlightQuest);
+    AcceptAtLorna(member, genn, FlightQuest);
+    Require(owner.GetQuestStatus(FlightQuest) == QUEST_STATUS_INCOMPLETE && member.GetQuestStatus(FlightQuest) == QUEST_STATUS_INCOMPLETE,
+        "Genn did not offer the actual quest after Vengeance or Survival");
+    MoveForRapier(owner, ground.GetPosition());
+    owner.CastSpell(&owner, GilneasBatFlight::Summon, true);
+    Tick(owner, 100);
+    Require(!findBat(owner), "The summons accepted a cast without the original clicked ground bat");
+    auto guid = board(owner);
+    auto bat = map.GetCreature(guid);
+    auto spells = bat->GetCreatureTemplate()->spells;
+    Require(spells[0] == GilneasBatFlight::IronBomb && !spells[1] && spells[4] == GilneasBatFlight::FlyBack,
+        "Vehicle action buttons do not match the observed Legion bar");
+    Require(!observer.canSeeOrDetect(bat) && owner.GetUnitBeingMoved() == bat, "The bat is shared or control did not move to the actual bat");
+    click(owner);
+    Require(findBat(owner) == bat, "Repeat spell-click replaced the rider's mount");
+    observer.EnterVehicle(bat, 0, true);
+    Tick(observer, 100);
+    Require(!observer.GetVehicle(), "Another player could enter the private bat");
+
+    Group party;
+    party.*Access(GroupGuidTag{}) = ObjectGuid::Create<HighGuid::Party>(FlightQuest, 0);
+    for (LootPlayer* player : {&owner, &member})
+    {
+        Group::MemberSlot slot;
+        slot.Guid = player->GetGUID();
+        slot.Class = player->getClass();
+        const_cast<Group::MemberSlotList&>(party.GetMemberSlots()).push_back(slot);
+        player->SetGroup(&party, 0);
+    }
+    for (unsigned step = 0; step < 400 && map.GetCreature(guid) == bat && bat->AI()->GetData(FlightQuest) < 2; ++step)
+        tick(owner, guid, 100);
+    Require(map.GetCreature(guid) == bat && bat->AI()->GetData(FlightQuest) == 2 && owner.GetVehicleCreatureBase() == bat,
+        "The actual flight did not reach the bombing circuit");
+
+    std::map<SpellCastResult, unsigned> results;
+    auto bombingSpell = sSpellMgr->GetSpellInfo(GilneasBatFlight::IronBomb);
+    auto impactSpell = sSpellMgr->GetSpellInfo(GilneasBatFlight::BombImpact);
+    std::cout << "CASE bomb range min=" << bombingSpell->GetMinRange(false) << " max=" << bombingSpell->GetMaxRange(false)
+        << " impact radius=" << impactSpell->GetEffect(EFFECT_0)->CalcRadius() << " movement=" << owner.GetUnitBeingMoved()->GetEntry()
+        << " byCharmer=" << bombingSpell->HasAttribute(SPELL_ATTR6_CAST_BY_CHARMER) << '/' << impactSpell->HasAttribute(SPELL_ATTR6_CAST_BY_CHARMER) << '\n';
+    GuidUnorderedSet aimed;
+    bool firstShot = true;
+    ObjectGuid firstDestination;
+    uint32 firstShotTime = 0;
+    for (unsigned step = 0; step < 1250 && owner.GetQuestStatus(FlightQuest) == QUEST_STATUS_INCOMPLETE; ++step)
+    {
+        if (firstDestination)
+        {
+            auto firstTarget = map.GetCreature(firstDestination);
+            if (!firstTarget || !firstTarget->IsAlive())
+            {
+                Require(member.GetQuestObjectiveData(FlightQuest, Catapult) || member.GetQuestObjectiveData(FlightQuest, Invader),
+                    "The first actual bomb did not reward the nearby party member");
+                firstDestination.Clear();
+            }
+            else
+                Require(step < firstShotTime + 50, "The actual vehicle spell packet failed to deliver the first bomb");
+        }
+        if (!firstDestination && step % 6 == 0 && bat->AI()->GetData(FlightQuest) == 2)
+        {
+            std::list<Creature*> candidates;
+            if (owner.GetQuestObjectiveData(FlightQuest, Catapult) < 6)
+                bat->GetCreatureListWithEntryInGrid(candidates, Catapult, 70.0f);
+            if (owner.GetQuestObjectiveData(FlightQuest, Invader) < 40)
+            {
+                bat->GetCreatureListWithEntryInGrid(candidates, Invader, 70.0f);
+                bat->GetCreatureListWithEntryInGrid(candidates, 38364, 70.0f);
+            }
+            candidates.sort([&](Creature* lhs, Creature* rhs) { return bat->GetExactDist(lhs) < bat->GetExactDist(rhs); });
+            for (Creature* target : candidates)
+            {
+                if (!target->IsAlive() || !bat->IsWithinLOSInMap(target) || !aimed.insert(target->GetGUID()).second)
+                    continue;
+                auto point = target->GetPosition();
+                if (firstShot)
+                {
+                    MoveForRapier(member, point);
+                    owner.GetGlobalCooldownMgr().CancelGlobalCooldown(bombingSpell);
+                    castButton(owner, *bat, GilneasBatFlight::IronBomb, &point);
+                    firstShot = false;
+                    firstDestination = target->GetGUID();
+                    firstShotTime = step;
+                }
+                else
+                    ++results[bat->CastSpell(point.GetPositionX(), point.GetPositionY(), point.GetPositionZ(), GilneasBatFlight::IronBomb,
+                        TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_DONT_REPORT_CAST_ERROR))];
+                break;
+            }
+        }
+        tick(owner, guid, 100);
+        Tick(member, 100);
+        if (!map.GetCreature(guid))
+            break;
+    }
+    std::cout << "CASE bat aimed=" << aimed.size() << " owner=" << owner.GetQuestObjectiveData(FlightQuest, Catapult) << '/'
+        << owner.GetQuestObjectiveData(FlightQuest, Invader) << " party=" << member.GetQuestObjectiveData(FlightQuest, Catapult) << '/'
+        << member.GetQuestObjectiveData(FlightQuest, Invader) << '\n';
+    for (auto const& [result, count] : results)
+        std::cout << "CASE iron bomb status " << uint32(result) << " count " << count << '\n';
+    Require(owner.GetQuestStatus(FlightQuest) == QUEST_STATUS_COMPLETE && owner.GetQuestObjectiveData(FlightQuest, Catapult) == 6 &&
+        owner.GetQuestObjectiveData(FlightQuest, Invader) == 40 && !observer.GetQuestObjectiveData(FlightQuest, Catapult) &&
+        (member.GetQuestObjectiveData(FlightQuest, Catapult) || member.GetQuestObjectiveData(FlightQuest, Invader)),
+        "Real native Iron Bomb kills failed to supply the 6 + 40 counters and eligible group credit");
+    auto flyBack = sSpellMgr->GetSpellInfo(GilneasBatFlight::FlyBack);
+    owner.GetGlobalCooldownMgr().CancelGlobalCooldown(flyBack);
+    bat->GetGlobalCooldownMgr().CancelGlobalCooldown(flyBack);
+    castButton(owner, *bat, GilneasBatFlight::FlyBack, nullptr);
+    for (unsigned step = 0; step < 10 && !bat->AI()->GetData(GilneasBatFlight::FlyBack); ++step)
+        tick(owner, guid, 100);
+    if (!bat->AI()->GetData(GilneasBatFlight::FlyBack))
+    {
+        auto direct = bat->CastSpell(bat, GilneasBatFlight::FlyBack, TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_DONT_REPORT_CAST_ERROR));
+        uint32 zone, area;
+        map.GetZoneAndAreaId(zone, area, bat->GetPositionX(), bat->GetPositionY(), bat->GetPositionZ());
+        std::cout << "CASE Fly Back probe direct status=" << uint32(direct) << " stage=" << bat->AI()->GetData(FlightQuest)
+            << " self=" << flyBack->GetEffect(EFFECT_0)->TargetA.GetTarget() << " byCharmer=" << flyBack->HasAttribute(SPELL_ATTR6_CAST_BY_CHARMER)
+            << " activeSpell=" << bat->HasSpell(GilneasBatFlight::FlyBack) << " charm=" << (owner.GetCharm() == bat)
+            << " areaGroup=" << flyBack->CastingReq.RequiredAreasID << " cached=" << bat->GetCurrentZoneID() << '/' << bat->GetCurrentAreaID()
+            << " terrain=" << zone << '/' << area << '\n';
+        for (uint32 areaId : sDB2Manager.GetAreasForGroup(flyBack->CastingReq.RequiredAreasID))
+            std::cout << "CASE native Fly Back area=" << areaId << '\n';
+        Require(false, "The actual Fly Back button did not request a return");
+    }
+    bool returned = false;
+    for (unsigned step = 0; step < 1500 && map.GetCreature(guid); ++step)
+    {
+        if (bat->AI()->GetData(FlightQuest) == 3)
+            returned = true;
+        tick(owner, guid, 100);
+    }
+    Tick(owner, 2500);
+    float height = map.GetHeight(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ() + 2.0f);
+    Require(returned && !map.GetCreature(guid) && !owner.GetVehicle() && owner.GetUnitBeingMoved() == &owner &&
+        owner.IsWithinDist3d(&ground, 7.0f) && std::fabs(owner.GetPositionZ() - height) < 0.6f,
+        "Fly Back failed to land at Greymane Court and restore the player's own mover");
+    MoveForRapier(owner, genn.GetPosition());
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestID = FlightQuest;
+    reward.QuestGiverGUID = genn.GetGUID();
+    owner.GetSession()->HandleQuestGiverChooseReward(reward);
+    Require(owner.GetQuestRewardStatus(FlightQuest) && genn.hasQuest(24678) &&
+        owner.CanTakeQuest(sQuestDataStore->GetQuestTemplate(24678), false), "Genn could not reward the bat quest and open Knee-Deep");
+
+    auto interrupted = board(member);
+    int32 memberCatapults = member.GetQuestObjectiveData(FlightQuest, Catapult);
+    int32 memberInvaders = member.GetQuestObjectiveData(FlightQuest, Invader);
+    for (unsigned step = 0; step < 60; ++step)
+        tick(member, interrupted, 100);
+    Require(member.GetVehicleCreatureBase() == map.GetCreature(interrupted), "The disconnect case requires a real midflight passenger");
+    sScriptMgr->OnPlayerBeforeLogout(&member);
+    for (unsigned step = 0; step < 20; ++step)
+        tick(member, interrupted, 100);
+    Require(!map.GetCreature(interrupted) && !member.GetVehicle() && member.GetUnitBeingMoved() == &member &&
+        member.GetQuestObjectiveData(FlightQuest, Catapult) == memberCatapults && member.GetQuestObjectiveData(FlightQuest, Invader) == memberInvaders,
+        "The pre-save logout path did not clean up the flying bat and its mover");
+    auto retry = board(member);
+    Require(retry != interrupted, "A legitimate retry reused the interrupted aircraft");
+    abandon(member);
+    for (unsigned step = 0; step < 30; ++step)
+        tick(member, retry, 100);
+    Require(!map.GetCreature(retry) && !member.GetVehicle() && member.GetUnitBeingMoved() == &member &&
+        member.GetQuestStatus(FlightQuest) == QUEST_STATUS_NONE, "Abandoning the quest retained the bat or awarded completion");
+    owner.SetGroup(nullptr);
+    member.SetGroup(nullptr);
+
+    AcceptAtLorna(observer, genn, FlightQuest);
+    auto unattended = board(observer);
+    bool automaticReturn = false;
+    for (unsigned step = 0; step < 2350; ++step)
+    {
+        auto aircraft = map.GetCreature(unattended);
+        if (!aircraft)
+            break;
+        automaticReturn |= aircraft->AI()->GetData(FlightQuest) == 3;
+        tick(observer, unattended, 100);
+    }
+    Tick(observer, 2000);
+    Require(automaticReturn && !map.GetCreature(unattended) && !observer.GetVehicle() && observer.GetUnitBeingMoved() == &observer &&
+        observer.IsWithinDist3d(&ground, 7.0f) && observer.GetQuestStatus(FlightQuest) == QUEST_STATUS_INCOMPLETE &&
+        !observer.GetQuestObjectiveData(FlightQuest, Catapult) && !observer.GetQuestObjectiveData(FlightQuest, Invader),
+        "The expired bombing circuit failed to land or awarded unearned credit");
+    abandon(observer);
+    std::cout << "PASS native riding bat, actual bombs and group kill credit, Fly Back, Genn reward, logout, retry and idle return\n";
+}
 }
 
 int main(int argc, char** argv)
@@ -847,11 +1148,14 @@ int main(int argc, char** argv)
         Require(!CharacterDatabase.Open() && CharacterDatabase.PrepareStatements(), "Private character pool failed");
         auto baseline = sConfigMgr->GetBoolDefault("NativeGilneasRapier.Baseline", false);
         auto opening = sConfigMgr->GetBoolDefault("NativeGilneasRapier.Opening", false);
-        LoadBattleInputs(baseline, opening);
+        auto bat = sConfigMgr->GetBoolDefault("NativeGilneasRapier.Bat", false);
+        LoadBattleInputs(baseline, opening, bat);
         HashMapHolder<Player>::SetSize(32);
         HashMapHolder<Pet>::SetSize(32);
         GameTime::UpdateGameTimers();
-        if (opening)
+        if (bat)
+            CheckBat();
+        else if (opening)
             CheckOpening(sConfigMgr->GetBoolDefault("NativeGilneasRapier.Hunt", false));
         else
             CheckRapier(baseline);

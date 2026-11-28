@@ -33,6 +33,7 @@
 #include "Group.h"
 #include "QuestItemObjectUse.h"
 #include "OldFriendsFlight.h"
+#include "GilneasBatFlight.h"
 #include "DarkshoreWildlifeFlight.h"
 #include "BrazieBotany.h"
 #include "ScorpidVenom.h"
@@ -4425,6 +4426,25 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         duration = 4 * MINUTE * IN_MILLISECONDS;
     }
 
+    Player* gilneasBatRider = nullptr;
+    if (entry == GilneasBatFlight::Bat && spellId == GilneasBatFlight::Summon)
+    {
+        using namespace GilneasBatFlight;
+        gilneasBatRider = summoner ? summoner->ToPlayer() : nullptr;
+        Creature const* groundBat = GetCreature(targetGuid);
+        if (!gilneasBatRider || GetId() != GilneasBatFlight::Map || !properties || properties->ID != SummonProperties ||
+            !gilneasBatRider->IsAlive() || gilneasBatRider->getRace() != RACE_WORGEN || gilneasBatRider->GetVehicle() ||
+            gilneasBatRider->isInFlight() || gilneasBatRider->GetQuestStatus(GilneasBatFlight::Quest) != QUEST_STATUS_INCOMPLETE ||
+            !groundBat || !groundBat->IsAlive() || groundBat->GetEntry() != GroundBat || groundBat->GetDBTableGUIDLow() != GroundBatSpawn ||
+            !gilneasBatRider->IsWithinDistInMap(groundBat, INTERACTION_DISTANCE) || !gilneasBatRider->IsWithinLOSInMap(groundBat))
+            return nullptr;
+
+        for (ObjectGuid const& guid : *gilneasBatRider->GetSummonList(entry))
+            if (Creature const* bat = GetCreature(guid); bat && !bat->IsDespawn() && !bat->IsQuestObjectExpired())
+                return nullptr;
+        duration = 4 * MINUTE * IN_MILLISECONDS;
+    }
+
     Player* wildlifeRider = nullptr;
     if (entry == DarkshoreWildlifeFlight::Hippogryph && spellId == DarkshoreWildlifeFlight::Summon)
     {
@@ -4888,6 +4908,9 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     if (bomberRider)
         bomberRider->BindQuestObject(OldFriendsFlight::Quest, summon);
+
+    if (gilneasBatRider)
+        gilneasBatRider->BindQuestObject(GilneasBatFlight::Quest, summon, false);
 
     if (wildlifeRider)
         wildlifeRider->BindQuestObject(DarkshoreWildlifeFlight::QuestId, summon, false);

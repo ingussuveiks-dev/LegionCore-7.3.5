@@ -39,6 +39,7 @@
 #include "CreatureGroups.h"
 #include "Dozercism.h"
 #include "OldFriendsFlight.h"
+#include "GilneasBatFlight.h"
 #include "DarkshoreWildlifeFlight.h"
 #include "BrazieBotany.h"
 #include "Formulas.h"
@@ -24537,6 +24538,20 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
     {
         base->RemoveAura(const_cast<AuraApplication*>(aurApp));
         return;
+    }
+
+    if (base->GetEntry() == GilneasBatFlight::Bat && base->GetMapId() == GilneasBatFlight::Map &&
+        base->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == GilneasBatFlight::Summon)
+    {
+        auto summon = base->ToTempSummon();
+        Player* player = ToPlayer();
+        if (!summon || !player || summon->GetSummonerGUID() != GetGUID() || !base->HasQuestObjectScope() ||
+            base->IsQuestObjectExpired() || player->GetQuestStatus(GilneasBatFlight::Quest) != QUEST_STATUS_INCOMPLETE ||
+            (seatId >= 0 && seatId != GilneasBatFlight::RiderSeat))
+        {
+            base->RemoveAura(const_cast<AuraApplication*>(aurApp));
+            return;
+        }
     }
 
     if (base->GetEntry() == DarkshoreWildlifeFlight::Hippogryph && base->GetMapId() == DarkshoreWildlifeFlight::Map)

@@ -89,6 +89,7 @@
 #include "UpdateData.h"
 #include "Util.h"
 #include "Vehicle.h"
+#include "GilneasBatFlight.h"
 #include "WaypointMovementGenerator.h"
 #include "WestfallVision.h"
 #include "World.h"
@@ -4439,6 +4440,9 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
             // to cast a ride vehicle spell on the summoned unit.
             float x, y, z;
             m_caster->GetClosePoint(x, y, z, DEFAULT_WORLD_OBJECT_SIZE);
+            // This destination-only summon still needs the clicked ground bat.
+            if (m_spellInfo->Id == GilneasBatFlight::Summon)
+                targetGUID = m_originalTargetGUID;
             summon = m_originalCaster->GetMap()->SummonCreature(entry, *destTarget, properties, duration, m_caster, targetGUID, m_spellInfo->Id);
             if (!summon || !summon->IsVehicle())
                 return;

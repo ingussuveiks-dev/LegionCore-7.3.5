@@ -17,6 +17,7 @@
 
 #include "Unit.h"
 #include "gilneas.h"
+#include "gilneas_bat.h"
 #include "gilneas_battle_opening.h"
 #include "gilneas_hunt.h"
 #include "ScriptedEscortAI.h"
@@ -3054,80 +3055,6 @@ public:
     };
 };
 
-/*
-38615 -> 38540 Captured Riding Bat
-*/
-class npc_captured_riding_bat : public CreatureScript
-{
-public:
-    npc_captured_riding_bat() : CreatureScript("npc_captured_riding_bat") {}
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_captured_riding_batAI (creature);
-    }
-
-    struct npc_captured_riding_batAI : public npc_escortAI
-    {
-        npc_captured_riding_batAI(Creature* creature) : npc_escortAI(creature) {}
-
-        bool PlayerOn;
-
-        void AttackStart(Unit* /*who*/) {}
-        void EnterCombat(Unit* /*who*/) {}
-        void EnterEvadeMode() {}
-
-        void Reset() override
-        {
-             PlayerOn       = false;
-        }
-
-        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
-        {
-            if (who->IsPlayer())
-            {
-                PlayerOn = true;
-
-                if (apply)
-                    Start(false, true, who->GetGUID(), NULL, NULL, true);
-            }
-        }
-
-        void WaypointReached(uint32 i) override
-        {
-            Player* player = GetPlayerForEscort();
-            switch (i)
-            {
-                case 36:
-                    player->ExitVehicle();
-                    player->SetClientControl(me, 1);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void JustDied(Unit* /*killer*/) override {}
-
-        void OnCharmed(bool /*apply*/) override {}
-
-        void UpdateAI(uint32 diff)
-        {
-            npc_escortAI::UpdateAI(diff);
-
-            Player* player = GetPlayerForEscort();
-            if (player)
-                return;
-
-            if (PlayerOn)
-            {
-                player->SetClientControl(me, 0);
-                PlayerOn = false;
-            }
-        }
-    };
-};
-
 class spell_gilneas_patriots_rapier : public SpellScript
 {
     PrepareSpellScript(spell_gilneas_patriots_rapier);
@@ -3218,5 +3145,12 @@ void AddSC_gilneas()
     new npc_commandeered_cannon();
     new npc_bloodfang_stalker_c1();
     new npc_gilnean_crow();
-    new npc_captured_riding_bat();
+    new GilneasBatFlight::npc_captured_riding_bat();
+    new GilneasBatFlight::player_gilneas_bat_flight();
+    using GilneasBatFlight::spell_gilneas_bat_fly_back;
+    using GilneasBatFlight::spell_gilneas_bat_iron_bomb;
+    using GilneasBatFlight::spell_gilneas_bat_bomb_impact;
+    RegisterSpellScript(spell_gilneas_bat_fly_back);
+    RegisterSpellScript(spell_gilneas_bat_iron_bomb);
+    RegisterSpellScript(spell_gilneas_bat_bomb_impact);
 }
