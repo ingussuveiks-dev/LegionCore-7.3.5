@@ -19303,6 +19303,10 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     if (quest->GetQuestId() == 24904 && !quest->StartScript && GetQuestObjectiveData(24904, 38854) < 1)
         return false;
 
+    // Previously objective-less Hunt slots could already be marked COMPLETE.
+    if (quest->GetQuestId() == 24902 && !quest->GetObjectives().empty() && GetQuestObjectiveData(24902, 38530) < 1)
+        return false;
+
     if (quest->GetQuestId() == AmaniCatacombs::Quest)
         for (QuestObjective const& objective : quest->GetObjectives())
             if ((objective.Type == QUEST_OBJECTIVE_GAMEOBJECT || objective.Type == QUEST_OBJECTIVE_AREATRIGGER) &&

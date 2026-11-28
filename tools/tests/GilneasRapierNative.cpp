@@ -14,6 +14,8 @@ void AddSC_gilneas();
 namespace
 {
 constexpr uint32 Battle = 24904;
+constexpr uint32 Hunt = 24902;
+constexpr uint32 Vengeance = 24903;
 constexpr uint32 PushThemOut = 24676;
 constexpr uint32 BattlePhase = 69485;
 constexpr uint32 KrennanMenu = 11061;
@@ -33,7 +35,7 @@ void LoadBattleInputs(bool baseline, bool opening)
     auto row = WorldDatabase.Query(
 #include "NativeGilneasRapier.inc"
     );
-    Require(row && row->GetRowCount() == 5, "Missing the actual Worgen phase, prerequisite or battle quests");
+    Require(row && row->GetRowCount() == 6, "Missing the actual Worgen phase, prerequisite or Gilneas quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -46,8 +48,8 @@ void LoadBattleInputs(bool baseline, bool opening)
 
     auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24904,24902)");
-    Require(addons && addons->GetRowCount() == 3, "Missing the original battle prerequisites");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24904,24902,24903)");
+    Require(addons && addons->GetRowCount() == 4, "Missing the original Gilneas prerequisites");
     do
     {
         auto fields = addons->Fetch();
@@ -58,8 +60,8 @@ void LoadBattleInputs(bool baseline, bool opening)
     Require(quests[PushThemOut]->PrevQuestID == 24575 && quests[Battle]->PrevQuestID == PushThemOut,
         "The original Liberation Day and Push Them Out requirements must remain in order");
     auto objectives = WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged "
-        "FROM quest_objectives WHERE QuestID IN(24676,24904)");
-    Require(objectives && objectives->GetRowCount() == 4, "The original combat and victory objectives are required");
+        "FROM quest_objectives WHERE QuestID IN(24676,24904,24902)");
+    Require(objectives && objectives->GetRowCount() >= 4, "The original combat and victory objectives are required");
     do
     {
         auto fields = objectives->Fetch();
@@ -86,22 +88,22 @@ void LoadBattleInputs(bool baseline, bool opening)
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN(148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706,149746)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24904,24902)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24904,24902)");
+        "WHERE guid IN(148016,148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706,149746)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24904,24902,24903)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24904,24902,24903)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID IN(15377)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area "
-        "WHERE (spell=68483 AND area=4714 AND quest_start=14386) OR spell=71388 OR (spell=69485 AND quest_start=24676)");
+        "WHERE (spell=68483 AND area=4714 AND quest_start=14386) OR spell=71388 OR (spell=69485 AND quest_start=24676) OR (spell=69486 AND quest_start=24903)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceEntry IN(71388,72114,72116,72361) AND SourceTypeOrReferenceId=13");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(71388,72050,72113,72114,72116,72349,72361,72384)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(71388,72050,72113,72114,72116,72239,72349,72361,72384,72470,72471)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_loot_template AS SELECT * FROM legion_world.creature_loot_template "
         "WHERE Entry IN(37685,37686,37692,38464,38473)");
     if (opening)
     {
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
-            "WHERE (CreatureID IN(38553,38331) AND GroupID=0) OR comment='Battle for Gilneas City - ordered dialogue'");
+            "WHERE (CreatureID IN(38553,38331) AND GroupID=0) OR comment IN('Battle for Gilneas City - ordered dialogue','The Hunt for Sylvanas - ordered dialogue')");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_start_scripts AS SELECT * FROM legion_world.quest_start_scripts WHERE id=24904");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_end_scripts AS SELECT * FROM legion_world.quest_end_scripts WHERE id=24904");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(38331,38377,38424)");
@@ -122,7 +124,8 @@ void LoadBattleInputs(bool baseline, bool opening)
         sScriptDataStore->LoadQuestStartScripts();
         sScriptDataStore->LoadQuestEndScripts();
         sObjectMgr->LoadNPCSpellClickSpells();
-        for (uint32 id : {70696u, 71774u, 72050u, 72113u, 72114u, 72115u, 72116u, 72349u, 72361u, 72384u})
+        for (uint32 id : {70696u, 71774u, 72050u, 72113u, 72114u, 72115u, 72116u, 72236u, 72238u, 72239u,
+            72245u, 72349u, 72361u, 72384u, 72470u, 72471u, 72476u})
         {
             auto native = sSpellMgr->GetSpellInfo(id);
             Require(native, "The original battle spell is absent from the 26972 catalog");
@@ -256,7 +259,155 @@ void ReportBattleAdmission(LootPlayer& player, Creature& krennan)
         << " Almyra phase=" << player.InSamePhase(&almyra) << " Myriam phase=" << player.InSamePhase(&myriam) << '\n';
 }
 
-void CheckOpening()
+void CheckHunt(LootPlayer& owner, LootPlayer& member, LootPlayer& visitor, Creature& lorna)
+{
+    constexpr uint32 Tobias = 38507;
+    constexpr uint32 Sylvanas = 38530;
+    Map& map = *owner.GetMap();
+    auto quest = sQuestDataStore->GetQuestTemplate(Hunt);
+    Require(quest && quest->GetObjectives().size() == 1 && lorna.GetScriptName() == "npc_gilneas_hunt_lorna",
+        "The Hunt fixture must have the restored objective and Lorna script");
+    auto findGuide = [&](LootPlayer& player) -> Creature*
+    {
+        auto const& guideList = *player.GetSummonList(Tobias);
+        Require(guideList.size() < 2, "A player received multiple Tobias actors");
+        return guideList.empty() ? nullptr : map.GetCreature(guideList.front());
+    };
+    auto greet = [&](LootPlayer& player)
+    {
+        MoveForRapier(player, lorna.GetPosition());
+        WorldPackets::NPC::Hello hello{WorldPacket(CMSG_TALK_TO_GOSSIP)};
+        hello.Unit = lorna.GetGUID();
+        player.GetSession()->HandleGossipHelloOpcode(hello);
+        auto const& menu = player.PlayerTalkClass->GetGossipMenu();
+        return menu.GetMenuId() == Hunt && menu.GetMenuItemAction(0) == Hunt;
+    };
+    auto select = [&](LootPlayer& player, uint32 menu, uint32 index)
+    {
+        WorldPackets::NPC::GossipSelectOption selection{WorldPacket(CMSG_GOSSIP_SELECT_OPTION)};
+        selection.GossipUnit = lorna.GetGUID();
+        selection.GossipID = menu;
+        selection.GossipIndex = index;
+        player.GetSession()->HandleGossipSelectOption(selection);
+    };
+    auto abandon = [&](LootPlayer& player)
+    {
+        WorldPackets::Quest::QuestLogRemoveQuest remove{WorldPacket(CMSG_QUEST_LOG_REMOVE_QUEST)};
+        remove.Entry = player.FindQuestSlot(Hunt);
+        player.GetSession()->HandleQuestLogRemoveQuest(remove);
+        map.RemoveAllObjectsInRemoveList();
+    };
+
+    Require(owner.GetQuestStatus(Hunt) == QUEST_STATUS_INCOMPLETE && !owner.CanRewardQuest(quest, false),
+        "The objective-less Hunt can still turn in immediately");
+    Tick(owner, 500);
+    auto guide = findGuide(owner);
+    Require(guide && guide->HasQuestObjectScope() && guide->IsInPersonnalVisibilityList(owner.GetGUID()) &&
+        !guide->IsInPersonnalVisibilityList(member.GetGUID()), "Lorna did not publish a private Tobias from the original cast");
+    Require(!greet(owner) && !greet(visitor), "A second or ineligible guide was offered");
+    select(visitor, Hunt, 0);
+    Require(!findGuide(visitor), "An ineligible player requested a guide");
+    ObjectGuid firstGuide = guide->GetGUID();
+    guide->DespawnOrUnsummon();
+    map.RemoveAllObjectsInRemoveList();
+    owner.SetQuestStatus(Hunt, QUEST_STATUS_COMPLETE);
+    Require(!owner.CanRewardQuest(quest, false), "A legacy zero-objective COMPLETE slot can reward");
+    sScriptMgr->OnPlayerLogin(&owner);
+    Require(owner.GetQuestStatus(Hunt) == QUEST_STATUS_INCOMPLETE && greet(owner), "A legacy slot could not recover at Lorna");
+    select(owner, Hunt + 1, 0);
+    select(owner, Hunt, 1);
+    Require(!findGuide(owner), "An invalid menu or option could start the Hunt");
+    select(owner, Hunt, 0);
+    Tick(owner, 500);
+    guide = findGuide(owner);
+    Require(guide && guide->GetGUID() != firstGuide, "Lorna did not summon a fresh Tobias after an interrupted Hunt");
+    ObjectGuid guideGuid = guide->GetGUID();
+
+    greet(member);
+    AcceptAtLorna(member, lorna, Hunt);
+    Tick(member, 500);
+    Creature* secondGuide = findGuide(member);
+    std::cout << "CASE hunt party status=" << member.GetQuestStatus(Hunt) << " oldReward=" << member.GetQuestRewardStatus(Battle)
+        << " guide=" << bool(secondGuide) << " phase=" << member.InSamePhase(&lorna) << '\n';
+    Require(secondGuide && secondGuide->GetQuestObjectScope().lock() != guide->GetQuestObjectScope().lock() &&
+        !secondGuide->IsInPersonnalVisibilityList(owner.GetGUID()), "Two accepted party members shared an escort");
+    ObjectGuid otherGuide = secondGuide->GetGUID();
+    abandon(member);
+    Require(!map.GetCreature(otherGuide) && map.GetCreature(guideGuid), "Canceling the party member's escort affected the owner");
+    AcceptAtLorna(member, lorna, Hunt);
+    Tick(member, 500);
+    Require(findGuide(member) && findGuide(member)->GetGUID() != otherGuide, "The party member could not restart after abandoning");
+
+    auto tick = [&](bool follow)
+    {
+        Require(map.GetCreature(guideGuid) == guide, "The Hunt guide despawned before completion");
+        Position here = guide->GetPosition();
+        if (follow)
+            MoveForRapier(owner, here);
+        Tick(owner, 100);
+        guide->Update(100);
+        for (uint32 entry : {38617u, 38530u, 38533u, 38537u})
+            for (ObjectGuid guid : GuidList(*guide->GetSummonList(entry)))
+                if (Creature* actor = map.GetCreature(guid))
+                    actor->Update(100);
+        map.MoveAllCreaturesInMoveList();
+        map.RemoveAllObjectsInRemoveList();
+    };
+    for (uint32 step = 0; step < 400; ++step)
+        tick(false);
+    Require(guide->AI()->GetData(Hunt) < 5 && !owner.GetQuestObjectiveData(Hunt, Sylvanas),
+        "The guide did not wait for the owner at the route checkpoint");
+    uint32 step = 0;
+    for (; step < 2400 && guide->GetSummonList(Sylvanas)->empty(); ++step)
+        tick(true);
+    std::cout << "CASE hunt path=" << guide->AI()->GetData(Hunt) << " moves=" << step
+        << " position=" << guide->GetPositionX() << ',' << guide->GetPositionY() << ',' << guide->GetPositionZ() << '\n';
+    Require(!guide->GetSummonList(Sylvanas)->empty() && !owner.GetQuestObjectiveData(Hunt, Sylvanas),
+        "Tobias did not arrive in the water or awarded credit before the dialogue");
+    auto queen = map.GetCreature(guide->GetSummonList(Sylvanas)->front());
+    Require(queen && queen->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 72238 &&
+        queen->GetQuestObjectScope().lock() == guide->GetQuestObjectScope().lock() &&
+        !queen->IsInPersonnalVisibilityList(member.GetGUID()), "The genuine private cathedral meeting was not published");
+    auto queenGuid = queen->GetGUID();
+    MoveForRapier(owner, lorna.GetPosition());
+    for (uint32 wait = 0; wait < 500; ++wait)
+        tick(false);
+    Require(!owner.GetQuestObjectiveData(Hunt, Sylvanas), "The final dialogue awarded credit while the owner was absent");
+    for (uint32 watch = 0; watch < 1400 && owner.GetQuestStatus(Hunt) != QUEST_STATUS_COMPLETE; ++watch)
+        tick(true);
+    Require(owner.GetQuestStatus(Hunt) == QUEST_STATUS_COMPLETE && owner.GetQuestObjectiveData(Hunt, Sylvanas) == 1 &&
+        member.GetQuestObjectiveData(Hunt, Sylvanas) == 0 && visitor.GetQuestObjectiveData(Hunt, Sylvanas) == 0,
+        "Listening to the scoped dialogue did not award exactly one objective to its owner");
+    for (uint32 retreat = 0; retreat < 300 && map.GetCreature(guideGuid); ++retreat)
+    {
+        guide->Update(100);
+        map.MoveAllCreaturesInMoveList();
+        map.RemoveAllObjectsInRemoveList();
+    }
+    Require(!map.GetCreature(guideGuid) && !map.GetCreature(queenGuid), "The completed Hunt left its actors visible");
+
+    MoveForRapier(owner, lorna.GetPosition());
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestGiverGUID = lorna.GetGUID();
+    reward.QuestID = Hunt;
+    owner.GetSession()->HandleQuestGiverChooseReward(reward);
+    Require(owner.GetQuestRewardStatus(Hunt), "The native Lorna reward failed");
+    AcceptAtLorna(owner, lorna, Vengeance);
+    auto& genn = BattleActor(map, 38539, 148016);
+    MoveForRapier(owner, genn.GetPosition());
+    Require(owner.GetQuestStatus(Vengeance) == QUEST_STATUS_COMPLETE && owner.HasAura(69486) &&
+        owner.InSamePhase(&genn) && owner.CanInteractWithQuestGiver(&genn) && genn.hasInvolvedQuest(Vengeance),
+        "Vengeance or Survival failed to open the original Genn layer and receiver");
+    reward.QuestGiverGUID = genn.GetGUID();
+    reward.QuestID = Vengeance;
+    owner.GetSession()->HandleQuestGiverChooseReward(reward);
+    Require(owner.GetQuestRewardStatus(Vengeance) && owner.HasAura(69486),
+        "Genn could not reward Vengeance or Survival through the original dialogue");
+    abandon(member);
+    std::cout << "PASS native Hunt summon and recall, checkpoint movement, private dialogue, Lorna reward and Genn handoff\n";
+}
+
+void CheckOpening(bool hunt)
 {
     constexpr uint32 Liam = 38218;
     constexpr uint32 Speech = 1;
@@ -565,6 +716,20 @@ void CheckOpening()
         "The real Greymane Court Lorna could not reward the victory");
     AcceptAtLorna(owner, receiver, 24902);
     Require(owner.GetQuestStatus(24902) != QUEST_STATUS_NONE, "Lorna did not admit the next quest after the real reward");
+    if (hunt)
+    {
+        MoveForRapier(member, receiver.GetPosition());
+        third->HandleQuestGiverChooseReward(reward);
+        Tick(member, 100);
+        Require(member.GetQuestRewardStatus(Battle) && member.HasAura(70696), "The other original winner did not receive the battle reward");
+        CheckHunt(owner, member, visitor, receiver);
+    }
+    else if (sQuestDataStore->GetQuestTemplate(Hunt)->GetObjectives().empty())
+    {
+        Require(owner.GetQuestStatus(Hunt) == QUEST_STATUS_COMPLETE && owner.GetSummonList(38507)->empty(),
+            "The pre-Hunt database no longer reproduces the objective-less acceptance");
+        std::cout << "EXPECTED_BROKEN original Hunt acceptance completed with no Tobias\n";
+    }
     Require(speak(visitor), "An abandoned battle could not be started again after genuine reacceptance");
     select(visitor, KrennanMenu, 0);
     Require(rootFor(visitor) && rootFor(visitor)->GetGUID() != otherGuid && rootFor(visitor)->AI()->GetData(Battle) == Speech,
@@ -687,7 +852,7 @@ int main(int argc, char** argv)
         HashMapHolder<Pet>::SetSize(32);
         GameTime::UpdateGameTimers();
         if (opening)
-            CheckOpening();
+            CheckOpening(sConfigMgr->GetBoolDefault("NativeGilneasRapier.Hunt", false));
         else
             CheckRapier(baseline);
         CharacterDatabase.Close();

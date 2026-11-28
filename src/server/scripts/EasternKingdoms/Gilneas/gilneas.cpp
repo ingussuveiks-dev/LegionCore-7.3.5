@@ -18,6 +18,7 @@
 #include "Unit.h"
 #include "gilneas.h"
 #include "gilneas_battle_opening.h"
+#include "gilneas_hunt.h"
 #include "ScriptedEscortAI.h"
 #include "Vehicle.h"
 #include "CharmInfo.h"
@@ -3152,6 +3153,17 @@ class spell_gilneas_patriots_rapier : public SpellScript
 
 void AddSC_gilneas()
 {
+    if (sObjectMgr->GetScriptId("npc_gilneas_hunt_lorna"))
+    {
+        using GilneasHunt::spell_gilneas_hunt_call;
+        using GilneasHunt::spell_gilneas_hunt_scene;
+        using GilneasHunt::spell_gilneas_hunt_tobias;
+        new GilneasHunt::npc_gilneas_hunt_lorna();
+        new GilneasHunt::player_gilneas_hunt();
+        RegisterSpellScript(spell_gilneas_hunt_call);
+        RegisterSpellScript(spell_gilneas_hunt_scene);
+        RegisterSpellScript(spell_gilneas_hunt_tobias);
+    }
     if (sObjectMgr->GetScriptId("npc_gilneas_battle_krennan"))
     {
         using GilneasBattle::spell_gilneas_battle_victory;

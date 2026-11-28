@@ -67,6 +67,8 @@ Izvietoti `14005` Vengeance of Elune darbību joslas un `24452` Profitability Sc
 
 Gilneas `24904` klienta datos atrasta oriģinālā `72349` fināla burvestība, kas satur `38854` ieskaiti. Tās izsaukums, viļņu maršruti un dalībnieku atlase darba versijā joprojām trūkst. [Gilneas avoti](gilneas-battle-sources-2026-11-27.md)
 
+2026-11-28 darba serverī atjaunoti visi septiņi `24904` viļņi un fināls. Pēc kaujas `24902` serverī pārbaudīts no Lorna un Tobiasa izsaukuma cauri katedrāles ainai, atpakaļ pie Lorna un līdz `24903` nodošanai pie Genn. Klienta attēls un kustība paliek atvērti. [Gilneas kauja](gilneas-battle-2026-11-28.md) · [The Hunt for Sylvanas](gilneas-hunt-2026-11-28.md)
+
 `24972` Vital Intelligence pats izsniedz vienu `2885` dokumentu no Sarvis pirms nodošanas Simmer. Neizsekotais `1667` laupījuma ieraksts nav prasība šajā piegādes kvestā. `29482` Transmutation Master prasa Alchemy `475` un četrus `72104` transmutācijas materiālus, lai gan kvestam ir zems nominālais minimums.
 
 `2499` Oakenscowl atkal ir atrodams Teldrassil. `29401/29412` Blown Away atjaunoti 38 balonu novietojumi, un svešs spēlētājs nevar iztukšot balonu. Servera pārbaudē savākti prasītie priekšmeti un pārbaudīta to izņemšana pēc atmešanas. [Novietojumu un laupījuma audits](low-level-world-spawns-2026-11-27.md)
