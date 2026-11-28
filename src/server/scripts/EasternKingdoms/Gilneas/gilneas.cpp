@@ -3134,7 +3134,13 @@ class spell_gilneas_patriots_rapier : public SpellScript
     void FilterTargets(std::list<WorldObject*>& targets)
     {
         auto caster = GetCaster();
-        targets.remove_if([caster](WorldObject const* target) { return !caster->InSamePhase(target); });
+        targets.remove_if([caster](WorldObject const* target)
+        {
+            if (!caster->InSamePhase(target))
+                return true;
+            auto battle = GilneasBattle::GetBattle(target->ToCreature());
+            return battle && !battle->SharesAttempt(caster);
+        });
     }
 
     void Register() override
@@ -3147,7 +3153,20 @@ class spell_gilneas_patriots_rapier : public SpellScript
 void AddSC_gilneas()
 {
     if (sObjectMgr->GetScriptId("npc_gilneas_battle_krennan"))
+    {
+        using GilneasBattle::spell_gilneas_battle_victory;
+        using GilneasBattle::spell_gilneas_battle_wail;
+        using GilneasBattle::spell_gilneas_battle_despawn;
+        using GilneasBattle::spell_gilneas_battle_catapult;
+        using GilneasBattle::spell_gilneas_battle_prince;
         new GilneasBattle::npc_gilneas_battle_krennan();
+        new GilneasBattle::player_gilneas_battle();
+        RegisterSpellScript(spell_gilneas_battle_victory);
+        RegisterSpellScript(spell_gilneas_battle_wail);
+        RegisterSpellScript(spell_gilneas_battle_despawn);
+        RegisterSpellScript(spell_gilneas_battle_catapult);
+        RegisterSpellScript(spell_gilneas_battle_prince);
+    }
     RegisterSpellScript(spell_gilneas_patriots_rapier);
     new npc_gilneas_city_guard_phase1();
     new npc_prince_liam_greymane_phase1();

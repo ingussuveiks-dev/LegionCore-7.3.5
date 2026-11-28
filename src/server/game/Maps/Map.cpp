@@ -4752,11 +4752,22 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     {
         std::list<Creature*> creatures;
         summoner->GetAliveCreatureListWithEntryInGrid(creatures, entry, 110.0f);
+        size_t limit = GetInstanceId() ? 100 : 50;
         // Each private lawn must fit its own forty plots under the usual cap.
         if (summoner->GetEntry() == BrazieBotany::Board && GetId() == BrazieBotany::Map)
             if (auto scope = summoner->GetQuestObjectScope().lock())
                 creatures.remove_if([&](Creature const* creature) { return creature->GetQuestObjectScope().lock() != scope; });
-        if (creatures.size() > (GetInstanceId() ? 100 : 50))
+        // Krennan's private battle can publish up to 82 members of its three
+        // Livery formations plus Genn's. Other attempts have separate scopes.
+        if (GetId() == 654 && summoner->GetEntry() == 38218 && summoner->ToTempSummon() &&
+            properties && properties->ID == 2912 && !summoner->IsQuestObjectExpired())
+            if (auto scope = summoner->GetQuestObjectScope().lock())
+            {
+                creatures.remove_if([&](Creature const* creature) { return creature->GetQuestObjectScope().lock() != scope; });
+                if (entry == 38221)
+                    limit = 81;
+            }
+        if (creatures.size() > limit)
             return nullptr;
     }
 

@@ -24518,6 +24518,20 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
         return;
 
     Unit* base = vehicle->GetBase();
+    if (base->GetMapId() == 654 && base->HasQuestObjectScope() &&
+        (base->GetEntry() == 38331 || base->GetEntry() == 38377 || base->GetEntry() == 38424))
+    {
+        Player* player = ToPlayer();
+        bool admitted = player && player->GetQuestStatus(24904) == QUEST_STATUS_INCOMPLETE &&
+            base->IsInPersonnalVisibilityList(GetGUID()) && base->IsWithinDistInMap(this, INTERACTION_DISTANCE) &&
+            base->IsWithinLOSInMap(this);
+        bool accessory = IsCreature() && GetQuestObjectScope().lock() == base->GetQuestObjectScope().lock();
+        if (base->IsQuestObjectExpired() || (!admitted && !accessory))
+        {
+            base->RemoveAura(const_cast<AuraApplication*>(aurApp));
+            return;
+        }
+    }
     if (base->GetEntry() == OldFriendsFlight::Bomber && base->GetMapId() == OldFriendsFlight::Map &&
         (!base->HasQuestObjectScope() || !base->CanTargetQuestObject(this)))
     {

@@ -33,7 +33,7 @@ void LoadBattleInputs(bool baseline, bool opening)
     auto row = WorldDatabase.Query(
 #include "NativeGilneasRapier.inc"
     );
-    Require(row && row->GetRowCount() == 4, "Missing the actual Worgen phase, prerequisite or battle quest");
+    Require(row && row->GetRowCount() == 5, "Missing the actual Worgen phase, prerequisite or battle quests");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(45089);
     sQuestDataStore->*Access(QuestMaxTag{}) = uint32(quests.size());
@@ -46,8 +46,8 @@ void LoadBattleInputs(bool baseline, bool opening)
 
     auto addons = WorldDatabase.Query("SELECT ID,MaxLevel,AllowableClasses,SourceSpellID,PrevQuestID,NextQuestID,ExclusiveGroup,"
         "RewardMailTemplateID,RewardMailDelay,RequiredSkillID,RequiredSkillPoints,RequiredMinRepFaction,RequiredMaxRepFaction,"
-        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24904)");
-    Require(addons && addons->GetRowCount() == 2, "Missing the original battle prerequisites");
+        "RequiredMinRepValue,RequiredMaxRepValue,ProvidedItemCount,SpecialFlags,RewardMailTitle FROM quest_template_addon WHERE ID IN(24676,24904,24902)");
+    Require(addons && addons->GetRowCount() == 3, "Missing the original battle prerequisites");
     do
     {
         auto fields = addons->Fetch();
@@ -75,6 +75,8 @@ void LoadBattleInputs(bool baseline, bool opening)
     sSpellMgr->LoadSpellProcEvents();
     sSpellMgr->LoadSpellPrcoCheck();
     sSpellMgr->LoadSpellProcs();
+    if (opening)
+        sSpellMgr->LoadSpellBonusess();
     auto item = sObjectMgr->GetItemTemplate(Rapier);
     auto spell = sSpellMgr->GetSpellInfo(Inspire);
     Require(item && std::any_of(item->Effects.begin(), item->Effects.end(), [](ItemEffectEntry const* effect)
@@ -84,21 +86,26 @@ void LoadBattleInputs(bool baseline, bool opening)
 
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature AS SELECT * FROM legion_world.creature "
-        "WHERE guid IN(148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24904)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24904)");
+        "WHERE guid IN(148102,148103,148108,148114,148116,148208,148209,148213,148225,148228,148229,149656,149660,149706,149746)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_queststarter AS SELECT * FROM legion_world.creature_queststarter WHERE quest IN(24676,24904,24902)");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_questender AS SELECT * FROM legion_world.creature_questender WHERE quest IN(24676,24904,24902)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_text AS SELECT * FROM legion_world.npc_text WHERE ID IN(15377)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu AS SELECT * FROM legion_world.gossip_menu WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE gossip_menu_option AS SELECT * FROM legion_world.gossip_menu_option WHERE MenuID=11061");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_area AS SELECT * FROM legion_world.spell_area "
         "WHERE (spell=68483 AND area=4714 AND quest_start=14386) OR spell=71388 OR (spell=69485 AND quest_start=24676)");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceEntry=71388 AND SourceTypeOrReferenceId=13");
-    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id=71388");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions AS SELECT * FROM legion_world.conditions WHERE SourceEntry IN(71388,72114,72116,72361) AND SourceTypeOrReferenceId=13");
+    WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE spell_script_names AS SELECT * FROM legion_world.spell_script_names WHERE spell_id IN(71388,72050,72113,72114,72116,72349,72361,72384)");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_loot_template AS SELECT * FROM legion_world.creature_loot_template "
-        "WHERE Entry IN(37685,37686,37692)");
+        "WHERE Entry IN(37685,37686,37692,38464,38473)");
     if (opening)
+    {
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text AS SELECT * FROM legion_world.creature_text "
-            "WHERE (CreatureID=38553 AND GroupID=0) OR (CreatureID=38218 AND GroupID BETWEEN 30 AND 36)");
+            "WHERE (CreatureID IN(38553,38331) AND GroupID=0) OR comment='Battle for Gilneas City - ordered dialogue'");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_start_scripts AS SELECT * FROM legion_world.quest_start_scripts WHERE id=24904");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE quest_end_scripts AS SELECT * FROM legion_world.quest_end_scripts WHERE id=24904");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE npc_spellclick_spells AS SELECT * FROM legion_world.npc_spellclick_spells WHERE npc_entry IN(38331,38377,38424)");
+    }
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     Require((LootTemplates_Creature.*Access(LoadLootTableTag{}))() > 0, "Missing the prerequisite enemies' original loot data");
     sObjectMgr->LoadCreatures();
@@ -108,7 +115,23 @@ void LoadBattleInputs(bool baseline, bool opening)
     sGossipDataStore->LoadGossipMenu();
     sGossipDataStore->LoadGossipMenuItems();
     if (opening)
+    {
+        Require(quests[Battle]->StartScript == 0 && quests[Battle]->CompleteScript == Battle &&
+            !quests[Battle]->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT), "The coordinated Gilneas cutover is missing");
         sCreatureTextMgr->LoadCreatureTexts();
+        sScriptDataStore->LoadQuestStartScripts();
+        sScriptDataStore->LoadQuestEndScripts();
+        sObjectMgr->LoadNPCSpellClickSpells();
+        for (uint32 id : {70696u, 71774u, 72050u, 72113u, 72114u, 72115u, 72116u, 72349u, 72361u, 72384u})
+        {
+            auto native = sSpellMgr->GetSpellInfo(id);
+            Require(native, "The original battle spell is absent from the 26972 catalog");
+            for (size_t slot = 0; slot < MAX_SPELL_EFFECTS; ++slot)
+                if (auto effect = native->GetEffect(SpellEffIndex(slot)); effect->IsEffect())
+                    std::cout << "CATALOG " << id << ' ' << slot << " effect=" << effect->Effect << " target="
+                        << effect->TargetA.GetTarget() << '/' << effect->TargetB.GetTarget() << " aura=" << effect->ApplyAuraName << '\n';
+        }
+    }
     sSpellMgr->LoadSpellAreas();
     if (!baseline)
     {
@@ -239,15 +262,22 @@ void CheckOpening()
     constexpr uint32 Speech = 1;
     constexpr uint32 March = 2;
     constexpr uint32 Assault = 3;
-    constexpr uint32 FirstWaveCleared = 4;
+    constexpr uint32 Finale = 4;
+    constexpr uint32 Retreat = 5;
+    constexpr uint32 Wave = Battle + 1;
     Map map(654, 838, 0, DIFFICULTY_NONE);
     auto& lorna = BattleActor(map, 37783, 149656);
     auto& krennan = BattleActor(map, 38553, 149660);
+    auto& receiver = BattleActor(map, 38611, 149746);
     auto first = new WorldSession(0, "Native Gilneas opening", {}, SEC_PLAYER, 6, 0, "Win", LOCALE_enUS, 0, false, AT_AUTH_FLAG_NONE, {});
     auto second = new WorldSession(0, "Native Gilneas opening visitor", {}, SEC_PLAYER, 6, 0, "Win", LOCALE_enUS, 0, false, AT_AUTH_FLAG_NONE, {});
+    auto third = new WorldSession(0, "Native Gilneas party member", {}, SEC_PLAYER, 6, 0, "Win", LOCALE_enUS, 0, false, AT_AUTH_FLAG_NONE, {});
     LootPlayer owner(first, map, 2490406, lorna.GetPosition());
     LootPlayer visitor(second, map, 2490407, lorna.GetPosition());
-    for (auto player : {&owner, &visitor})
+    LootPlayer member(third, map, 2490408, lorna.GetPosition());
+    Group party;
+    party.*Access(GroupGuidTag{}) = ObjectGuid::Create<HighGuid::Party>(24904, 0);
+    for (auto player : {&owner, &visitor, &member})
     {
         player->SetByteValue(UNIT_FIELD_BYTES_0, 0, RACE_WORGEN);
         player->setFactionForRace(RACE_WORGEN);
@@ -255,6 +285,14 @@ void CheckOpening()
         player->SetLevel(15);
         player->SetRewardedQuest(14386);
         player->SetRewardedQuest(PushThemOut);
+    }
+    for (auto player : {&owner, &member})
+    {
+        Group::MemberSlot slot;
+        slot.Guid = player->GetGUID();
+        slot.Class = player->getClass();
+        const_cast<Group::MemberSlotList&>(party.GetMemberSlots()).push_back(slot);
+        player->SetGroup(&party, 0);
     }
 
     auto speak = [&](LootPlayer& player)
@@ -294,18 +332,29 @@ void CheckOpening()
     Require(!rootFor(owner), "A forged early option created a battle");
     AcceptAtLorna(owner, lorna, Battle);
     AcceptAtLorna(visitor, lorna, Battle);
+    AcceptAtLorna(member, lorna, Battle);
+    Require(owner.GetQuestStatus(Battle) == QUEST_STATUS_INCOMPLETE && !owner.IsBeingTeleported() &&
+        !owner.CanRewardQuest(sQuestDataStore->GetQuestTemplate(Battle), false), "Acceptance still teleports or rewards an unearned victory");
+    owner.SetQuestStatus(Battle, QUEST_STATUS_COMPLETE);
+    Require(!owner.CanRewardQuest(sQuestDataStore->GetQuestTemplate(Battle), false), "A saved shortcut completion bypassed the native victory gate");
+    sScriptMgr->OnPlayerLogin(&owner);
+    Require(owner.GetQuestStatus(Battle) == QUEST_STATUS_INCOMPLETE && owner.GetItemByEntry(Rapier),
+        "Login did not reopen the old zero-credit slot with its real item");
+    MoveForRapier(member, krennan.GetPosition());
     Require(speak(owner), "The accepted Worgen did not see Krennan's genuine menu");
     select(owner, KrennanMenu + 1, 0);
     select(owner, KrennanMenu, 1);
     Require(!rootFor(owner), "A mismatched menu or option created the opening");
     select(owner, KrennanMenu, 0);
+    uint8 const battleLevel = std::clamp<uint8>(owner.getLevel(), 12, 20);
     auto liam = rootFor(owner);
     Require(liam && liam->AI()->GetData(Battle) == Speech && liam->HasQuestObjectScope() &&
-        liam->IsInPersonnalVisibilityList(owner.GetGUID()) && !liam->IsInPersonnalVisibilityList(visitor.GetGUID()),
-        "The real selection must publish the owner's Liam only");
+        liam->IsInPersonnalVisibilityList(owner.GetGUID()) && liam->IsInPersonnalVisibilityList(member.GetGUID()) &&
+        !liam->IsInPersonnalVisibilityList(visitor.GetGUID()), "The real selection must publish Liam for the eligible party only");
     ObjectGuid liamGuid = liam->GetGUID();
     select(owner, KrennanMenu, 0);
     Require(rootFor(owner) == liam && !speak(owner), "The opening must consume repeat selections while the attempt is active");
+    Require(!speak(member) && !rootFor(member), "An already enrolled party member was offered a second attempt");
 
     Require(speak(visitor), "A separate accepted owner could not open their own attempt");
     select(visitor, KrennanMenu, 0);
@@ -323,9 +372,13 @@ void CheckOpening()
         Require(map.GetCreature(liamGuid) == liam, "The active Liam disappeared during the opening");
         if (follow && owner.GetExactDist(liam) > 12.0f)
             MoveForRapier(owner, liam->GetPosition());
+        if (follow && member.GetExactDist(liam) > 15.0f)
+            MoveForRapier(member, liam->GetPosition());
         Tick(owner, tick);
+        Tick(member, tick);
         liam->Update(tick);
-        for (uint32 entry : {38465u, 38466u, 38221u, 38210u})
+        for (uint32 entry : {38465u, 38466u, 38426u, 38415u, 38470u, 38221u, 38348u, 38425u, 38210u,
+            38464u, 38420u, 38331u, 38424u, 38377u, 38469u, 38474u, 38473u})
         {
             if (!updateTroops && (entry == 38221 || entry == 38210))
                 continue;
@@ -358,16 +411,19 @@ void CheckOpening()
     {
         auto target = map.GetCreature(guid);
         Require(target && target->IsAlive(), "First-wave hostile disappeared before combat");
-        MoveForRapier(owner, target->GetPosition());
+        // The owner is present throughout the whole sequence. The party member
+        // contributes actual kills as well as receiving the native finale.
+        LootPlayer& killer = petFinalBlow ? member : owner;
+        MoveForRapier(killer, target->GetPosition());
         if (petFinalBlow)
         {
-            BattlePet pet(owner, map);
-            pet.SetPhaseMask(owner.GetPhaseMask(), false);
-            pet.SetPhaseId(owner.GetPhases(), false);
+            BattlePet pet(killer, map);
+            pet.SetPhaseMask(killer.GetPhaseMask(), false);
+            pet.SetPhaseId(killer.GetPhases(), false);
             pet.DealDamage(target, uint32(target->GetMaxHealth()) * 2);
         }
         else
-            owner.DealDamage(target, uint32(target->GetMaxHealth()) * 2);
+            killer.DealDamage(target, uint32(target->GetMaxHealth()) * 2);
         Require(target->isDead(false), "A scoped owner or pet's actual final hit was rejected");
     };
     auto last = hostiles.back();
@@ -383,27 +439,140 @@ void CheckOpening()
     Require(liam->AI()->GetData(Battle) == Assault && map.GetCreature(last) && map.GetCreature(last)->IsAlive(),
         "Route arrival alone must not clear the first wave");
     defeat(last, true);
-    for (uint32 step = 0; step < 850 && liam->AI()->GetData(Battle) < FirstWaveCleared; ++step)
+    for (uint32 step = 0; step < 850 && liam->AI()->GetData(Wave) == 1; ++step)
         lift(true);
-    std::cout << "CASE opening stage=" << liam->AI()->GetData(Battle) << " quest=" << owner.GetQuestStatus(Battle)
-        << " victory=" << owner.GetQuestObjectiveData(Battle, 38854) << " Liam=" << liam->GetPositionX() << ',' << liam->GetPositionY();
-    for (uint32 entry : {38465u, 38466u})
-        for (ObjectGuid guid : *liam->GetSummonList(entry))
-            if (Creature* leader = map.GetCreature(guid))
-                std::cout << " leader " << entry << '=' << leader->GetPositionX() << ',' << leader->GetPositionY();
-    std::cout << '\n';
-    Require(liam->AI()->GetData(Battle) == FirstWaveCleared && owner.GetQuestStatus(Battle) == QUEST_STATUS_INCOMPLETE &&
+    Require(liam->AI()->GetData(Wave) == 2 && owner.GetQuestStatus(Battle) == QUEST_STATUS_INCOMPLETE &&
         owner.GetQuestObjectiveData(Battle, 38854) == 0, "The first wave must wait for hostile deaths and the march, with no finale credit");
-    abandon(owner);
-    Require(!map.GetCreature(liamGuid), "The scoped opening was not removed on abandon");
-    AcceptAtLorna(owner, lorna, Battle);
-    Require(speak(owner), "An abandoned battle could not be started again after genuine reacceptance");
-    select(owner, KrennanMenu, 0);
-    Require(rootFor(owner) && rootFor(owner)->GetGUID() != liamGuid && rootFor(owner)->AI()->GetData(Battle) == Speech,
+    std::cout << "PASS first-wave owner and party pet kills, foreign damage rejection and no early completion\n";
+
+    for (uint32 wave = 2; wave <= 7; ++wave)
+    {
+        bool bossSeen = false;
+        uint32 steps = 0;
+        for (; steps < 2400 && liam->AI()->GetData(Wave) == wave && liam->AI()->GetData(Battle) < Finale; ++steps)
+        {
+            if (liam->AI()->GetData(Battle) == Assault && steps % 5 == 0)
+            {
+                bool defeated = false;
+                for (uint32 entry : {38210u, 38464u, 38420u, 38331u})
+                {
+                    for (ObjectGuid guid : *liam->GetSummonList(entry))
+                    {
+                        Creature* enemy = map.GetCreature(guid);
+                        if (!enemy || !enemy->IsAlive() || liam->GetExactDist(enemy) > 170.0f)
+                            continue;
+                        if (entry == 38331)
+                        {
+                            std::cout << "CASE Gorerot level=" << uint32(enemy->getLevel()) << " hp=" << enemy->GetMaxHealth()
+                                << " encounter=" << uint32(battleLevel) << '\n';
+                            Require(enemy->getLevel() == battleLevel && enemy->GetMaxHealth() > 1,
+                                "Gorerot retained the invalid level-83 stats");
+                            Creature* catapult = nullptr;
+                            for (ObjectGuid catapultGuid : *liam->GetSummonList(38377))
+                                if (auto candidate = map.GetCreature(catapultGuid); candidate && candidate->IsWithinDistInMap(enemy, 50.0f))
+                                {
+                                    catapult = candidate;
+                                    break;
+                                }
+                            Require(catapult && catapult->GetVehicleKit(), "Missing the genuine firing position and catapult vehicle");
+                            MoveForRapier(visitor, catapult->GetPosition());
+                            catapult->HandleSpellClick(&visitor);
+                            Tick(visitor, 300);
+                            Require(!visitor.GetVehicle(), "The foreign attempt boarded a private catapult");
+                            MoveForRapier(member, catapult->GetPosition());
+                            catapult->HandleSpellClick(&member);
+                            Tick(member, 300);
+                            Require(member.GetVehicleCreatureBase() == catapult, "The eligible party member could not board the native catapult");
+                            member.ExitVehicle();
+                            Tick(member, 300);
+                            Require(!member.GetVehicle(), "The native catapult did not restore the member's mover");
+                            bossSeen = true;
+                        }
+                        defeat(guid, entry == 38331 || steps % 2 == 0);
+                        defeated = true;
+                        break;
+                    }
+                    if (defeated)
+                        break;
+                }
+            }
+            lift(true);
+        }
+        std::cout << "CASE battle wave=" << wave << " next=" << liam->AI()->GetData(Wave) << " stage="
+            << liam->AI()->GetData(Battle) << " steps=" << steps << " boss=" << bossSeen << '\n';
+        if (steps == 2400)
+        {
+            std::cout << "CASE stalled Liam=" << liam->GetPositionX() << ',' << liam->GetPositionY() << ',' << liam->GetPositionZ() << '\n';
+            for (uint32 entry : {38465u, 38466u, 38426u, 38415u, 38470u, 38210u, 38464u, 38420u, 38331u})
+                for (ObjectGuid guid : *liam->GetSummonList(entry))
+                    if (Creature* actor = map.GetCreature(guid); actor && actor->IsAlive())
+                        std::cout << "CASE stalled actor=" << entry << " pos=" << actor->GetPositionX() << ','
+                            << actor->GetPositionY() << ',' << actor->GetPositionZ() << " LiamDist=" << liam->GetExactDist(actor) << '\n';
+        }
+        Require(steps < 2400 && (wave != 5 || bossSeen) && !owner.GetQuestObjectiveData(Battle, 38854),
+            "The real formation, Gorerot or wave combat stalled or granted premature victory");
+    }
+    Require(liam->AI()->GetData(Battle) == Finale, "The seven wave receipts did not open the finale");
+    auto queen = map.GetCreature(liam->GetSummonList(38469)->front());
+    Require(queen && queen->getLevel() == battleLevel, "The real scoped finale caster or its level is wrong");
+    auto premature = queen->CastSpell(queen, 72349, true);
+    lift(false);
+    std::cout << "CASE premature finale cast=" << uint32(premature) << " owner=" << owner.GetQuestObjectiveData(Battle, 38854) << '\n';
+    Require(owner.GetQuestObjectiveData(Battle, 38854) == 0 && member.GetQuestObjectiveData(Battle, 38854) == 0,
+        "The scoped queen granted credit before the final arrow");
+    MoveForRapier(visitor, queen->GetPosition());
+    MoveForRapier(owner, queen->GetPosition());
+    MoveForRapier(member, queen->GetPosition());
+    for (uint32 step = 0; step < 1500 && owner.GetQuestStatus(Battle) != QUEST_STATUS_COMPLETE; ++step)
+        lift(false);
+    Require(owner.GetQuestStatus(Battle) == QUEST_STATUS_COMPLETE && member.GetQuestStatus(Battle) == QUEST_STATUS_COMPLETE &&
+        owner.GetQuestObjectiveData(Battle, 38854) == 1 && member.GetQuestObjectiveData(Battle, 38854) == 1 &&
+        visitor.GetQuestObjectiveData(Battle, 38854) == 0 && !visitor.HasAura(72113) && liam->AI()->GetData(Battle) == Retreat,
+        "The original shot and victory did not finish independently for the two enrolled players only");
+    queen->CastSpell(queen, 72349, true);
+    Require(owner.GetQuestObjectiveData(Battle, 38854) == 1 && member.GetQuestObjectiveData(Battle, 38854) == 1 &&
+        visitor.GetQuestObjectiveData(Battle, 38854) == 0, "Retreat changed the scoped victory counts");
+    std::cout << "PASS seven movement and death gates, native arrow and one victory for each eligible party member\n";
+
+    for (uint32 step = 0; step < 400 && map.GetCreature(liamGuid); ++step)
+        lift(false);
+    Require(!map.GetCreature(liamGuid), "The finale did not clean up its actors");
+    MoveForRapier(owner, receiver.GetPosition());
+    WorldPackets::Quest::QuestGiverChooseReward reward{WorldPacket(CMSG_QUEST_GIVER_CHOOSE_REWARD)};
+    reward.QuestGiverGUID = receiver.GetGUID();
+    reward.QuestID = Battle;
+    auto battle = sQuestDataStore->GetQuestTemplate(Battle);
+    reward.ItemChoiceID = battle->RewardChoiceItemId[0];
+    if (battle->PackageID && !reward.ItemChoiceID)
+    {
+        if (auto items = sDB2Manager.GetQuestPackageItems(battle->PackageID))
+            for (auto item : *items)
+                if (owner.CanSelectQuestPackageItem(item))
+                {
+                    reward.ItemChoiceID = item->ItemID;
+                    break;
+                }
+        if (!reward.ItemChoiceID)
+            if (auto items = sDB2Manager.GetQuestPackageItemsFallback(battle->PackageID); items && !items->empty())
+                reward.ItemChoiceID = items->front()->ItemID;
+    }
+    Require(receiver.hasInvolvedQuest(Battle) && owner.CanInteractWithQuestGiver(&receiver), "The original Lorna receiver is phased or missing the quest relation");
+    std::cout << "CASE reward package=" << battle->PackageID << " item=" << reward.ItemChoiceID << '\n';
+    uint32 oldCount = reward.ItemChoiceID ? owner.GetItemCount(reward.ItemChoiceID) : 0;
+    first->HandleQuestGiverChooseReward(reward);
+    Tick(owner, 100);
+    Require(owner.GetQuestRewardStatus(Battle) && owner.HasAura(70696) && (!reward.ItemChoiceID || owner.GetItemCount(reward.ItemChoiceID) > oldCount),
+        "The real Greymane Court Lorna could not reward the victory");
+    AcceptAtLorna(owner, receiver, 24902);
+    Require(owner.GetQuestStatus(24902) != QUEST_STATUS_NONE, "Lorna did not admit the next quest after the real reward");
+    Require(speak(visitor), "An abandoned battle could not be started again after genuine reacceptance");
+    select(visitor, KrennanMenu, 0);
+    Require(rootFor(visitor) && rootFor(visitor)->GetGUID() != otherGuid && rootFor(visitor)->AI()->GetData(Battle) == Speech,
         "The retry reused an earlier attempt");
-    abandon(owner);
     abandon(visitor);
-    std::cout << "PASS isolated first-wave owner/pet kills, foreign damage rejection, no victory credit, abandon and retry\n";
+    owner.SetGroup(nullptr);
+    member.SetGroup(nullptr);
+    std::cout << "PASS native finale cleanup, Greymane Court reward, next quest admission and abandon/retry\n";
 }
 
 void CheckRapier(bool baseline)

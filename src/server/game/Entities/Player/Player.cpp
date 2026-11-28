@@ -19298,6 +19298,11 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     if (quest->GetQuestId() == 14477 && GetQuestObjectiveData(14477, 196870) < 1)
         return false;
 
+    // After the Gilneas battle replaces the acceptance shortcut, a legacy
+    // COMPLETE slot with no victory marker cannot be rewarded at Lorna.
+    if (quest->GetQuestId() == 24904 && !quest->StartScript && GetQuestObjectiveData(24904, 38854) < 1)
+        return false;
+
     if (quest->GetQuestId() == AmaniCatacombs::Quest)
         for (QuestObjective const& objective : quest->GetObjectives())
             if ((objective.Type == QUEST_OBJECTIVE_GAMEOBJECT || objective.Type == QUEST_OBJECTIVE_AREATRIGGER) &&
